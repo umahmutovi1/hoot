@@ -5,8 +5,9 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 
 ## Source of truth
 - Specification: `docs/PRD.md` (Bosnian). Read the relevant section before implementing a feature.
-- Screen designs: `docs/design/` — see `docs/design/README.md` for the visual system and screen flows.
+- Screen designs: `docs/design/` — see `docs/design/README.md` for the visual system and screen flows, and `docs/design/MASCOT.md` for the owl mascot.
 - Build order and Definition of Done: `docs/ROADMAP.md`. Work on one stage at a time.
+- Manual service setup (Supabase, Cloudflare, Resend, Anthropic, opening to more users): `docs/SETUP.md`. Keep it updated when a dashboard setting changes.
 - The designs are mockups: port layout, colors and copy into React + Tailwind. Do NOT copy the HTML or the demo `<script>` logic.
 - If the PRD and the code disagree, or the PRD is ambiguous, ask instead of guessing.
 
@@ -26,8 +27,8 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `supabase/migrations/` SQL migrations; `supabase/functions/_shared/` Zod schemas, `llm.ts`, prices, cors (imported by the frontend via `@shared/`)
 
 ## Commands
-- `npm run dev` · `npm run build` · `npm run lint` · `npm run typecheck` · `npm test`
-- `npx supabase start` (local DB) · `npx supabase db push` · `npx supabase gen types typescript --linked > src/types/database.ts`
+- `npm run dev` · `npm run build` · `npm run lint` (oxlint) · `npm run format` (Prettier) · `npm run typecheck` · `npm test`
+- `npx supabase db push` · `npm run db:types` (regenerates `src/types/database.ts` from the linked project)
 - `npx supabase functions serve` / `npx supabase functions deploy <name>`
 
 ## Architectural rules
@@ -43,13 +44,14 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 
 ## Database
 - Schema changes = new migration file (`0002_*.sql`, ...). Never edit an applied migration.
-- Every new table: `user_id uuid not null default auth.uid()`, RLS enabled, owner-only policy. Synced tables get `updated_at` + trigger.
+- Every new table: `user_id uuid not null default auth.uid()`, RLS enabled, owner-only policy `to authenticated`, and an explicit `grant select, insert, update, delete ... to authenticated` (the Data API does not auto-expose tables; `anon` gets nothing). Synced tables get `updated_at` + the `set_updated_at` trigger.
 - Regenerate `src/types/database.ts` after every migration.
 
 ## Design implementation
 - Tokens (colors, Outfit font, radii) live in `src/index.css` `@theme`; use token classes, not raw hex values.
 - Target 390 px width first; touch targets ≥ 44 px; stroke icons 1.8 px.
 - Prefer shadcn/ui primitives (Dialog, Sheet, Tabs) styled to match the mockups.
+- Owl mascot only via `<Mascot pose size />` (`src/components/Mascot.tsx`) at the places and sizes listed in `docs/design/MASCOT.md`. At most one per screen, never in lists or the tab bar; never edit files in `public/mascot/`.
 
 ## Git workflow
 - Branches: `main` = production, `dev` = integration (default). Never commit directly to either.
@@ -61,7 +63,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - Never commit `.env*` files or secrets. `VITE_SUPABASE_ANON_KEY` is public by design; service-role and Anthropic keys live only in Supabase secrets.
 
 ## Before finishing a task
-- `npm run lint && npm run typecheck && npm test && npm run build` pass.
+- `npm run lint && npm run format:check && npm run typecheck && npm test && npm run build` pass.
 - New strings exist in both locale files.
 - Check the screen against its mockup at 390 px.
 - Update `docs/ROADMAP.md` checkboxes if a stage item is done.

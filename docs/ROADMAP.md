@@ -1,14 +1,14 @@
 # Hoot — Roadmap
 
-Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md), dizajn u [design/](design/README.md). Etape 1–10 prate redoslijed iz PRD sekcije „Roadmap i odluke"; poslije svake etape app radi i deployan je.
+Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md), dizajn u [design/](design/README.md), ručna podešavanja servisa u [SETUP.md](SETUP.md). Etape 1–10 prate redoslijed iz PRD sekcije „Roadmap i odluke"; poslije svake etape app radi i deployan je.
 
 ## Konvencije
 
-**Ime.** App se zove **Hoot**: repo `hoot`, PWA manifest `name: "Hoot"`, `<title>`, Cloudflare projekat `hoot` → `hoot.pages.dev`. Radni naziv `study-planner` iz PRD-a se ne koristi.
+**Ime.** App se zove **Hoot**: repo `hoot`, PWA manifest `name: "Hoot"`, `<title>`, Cloudflare projekat `hoot` → `hoot-5ig.pages.dev`. Radni naziv `study-planner` iz PRD-a se ne koristi.
 
 **Branching: `main` / `dev` / feature grane.**
 - `main` = produkcija (Cloudflare production deploy). Zaštićen: samo PR iz `dev` (release) ili `hotfix/*`, CI mora proći, bez force pusha.
-- `dev` = integracija (Cloudflare preview alias `dev.hoot.pages.dev`). Zaštićen: samo PR, CI mora proći. Default branch na GitHubu.
+- `dev` = integracija (Cloudflare preview alias `dev.hoot-5ig.pages.dev`). Zaštićen: samo PR, CI mora proći. Default branch na GitHubu.
 - Feature grane se granaju iz `dev` i vraćaju u `dev`: `feat/<slug>`, `fix/<slug>`, `chore/<slug>`, `docs/<slug>`. Squash merge, grana se briše.
 - Release: na kraju etape PR `dev → main` (merge commit, ne squash), pa tag na `main`.
 - Hotfix: `hotfix/<slug>` iz `main` → PR u `main`, zatim `main` mergeati nazad u `dev`.
@@ -22,7 +22,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 **Okruženja.**
 - Lokalno: `npx supabase start` + `npm run dev`.
 - `dev` i feature grane: Cloudflare preview URL-ovi. Dijele produkcijski Supabase (free tier = 2 projekta), ili drugi projekat `hoot-staging` ako treba izolacija.
-- Produkcija: `main` → `hoot.pages.dev`.
+- Produkcija: `main` → `hoot-5ig.pages.dev`.
 
 **Definition of Done (svaka etapa).**
 - Lint, typecheck, testovi i build zeleni u CI.
@@ -35,35 +35,43 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 ## Etapa 0 — Repo i alati
 
-- [ ] `git init`, `.gitignore` (node_modules, dist, `.env*`, `supabase/.temp`), `.editorconfig`, `.nvmrc` (Node 24 LTS), kratki `README.md` (EN)
-- [ ] Prvi commit na `main`: `docs/`, `CLAUDE.md` (jedini direktni commit na `main`)
-- [ ] GitHub repo `hoot` (privatan), push `main`
-- [ ] `git checkout -b dev`, push, `dev` kao default branch
-- [ ] Branch protection na `main` i `dev` (PR obavezan, CI status check kad CI postoji)
-- [ ] PR template (`.github/pull_request_template.md`), issue templates, labeli, Milestones 0–10
-- [ ] Nalozi: Supabase (regija Frankfurt), Cloudflare, Anthropic konzola sa mjesečnim limitom. Ključevi nikad u repou.
+- [x] `git init`, `.gitignore` (node_modules, dist, `.env*`, `supabase/.temp`), `.editorconfig`, `.nvmrc` (Node 24 LTS), kratki `README.md` (EN)
+- [x] Prvi commit na `main`: `docs/`, `CLAUDE.md` (jedini direktni commit na `main`)
+- [x] GitHub repo `hoot` (privatan), push `main`
+- [x] `git checkout -b dev`, push, `dev` kao default branch
+- [x] Branch protection na `main` i `dev` (ruleset `protect-main-dev`: PR obavezan, bez force pusha i brisanja)
+- [x] PR template (`.github/pull_request_template.md`), issue templates, labeli, Milestones 0–10
+- [x] Nalozi: Supabase (projekat `hoot`, ref `lpyyatqzvrvqgcmwiqfr`, Frankfurt), Cloudflare
+- [ ] **Anthropic: nedostaje kartica.** Treba dopuniti kredit, postaviti mjesečni limit i napraviti **workspace** API ključ (`sk-ant-api03-…`, ne `sk-ant-usr-…`). Blokira samo Etapu 8. Ključevi nikad u repou ni u chatu.
+
+> **Lozinka baze** (Supabase DB password) čuva se samo u password manageru. CLI je za `link` / `db push` ne traži (koristi `supabase login`); treba kasnije kao GitHub secret `SUPABASE_DB_PASSWORD` za `backup.yml`. Nikad u repo ili `.env` fajl.
 
 ## Etapa 1 — Temelj (`feat/foundation`)
 
-- [ ] Kostur prema PRD „Kostur za prvi dan": Vite React-TS, Tailwind v4 (`@tailwindcss/vite`), shadcn/ui, React Router, TanStack Query, Zustand, RHF + Zod, date-fns
-- [ ] ESLint (flat config) + Prettier, strict `tsconfig`, aliasi `@/` → `src/` i `@shared/` → `supabase/functions/_shared/`
-- [ ] Skripte `dev`, `build`, `lint`, `typecheck`, `test`
-- [ ] Dizajn tokeni iz `docs/design/README.md` u `src/index.css` `@theme` (boje, Outfit, radiusi)
-- [ ] `AppShell`: donja navigacija (Danas, Plan, Satnica, Predmeti, Napredak), urez i plutajuće timer dugme; prazni tab ekrani
-- [ ] i18n: `react-i18next`, `src/locales/bs.json` + `en.json`, date-fns lokali, izbor jezika pamti `profiles.locale`
-- [ ] PWA: `vite-plugin-pwa`, manifest „Hoot", ikone, offline shell
-- [ ] Supabase: `supabase init`, `supabase/migrations/0001_init.sql` iz PRD-a + dopune (vidi „Otvorena pitanja"), `seed.sql`
-- [ ] `supabase link`, `db push`, `gen types` → `src/types/database.ts`
-- [ ] Auth: ekran Prijava (`Prijava.dc.html`), magic link, `RequireAuth` guard, odjava u Postavkama
-- [ ] CI `.github/workflows/ci.yml`: install → lint → typecheck → vitest → build, na PR prema `dev`/`main` i push na `dev`/`main`
-- [ ] `.github/workflows/keepalive.yml` iz PRD-a (Secrets: `SUPABASE_URL`, `SUPABASE_ANON_KEY`)
-- [ ] Cloudflare Pages projekat `hoot`: production branch `main`, preview za ostale, env `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
-- [ ] Supabase Auth: Site URL `https://hoot.pages.dev`, redirecti za `dev.hoot.pages.dev`, preview URL-ove i `http://localhost:5173`
-- [ ] Kreiran vlastiti nalog, pa isključene nove registracije
-- **DoD:** login magic linkom radi na `hoot.pages.dev`, bs/en se mijenja i pamti, PWA se instalira kao „Hoot", CI zelen → `v0.1.0`
+- [x] Kostur prema PRD „Kostur za prvi dan": Vite React-TS, Tailwind v4 (`@tailwindcss/vite`), shadcn/ui, React Router, TanStack Query, Zustand, RHF + Zod, date-fns
+- [x] oxlint (Vite default) + Prettier, strict `tsconfig`, aliasi `@/` → `src/` i `@shared/` → `supabase/functions/_shared/`
+- [x] Skripte `dev`, `build`, `lint`, `typecheck`, `test`, `format`, `db:types`
+- [x] Dizajn tokeni iz `docs/design/README.md` u `src/index.css` `@theme` (boje, Outfit, radiusi)
+- [x] `AppShell`: donja navigacija (Danas, Plan, Predmeti, Napredak; Satnica je tab unutar Plana), urez i plutajuće timer dugme; prazni tab ekrani
+- [x] i18n: `react-i18next`, `src/locales/bs.json` + `en.json`, date-fns lokali, izbor jezika pamti `profiles.locale`
+- [x] PWA: `vite-plugin-pwa`, manifest „Hoot", ikone, offline shell
+- [x] Supabase: `supabase init`, `supabase/migrations/0001_init.sql` iz PRD-a + dopune (vidi „Otvorena pitanja"), `seed.sql`
+- [x] `supabase link`, `db push`, `gen types` → `src/types/database.ts`
+- [x] Auth: ekran Prijava (`Prijava.dc.html`), magic link + unos koda iz emaila (za instaliranu PWA), `RequireAuth` guard, odjava u Postavkama
+- [x] Maskota: `<Mascot pose size />` (`docs/design/MASCOT.md`) na Prijavi, praznom „Danas" (DanasPrazno) i praznoj Satnici
+- [x] CI `.github/workflows/ci.yml`: install → lint → format check → typecheck → vitest → build, na PR prema `dev`/`main` i push na `dev`/`main`
+- [x] CI kao obavezan status check u rulesetu `protect-main-dev`
+- [x] `.github/workflows/keepalive.yml` — zove RPC `keepalive()` (anon nema pristup tabelama)
+- [x] GitHub Secrets za keepalive: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`
+- [x] Cloudflare Pages projekat `hoot`: production branch `main`, preview za ostale, env `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+- [x] Supabase Auth URL Configuration (vidi [SETUP.md](SETUP.md#1-supabase))
+- [x] Kreiran vlastiti nalog, pa isključene nove registracije
+- **DoD:** login magic linkom radi na `hoot-5ig.pages.dev` (u browseru; login u instaliranoj PWA dolazi sa Resend SMTP-om u Etapi 2), bs/en se mijenja i pamti, PWA se instalira kao „Hoot", CI zelen → `v0.1.0`
 
 ## Etapa 2 — Predmeti, ispiti, rokovi, kalendar
 
+- [ ] Resend SMTP + šablon emaila sa kodom, da login radi u instaliranoj PWA ([SETUP.md](SETUP.md#3-resend-smtp-kod-za-prijavu-u-emailu))
+- [ ] Ime korisnika: `profiles.display_name` se sad uzima iz dijela emaila prije `@`. Dodati pitanje „Kako da te zovem?" pri prvom ulasku i izmjenu imena u Postavkama (profilna kartica)
 - [ ] Predmeti (lista), NoviPredmet (naziv, boja, preset ispita, datum i format; < 30 s), Predmet (detalji)
 - [ ] CRUD ispita i rokova (procjena sati opcionalna)
 - [ ] Plan tab: FullCalendar mjesečni prikaz ispita i rokova
@@ -92,6 +100,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 ## Etapa 5 — Timer i sesije
 
+- [ ] Maskota: `timer` 84 px u sheetu „Šta učiš sad?", `celebrating` 140 px na KrajSesije, `sleeping` 190 px u offline poruci
 - [ ] Timer dugme → PokreniSesiju (preporučeni blok / drugi blok / slobodna sesija; nastavak aktivne)
 - [ ] Sesija: segmenti u bazi, pauza/nastavak, „Sad radim na", režimi 25/5, 50/10, slobodno, način učenja
 - [ ] KrajSesije: težina 1–5 po jedinici, fokus 1–3, refleksija; raspodjela minuta u `session_units`
@@ -108,11 +117,13 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] `input_hash`, upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [ ] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno")
 - [ ] Replan sheet: deficit + 3 opcije
+- [ ] Maskota: `sleeping` 190 px na DanasSlobodno (dan bez blokova), `sleeping-head` 76 px u Replan sheetu, `timer-head` u praznoj Satnici već postoji
 - [ ] Danas ekran (fokus bar, Sljedeći blok, lista, 3 ispita, savjet) i Satnica tab
 - **DoD** → `v0.6.0`
 
 ## Etapa 7 — Recall gate i spaced repetition
 
+- [ ] Maskota: `celebrating-head` uz potvrdu „Sjećam se"
 - [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2
 - [ ] `src/lib/srs/`: SM-2 varijanta, lični množitelj, ograničenje na datum ispita + testovi
 - [ ] `review_logs`, prelaz na level 2/3, review i recap blokovi u scheduleru
@@ -137,13 +148,14 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] Progres po izvoru, ispitu, predmetu i temi
 - [ ] Statistika: sati vs plan, ispunjenost, fokus, efikasnost po dobu dana (SQL view / RPC)
 - [ ] Prognoza spremnosti na Danas i Napredak
-- [ ] Rezultat ispita + spremnost dan prije
+- [ ] Rezultat ispita + spremnost dan prije; `celebrating` 120 px u toastu/modalu za položen ispit
+- [ ] Maskota: `reading-head` 52 px kao avatar strategista (Danas savjet, Napredak sedmični pregled)
 - [ ] `strategist` edge funkcija (sedmično / na dugme), odobravanje akcija jednim tapom → replan
 - **DoD** → `v0.9.0`
 
 ## Etapa 10 — Notifikacije i dorada
 
-- [ ] Web Push: service worker, `notify` edge funkcija, `pg_cron` (prvi blok, propušten blok, ponavljanje)
+- [ ] Web Push: service worker; ikone notifikacija `celebrating-head` / `timer-head`, `notify` edge funkcija, `pg_cron` (prvi blok, propušten blok, ponavljanje)
 - [ ] Postavke kompletne (plan, timer, jezik, potrošnja AI iz `ai_runs`)
 - [ ] Pristupačnost: touch ≥ 44 px, kontrast, aria, fokus
 - [ ] Playwright E2E: novi predmet, dodaj izvor, sesija, replan
@@ -154,17 +166,21 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 ## Kasnije
 
 - Read-only demo nalog sa seed podacima za portfolio.
+- Admin pregled (read-only): oznaka `role: admin` u `app_metadata`, funkcija `is_admin()` i dodatna `select` RLS politika po tabeli, ekran `/admin`.
+- Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#5-otvaranje-aplikacije-za-više-korisnika)).
 
 ---
 
-## Otvorena pitanja u PRD-u (riješiti u Etapi 1)
+## Odluke iz Etape 1 (odstupanja od PRD-a)
 
-- `0001_init.sql` nema triger `set_updated_at`; dodati ga za sve tabele sa `updated_at`.
-- Nema trigera koji pravi red u `profiles` pri novom korisniku (`auth.users` insert).
-- `deadlines` nema `created_at`; `source_mode_rates` nema `updated_at`, a sinhronizuje se.
-- Ime bucketa: `uploads` (Šema) vs `toc-uploads` (Deploy) → koristiti `uploads` svuda.
-- Zod šeme: `packages/shared` (AI sekcija) vs `supabase/functions/_shared/` (Struktura) → `_shared`.
-- `LlmRequest.task` ima 4 vrijednosti, enum `ai_task` ima 7 → koristiti `ai_task`.
+- `0001_init.sql` dodaje: triger `set_updated_at` za sve tabele sa `updated_at`, triger koji pravi `profiles` red za novog korisnika, `created_at` na `deadlines`, `updated_at` na `source_mode_rates`, `timetable_entries`, `availability_*`, `plan_blocks`, `cards`, `profiles.display_name`, indekse po `user_id`/FK.
+- Data API ne izlaže nove tabele automatski: migracija daje `grant` samo roli `authenticated`; `anon` nema pristup tabelama. `ai_runs` korisnik samo čita, a piše ga Edge Function preko service role. **Svaka nova migracija mora sadržavati i `grant` za nove tabele.**
+- Bucket se zove `uploads` svuda (pravi ga migracija, sa politikom vlastitog foldera).
+- Zod šeme dijeljene sa Edge Functions žive u `supabase/functions/_shared/` (alias `@shared/`).
+- `LlmRequest.task` koristi enum `ai_task` iz baze.
+- Supabase API ključ je novi „publishable" (`sb_publishable_…`), env `VITE_SUPABASE_PUBLISHABLE_KEY`.
+- Linter je oxlint (Vite 8 default) umjesto ESLinta.
+- Font Outfit se servira lokalno (`@fontsource-variable/outfit`), radi offline.
 
 ## Prompt za početak etape (primjer)
 
