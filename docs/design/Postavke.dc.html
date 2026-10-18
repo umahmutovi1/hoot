@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Postavke</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+</style>
+</helmet>
+<div style="width: 390px; height: 1020px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; padding: 24px 20px; display: flex; flex-direction: column; gap: 14px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Napredak.dc.html" aria-label="Nazad" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<span style="font-size: 16px; font-weight: 600">Postavke</span>
+<span style="width: 44px"></span>
+</div>
+
+<div style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; align-items: center; gap: 14px">
+<div style="width: 52px; height: 52px; border-radius: 26px; background: #CFC6F2; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; color: #3B2D82">U</div>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 600">Uma</span><span style="font-size: 13px; color: #5B5670">Prijava putem magic linka</span></div>
+</div>
+
+<span style="font-size: 13px; font-weight: 600; color: #5B5670; padding: 4px 4px 0">OPĆE</span>
+<div style="background: #FFFFFF; border-radius: 24px; padding: 6px 16px; display: flex; flex-direction: column">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F1EFF7">
+<span style="font-size: 15px">Jezik</span>
+<div style="display: flex; background: #F1EFF7; border-radius: 18px; padding: 3px">
+<button onClick="{{toBs}}" style="height: 34px; padding: 0 14px; border-radius: 15px; border: none; background: {{bsBg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #1D1A2B">Bosanski</button>
+<button onClick="{{toEn}}" style="height: 34px; padding: 0 14px; border-radius: 15px; border: none; background: {{enBg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #1D1A2B">English</button>
+</div>
+</div>
+<a href="Dostupnost.dc.html" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 0; text-decoration: none; color: #1D1A2B; border-bottom: 1px solid #F1EFF7"><span style="font-size: 15px">Dostupnost</span><span style="font-size: 14px; color: #5B5670">21h sedmično ›</span></a>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 0"><span style="font-size: 15px">Vremenska zona</span><span style="font-size: 14px; color: #5B5670">Europe/Sarajevo</span></div>
+</div>
+
+<span style="font-size: 13px; font-weight: 600; color: #5B5670; padding: 4px 4px 0">PLAN</span>
+<div style="background: #FFFFFF; border-radius: 24px; padding: 6px 16px; display: flex; flex-direction: column">
+<sc-for list="{{steppers}}" as="s" hint-placeholder-count="3">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid {{s.line}}">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">{{s.label}}</span><span style="font-size: 12px; color: #5B5670">{{s.hint}}</span></span>
+<span style="display: flex; align-items: center; gap: 8px">
+<button onClick="{{s.dec}}" aria-label="Smanji" style="width: 36px; height: 36px; border-radius: 18px; border: 1px solid #DCD7EA; background: #FFFFFF; font-size: 18px; color: #4B3B8F">−</button>
+<span style="min-width: 52px; text-align: center; font-size: 15px; font-weight: 600">{{s.value}}</span>
+<button onClick="{{s.inc}}" aria-label="Povećaj" style="width: 36px; height: 36px; border-radius: 18px; border: 1px solid #DCD7EA; background: #FFFFFF; font-size: 18px; color: #4B3B8F">+</button>
+</span>
+</div>
+</sc-for>
+</div>
+
+<span style="font-size: 13px; font-weight: 600; color: #5B5670; padding: 4px 4px 0">TIMER</span>
+<div style="background: #FFFFFF; border-radius: 24px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 15px">Režim pauza</span>
+<div style="display: flex; gap: 8px">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="3">
+<button onClick="{{m.pick}}" style="flex: 1; height: 44px; border-radius: 22px; border: none; background: {{m.bg}}; color: {{m.fg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600">{{m.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #5B5670">App prati koji režim ti daje bolju efikasnost i fokus.</span>
+</div>
+
+<span style="font-size: 13px; font-weight: 600; color: #5B5670; padding: 4px 4px 0">AI</span>
+<div style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; justify-content: space-between; align-items: center">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">Potrošnja ovog mjeseca</span><span style="font-size: 12px; color: #5B5670">14 poziva · limit 30 dnevno</span></span>
+<span style="font-size: 17px; font-weight: 700">$0,012</span>
+</div>
+
+<a href="Prijava.dc.html" style="margin-top: auto; height: 52px; border-radius: 26px; background: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; color: #B42318">Odjava</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1020}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { lang: 'bs', buffer: 1, maxSub: 3, minBlock: 25, mode: '25' }; }
+  renderVals() {
+    const s = this.state;
+    const mk = (key, label, hint, fmt, step, min, max, last) => ({
+      label, hint, value: fmt(s[key]), line: last ? 'transparent' : '#F1EFF7',
+      dec: () => this.setState({ [key]: Math.max(min, s[key] - step) }),
+      inc: () => this.setState({ [key]: Math.min(max, s[key] + step) })
+    });
+    return {
+      bsBg: s.lang === 'bs' ? '#FFFFFF' : 'transparent', enBg: s.lang === 'en' ? '#FFFFFF' : 'transparent',
+      toBs: () => this.setState({ lang: 'bs' }), toEn: () => this.setState({ lang: 'en' }),
+      steppers: [
+        mk('buffer', 'Dani za ponavljanje', 'prije svakog ispita', (v) => v + ' d', 1, 0, 5, false),
+        mk('maxSub', 'Predmeta dnevno', 'najviše', (v) => String(v), 1, 1, 5, false),
+        mk('minBlock', 'Najkraći blok', 'kraće se ne planira', (v) => v + ' min', 5, 15, 90, true)
+      ],
+      modes: [['25', '25/5'], ['50', '50/10'], ['free', 'Slobodno']].map(([id, label]) => {
+        const on = s.mode === id;
+        return { label, bg: on ? '#4B3B8F' : '#F1EFF7', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ mode: id }) };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

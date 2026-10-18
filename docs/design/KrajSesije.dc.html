@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Kraj sesije</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+textarea::placeholder{color:#8A84A0}
+</style>
+</helmet>
+<div style="width: 390px; height: 1040px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 8px">
+<div style="width: 64px; height: 64px; border-radius: 32px; background: #DCEFEA; display: flex; align-items: center; justify-content: center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1F6B5A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></div>
+<h1 style="margin: 0; font-size: 26px; font-weight: 700">Sesija završena</h1>
+<p style="margin: 0; font-size: 14px; color: #5B5670">Baze podataka · 47 min učenja · 2 pauze</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div style="background: #FFFFFF; border-radius: 20px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 20px; font-weight: 700">47</span><span style="font-size: 12px; color: #5B5670">min od 60</span></div>
+<div style="background: #FFFFFF; border-radius: 20px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 20px; font-weight: 700">19</span><span style="font-size: 12px; color: #5B5670">stranica</span></div>
+<div style="background: #FFFFFF; border-radius: 20px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 20px; font-weight: 700">2,5</span><span style="font-size: 12px; color: #5B5670">min / str.</span></div>
+</div>
+
+<h2 style="margin: 4px 0 0; font-size: 18px; font-weight: 600">Koliko je bilo teško?</h2>
+<sc-for list="{{units}}" as="u" hint-placeholder-count="2">
+<div style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{u.title}}</span><span style="font-size: 12px; color: #5B5670">{{u.meta}}</span></div>
+<span style="font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 999px; background: #E9E4FB; color: #4B3B8F; white-space: nowrap">{{u.status}}</span>
+</div>
+<div style="display: flex; gap: 6px" role="group" aria-label="Težina 1 do 5">
+<sc-for list="{{u.opts}}" as="o" hint-placeholder-count="5">
+<button onClick="{{o.pick}}" aria-label="Težina {{o.n}}" style="flex: 1; height: 44px; border-radius: 14px; border: none; background: {{o.bg}}; color: {{o.fg}}; font-family: Outfit, sans-serif; font-size: 16px; font-weight: 600">{{o.n}}</button>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 11px; color: #5B5670"><span>lako</span><span>jako teško</span></div>
+</div>
+</sc-for>
+
+<h2 style="margin: 4px 0 0; font-size: 18px; font-weight: 600">Kakav je bio fokus?</h2>
+<div style="display: flex; gap: 8px" role="group" aria-label="Fokus">
+<sc-for list="{{focus}}" as="f" hint-placeholder-count="3">
+<button onClick="{{f.pick}}" style="flex: 1; height: 48px; border-radius: 24px; border: none; background: {{f.bg}}; color: {{f.fg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600">{{f.label}}</button>
+</sc-for>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 15px; font-weight: 600">Šta je bilo teško? <span style="font-weight: 400; color: #5B5670">(opcionalno)</span></span>
+<textarea rows="3" placeholder="npr. nisam skontala razliku 3NF i BCNF" style="border: none; border-radius: 20px; padding: 14px 16px; font-family: Outfit, sans-serif; font-size: 15px; color: #1D1A2B; background: #FFFFFF; resize: none"></textarea>
+</label>
+
+<div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto">
+<a href="RecallGate.dc.html" style="height: 56px; border-radius: 28px; background: #4B3B8F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">Sačuvaj i testiraj se</a>
+<a href="Danas.dc.html" style="height: 52px; border-radius: 26px; background: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">Samo sačuvaj</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1040}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { r: { a: 4, b: 3 }, focus: 2 }; }
+  renderVals() {
+    const units = [
+      { id: 'a', title: '5.1 Funkcionalne zavisnosti', meta: '28 min · AI procjena 3', status: 'Pročitano' },
+      { id: 'b', title: '5.2 Normalne forme 1NF–3NF', meta: '19 min · AI procjena 3', status: 'Pročitano' }
+    ];
+    const f = [{ n: 1, label: 'Slab' }, { n: 2, label: 'Ok' }, { n: 3, label: 'Odličan' }];
+    return {
+      units: units.map((u) => ({ ...u, opts: [1, 2, 3, 4, 5].map((n) => {
+        const on = this.state.r[u.id] === n;
+        return { n, bg: on ? '#4B3B8F' : '#F1EFF7', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ r: { ...this.state.r, [u.id]: n } }) };
+      }) })),
+      focus: f.map((x) => {
+        const on = this.state.focus === x.n;
+        return { ...x, bg: on ? '#4B3B8F' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ focus: x.n }) };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

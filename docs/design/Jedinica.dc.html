@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Fourierova transformacija</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+</style>
+</helmet>
+<div style="width: 390px; height: 1160px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; padding: 24px 20px; display: flex; flex-direction: column; gap: 14px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Izvor.dc.html" aria-label="Nazad" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<span style="font-size: 13px; color: #5B5670">Poglavlje 4 od 10</span>
+<button aria-label="Više opcija" style="width: 44px; height: 44px; border-radius: 22px; border: none; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#1D1A2B" aria-hidden="true"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; color: #5B4FA0">Oppenheim · str. 284–355 · I parcijala</span>
+<h1 style="margin: 0; font-size: 28px; font-weight: 700; line-height: 1.1">Fourierova transformacija</h1>
+</div>
+
+<div style="background: #FFFFFF; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 14px; font-weight: 600">Status</span>
+<div style="display: flex; gap: 6px" role="radiogroup" aria-label="Status">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+<button role="radio" onClick="{{s.pick}}" style="flex: 1; height: 56px; border-radius: 16px; border: none; background: {{s.bg}}; color: {{s.fg}}; font-family: Outfit, sans-serif; font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0 2px"><span style="width: 18px; height: 4px; border-radius: 2px; background: {{s.bar}}"></span>{{s.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #5B5670">„Razumijem” se otključava kroz <a href="RecallGate.dc.html">test pamćenja</a>.</span>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="background: #FFFFFF; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #5B5670">Težina</span>
+<div style="display: flex; align-items: baseline; gap: 6px"><span style="font-size: 22px; font-weight: 700">5</span><span style="font-size: 12px; color: #5B5670">tvoja · AI: 4</span></div>
+<div style="display: flex; gap: 3px"><span style="flex: 1; height: 6px; border-radius: 3px; background: #C026B0"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #C026B0"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #C026B0"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #C026B0"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #C026B0"></span></div>
+</div>
+<div style="background: #FFFFFF; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #5B5670">Procjena vremena</span>
+<span style="font-size: 22px; font-weight: 700">4h 05</span>
+<span style="font-size: 12px; color: #5B5670">bilo 2h 50 · kalibrisano</span>
+</div>
+<div style="background: #FFFFFF; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #5B5670">Uloženo</span>
+<span style="font-size: 22px; font-weight: 700">1h 52</span>
+<span style="font-size: 12px; color: #5B5670">3 sesije</span>
+</div>
+<div style="background: #FDEBD3; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #7A4210">Sljedeće ponavljanje</span>
+<span style="font-size: 22px; font-weight: 700; color: #5C3208">24. okt</span>
+<span style="font-size: 12px; color: #7A4210">korak 2 od 4</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Teme</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<span style="height: 32px; padding: 0 12px; border-radius: 16px; background: #FFFFFF; font-size: 13px; display: flex; align-items: center">Fourierova transformacija</span>
+<span style="height: 32px; padding: 0 12px; border-radius: 16px; background: #FDEBD3; color: #5C3208; font-size: 13px; font-weight: 600; display: flex; align-items: center">Konvolucija · slaba</span>
+<span style="height: 32px; padding: 0 12px; border-radius: 16px; background: #FFFFFF; font-size: 13px; display: flex; align-items: center">Parsevalova teorema</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Povezana ispitna pitanja <span style="font-weight: 400; color: #5B5670">· 6</span></span>
+<div style="background: #FFFFFF; border-radius: 20px; padding: 4px 14px; display: flex; flex-direction: column">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F1EFF7; gap: 8px"><span style="font-size: 14px">P17 · Svojstvo konvolucije u vremenu</span><span style="font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 10px; background: #DCEFEA; color: #1F4D41">znam</span></div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F1EFF7; gap: 8px"><span style="font-size: 14px">P22 · FT pravougaonog impulsa</span><span style="font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 10px; background: #FDEBD3; color: #5C3208">djelimično</span></div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; gap: 8px"><span style="font-size: 14px">P31 · Parsevalova teorema</span><span style="font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 10px; background: #F1EFF7; color: #5B5670">ne znam</span></div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 14px; font-weight: 600">Bilješke</span><button style="height: 36px; padding: 0 12px; border-radius: 18px; border: none; background: #FFFFFF; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #4B3B8F">Uredi</button></div>
+<div style="background: #FFFFFF; border-radius: 20px; padding: 16px; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 6px">
+<span style="font-weight: 600">Ključno</span>
+<span>• X(jω) = ∫ x(t)e^(−jωt) dt</span>
+<span>• Konvolucija u vremenu ↔ množenje u frekvenciji</span>
+<span style="color: #5B5670">• Provjeriti primjer 4.11 — nije jasan</span>
+</div>
+</div>
+
+<a href="RecallGate.dc.html" style="margin-top: auto; height: 56px; border-radius: 28px; background: #4B3B8F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">Testiraj se iz ovog poglavlja</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1160}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { lvl: 1 }; }
+  renderVals() {
+    const labels = ['Nije počelo', 'Pročitano', 'Razumijem', 'Ponovljeno'];
+    return {
+      steps: labels.map((label, i) => {
+        const done = i <= this.state.lvl;
+        const cur = i === this.state.lvl;
+        return { label, bg: cur ? '#4B3B8F' : done ? '#E9E4FB' : '#F6F4FB', fg: cur ? '#FFFFFF' : '#1D1A2B', bar: done ? (cur ? '#FFFFFF' : '#7C6BD6') : '#DCD7EA', pick: () => this.setState({ lvl: i }) };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Napredak</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+</style>
+</helmet>
+<div style="width: 390px; height: 1300px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; position: relative; overflow: hidden; padding: 24px 20px 0">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 30px; font-weight: 700">Napredak</h1>
+<a href="Postavke.dc.html" aria-label="Postavke" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1A2B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg></a>
+</div>
+
+<div role="tablist" style="display: flex; background: #E3DFEF; border-radius: 22px; padding: 4px; margin-top: 16px">
+<button role="tab" onClick="{{toWeek}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{weekBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Prošla sedmica</button>
+<button role="tab" onClick="{{toMonth}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{monthBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Mjesec</button>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px">
+<div style="background: #E9E4FB; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #2F2363">{{hours}}</span><span style="font-size: 12px; color: #4B3B8F">učenja</span></div>
+<div style="background: #DCEFEA; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #1F4D41">{{fulfil}}</span><span style="font-size: 12px; color: #1F6B5A">plana odrađeno</span></div>
+<div style="background: #E3EDFD; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #0F2B5C">{{sessions}}</span><span style="font-size: 12px; color: #2A5BB0">sesija</span></div>
+<div style="background: #FDEBD3; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #5C3208">2,4 / 3</span><span style="font-size: 12px; color: #7A4210">prosječan fokus</span></div>
+</div>
+
+<div style="background: #FFFFFF; border-radius: 28px; padding: 18px; margin-top: 12px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Sati po danu</span><span style="font-size: 12px; color: #5B5670">12.–18. okt</span></div>
+<svg width="350" height="168" viewBox="0 0 350 168" role="img" aria-label="Sati učenja po danu prošle sedmice u odnosu na plan; utorak i petak ispod plana, nedjelja bez učenja">
+<line x1="0" x2="350" y1="140" y2="140" stroke="#DCD7EA"></line>
+<line x1="0" x2="350" y1="80" y2="80" stroke="#F1EFF7"></line>
+<text x="350" y="76" text-anchor="end" font-size="10" fill="#6E6985" font-family="Outfit, sans-serif">1h</text>
+<text x="350" y="16" text-anchor="end" font-size="10" fill="#6E6985" font-family="Outfit, sans-serif">2h</text>
+<line x1="0" x2="330" y1="20" y2="20" stroke="#F1EFF7"></line>
+<rect x="11" y="38" width="28" height="102" rx="8" fill="#EEEBF5"></rect><rect x="17" y="32" width="16" height="108" rx="6" fill="#7C6BD6"></rect>
+<rect x="61" y="50" width="28" height="90" rx="8" fill="#EEEBF5"></rect><rect x="67" y="50" width="16" height="90" rx="6" fill="#7C6BD6"></rect>
+<rect x="111" y="38" width="28" height="102" rx="8" fill="#EEEBF5"></rect><rect x="117" y="68" width="16" height="72" rx="6" fill="#7C6BD6"></rect>
+<rect x="161" y="50" width="28" height="90" rx="8" fill="#EEEBF5"></rect><rect x="167" y="104" width="16" height="36" rx="6" fill="#7C6BD6"></rect>
+<rect x="211" y="50" width="28" height="90" rx="8" fill="#EEEBF5"></rect><rect x="217" y="80" width="16" height="60" rx="6" fill="#7C6BD6"></rect>
+<rect x="261" y="44" width="28" height="96" rx="8" fill="#EEEBF5"></rect><rect x="267" y="71" width="16" height="69" rx="6" fill="#7C6BD6"></rect>
+<rect x="311" y="110" width="28" height="30" rx="8" fill="#EEEBF5"></rect>
+<g font-size="11" fill="#5B5670" font-family="Outfit, sans-serif" text-anchor="middle"><text x="25" y="160">P</text><text x="75" y="160">U</text><text x="125" y="160">S</text><text x="175" y="160">Č</text><text x="225" y="160">P</text><text x="275" y="160">S</text><text x="325" y="160">N</text></g>
+</svg>
+<div style="display: flex; gap: 14px; font-size: 12px; color: #5B5670"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #7C6BD6"></span>Učila</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #EEEBF5"></span>Plan</span></div>
+</div>
+
+<div style="background: #FFFFFF; border-radius: 28px; padding: 18px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 16px; font-weight: 600">Kad ti najbolje ide</span>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<div style="background: #4B3B8F; border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 12px; color: #E9E4FB">9–12h</span><span style="font-size: 16px; font-weight: 700; color: #FFFFFF">2,4</span></div>
+<div style="background: #C3B9F0; border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 12px; color: #2F2363">12–16h</span><span style="font-size: 16px; font-weight: 700; color: #2F2363">3,6</span></div>
+<div style="background: #9C8DE2; border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 12px; color: #1D1A2B">16–20h</span><span style="font-size: 16px; font-weight: 700; color: #1D1A2B">3,1</span></div>
+<div style="background: #E9E4FB; border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 12px; color: #2F2363">20h+</span><span style="font-size: 16px; font-weight: 700; color: #2F2363">4,2</span></div>
+</div>
+<span style="font-size: 12px; color: #5B5670">minuta po stranici · tamnije = brže · fokus pada nakon ~50 min</span>
+</div>
+
+<div style="background: #FFFFFF; border-radius: 28px; padding: 18px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 10px">
+<div style="width: 40px; height: 40px; border-radius: 20px; background: #FDEBD3; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9A4B0B" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg></div>
+<div style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 600">Sedmični pregled</span><span style="font-size: 12px; color: #5B5670">Strategist · nedjelja 18. okt</span></div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #4A4560">Utorkom i četvrtkom uveče redovno preskačeš blokove, a Signali kasne 3h za I parcijalu.</p>
+<sc-for list="{{actions}}" as="a" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 18px; background: #F6F4FB">
+<span style="flex: 1; font-size: 14px; line-height: 1.35">{{a.text}}</span>
+<button onClick="{{a.pick}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: none; background: {{a.bg}}; color: {{a.fg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap">{{a.label}}</button>
+</div>
+</sc-for>
+</div>
+
+<nav aria-label="Glavna navigacija" style="position: absolute; left: 0; right: 0; bottom: 0; height: 104px">
+<svg width="390" height="104" viewBox="0 0 390 104" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 -4px 16px rgba(75,59,143,0.12))"><path d="M0 40 Q0 12 28 12 H124 C148 12 150 56 195 56 C240 56 242 12 266 12 H362 Q390 12 390 40 V104 H0 Z" fill="#FFFFFF"></path></svg>
+<a href="PokreniSesiju.dc.html" aria-label="Pokreni sesiju" style="position: absolute; left: 161px; top: -22px; width: 68px; height: 68px; border-radius: 34px; background: #7C6BD6; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="7"></circle><path d="M12 10v3l2 2M10 3h4"></path></svg></a>
+<div style="position: absolute; left: 8px; top: 30px; width: 144px; display: flex; justify-content: space-around">
+<a href="Danas.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg></span>Danas</a>
+<a href="Plan.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg></span>Plan</a>
+</div>
+<div style="position: absolute; right: 8px; top: 30px; width: 144px; display: flex; justify-content: space-around">
+<a href="Predmeti.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v14c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-14c-3-.5-6 0-8 1.5z"></path></svg></span>Predmeti</a>
+<a href="Napredak.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; text-decoration: none; color: #4B3B8F; min-width: 56px"><span style="width: 48px; height: 30px; border-radius: 15px; background: #E9E4FB; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4B3B8F" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"></path></svg></span>Napredak</a>
+</div>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tab: 'week', ok: [] }; }
+  renderVals() {
+    const week = this.state.tab === 'week';
+    const acts = [
+      ['a', 'Ne planiraj utorak i četvrtak uveče'],
+      ['b', 'Dodaj 2h u subotu za Signale'],
+      ['c', 'Pogl. 4 prebaci na jutarnje termine']
+    ];
+    return {
+      weekBg: week ? '#FFFFFF' : 'transparent', monthBg: week ? 'transparent' : '#FFFFFF',
+      toWeek: () => this.setState({ tab: 'week' }), toMonth: () => this.setState({ tab: 'month' }),
+      hours: week ? '7h 15m' : '31h 40m', fulfil: week ? '73%' : '78%', sessions: week ? '9' : '38',
+      actions: acts.map(([id, text]) => {
+        const done = this.state.ok.includes(id);
+        return { text, label: done ? 'Primijenjeno' : 'Primijeni', bg: done ? '#DCEFEA' : '#4B3B8F', fg: done ? '#1F4D41' : '#FFFFFF', pick: () => { if (!done) this.setState({ ok: [...this.state.ok, id] }); } };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

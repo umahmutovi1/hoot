@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Prijava</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+input::placeholder{color:#8A84A0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; position: relative; overflow: hidden; display: flex; flex-direction: column">
+
+<div style="height: 420px; background: #DCD3F7; border-radius: 0 0 48px 48px; position: relative; display: flex; align-items: center; justify-content: center">
+<div style="position: absolute; top: 24px; right: 20px; display: flex; background: rgba(255,255,255,0.6); border-radius: 18px; padding: 3px">
+<button style="height: 32px; padding: 0 12px; border-radius: 15px; border: none; background: #FFFFFF; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #1D1A2B">BS</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 15px; border: none; background: transparent; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #1D1A2B">EN</button>
+</div>
+<svg width="240" height="220" viewBox="0 0 240 220" aria-hidden="true">
+<circle cx="120" cy="110" r="96" fill="#C9BEF2"></circle>
+<rect x="56" y="132" width="128" height="26" rx="8" fill="#7C6BD6"></rect>
+<rect x="66" y="106" width="112" height="26" rx="8" fill="#FFFFFF" stroke="#4B3B8F" stroke-width="2"></rect>
+<rect x="60" y="80" width="118" height="26" rx="8" fill="#F2B8E8"></rect>
+<line x1="80" y1="119" x2="160" y2="119" stroke="#C9C3DE" stroke-width="2" stroke-linecap="round"></line>
+<circle cx="176" cy="58" r="22" fill="#FFFFFF" stroke="#4B3B8F" stroke-width="3"></circle>
+<path d="M176 46v12l8 6" fill="none" stroke="#4B3B8F" stroke-width="3" stroke-linecap="round"></path>
+<path d="M54 52l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#FFFFFF"></path>
+</svg>
+</div>
+
+<div style="padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; flex: 1">
+<h1 style="margin: 0; font-size: 30px; font-weight: 700; line-height: 1.15">Uči pametnije,<br>ne duže.</h1>
+<p style="margin: 0; font-size: 15px; color: #5B5670; line-height: 1.4">Plan iz tvojih rokova i literature, koji se sam prilagođava kad nešto propustiš.</p>
+<label style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px">
+<span style="font-size: 13px; font-weight: 600">Email</span>
+<input type="email" placeholder="ime@primjer.ba" style="height: 54px; border: none; border-radius: 18px; padding: 0 16px; font-family: Outfit, sans-serif; font-size: 16px; background: #FFFFFF; color: #1D1A2B">
+</label>
+<a href="Danas.dc.html" style="height: 56px; border-radius: 28px; background: #1D1A2B; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">Pošalji link za prijavu</a>
+<span style="font-size: 12px; color: #5B5670; text-align: center">Bez lozinke — link stiže na email.</span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Plan — satnica</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+</style>
+</helmet>
+<div style="width: 390px; height: 1100px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; position: relative; overflow: hidden; padding: 24px 20px 0">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 30px; font-weight: 700">Plan</h1>
+<a href="Dostupnost.dc.html" style="height: 44px; padding: 0 16px; border-radius: 22px; background: #FFFFFF; text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4B3B8F" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path></svg>Dostupnost</a>
+</div>
+
+<div role="tablist" style="display: flex; background: #E3DFEF; border-radius: 22px; padding: 4px; margin-top: 16px">
+<a role="tab" href="Plan.dc.html" style="flex: 1; height: 40px; border-radius: 18px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; font-weight: 600; color: #5B5670">Kalendar</a>
+<a role="tab" aria-selected="true" href="Satnica.dc.html" style="flex: 1; height: 40px; border-radius: 18px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; font-weight: 600; color: #1D1A2B">Satnica</a>
+</div>
+
+<div style="display: flex; gap: 6px; margin-top: 14px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+<button onClick="{{d.pick}}" style="flex: 1; height: 68px; border-radius: 22px; border: none; background: {{d.bg}}; color: {{d.fg}}; font-family: Outfit, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0"><span style="font-size: 18px; font-weight: 700">{{d.n}}</span><span style="font-size: 11px">{{d.w}}</span></button>
+</sc-for>
+</div>
+
+<div style="margin-top: 12px; background: #FFFFFF; border-radius: 18px; padding: 10px 12px 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="font-size: 12px; color: #5B5670; line-height: 1.35">Generisano danas u 08:12<br>Nema promjena od tada</span>
+<button style="height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid #DCD7EA; background: #FFFFFF; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #4B3B8F; display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4B3B8F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg>Generiši ponovo</button>
+</div>
+
+<div style="position: relative; margin-top: 16px; height: 640px">
+<div style="position: absolute; left: 0; top: 0; width: 44px; display: flex; flex-direction: column; font-size: 11px; color: #6E6985">
+<span style="height: 52px">08:00</span><span style="height: 52px">09:00</span><span style="height: 52px">10:00</span><span style="height: 52px">11:00</span><span style="height: 52px">12:00</span><span style="height: 52px">13:00</span><span style="height: 52px">14:00</span><span style="height: 52px">15:00</span><span style="height: 52px">16:00</span><span style="height: 52px">17:00</span><span style="height: 52px">18:00</span><span style="height: 52px">19:00</span><span style="height: 20px">20:00</span>
+</div>
+<div style="position: absolute; left: 50px; right: 0; top: 6px; height: 624px; background: repeating-linear-gradient(#E3DFEF 0 1px, transparent 1px 52px)"></div>
+
+<div style="position: absolute; left: 56px; right: 4px; top: 58px; height: 50px; box-sizing: border-box; border-radius: 16px; background: #E9E4FB; border: 2px solid #7C6BD6; padding: 6px 12px; display: flex; flex-direction: column; justify-content: center">
+<span style="font-size: 14px; font-weight: 600; color: #2F2363">Baze — 5.1–5.3 Normalizacija</span>
+<span style="font-size: 11px; color: #4B3B8F">09:00–10:00 · najbolji termin za teže gradivo</span>
+</div>
+
+<div style="position: absolute; left: 50px; right: 0; top: 130px; height: 2px; background: #C026B0"></div>
+<div style="position: absolute; left: 44px; top: 126px; width: 10px; height: 10px; border-radius: 5px; background: #C026B0"></div>
+
+<div style="position: absolute; left: 56px; right: 4px; top: 162px; height: 41px; box-sizing: border-box; border-radius: 14px; background: #DCEFEA; padding: 4px 12px; display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 13px; font-weight: 600; color: #1F4D41; text-decoration: line-through">Signali — poglavlje 3</span>
+<span style="font-size: 11px; color: #1F4D41">11:00–11:50</span>
+</div>
+
+<div style="position: absolute; left: 56px; right: 4px; top: 266px; height: 152px; box-sizing: border-box; border-radius: 16px; background: repeating-linear-gradient(135deg, #ECEAF2 0 8px, #F5F4F9 8px 16px); padding: 10px 12px">
+<span style="font-size: 13px; font-weight: 600; color: #5B5670">Signali · predavanje · S1</span><br><span style="font-size: 11px; color: #6E6985">iz rasporeda nastave</span>
+</div>
+
+<div style="position: absolute; left: 56px; right: 4px; top: 474px; height: 41px; box-sizing: border-box; border-radius: 14px; background: #E3EDFD; padding: 4px 12px; display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 13px; font-weight: 600; color: #0F2B5C">Vjerovatnoća — 12 pitanja</span>
+<span style="font-size: 11px; color: #2A5BB0">17:00–17:50</span>
+</div>
+</div>
+
+<nav aria-label="Glavna navigacija" style="position: absolute; left: 0; right: 0; bottom: 0; height: 104px">
+<svg width="390" height="104" viewBox="0 0 390 104" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 -4px 16px rgba(75,59,143,0.12))"><path d="M0 40 Q0 12 28 12 H124 C148 12 150 56 195 56 C240 56 242 12 266 12 H362 Q390 12 390 40 V104 H0 Z" fill="#FFFFFF"></path></svg>
+<a href="PokreniSesiju.dc.html" aria-label="Pokreni sesiju" style="position: absolute; left: 161px; top: -22px; width: 68px; height: 68px; border-radius: 34px; background: #7C6BD6; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="7"></circle><path d="M12 10v3l2 2M10 3h4"></path></svg></a>
+<div style="position: absolute; left: 8px; top: 30px; width: 144px; display: flex; justify-content: space-around">
+<a href="Danas.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg></span>Danas</a>
+<a href="Plan.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; text-decoration: none; color: #4B3B8F; min-width: 56px"><span style="width: 48px; height: 30px; border-radius: 15px; background: #E9E4FB; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4B3B8F" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg></span>Plan</a>
+</div>
+<div style="position: absolute; right: 8px; top: 30px; width: 144px; display: flex; justify-content: space-around">
+<a href="Predmeti.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v14c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-14c-3-.5-6 0-8 1.5z"></path></svg></span>Predmeti</a>
+<a href="Napredak.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"></path></svg></span>Napredak</a>
+</div>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { sel: 19 }; }
+  renderVals() {
+    const w = ['Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub', 'Ned'];
+    return {
+      days: w.map((x, i) => {
+        const n = 19 + i, on = n === this.state.sel;
+        return { n, w: x, bg: on ? '#1D1A2B' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ sel: n }) };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

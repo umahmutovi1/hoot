@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Dodaj izvor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+textarea::placeholder,input::placeholder{color:#8A84A0}
+</style>
+</helmet>
+<div style="width: 390px; height: 940px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Predmet.dc.html" aria-label="Zatvori" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D1A2B" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+<div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Novi izvor</span><span style="font-size: 12px; color: #5B5670">Signali i sistemi</span></div>
+<span style="width: 44px"></span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Tip izvora</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px" role="radiogroup">
+<sc-for list="{{types}}" as="t" hint-placeholder-count="5">
+<button role="radio" onClick="{{t.pick}}" style="height: 64px; border-radius: 18px; border: 2px solid {{t.border}}; background: {{t.bg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">{{t.label}}<span style="font-size: 11px; font-weight: 400; color: #5B5670">{{t.unit}}</span></button>
+</sc-for>
+</div>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Naziv</span>
+<input value="Oppenheim — Signals &amp; Systems" style="height: 52px; border: none; border-radius: 18px; padding: 0 16px; font-family: Outfit, sans-serif; font-size: 15px; background: #FFFFFF; color: #1D1A2B">
+</label>
+
+<div role="tablist" style="display: flex; background: #E3DFEF; border-radius: 22px; padding: 4px">
+<button role="tab" onClick="{{toPhoto}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{photoBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Slikaj sadržaj</button>
+<button role="tab" onClick="{{toText}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{textBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Ukucaj</button>
+</div>
+
+<sc-if value="{{isPhoto}}" hint-placeholder-val="{{ true }}">
+<div style="background: #FFFFFF; border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="height: 200px; border-radius: 20px; border: 2px dashed #B5ADD6; background: #F6F4FB; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px">
+<div style="width: 60px; height: 60px; border-radius: 30px; background: #4B3B8F; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></div>
+<span style="font-size: 15px; font-weight: 600">Uslikaj stranicu sadržaja</span>
+<span style="font-size: 12px; color: #5B5670">ili odaberi iz galerije · više strana je ok</span>
+</div>
+<div style="display: flex; gap: 10px; align-items: center">
+<div style="width: 64px; height: 84px; border-radius: 12px; background: repeating-linear-gradient(#FFFFFF 0 8px, #E3DFEF 8px 10px); border: 1px solid #DCD7EA; position: relative"><span style="position: absolute; left: 4px; bottom: 4px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; background: #1D1A2B; color: #FFFFFF">1</span></div>
+<div style="width: 64px; height: 84px; border-radius: 12px; background: repeating-linear-gradient(#FFFFFF 0 8px, #E3DFEF 8px 10px); border: 1px solid #DCD7EA; position: relative"><span style="position: absolute; left: 4px; bottom: 4px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; background: #1D1A2B; color: #FFFFFF">2</span></div>
+<span style="font-size: 13px; color: #5B5670">2 stranice sadržaja</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isText}}" hint-placeholder-val="{{ false }}">
+<div style="background: #FFFFFF; border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<textarea rows="9" aria-label="Sadržaj" placeholder="Jedno poglavlje po liniji, npr.&#10;1 Uvod 1&#10;2 LTI sistemi 74&#10;2.1 Konvolucija 75" style="border: none; border-radius: 18px; padding: 14px; font-family: Outfit, sans-serif; font-size: 15px; background: #F6F4FB; color: #1D1A2B; resize: none"></textarea>
+<span style="font-size: 12px; color: #5B5670">Može i zalijepljen tekst — AI ga pretvori u poglavlja.</span>
+</div>
+</sc-if>
+
+<span style="font-size: 12px; color: #5B5670; text-align: center">Slike se brišu odmah nakon obrade.</span>
+<a href="Parsiranje.dc.html" style="margin-top: auto; height: 56px; border-radius: 28px; background: #4B3B8F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg>Izvuci poglavlja</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":940}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { type: 'book', mode: 'photo' }; }
+  renderVals() {
+    const t = [['book', 'Knjiga', 'stranice'], ['script', 'Skripta', 'stranice'], ['questions', 'Pitanja', 'lista'], ['slides', 'Prezentacije', 'slajdovi'], ['other', 'Ostalo', 'bilo šta']];
+    const m = this.state.mode;
+    return {
+      types: t.map(([id, label, unit]) => {
+        const on = this.state.type === id;
+        return { label, unit, border: on ? '#7C6BD6' : '#FFFFFF', bg: on ? '#F6F4FB' : '#FFFFFF', pick: () => this.setState({ type: id }) };
+      }),
+      isPhoto: m === 'photo', isText: m === 'text',
+      photoBg: m === 'photo' ? '#FFFFFF' : 'transparent', textBg: m === 'text' ? '#FFFFFF' : 'transparent',
+      toPhoto: () => this.setState({ mode: 'photo' }), toText: () => this.setState({ mode: 'text' })
+    };
+  }
+}
+</script>
+</body>
+</html>
