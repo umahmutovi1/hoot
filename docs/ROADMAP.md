@@ -56,7 +56,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [x] i18n: `react-i18next`, `src/locales/bs.json` + `en.json`, date-fns lokali, izbor jezika pamti `profiles.locale`
 - [x] PWA: `vite-plugin-pwa`, manifest „Hoot", ikone, offline shell
 - [x] Supabase: `supabase init`, `supabase/migrations/0001_init.sql` iz PRD-a + dopune (vidi „Otvorena pitanja"), `seed.sql`
-- [ ] `supabase link`, `db push`, `gen types` → `src/types/database.ts`
+- [x] `supabase link`, `db push`, `gen types` → `src/types/database.ts`
 - [x] Auth: ekran Prijava (`Prijava.dc.html`), magic link + unos koda iz emaila (za instaliranu PWA), `RequireAuth` guard, odjava u Postavkama
 - [x] Maskota: `<Mascot pose size />` (`docs/design/MASCOT.md`) na Prijavi, praznom „Danas" (DanasPrazno) i praznoj Satnici
 - [ ] Supabase email template „Magic Link" dopuniti sa `{{ .Token }}` da email sadrži i kod
