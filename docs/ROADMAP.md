@@ -61,9 +61,9 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [x] Maskota: `<Mascot pose size />` (`docs/design/MASCOT.md`) na Prijavi, praznom „Danas" (DanasPrazno) i praznoj Satnici
 - [ ] Supabase email template „Magic Link" dopuniti sa `{{ .Token }}` da email sadrži i kod
 - [x] CI `.github/workflows/ci.yml`: install → lint → format check → typecheck → vitest → build, na PR prema `dev`/`main` i push na `dev`/`main`
-- [ ] CI kao obavezan status check u rulesetu `protect-main-dev`
+- [x] CI kao obavezan status check u rulesetu `protect-main-dev`
 - [x] `.github/workflows/keepalive.yml` — zove RPC `keepalive()` (anon nema pristup tabelama)
-- [ ] GitHub Secrets za keepalive: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`
+- [x] GitHub Secrets za keepalive: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`
 - [ ] Cloudflare Pages projekat `hoot`: production branch `main`, preview za ostale, env `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
 - [ ] Supabase Auth: Site URL `https://hoot.pages.dev`, redirecti za `dev.hoot.pages.dev`, preview URL-ove i `http://localhost:5173`
 - [ ] Kreiran vlastiti nalog, pa isključene nove registracije
