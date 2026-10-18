@@ -15,11 +15,14 @@ Logika u `<script>` bloku na dnu fajla je samo demo interakcija.
 
 ## Ekrani po toku
 - Tab ekrani (sa donjom navigacijom): Danas, Plan, Satnica, Predmeti, Napredak
+- Prazna stanja "Danas": DanasPrazno (prvi ulazak), DanasSlobodno (dan bez plana)
 - Sesija: PokreniSesiju → Sesija → KrajSesije → RecallGate
 - Plan: Plan (kalendar), Satnica, Replan, Dostupnost, Raspored
 - Predmeti: Predmeti, Predmet, NoviPredmet, Izvor, Jedinica
 - Uvoz: DodajIzvor → Parsiranje → ObimIspita
 - Ostalo: Postavke, Prijava
+
+Maskota: vidi MASCOT.md.
 
 Donja navigacija: bijela traka sa zaobljenim vrhom i urezom u sredini za plutajuće timer dugme (bez sjene);
 aktivni tab ima svijetloljubičastu pilulu iza ikone.
