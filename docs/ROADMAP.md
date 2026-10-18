@@ -35,12 +35,12 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 ## Etapa 0 — Repo i alati
 
-- [ ] `git init`, `.gitignore` (node_modules, dist, `.env*`, `supabase/.temp`), `.editorconfig`, `.nvmrc` (Node 24 LTS), kratki `README.md` (EN)
-- [ ] Prvi commit na `main`: `docs/`, `CLAUDE.md` (jedini direktni commit na `main`)
-- [ ] GitHub repo `hoot` (privatan), push `main`
-- [ ] `git checkout -b dev`, push, `dev` kao default branch
-- [ ] Branch protection na `main` i `dev` (PR obavezan, CI status check kad CI postoji)
-- [ ] PR template (`.github/pull_request_template.md`), issue templates, labeli, Milestones 0–10
+- [x] `git init`, `.gitignore` (node_modules, dist, `.env*`, `supabase/.temp`), `.editorconfig`, `.nvmrc` (Node 24 LTS), kratki `README.md` (EN)
+- [x] Prvi commit na `main`: `docs/`, `CLAUDE.md` (jedini direktni commit na `main`)
+- [x] GitHub repo `hoot` (privatan), push `main`
+- [x] `git checkout -b dev`, push, `dev` kao default branch
+- [x] Branch protection na `main` i `dev` (ruleset `protect-main-dev`: PR obavezan, bez force pusha i brisanja)
+- [x] PR template (`.github/pull_request_template.md`), issue templates, labeli, Milestones 0–10
 - [ ] Nalozi: Supabase (regija Frankfurt), Cloudflare, Anthropic konzola sa mjesečnim limitom. Ključevi nikad u repou.
 
 ## Etapa 1 — Temelj (`feat/foundation`)
@@ -56,6 +56,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] `supabase link`, `db push`, `gen types` → `src/types/database.ts`
 - [ ] Auth: ekran Prijava (`Prijava.dc.html`), magic link, `RequireAuth` guard, odjava u Postavkama
 - [ ] CI `.github/workflows/ci.yml`: install → lint → typecheck → vitest → build, na PR prema `dev`/`main` i push na `dev`/`main`
+- [ ] CI kao obavezan status check u rulesetu `protect-main-dev`
 - [ ] `.github/workflows/keepalive.yml` iz PRD-a (Secrets: `SUPABASE_URL`, `SUPABASE_ANON_KEY`)
 - [ ] Cloudflare Pages projekat `hoot`: production branch `main`, preview za ostale, env `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
 - [ ] Supabase Auth: Site URL `https://hoot.pages.dev`, redirecti za `dev.hoot.pages.dev`, preview URL-ove i `http://localhost:5173`
