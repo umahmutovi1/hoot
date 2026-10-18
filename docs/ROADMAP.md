@@ -1,6 +1,6 @@
 # Hoot — Roadmap
 
-Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md), dizajn u [design/](design/README.md). Etape 1–10 prate redoslijed iz PRD sekcije „Roadmap i odluke"; poslije svake etape app radi i deployan je.
+Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md), dizajn u [design/](design/README.md), ručna podešavanja servisa u [SETUP.md](SETUP.md). Etape 1–10 prate redoslijed iz PRD sekcije „Roadmap i odluke"; poslije svake etape app radi i deployan je.
 
 ## Konvencije
 
@@ -64,8 +64,9 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [x] `.github/workflows/keepalive.yml` — zove RPC `keepalive()` (anon nema pristup tabelama)
 - [x] GitHub Secrets za keepalive: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`
 - [x] Cloudflare Pages projekat `hoot`: production branch `main`, preview za ostale, env `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
-- [ ] Supabase Auth: Site URL `https://hoot-5ig.pages.dev`, redirecti za `dev.hoot-5ig.pages.dev`, preview URL-ove i `http://localhost:5173`
-- [ ] Kreiran vlastiti nalog, pa isključene nove registracije
+- [x] Supabase Auth URL Configuration (vidi [SETUP.md](SETUP.md#1-supabase))
+- [x] Kreiran vlastiti nalog, pa isključene nove registracije
+- [ ] Resend SMTP + šablon emaila sa kodom, da login radi u instaliranoj PWA ([SETUP.md](SETUP.md#3-resend-smtp-kod-za-prijavu-u-emailu))
 - **DoD:** login magic linkom radi na `hoot-5ig.pages.dev`, bs/en se mijenja i pamti, PWA se instalira kao „Hoot", CI zelen → `v0.1.0`
 
 ## Etapa 2 — Predmeti, ispiti, rokovi, kalendar
@@ -153,7 +154,6 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 ## Etapa 10 — Notifikacije i dorada
 
-- [ ] Custom SMTP (Resend) u Supabase Auth + šablon emaila na bs/en sa `{{ .Token }}` (bez SMTP-a šablon se ne može mijenjati, a login kodom u instaliranoj PWA ne radi)
 - [ ] Web Push: service worker; ikone notifikacija `celebrating-head` / `timer-head`, `notify` edge funkcija, `pg_cron` (prvi blok, propušten blok, ponavljanje)
 - [ ] Postavke kompletne (plan, timer, jezik, potrošnja AI iz `ai_runs`)
 - [ ] Pristupačnost: touch ≥ 44 px, kontrast, aria, fokus
@@ -165,6 +165,8 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 ## Kasnije
 
 - Read-only demo nalog sa seed podacima za portfolio.
+- Admin pregled (read-only): oznaka `role: admin` u `app_metadata`, funkcija `is_admin()` i dodatna `select` RLS politika po tabeli, ekran `/admin`.
+- Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#5-otvaranje-aplikacije-za-više-korisnika)).
 
 ---
 
