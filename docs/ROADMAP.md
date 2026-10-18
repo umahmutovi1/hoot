@@ -4,11 +4,11 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 ## Konvencije
 
-**Ime.** App se zove **Hoot**: repo `hoot`, PWA manifest `name: "Hoot"`, `<title>`, Cloudflare projekat `hoot` → `hoot.pages.dev`. Radni naziv `study-planner` iz PRD-a se ne koristi.
+**Ime.** App se zove **Hoot**: repo `hoot`, PWA manifest `name: "Hoot"`, `<title>`, Cloudflare projekat `hoot` → `hoot-5ig.pages.dev`. Radni naziv `study-planner` iz PRD-a se ne koristi.
 
 **Branching: `main` / `dev` / feature grane.**
 - `main` = produkcija (Cloudflare production deploy). Zaštićen: samo PR iz `dev` (release) ili `hotfix/*`, CI mora proći, bez force pusha.
-- `dev` = integracija (Cloudflare preview alias `dev.hoot.pages.dev`). Zaštićen: samo PR, CI mora proći. Default branch na GitHubu.
+- `dev` = integracija (Cloudflare preview alias `dev.hoot-5ig.pages.dev`). Zaštićen: samo PR, CI mora proći. Default branch na GitHubu.
 - Feature grane se granaju iz `dev` i vraćaju u `dev`: `feat/<slug>`, `fix/<slug>`, `chore/<slug>`, `docs/<slug>`. Squash merge, grana se briše.
 - Release: na kraju etape PR `dev → main` (merge commit, ne squash), pa tag na `main`.
 - Hotfix: `hotfix/<slug>` iz `main` → PR u `main`, zatim `main` mergeati nazad u `dev`.
@@ -22,7 +22,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 **Okruženja.**
 - Lokalno: `npx supabase start` + `npm run dev`.
 - `dev` i feature grane: Cloudflare preview URL-ovi. Dijele produkcijski Supabase (free tier = 2 projekta), ili drugi projekat `hoot-staging` ako treba izolacija.
-- Produkcija: `main` → `hoot.pages.dev`.
+- Produkcija: `main` → `hoot-5ig.pages.dev`.
 
 **Definition of Done (svaka etapa).**
 - Lint, typecheck, testovi i build zeleni u CI.
@@ -59,15 +59,14 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [x] `supabase link`, `db push`, `gen types` → `src/types/database.ts`
 - [x] Auth: ekran Prijava (`Prijava.dc.html`), magic link + unos koda iz emaila (za instaliranu PWA), `RequireAuth` guard, odjava u Postavkama
 - [x] Maskota: `<Mascot pose size />` (`docs/design/MASCOT.md`) na Prijavi, praznom „Danas" (DanasPrazno) i praznoj Satnici
-- [ ] Supabase email template „Magic Link" dopuniti sa `{{ .Token }}` da email sadrži i kod
 - [x] CI `.github/workflows/ci.yml`: install → lint → format check → typecheck → vitest → build, na PR prema `dev`/`main` i push na `dev`/`main`
 - [x] CI kao obavezan status check u rulesetu `protect-main-dev`
 - [x] `.github/workflows/keepalive.yml` — zove RPC `keepalive()` (anon nema pristup tabelama)
 - [x] GitHub Secrets za keepalive: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`
-- [ ] Cloudflare Pages projekat `hoot`: production branch `main`, preview za ostale, env `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
-- [ ] Supabase Auth: Site URL `https://hoot.pages.dev`, redirecti za `dev.hoot.pages.dev`, preview URL-ove i `http://localhost:5173`
+- [x] Cloudflare Pages projekat `hoot`: production branch `main`, preview za ostale, env `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+- [ ] Supabase Auth: Site URL `https://hoot-5ig.pages.dev`, redirecti za `dev.hoot-5ig.pages.dev`, preview URL-ove i `http://localhost:5173`
 - [ ] Kreiran vlastiti nalog, pa isključene nove registracije
-- **DoD:** login magic linkom radi na `hoot.pages.dev`, bs/en se mijenja i pamti, PWA se instalira kao „Hoot", CI zelen → `v0.1.0`
+- **DoD:** login magic linkom radi na `hoot-5ig.pages.dev`, bs/en se mijenja i pamti, PWA se instalira kao „Hoot", CI zelen → `v0.1.0`
 
 ## Etapa 2 — Predmeti, ispiti, rokovi, kalendar
 
@@ -154,6 +153,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 ## Etapa 10 — Notifikacije i dorada
 
+- [ ] Custom SMTP (Resend) u Supabase Auth + šablon emaila na bs/en sa `{{ .Token }}` (bez SMTP-a šablon se ne može mijenjati, a login kodom u instaliranoj PWA ne radi)
 - [ ] Web Push: service worker; ikone notifikacija `celebrating-head` / `timer-head`, `notify` edge funkcija, `pg_cron` (prvi blok, propušten blok, ponavljanje)
 - [ ] Postavke kompletne (plan, timer, jezik, potrošnja AI iz `ai_runs`)
 - [ ] Pristupačnost: touch ≥ 44 px, kontrast, aria, fokus
