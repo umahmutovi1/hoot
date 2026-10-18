@@ -1,0 +1,82 @@
+{
+  "app": {
+    "name": "Hoot",
+    "loading": "Loading…",
+    "comingSoon": "Coming soon",
+    "back": "Back",
+    "error": "Something went wrong. Please try again."
+  },
+  "locale": {
+    "bs": "Bosanski",
+    "en": "English",
+    "bsShort": "BS",
+    "enShort": "EN"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "today": "Today",
+    "plan": "Plan",
+    "subjects": "Subjects",
+    "progress": "Progress",
+    "startSession": "Start session"
+  },
+  "auth": {
+    "headline": "Study smarter,\nnot longer.",
+    "lead": "A plan built from your deadlines and reading list that adapts when you miss something.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "emailInvalid": "Enter a valid email.",
+    "sendLink": "Send sign-in link",
+    "sending": "Sending…",
+    "noPassword": "No password — the link arrives by email.",
+    "checkEmailTitle": "Check your email",
+    "checkEmailBody": "We sent a sign-in link to {{email}}. Open it on this device or enter the code from the email.",
+    "code": "Code from email",
+    "codePlaceholder": "123456",
+    "verify": "Sign in with code",
+    "verifying": "Checking…",
+    "codeInvalid": "The code is wrong or has expired.",
+    "useOtherEmail": "Use another email",
+    "sendFailed": "Couldn't send the email. Try again in a minute.",
+    "mascotAlt": "Owl mascot reading a book"
+  },
+  "today": {
+    "greeting": {
+      "morning": "Good morning, {{name}}",
+      "day": "Good afternoon, {{name}}",
+      "evening": "Good evening, {{name}}"
+    },
+    "addSubject": "Add subject",
+    "firstRunMascotAlt": "Owl reading a book",
+    "firstRunTitle": "Let's build your plan",
+    "firstRunBody": "Add your first subject and exam date. You can photograph your reading list now or later."
+  },
+  "plan": {
+    "title": "Plan",
+    "tabCalendar": "Calendar",
+    "tabSchedule": "Schedule",
+    "calendarEmpty": "Exams, deadlines and classes will show up here.",
+    "scheduleEmpty": "The schedule places today's blocks into your free time slots."
+  },
+  "subjects": {
+    "title": "Subjects",
+    "empty": "You have no subjects yet."
+  },
+  "progress": {
+    "title": "Progress",
+    "empty": "Progress shows up once you start studying.",
+    "settings": "Settings"
+  },
+  "session": {
+    "title": "Study session",
+    "empty": "Timer and sessions are coming soon."
+  },
+  "settings": {
+    "title": "Settings",
+    "signedInWith": "Signed in with a magic link",
+    "general": "General",
+    "language": "Language",
+    "timezone": "Time zone",
+    "signOut": "Sign out"
+  }
+}

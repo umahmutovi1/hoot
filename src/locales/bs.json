@@ -1,0 +1,82 @@
+{
+  "app": {
+    "name": "Hoot",
+    "loading": "Učitavanje…",
+    "comingSoon": "Uskoro",
+    "back": "Nazad",
+    "error": "Nešto nije u redu. Pokušaj ponovo."
+  },
+  "locale": {
+    "bs": "Bosanski",
+    "en": "English",
+    "bsShort": "BS",
+    "enShort": "EN"
+  },
+  "nav": {
+    "label": "Glavna navigacija",
+    "today": "Danas",
+    "plan": "Plan",
+    "subjects": "Predmeti",
+    "progress": "Napredak",
+    "startSession": "Pokreni sesiju"
+  },
+  "auth": {
+    "headline": "Uči pametnije,\nne duže.",
+    "lead": "Plan iz tvojih rokova i literature, koji se sam prilagođava kad nešto propustiš.",
+    "email": "Email",
+    "emailPlaceholder": "ime@primjer.ba",
+    "emailInvalid": "Upiši ispravan email.",
+    "sendLink": "Pošalji link za prijavu",
+    "sending": "Šaljem…",
+    "noPassword": "Bez lozinke — link stiže na email.",
+    "checkEmailTitle": "Provjeri email",
+    "checkEmailBody": "Poslali smo link za prijavu na {{email}}. Otvori ga na ovom uređaju ili upiši kod iz emaila.",
+    "code": "Kod iz emaila",
+    "codePlaceholder": "123456",
+    "verify": "Prijavi se kodom",
+    "verifying": "Provjeravam…",
+    "codeInvalid": "Kod nije ispravan ili je istekao.",
+    "useOtherEmail": "Drugi email",
+    "sendFailed": "Slanje nije uspjelo. Pokušaj ponovo za minutu.",
+    "mascotAlt": "Sova maskota čita knjigu"
+  },
+  "today": {
+    "greeting": {
+      "morning": "Dobro jutro, {{name}}",
+      "day": "Dobar dan, {{name}}",
+      "evening": "Dobro veče, {{name}}"
+    },
+    "addSubject": "Dodaj predmet",
+    "firstRunMascotAlt": "Sova čita knjigu",
+    "firstRunTitle": "Hajde da napravimo plan",
+    "firstRunBody": "Dodaj prvi predmet i datum ispita. Literaturu možeš uslikati odmah ili kasnije."
+  },
+  "plan": {
+    "title": "Plan",
+    "tabCalendar": "Kalendar",
+    "tabSchedule": "Satnica",
+    "calendarEmpty": "Ispiti, rokovi i nastava pojavit će se ovdje.",
+    "scheduleEmpty": "Satnica raspoređuje današnje blokove u slobodne termine."
+  },
+  "subjects": {
+    "title": "Predmeti",
+    "empty": "Još nemaš predmeta."
+  },
+  "progress": {
+    "title": "Napredak",
+    "empty": "Napredak se prikazuje kad počneš učiti.",
+    "settings": "Postavke"
+  },
+  "session": {
+    "title": "Sesija učenja",
+    "empty": "Timer i sesije dolaze uskoro."
+  },
+  "settings": {
+    "title": "Postavke",
+    "signedInWith": "Prijava putem magic linka",
+    "general": "Opće",
+    "language": "Jezik",
+    "timezone": "Vremenska zona",
+    "signOut": "Odjava"
+  }
+}
