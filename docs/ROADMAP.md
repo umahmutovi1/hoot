@@ -66,11 +66,11 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [x] Cloudflare Pages projekat `hoot`: production branch `main`, preview za ostale, env `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
 - [x] Supabase Auth URL Configuration (vidi [SETUP.md](SETUP.md#1-supabase))
 - [x] Kreiran vlastiti nalog, pa isključene nove registracije
-- [ ] Resend SMTP + šablon emaila sa kodom, da login radi u instaliranoj PWA ([SETUP.md](SETUP.md#3-resend-smtp-kod-za-prijavu-u-emailu))
-- **DoD:** login magic linkom radi na `hoot-5ig.pages.dev`, bs/en se mijenja i pamti, PWA se instalira kao „Hoot", CI zelen → `v0.1.0`
+- **DoD:** login magic linkom radi na `hoot-5ig.pages.dev` (u browseru; login u instaliranoj PWA dolazi sa Resend SMTP-om u Etapi 2), bs/en se mijenja i pamti, PWA se instalira kao „Hoot", CI zelen → `v0.1.0`
 
 ## Etapa 2 — Predmeti, ispiti, rokovi, kalendar
 
+- [ ] Resend SMTP + šablon emaila sa kodom, da login radi u instaliranoj PWA ([SETUP.md](SETUP.md#3-resend-smtp-kod-za-prijavu-u-emailu))
 - [ ] Ime korisnika: `profiles.display_name` se sad uzima iz dijela emaila prije `@`. Dodati pitanje „Kako da te zovem?" pri prvom ulasku i izmjenu imena u Postavkama (profilna kartica)
 - [ ] Predmeti (lista), NoviPredmet (naziv, boja, preset ispita, datum i format; < 30 s), Predmet (detalji)
 - [ ] CRUD ispita i rokova (procjena sati opcionalna)
