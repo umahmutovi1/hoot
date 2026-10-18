@@ -7,6 +7,7 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 - Specification: `docs/PRD.md` (Bosnian). Read the relevant section before implementing a feature.
 - Screen designs: `docs/design/` — see `docs/design/README.md` for the visual system and screen flows, and `docs/design/MASCOT.md` for the owl mascot.
 - Build order and Definition of Done: `docs/ROADMAP.md`. Work on one stage at a time.
+- Manual service setup (Supabase, Cloudflare, Resend, Anthropic, opening to more users): `docs/SETUP.md`. Keep it updated when a dashboard setting changes.
 - The designs are mockups: port layout, colors and copy into React + Tailwind. Do NOT copy the HTML or the demo `<script>` logic.
 - If the PRD and the code disagree, or the PRD is ambiguous, ask instead of guessing.
 
