@@ -1,0 +1,13 @@
+dist
+dev-dist
+coverage
+node_modules
+package-lock.json
+src/types/database.ts
+docs/design
+supabase/.temp
+docs
+CLAUDE.md
+README.md
+.github/ISSUE_TEMPLATE
+.github/pull_request_template.md
