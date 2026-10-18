@@ -12,6 +12,6 @@ React + TypeScript + Vite, Tailwind + shadcn/ui, TanStack Query, Supabase (Postg
 
 ## Branches
 
-- `main` — production (`hoot.pages.dev`)
+- `main` — production (`hoot-5ig.pages.dev`)
 - `dev` — integration, default branch
 - `feat/*`, `fix/*`, `chore/*`, `docs/*` — branch off `dev`, PR into `dev`

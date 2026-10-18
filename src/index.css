@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/outfit';
+
+/* Design tokens from docs/design/README.md. Use these classes, never raw hex values. */
+@theme {
+  --font-sans: 'Outfit Variable', 'Outfit', system-ui, sans-serif;
+
+  /* Surfaces and text */
+  --color-canvas: #f1eff7;
+  --color-surface: #ffffff;
+  --color-ink: #1d1a2b;
+  --color-ink-muted: #5b5670;
+  --color-ink-subtle: #6e6985;
+  --color-ink-placeholder: #8a84a0;
+  --color-line: #dcd7ea;
+  --color-track: #e3dfef;
+
+  /* Brand */
+  --color-brand: #4b3b8f;
+  --color-brand-strong: #2f2363;
+  --color-brand-accent: #7c6bd6;
+  --color-brand-soft: #e9e4fb;
+  --color-brand-hero: #dcd3f7;
+  --color-avatar: #cfc6f2;
+  --color-avatar-ink: #3b2d82;
+  --color-mascot-halo: #e3dcfa;
+  --color-mascot-halo-strong: #cbbff4;
+
+  /* Subjects */
+  --color-subject-pink: #c026b0;
+  --color-subject-pink-soft: #fbe3f6;
+  --color-subject-lavender: #7c6bd6;
+  --color-subject-lavender-soft: #e9e4fb;
+  --color-subject-blue: #2563eb;
+  --color-subject-blue-soft: #e3edfd;
+
+  /* Status */
+  --color-success: #1f6b5a;
+  --color-success-soft: #dcefea;
+  --color-warning: #9a4b0b;
+  --color-warning-soft: #fdebd3;
+  --color-danger: #b42318;
+
+  /* Radii: inputs 18px, cards 24–28px, pills full */
+  --radius-input: 18px;
+  --radius-card: 24px;
+  --radius-card-lg: 28px;
+}
+
+/* shadcn/ui semantic variables mapped onto the Hoot palette */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+}
+
+:root {
+  --background: #f1eff7;
+  --foreground: #1d1a2b;
+  --card: #ffffff;
+  --card-foreground: #1d1a2b;
+  --popover: #ffffff;
+  --popover-foreground: #1d1a2b;
+  --primary: #4b3b8f;
+  --primary-foreground: #ffffff;
+  --secondary: #e9e4fb;
+  --secondary-foreground: #4b3b8f;
+  --muted: #f1eff7;
+  --muted-foreground: #5b5670;
+  --accent: #e9e4fb;
+  --accent-foreground: #4b3b8f;
+  --destructive: #b42318;
+  --border: #dcd7ea;
+  --input: #dcd7ea;
+  --ring: #7c6bd6;
+  --radius: 1rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-canvas text-ink;
+  }
+  input::placeholder {
+    @apply text-ink-placeholder;
+  }
+}

@@ -1,0 +1,3 @@
+-- Local development seed (runs on `supabase db reset`, never on the linked project).
+-- Data rows need an auth user, so sign in once locally via magic link (Inbucket at
+-- http://127.0.0.1:54324) and add test data from the app. Stage 2+ will extend this file.
