@@ -29,7 +29,13 @@ import { validationKey } from '@/lib/validation'
 import { useDeleteSource, useSaveOutline, useSource } from './api'
 import { amountLabel, formatDuration } from './format'
 import { carryDifficulty, sourceToForm, toFormattable, toStoredUnits } from './mappers'
-import { activeUnits, OTHER_MEASURES, SOURCE_KINDS, type SourceWithUnits } from './model'
+import {
+  activeUnits,
+  OTHER_MEASURES,
+  partialExams,
+  SOURCE_KINDS,
+  type SourceWithUnits,
+} from './model'
 import { cycleDifficulty, nextLabel, removeUnit, upsertUnit } from './outlineEdit'
 import {
   OUTLINE_MAX_LENGTH,
@@ -105,11 +111,19 @@ function SourceEditor({
     window.scrollTo(0, 0)
   })
 
+  // With partial exams the next step is ObimIspita, as in the mockup flow.
+  const splitByExam = partialExams(subject.assessments).length > 0
+
   const onSave = (units: OutlineUnit[]) => {
     const values = form.getValues()
     const merge = mergeOutline(toStoredUnits(source?.units ?? []), units, () => crypto.randomUUID())
     save.mutate({ form: values, measure, merge })
-    navigate(`/subjects/${subject.id}/sources/${values.id}`, { replace: true })
+    navigate(
+      splitByExam
+        ? `/subjects/${subject.id}/scope?source=${values.id}`
+        : `/subjects/${subject.id}/sources/${values.id}`,
+      { replace: true },
+    )
   }
 
   if (step.kind === 'review') {
@@ -129,6 +143,7 @@ function SourceEditor({
           setStep({ kind: 'input' })
         }}
         onSave={onSave}
+        saveLabel={t(splitByExam ? 'sources.review.saveAndSplit' : 'common.save')}
       />
     )
   }
@@ -368,6 +383,7 @@ function Review({
   onChange,
   onBack,
   onSave,
+  saveLabel,
 }: {
   outline: ParsedOutline
   measure: Measure
@@ -376,6 +392,7 @@ function Review({
   onChange: (outline: ParsedOutline) => void
   onBack: () => void
   onSave: (units: OutlineUnit[]) => void
+  saveLabel: string
 }) {
   const { t } = useTranslation()
   const units = outline.units
@@ -579,7 +596,7 @@ function Review({
         onClick={() => onSave(units)}
         className="mt-2 bg-brand text-white hover:bg-brand-strong"
       >
-        {t('common.save')}
+        {saveLabel}
       </Button>
 
       <UnitSheet

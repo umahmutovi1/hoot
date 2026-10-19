@@ -398,7 +398,8 @@
       "remove": "Remove {{label}}",
       "archiving": "Archived ({{count}})",
       "archivingHint": "Progress and notes stay; restore them from “Archived units”.",
-      "unknownAmount": "size unknown"
+      "unknownAmount": "size unknown",
+      "saveAndSplit": "Save and split by exam"
     },
     "detail": {
       "editContent": "Edit contents",
@@ -413,7 +414,10 @@
       "empty": "No units yet. Add them with “Edit contents”.",
       "difficulty": "difficulty {{d}}",
       "archived": "Archived units ({{count}})",
-      "restore": "Restore"
+      "restore": "Restore",
+      "filter": "Filter by exam",
+      "all": "All",
+      "noneInExam": "No unit of this source is in this exam yet. Assign them in “Exam scope”."
     }
   },
   "time": {
@@ -505,5 +509,26 @@
       "delete": "Delete card",
       "confirmDelete": "Sure? Tap again to delete"
     }
+  },
+  "scope": {
+    "title": "Exam scope",
+    "heading": "What goes into which exam?",
+    "lead": "Assign chapters and questions to exams. Your choice is never overwritten, not even by a later AI import.",
+    "noUnits": "Add a source with units first.",
+    "source": "Source",
+    "summary_one": "{{count}} item · ~{{time}}",
+    "summary_other": "{{count}} items · ~{{time}}",
+    "legendAi": "suggestion",
+    "legendUser": "your change",
+    "legendAll": "Comprehensive and final exams cover everything except “Not included”",
+    "tagAi": "AI",
+    "tagUser": "MANUAL",
+    "included": "Included",
+    "excluded": "Not included",
+    "all": "All",
+    "unassigned": "not assigned yet",
+    "unassignedAll": "not assigned · comprehensive / final only",
+    "unitExams": "Exam for {{label}}",
+    "link": "Exam scope"
   }
 }

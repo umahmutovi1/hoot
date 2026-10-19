@@ -8,6 +8,7 @@ import { ProgressPage } from '@/features/progress/ProgressPage'
 import { SourceEditorPage } from '@/features/sources/SourceEditorPage'
 import { SourcePage } from '@/features/sources/SourcePage'
 import { UnitPage } from '@/features/sources/UnitPage'
+import { ExamScopePage } from '@/features/sources/ExamScopePage'
 import { SessionStartPage } from '@/features/session/SessionStartPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { SubjectFormPage } from '@/features/subjects/SubjectFormPage'
@@ -50,6 +51,7 @@ export const router = createBrowserRouter([
               { path: 'subjects/:id/sources/:sourceId', element: <SourcePage /> },
               { path: 'subjects/:id/sources/:sourceId/edit', element: <SourceEditorPage /> },
               { path: 'subjects/:id/sources/:sourceId/units/:unitId', element: <UnitPage /> },
+              { path: 'subjects/:id/scope', element: <ExamScopePage /> },
               { path: 'session/start', element: <SessionStartPage /> },
             ],
           },

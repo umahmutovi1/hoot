@@ -2,13 +2,18 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { differenceInCalendarDays, format } from 'date-fns'
-import { ChevronLeftIcon, FlagIcon, PencilIcon } from '@/components/icons'
+import { ChevronLeftIcon, ChevronRightIcon, FlagIcon, PencilIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
-import { useSources } from '@/features/sources/api'
-import { materialOf, subjectMaterialProgress } from '@/features/sources/model'
+import { useScope, useSources } from '@/features/sources/api'
+import {
+  examProgress,
+  materialOf,
+  subjectMaterialProgress,
+  toScopeRows,
+} from '@/features/sources/model'
 import { ProgressRing, SubjectSources } from '@/features/sources/SubjectSources'
 import { useDeadlines, useSubject, useUpdateSubject } from './api'
 import { paletteOf, type SubjectPalette } from './colors'
@@ -53,6 +58,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const { data: sources = [] } = useSources(subject.id)
   const materials = sources.map(materialOf)
   const hasMaterial = materials.some((m) => m.units.length > 0)
+  const { data: scope = [] } = useScope(subject.id)
+  const scopeRows = toScopeRows(scope)
   const [deadlineSheet, setDeadlineSheet] = useState<{ open: boolean; id?: string }>({
     open: false,
   })
@@ -149,12 +156,27 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
               <ExamRow
                 exam={exam}
                 highlight={exam.id === next?.id}
+                progress={
+                  hasMaterial ? examProgress(exam, materials, scopeRows).fraction : undefined
+                }
                 palette={palette}
                 locale={locale}
                 onOpen={() => setExamSheet({ open: true, id: exam.id })}
               />
             </div>
           ))}
+          {hasMaterial && (
+            <>
+              <div className="mx-3 h-px bg-hairline" />
+              <Link
+                to={`/subjects/${subject.id}/scope`}
+                className="flex min-h-11 items-center justify-between px-3 py-2.5 text-sm font-semibold text-brand"
+              >
+                {t('scope.link')}
+                <ChevronRightIcon size={16} />
+              </Link>
+            </>
+          )}
         </div>
       )}
 
@@ -206,12 +228,15 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
 function ExamRow({
   exam,
   highlight,
+  progress,
   palette,
   locale,
   onOpen,
 }: {
   exam: Assessment
   highlight: boolean
+  /** Progress over the exam's scope; undefined without sources. */
+  progress?: number
   palette: SubjectPalette
   locale: 'bs' | 'en'
   onOpen: () => void
@@ -253,6 +278,16 @@ function ExamRow({
         <span className="text-[15px] font-semibold">{exam.title}</span>
         <span className="text-xs text-ink-muted">{details}</span>
       </div>
+      {progress !== undefined && (
+        <span
+          className={cn(
+            'shrink-0 text-[15px] font-bold',
+            highlight ? palette.inkText : 'text-ink-muted',
+          )}
+        >
+          {Math.round(progress * 100)}%
+        </span>
+      )}
     </button>
   )
 }
