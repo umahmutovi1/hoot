@@ -7,8 +7,11 @@ import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
-import { useSubject, useUpdateSubject } from './api'
+import { useDeadlines, useSubject, useUpdateSubject } from './api'
 import { paletteOf, type SubjectPalette } from './colors'
+import { DeadlineRow } from './DeadlineRow'
+import { DeadlineSheet } from './DeadlineSheet'
+import { ExamSheet } from './ExamSheet'
 import { relativeDays } from './format'
 import {
   asPriority,
@@ -39,6 +42,13 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const next = nextAssessment(subject.assessments, now)
   const exams = [...subject.assessments].sort((a, b) => a.at.localeCompare(b.at))
   const editPath = `/subjects/${subject.id}/edit`
+  const { data: allDeadlines = [] } = useDeadlines()
+  const deadlines = allDeadlines.filter((d) => d.subject_id === subject.id)
+  // Sheets keep only the id, so they always render the latest cached row.
+  const [examSheet, setExamSheet] = useState<{ open: boolean; id?: string }>({ open: false })
+  const [deadlineSheet, setDeadlineSheet] = useState<{ open: boolean; id?: string }>({
+    open: false,
+  })
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -101,12 +111,13 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
 
       <div className="mt-1.5 flex items-center justify-between">
         <h2 className="text-lg font-semibold">{t('subjects.form.exams')}</h2>
-        <Link
-          to={editPath}
+        <button
+          type="button"
+          onClick={() => setExamSheet({ open: true })}
           className="flex h-9 items-center rounded-full bg-surface px-3 text-[13px] font-semibold text-brand"
         >
           {t('subjects.detail.addExam')}
-        </Link>
+        </button>
       </div>
       {exams.length === 0 ? (
         <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
@@ -122,11 +133,52 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
                 highlight={exam.id === next?.id}
                 palette={palette}
                 locale={locale}
+                onOpen={() => setExamSheet({ open: true, id: exam.id })}
               />
             </div>
           ))}
         </div>
       )}
+
+      <div className="mt-1.5 flex items-center justify-between">
+        <h2 className="text-lg font-semibold">{t('deadlines.section')}</h2>
+        <button
+          type="button"
+          onClick={() => setDeadlineSheet({ open: true })}
+          className="flex h-9 items-center rounded-full bg-surface px-3 text-[13px] font-semibold text-brand"
+        >
+          {t('deadlines.add')}
+        </button>
+      </div>
+      {deadlines.length === 0 ? (
+        <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">{t('deadlines.none')}</p>
+      ) : (
+        <div className="flex flex-col rounded-card bg-surface p-1.5">
+          {deadlines.map((d, i) => (
+            <div key={d.id}>
+              {i > 0 && <div className="mx-3 h-px bg-hairline" />}
+              <DeadlineRow
+                deadline={d}
+                now={now}
+                onOpen={() => setDeadlineSheet({ open: true, id: d.id })}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <ExamSheet
+        subjectId={subject.id}
+        exam={subject.assessments.find((a) => a.id === examSheet.id)}
+        open={examSheet.open}
+        onOpenChange={(open) => setExamSheet((s) => ({ ...s, open }))}
+      />
+      <DeadlineSheet
+        deadline={deadlines.find((d) => d.id === deadlineSheet.id)}
+        subjectId={subject.id}
+        open={deadlineSheet.open}
+        onOpenChange={(open) => setDeadlineSheet((s) => ({ ...s, open }))}
+      />
     </div>
   )
 }
@@ -136,11 +188,13 @@ function ExamRow({
   highlight,
   palette,
   locale,
+  onOpen,
 }: {
   exam: Assessment
   highlight: boolean
   palette: SubjectPalette
   locale: 'bs' | 'en'
+  onOpen: () => void
 }) {
   const { t } = useTranslation()
   const date = new Date(exam.at)
@@ -155,7 +209,7 @@ function ExamRow({
     .join(' · ')
 
   return (
-    <div className="flex items-center gap-3 p-3">
+    <button type="button" onClick={onOpen} className="flex w-full items-center gap-3 p-3 text-left">
       <div
         className={cn(
           'flex h-[54px] w-[50px] shrink-0 flex-col items-center justify-center rounded-[16px]',
@@ -174,7 +228,7 @@ function ExamRow({
         <span className="text-[15px] font-semibold">{exam.title}</span>
         <span className="text-xs text-ink-muted">{details}</span>
       </div>
-    </div>
+    </button>
   )
 }
 

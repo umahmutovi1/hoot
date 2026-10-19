@@ -237,5 +237,49 @@
     "continue": "Nastavi",
     "saveFailed": "Snimanje nije uspjelo. Pokušaj ponovo.",
     "editName": "Promijeni ime"
+  },
+  "exams": {
+    "newTitle": "Novi ispit",
+    "editTitle": "Uredi ispit",
+    "kindLabel": "Vrsta",
+    "scopeAll": "Cijelo gradivo",
+    "delete": "Obriši ispit",
+    "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
+    "kind": {
+      "partial": "Parcijala",
+      "final": "Završni",
+      "integral": "Integralni",
+      "makeup": "Popravni",
+      "other": "Ostalo"
+    }
+  },
+  "deadlines": {
+    "section": "Rokovi",
+    "add": "+ Rok",
+    "none": "Nema rokova.",
+    "newTitle": "Novi rok",
+    "editTitle": "Uredi rok",
+    "title": "Naziv",
+    "titlePlaceholder": "npr. Seminarski rad",
+    "subject": "Predmet",
+    "noSubject": "Bez predmeta",
+    "kindLabel": "Vrsta",
+    "kind": {
+      "assignment": "Zadaća / seminarski",
+      "custom": "Vlastiti rok"
+    },
+    "date": "Rok",
+    "inPlan": "Ulazi u plan učenja",
+    "estimate": "Procjena",
+    "estimateHint": "koliko sati rada treba",
+    "hours": "{{hours}} h",
+    "less": "Manje",
+    "more": "Više",
+    "notes": "Bilješka",
+    "optional": "(opcionalno)",
+    "done": "Završeno",
+    "doneShort": "završeno",
+    "delete": "Obriši rok",
+    "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
   }
 }

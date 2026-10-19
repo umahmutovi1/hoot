@@ -235,5 +235,49 @@
     "continue": "Continue",
     "saveFailed": "Saving failed. Try again.",
     "editName": "Change name"
+  },
+  "exams": {
+    "newTitle": "New exam",
+    "editTitle": "Edit exam",
+    "kindLabel": "Type",
+    "scopeAll": "All material",
+    "delete": "Delete exam",
+    "confirmDelete": "Sure? Tap again to delete",
+    "kind": {
+      "partial": "Midterm",
+      "final": "Final",
+      "integral": "Comprehensive",
+      "makeup": "Makeup",
+      "other": "Other"
+    }
+  },
+  "deadlines": {
+    "section": "Deadlines",
+    "add": "+ Deadline",
+    "none": "No deadlines.",
+    "newTitle": "New deadline",
+    "editTitle": "Edit deadline",
+    "title": "Name",
+    "titlePlaceholder": "e.g. Seminar paper",
+    "subject": "Subject",
+    "noSubject": "No subject",
+    "kindLabel": "Type",
+    "kind": {
+      "assignment": "Assignment / paper",
+      "custom": "Own deadline"
+    },
+    "date": "Due",
+    "inPlan": "Include in the study plan",
+    "estimate": "Estimate",
+    "estimateHint": "hours of work needed",
+    "hours": "{{hours}} h",
+    "less": "Less",
+    "more": "More",
+    "notes": "Note",
+    "optional": "(optional)",
+    "done": "Done",
+    "doneShort": "done",
+    "delete": "Delete deadline",
+    "confirmDelete": "Sure? Tap again to delete"
   }
 }
