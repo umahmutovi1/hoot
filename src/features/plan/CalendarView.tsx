@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { addMonths, differenceInCalendarDays, format, isSameDay, startOfMonth } from 'date-fns'
@@ -38,6 +38,7 @@ export function CalendarView() {
   const setView = (v: CalendarMode) =>
     setParams(v === 'month' ? {} : { view: v }, { replace: true })
   const [today] = useState(() => new Date())
+  const now = useNow()
   const [selected, setSelected] = useState(today)
   const agenda = useAgenda()
   const boundary = useDayBoundary()
@@ -89,9 +90,7 @@ export function CalendarView() {
             <DayTimeline
               items={dayClasses}
               nowMin={
-                isSameDay(selected, today)
-                  ? wallClock(new Date(), boundary.timeZone).minutes
-                  : undefined
+                isSameDay(selected, today) ? wallClock(now, boundary.timeZone).minutes : undefined
               }
             />
           </div>
@@ -106,6 +105,16 @@ export function CalendarView() {
       />
     </div>
   )
+}
+
+/** Current time for the "now" line, refreshed every minute. */
+function useNow() {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000)
+    return () => clearInterval(id)
+  }, [])
+  return now
 }
 
 function MonthGrid({
