@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { examAtFromDate, dueAtFromDate, type Deadline } from '@/features/subjects/model'
+import { assessmentRow, deadlineRow, subjectRow } from '@/features/subjects/fixtures'
+import {
+  examAtFromDate,
+  dueAtFromDate,
+  type SubjectWithAssessments,
+} from '@/features/subjects/model'
 import {
   dayMarkers,
   deadlinesAhead,
@@ -11,20 +16,8 @@ import {
   possibleExamsOn,
 } from './calendar'
 
-const deadline = (id: string, date: string, done = false): Deadline => ({
-  id,
-  user_id: 'u',
-  subject_id: null,
-  title: id,
-  kind: 'custom',
-  due_at: dueAtFromDate(date),
-  est_minutes: null,
-  done_minutes: 0,
-  notes: null,
-  done,
-  created_at: '',
-  updated_at: '',
-})
+const deadline = (id: string, date: string, done = false) =>
+  deadlineRow({ id, title: id, due_at: dueAtFromDate(date), done })
 
 describe('monthGrid', () => {
   it('October 2026 starts on Monday 28 Sep and ends on Sunday 1 Nov', () => {
@@ -42,40 +35,9 @@ describe('monthGrid', () => {
 })
 
 describe('day events', () => {
-  const subject = (archived: boolean) => ({
-    id: archived ? 'old' : 's',
-    user_id: 'u',
-    name: 'Signali',
-    color: 'pink',
-    archived,
-    priority: 3,
-    study_mode: 'regular',
-    campaign_start_on: null,
-    created_at: '',
-    updated_at: '',
-    assessments: [
-      {
-        id: archived ? 'x' : 'a',
-        user_id: 'u',
-        subject_id: 's',
-        kind: 'partial' as const,
-        title: 'I parcijala',
-        at: examAtFromDate('2026-10-28'),
-        format: 'written' as const,
-        weight_pct: null,
-        scope_all: false,
-        passed: false,
-        readiness_before: null,
-        result_points: null,
-        result_max: null,
-        exam_period_id: null,
-        contingent: false,
-        date_tentative: false,
-        at_latest: null as string | null,
-        created_at: '',
-        updated_at: '',
-      },
-    ],
+  const subject = (archived: boolean): SubjectWithAssessments => ({
+    ...subjectRow({ id: archived ? 'old' : 's', archived }),
+    assessments: [assessmentRow({ id: archived ? 'x' : 'a', at: examAtFromDate('2026-10-28') })],
   })
 
   it('lists exams of active subjects on the day', () => {

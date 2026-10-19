@@ -125,8 +125,8 @@ Odluke Etape 4: raspored važi za jedan period nastave iz akademskog kalendara, 
 Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 
 - [x] Mockup [`design/BodoviOcjene.html`](design/BodoviOcjene.html) (6 ekrana: kartica „Bodovi i ocjena“, ispiti sa rezultatom i popravnim, polja bodova u ExamSheetu, sheet Rezultat, sheet Skala ocjena, Napredak → Ocjene) — odobren
-- [ ] Migracija `0007_grades.sql` (`assessments.points_max` umjesto `weight_pct`, `points_unit`, `pass_min_pct`, `entry_min_points`, `retake_of`, `result_annulled`; bodovi na `deadlines`; `subjects.points_total`, `grade_scale`, `target_grade`), regenerisan `database.ts`
-- [ ] `src/lib/grades/`: doprinos stavke, zadnji izlazak, popravni i integralni, pragovi (stavka, ukupno, uslov za izlazak), skala, projekcija „imam / treba / nedostižno“ + testovi (i `fast-check`: doprinos nikad ne prelazi maksimum)
+- [x] Migracija `0007_grades.sql` (`assessments.points_max` umjesto `weight_pct`, `points_unit`, `pass_min_pct`, `entry_min_points`, `retake_of`, `result_annulled`; bodovi na `deadlines`; `subjects.points_total`, `grade_scale`, `target_grade`), regenerisan `database.ts`
+- [x] `src/lib/grades/`: doprinos stavke, zadnji izlazak, popravni i integralni, pragovi (stavka, ukupno, uslov za izlazak), skala, projekcija „imam / treba / nedostižno“ + testovi (i `fast-check`: doprinos nikad ne prelazi maksimum)
 - [ ] ExamSheet i DeadlineSheet: bodovi ili %, prag, uslov za izlazak; popravni vezan za ispit i ugniježđen ispod njega
 - [ ] Sheet Rezultat: unos u bodovima ili %, automatski `passed`, „Poništi rezultat“ (odricanje) aktivira popravni
 - [ ] Kartica „Bodovi i ocjena“ na Predmetu + sheet Skala ocjena + željena ocjena

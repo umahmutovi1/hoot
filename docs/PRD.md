@@ -515,6 +515,7 @@ Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih 
 
 - **Poništi rezultat** (odricanje, `result_annulled`): rezultat ostaje vidljiv precrtan, ne ulazi u zbir, ispit nije položen, pa se aktivira njegov popravni (“samo ako zatreba”).
 - **Položeno** (`passed`) app postavi pri unosu rezultata: rezultat se računa i, ako ispit ima prag, procenat ≥ `pass_min_pct`. Korisnik ga može ručno promijeniti (kao i do sad).
+- **Ispod praga** (odluka, Etapa 5): rezultat koji nije položen ne ulazi u “imam”; bodovi te stavke se vraćaju u preostale (dobijaju se na popravnom ili integralnom). Prikazuje se kao “12/40 ✗”. Rok nema `passed` kolonu: položen je kad je procenat ≥ `pass_min_pct` (ili nema praga).
 
 **Popravni i integralni.**
 
@@ -528,13 +529,13 @@ Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih 
 - **Prag ukupno**: zbir mora dostići prag ocjene 6 iz skale.
 - **Uslov za izlazak** (`entry_min_points` na ispitu, opcionalno): zbir bodova sa stavki koje su prije tog ispita mora biti bar toliki (npr. 20 bodova iz zadaća i seminarskog za završni). Ako nije ispunjen, ispit i projekcija to pokažu.
 
-**Skala ocjena** (`subjects.grade_scale`, `null` = default): pragovi u procentima od `points_total`. Default bosanska skala: 0–54 → 5, 55–64 → 6, 65–74 → 7, 75–84 → 8, 85–94 → 9, 95–100 → 10. Mijenja se po predmetu (pragovi strogo rastući, Zod).
+**Skala ocjena** (`subjects.grade_scale`, `null` = default): pragovi u procentima od `points_total`, snimljeni kao niz od 5 brojeva za ocjene 6–10 (`[55,65,75,85,95]`). Default bosanska skala: 0–54 → 5, 55–64 → 6, 65–74 → 7, 75–84 → 8, 85–94 → 9, 95–100 → 10. Mijenja se po predmetu (pragovi strogo rastući, Zod). Sheet “Skala ocjena” ima i polje “Ukupno bodova” (`points_total`); pragovi se unose i prikazuju u % (odluka, Etapa 5).
 
 **Projekcija ocjene** (`src/lib/grades/`):
 
 - **Imam**: zbir doprinosa uračunatih rezultata, uz maksimum do sad (“32 od 40”).
 - **Najviše moguće**: imam + bodovi preostalih stavki.
-- **Za ocjenu N treba**: max(0, prag N − imam) od preostalih bodova, i kao prosječan procenat na preostalim stavkama; uz pragove po stavci. Za svaku ocjenu 6–10: osigurano / treba X (Y%) / nedostižno.
+- **Za ocjenu N treba**: max(prag N − imam, zbir pragova preostalih stavki) od preostalih bodova, i kao prosječan procenat na preostalim stavkama. Pragovi po stavci su donja granica (odluka, Etapa 5): uz II parcijalu od 40 sa pragom 50% treba najmanje 20, i kad je za 6 dovoljno 9 bodova (mockup prikazuje 9). Za svaku ocjenu 6–10: osigurano / treba X (Y%) / nedostižno.
 - **Željena ocjena** (`subjects.target_grade`, 6–10, opcionalno) je istaknut red projekcije.
 - **Procjena ocjene iz spremnosti** (Napredak, uz prognozu spremnosti): očekivani procenat na preostalom ispitu = prognozirana pokrivenost obima do datuma ispita × jačina znanja; daje vjerovatnu ocjenu i raspon. Rezultati i `readiness_before` je kalibrišu.
 
@@ -1026,7 +1027,7 @@ create table availability_days (                            -- izmjena za konkre
 );
 -- + RLS, grant, triger; default šablon 06–24 za postojeće korisnike i u handle_new_user()
 
--- 0007_grades.sql (Etapa 5)
+-- 0007_grades.sql (Etapa 5, primijenjena; + checkovi: retake_of samo za makeup, result_points između 0 i result_max)
 alter table assessments rename column weight_pct to points_max;   -- nije korištena
 alter table assessments
   add column points_unit text not null default 'points' check (points_unit in ('points','percent')),
