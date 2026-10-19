@@ -281,7 +281,11 @@
     "outlineEmpty": "Enter at least one unit",
     "labelTaken": "That label already exists",
     "time": "Invalid time",
-    "timeOrder": "End must be after start"
+    "timeOrder": "End must be after start",
+    "percentMax": "At most 100%",
+    "retakeOf": "Pick the exam this make-up repeats",
+    "resultOverMax": "Can't be more than the maximum",
+    "scaleOrder": "Each threshold must be higher than the one before"
   },
   "common": {
     "cancel": "Cancel",
@@ -330,7 +334,10 @@
       "none_choice": "Not included",
       "hint": "Pick part of a source (e.g. chapters 1–5) in Exam scope.",
       "hintNew": "After saving, pick part of a source (e.g. chapters 1–5) in Exam scope."
-    }
+    },
+    "retakeOf": "Make-up for",
+    "retakeOfNone": "First add the exam this make-up repeats.",
+    "makeupTitle": "Make-up: {{title}}"
   },
   "deadlines": {
     "section": "Deadlines",
@@ -815,5 +822,62 @@
     "restore": "Restore class",
     "cancel": "Cancel for this day",
     "edit": "Edit in timetable"
+  },
+  "grades": {
+    "unit": {
+      "points": "points",
+      "ofGrade": "% of grade"
+    },
+    "fields": {
+      "heading": "Points",
+      "carries": "Carries",
+      "noPoints": "no points",
+      "noPointsHint": "When you find out what it carries, enter it here. Until then it is only in the plan, not in the points.",
+      "percentIs": "= {{points}} of the subject's {{total}} points",
+      "threshold": "Pass threshold",
+      "noThreshold": "none",
+      "thresholdIsPct": "= {{pct}}%.",
+      "thresholdIsPoints": "= {{points}} pts.",
+      "thresholdHintExam": "Below the threshold the exam is not passed and the make-up is needed.",
+      "thresholdHintDeadline": "Below the threshold the deadline is not passed.",
+      "entry": "Entry requirement",
+      "entryPlaceholder": "e.g. 10 points from earlier items",
+      "entryHint": "Points needed from earlier exams and deadlines to sit this exam.",
+      "makeupCarries": "Carries the same points as {{title}} ({{points}}) and replaces that exam if you sit it.",
+      "integralCarries": "Sum of the partials' points; replaces them if you sit it."
+    },
+    "points_one": "{{n}} point",
+    "points_other": "{{n}} points",
+    "shareOfGrade": "{{n}}% of grade",
+    "thresholdShort": "threshold {{pct}}%",
+    "entryShort": "entry requirement: {{n}} pts",
+    "replacesPartials": "replaces the partials",
+    "enterResult": "Enter result",
+    "score": "{{points}}/{{max}}",
+    "annulled": "waived",
+    "retakeNeeded": "needed",
+    "result": {
+      "title": "Result",
+      "modeLabel": "Entry",
+      "modePoints": "Points",
+      "modePercent": "Percentage",
+      "points": "Points",
+      "max": "Out of",
+      "of": "of",
+      "percent": "Percentage",
+      "rescaleHint": "If the test was marked differently (e.g. out of 50), enter that; it is scaled to {{points}} points.",
+      "pct": "{{pct}}%",
+      "passedLine": "{{pct}}% · passed",
+      "failedLine": "{{pct}}% · not passed",
+      "thresholdNote": "threshold {{pct}}%",
+      "passed": "Passed",
+      "save": "Save result",
+      "annul": "Waive result",
+      "annulHint": "Giving up the points: the exam is not passed and the make-up is needed. The result stays in the history.",
+      "annulled": "The result is waived and not in the sum.",
+      "restore": "Restore result",
+      "clear": "Delete result",
+      "contributes": "Counts {{points}} of {{max}} points"
+    }
   }
 }

@@ -18,10 +18,13 @@ import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
 import { useSaveScope, useSources } from '@/features/sources/api'
 import { materialOf } from '@/features/sources/model'
-import { useDeleteAssessment, useSaveAssessment } from './api'
+import { itemWorth } from '@/lib/grades'
+import { useDeleteAssessment, useSaveAssessment, useSubject } from './api'
 import { rowsForSource, type SourceChoice } from './sourceScope'
 import { ExamSources } from './ExamSources'
-import { ChipGroup, fieldInput, fieldLabel } from './fields'
+import { ChipGroup, fieldInput, fieldLabel, NumberField } from './fields'
+import { examItem, formatPoints } from './grades'
+import { PointsFields } from './PointsFields'
 import { assessmentToForm } from './mappers'
 import {
   ASSESSMENT_KINDS,
@@ -30,7 +33,7 @@ import {
   localDateOf,
   type Assessment,
 } from './model'
-import { assessmentFormSchema, type AssessmentForm } from './schemas'
+import { EXAM_GRADE_DEFAULTS, examSheetSchema, type AssessmentForm } from './schemas'
 
 /** How the exam's date is known: exact day, "in a period" of the academic calendar, or a range. */
 const DATE_MODES = ['exact', 'period', 'range'] as const
@@ -74,7 +77,7 @@ function ExamForm({
   const remove = useDeleteAssessment()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const form = useForm<AssessmentForm>({
-    resolver: zodResolver(assessmentFormSchema),
+    resolver: zodResolver(examSheetSchema),
     defaultValues: exam
       ? assessmentToForm(exam)
       : {
@@ -87,13 +90,47 @@ function ExamForm({
           dateTentative: false,
           dateLatest: null,
           examPeriodId: null,
+          ...EXAM_GRADE_DEFAULTS,
         },
   })
-  const [kind, examFormat, scopeAll, contingent, dateTentative, date, examPeriodId] = useWatch({
+  const [
+    kind,
+    examFormat,
+    scopeAll,
+    contingent,
+    dateTentative,
+    date,
+    examPeriodId,
+    pointsMax,
+    pointsUnit,
+    passMinPct,
+    entryMinPoints,
+    retakeOf,
+  ] = useWatch({
     control: form.control,
-    name: ['kind', 'format', 'scopeAll', 'contingent', 'dateTentative', 'date', 'examPeriodId'],
+    name: [
+      'kind',
+      'format',
+      'scopeAll',
+      'contingent',
+      'dateTentative',
+      'date',
+      'examPeriodId',
+      'pointsMax',
+      'pointsUnit',
+      'passMinPct',
+      'entryMinPoints',
+      'retakeOf',
+    ],
   })
-  const { locale } = useLocale()
+  const subject = useSubject(subjectId).data
+  const pointsTotal = subject?.points_total ?? 100
+  const others = (subject?.assessments ?? []).filter((a) => a.id !== form.getValues('id'))
+  const otherItems = others.map(examItem)
+  const retakeTargets = others
+    .filter((a) => a.kind !== 'makeup')
+    .sort((a, b) => a.at.localeCompare(b.at))
+  const retakeTarget = retakeTargets.find((a) => a.id === retakeOf)
   const boundary = useDayBoundary()
   const [today] = useState(() => localDay(new Date(), boundary))
   const periods = (usePeriods().data ?? []).map(toPeriod)
@@ -139,6 +176,49 @@ function ExamForm({
     }
   }
 
+  // A makeup carries its exam's points; an integral the partials' sum.
+  const inheritedPoints = (() => {
+    if (kind === 'makeup') {
+      return retakeTarget ? itemWorth(examItem(retakeTarget), otherItems, pointsTotal) : null
+    }
+    if (kind !== 'integral') return null
+    const partials = otherItems
+      .filter((i) => i.kind === 'partial')
+      .map((i) => itemWorth(i, otherItems, pointsTotal))
+      .filter((w): w is number => w !== null)
+    return partials.length > 0 ? partials.reduce((a, b) => a + b, 0) : null
+  })()
+  const { locale } = useLocale()
+  const inherited =
+    inheritedPoints === null
+      ? undefined
+      : {
+          points: inheritedPoints,
+          hint:
+            kind === 'makeup'
+              ? t('grades.fields.makeupCarries', {
+                  title: retakeTarget?.title,
+                  points: formatPoints(inheritedPoints, locale),
+                })
+              : t('grades.fields.integralCarries'),
+        }
+
+  const pickRetake = (id: string) => {
+    const previous = retakeTargets.find((a) => a.id === form.getValues('retakeOf'))
+    form.setValue('retakeOf', id, set)
+    const target = retakeTargets.find((a) => a.id === id)
+    if (!target) return
+    // A makeup repeats the exam's threshold unless one is set.
+    if (form.getValues('passMinPct') === null) {
+      form.setValue('passMinPct', target.pass_min_pct, set)
+    }
+    const title = form.getValues('title').trim()
+    const auto = (title: string | undefined) => t('exams.makeupTitle', { title })
+    if (!title || title === t('exams.kind.makeup') || title === auto(previous?.title)) {
+      form.setValue('title', auto(target.title), set)
+    }
+  }
+
   const pickKind = (k: AssessmentForm['kind']) => {
     const previous = form.getValues('kind')
     form.setValue('kind', k, set)
@@ -162,6 +242,26 @@ function ExamForm({
           onChange={pickKind}
         />
       </div>
+
+      {kind === 'makeup' && (
+        <div className="flex flex-col gap-2">
+          <span className={fieldLabel}>{t('exams.retakeOf')}</span>
+          {retakeTargets.length > 0 ? (
+            <ChipGroup
+              options={retakeTargets.map((a) => ({ value: a.id, label: a.title }))}
+              value={retakeOf}
+              onChange={pickRetake}
+            />
+          ) : (
+            <span className="text-xs leading-[1.4] text-ink-muted">{t('exams.retakeOfNone')}</span>
+          )}
+          {errors.retakeOf && (
+            <span role="alert" className="text-sm text-danger">
+              {t(validationKey(errors.retakeOf.message))}
+            </span>
+          )}
+        </div>
+      )}
 
       <label className="flex flex-col gap-2">
         <span className={fieldLabel}>{t('subjects.form.examTitle')}</span>
@@ -264,6 +364,36 @@ function ExamForm({
         onChange={(id, c) => setSourceChoices((prev) => ({ ...prev, [id]: c }))}
         isNew={!exam}
       />
+
+      <PointsFields
+        value={{ pointsMax, pointsUnit, passMinPct }}
+        onChange={(patch) => {
+          if (patch.pointsMax !== undefined) form.setValue('pointsMax', patch.pointsMax, set)
+          if (patch.pointsUnit) form.setValue('pointsUnit', patch.pointsUnit, set)
+          if (patch.passMinPct !== undefined) form.setValue('passMinPct', patch.passMinPct, set)
+        }}
+        pointsTotal={pointsTotal}
+        inherited={inherited}
+        thresholdHint={t('grades.fields.thresholdHintExam')}
+        errors={{
+          pointsMax: errors.pointsMax && validationKey(errors.pointsMax.message),
+          passMinPct: errors.passMinPct && validationKey(errors.passMinPct.message),
+        }}
+      />
+      <div className="flex flex-col gap-2">
+        <span className={fieldLabel}>
+          {t('grades.fields.entry')}{' '}
+          <span className="font-normal text-ink-muted">{t('deadlines.optional')}</span>
+        </span>
+        <NumberField
+          label={t('grades.fields.entry')}
+          placeholder={t('grades.fields.entryPlaceholder')}
+          value={entryMinPoints}
+          invalid={Boolean(errors.entryMinPoints)}
+          onChange={(n) => form.setValue('entryMinPoints', n === 0 ? null : n, set)}
+        />
+        <span className="text-xs leading-[1.4] text-ink-muted">{t('grades.fields.entryHint')}</span>
+      </div>
 
       <div className="flex flex-col gap-2">
         <span className={fieldLabel}>{t('subjects.form.examFormat')}</span>

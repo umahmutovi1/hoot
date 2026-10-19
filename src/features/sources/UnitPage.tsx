@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -318,11 +319,7 @@ function UnitDetail({
   )
 }
 
-function positionLabel(
-  t: ReturnType<typeof useTranslation>['t'],
-  material: SourceMaterial,
-  unit: Unit,
-) {
+function positionLabel(t: TFunction, material: SourceMaterial, unit: Unit) {
   const top = material.units.filter((u) => u.parent_id === null)
   const kind = unit.kind === 'question' ? 'question' : 'chapter'
   if (unit.parent_id !== null) {

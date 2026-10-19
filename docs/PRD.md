@@ -509,7 +509,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 
 Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih je osvojeno i šta treba za željenu ocjenu. Sve se računa čistim kodom u `src/lib/grades/` (testovi), ništa se ne snima osim unosa.
 
-**Bodovi.** Ispit (`assessments`) i rok (`deadlines`) mogu nositi bodove (`points_max`, npr. I parcijala 40, II parcijala 40, zadaće 20). Jedinica se bira po stavci (`points_unit`): bodovi, ili procenti ukupne ocjene. Ukupno predmeta (`subjects.points_total`, default 100) je osnova za procente i skalu: stavka od 20% nosi 20% od `points_total`. Stavka bez `points_max` ne ulazi u bodove (samo u plan).
+**Bodovi.** Ispit (`assessments`) i rok (`deadlines`) mogu nositi bodove (`points_max`, npr. I parcijala 40, II parcijala 40, zadaće 20). Jedinica se bira po stavci (`points_unit`): bodovi, ili procenti ukupne ocjene. Ukupno predmeta (`subjects.points_total`, default 100) je osnova za procente i skalu: stavka od 20% nosi 20% od `points_total`. Stavka bez `points_max` ne ulazi u bodove (samo u plan). U sheetu se to bira kao “bez bodova” (još ne znaš koliko nosi), a prag kao “bez praga” (odluka, Etapa 5). Popravni i integralni (kad postoje parcijale) ne unose bodove: prikazuju naslijeđene.
 
 **Rezultat.** Unosi se kad izađe, kao bodovi (`result_points` od `result_max`, default `result_max` = bodovi stavke) ili kao procenat (`result_max` = 100). Doprinos stavke = bodovi stavke × `result_points` / `result_max`, pa test bodovan od 50 može nositi 40 bodova.
 

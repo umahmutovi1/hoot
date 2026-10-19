@@ -6,6 +6,7 @@ import {
   localDateOf,
   type Assessment,
   type Deadline,
+  type PointsUnit,
   type StudyMode,
   type SubjectWithAssessments,
 } from './model'
@@ -38,6 +39,12 @@ export function toAssessmentRow(
     date_tentative: form.dateTentative,
     at_latest: form.dateTentative && form.dateLatest ? examAtFromDate(form.dateLatest) : null,
     exam_period_id: form.dateTentative ? form.examPeriodId : null,
+    // A makeup carries the points of the exam it repeats.
+    points_max: form.kind === 'makeup' ? null : form.pointsMax,
+    points_unit: form.pointsUnit,
+    pass_min_pct: form.passMinPct,
+    entry_min_points: form.entryMinPoints,
+    retake_of: form.kind === 'makeup' ? form.retakeOf : null,
   }
 }
 
@@ -50,6 +57,10 @@ export function toDeadlineRow(form: DeadlineForm): TablesInsert<'deadlines'> {
     due_at: dueAtFromDate(form.date),
     est_minutes: form.estHours === null ? null : Math.round(form.estHours * 60),
     notes: form.notes || null,
+    // Points only count within a subject.
+    points_max: form.subjectId ? form.pointsMax : null,
+    points_unit: form.pointsUnit,
+    pass_min_pct: form.subjectId && form.pointsMax !== null ? form.passMinPct : null,
   }
 }
 
@@ -65,6 +76,11 @@ export function assessmentToForm(a: Assessment): AssessmentForm {
     dateTentative: a.date_tentative,
     dateLatest: a.at_latest ? localDateOf(a.at_latest) : null,
     examPeriodId: a.exam_period_id,
+    pointsMax: a.points_max,
+    pointsUnit: asPointsUnit(a.points_unit),
+    passMinPct: a.pass_min_pct,
+    entryMinPoints: a.entry_min_points,
+    retakeOf: a.retake_of,
   }
 }
 
@@ -89,5 +105,12 @@ export function deadlineToForm(d: Deadline): DeadlineForm {
     date: localDateOf(d.due_at),
     estHours: d.est_minutes === null ? null : d.est_minutes / 60,
     notes: d.notes,
+    pointsMax: d.points_max,
+    pointsUnit: asPointsUnit(d.points_unit),
+    passMinPct: d.pass_min_pct,
   }
+}
+
+function asPointsUnit(unit: string): PointsUnit {
+  return unit === 'percent' ? 'percent' : 'points'
 }
