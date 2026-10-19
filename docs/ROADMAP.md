@@ -120,7 +120,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 - [ ] `plan(state)` u `src/lib/scheduler/`: kapacitet, ponavljanja, preostali rad po cilju, buffer, hitnost, redoslijed, tipovi blokova, dijeljenje dugih jedinica, deficit, „zašto ovo danas"
 - [ ] `placeTimes()` za Satnicu
-- [ ] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina i ručni override, meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, novi razlozi „zašto ovo danas“
+- [ ] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina, ručni override i „Počni odmah“, privremeno pojačanje prioriteta („Uzmi vrijeme od …“ sa izračunatom razlikom plana), meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, novi razlozi „zašto ovo danas“
 - [ ] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan
 - [ ] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, ručni blokovi se ne mijenjaju, isti ulaz = isti plan
 - [ ] Migracija `0004_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
@@ -140,7 +140,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu, `next_review_on`, ograničenje na datum ispita, level 3 nakon 4 uspjeha + testovi
 - [ ] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
 - [ ] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje
-- [ ] `review_logs` (proteklo dana, stabilnost prije/poslije), prelaz na level 2/3, review i recap blokovi u scheduleru, dnevni limit ponavljanja (`review_cap_pct`), nema ponavljanja prije starta kampanje
+- [ ] `review_logs` (proteklo dana, stabilnost prije/poslije), prelaz na level 2/3, review i recap blokovi u scheduleru, dnevni limit ponavljanja (`review_cap_pct`), prije starta kampanje samo ponavljanja već naučenog
 - [ ] ProvjeraZnanja: review blok kao niz recall gate-ova + sažetak promjene jačine; kartica „Znanje slabi“ na Danas; kartica „Jačina znanja“ na Predmetu
 - **DoD** → `v0.7.0`
 
@@ -167,7 +167,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] Prognoza spremnosti na Danas i Napredak
 - [ ] Rezultat ispita + spremnost dan prije; `celebrating` 120 px u toastu/modalu za položen ispit
 - [ ] Maskota: `reading-head` 52 px kao avatar strategista (Danas savjet, Napredak sedmični pregled)
-- [ ] `strategist` edge funkcija (sedmično / na dugme), odobravanje akcija jednim tapom → replan; akcije `set_priority`, `set_mode`, `set_campaign_start`; zaostatak po predavanjima i jačina po temama u ulazu
+- [ ] `strategist` edge funkcija (sedmično / na dugme), odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`; zaostatak po predavanjima i jačina po temama u ulazu
 - **DoD** → `v0.9.0`
 
 ## Etapa 10 — Notifikacije i dorada
