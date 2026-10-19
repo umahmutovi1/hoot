@@ -49,7 +49,12 @@
     "addSubject": "Add subject",
     "firstRunMascotAlt": "Owl reading a book",
     "firstRunTitle": "Let's build your plan",
-    "firstRunBody": "Add your first subject and exam date. You can photograph your reading list now or later."
+    "firstRunBody": "Add your first subject and exam date. You can photograph your reading list now or later.",
+    "fact": {
+      "title": "Did you know?",
+      "source": "Source: {{source}}",
+      "sourceLabel": "Source: {{source}} (opens in a new window)"
+    }
   },
   "plan": {
     "title": "Plan",
@@ -530,5 +535,27 @@
     "unassignedAll": "not assigned · comprehensive / final only",
     "unitExams": "Exam for {{label}}",
     "link": "Exam scope"
+  },
+  "facts": {
+    "testingWeek": "A week after studying, students who had tested themselves three times on a text remembered 61% of it; those who had read it four times remembered 40%.",
+    "rereadConfidence": "Students who only reread a text were the most confident they would remember it, and a week later they remembered the least. Feeling that you know is not knowing.",
+    "retrievalConceptMaps": "Recalling material without looking gave better results on a test a week later than drawing concept maps, even though most students expected the opposite.",
+    "interleaving": "When different problem types were mixed, practice went worse (60% vs 89%), but on the test a week later the score was 63% vs 20%.",
+    "spacingSessions": "The same problems split into two sessions a week apart gave 74% on a later test; done in one go, 49%.",
+    "spacingGap": "If the exam is a week away, the best time to review is about 1 to 3 days after first studying. The further away the exam, the longer the gap can be.",
+    "techniquesRanking": "A large review of ten study techniques rated self-testing and spaced practice the most useful, and highlighting and rereading of low use.",
+    "studentsReread": "In one survey, 84% of students said they study by rereading, and only 11% said they test themselves.",
+    "multitasking": "Brief mental blocks when switching between tasks can cost as much as 40% of productive time.",
+    "interruption": "In Gloria Mark's research, interrupted work that was resumed the same day waited on average 23 minutes and 15 seconds, with other tasks in between.",
+    "taskSwitching": "People at work switch activities about every three minutes on average. An uninterrupted session is worth more than you think.",
+    "mindWandering": "Our minds wander in almost half of our waking moments (46.9%), and we are less happy on average when they do.",
+    "notifications": "Just receiving a notification, without looking at the phone, hurt attention on a demanding task almost as much as calling or texting.",
+    "mediaMultitaskers": "People who constantly use several media at once are more easily distracted by irrelevant things and worse at switching between tasks.",
+    "writeWorries": "Ten minutes of writing about worries before an exam improved scores, most of all for students with strong test anxiety.",
+    "hypercorrection": "Errors made with high confidence are easier to fix: when you see the right answer, you remember it better than after a mere guess.",
+    "expectTeach": "When people study expecting to explain the material to someone, they recall more and in a better order, even if they never end up teaching.",
+    "greenBreak": "Looking at greenery for just 40 seconds, even in a picture, helped students keep their attention on a boring task.",
+    "sleepAfter": "Sleeping within a few hours after studying helps the material stick. A sleepless night after learning hurts recall even after catching up on sleep.",
+    "wakefulRest": "Ten minutes of quiet rest (no phone, no games) right after learning improved memory even a week later."
   }
 }
