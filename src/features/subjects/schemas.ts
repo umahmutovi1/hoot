@@ -25,6 +25,8 @@ export const assessmentFormSchema = z
     dateTentative: z.boolean(),
     /** Latest possible day of a tentative exam; ignored otherwise. */
     dateLatest: isoDate.nullable(),
+    /** Exam period of the academic calendar the tentative range comes from. */
+    examPeriodId: z.string().nullable(),
   })
   .superRefine((a, ctx) => {
     if (!a.dateTentative) return

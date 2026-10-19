@@ -93,11 +93,17 @@ describe('exam date range', () => {
     contingent: false,
     dateTentative: true,
     dateLatest: '2026-12-12',
+    examPeriodId: 'period-1',
   }
 
   it('stores the range end only for tentative exams', () => {
     expect(localDateOf(toAssessmentRow('s', form).at_latest!)).toBe('2026-12-12')
     expect(toAssessmentRow('s', { ...form, dateTentative: false }).at_latest).toBeNull()
+  })
+
+  it('keeps the exam period only while the date is tentative', () => {
+    expect(toAssessmentRow('s', form).exam_period_id).toBe('period-1')
+    expect(toAssessmentRow('s', { ...form, dateTentative: false }).exam_period_id).toBeNull()
   })
 
   it('round-trips the range', () => {

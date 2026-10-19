@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { Mascot } from '@/components/Mascot'
 import { Button } from '@/components/ui/button'
-import { useProfile } from '@/features/settings/profile'
+import { useScheduleData } from '@/features/schedule/useScheduleData'
+import { useDayBoundary, useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
+import { localDay } from '@/lib/day'
 import { greetingPart } from '@/lib/greeting'
+import { calendarStatus } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
 import { FactCard } from './FactCard'
 
@@ -17,12 +20,16 @@ export function TodayPage() {
   const { data: profile } = useProfile()
   const [now] = useState(() => new Date())
   const name = profile?.display_name ?? ''
+  const boundary = useDayBoundary()
+  const { periods } = useScheduleData()
+  const status = calendarStatus(localDay(now, boundary), periods)
 
   return (
     <div className="flex flex-col">
       <header className="flex flex-col gap-0.5">
         <span className="text-[13px] text-ink-muted first-letter:uppercase">
           {format(now, 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
+          {status && ` · ${t(`today.week.${status.kind}`, status)}`}
         </span>
         <span className="text-[17px] font-semibold">
           {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}
