@@ -62,7 +62,7 @@ function subtreeEnd(units: PaceUnit[], unitId: string): number | null {
   return end
 }
 
-function leaves(units: PaceUnit[]): PaceUnit[] {
+function leaves<T extends PaceUnit>(units: T[]): T[] {
   const parents = new Set(units.map((u) => u.parentId).filter(Boolean))
   return units.filter((u) => !parents.has(u.id)).sort((a, b) => a.position - b.position)
 }
@@ -75,18 +75,18 @@ export function coveredLeaves(units: PaceUnit[], upToUnitId: string): PaceUnit[]
 }
 
 /** Top-level unit (no parent) that contains the unit. */
-function topOf(units: PaceUnit[], unitId: string): PaceUnit | undefined {
+function topOf<T extends PaceUnit>(units: T[], unitId: string): T | undefined {
   const byId = new Map(units.map((u) => [u.id, u]))
   let u = byId.get(unitId)
   while (u?.parentId && byId.has(u.parentId)) u = byId.get(u.parentId)
   return u
 }
 
-export interface SourcePace {
+export interface SourcePace<T extends PaceUnit = PaceUnit> {
   /** Top-level unit that contains the latest lecture boundary ("Na predavanju: pogl. 5"). */
-  lectureAt: PaceUnit
+  lectureAt: T
   /** Last top-level unit the user has fully started, in order without gaps ("Ti: pogl. 3"). */
-  youAt: PaceUnit | null
+  youAt: T | null
   /** 1-based index of `lectureAt` / `youAt` among top-level units (0 = none yet). */
   lectureIndex: number
   youIndex: number
@@ -99,7 +99,7 @@ export interface SourcePace {
 }
 
 /** Pace of one source from its logs; null without a log that reached a unit. */
-export function sourcePace(units: PaceUnit[], logs: PaceLog[]): SourcePace | null {
+export function sourcePace<T extends PaceUnit>(units: T[], logs: PaceLog[]): SourcePace<T> | null {
   const reached = reachedLogs(logs).filter((l) => units.some((u) => u.id === l.upToUnitId))
   const latest = reached.at(-1)
   if (!latest) return null

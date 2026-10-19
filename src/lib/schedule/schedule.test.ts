@@ -13,6 +13,7 @@ import {
   subtractSlots,
   suggestExamPeriod,
   assignExamPeriods,
+  lecturesToLog,
   weekFreeMinutes,
   weekNumber,
   type ClassEntry,
@@ -245,5 +246,24 @@ describe('assignExamPeriods', () => {
     expect(
       assignExamPeriods([{ kind: 'partial' }, { kind: 'partial' }], periods, '2026-10-19')[1],
     ).toBeUndefined()
+  })
+})
+
+describe('lecturesToLog', () => {
+  const lecture = entry({ id: 'lec' }) // Monday 09:00–11:00
+  const exercise = entry({ id: 'ex', kind: 'exercise', startMin: 12 * 60, endMin: 13 * 60 })
+  const none = new Set<string>()
+
+  it('asks only after a lecture has ended', () => {
+    expect(lecturesToLog('2026-10-19', 10 * 60, [lecture], periods, none, none)).toEqual([])
+    expect(lecturesToLog('2026-10-19', 11 * 60, [lecture], periods, none, none)).toHaveLength(1)
+  })
+
+  it('skips exercises, logged and skipped lectures', () => {
+    const late = 23 * 60
+    expect(lecturesToLog('2026-10-19', late, [exercise], periods, none, none)).toEqual([])
+    const key = new Set(['lec:2026-10-19'])
+    expect(lecturesToLog('2026-10-19', late, [lecture], periods, key, none)).toEqual([])
+    expect(lecturesToLog('2026-10-19', late, [lecture], periods, none, key)).toEqual([])
   })
 })
