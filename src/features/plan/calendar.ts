@@ -103,3 +103,54 @@ export function dayMarkers(
   if (all.length <= max) return { visible: all, more: 0 }
   return { visible: all.slice(0, max - 1), more: all.length - (max - 1) }
 }
+
+export interface TimedItem {
+  id: string
+  startMin: number
+  endMin: number
+}
+
+export interface PlacedItem<T extends TimedItem> {
+  item: T
+  /** 0-based column among overlapping items, and how many columns its group needs. */
+  lane: number
+  lanes: number
+}
+
+/**
+ * Side-by-side columns for overlapping items on a time axis: each item takes the first free
+ * lane; items that overlap (directly or through a chain) share the same lane count.
+ */
+export function layoutLanes<T extends TimedItem>(items: T[]): PlacedItem<T>[] {
+  const sorted = [...items].sort((a, b) => a.startMin - b.startMin || b.endMin - a.endMin)
+  const out: PlacedItem<T>[] = []
+  let group: PlacedItem<T>[] = []
+  let laneEnds: number[] = []
+  let groupEnd = -Infinity
+  const close = () => {
+    for (const p of group) p.lanes = laneEnds.length
+    out.push(...group)
+    group = []
+    laneEnds = []
+  }
+  for (const item of sorted) {
+    if (item.startMin >= groupEnd) {
+      close()
+      groupEnd = -Infinity
+    }
+    let lane = laneEnds.findIndex((end) => end <= item.startMin)
+    if (lane === -1) lane = laneEnds.push(item.endMin) - 1
+    else laneEnds[lane] = item.endMin
+    group.push({ item, lane, lanes: 0 })
+    groupEnd = Math.max(groupEnd, item.endMin)
+  }
+  close()
+  return out
+}
+
+/** Hours shown on a time axis: at least 08–20, widened to fit every item. */
+export function hourRange(items: TimedItem[], from = 8, to = 20): [number, number] {
+  const start = Math.min(from, ...items.map((i) => Math.floor(i.startMin / 60)))
+  const end = Math.max(to, ...items.map((i) => Math.ceil(i.endMin / 60)))
+  return [Math.max(0, start), Math.min(24, end)]
+}
