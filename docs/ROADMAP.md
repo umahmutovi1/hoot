@@ -129,8 +129,8 @@ Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 - [x] `src/lib/grades/`: doprinos stavke, zadnji izlazak, popravni i integralni, pragovi (stavka, ukupno, uslov za izlazak), skala, projekcija „imam / treba / nedostižno“ + testovi (i `fast-check`: doprinos nikad ne prelazi maksimum)
 - [x] ExamSheet i DeadlineSheet: bodovi ili %, prag, uslov za izlazak; popravni vezan za ispit i ugniježđen ispod njega
 - [x] Sheet Rezultat: unos u bodovima ili %, automatski `passed`, „Poništi rezultat“ (odricanje) aktivira popravni
-- [ ] Kartica „Bodovi i ocjena“ na Predmetu + sheet Skala ocjena + željena ocjena
-- [ ] Napredak: kratak pregled bodova i ocjena po predmetima
+- [x] Kartica „Bodovi i ocjena“ na Predmetu + sheet Skala ocjena + željena ocjena
+- [x] Napredak: kratak pregled bodova i ocjena po predmetima
 - **DoD** → `v0.5.0`
 
 ## Etapa 6 — AI temelj, uvoz i dokumenti

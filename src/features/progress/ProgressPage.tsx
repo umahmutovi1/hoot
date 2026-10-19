@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { EmptyCard } from '@/components/EmptyCard'
 import { GearIcon } from '@/components/icons'
 import { PageTitle } from '@/components/PageTitle'
+import { GradesOverview } from './GradesOverview'
 
 export function ProgressPage() {
   const { t } = useTranslation()
@@ -21,7 +21,7 @@ export function ProgressPage() {
       >
         {t('progress.title')}
       </PageTitle>
-      <EmptyCard>{t('progress.empty')}</EmptyCard>
+      <GradesOverview />
     </div>
   )
 }

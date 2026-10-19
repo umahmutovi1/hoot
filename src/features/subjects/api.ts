@@ -197,7 +197,7 @@ export function useArchiveSubject() {
   })
 }
 
-/** Partial update of subject fields that are edited outside the full form (priority, mode). */
+/** Partial update of subject fields edited outside the full form (priority, mode, scale). */
 export function useUpdateSubject() {
   const userId = useUserId()
   const queryClient = useQueryClient()
@@ -207,7 +207,17 @@ export function useUpdateSubject() {
       patch,
     }: {
       id: string
-      patch: Partial<Pick<Subject, 'priority' | 'study_mode' | 'campaign_start_on'>>
+      patch: Partial<
+        Pick<
+          Subject,
+          | 'priority'
+          | 'study_mode'
+          | 'campaign_start_on'
+          | 'points_total'
+          | 'grade_scale'
+          | 'target_grade'
+        >
+      >
     }) => {
       const { error } = await supabase.from('subjects').update(patch).eq('id', id)
       if (error) throw error

@@ -88,10 +88,15 @@ export function pointsDetails(
   const carries =
     item.pointsMax !== null && item.pointsUnit === 'percent'
       ? t('grades.shareOfGrade', { n: formatPoints(item.pointsMax, locale) })
-      : t('grades.points', { count: Math.round(worth), n: formatPoints(worth, locale) })
+      : pointsLabel(t, worth, locale)
   return [
     carries,
     item.passMinPct !== null &&
       t('grades.thresholdShort', { pct: formatPoints(item.passMinPct, locale) }),
   ].filter((s): s is string => Boolean(s))
+}
+
+/** "29 bodova" / "2 boda" / "1 bod" with the right plural form. */
+export function pointsLabel(t: TFunction, n: number, locale: string): string {
+  return t('grades.points', { count: Math.round(n), n: formatPoints(n, locale) })
 }

@@ -866,7 +866,7 @@
     "points_other": "{{n}} bodova",
     "shareOfGrade": "{{n}}% ocjene",
     "thresholdShort": "prag {{pct}}%",
-    "entryShort": "uslov za izlazak: {{n}} bod.",
+    "entryShort": "uslov za izlazak: {{points}}",
     "replacesPartials": "zamjenjuje parcijale",
     "enterResult": "Unesi rezultat",
     "score": "{{points}}/{{max}}",
@@ -894,6 +894,48 @@
       "restore": "Vrati rezultat",
       "clear": "Obriši rezultat",
       "contributes": "Doprinos: {{points}} od {{max}} bodova"
+    },
+    "card": {
+      "title": "Bodovi i ocjena",
+      "scale": "Skala ›",
+      "empty": "Unesi koliko nose ispiti i rokovi (uredi ispit ili rok) da vidiš bodove i šta treba za ocjenu.",
+      "haveOf": "imaš {{have}} od {{max}} mogućih do sad",
+      "nothingYet": "još nema rezultata",
+      "targetChip": "Cilj: {{grade}}",
+      "targetRow": "{{grade}} · cilj",
+      "secured": "osigurano",
+      "unreachable": "nedostižno",
+      "needs": "treba {{points}} ({{pct}}%)",
+      "targetNeeds": "Za {{grade}} treba ti još {{points}}",
+      "targetNeedsSub": "od {{remaining}} preostalih · ~{{pct}}% na: {{items}}",
+      "targetSecured": "Ocjena {{grade}} je osigurana",
+      "targetUnreachable": "{{grade}} više nije dostižna",
+      "targetUnreachableSub": "Najviše moguće: {{max}} bodova",
+      "entryMissing": "Uslov za izlazak na {{title}}: još {{points}}"
+    },
+    "scale": {
+      "title": "Skala ocjena",
+      "subtitle": "{{name}} · ukupno {{total}} bodova",
+      "total": "Ukupno bodova",
+      "pass": "prolaz",
+      "from": "od",
+      "thresholdFor": "Prag za ocjenu {{grade}}",
+      "below": "ispod {{pct}}%",
+      "reset": "Vrati bosansku skalu",
+      "target": "Željena ocjena",
+      "noTarget": "bez cilja",
+      "targetHint": "Plan će podići ciljnu pokrivenost da stigneš do {{grade}}.",
+      "noTargetHint": "Bez cilja plan prati samo prioritet predmeta."
+    },
+    "overview": {
+      "title": "Ocjene",
+      "entry": "Uslov za {{title}}: još {{points}}",
+      "targetNeeds": "Cilj {{grade}} · treba {{points}} od {{remaining}} preostalih ({{pct}}%)",
+      "passNeeds": "Za prolaz treba {{points}} od {{remaining}} preostalih ({{pct}}%)",
+      "passSecured": "Prolaz osiguran",
+      "passUnreachable": "Prolaz više nije dostižan bez popravnog",
+      "noPoints": "Bodovi nisu uneseni",
+      "addOnSubject": "Dodaj na predmetu"
     }
   }
 }
