@@ -92,5 +92,18 @@
     "positive": "Mora biti veće od 0",
     "tooLarge": "Prevelika vrijednost",
     "campaignStartOnlyForCampaign": "Početak se postavlja samo u kampanji"
+  },
+  "common": {
+    "cancel": "Odustani",
+    "save": "Snimi"
+  },
+  "profile": {
+    "welcomeTitle": "Kako da te zovem?",
+    "welcomeBody": "Ime koristim u pozdravu na početku dana. Možeš ga promijeniti u Postavkama.",
+    "nameLabel": "Ime",
+    "namePlaceholder": "npr. Uma",
+    "continue": "Nastavi",
+    "saveFailed": "Snimanje nije uspjelo. Pokušaj ponovo.",
+    "editName": "Promijeni ime"
   }
 }

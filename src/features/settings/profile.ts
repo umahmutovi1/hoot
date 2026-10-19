@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
 import type { Locale } from '@/lib/locale'
@@ -34,6 +35,34 @@ export function useUpdateLocale() {
     onMutate: (locale) => {
       queryClient.setQueryData<Profile>(profileKey(userId), (old) =>
         old ? { ...old, locale } : old,
+      )
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: profileKey(userId) }),
+  })
+}
+
+export const displayNameSchema = z.object({
+  displayName: z.string().trim().min(1, 'validation.required').max(40, 'validation.tooLong'),
+})
+
+/** Saves the name and marks it confirmed, so the first-run question is not asked again. */
+export function useUpdateDisplayName() {
+  const { session } = useAuth()
+  const userId = session?.user.id
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (displayName: string) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ display_name: displayName, name_confirmed_at: new Date().toISOString() })
+        .eq('id', userId!)
+      if (error) throw error
+    },
+    onMutate: (displayName) => {
+      queryClient.setQueryData<Profile>(profileKey(userId), (old) =>
+        old
+          ? { ...old, display_name: displayName, name_confirmed_at: new Date().toISOString() }
+          : old,
       )
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: profileKey(userId) }),
