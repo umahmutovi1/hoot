@@ -246,7 +246,8 @@
     "tooLarge": "Value too large",
     "campaignStartOnlyForCampaign": "Start date is only set in campaign mode",
     "rangeEnd": "Enter the latest possible date",
-    "rangeOrder": "The latest date must be after the earliest"
+    "rangeOrder": "The latest date must be after the earliest",
+    "pageOrder": "The end page must come after the start page"
   },
   "common": {
     "cancel": "Cancel",
@@ -306,5 +307,10 @@
     "doneShort": "done",
     "delete": "Delete deadline",
     "confirmDelete": "Sure? Tap again to delete"
+  },
+  "sources": {
+    "editor": {
+      "empty": "Enter at least one unit"
+    }
   }
 }

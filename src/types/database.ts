@@ -85,18 +85,21 @@ export type Database = {
         Row: {
           assessment_id: string
           assigned_by: Database["public"]["Enums"]["assigned_by"]
+          included: boolean
           unit_id: string
           user_id: string
         }
         Insert: {
           assessment_id: string
           assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          included?: boolean
           unit_id: string
           user_id?: string
         }
         Update: {
           assessment_id?: string
           assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          included?: boolean
           unit_id?: string
           user_id?: string
         }
@@ -678,6 +681,7 @@ export type Database = {
           kind: Database["public"]["Enums"]["source_kind"]
           learned_min_per_unit: number | null
           learned_samples: number
+          measure: string
           subject_id: string
           title: string
           updated_at: string
@@ -692,6 +696,7 @@ export type Database = {
           kind: Database["public"]["Enums"]["source_kind"]
           learned_min_per_unit?: number | null
           learned_samples?: number
+          measure?: string
           subject_id: string
           title: string
           updated_at?: string
@@ -706,6 +711,7 @@ export type Database = {
           kind?: Database["public"]["Enums"]["source_kind"]
           learned_min_per_unit?: number | null
           learned_samples?: number
+          measure?: string
           subject_id?: string
           title?: string
           updated_at?: string
