@@ -16,7 +16,14 @@ import { validationKey } from '@/lib/validation'
 import { useArchiveSubject, useSaveSubject, useSubject } from './api'
 import { SUBJECT_PALETTES } from './colors'
 import { subjectToForm } from './mappers'
-import { asPriority, EXAM_FORMATS, PRIORITIES, SUBJECT_COLORS, type SubjectColor } from './model'
+import {
+  asPriority,
+  EXAM_FORMATS,
+  examKindDefaults,
+  PRIORITIES,
+  SUBJECT_COLORS,
+  type SubjectColor,
+} from './model'
 import { EXAM_PRESETS, presetExams, type ExamPreset } from './presets'
 import { subjectFormSchema, type AssessmentForm, type SubjectForm } from './schemas'
 
@@ -80,18 +87,19 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
     exams.replace(newExams(p))
   }
 
-  const addExam = () =>
+  const addExam = () => {
+    const kind = exams.fields.length === 0 ? 'final' : 'other'
     exams.append({
       id: crypto.randomUUID(),
-      kind: exams.fields.length === 0 ? 'final' : 'other',
+      kind,
       title: '',
       date: '',
       format: 'written',
-      scopeAll: true,
-      contingent: false,
+      ...examKindDefaults(kind),
       dateTentative: false,
       dateLatest: null,
     })
+  }
 
   const submit = form.handleSubmit((values) => {
     save.mutate(values)

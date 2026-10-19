@@ -7,7 +7,13 @@ import {
   toDeadlineRow,
   toSubjectRow,
 } from './mappers'
-import { examAtFromDate, localDateOf, nextAssessment, type Assessment } from './model'
+import {
+  examAtFromDate,
+  examKindDefaults,
+  localDateOf,
+  nextAssessment,
+  type Assessment,
+} from './model'
 
 const assessment = (patch: Partial<Assessment>): Assessment => ({
   id: crypto.randomUUID(),
@@ -152,5 +158,14 @@ describe('nextAssessment', () => {
   it('counts an exam later today as upcoming', () => {
     const today = assessment({ at: examAtFromDate('2026-10-19') })
     expect(nextAssessment([today], now)).toBe(today)
+  })
+})
+
+describe('examKindDefaults', () => {
+  it('turns all material and only-if-needed on only for the comprehensive exam', () => {
+    expect(examKindDefaults('integral')).toEqual({ scopeAll: true, contingent: true })
+    for (const kind of ['partial', 'final', 'makeup', 'other'] as const) {
+      expect(examKindDefaults(kind)).toEqual({ scopeAll: false, contingent: false })
+    }
   })
 })

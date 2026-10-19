@@ -29,6 +29,15 @@ export const ASSESSMENT_KINDS = ['partial', 'final', 'integral', 'makeup', 'othe
 export const EXAM_FORMATS = ['written', 'oral', 'combined', 'project', 'other'] as const
 export const DEADLINE_KINDS = ['assignment', 'custom'] as const
 
+/**
+ * Defaults applied when an exam's type is picked: only the comprehensive (integral) exam
+ * covers all material and is taken only if needed; every other type starts with both off.
+ */
+export function examKindDefaults(kind: AssessmentKind) {
+  const comprehensive = kind === 'integral'
+  return { scopeAll: comprehensive, contingent: comprehensive }
+}
+
 export function isSubjectColor(value: string | null): value is SubjectColor {
   return SUBJECT_COLORS.includes(value as SubjectColor)
 }
