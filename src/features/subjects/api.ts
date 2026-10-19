@@ -119,6 +119,7 @@ function optimisticAssessment(userId: string, subjectId: string, form: Assessmen
     scope_all: form.scopeAll,
     contingent: form.contingent,
     date_tentative: form.dateTentative,
+    at_latest: row.at_latest ?? null,
     passed: false,
     weight_pct: null,
     readiness_before: null,

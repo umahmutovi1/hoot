@@ -31,15 +31,30 @@ export interface DayExam {
   subject: SubjectWithAssessments
 }
 
-/** Exams of active subjects on a given local day. */
-export function examsOn(day: Date, subjects: SubjectWithAssessments[]): DayExam[] {
+const hasRange = (exam: Assessment) => exam.date_tentative && exam.at_latest !== null
+
+function activeExams(subjects: SubjectWithAssessments[], keep: (exam: Assessment) => boolean) {
   return subjects
     .filter((s) => !s.archived)
     .flatMap((subject) =>
-      subject.assessments
-        .filter((exam) => isSameDay(new Date(exam.at), day))
-        .map((exam) => ({ exam, subject })),
+      subject.assessments.filter(keep).map((exam) => ({ exam, subject }) satisfies DayExam),
     )
+}
+
+/** Exams on a given local day; tentative exams with a date range are in `possibleExamsOn`. */
+export function examsOn(day: Date, subjects: SubjectWithAssessments[]): DayExam[] {
+  return activeExams(subjects, (e) => !hasRange(e) && isSameDay(new Date(e.at), day))
+}
+
+/** Tentative exams whose possible range (earliest–latest, inclusive) contains the day. */
+export function possibleExamsOn(day: Date, subjects: SubjectWithAssessments[]): DayExam[] {
+  return activeExams(subjects, (e) => {
+    if (!hasRange(e)) return false
+    return (
+      differenceInCalendarDays(day, new Date(e.at)) >= 0 &&
+      differenceInCalendarDays(new Date(e.at_latest!), day) >= 0
+    )
+  })
 }
 
 export function deadlinesOn(day: Date, deadlines: Deadline[]): Deadline[] {

@@ -201,7 +201,12 @@ function ExamRow({
   const details = [
     t(exam.scope_all ? 'subjects.scope.all' : 'subjects.scope.part'),
     t(`subjects.format.${exam.format}`).toLowerCase(),
-    exam.date_tentative && t('subjects.detail.tentative'),
+    exam.date_tentative &&
+      (exam.at_latest
+        ? t('subjects.detail.tentativeUntil', {
+            date: format(new Date(exam.at_latest), 'd. MMM', { locale: dateFnsLocales[locale] }),
+          })
+        : t('subjects.detail.tentative')),
     exam.contingent && t('subjects.detail.contingent'),
     exam.passed && t('subjects.detail.passed'),
   ]

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useFieldArray, useForm, useWatch, type Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
@@ -53,6 +53,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       scopeAll: e.scopeAll,
       contingent: e.contingent,
       dateTentative: false,
+      dateLatest: null,
     }))
 
   const form = useForm<SubjectForm>({
@@ -89,6 +90,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       scopeAll: true,
       contingent: false,
       dateTentative: false,
+      dateLatest: null,
     })
 
   const submit = form.handleSubmit((values) => {
@@ -270,17 +272,21 @@ function ExamEditor({
   control: Control<SubjectForm>
   register: ReturnType<typeof useForm<SubjectForm>>['register']
   setValue: (name: ExamField, value: boolean) => void
-  errors?: { title?: { message?: string }; date?: { message?: string } }
+  errors?: {
+    title?: { message?: string }
+    date?: { message?: string }
+    dateLatest?: { message?: string }
+  }
   onRemove: () => void
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
   const exam = useWatch({ control, name: `assessments.${index}` })
-  const error = errors?.title?.message ?? errors?.date?.message
-  const dateLabel = exam.date
-    ? (exam.dateTentative ? '~' : '') +
-      format(new Date(`${exam.date}T12:00`), 'd. MMM', { locale: dateFnsLocales[locale] })
-    : t('subjects.form.pickDate')
+  const error = errors?.title?.message ?? errors?.date?.message ?? errors?.dateLatest?.message
+  const dayLabel = (date: string | null) =>
+    date
+      ? format(new Date(`${date}T12:00`), 'd. MMM', { locale: dateFnsLocales[locale] })
+      : t('subjects.form.pickDate')
   const scope = [
     t(exam.scopeAll ? 'subjects.scope.all' : 'subjects.scope.part'),
     exam.contingent && t('subjects.form.notPlannedAhead'),
@@ -302,15 +308,16 @@ function ExamEditor({
           />
           <span className="truncate text-xs text-ink-muted">{scope}</span>
         </div>
-        <label className={cn(chip, 'relative font-semibold')}>
-          {dateLabel}
-          <input
-            type="date"
-            aria-label={t('subjects.form.examDate')}
-            className="absolute inset-0 opacity-0"
-            {...register(`assessments.${index}.date`)}
-          />
-        </label>
+        {!exam.dateTentative && (
+          <DateChip label={dayLabel(exam.date)}>
+            <input
+              type="date"
+              aria-label={t('subjects.form.examDate')}
+              className="absolute inset-0 opacity-0"
+              {...register(`assessments.${index}.date`)}
+            />
+          </DateChip>
+        )}
         <select
           aria-label={t('subjects.form.examFormat')}
           className={cn(chip, 'appearance-none px-2.5')}
@@ -331,6 +338,31 @@ function ExamEditor({
           <CloseIcon size={16} />
         </button>
       </div>
+      {exam.dateTentative && (
+        <div className="flex flex-wrap items-center gap-2 pt-1 text-[13px] text-ink-muted">
+          {t('subjects.form.rangeBetween')}
+          <DateChip label={dayLabel(exam.date)}>
+            <input
+              type="date"
+              aria-label={t('subjects.form.rangeEarliest')}
+              className="absolute inset-0 opacity-0"
+              {...register(`assessments.${index}.date`)}
+            />
+          </DateChip>
+          {t('subjects.form.rangeAnd')}
+          <DateChip label={dayLabel(exam.dateLatest)}>
+            <input
+              type="date"
+              aria-label={t('subjects.form.rangeLatest')}
+              min={exam.date || undefined}
+              className="absolute inset-0 opacity-0"
+              {...register(`assessments.${index}.dateLatest`, {
+                setValueAs: (v: string) => v || null,
+              })}
+            />
+          </DateChip>
+        </div>
+      )}
       {error && (
         <span role="alert" className="text-xs text-danger">
           {t(validationKey(error))}
@@ -349,6 +381,16 @@ function ExamEditor({
         />
       </div>
     </div>
+  )
+}
+
+function DateChip({ label, children }: { label: string; children: ReactNode }) {
+  // The native date input sits invisibly on top, so the system date picker opens on tap.
+  return (
+    <label className={cn(chip, 'relative font-semibold text-ink')}>
+      {label}
+      {children}
+    </label>
   )
 }
 

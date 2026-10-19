@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Switch } from '@/components/Switch'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
 import { useDeleteAssessment, useSaveAssessment } from './api'
 import { ChipGroup, fieldInput, fieldLabel } from './fields'
@@ -59,11 +60,12 @@ function ExamForm({
           scopeAll: true,
           contingent: false,
           dateTentative: false,
+          dateLatest: null,
         },
   })
-  const [kind, examFormat, scopeAll, contingent, dateTentative] = useWatch({
+  const [kind, examFormat, scopeAll, contingent, dateTentative, date] = useWatch({
     control: form.control,
-    name: ['kind', 'format', 'scopeAll', 'contingent', 'dateTentative'],
+    name: ['kind', 'format', 'scopeAll', 'contingent', 'dateTentative', 'date'],
   })
   const errors = form.formState.errors
   const set = { shouldDirty: true, shouldValidate: form.formState.isSubmitted } as const
@@ -110,20 +112,46 @@ function ExamForm({
         )}
       </label>
 
-      <label className="flex flex-col gap-2">
-        <span className={fieldLabel}>{t('subjects.form.examDate')}</span>
-        <input
-          type="date"
-          aria-invalid={Boolean(errors.date)}
-          className={fieldInput}
-          {...form.register('date')}
+      <div className="flex flex-col gap-2">
+        <Switch
+          checked={dateTentative}
+          label={t('subjects.form.dateTentative')}
+          onChange={(v) => form.setValue('dateTentative', v, set)}
         />
-        {errors.date && (
+        <div className={cn('grid gap-2', dateTentative && 'grid-cols-2')}>
+          <label className="flex min-w-0 flex-col gap-2">
+            <span className={fieldLabel}>
+              {t(dateTentative ? 'subjects.form.rangeEarliest' : 'subjects.form.examDate')}
+            </span>
+            <input
+              type="date"
+              aria-invalid={Boolean(errors.date)}
+              className={cn(fieldInput, dateTentative && 'px-3')}
+              {...form.register('date')}
+            />
+          </label>
+          {dateTentative && (
+            <label className="flex min-w-0 flex-col gap-2">
+              <span className={fieldLabel}>{t('subjects.form.rangeLatest')}</span>
+              <input
+                type="date"
+                min={date || undefined}
+                aria-invalid={Boolean(errors.dateLatest)}
+                className={cn(fieldInput, 'px-3')}
+                {...form.register('dateLatest', { setValueAs: (v: string) => v || null })}
+              />
+            </label>
+          )}
+        </div>
+        {dateTentative && (
+          <span className="text-xs leading-[1.4] text-ink-muted">{t('exams.rangeHint')}</span>
+        )}
+        {(errors.date || errors.dateLatest) && (
           <span role="alert" className="text-sm text-danger">
-            {t(validationKey(errors.date.message))}
+            {t(validationKey(errors.date?.message ?? errors.dateLatest?.message))}
           </span>
         )}
-      </label>
+      </div>
 
       <div className="flex flex-col gap-2">
         <span className={fieldLabel}>{t('subjects.form.examFormat')}</span>
@@ -144,11 +172,6 @@ function ExamForm({
           checked={contingent}
           label={t('subjects.form.contingent')}
           onChange={(v) => form.setValue('contingent', v, set)}
-        />
-        <Switch
-          checked={dateTentative}
-          label={t('subjects.form.dateTentative')}
-          onChange={(v) => form.setValue('dateTentative', v, set)}
         />
       </div>
 

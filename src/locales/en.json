@@ -64,7 +64,10 @@
     "examItem": "Exam: {{subject}} · {{title}}",
     "deadlineItem": "Due: {{title}}",
     "deadlineItemSubject": "Due: {{title}} · {{subject}}",
-    "addDeadline": "Add deadline"
+    "addDeadline": "Add deadline",
+    "legendPossibleExam": "Possible exam",
+    "possibleExamItem": "Possible exam: {{subject}} · {{title}}",
+    "possibleExamRange": "date not announced · {{range}}"
   },
   "subjects": {
     "title": "Subjects",
@@ -168,9 +171,9 @@
       "pickDate": "Date",
       "removeExam": "Remove exam",
       "contingent": "Only if needed",
-      "dateTentative": "Tentative date",
+      "dateTentative": "Date not announced yet",
       "notPlannedAhead": "not planned ahead",
-      "dateNotConfirmed": "date not confirmed",
+      "dateNotConfirmed": "date not announced",
       "advanced": "Advanced",
       "advancedSummary": "Priority {{priority}} · {{mode}}",
       "priority": "Priority",
@@ -184,7 +187,11 @@
       "campaignHint": "Computed backwards from the exam, from the remaining material and your availability, with a 20% reserve. Until then the subject is not planned.",
       "create": "Create subject",
       "archive": "Archive subject",
-      "unarchive": "Restore from archive"
+      "unarchive": "Restore from archive",
+      "rangeBetween": "Possible between",
+      "rangeAnd": "and",
+      "rangeEarliest": "Earliest",
+      "rangeLatest": "Latest"
     },
     "detail": {
       "edit": "Edit subject",
@@ -192,9 +199,10 @@
       "nextExam": "{{title}} {{when}}.",
       "addExam": "+ Exam",
       "noExams": "No exams yet.",
-      "tentative": "tentative date",
+      "tentative": "date approximate",
       "contingent": "only if needed",
-      "passed": "passed"
+      "passed": "passed",
+      "tentativeUntil": "date approximate, latest {{date}}"
     },
     "campaign": {
       "label": "CAMPAIGN",
@@ -228,7 +236,9 @@
     "date": "Invalid date",
     "positive": "Must be greater than 0",
     "tooLarge": "Value too large",
-    "campaignStartOnlyForCampaign": "Start date is only set in campaign mode"
+    "campaignStartOnlyForCampaign": "Start date is only set in campaign mode",
+    "rangeEnd": "Enter the latest possible date",
+    "rangeOrder": "The latest date must be after the earliest"
   },
   "common": {
     "cancel": "Cancel",
@@ -257,7 +267,8 @@
       "integral": "Comprehensive",
       "makeup": "Makeup",
       "other": "Other"
-    }
+    },
+    "rangeHint": "The plan targets the earliest possible date, so you are ready even if the exam comes early. When the date is announced, turn this off and enter it."
   },
   "deadlines": {
     "section": "Deadlines",

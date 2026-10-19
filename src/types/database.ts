@@ -120,6 +120,7 @@ export type Database = {
       assessments: {
         Row: {
           at: string
+          at_latest: string | null
           contingent: boolean
           created_at: string
           date_tentative: boolean
@@ -139,6 +140,7 @@ export type Database = {
         }
         Insert: {
           at: string
+          at_latest?: string | null
           contingent?: boolean
           created_at?: string
           date_tentative?: boolean
@@ -158,6 +160,7 @@ export type Database = {
         }
         Update: {
           at?: string
+          at_latest?: string | null
           contingent?: boolean
           created_at?: string
           date_tentative?: boolean

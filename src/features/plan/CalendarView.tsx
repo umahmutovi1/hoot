@@ -6,11 +6,11 @@ import { useLocale } from '@/features/settings/useLocale'
 import { useDeadlines, useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
 import { DeadlineSheet } from '@/features/subjects/DeadlineSheet'
-import { relativeDays } from '@/features/subjects/format'
+import { examDateLabel, relativeDays } from '@/features/subjects/format'
 import { localDateOf } from '@/features/subjects/model'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
-import { deadlinesAhead, deadlinesOn, examsOn, monthGrid } from './calendar'
+import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
 
 /** Plan → Kalendar: month grid with exams and deadlines, and the selected day's list. */
 export function CalendarView() {
@@ -27,6 +27,7 @@ export function CalendarView() {
   const cells = monthGrid(month)
   const weekdays = cells.slice(0, 7).map((c) => format(c.date, 'EEEEE', { locale: dfLocale }))
   const dayExams = examsOn(selected, subjects)
+  const dayPossible = possibleExamsOn(selected, subjects)
   const dayDeadlines = deadlinesAhead(selected, deadlines)
 
   return (
@@ -67,9 +68,11 @@ export function CalendarView() {
             const isToday = isSameDay(date, today)
             const exam = inMonth && examsOn(date, subjects).length > 0
             const due = inMonth && deadlinesOn(date, deadlines).length > 0
+            const possible = inMonth && possibleExamsOn(date, subjects).length > 0
             const label = [
               format(date, 'd. MMMM', { locale: dfLocale }),
               exam && t('plan.legendExam').toLowerCase(),
+              possible && t('plan.legendPossibleExam').toLowerCase(),
               due && t('plan.legendDeadline').toLowerCase(),
             ]
               .filter(Boolean)
@@ -92,9 +95,11 @@ export function CalendarView() {
                       ? 'bg-calendar-exam font-medium'
                       : due
                         ? 'bg-calendar-deadline font-medium'
-                        : isToday
-                          ? 'bg-brand-soft font-bold'
-                          : 'font-medium',
+                        : possible
+                          ? 'border-[1.5px] border-dashed border-subject-pink bg-calendar-exam/40 font-medium'
+                          : isToday
+                            ? 'bg-brand-soft font-bold'
+                            : 'font-medium',
                   !inMonth && !isSelected && 'text-ink-placeholder',
                 )}
               >
@@ -109,6 +114,10 @@ export function CalendarView() {
             {t('plan.legendExam')}
           </span>
           <span className="flex items-center gap-1.5">
+            <span className="size-2.5 rounded-full border border-dashed border-subject-pink bg-calendar-exam/40" />
+            {t('plan.legendPossibleExam')}
+          </span>
+          <span className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-full bg-calendar-deadline" />
             {t('plan.legendDeadline')}
           </span>
@@ -119,7 +128,7 @@ export function CalendarView() {
         {format(selected, 'EEEE, d. MMMM', { locale: dfLocale })}
       </h2>
       <div className="flex flex-col gap-2">
-        {dayExams.length === 0 && dayDeadlines.length === 0 && (
+        {dayExams.length === 0 && dayPossible.length === 0 && dayDeadlines.length === 0 && (
           <p className="rounded-[20px] bg-surface px-4 py-3.5 text-sm text-ink-muted">
             {t('plan.dayEmpty')}
           </p>
@@ -144,6 +153,25 @@ export function CalendarView() {
                   ]
                     .filter(Boolean)
                     .join(' · ')}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+        {dayPossible.map(({ exam, subject }) => {
+          const palette = paletteOf(subject.color)
+          return (
+            <div
+              key={exam.id}
+              className="flex items-center gap-3 rounded-[20px] border-[1.5px] border-dashed border-line bg-surface px-4 py-3.5"
+            >
+              <span className={cn('size-2.5 shrink-0 rounded-full', palette.bar)} />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[15px] font-semibold">
+                  {t('plan.possibleExamItem', { subject: subject.name, title: exam.title })}
+                </span>
+                <span className="text-xs text-ink-muted">
+                  {t('plan.possibleExamRange', { range: examDateLabel(exam, dfLocale).slice(1) })}
                 </span>
               </div>
             </div>
