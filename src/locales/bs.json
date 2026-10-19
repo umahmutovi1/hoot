@@ -67,7 +67,18 @@
     "addDeadline": "Dodaj rok",
     "legendPossibleExam": "Mogući ispit",
     "possibleExamItem": "Mogući ispit: {{subject}} · {{title}}",
-    "possibleExamRange": "datum još nije objavljen · {{range}}"
+    "possibleExamRange": "datum još nije objavljen · {{range}}",
+    "dayCount": {
+      "exam_one": "{{count}} ispit",
+      "exam_few": "{{count}} ispita",
+      "exam_other": "{{count}} ispita",
+      "possible_one": "{{count}} mogući ispit",
+      "possible_few": "{{count}} moguća ispita",
+      "possible_other": "{{count}} mogućih ispita",
+      "deadline_one": "{{count}} rok",
+      "deadline_few": "{{count}} roka",
+      "deadline_other": "{{count}} rokova"
+    }
   },
   "subjects": {
     "title": "Predmeti",
