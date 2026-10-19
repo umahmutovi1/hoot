@@ -1,8 +1,10 @@
+import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
 import type { Locale } from '@/lib/locale'
+import { DEFAULT_BOUNDARY, type DayBoundary } from '@/lib/day'
 import { useAuth } from '@/features/auth/auth-context'
 
 export type Profile = Tables<'profiles'>
@@ -21,6 +23,14 @@ export function useProfile() {
       return data
     },
   })
+}
+
+/** Day boundary from the profile (defaults until it loads): 04:00 in the user's zone. */
+export function useDayBoundary(): DayBoundary {
+  const { data: profile } = useProfile()
+  const timeZone = profile?.timezone ?? DEFAULT_BOUNDARY.timeZone
+  const dayStartMin = profile?.day_start_min ?? DEFAULT_BOUNDARY.dayStartMin
+  return useMemo(() => ({ timeZone, dayStartMin }), [timeZone, dayStartMin])
 }
 
 export function useUpdateLocale() {

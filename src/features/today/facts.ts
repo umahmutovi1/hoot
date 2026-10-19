@@ -114,7 +114,7 @@ export const FACTS = [
 
 export type FactId = (typeof FACTS)[number]['id']
 
-/** Whole days since 1970-01-01 for a local `yyyy-MM-dd` date. */
+/** Whole days since 1970-01-01 for a local day from `localDay()` (`src/lib/day.ts`). */
 function dayNumber(localDate: string): number {
   const [y = 1970, m = 1, d = 1] = localDate.split('-').map(Number)
   return Math.floor(Date.UTC(y, m - 1, d) / 86_400_000)

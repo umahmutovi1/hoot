@@ -29,6 +29,7 @@ const assessment = (patch: Partial<Assessment>): Assessment => ({
   readiness_before: null,
   result_points: null,
   result_max: null,
+  exam_period_id: null,
   contingent: false,
   date_tentative: false,
   at_latest: null,
