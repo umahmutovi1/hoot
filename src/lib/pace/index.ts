@@ -12,6 +12,8 @@ export interface PaceUnit {
   position: number
   level: number
   minutes: number
+  /** Pages, slides, questions or items of the unit (source measure). */
+  amount?: number
 }
 
 export interface PaceLog {
@@ -93,6 +95,8 @@ export interface SourcePace<T extends PaceUnit = PaceUnit> {
   topCount: number
   /** Minutes of covered leaves still at level 0. */
   behindMinutes: number
+  /** The same leaves in the source's measure (pages, questions…). */
+  behindAmount: number
   /** Lectures whose newly covered material still has a level-0 unit. */
   behindLectures: number
   latest: PaceLog
@@ -115,9 +119,9 @@ export function sourcePace<T extends PaceUnit>(units: T[], logs: PaceLog[]): Sou
     youIndex++
   }
 
-  const behindMinutes = coveredLeaves(units, latest.upToUnitId!)
-    .filter((u) => u.level === 0)
-    .reduce((sum, u) => sum + u.minutes, 0)
+  const untouched = coveredLeaves(units, latest.upToUnitId!).filter((u) => u.level === 0)
+  const behindMinutes = untouched.reduce((sum, u) => sum + u.minutes, 0)
+  const behindAmount = untouched.reduce((sum, u) => sum + (u.amount ?? 0), 0)
 
   let reachedEnd = -1
   let behindLectures = 0
@@ -135,6 +139,7 @@ export function sourcePace<T extends PaceUnit>(units: T[], logs: PaceLog[]): Sou
     youIndex,
     topCount: tops.length,
     behindMinutes,
+    behindAmount,
     behindLectures,
     latest,
   }

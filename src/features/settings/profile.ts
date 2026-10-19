@@ -86,7 +86,7 @@ export function useUpdateProfile() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (
-      patch: Partial<Pick<Profile, 'recap_after_lecture' | 'lecture_pace_days'>>,
+      patch: Partial<Pick<Profile, 'recap_after_lecture' | 'lecture_pace_days' | 'daily_cap_min'>>,
     ) => {
       const { error } = await supabase.from('profiles').update(patch).eq('id', userId!)
       if (error) throw error

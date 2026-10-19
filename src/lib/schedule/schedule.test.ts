@@ -3,8 +3,11 @@ import fc from 'fast-check'
 import {
   calendarStatus,
   classesOn,
-  exceptionDelta,
+  capFor,
+  classesOverlapping,
+  studyMinutesOn,
   formatClock,
+  freeMinutesOn,
   freeSlotsOn,
   mergeSlots,
   parityOf,
@@ -14,7 +17,7 @@ import {
   suggestExamPeriod,
   assignExamPeriods,
   lecturesToLog,
-  weekFreeMinutes,
+  weekStudyMinutes,
   weekNumber,
   type ClassEntry,
   type DayInput,
@@ -31,8 +34,8 @@ const winter: Period = {
 }
 const partials: Period = {
   id: 'p',
-  kind: 'partial_exams',
-  examSession: null,
+  kind: 'exam',
+  examSession: 'partial',
   title: 'Sedmica parcijalnih',
   startsOn: '2026-11-23',
   endsOn: '2026-11-27',
@@ -97,7 +100,10 @@ describe('calendarStatus', () => {
 
   it('prefers a holiday, then partial-exam weeks', () => {
     expect(calendarStatus('2026-11-25', periods)?.kind).toBe('holiday')
-    expect(calendarStatus('2026-11-24', periods)?.kind).toBe('partial_exams')
+    expect(calendarStatus('2026-11-24', periods)).toMatchObject({
+      kind: 'exam',
+      session: 'partial',
+    })
   })
 
   it('numbers weeks of an exam period and is empty outside all periods', () => {
@@ -105,6 +111,7 @@ describe('calendarStatus', () => {
       kind: 'exam',
       title: 'Januarski rok',
       week: 2,
+      session: 'regular',
     })
     expect(calendarStatus('2027-07-15', periods)).toBeNull()
   })
@@ -202,12 +209,43 @@ describe('freeSlotsOn', () => {
     const busy = { onDate: '2026-10-19', startMin: null, endMin: null, isBusy: true }
     expect(freeSlotsOn('2026-10-19', { ...input, exceptions: [busy] })).toEqual([])
     const extra = { onDate: '2026-10-19', startMin: 14 * 60, endMin: 16 * 60, isBusy: false }
-    expect(exceptionDelta(extra, input)).toBe(120)
-    expect(exceptionDelta(busy, input)).toBe(-(45 + 45 + 180))
+    expect(freeMinutesOn('2026-10-19', { ...input, exceptions: [extra] })).toBe(270 + 120)
   })
 
-  it('sums the week', () => {
-    expect(weekFreeMinutes('2026-10-21', input)).toBe(45 + 45 + 180)
+  it('uses the per-date slots instead of the template', () => {
+    const day = {
+      onDate: '2026-10-19',
+      slots: [{ startMin: 18 * 60, endMin: 19 * 60 }],
+      capMin: null,
+    }
+    expect(freeSlotsOn('2026-10-19', { ...input, days: [day] })).toEqual([
+      { startMin: 18 * 60, endMin: 19 * 60 },
+    ])
+    const off = { onDate: '2026-10-19', slots: [], capMin: null }
+    expect(freeSlotsOn('2026-10-19', { ...input, days: [off] })).toEqual([])
+  })
+
+  it('a slot marked "over classes" is free even during a class', () => {
+    const forced = {
+      ...input,
+      rules: [{ weekday: 0, startMin: 9 * 60, endMin: 11 * 60, overClasses: true }],
+    }
+    expect(freeSlotsOn('2026-10-19', forced)).toEqual([{ startMin: 9 * 60, endMin: 11 * 60 }])
+  })
+
+  it('caps study minutes per day and per date', () => {
+    const caps = [60, 60, 60, 60, 60, 300, 300]
+    expect(studyMinutesOn('2026-10-19', { ...input, caps })).toBe(60)
+    const day = { onDate: '2026-10-19', slots: null, capMin: 600 }
+    expect(capFor('2026-10-19', { caps, days: [day] })).toBe(600)
+    expect(studyMinutesOn('2026-10-19', { ...input, caps, days: [day] })).toBe(270)
+    expect(weekStudyMinutes('2026-10-21', { ...input, caps })).toBe(60)
+  })
+
+  it('finds classes a slot overlaps', () => {
+    const slot = { startMin: 10 * 60, endMin: 12 * 60 }
+    expect(classesOverlapping(slot, input.entries, periods, { weekday: 0 })).toHaveLength(1)
+    expect(classesOverlapping(slot, input.entries, periods, { date: '2026-10-20' })).toHaveLength(0)
   })
 })
 

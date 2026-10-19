@@ -57,7 +57,7 @@
     },
     "week": {
       "teaching": "{{week}}. sedmica nastave",
-      "partial_exams": "{{title}}",
+      "partial": "{{title}}",
       "exam": "{{title}} · {{week}}. sedmica",
       "holiday": "Neradni dan · {{title}}"
     }
@@ -624,45 +624,42 @@
     "newTitle": "Novi period",
     "editTitle": "Uredi period",
     "kindLabel": "Vrsta",
-    "sessionLabel": "Rok",
+    "sessionLabel": "Vrsta perioda",
     "titleLabel": "Naziv",
     "from": "Od",
     "to": "Do",
     "kind": {
       "teaching": "Nastava",
-      "partial_exams": "Parcijale",
-      "exam": "Ispitni rok",
+      "exam": "Ispitni period",
       "holiday": "Neradni dani"
     },
     "session": {
-      "regular": "Redovni",
-      "makeup": "Popravni"
+      "partial": "Parcijale",
+      "regular": "Redovni rok",
+      "makeup": "Popravni rok"
     },
     "section": {
       "teaching": "Nastava",
-      "partial_exams": "Sedmice parcijalnih",
-      "exam": "Ispitni rokovi",
+      "exam": "Ispitni periodi",
       "holiday": "Neradni dani"
     },
     "empty": {
       "teaching": "Dodaj semestar: od kad do kad traje nastava. Raspored i sedmice nastave se računaju odavde.",
-      "partial_exams": "Nema sedmica parcijalnih.",
-      "exam": "Nema ispitnih rokova.",
+      "exam": "Nema ispitnih perioda. Dodaj sedmice parcijalnih i ispitne rokove.",
       "holiday": "Nema neradnih dana."
     },
     "hint": {
       "teaching": "Raspored nastave važi u ovom periodu; 1. sedmica nastave je neparna.",
-      "partial_exams": "Parcijala čiji datum još nije objavljen može biti „u ovoj sedmici“.",
-      "exam": "Ispit bez datuma može biti „u ovom roku“; plan cilja prvi dan roka.",
+      "exam": "Ispit bez datuma može biti „u ovom periodu“; plan cilja prvi dan. Parcijale padaju usred nastave.",
       "holiday": "Tih dana nema nastave; dostupnost za učenje ostaje."
     },
     "defaultTitle": {
       "winter": "Zimski semestar",
       "summer": "Ljetni semestar",
-      "partial_exams": "Sedmica parcijalnih",
       "exam_regular": "Redovni ispitni rok",
       "exam_makeup": "Popravni ispitni rok",
-      "holiday": "Neradni dan"
+      "holiday": "Neradni dan",
+      "exam_partial": "Sedmica parcijalnih"
     },
     "delete": "Obriši period",
     "confirmDelete": "Sigurno obrisati?"

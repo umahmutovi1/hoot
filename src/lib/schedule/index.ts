@@ -6,8 +6,9 @@ import { addDays, diffDays, startOfWeek, weekdayOf, type LocalDate } from '@/lib
  * midnight (the DB checks end_min > start_min).
  */
 
-export type PeriodKind = 'teaching' | 'partial_exams' | 'exam' | 'holiday'
-export type ExamSession = 'regular' | 'makeup'
+export type PeriodKind = 'teaching' | 'exam' | 'holiday'
+/** Exam periods: partial-exam weeks, regular and make-up periods. */
+export type ExamSession = 'partial' | 'regular' | 'makeup'
 
 export interface Period {
   id: string
@@ -38,9 +39,27 @@ export interface Slot {
   endMin: number
 }
 
-export interface AvailabilityRule extends Slot {
+export interface FreeSlot extends Slot {
+  /** "Učim umjesto nastave": classes do not block this slot. */
+  overClasses?: boolean
+}
+
+export interface AvailabilityRule extends FreeSlot {
   weekday: number
 }
+
+/** One date that differs from the weekly template (`availability_days`). */
+export interface AvailabilityDay {
+  onDate: LocalDate
+  /** null = the template's slots for that weekday */
+  slots: FreeSlot[] | null
+  /** null = the template's cap for that weekday */
+  capMin: number | null
+}
+
+/** Default template: every day 06:00–24:00; default cap 3 h weekdays, 5 h weekend. */
+export const DEFAULT_SLOT: Slot = { startMin: 6 * 60, endMin: 24 * 60 }
+export const DEFAULT_CAPS = [180, 180, 180, 180, 180, 300, 300] as const
 
 export interface AvailabilityException {
   onDate: LocalDate
@@ -73,13 +92,12 @@ export function parityOf(start: LocalDate, date: LocalDate): WeekParity {
 
 export type CalendarStatus =
   | { kind: 'holiday'; title: string }
-  | { kind: 'partial_exams'; title: string }
-  | { kind: 'exam'; title: string; week: number }
+  | { kind: 'exam'; title: string; week: number; session: ExamSession }
   | { kind: 'teaching'; title: string; week: number }
 
 /**
  * What the academic calendar says about a day, for the line under the date on Today.
- * A holiday wins, then partial-exam weeks, exam periods and teaching.
+ * A holiday wins, then partial-exam weeks, other exam periods and teaching.
  */
 export function calendarStatus(date: LocalDate, periods: Period[]): CalendarStatus | null {
   const on = periodsOn(date, periods)
@@ -87,10 +105,17 @@ export function calendarStatus(date: LocalDate, periods: Period[]): CalendarStat
     on.filter((p) => p.kind === kind).sort((a, b) => a.startsOn.localeCompare(b.startsOn))[0]
   const holiday = first('holiday')
   if (holiday) return { kind: 'holiday', title: holiday.title }
-  const partial = first('partial_exams')
-  if (partial) return { kind: 'partial_exams', title: partial.title }
-  const exam = first('exam')
-  if (exam) return { kind: 'exam', title: exam.title, week: weekNumber(exam.startsOn, date) }
+  const exams = on
+    .filter((p) => p.kind === 'exam')
+    .sort((a, b) => (a.examSession === 'partial' ? 0 : 1) - (b.examSession === 'partial' ? 0 : 1))
+  const exam = exams[0]
+  if (exam)
+    return {
+      kind: 'exam',
+      title: exam.title,
+      week: weekNumber(exam.startsOn, date),
+      session: exam.examSession ?? 'regular',
+    }
   const teaching = first('teaching')
   if (teaching)
     return {
@@ -176,48 +201,80 @@ export interface DayInput {
   exceptions: AvailabilityException[]
   entries: ClassEntry[]
   periods: Period[]
+  /** Dates that differ from the template. */
+  days?: AvailabilityDay[]
+  /** Daily study cap per weekday (minutes, Monday first). */
+  caps?: readonly number[]
   /** Timetable entries cancelled on this date ("Nastava otkazana"). */
   cancelledEntryIds?: ReadonlySet<string>
 }
 
+/** The free slots planned for a date: its own (per-date change) or the weekday template. */
+export function slotsFor(date: LocalDate, input: Pick<DayInput, 'rules' | 'days'>): FreeSlot[] {
+  const day = input.days?.find((d) => d.onDate === date)
+  if (day?.slots) return day.slots
+  return input.rules.filter((r) => r.weekday === weekdayOf(date))
+}
+
+/** Most minutes of study on a date: the per-date cap, else the weekday cap. */
+export function capFor(date: LocalDate, input: Pick<DayInput, 'days' | 'caps'>): number {
+  const day = input.days?.find((d) => d.onDate === date)
+  if (day && day.capMin !== null) return day.capMin
+  return input.caps?.[weekdayOf(date)] ?? DAY_MINUTES
+}
+
 /**
- * Free study time on a date (PRD "Scheduler" step 1): weekly rules plus extra free time,
+ * Free study time on a date (PRD "Scheduler" step 1): the day's slots plus extra free time,
  * minus busy exceptions (a whole-day one leaves nothing), minus classes ±15 min that are not
- * cancelled.
+ * cancelled, except inside slots marked "Učim umjesto nastave".
  */
 export function freeSlotsOn(date: LocalDate, input: DayInput): Slot[] {
   const exceptions = input.exceptions.filter((e) => e.onDate === date)
-  const base = [
-    ...input.rules.filter((r) => r.weekday === weekdayOf(date)),
+  const slots = slotsFor(date, input)
+  const normal = [
+    ...slots.filter((s) => !s.overClasses),
     ...exceptions.filter((e) => !e.isBusy).map(exceptionSlot),
   ]
+  const forced = slots.filter((s) => s.overClasses)
   const busy = exceptions.filter((e) => e.isBusy).map(exceptionSlot)
   const classes = classesOn(date, input.entries, input.periods)
     .filter((e) => !input.cancelledEntryIds?.has(e.id))
     .map(busySlotOf)
-  return subtractSlots(base, [...busy, ...classes])
+  return mergeSlots([
+    ...subtractSlots(normal, [...busy, ...classes]),
+    ...subtractSlots(forced, busy),
+  ])
+}
+
+/** Study minutes a date can hold: free time, but never more than the day's cap. */
+export function studyMinutesOn(date: LocalDate, input: DayInput): number {
+  return Math.min(freeMinutesOn(date, input), capFor(date, input))
+}
+
+/** Classes on a date (or, without a date, on that weekday) that overlap a slot. */
+export function classesOverlapping<T extends ClassEntry>(
+  slot: Slot,
+  entries: T[],
+  periods: Period[],
+  on: { date: LocalDate } | { weekday: number },
+): T[] {
+  const candidates =
+    'date' in on
+      ? classesOn(on.date, entries, periods)
+      : entries.filter((e) => e.weekday === on.weekday)
+  return candidates.filter((e) => e.startMin < slot.endMin && e.endMin > slot.startMin)
 }
 
 export function freeMinutesOn(date: LocalDate, input: DayInput): number {
   return slotMinutes(freeSlotsOn(date, input))
 }
 
-/** Net free minutes in the week (Mon–Sun) that contains `date`. */
-export function weekFreeMinutes(date: LocalDate, input: DayInput): number {
+/** Study minutes in the week (Mon–Sun) that contains `date`: free time capped per day. */
+export function weekStudyMinutes(date: LocalDate, input: DayInput): number {
   const monday = startOfWeek(date)
   let total = 0
-  for (let i = 0; i < 7; i++) total += freeMinutesOn(addDays(monday, i), input)
+  for (let i = 0; i < 7; i++) total += studyMinutesOn(addDays(monday, i), input)
   return total
-}
-
-/** How a single exception changes the day compared with the weekly rules (+ / − minutes). */
-export function exceptionDelta(
-  exception: AvailabilityException,
-  input: Omit<DayInput, 'exceptions'>,
-): number {
-  const without = freeMinutesOn(exception.onDate, { ...input, exceptions: [] })
-  const withIt = freeMinutesOn(exception.onDate, { ...input, exceptions: [exception] })
-  return withIt - without
 }
 
 /** Classes in the teaching period that contains `date` (or the next one), per week. */
@@ -258,7 +315,7 @@ export type ExamKind = 'partial' | 'final' | 'integral' | 'makeup' | 'other'
 /** Periods an exam of this kind can be "in": partial-exam weeks or exam periods. */
 export function examPeriodsFor(kind: ExamKind, periods: Period[]): Period[] {
   return periods
-    .filter((p) => p.kind === 'exam' || p.kind === 'partial_exams')
+    .filter((p) => p.kind === 'exam')
     .sort((a, b) => {
       const fit = (p: Period) => (suits(kind, p) ? 0 : 1)
       return fit(a) - fit(b) || a.startsOn.localeCompare(b.startsOn)
@@ -267,9 +324,10 @@ export function examPeriodsFor(kind: ExamKind, periods: Period[]): Period[] {
 
 /** Partial → partial-exam week, makeup → makeup period, the rest → regular exam period. */
 function suits(kind: ExamKind, p: Period): boolean {
-  if (kind === 'partial') return p.kind === 'partial_exams'
-  if (kind === 'makeup') return p.kind === 'exam' && p.examSession === 'makeup'
-  return p.kind === 'exam' && p.examSession === 'regular'
+  if (p.kind !== 'exam') return false
+  if (kind === 'partial') return p.examSession === 'partial'
+  if (kind === 'makeup') return p.examSession === 'makeup'
+  return p.examSession === 'regular'
 }
 
 /** Suggested period for a new exam with an unknown date: the next one that suits its kind. */
@@ -293,7 +351,7 @@ export function assignExamPeriods(
   today: LocalDate,
 ): (Period | undefined)[] {
   const partialWeeks = periods
-    .filter((p) => p.kind === 'partial_exams' && p.endsOn >= today)
+    .filter((p) => p.kind === 'exam' && p.examSession === 'partial' && p.endsOn >= today)
     .sort((a, b) => a.startsOn.localeCompare(b.startsOn))
   let n = 0
   return exams.map((e) =>

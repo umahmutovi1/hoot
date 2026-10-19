@@ -1,7 +1,7 @@
 import type { TFunction } from 'i18next'
 import { format, type Locale as DateFnsLocale } from 'date-fns'
 import { toDisplayDate, type LocalDate } from '@/lib/day'
-import { formatClock, type PeriodKind } from '@/lib/schedule'
+import { formatClock, type CalendarStatus, type ExamSession, type PeriodKind } from '@/lib/schedule'
 import type { ClassKind } from './model'
 
 /** "6. okt – 23. jan", or one day "25. nov". */
@@ -35,7 +35,7 @@ export function isWinterTerm(startsOn: LocalDate) {
 export function defaultPeriodTitle(
   t: TFunction,
   kind: PeriodKind,
-  session: 'regular' | 'makeup' | null,
+  session: ExamSession | null,
   startsOn: LocalDate | null,
 ) {
   if (kind === 'teaching') {
@@ -60,15 +60,17 @@ export const CLASS_KIND_STYLE: Record<ClassKind, string> = {
 /** Date tile colors per period kind. */
 export const PERIOD_TILE: Record<PeriodKind, { bg: string; day: string; month: string }> = {
   teaching: { bg: 'bg-brand-soft', day: 'text-brand-strong', month: 'text-brand' },
-  partial_exams: {
-    bg: 'bg-subject-blue-soft',
-    day: 'text-subject-blue-ink',
-    month: 'text-subject-blue-deep',
-  },
   exam: {
     bg: 'bg-subject-pink-soft',
     day: 'text-subject-pink-ink',
     month: 'text-subject-pink-deep',
   },
   holiday: { bg: 'bg-success-soft', day: 'text-subject-green-ink', month: 'text-success' },
+}
+
+/** "4. sedmica nastave", "Sedmica parcijalnih", "Januarski rok · 2. sedmica", "Neradni dan · …" */
+export function statusLabel(t: TFunction, status: CalendarStatus) {
+  if (status.kind === 'exam' && status.session === 'partial')
+    return t('today.week.partial', { title: status.title })
+  return t(`today.week.${status.kind}`, status)
 }

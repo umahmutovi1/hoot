@@ -27,6 +27,7 @@ const units: PaceUnit[] = outline.map(([id, parentId, level], position) => ({
   position,
   level,
   minutes: 30,
+  amount: 10,
 }))
 
 let n = 0
@@ -71,6 +72,7 @@ describe('sourcePace', () => {
     expect(pace.youIndex).toBe(1)
     expect(pace.topCount).toBe(3)
     expect(pace.behindMinutes).toBe(60) // 5.1 and 5.2
+    expect(pace.behindAmount).toBe(20)
     expect(pace.behindLectures).toBe(1) // the first lecture is done
   })
 

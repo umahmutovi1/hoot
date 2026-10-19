@@ -4,7 +4,7 @@ import { useAuth } from '@/features/auth/auth-context'
 import { subjectsKey } from '@/features/subjects/api'
 import { examAtFromDate } from '@/features/subjects/model'
 import { supabase } from '@/lib/supabase'
-import type { ExceptionRow, LectureLogRow, PeriodRow, RuleRow, TimetableRow } from './model'
+import type { DayRow, ExceptionRow, LectureLogRow, PeriodRow, RuleRow, TimetableRow } from './model'
 
 // IDs come from the client (crypto.randomUUID()), so writes are idempotent upserts that the
 // offline queue (Stage 7) can replay.
@@ -14,6 +14,7 @@ type ScheduleTable =
   | 'timetable_entries'
   | 'availability_rules'
   | 'availability_exceptions'
+  | 'availability_days'
   | 'lecture_logs'
 
 export const scheduleKey = (table: ScheduleTable, userId: string | undefined) =>
@@ -28,6 +29,7 @@ const ORDER: Record<ScheduleTable, string> = {
   timetable_entries: 'start_min',
   availability_rules: 'start_min',
   availability_exceptions: 'on_date',
+  availability_days: 'on_date',
   lecture_logs: 'on_date',
 }
 
@@ -49,6 +51,7 @@ export const useTimetable = () => useTable<TimetableRow>('timetable_entries')
 export const useAvailabilityRules = () => useTable<RuleRow>('availability_rules')
 export const useAvailabilityExceptions = () => useTable<ExceptionRow>('availability_exceptions')
 export const useLectureLogs = () => useTable<LectureLogRow>('lecture_logs')
+export const useAvailabilityDays = () => useTable<DayRow>('availability_days')
 
 async function patchList<T extends { id: string }>(
   queryClient: QueryClient,
@@ -176,7 +179,7 @@ export const useDeleteClass = () => useDelete('timetable_entries', ['lecture_log
 
 // ------------------------------------------------------------------ availability
 
-export const useSaveRule = () => useUpsert<RuleRow>('availability_rules')
+export const useSaveRule = () => useUpsert<RuleRow>('availability_rules', { over_classes: false })
 export const useDeleteRule = () => useDelete('availability_rules')
 export const useSaveException = () =>
   useUpsert<ExceptionRow>('availability_exceptions', {
@@ -186,6 +189,10 @@ export const useSaveException = () =>
     lecture_log_id: null,
   })
 export const useDeleteException = () => useDelete('availability_exceptions')
+/** A date's own slots and/or cap; one row per date (unique), so the id is reused when it exists. */
+export const useSaveDay = () =>
+  useUpsert<DayRow>('availability_days', { slots: null, cap_min: null })
+export const useDeleteDay = () => useDelete('availability_days')
 
 // ------------------------------------------------------------------ lecture logs
 
