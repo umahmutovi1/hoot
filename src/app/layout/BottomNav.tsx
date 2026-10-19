@@ -11,30 +11,24 @@ function TabLink({ to, label, Icon, end }: Tab) {
     <NavLink
       to={to}
       end={end}
+      aria-label={label}
+      title={label}
       className={({ isActive }) =>
         cn(
-          'flex min-w-14 flex-col items-center gap-1 text-xs',
-          isActive ? 'font-semibold text-brand' : 'text-ink-subtle',
+          'flex h-12 w-[60px] items-center justify-center rounded-full transition-colors',
+          isActive ? 'bg-brand-soft text-brand' : 'text-ink-muted',
         )
       }
     >
-      {({ isActive }) => (
-        <>
-          <span
-            className={cn(
-              'flex h-[30px] w-12 items-center justify-center rounded-full',
-              isActive && 'bg-brand-soft',
-            )}
-          >
-            <Icon size={22} />
-          </span>
-          {label}
-        </>
-      )}
+      <Icon size={22} />
     </NavLink>
   )
 }
 
+/**
+ * Floating navigation: a frosted pill with the four tabs and the timer button in the middle as a
+ * brand-colored circle, so starting a session stays the most prominent action.
+ */
 export function BottomNav() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -51,41 +45,25 @@ export function BottomNav() {
   return (
     <nav
       aria-label={t('nav.label')}
-      className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[430px]"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(14px+env(safe-area-inset-bottom))] z-40 flex justify-center px-4"
     >
-      <div className="relative h-[104px]">
-        {/* White bar with a rounded top and a notch for the floating timer button */}
-        <svg
-          viewBox="0 0 390 104"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-          className="absolute inset-0 size-full drop-shadow-[0_-4px_16px_rgba(75,59,143,0.12)]"
-        >
-          <path
-            d="M0 40 Q0 12 28 12 H124 C148 12 150 56 195 56 C240 56 242 12 266 12 H362 Q390 12 390 40 V104 H0 Z"
-            className="fill-surface"
-          />
-        </svg>
+      <div className="pointer-events-auto flex items-center gap-0.5 rounded-full border border-white/70 bg-surface/70 p-1.5 shadow-[0_8px_28px_rgba(29,26,43,0.14)] backdrop-blur-xl">
+        {left.map((tab) => (
+          <TabLink key={tab.to} {...tab} />
+        ))}
         <button
           type="button"
           aria-label={t('nav.startSession')}
+          title={t('nav.startSession')}
           onClick={() => navigate('/session/start')}
-          className="absolute -top-[22px] left-1/2 flex size-[68px] -translate-x-1/2 items-center justify-center rounded-full bg-brand-accent text-white"
+          className="mx-1 flex size-[52px] shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-[0_4px_14px_rgba(75,59,143,0.35)]"
         >
-          <TimerIcon size={26} />
+          <TimerIcon size={24} />
         </button>
-        <div className="absolute top-[30px] left-2 flex w-[37%] justify-around">
-          {left.map((tab) => (
-            <TabLink key={tab.to} {...tab} />
-          ))}
-        </div>
-        <div className="absolute top-[30px] right-2 flex w-[37%] justify-around">
-          {right.map((tab) => (
-            <TabLink key={tab.to} {...tab} />
-          ))}
-        </div>
+        {right.map((tab) => (
+          <TabLink key={tab.to} {...tab} />
+        ))}
       </div>
-      <div className="h-[env(safe-area-inset-bottom)] bg-surface" />
     </nav>
   )
 }
