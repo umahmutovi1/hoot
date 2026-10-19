@@ -287,7 +287,11 @@
     "outlineEmpty": "Upiši bar jednu jedinicu",
     "labelTaken": "Ta oznaka već postoji",
     "time": "Neispravno vrijeme",
-    "timeOrder": "Kraj mora biti poslije početka"
+    "timeOrder": "Kraj mora biti poslije početka",
+    "percentMax": "Najviše 100%",
+    "retakeOf": "Odaberi ispit koji popravni ponavlja",
+    "resultOverMax": "Ne može biti više od maksimuma",
+    "scaleOrder": "Svaki prag mora biti veći od prethodnog"
   },
   "common": {
     "cancel": "Odustani",
@@ -336,7 +340,10 @@
       "none_choice": "Ne ulazi",
       "hint": "Dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita.",
       "hintNew": "Nakon spašavanja dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita."
-    }
+    },
+    "retakeOf": "Popravni za",
+    "retakeOfNone": "Prvo dodaj ispit koji popravni ponavlja.",
+    "makeupTitle": "Popravni: {{title}}"
   },
   "deadlines": {
     "section": "Rokovi",
@@ -830,5 +837,63 @@
     "restore": "Vrati termin",
     "cancel": "Otkaži za ovaj dan",
     "edit": "Uredi u rasporedu"
+  },
+  "grades": {
+    "unit": {
+      "points": "bodova",
+      "ofGrade": "% ocjene"
+    },
+    "fields": {
+      "heading": "Bodovi",
+      "carries": "Nosi",
+      "noPoints": "bez bodova",
+      "noPointsHint": "Kad saznaš koliko nosi, unesi ovdje. Do tada ulazi samo u plan, ne u bodove.",
+      "percentIs": "= {{points}} od {{total}} bodova predmeta",
+      "threshold": "Prag za prolaz",
+      "noThreshold": "bez praga",
+      "thresholdIsPct": "= {{pct}}%.",
+      "thresholdIsPoints": "= {{points}} bod.",
+      "thresholdHintExam": "Ispod praga ispit nije položen i aktivira se popravni.",
+      "thresholdHintDeadline": "Ispod praga rok nije položen.",
+      "entry": "Uslov za izlazak",
+      "entryPlaceholder": "npr. 10 bodova iz ranijih stavki",
+      "entryHint": "Koliko bodova sa ranijih ispita i rokova treba da se izađe na ovaj ispit.",
+      "makeupCarries": "Nosi iste bodove kao {{title}} ({{points}}) i zamjenjuje taj ispit ako izađeš.",
+      "integralCarries": "Zbir bodova parcijala; zamjenjuje ih ako izađeš."
+    },
+    "points_one": "{{n}} bod",
+    "points_few": "{{n}} boda",
+    "points_other": "{{n}} bodova",
+    "shareOfGrade": "{{n}}% ocjene",
+    "thresholdShort": "prag {{pct}}%",
+    "entryShort": "uslov za izlazak: {{n}} bod.",
+    "replacesPartials": "zamjenjuje parcijale",
+    "enterResult": "Unesi rezultat",
+    "score": "{{points}}/{{max}}",
+    "annulled": "poništen",
+    "retakeNeeded": "potreban",
+    "result": {
+      "title": "Rezultat",
+      "modeLabel": "Unos",
+      "modePoints": "Bodovi",
+      "modePercent": "Procenat",
+      "points": "Bodovi",
+      "max": "Od koliko",
+      "of": "od",
+      "percent": "Procenat",
+      "rescaleHint": "Ako je test bodovan drugačije (npr. od 50), upiši to; doprinos se preračuna na {{points}} bodova.",
+      "pct": "{{pct}}%",
+      "passedLine": "{{pct}}% · položeno",
+      "failedLine": "{{pct}}% · nije položeno",
+      "thresholdNote": "prag {{pct}}%",
+      "passed": "Položeno",
+      "save": "Spasi rezultat",
+      "annul": "Poništi rezultat",
+      "annulHint": "Odricanje od bodova: ispit nije položen i aktivira se popravni. Rezultat ostaje u historiji.",
+      "annulled": "Rezultat je poništen i ne ulazi u zbir.",
+      "restore": "Vrati rezultat",
+      "clear": "Obriši rezultat",
+      "contributes": "Doprinos: {{points}} od {{max}} bodova"
+    }
   }
 }

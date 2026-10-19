@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { deadlineFormSchema, subjectFormSchema, type SubjectForm } from './schemas'
+import {
+  deadlineFormSchema,
+  EXAM_GRADE_DEFAULTS,
+  examSheetSchema,
+  GRADE_FIELD_DEFAULTS,
+  gradeScaleFormSchema,
+  resultFormSchema,
+  subjectFormSchema,
+  type SubjectForm,
+} from './schemas'
 
 const id = () => crypto.randomUUID()
 
@@ -22,6 +31,7 @@ const subject = (patch: Partial<SubjectForm> = {}): SubjectForm => ({
       dateTentative: false,
       dateLatest: null,
       examPeriodId: null,
+      ...EXAM_GRADE_DEFAULTS,
     },
   ],
   ...patch,
@@ -91,6 +101,7 @@ describe('deadlineFormSchema', () => {
     date: '2026-10-23',
     estHours: null,
     notes: null,
+    ...GRADE_FIELD_DEFAULTS,
   }
 
   it('accepts a deadline without estimate or subject', () => {
@@ -100,5 +111,37 @@ describe('deadlineFormSchema', () => {
   it('requires a positive estimate when given', () => {
     expect(deadlineFormSchema.safeParse({ ...deadline, estHours: 0 }).success).toBe(false)
     expect(deadlineFormSchema.safeParse({ ...deadline, estHours: 4.5 }).success).toBe(true)
+  })
+})
+
+describe('grade fields', () => {
+  const exam = () => subject().assessments[0]!
+
+  it('allows a share of the grade up to 100%', () => {
+    const e = { ...exam(), pointsMax: 120 }
+    expect(examSheetSchema.safeParse(e).success).toBe(true)
+    expect(examSheetSchema.safeParse({ ...e, pointsUnit: 'percent' }).success).toBe(false)
+  })
+
+  it('asks which exam a makeup repeats', () => {
+    const makeup = { ...exam(), kind: 'makeup' as const }
+    expect(firstError(examSheetSchema.safeParse(makeup))).toBe('validation.retakeOf')
+    expect(examSheetSchema.safeParse({ ...makeup, retakeOf: id() }).success).toBe(true)
+  })
+
+  it('keeps the result within its maximum', () => {
+    const r = { mode: 'points' as const, points: 32, max: 40, passed: true }
+    expect(resultFormSchema.safeParse(r).success).toBe(true)
+    expect(firstError(resultFormSchema.safeParse({ ...r, points: 41 }))).toBe(
+      'validation.resultOverMax',
+    )
+  })
+
+  it('wants a strictly increasing scale', () => {
+    const s = { pointsTotal: 100, scale: [55, 65, 75, 85, 95], targetGrade: 8 }
+    expect(gradeScaleFormSchema.safeParse(s).success).toBe(true)
+    expect(firstError(gradeScaleFormSchema.safeParse({ ...s, scale: [55, 65, 65, 85, 95] }))).toBe(
+      'validation.scaleOrder',
+    )
   })
 })

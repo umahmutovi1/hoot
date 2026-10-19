@@ -9,6 +9,7 @@ import {
 } from './mappers'
 import { examAtFromDate, examKindDefaults, localDateOf, nextAssessment } from './model'
 import { assessmentRow as assessment, deadlineRow, subjectRow } from './fixtures'
+import { EXAM_GRADE_DEFAULTS, GRADE_FIELD_DEFAULTS } from './schemas'
 
 describe('dates', () => {
   it('round-trips a local exam date', () => {
@@ -57,6 +58,7 @@ describe('exam date range', () => {
     dateTentative: true,
     dateLatest: '2026-12-12',
     examPeriodId: 'period-1',
+    ...EXAM_GRADE_DEFAULTS,
   }
 
   it('stores the range end only for tentative exams', () => {
@@ -76,6 +78,16 @@ describe('exam date range', () => {
     )
     expect([back.date, back.dateLatest]).toEqual(['2026-12-01', '2026-12-12'])
   })
+
+  it('stores points, but lets a makeup carry the points of the exam it repeats', () => {
+    const graded = { ...form, pointsMax: 40, passMinPct: 50, retakeOf: 'x' }
+    expect(toAssessmentRow('s', graded)).toMatchObject({ points_max: 40, retake_of: null })
+    expect(toAssessmentRow('s', { ...graded, kind: 'makeup' })).toMatchObject({
+      points_max: null,
+      pass_min_pct: 50,
+      retake_of: 'x',
+    })
+  })
 })
 
 describe('deadline mapping', () => {
@@ -88,6 +100,7 @@ describe('deadline mapping', () => {
       date: '2026-10-23',
       estHours: 4.5,
       notes: '',
+      ...GRADE_FIELD_DEFAULTS,
     })
     expect(row.est_minutes).toBe(270)
     expect(row.notes).toBeNull()
@@ -122,9 +135,10 @@ describe('nextAssessment', () => {
 })
 
 describe('examKindDefaults', () => {
-  it('turns all material and only-if-needed on only for the comprehensive exam', () => {
+  it('turns all material on for the integral and only-if-needed for it and the makeup', () => {
     expect(examKindDefaults('integral')).toEqual({ scopeAll: true, contingent: true })
-    for (const kind of ['partial', 'final', 'makeup', 'other'] as const) {
+    expect(examKindDefaults('makeup')).toEqual({ scopeAll: false, contingent: true })
+    for (const kind of ['partial', 'final', 'other'] as const) {
       expect(examKindDefaults(kind)).toEqual({ scopeAll: false, contingent: false })
     }
   })

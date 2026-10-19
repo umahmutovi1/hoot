@@ -21,7 +21,11 @@ import { paletteOf, type SubjectPalette } from './colors'
 import { DeadlineRow } from './DeadlineRow'
 import { DeadlineSheet } from './DeadlineSheet'
 import { ExamSheet } from './ExamSheet'
-import { relativeDays } from './format'
+import { examDateLabel, relativeDays } from './format'
+import { gradeItemsOf, pointsDetails, worthOf } from './grades'
+import { ResultChip } from './ResultChip'
+import { ResultSheet } from './ResultSheet'
+import { retakeStatus, type GradeItem } from '@/lib/grades'
 import {
   asPriority,
   localDateOf,
@@ -64,6 +68,38 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const [deadlineSheet, setDeadlineSheet] = useState<{ open: boolean; id?: string }>({
     open: false,
   })
+  const [resultSheet, setResultSheet] = useState<{
+    open: boolean
+    kind?: 'exam' | 'deadline'
+    id?: string
+  }>({ open: false })
+  const items = gradeItemsOf(subject, allDeadlines)
+  const itemOf = (id: string) => items.find((i) => i.id === id)!
+  const worth = (id: string) => worthOf(id, items, subject.points_total)
+  const todayDate = localDateOf(now.toISOString())
+  const isDue = (iso: string) => localDateOf(iso) <= todayDate
+  // Makeups are listed under the exam they repeat.
+  const isNested = (a: Assessment) => a.kind === 'makeup' && exams.some((e) => e.id === a.retake_of)
+  const hasPartials = exams.some((e) => e.kind === 'partial')
+  const resultExam = subject.assessments.find((a) => a.id === resultSheet.id)
+  const resultDeadline = deadlines.find((d) => d.id === resultSheet.id)
+  const examRow = (exam: Assessment, nested = false) => (
+    <ExamRow
+      exam={exam}
+      item={itemOf(exam.id)}
+      worth={worth(exam.id)}
+      due={isDue(exam.at)}
+      nested={nested}
+      replacesPartials={exam.kind === 'integral' && hasPartials}
+      retakeNeeded={nested && retakeStatus(itemOf(exam.id), items) === 'needed'}
+      highlight={exam.id === next?.id}
+      progress={hasMaterial ? examProgress(exam, materials, scopeRows).fraction : undefined}
+      palette={palette}
+      locale={locale}
+      onOpen={() => setExamSheet({ open: true, id: exam.id })}
+      onResult={() => setResultSheet({ open: true, kind: 'exam', id: exam.id })}
+    />
+  )
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -153,21 +189,19 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         </p>
       ) : (
         <div className="flex flex-col rounded-card bg-surface p-1.5">
-          {exams.map((exam, i) => (
-            <div key={exam.id}>
-              {i > 0 && <div className="mx-3 h-px bg-hairline" />}
-              <ExamRow
-                exam={exam}
-                highlight={exam.id === next?.id}
-                progress={
-                  hasMaterial ? examProgress(exam, materials, scopeRows).fraction : undefined
-                }
-                palette={palette}
-                locale={locale}
-                onOpen={() => setExamSheet({ open: true, id: exam.id })}
-              />
-            </div>
-          ))}
+          {exams
+            .filter((e) => !isNested(e))
+            .map((exam, i) => (
+              <div key={exam.id}>
+                {i > 0 && <div className="mx-3 h-px bg-hairline" />}
+                {examRow(exam)}
+                {exams
+                  .filter((m) => m.kind === 'makeup' && m.retake_of === exam.id)
+                  .map((m) => (
+                    <div key={m.id}>{examRow(m, true)}</div>
+                  ))}
+              </div>
+            ))}
           {hasMaterial && (
             <>
               <div className="mx-3 h-px bg-hairline" />
@@ -205,7 +239,16 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
               <DeadlineRow
                 deadline={d}
                 now={now}
+                worth={worth(d.id)}
                 onOpen={() => setDeadlineSheet({ open: true, id: d.id })}
+                result={
+                  <ResultChip
+                    item={itemOf(d.id)}
+                    worth={worth(d.id)}
+                    due={d.done || isDue(d.due_at)}
+                    onOpen={() => setResultSheet({ open: true, kind: 'deadline', id: d.id })}
+                  />
+                }
               />
             </div>
           ))}
@@ -217,6 +260,19 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         exam={subject.assessments.find((a) => a.id === examSheet.id)}
         open={examSheet.open}
         onOpenChange={(open) => setExamSheet((s) => ({ ...s, open }))}
+      />
+      <ResultSheet
+        target={
+          resultSheet.kind === 'exam' && resultExam
+            ? { kind: 'exam', row: resultExam }
+            : resultSheet.kind === 'deadline' && resultDeadline
+              ? { kind: 'deadline', row: resultDeadline }
+              : undefined
+        }
+        subjectName={subject.name}
+        worth={resultSheet.id ? worth(resultSheet.id) : null}
+        open={resultSheet.open}
+        onOpenChange={(open) => setResultSheet((s) => ({ ...s, open }))}
       />
       <DeadlineSheet
         deadline={deadlines.find((d) => d.id === deadlineSheet.id)}
@@ -230,68 +286,119 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
 
 function ExamRow({
   exam,
+  item,
+  worth,
+  due,
+  nested,
+  replacesPartials,
+  retakeNeeded,
   highlight,
   progress,
   palette,
   locale,
   onOpen,
+  onResult,
 }: {
   exam: Assessment
+  item: GradeItem
+  /** Points the exam carries; null = no points. */
+  worth: number | null
+  /** The exam day has come: a result can be entered. */
+  due: boolean
+  /** A makeup under the exam it repeats. */
+  nested: boolean
+  replacesPartials: boolean
+  /** The makeup is needed (its exam was failed or waived). */
+  retakeNeeded: boolean
   highlight: boolean
   /** Progress over the exam's scope; undefined without sources. */
   progress?: number
   palette: SubjectPalette
   locale: 'bs' | 'en'
   onOpen: () => void
+  onResult: () => void
 }) {
   const { t } = useTranslation()
   const date = new Date(exam.at)
+  const dfLocale = dateFnsLocales[locale]
+  const points = pointsDetails(t, item, worth, locale)
   const details = [
-    t(exam.scope_all ? 'subjects.scope.all' : 'subjects.scope.part'),
-    t(`subjects.format.${exam.format}`).toLowerCase(),
-    exam.date_tentative &&
+    replacesPartials && t('grades.replacesPartials'),
+    ...points,
+    // Scope and format make room for the points once they are known.
+    points.length === 0 && t(exam.scope_all ? 'subjects.scope.all' : 'subjects.scope.part'),
+    points.length === 0 && t(`subjects.format.${exam.format}`).toLowerCase(),
+    exam.entry_min_points !== null &&
+      t('grades.entryShort', { n: exam.entry_min_points.toLocaleString(locale) }),
+    nested && examDateLabel(exam, dfLocale),
+    !nested &&
+      exam.date_tentative &&
       (exam.at_latest
         ? t('subjects.detail.tentativeUntil', {
-            date: format(new Date(exam.at_latest), 'd. MMM', { locale: dateFnsLocales[locale] }),
+            date: format(new Date(exam.at_latest), 'd. MMM', { locale: dfLocale }),
           })
         : t('subjects.detail.tentative')),
-    exam.contingent && t('subjects.detail.contingent'),
-    exam.passed && t('subjects.detail.passed'),
+    retakeNeeded
+      ? t('grades.retakeNeeded')
+      : exam.contingent && item.resultPoints === null && t('subjects.detail.contingent'),
   ]
     .filter(Boolean)
     .join(' · ')
+  const chip = <ResultChip item={item} worth={worth} due={due} onOpen={onResult} />
+  const hasChip = item.resultPoints !== null || due
 
   return (
-    <button type="button" onClick={onOpen} className="flex w-full items-center gap-3 p-3 text-left">
-      <div
+    <div className={cn('flex w-full items-center gap-3 pr-3', nested ? 'pt-1 pb-3 pl-[30px]' : '')}>
+      <button
+        type="button"
+        onClick={onOpen}
         className={cn(
-          'flex h-[54px] w-[50px] shrink-0 flex-col items-center justify-center rounded-[16px]',
-          highlight ? palette.soft : 'bg-canvas',
+          'flex min-w-0 flex-1 items-center gap-3 text-left',
+          nested ? 'self-stretch' : 'py-3 pl-3',
         )}
       >
-        <span className={cn('text-[19px] leading-none font-bold', highlight && palette.inkText)}>
-          {exam.date_tentative ? '~' : ''}
-          {format(date, 'd')}
-        </span>
-        <span className={cn('text-[11px]', highlight ? palette.deepText : 'text-ink-muted')}>
-          {format(date, 'MMM', { locale: dateFnsLocales[locale] })}
-        </span>
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="text-[15px] font-semibold">{exam.title}</span>
-        <span className="text-xs text-ink-muted">{details}</span>
-      </div>
-      {progress !== undefined && (
-        <span
-          className={cn(
-            'shrink-0 text-[15px] font-bold',
-            highlight ? palette.inkText : 'text-ink-muted',
+        {nested ? (
+          <span aria-hidden="true" className="w-0.5 self-stretch rounded-full bg-line" />
+        ) : (
+          <div
+            className={cn(
+              'flex h-[54px] w-[50px] shrink-0 flex-col items-center justify-center rounded-[16px]',
+              highlight ? palette.soft : 'bg-canvas',
+            )}
+          >
+            <span
+              className={cn('text-[19px] leading-none font-bold', highlight && palette.inkText)}
+            >
+              {exam.date_tentative ? '~' : ''}
+              {format(date, 'd')}
+            </span>
+            <span className={cn('text-[11px]', highlight ? palette.deepText : 'text-ink-muted')}>
+              {format(date, 'MMM', { locale: dfLocale })}
+            </span>
+          </div>
+        )}
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className={cn('font-semibold', nested ? 'text-sm' : 'text-[15px]')}>
+            {exam.title}
+          </span>
+          <span className={cn('text-xs', retakeNeeded ? 'text-warning' : 'text-ink-muted')}>
+            {details}
+          </span>
+        </div>
+      </button>
+      {hasChip
+        ? chip
+        : progress !== undefined && (
+            <span
+              className={cn(
+                'shrink-0 text-[15px] font-bold',
+                highlight ? palette.inkText : 'text-ink-muted',
+              )}
+            >
+              {Math.round(progress * 100)}%
+            </span>
           )}
-        >
-          {Math.round(progress * 100)}%
-        </span>
-      )}
-    </button>
+    </div>
   )
 }
 
