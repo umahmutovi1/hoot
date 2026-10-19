@@ -12,6 +12,7 @@ import {
   mergeSlots,
   parityOf,
   parseClock,
+  parseEndClock,
   slotMinutes,
   subtractSlots,
   suggestExamPeriod,
@@ -266,6 +267,7 @@ describe('clock', () => {
     expect(parseClock('24:00')).toBe(1440)
     expect(parseClock('25:00')).toBeNull()
     expect(parseClock('abc')).toBeNull()
+    expect(parseEndClock('00:00')).toBe(1440)
   })
 })
 

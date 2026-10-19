@@ -300,6 +300,12 @@ export function formatClock(minutes: number): string {
   return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 }
 
+/** End of a slot from a time input: "00:00" means midnight at the end of the day (1440). */
+export function parseEndClock(value: string): number | null {
+  const m = parseClock(value)
+  return m === 0 ? DAY_MINUTES : m
+}
+
 /** "HH:mm" → minutes after midnight; null when malformed. */
 export function parseClock(value: string): number | null {
   const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim())

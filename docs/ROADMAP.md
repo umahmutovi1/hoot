@@ -112,8 +112,8 @@ Odluke Etape 3: statusi 0–3 se do Etape 7 biraju ručno; „Uredi sadržaj“ 
 - [x] Kartica „Dokle ste stigli?“ na Danas nakon završenog predavanja (do kraja dana); ručni unos sa datumom na Predmetu
 - [x] `src/lib/pace/`: pređene jedinice, zaostatak u minutama, pravila prijedloga (prag > 2 predavanja ili > 4 h) + testovi
 - [x] Kartica „Predavanja“ na Predmetu (na predavanju / ti / kasniš) + upozorenje sa akcijama koje ne traže scheduler
-- [ ] Dorada nakon prvog pregleda: migracija `0006_availability_days.sql` (ispitni periodi sa podtipom `partial`, default dostupnost 06–24, `profiles.daily_cap_min`, `availability_days`, `availability_rules.over_classes`)
-- [ ] Dostupnost: sedmica sa datumima + vremenska osa, šablon i dnevni maksimum po danu u sedmici, izmjena „samo ovaj dan“ / „svaki“, upozorenje i „Učim umjesto nastave“
+- [x] Dorada nakon prvog pregleda: migracija `0006_availability_days.sql` (ispitni periodi sa podtipom `partial`, default dostupnost 06–24, `profiles.daily_cap_min`, `availability_days`, `availability_rules.over_classes`)
+- [x] Dostupnost: sedmica sa datumima + vremenska osa, šablon i dnevni maksimum po danu u sedmici, izmjena „samo ovaj dan“ / „svaki“, upozorenje i „Učim umjesto nastave“
 - [ ] Kalendar: tačkice aktivnosti u sedmici i danu, detalji termina na tap, dugme „Raspored“ u Planu, `?date=` prečice
 - [ ] Zaostatak u mjeri izvora (str., pitanja…) sa vremenom sitno; bolji tok između ekrana (predmet ↔ termini ↔ kalendar ↔ akademski kalendar)
 - **DoD** → `v0.4.0`
