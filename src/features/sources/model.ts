@@ -151,3 +151,14 @@ export function relatedUnits(unit: Unit, topics: TopicWithUnits[], units: Unit[]
       (u.kind === 'question') !== (unit.kind === 'question'),
   )
 }
+
+/** "I parcijala" → "I", "II parcijala" → "II"; other titles stay as they are. */
+export function shortExamLabel(title: string): string {
+  const roman = /^([IVX]+)\b/.exec(title.trim())
+  return roman ? roman[1]! : title
+}
+
+/** Exams that take part of the material: the ones the ObimIspita segments choose between. */
+export function partialExams<T extends Pick<Assessment, 'scope_all' | 'at'>>(exams: T[]): T[] {
+  return exams.filter((e) => !e.scope_all).sort((a, b) => a.at.localeCompare(b.at))
+}

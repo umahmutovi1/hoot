@@ -6,8 +6,9 @@ import { SplashScreen } from '@/components/SplashScreen'
 import { useSubject } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
 import { levelMinutes, leavesOf, subtreeLeaves } from '@/lib/progress'
+import { scopeOf } from '@/lib/progress/scope'
 import { cn } from '@/lib/utils'
-import { useSource, useUpdateUnit } from './api'
+import { useScope, useSource, useUpdateUnit } from './api'
 import { formatDuration, pagesLabel, STATUS_CHIP, statusLabel } from './format'
 import { LevelBar } from './LevelBar'
 import {
@@ -15,6 +16,8 @@ import {
   asProgress,
   materialOf,
   measureOf,
+  partialExams,
+  toScopeRows,
   type SourceMaterial,
   type SourceWithUnits,
 } from './model'
@@ -43,6 +46,13 @@ function SourceDetail({
   const measure = measureOf(source)
   const leaves = leavesOf(asProgress(material.units))
   const base = `/subjects/${subject.id}/sources/${source.id}`
+  const { data: scope = [] } = useScope(subject.id)
+  const partials = partialExams(subject.assessments)
+  const [filter, setFilter] = useState<string>('all')
+  const exam = partials.find((e) => e.id === filter)
+  const visible = exam
+    ? scopeOf({ id: exam.id, scopeAll: false }, asProgress(material.units), toScopeRows(scope))
+    : null
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -94,12 +104,31 @@ function SourceDetail({
         </div>
       </div>
 
+      {partials.length > 0 && material.units.length > 0 && (
+        <div role="group" aria-label={t('sources.detail.filter')} className="flex flex-wrap gap-2">
+          {[{ id: 'all', title: t('sources.detail.all') }, ...partials].map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              aria-pressed={filter === f.id}
+              onClick={() => setFilter(f.id)}
+              className={cn(
+                'h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
+                filter === f.id ? 'bg-ink text-white' : 'bg-surface',
+              )}
+            >
+              {f.title}
+            </button>
+          ))}
+        </div>
+      )}
+
       {material.units.length === 0 ? (
         <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
           {t('sources.detail.empty')}
         </p>
       ) : (
-        <UnitList material={material} base={base} />
+        <UnitList material={material} base={base} visible={visible} />
       )}
 
       <Archived subjectId={subject.id} source={source} />
@@ -120,15 +149,32 @@ function Stat({ value, label }: { value: string; label: string }) {
   )
 }
 
-function UnitList({ material, base }: { material: SourceMaterial; base: string }) {
+function UnitList({
+  material,
+  base,
+  visible,
+}: {
+  material: SourceMaterial
+  base: string
+  /** Units in the filtered exam's scope; null = all. */
+  visible: Set<string> | null
+}) {
   const { t } = useTranslation()
   const measure = measureOf(material.source)
-  const units = material.units
-  const progress = asProgress(units)
+  const units = visible ? material.units.filter((u) => visible.has(u.id)) : material.units
+  const progress = asProgress(material.units)
   const depth = new Map<string, number>()
-  for (const u of units) depth.set(u.id, u.parent_id ? (depth.get(u.parent_id) ?? 0) + 1 : 0)
-  const parents = new Set(units.map((u) => u.parent_id).filter(Boolean))
+  for (const u of material.units)
+    depth.set(u.id, u.parent_id ? (depth.get(u.parent_id) ?? 0) + 1 : 0)
+  const parents = new Set(material.units.map((u) => u.parent_id).filter(Boolean))
 
+  if (units.length === 0) {
+    return (
+      <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
+        {t('sources.detail.noneInExam')}
+      </p>
+    )
+  }
   return (
     <div className="flex flex-col rounded-card bg-surface p-1.5">
       {units.map((u, i) => {

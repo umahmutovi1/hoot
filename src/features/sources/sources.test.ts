@@ -7,6 +7,7 @@ import {
   levelsFor,
   materialOf,
   relatedUnits,
+  shortExamLabel,
   toScopeRows,
   type SourceWithUnits,
   type Unit,
@@ -213,5 +214,16 @@ describe('relatedUnits', () => {
     ]
     expect(relatedUnits(ch, topics, [ch, q1, q2, other]).map((u) => u.id)).toEqual(['q1'])
     expect(relatedUnits(q1, topics, [ch, q1, q2, other]).map((u) => u.id)).toEqual(['ch', 'ch2'])
+  })
+})
+
+describe('shortExamLabel', () => {
+  it('keeps roman numerals of partial exams', () => {
+    expect(['I parcijala', 'II parcijala', 'Završni', 'IV kolokvij'].map(shortExamLabel)).toEqual([
+      'I',
+      'II',
+      'Završni',
+      'IV',
+    ])
   })
 })

@@ -408,7 +408,8 @@
       "remove": "Ukloni {{label}}",
       "archiving": "Arhivira se ({{count}})",
       "archivingHint": "Napredak i bilješke ostaju; vraćaš ih iz „Arhivirane jedinice”.",
-      "unknownAmount": "obim nepoznat"
+      "unknownAmount": "obim nepoznat",
+      "saveAndSplit": "Sačuvaj i podijeli po ispitima"
     },
     "detail": {
       "editContent": "Uredi sadržaj",
@@ -423,7 +424,10 @@
       "empty": "Još nema jedinica. Dodaj ih kroz „Uredi sadržaj”.",
       "difficulty": "težina {{d}}",
       "archived": "Arhivirane jedinice ({{count}})",
-      "restore": "Vrati"
+      "restore": "Vrati",
+      "filter": "Filter po ispitu",
+      "all": "Sve",
+      "noneInExam": "Nijedna jedinica ovog izvora još nije u ovom ispitu. Rasporedi ih u „Obim ispita”."
     }
   },
   "time": {
@@ -515,5 +519,27 @@
       "delete": "Obriši karticu",
       "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
     }
+  },
+  "scope": {
+    "title": "Obim ispita",
+    "heading": "Šta ulazi u koji ispit?",
+    "lead": "Rasporedi poglavlja i pitanja po ispitima. Tvoj izbor se ne prepisuje ni kasnijim AI uvozom.",
+    "noUnits": "Prvo dodaj izvor sa jedinicama.",
+    "source": "Izvor",
+    "summary_one": "{{count}} stavka · ~{{time}}",
+    "summary_few": "{{count}} stavke · ~{{time}}",
+    "summary_other": "{{count}} stavki · ~{{time}}",
+    "legendAi": "prijedlog",
+    "legendUser": "tvoja izmjena",
+    "legendAll": "Integralni i završni obuhvataju sve osim „Ne ulazi”",
+    "tagAi": "AI",
+    "tagUser": "RUČNO",
+    "included": "Ulazi",
+    "excluded": "Ne ulazi",
+    "all": "Sve",
+    "unassigned": "još nije raspoređeno",
+    "unassignedAll": "nije raspoređeno · samo integralni / završni",
+    "unitExams": "Ispit za {{label}}",
+    "link": "Obim ispita"
   }
 }

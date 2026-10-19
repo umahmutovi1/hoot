@@ -84,14 +84,14 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 ## Etapa 3 — Izvori i jedinice ručno
 
-- [ ] Izvor (tipovi knjiga/skripta/pitanja/prezentacije/ostalo), lista jedinica, podjedinice
-- [ ] Ručni unos „jedna linija po jedinici" — parser u `src/lib/` + testovi (isti parser kasnije koristi AI uvoz)
-- [ ] Jedinica: level, markdown bilješke (`react-markdown` + `remark-math` + `rehype-katex`), odgovor (pitanja), kartice, teme ručno
-- [ ] `src/lib/progress/` — formule progresa jedinice, izvora, predmeta, ispita + testovi
-- [ ] `src/lib/estimates/` — heuristika po tipu, AI množitelj težine, korekcija ocjenom + testovi
-- [ ] ObimIspita ručno (`assessment_units`, `assigned_by = 'user'`)
-- [ ] Arhivirane jedinice (prikaz i vraćanje)
-- [ ] Migracija `0004_sources_and_scope.sql` (`sources.measure`, `assessment_units.included` pomjeren iz Etape 6), regenerisan `database.ts`
+- [x] Izvor (tipovi knjiga/skripta/pitanja/prezentacije/ostalo), lista jedinica, podjedinice
+- [x] Ručni unos „jedna linija po jedinici" — parser u `src/lib/` + testovi (isti parser kasnije koristi AI uvoz)
+- [x] Jedinica: level, markdown bilješke (`react-markdown` + `remark-math` + `rehype-katex`), odgovor (pitanja), kartice, teme ručno
+- [x] `src/lib/progress/` — formule progresa jedinice, izvora, predmeta, ispita + testovi
+- [x] `src/lib/estimates/` — heuristika po tipu, AI množitelj težine, korekcija ocjenom + testovi
+- [x] ObimIspita ručno (`assessment_units`, `assigned_by = 'user'`)
+- [x] Arhivirane jedinice (prikaz i vraćanje)
+- [x] Migracija `0004_sources_and_scope.sql` (`sources.measure`, `assessment_units.included` pomjeren iz Etape 6), regenerisan `database.ts`
 - [ ] Danas: kartica „Znaš li?“ — jedna istražena činjenica o učenju dnevno, sa izvorom (link)
 - **DoD** → `v0.3.0`
 
