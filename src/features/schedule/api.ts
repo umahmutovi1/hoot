@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import type { TablesInsert } from '@/types/database'
 import { useAuth } from '@/features/auth/auth-context'
+import { profileKey } from '@/features/settings/profile'
 import { subjectsKey } from '@/features/subjects/api'
 import { examAtFromDate } from '@/features/subjects/model'
 import { supabase } from '@/lib/supabase'
@@ -246,3 +247,62 @@ export function useSaveLectureLogs() {
 
 /** Deleting a log also removes its "class cancelled" exception (FK cascade). */
 export const useDeleteLectureLog = () => useDelete('lecture_logs', ['availability_exceptions'])
+
+// ------------------------------------------------------------------ availability: weekday template
+
+export interface WeekdayTemplateInput {
+  weekday: number
+  slots: { start_min: number; end_min: number; over_classes: boolean }[]
+  /** New cap for that weekday (minutes); all seven caps are written together. */
+  caps: number[]
+  /** A per-date change on this date is dropped, so the date follows the template again. */
+  clearDayId?: string
+}
+
+/** "Svaki ponedjeljak": replaces the weekday's slots and cap in the template. */
+export function useSaveWeekdayTemplate() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  const key = scheduleKey('availability_rules', userId)
+  return useMutation({
+    mutationFn: async ({ weekday, slots, caps, clearDayId }: WeekdayTemplateInput) => {
+      const { error: dError } = await supabase
+        .from('availability_rules')
+        .delete()
+        .eq('weekday', weekday)
+      if (dError) throw dError
+      if (slots.length > 0) {
+        const { error } = await supabase
+          .from('availability_rules')
+          .insert(slots.map((s) => ({ id: crypto.randomUUID(), weekday, ...s })))
+        if (error) throw error
+      }
+      const { error: pError } = await supabase
+        .from('profiles')
+        .update({ daily_cap_min: caps })
+        .eq('id', userId!)
+      if (pError) throw pError
+      if (clearDayId) {
+        const { error } = await supabase.from('availability_days').delete().eq('id', clearDayId)
+        if (error) throw error
+      }
+    },
+    onMutate: ({ weekday, slots }) =>
+      patchList<RuleRow>(queryClient, key, (list) => [
+        ...list.filter((r) => r.weekday !== weekday),
+        ...slots.map((s) => ({
+          id: crypto.randomUUID(),
+          user_id: userId!,
+          updated_at: now(),
+          weekday,
+          ...s,
+        })),
+      ]),
+    onError: (_e, _input, rollback) => rollback?.(),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: key })
+      queryClient.invalidateQueries({ queryKey: scheduleKey('availability_days', userId) })
+      queryClient.invalidateQueries({ queryKey: profileKey(userId) })
+    },
+  })
+}

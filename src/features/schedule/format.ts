@@ -13,7 +13,7 @@ export function dateRangeLabel(from: LocalDate, to: LocalDate, locale: DateFnsLo
 
 /** "09:00–11:00" */
 export function clockRange(startMin: number, endMin: number) {
-  return `${formatClock(startMin)}–${formatClock(endMin)}`
+  return `${formatClock(startMin)}–${endMin >= 1440 ? '24:00' : formatClock(endMin)}`
 }
 
 /** "09–11" when both are full hours (Dostupnost chips), otherwise "09:30–11:00". */

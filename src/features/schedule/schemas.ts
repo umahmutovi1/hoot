@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { parseClock } from '@/lib/schedule'
+import { parseClock, parseEndClock } from '@/lib/schedule'
 import { CLASS_KINDS, EXAM_SESSIONS, PERIOD_KINDS } from './model'
 
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'validation.date')
@@ -10,7 +10,7 @@ const clock = z
   .refine((v) => parseClock(v) !== null, 'validation.time')
 
 const timeOrder = <T extends { start: string; end: string }>(v: T) =>
-  (parseClock(v.end) ?? 0) > (parseClock(v.start) ?? 0)
+  (parseEndClock(v.end) ?? 0) > (parseClock(v.start) ?? 0)
 
 export const periodFormSchema = z
   .object({
@@ -39,30 +39,14 @@ export const classFormSchema = z
   .refine(timeOrder, { path: ['end'], message: 'validation.timeOrder' })
 export type ClassForm = z.infer<typeof classFormSchema>
 
-export const slotFormSchema = z
-  .object({ id: z.uuid(), weekday: z.number().int().min(0).max(6), start: clock, end: clock })
-  .refine(timeOrder, { path: ['end'], message: 'validation.timeOrder' })
-export type SlotForm = z.infer<typeof slotFormSchema>
-
-export const EXCEPTION_TYPES = ['busyDay', 'busyTime', 'extraFree'] as const
-export type ExceptionType = (typeof EXCEPTION_TYPES)[number]
-
-export const exceptionFormSchema = z
-  .object({
-    id: z.uuid(),
-    type: z.enum(EXCEPTION_TYPES),
-    onDate: date,
-    start: z.string(),
-    end: z.string(),
-  })
-  .superRefine((v, ctx) => {
-    if (v.type === 'busyDay') return
-    for (const key of ['start', 'end'] as const) {
-      if (!v[key]) ctx.addIssue({ code: 'custom', path: [key], message: 'validation.required' })
-      else if (parseClock(v[key]) === null)
-        ctx.addIssue({ code: 'custom', path: [key], message: 'validation.time' })
-    }
-    if (v.start && v.end && !timeOrder(v))
-      ctx.addIssue({ code: 'custom', path: ['end'], message: 'validation.timeOrder' })
-  })
-export type ExceptionForm = z.infer<typeof exceptionFormSchema>
+export const dayFormSchema = z.object({
+  slots: z.array(
+    z
+      .object({ start: clock, end: clock, overClasses: z.boolean() })
+      .refine(timeOrder, { path: ['end'], message: 'validation.timeOrder' }),
+  ),
+  /** Daily study cap in hours (half-hour steps). */
+  capHours: z.number().min(0).max(24),
+  scope: z.enum(['day', 'weekday']),
+})
+export type DayForm = z.infer<typeof dayFormSchema>
