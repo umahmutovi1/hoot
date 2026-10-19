@@ -17,7 +17,7 @@ import type {
 import type { CardForm, SourceForm } from './schemas'
 
 // IDs come from the client (crypto.randomUUID()), so writes are idempotent upserts that the
-// offline queue (Stage 5) can replay.
+// offline queue (Stage 6) can replay.
 
 export const sourcesKey = (userId: string | undefined, subjectId: string | undefined) =>
   ['sources', userId, subjectId] as const

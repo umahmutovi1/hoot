@@ -1,5 +1,5 @@
 /**
- * "One line per unit" outline parser. Manual entry uses it now; AI import (Stage 8) produces the
+ * "One line per unit" outline parser. Manual entry uses it now; AI import (Stage 9) produces the
  * same `OutlineUnit` shape, so review, merge and saving are shared.
  *
  * Line format: `<label> <title> <pages>`, e.g. `2.1 Konvolucija 75` or `4 Fourierova 284-355`.
