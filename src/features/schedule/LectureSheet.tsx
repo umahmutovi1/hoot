@@ -74,7 +74,8 @@ function LectureForm({
   const [tab, setTab] = useState(0)
   const [picked, setPicked] = useState<Record<string, string>>({})
   const [note, setNote] = useState('')
-  const [date, setDate] = useState(() => classDate ?? localDay(new Date(), boundary))
+  const [today] = useState(() => localDay(new Date(), boundary))
+  const [date, setDate] = useState(() => classDate ?? today)
   const material = materials[Math.min(tab, materials.length - 1)]
   const current = material ? (picked[material.source.id] ?? previous(material.source.id)) : null
   const changed = materials.filter(
@@ -131,7 +132,7 @@ function LectureForm({
           <input
             type="date"
             value={date}
-            max={localDay(new Date(), boundary)}
+            max={today}
             onChange={(e) => e.target.value && setDate(e.target.value)}
             className={fieldInput}
           />
