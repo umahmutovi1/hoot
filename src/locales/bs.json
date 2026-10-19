@@ -251,7 +251,8 @@
     "tooLarge": "Prevelika vrijednost",
     "campaignStartOnlyForCampaign": "Početak se postavlja samo u kampanji",
     "rangeEnd": "Unesi najkasniji mogući datum",
-    "rangeOrder": "Najkasniji datum mora biti poslije najranijeg"
+    "rangeOrder": "Najkasniji datum mora biti poslije najranijeg",
+    "pageOrder": "Krajnja stranica mora biti poslije početne"
   },
   "common": {
     "cancel": "Odustani",
@@ -311,5 +312,10 @@
     "doneShort": "završeno",
     "delete": "Obriši rok",
     "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
+  },
+  "sources": {
+    "editor": {
+      "empty": "Upiši bar jednu jedinicu"
+    }
   }
 }
