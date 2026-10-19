@@ -1,0 +1,84 @@
+import type { Tables } from '@/types/database'
+import type {
+  AvailabilityException,
+  AvailabilityRule,
+  ClassEntry,
+  ExamSession,
+  Period,
+  PeriodKind,
+  WeekParity,
+} from '@/lib/schedule'
+import type { PaceLog } from '@/lib/pace'
+
+export type PeriodRow = Tables<'academic_periods'>
+export type TimetableRow = Tables<'timetable_entries'>
+export type RuleRow = Tables<'availability_rules'>
+export type ExceptionRow = Tables<'availability_exceptions'>
+export type LectureLogRow = Tables<'lecture_logs'>
+export type ClassKind = TimetableRow['kind']
+
+export const PERIOD_KINDS = ['teaching', 'partial_exams', 'exam', 'holiday'] as const
+export const EXAM_SESSIONS = ['regular', 'makeup'] as const
+export const CLASS_KINDS = ['lecture', 'exercise', 'lab', 'other'] as const
+export const WEEK_PARITIES = ['odd', 'even'] as const
+
+export function toPeriod(row: PeriodRow): Period {
+  return {
+    id: row.id,
+    kind: row.kind as PeriodKind,
+    examSession: (row.exam_session as ExamSession | null) ?? null,
+    title: row.title,
+    startsOn: row.starts_on,
+    endsOn: row.ends_on,
+  }
+}
+
+export type ClassWithRow = ClassEntry & { row: TimetableRow }
+
+export function toClass(row: TimetableRow): ClassWithRow {
+  return {
+    id: row.id,
+    subjectId: row.subject_id,
+    kind: row.kind,
+    weekday: row.weekday,
+    startMin: row.start_min,
+    endMin: row.end_min,
+    weekParity: (row.week_parity as WeekParity | null) ?? null,
+    validFrom: row.valid_from,
+    validTo: row.valid_to,
+    row,
+  }
+}
+
+export function toRule(row: RuleRow): AvailabilityRule {
+  return { weekday: row.weekday, startMin: row.start_min, endMin: row.end_min }
+}
+
+export function toException(row: ExceptionRow): AvailabilityException {
+  return {
+    onDate: row.on_date,
+    startMin: row.start_min,
+    endMin: row.end_min,
+    isBusy: row.is_busy,
+  }
+}
+
+export function toPaceLog(row: LectureLogRow): PaceLog {
+  return {
+    id: row.id,
+    onDate: row.on_date,
+    createdAt: row.created_at,
+    sourceId: row.source_id,
+    upToUnitId: row.up_to_unit_id,
+    cancelled: row.cancelled,
+  }
+}
+
+/** Entry ids cancelled on a date, from lecture logs. */
+export function cancelledOn(date: string, logs: LectureLogRow[]): Set<string> {
+  return new Set(
+    logs
+      .filter((l) => l.cancelled && l.on_date === date && l.timetable_entry_id)
+      .map((l) => l.timetable_entry_id!),
+  )
+}
