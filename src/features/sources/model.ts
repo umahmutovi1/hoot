@@ -130,3 +130,24 @@ export function formatMinutes(minutes: number): { hours: number; minutes: number
   const total = Math.max(0, Math.round(minutes))
   return { hours: Math.floor(total / 60), minutes: total % 60 }
 }
+
+export function topicsOfUnit(unitId: string, topics: TopicWithUnits[]): TopicWithUnits[] {
+  return topics.filter((t) => t.unit_topics.some((l) => l.unit_id === unitId))
+}
+
+/**
+ * Units of the other kind (chapter ↔ question) that share at least one topic with the unit:
+ * "Povezana ispitna pitanja" on a chapter, related chapters on a question.
+ */
+export function relatedUnits(unit: Unit, topics: TopicWithUnits[], units: Unit[]): Unit[] {
+  const shared = new Set(
+    topicsOfUnit(unit.id, topics).flatMap((t) => t.unit_topics.map((l) => l.unit_id)),
+  )
+  return units.filter(
+    (u) =>
+      u.id !== unit.id &&
+      shared.has(u.id) &&
+      u.archived_at === null &&
+      (u.kind === 'question') !== (unit.kind === 'question'),
+  )
+}

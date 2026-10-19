@@ -445,6 +445,65 @@
       "slideFrom": "From slide",
       "slideTo": "To slide",
       "rangeHint": "Without an end, it runs to the start of the next unit."
+    },
+    "detail": {
+      "more": "More options",
+      "archivedBadge": "Archived",
+      "status": "Status",
+      "difficulty": "Difficulty",
+      "yours": "yours · initial: {{prior}}",
+      "prior": "initial estimate",
+      "estimate": "Time estimate",
+      "estimateHint": "from size and difficulty",
+      "topics": "Topics",
+      "addTopic": "Topic",
+      "editTopics": "Edit",
+      "relatedQuestions": "Related exam questions",
+      "relatedChapters": "Related chapters",
+      "answer": "Answer",
+      "noAnswer": "No answer yet. Tap to write one.",
+      "notes": "Notes",
+      "noNotes": "No notes yet. Tap to write some.",
+      "editText": "Edit",
+      "markdownHint": "Markdown: **bold**, - lists, formulas in $…$ or $$…$$.",
+      "edit": "Edit title and pages",
+      "archive": "Archive unit",
+      "restore": "Restore from archive",
+      "archiveHint": "An archived unit is left out of the plan and progress; restore it from the source screen.",
+      "rateTitle": "How hard was it?",
+      "rateBody": "Your rating adjusts the estimate of this source's remaining units. Tap again to remove it.",
+      "easy": "easy",
+      "hard": "very hard",
+      "partOf": "Part of unit {{label}}",
+      "position": {
+        "chapter": "Chapter {{n}} of {{total}}",
+        "question": "Question {{n}} of {{total}}"
+      },
+      "subUnits": "Sub-units",
+      "subUnitsHint": "Status is set on the sub-units; the chapter is computed from them."
+    },
+    "topics": {
+      "title": "Topics",
+      "body": "Topics link this subject's chapters and exam questions.",
+      "new": "New topic",
+      "newPlaceholder": "New topic, e.g. Convolution",
+      "add": "Add topic"
+    },
+    "cards": {
+      "title": "Cards",
+      "add": "+ Card",
+      "none": "No cards. A card is a question and answer for self-testing.",
+      "front": "Question",
+      "back": "Answer",
+      "frontPlaceholder": "e.g. What is Parseval's theorem?",
+      "edit": "Edit",
+      "showBack": "Show answer",
+      "showFront": "Show question",
+      "flipHint": "Tap a card to see the answer.",
+      "newTitle": "New card",
+      "editTitle": "Edit card",
+      "delete": "Delete card",
+      "confirmDelete": "Sure? Tap again to delete"
     }
   }
 }

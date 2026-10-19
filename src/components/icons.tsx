@@ -144,3 +144,9 @@ export const MoreIcon = ({ size = 20, ...props }: IconProps) => (
     <circle cx="19" cy="12" r="1.8" />
   </svg>
 )
+
+export const CheckIcon = (p: IconProps) => (
+  <Icon strokeWidth={2.2} {...p}>
+    <path d="M5 12l5 5 9-10" />
+  </Icon>
+)
