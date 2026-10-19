@@ -55,12 +55,165 @@
     "title": "Plan",
     "tabCalendar": "Kalendar",
     "tabSchedule": "Satnica",
-    "calendarEmpty": "Ispiti, rokovi i nastava pojavit će se ovdje.",
-    "scheduleEmpty": "Satnica raspoređuje današnje blokove u slobodne termine."
+    "scheduleEmpty": "Satnica raspoređuje današnje blokove u slobodne termine.",
+    "prevMonth": "Prethodni mjesec",
+    "nextMonth": "Sljedeći mjesec",
+    "legendExam": "Ispit",
+    "legendDeadline": "Rok",
+    "dayEmpty": "Nema ispita ni rokova. Plan učenja dolazi kad dodaš izvore.",
+    "examItem": "Ispit: {{subject}} · {{title}}",
+    "deadlineItem": "Rok: {{title}}",
+    "deadlineItemSubject": "Rok: {{title}} · {{subject}}",
+    "addDeadline": "Dodaj rok",
+    "legendPossibleExam": "Mogući ispit",
+    "possibleExamItem": "Mogući ispit: {{subject}} · {{title}}",
+    "possibleExamRange": "datum još nije objavljen · {{range}}"
   },
   "subjects": {
     "title": "Predmeti",
-    "empty": "Još nemaš predmeta."
+    "empty": "Još nemaš predmeta. Dodaj prvi: naziv i datum ispita su dovoljni.",
+    "examTitle": {
+      "final": "Završni",
+      "partial1": "I parcijala",
+      "partial2": "II parcijala",
+      "integral": "Integralni"
+    },
+    "new": "Novi",
+    "activeCount_one": "{{count}} aktivan",
+    "activeCount_few": "{{count}} aktivna",
+    "activeCount_other": "{{count}} aktivnih",
+    "archived": "Arhivirani predmeti ({{count}})",
+    "noUpcomingExam": "Nema nadolazećih ispita",
+    "days": {
+      "today": "danas",
+      "tomorrow": "sutra",
+      "inDays_one": "za {{count}} dan",
+      "inDays_few": "za {{count}} dana",
+      "inDays_other": "za {{count}} dana"
+    },
+    "color": {
+      "pink": "Roza",
+      "lavender": "Lavanda",
+      "blue": "Plava",
+      "green": "Zelena",
+      "orange": "Narandžasta",
+      "slate": "Siva"
+    },
+    "preset": {
+      "final": {
+        "title": "Samo završni",
+        "sub": "Jedan ispit, cijelo gradivo"
+      },
+      "partials": {
+        "title": "Dvije parcijale + integralni",
+        "sub": "Svaka parcijala ima svoj dio gradiva"
+      },
+      "custom": {
+        "title": "Prilagođeno",
+        "sub": "Dodaj ispite ručno"
+      }
+    },
+    "format": {
+      "written": "Pismeni",
+      "oral": "Usmeni",
+      "combined": "Kombinovani",
+      "project": "Projekat",
+      "other": "Ostalo"
+    },
+    "scope": {
+      "all": "Cijelo gradivo",
+      "part": "Dio gradiva"
+    },
+    "priority": {
+      "1": {
+        "name": "Lagano",
+        "description": "Dovoljno je proći"
+      },
+      "2": {
+        "name": "Manje bitan",
+        "description": "Bez velikih ambicija"
+      },
+      "3": {
+        "name": "Standardno",
+        "description": "Standardno"
+      },
+      "4": {
+        "name": "Važan",
+        "description": "Želim dobru ocjenu"
+      },
+      "5": {
+        "name": "Uslovni",
+        "description": "Mora se položiti"
+      }
+    },
+    "mode": {
+      "regular": {
+        "title": "Redovno",
+        "sub": "Od danas, u korak s predavanjima"
+      },
+      "campaign": {
+        "title": "Kampanja",
+        "sub": "Kreće pred ispit, app izračuna kad"
+      }
+    },
+    "form": {
+      "newTitle": "Novi predmet",
+      "editTitle": "Uredi predmet",
+      "name": "Naziv",
+      "namePlaceholder": "npr. Signali i sistemi",
+      "color": "Boja",
+      "howExamined": "Kako se polaže?",
+      "exams": "Ispiti",
+      "addExam": "Dodaj ispit",
+      "scopeLater": "Obim gradiva po ispitu biraš kad dodaš izvore.",
+      "examTitle": "Naziv ispita",
+      "examTitlePlaceholder": "Naziv ispita",
+      "examDate": "Datum ispita",
+      "examFormat": "Format ispita",
+      "pickDate": "Datum",
+      "removeExam": "Ukloni ispit",
+      "contingent": "Samo ako zatreba",
+      "dateTentative": "Okvirni datum (još nije objavljen)",
+      "notPlannedAhead": "ne planira se unaprijed",
+      "dateNotConfirmed": "datum nije objavljen",
+      "advanced": "Napredno",
+      "advancedSummary": "Prioritet {{priority}} · {{mode}}",
+      "priority": "Prioritet",
+      "priorityDescription": "{{n}} · {{name}}: {{description}}",
+      "howStudied": "Kako učiš ovaj predmet?",
+      "campaignStart": "Početak",
+      "campaignStartComputed": "Izračunava se iz plana",
+      "campaignStartManual": "Ručno · {{date}}",
+      "setManually": "Postavi ručno",
+      "useComputed": "Vrati izračunato",
+      "campaignHint": "Izračunato unazad od ispita, iz preostalog gradiva i tvoje dostupnosti, uz 20% rezerve. Do tada se predmet ne planira.",
+      "create": "Kreiraj predmet",
+      "archive": "Arhiviraj predmet",
+      "unarchive": "Vrati iz arhive",
+      "rangeBetween": "Moguće između",
+      "rangeAnd": "i",
+      "rangeEarliest": "Najranije",
+      "rangeLatest": "Najkasnije"
+    },
+    "detail": {
+      "edit": "Uredi predmet",
+      "priorityChip": "Prioritet {{n}} · {{name}}",
+      "nextExam": "{{title}} {{when}}.",
+      "addExam": "+ Ispit",
+      "noExams": "Još nema ispita.",
+      "tentative": "datum okvirno",
+      "contingent": "samo ako zatreba",
+      "passed": "položen",
+      "tentativeUntil": "datum okvirno, najkasnije {{date}}"
+    },
+    "campaign": {
+      "label": "KAMPANJA",
+      "startsOn": "Kreće {{date}} · {{when}}",
+      "computedLater": "Početak se računa iz plana",
+      "body": "Do tada se predmet ne planira, osim ponavljanja već naučenog. Početak se računa iz preostalog gradiva i tvoje dostupnosti, uz 20% rezerve.",
+      "move": "Pomjeri",
+      "startNow": "Počni odmah"
+    }
   },
   "progress": {
     "title": "Napredak",
@@ -78,5 +231,74 @@
     "language": "Jezik",
     "timezone": "Vremenska zona",
     "signOut": "Odjava"
+  },
+  "validation": {
+    "required": "Obavezno polje",
+    "tooLong": "Predugo",
+    "date": "Neispravan datum",
+    "positive": "Mora biti veće od 0",
+    "tooLarge": "Prevelika vrijednost",
+    "campaignStartOnlyForCampaign": "Početak se postavlja samo u kampanji",
+    "rangeEnd": "Unesi najkasniji mogući datum",
+    "rangeOrder": "Najkasniji datum mora biti poslije najranijeg"
+  },
+  "common": {
+    "cancel": "Odustani",
+    "save": "Snimi",
+    "close": "Zatvori"
+  },
+  "profile": {
+    "welcomeTitle": "Kako da te zovem?",
+    "welcomeBody": "Ime koristim u pozdravu na početku dana. Možeš ga promijeniti u Postavkama.",
+    "nameLabel": "Ime",
+    "namePlaceholder": "npr. Uma",
+    "continue": "Nastavi",
+    "saveFailed": "Snimanje nije uspjelo. Pokušaj ponovo.",
+    "editName": "Promijeni ime"
+  },
+  "exams": {
+    "newTitle": "Novi ispit",
+    "editTitle": "Uredi ispit",
+    "kindLabel": "Vrsta",
+    "scopeAll": "Cijelo gradivo",
+    "delete": "Obriši ispit",
+    "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
+    "kind": {
+      "partial": "Parcijala",
+      "final": "Završni",
+      "integral": "Integralni",
+      "makeup": "Popravni",
+      "other": "Ostalo"
+    },
+    "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum."
+  },
+  "deadlines": {
+    "section": "Rokovi",
+    "add": "+ Rok",
+    "none": "Nema rokova.",
+    "newTitle": "Novi rok",
+    "editTitle": "Uredi rok",
+    "title": "Naziv",
+    "titlePlaceholder": "npr. Seminarski rad",
+    "subject": "Predmet",
+    "noSubject": "Bez predmeta",
+    "kindLabel": "Vrsta",
+    "kind": {
+      "assignment": "Zadaća / seminarski",
+      "custom": "Vlastiti rok"
+    },
+    "date": "Rok",
+    "inPlan": "Ulazi u plan učenja",
+    "estimate": "Procjena",
+    "estimateHint": "koliko sati rada treba",
+    "hours": "{{hours}} h",
+    "less": "Manje",
+    "more": "Više",
+    "notes": "Bilješka",
+    "optional": "(opcionalno)",
+    "done": "Završeno",
+    "doneShort": "završeno",
+    "delete": "Obriši rok",
+    "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
   }
 }

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Novi predmet · napredno</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+input::placeholder{color:#8A84A0}
+</style>
+</helmet>
+<div style="width: 390px; height: 1640px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Predmeti.dc.html" aria-label="Zatvori" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D1A2B" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+<span style="font-size: 16px; font-weight: 600">Novi predmet</span>
+<span style="width: 44px"></span>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Naziv</span>
+<input value="Signali i sistemi" style="height: 54px; border: 2px solid #7C6BD6; border-radius: 18px; padding: 0 16px; font-family: Outfit, sans-serif; font-size: 16px; background: #FFFFFF; color: #1D1A2B">
+</label>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Boja</span>
+<div style="display: flex; gap: 10px" role="radiogroup" aria-label="Boja predmeta">
+<sc-for list="{{colors}}" as="c" hint-placeholder-count="6">
+<button role="radio" aria-label="{{c.name}}" onClick="{{c.pick}}" style="width: 44px; height: 44px; border-radius: 22px; border: 3px solid {{c.ring}}; background: {{c.hex}}; padding: 0"></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Kako se polaže?</span>
+<div style="display: flex; flex-direction: column; gap: 8px" role="radiogroup">
+<sc-for list="{{presets}}" as="p" hint-placeholder-count="3">
+<button role="radio" onClick="{{p.pick}}" style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 20px; border: 2px solid {{p.border}}; background: #FFFFFF; font-family: Outfit, sans-serif; text-align: left; color: #1D1A2B">
+<span style="width: 22px; height: 22px; border-radius: 11px; border: 2px solid {{p.ring}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{p.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{p.title}}</span><span style="font-size: 12px; color: #5B5670">{{p.sub}}</span></span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Ispiti</span>
+<sc-for list="{{exams}}" as="e" hint-placeholder-count="3">
+<div style="background: #FFFFFF; border-radius: 20px; padding: 14px 16px 6px; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: center; gap: 10px">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{e.name}}</span><span style="font-size: 12px; color: #5B5670">{{e.scope}}</span></div>
+<span style="height: 36px; padding: 0 12px; border-radius: 12px; background: #F1EFF7; font-size: 13px; font-weight: 600; display: flex; align-items: center">{{e.dateLabel}}</span>
+<span style="height: 36px; padding: 0 10px; border-radius: 12px; background: #F1EFF7; font-size: 13px; display: flex; align-items: center">{{e.fmt}}</span>
+</div>
+<div style="display: flex; gap: 18px; flex-wrap: wrap">
+<button role="switch" aria-checked="{{e.maybeAria}}" onClick="{{e.toggleMaybe}}" style="display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; min-height: 44px; font-family: Outfit, sans-serif; font-size: 13px; color: #1D1A2B"><span style="width: 40px; height: 24px; border-radius: 12px; background: {{e.maybeBg}}; padding: 2px; box-sizing: border-box; display: flex; justify-content: {{e.maybeJust}}"><span style="width: 20px; height: 20px; border-radius: 10px; background: #FFFFFF"></span></span>Samo ako zatreba</button>
+<button role="switch" aria-checked="{{e.approxAria}}" onClick="{{e.toggleApprox}}" style="display: flex; align-items: center; gap: 8px; border: none; background: transparent; padding: 0; min-height: 44px; font-family: Outfit, sans-serif; font-size: 13px; color: #1D1A2B"><span style="width: 40px; height: 24px; border-radius: 12px; background: {{e.approxBg}}; padding: 2px; box-sizing: border-box; display: flex; justify-content: {{e.approxJust}}"><span style="width: 20px; height: 20px; border-radius: 10px; background: #FFFFFF"></span></span>Okvirni datum</button>
+</div>
+</div>
+</sc-for>
+<span style="font-size: 12px; color: #5B5670; padding: 0 4px">Obim gradiva po ispitu biraš kad dodaš izvore.</span>
+</div>
+
+<div style="background: #FFFFFF; border-radius: 24px; display: flex; flex-direction: column">
+<button onClick="{{toggleOpen}}" aria-expanded="{{openAria}}" style="display: flex; align-items: center; gap: 12px; padding: 16px; min-height: 64px; border: none; background: transparent; font-family: Outfit, sans-serif; text-align: left; color: #1D1A2B">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">Napredno</span><span style="font-size: 13px; color: #5B5670">{{summary}}</span></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5670" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: {{chev}}"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<sc-if value="{{open}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 14px 16px 18px; border-top: 1px solid #F1EFF7; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 14px; font-weight: 600">Prioritet</span>
+<div role="radiogroup" aria-label="Prioritet" style="display: flex; gap: 6px">
+<sc-for list="{{prios}}" as="q" hint-placeholder-count="5">
+<button role="radio" aria-checked="{{q.aria}}" onClick="{{q.pick}}" style="flex: 1; height: 44px; border-radius: 14px; border: none; background: {{q.bg}}; color: {{q.fg}}; font-family: Outfit, sans-serif; font-size: 16px; font-weight: 600">{{q.n}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #5B5670">{{prioDesc}}</span>
+
+<span style="font-size: 14px; font-weight: 600; margin-top: 6px">Kako učiš ovaj predmet?</span>
+<div role="radiogroup" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2">
+<button role="radio" aria-checked="{{m.aria}}" onClick="{{m.pick}}" style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; border: 2px solid {{m.border}}; background: {{m.bg}}; font-family: Outfit, sans-serif; text-align: left; color: #1D1A2B">
+<span style="width: 22px; height: 22px; border-radius: 11px; border: 2px solid {{m.ring}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{m.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{m.title}}</span><span style="font-size: 12px; color: #5B5670">{{m.sub}}</span></span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{isCampaign}}" hint-placeholder-val="{{ false }}">
+<div style="background: #F6F4FB; border-radius: 18px; padding: 10px 8px 10px 14px; display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #5B5670">Početak</span><span style="font-size: 15px; font-weight: 600">{{startLabel}}</span></span>
+<button onClick="{{toggleManual}}" style="min-height: 44px; padding: 0 10px; border: none; background: transparent; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #4B3B8F">{{manualLink}}</button>
+</div>
+<span style="font-size: 12px; color: #5B5670; line-height: 1.4">Izračunato unazad od ispita, iz preostalog gradiva i tvoje dostupnosti, uz 20% rezerve. Do tada se predmet ne planira.</span>
+</sc-if>
+</div>
+</sc-if>
+</div>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px">
+<a href="DodajIzvor.dc.html" style="height: 56px; border-radius: 28px; background: #4B3B8F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">Kreiraj i dodaj izvor</a>
+<a href="Predmet.dc.html" style="height: 48px; border-radius: 24px; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">Izvore dodajem kasnije</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1640}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { preset: 'partials', color: 'pink', open: true, prio: 4, mode: 'campaign', manual: false, maybe: { int: true }, approx: { p2: true } };
+  }
+  renderVals() {
+    const s = this.state;
+    const cols = [['pink', '#C026B0', 'Roza'], ['lav', '#7C6BD6', 'Lavanda'], ['blue', '#2563EB', 'Plava'], ['green', '#1F8A70', 'Zelena'], ['orange', '#D97706', 'Narandžasta'], ['slate', '#475569', 'Siva']];
+    const ps = [
+      { id: 'final', title: 'Samo završni', sub: 'Jedan ispit, cijelo gradivo' },
+      { id: 'partials', title: 'Dvije parcijale + integralni', sub: 'Svaka parcijala ima svoj dio gradiva' },
+      { id: 'custom', title: 'Prilagođeno', sub: 'Dodaj ispite ručno' }
+    ];
+    const ex = s.preset === 'final'
+      ? [{ id: 'fin', name: 'Završni', scope: 'Cijelo gradivo', date: '20.01.', fmt: 'Pismeni' }]
+      : s.preset === 'custom' ? []
+      : [
+        { id: 'p1', name: 'I parcijala', scope: 'Dio gradiva', date: '28.10.', fmt: 'Pismeni' },
+        { id: 'p2', name: 'II parcijala', scope: 'Dio gradiva', date: '09.12.', fmt: 'Pismeni' },
+        { id: 'int', name: 'Integralni', scope: 'Cijelo gradivo', date: '27.01.', fmt: 'Pismeni' }
+      ];
+    const sw = (on) => ({ bg: on ? '#4B3B8F' : '#C9C3DE', just: on ? 'flex-end' : 'flex-start', aria: on ? 'true' : 'false' });
+    const pd = ['', 'Lagano, dovoljno je proći', 'Manje bitan, bez velikih ambicija', 'Standardno', 'Važan, želim dobru ocjenu', 'Uslovni, mora se položiti'];
+    const pn = ['', 'Lagano', 'Manje bitan', 'Standardno', 'Važan', 'Uslovni'];
+    const camp = s.mode === 'campaign';
+    return {
+      colors: cols.map(([id, hex, name]) => ({ hex, name, ring: s.color === id ? '#1D1A2B' : '#FFFFFF', pick: () => this.setState({ color: id }) })),
+      presets: ps.map((p) => {
+        const on = s.preset === p.id;
+        return { ...p, border: on ? '#7C6BD6' : '#FFFFFF', ring: on ? '#4B3B8F' : '#C9C3DE', dot: on ? '#4B3B8F' : 'transparent', pick: () => this.setState({ preset: p.id }) };
+      }),
+      exams: ex.map((e) => {
+        const m = !!s.maybe[e.id], a = !!s.approx[e.id];
+        const ms = sw(m), as = sw(a);
+        return {
+          ...e,
+          scope: e.scope + (m ? ' · ne planira se unaprijed' : '') + (a ? ' · datum nije potvrđen' : ''),
+          dateLabel: (a ? '~' : '') + e.date,
+          maybeBg: ms.bg, maybeJust: ms.just, maybeAria: ms.aria,
+          approxBg: as.bg, approxJust: as.just, approxAria: as.aria,
+          toggleMaybe: () => this.setState({ maybe: { ...s.maybe, [e.id]: !m } }),
+          toggleApprox: () => this.setState({ approx: { ...s.approx, [e.id]: !a } })
+        };
+      }),
+      open: s.open, openAria: s.open ? 'true' : 'false', chev: s.open ? 'rotate(180deg)' : 'none',
+      toggleOpen: () => this.setState({ open: !s.open }),
+      summary: 'Prioritet ' + s.prio + ' · ' + (camp ? 'Kampanja' : 'Redovno'),
+      prios: [1, 2, 3, 4, 5].map((n) => {
+        const on = s.prio === n;
+        return { n, aria: on ? 'true' : 'false', bg: on ? '#4B3B8F' : '#F1EFF7', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ prio: n }) };
+      }),
+      prioDesc: s.prio + ' · ' + pn[s.prio] + ': ' + pd[s.prio].charAt(0).toLowerCase() + pd[s.prio].slice(1),
+      modes: [
+        { id: 'regular', title: 'Redovno', sub: 'Od danas, u korak s predavanjima' },
+        { id: 'campaign', title: 'Kampanja', sub: 'Kreće pred ispit, app izračuna kad' }
+      ].map((m) => {
+        const on = s.mode === m.id;
+        return { ...m, aria: on ? 'true' : 'false', border: on ? '#7C6BD6' : '#EEEBF5', bg: on ? '#F6F4FB' : '#FFFFFF', ring: on ? '#4B3B8F' : '#C9C3DE', dot: on ? '#4B3B8F' : 'transparent', pick: () => this.setState({ mode: m.id }) };
+      }),
+      isCampaign: camp,
+      startLabel: s.manual ? 'Ručno · 25. nov' : 'Izračunat · ~2. dec',
+      manualLink: s.manual ? 'Vrati izračunato' : 'Postavi ručno',
+      toggleManual: () => this.setState({ manual: !s.manual })
+    };
+  }
+}
+</script>
+</body>
+</html>

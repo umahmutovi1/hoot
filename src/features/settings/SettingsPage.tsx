@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Avatar } from '@/components/Avatar'
 import { BackHeader } from '@/components/BackHeader'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { signOut } from '@/features/auth/api'
+import { DisplayNameForm } from './DisplayNameForm'
 import { useProfile } from './profile'
 import { useLocale } from './useLocale'
 
@@ -11,18 +13,36 @@ export function SettingsPage() {
   const { data: profile } = useProfile()
   const { locale, setLocale } = useLocale()
   const name = profile?.display_name ?? ''
+  const [editingName, setEditingName] = useState(false)
 
   return (
     <div className="flex min-h-[calc(100dvh-48px)] flex-col gap-3.5">
       <BackHeader title={t('settings.title')} fallback="/progress" />
 
-      <div className="flex items-center gap-3.5 rounded-card bg-surface p-4">
-        <Avatar name={name} className="size-[52px] text-xl" />
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[17px] font-semibold">{name}</span>
-          <span className="text-[13px] text-ink-muted">{t('settings.signedInWith')}</span>
+      {editingName ? (
+        <div className="rounded-card bg-surface p-4">
+          <DisplayNameForm
+            initialName={name}
+            submitLabel={t('common.save')}
+            inputClassName="bg-canvas"
+            onSaved={() => setEditingName(false)}
+            onCancel={() => setEditingName(false)}
+          />
         </div>
-      </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditingName(true)}
+          aria-label={t('profile.editName')}
+          className="flex items-center gap-3.5 rounded-card bg-surface p-4 text-left"
+        >
+          <Avatar name={name} className="size-[52px] text-xl" />
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[17px] font-semibold">{name}</span>
+            <span className="text-[13px] text-ink-muted">{t('settings.signedInWith')}</span>
+          </div>
+        </button>
+      )}
 
       <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
         {t('settings.general')}

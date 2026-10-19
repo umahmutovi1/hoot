@@ -15,7 +15,7 @@ body{margin:0}
 a{color:#4B3B8F}a:hover{color:#2F2363}
 </style>
 </helmet>
-<div style="width: 390px; height: 1300px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; position: relative; overflow: hidden; padding: 24px 20px 0">
+<div style="width: 390px; height: 1720px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; position: relative; overflow: hidden; padding: 24px 20px 0">
 
 <div style="display: flex; align-items: center; justify-content: space-between">
 <h1 style="margin: 0; font-size: 30px; font-weight: 700">Napredak</h1>
@@ -79,6 +79,31 @@ a{color:#4B3B8F}a:hover{color:#2F2363}
 </sc-for>
 </div>
 
+<div style="background: #FFFFFF; border-radius: 28px; padding: 18px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Jačina po temama</span><span style="font-size: 12px; color: #5B5670">najslabije prvo</span></div>
+<div role="group" aria-label="Filter po predmetu" style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{tsubs}}" as="f" hint-placeholder-count="4">
+<button onClick="{{f.pick}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: none; background: {{f.bg}}; color: {{f.fg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600">{{f.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{topics}}" as="t" hint-placeholder-count="6">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 124px; flex-shrink: 0; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 13px; font-weight: 500">{{t.name}}</span><span style="font-size: 11px; color: #6E6985">{{t.subj}}</span></span>
+<span style="flex: 1; height: 12px; border-radius: 6px; background: #F1EFF7; display: block"><span style="display: block; width: {{t.w}}; height: 12px; border-radius: 6px; background: {{t.c}}"></span></span>
+<span style="width: 38px; text-align: right; font-size: 13px; font-weight: 600">{{t.pct}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: #5B5670">
+<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #E08A2C"></span>ispod 60%</span>
+<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #E0B23A"></span>60–74%</span>
+<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #8DBF5A"></span>75–84%</span>
+<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #2E9E6A"></span>85%+</span>
+</div>
+<a href="ProvjeraZnanja.dc.html" style="height: 48px; border-radius: 24px; border: 2px solid #4B3B8F; box-sizing: border-box; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">Provjeri slabe teme</a>
+</div>
+
 <nav aria-label="Glavna navigacija" style="position: absolute; left: 0; right: 0; bottom: 0; height: 104px">
 <svg width="390" height="104" viewBox="0 0 390 104" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 -4px 16px rgba(75,59,143,0.12))"><path d="M0 40 Q0 12 28 12 H124 C148 12 150 56 195 56 C240 56 242 12 266 12 H362 Q390 12 390 40 V104 H0 Z" fill="#FFFFFF"></path></svg>
 <a href="PokreniSesiju.dc.html" aria-label="Pokreni sesiju" style="position: absolute; left: 161px; top: -22px; width: 68px; height: 68px; border-radius: 34px; background: #7C6BD6; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="7"></circle><path d="M12 10v3l2 2M10 3h4"></path></svg></a>
@@ -93,9 +118,9 @@ a{color:#4B3B8F}a:hover{color:#2F2363}
 </nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1300}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1720}}'>
 class Component extends DCLogic {
-  constructor(p) { super(p); this.state = { tab: 'week', ok: [] }; }
+  constructor(p) { super(p); this.state = { tab: 'week', ok: [], ts: 'all' }; }
   renderVals() {
     const week = this.state.tab === 'week';
     const acts = [
@@ -103,7 +128,16 @@ class Component extends DCLogic {
       ['b', 'Dodaj 2h u subotu za Signale'],
       ['c', 'Pogl. 4 prebaci na jutarnje termine']
     ];
+    const col = (v) => (v >= 85 ? '#2E9E6A' : v >= 75 ? '#8DBF5A' : v >= 60 ? '#E0B23A' : '#E08A2C');
+    const TP = [['Konvolucija', 'sig', 52], ['Bayesova teorema', 'vjer', 57], ['Z-transformacija', 'sig', 61], ['Funkcionalne zavisnosti', 'baze', 64], ['Uslovna vjerovatnoća', 'vjer', 70], ['Fourierov red', 'sig', 74], ['Normalizacija', 'baze', 88], ['SQL upiti', 'baze', 91]];
+    const SN = { sig: 'Signali', baze: 'Baze', vjer: 'Vjerovatnoća' };
+    const ts = this.state.ts;
     return {
+      tsubs: [['all', 'Svi'], ['sig', 'Signali'], ['baze', 'Baze'], ['vjer', 'Vjerovatnoća']].map(([id, label]) => {
+        const on = ts === id;
+        return { label, bg: on ? '#1D1A2B' : '#F1EFF7', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ ts: id }) };
+      }),
+      topics: TP.filter((x) => ts === 'all' || x[1] === ts).map(([name, sb, v]) => ({ name, subj: SN[sb], pct: v + '%', w: v + '%', c: col(v) })),
       weekBg: week ? '#FFFFFF' : 'transparent', monthBg: week ? 'transparent' : '#FFFFFF',
       toWeek: () => this.setState({ tab: 'week' }), toMonth: () => this.setState({ tab: 'month' }),
       hours: week ? '7h 15m' : '31h 40m', fulfil: week ? '73%' : '78%', sessions: week ? '9' : '38',

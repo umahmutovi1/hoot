@@ -16,6 +16,7 @@ Koristi uvijek isti `<Mascot pose="reading" size={120} />` komponent:
 | `timer` | Sheet "Šta učiš sad?" (timer dugme) | 84 px, lijevo od naslova | PokreniSesiju.dc.html |
 | `celebrating` | Kraj sesije, umjesto kvačice | 140 px, centrirano | KrajSesije.dc.html |
 | `celebrating` | Položen ispit / unesen rezultat (toast ili modal) | 120 px | — (isti stil kao KrajSesije) |
+| `celebrating` | Sažetak provjere znanja | 120 px, centrirano | ProvjeraSazetak.dc.html |
 | `reading-head` | Avatar strategista: savjet na "Danas" i sedmični pregled | 52 px | Danas.dc.html, Napredak.dc.html |
 | `sleeping-head` | Replan sheet "Plan je ažuriran" (propušten blok) | 76 px, gore desno | Replan.dc.html |
 | `celebrating-head` | Web Push notifikacije (ikona), recall gate "Sjećam se" potvrda | 48–72 px | — |

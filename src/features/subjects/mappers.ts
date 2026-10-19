@@ -1,0 +1,91 @@
+import type { TablesInsert } from '@/types/database'
+import {
+  dueAtFromDate,
+  examAtFromDate,
+  isSubjectColor,
+  localDateOf,
+  type Assessment,
+  type Deadline,
+  type StudyMode,
+  type SubjectWithAssessments,
+} from './model'
+import type { AssessmentForm, DeadlineForm, SubjectForm } from './schemas'
+
+export function toSubjectRow(form: SubjectForm): TablesInsert<'subjects'> {
+  return {
+    id: form.id,
+    name: form.name,
+    color: form.color,
+    priority: form.priority,
+    study_mode: form.studyMode,
+    campaign_start_on: form.studyMode === 'campaign' ? form.campaignStartOn : null,
+  }
+}
+
+export function toAssessmentRow(
+  subjectId: string,
+  form: AssessmentForm,
+): TablesInsert<'assessments'> {
+  return {
+    id: form.id,
+    subject_id: subjectId,
+    kind: form.kind,
+    title: form.title,
+    at: examAtFromDate(form.date),
+    format: form.format,
+    scope_all: form.scopeAll,
+    contingent: form.contingent,
+    date_tentative: form.dateTentative,
+    at_latest: form.dateTentative && form.dateLatest ? examAtFromDate(form.dateLatest) : null,
+  }
+}
+
+export function toDeadlineRow(form: DeadlineForm): TablesInsert<'deadlines'> {
+  return {
+    id: form.id,
+    subject_id: form.subjectId,
+    title: form.title,
+    kind: form.kind,
+    due_at: dueAtFromDate(form.date),
+    est_minutes: form.estHours === null ? null : Math.round(form.estHours * 60),
+    notes: form.notes || null,
+  }
+}
+
+export function assessmentToForm(a: Assessment): AssessmentForm {
+  return {
+    id: a.id,
+    kind: a.kind,
+    title: a.title,
+    date: localDateOf(a.at),
+    format: a.format,
+    scopeAll: a.scope_all,
+    contingent: a.contingent,
+    dateTentative: a.date_tentative,
+    dateLatest: a.at_latest ? localDateOf(a.at_latest) : null,
+  }
+}
+
+export function subjectToForm(s: SubjectWithAssessments): SubjectForm {
+  return {
+    id: s.id,
+    name: s.name,
+    color: isSubjectColor(s.color) ? s.color : 'lavender',
+    priority: s.priority,
+    studyMode: s.study_mode as StudyMode,
+    campaignStartOn: s.campaign_start_on,
+    assessments: [...s.assessments].sort((a, b) => a.at.localeCompare(b.at)).map(assessmentToForm),
+  }
+}
+
+export function deadlineToForm(d: Deadline): DeadlineForm {
+  return {
+    id: d.id,
+    subjectId: d.subject_id,
+    title: d.title,
+    kind: d.kind,
+    date: localDateOf(d.due_at),
+    estHours: d.est_minutes === null ? null : d.est_minutes / 60,
+    notes: d.notes,
+  }
+}

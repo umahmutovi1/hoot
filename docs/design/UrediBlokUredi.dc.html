@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Uredi blok</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B3B8F}a:hover{color:#2F2363}
+</style>
+</helmet>
+<div style="width: 390px; height: 1080px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; position: relative; overflow: hidden">
+<div aria-hidden="true" style="padding: 24px 20px; display: flex; flex-direction: column; gap: 10px">
+<div style="height: 44px; width: 120px; border-radius: 22px; background: #FFFFFF"></div>
+<div style="height: 90px; border-radius: 28px; background: #FFFFFF"></div>
+</div>
+<div style="position: absolute; inset: 0; background: rgba(29,26,43,0.45)"></div>
+
+<div role="dialog" aria-label="{{title}}" style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-radius: 32px 32px 0 0; padding: 12px 20px 24px; display: flex; flex-direction: column; gap: 16px">
+<span style="width: 40px; height: 5px; border-radius: 3px; background: #DCD7EA; align-self: center"></span>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 700">{{title}}</h1>
+<sc-if value="{{hasSub}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 14px; color: #5B5670">{{sub}}</p></sc-if>
+</div>
+
+<sc-if value="{{isForm}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Predmet</span>
+<div role="radiogroup" style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{subjects}}" as="s" hint-placeholder-count="3">
+<button role="radio" aria-checked="{{s.aria}}" onClick="{{s.pick}}" style="height: 40px; padding: 0 14px; border-radius: 20px; border: 2px solid {{s.border}}; background: {{s.bg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #1D1A2B; display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{s.color}}"></span>{{s.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Tip</span>
+<div role="radiogroup" style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{types}}" as="t" hint-placeholder-count="5">
+<button role="radio" aria-checked="{{t.aria}}" onClick="{{t.pick}}" style="height: 38px; padding: 0 12px; border-radius: 19px; border: none; background: {{t.bg}}; color: {{t.fg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600">{{t.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Jedinice <span style="font-weight: 400; color: #5B5670">(opcionalno)</span></span>
+<div role="group" style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{units}}" as="u" hint-placeholder-count="5">
+<button role="checkbox" aria-checked="{{u.aria}}" onClick="{{u.toggle}}" style="height: 36px; padding: 0 12px; border-radius: 12px; border: 1px solid {{u.border}}; background: {{u.bg}}; color: {{u.fg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600">{{u.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Dan</span>
+<div role="radiogroup" style="display: flex; gap: 6px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="5">
+<button role="radio" aria-checked="{{d.aria}}" onClick="{{d.pick}}" style="flex: 1; height: 56px; border-radius: 16px; border: none; background: {{d.bg}}; color: {{d.fg}}; font-family: Outfit, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 0"><span style="font-size: 13px; font-weight: 600">{{d.top}}</span><span style="font-size: 11px">{{d.bottom}}</span></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">Trajanje</span><span style="font-size: 12px; color: #5B5670">najmanje 15 min</span></span>
+<span style="display: flex; align-items: center; gap: 8px">
+<button onClick="{{dec}}" aria-label="Kraće" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #DCD7EA; background: #FFFFFF; font-size: 20px; color: #4B3B8F">−</button>
+<span style="min-width: 64px; text-align: center; font-size: 17px; font-weight: 700">{{durLabel}}</span>
+<button onClick="{{inc}}" aria-label="Duže" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #DCD7EA; background: #FFFFFF; font-size: 20px; color: #4B3B8F">+</button>
+</span>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600">Vrijeme <span style="font-weight: 400; color: #5B5670">(opcionalno)</span></span><span style="font-size: 12px; color: #5B5670">{{timeHint}}</span></span>
+<span style="display: flex; align-items: center; gap: 10px">
+<sc-if value="{{timeOn}}" hint-placeholder-val="{{ false }}"><span style="height: 40px; padding: 0 14px; border-radius: 14px; background: #F1EFF7; font-size: 15px; font-weight: 600; display: flex; align-items: center">{{timeLabel}}</span></sc-if>
+<button role="switch" aria-checked="{{timeAria}}" aria-label="Postavi vrijeme" onClick="{{toggleTime}}" style="width: 52px; height: 32px; border-radius: 16px; border: none; background: {{swBg}}; padding: 3px; display: flex; justify-content: {{swJust}}"><span style="width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF"></span></button>
+</span>
+</div>
+
+<sc-if value="{{isEdit}}" hint-placeholder-val="{{ false }}">
+<div style="background: #F6F4FB; border-radius: 18px; padding: 12px 14px; display: flex; gap: 10px; align-items: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4B3B8F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+<span style="font-size: 13px; line-height: 1.35; color: #3B2D82">Kad ga izmijeniš, plan ga više neće pomjerati.</span>
+</div>
+</sc-if>
+
+<a href="Plan.dc.html" style="height: 56px; border-radius: 28px; background: #4B3B8F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">Snimi</a>
+<sc-if value="{{isEdit}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{askDelete}}" style="height: 44px; border: none; background: transparent; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #B42318">Obriši blok</button>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{isDelete}}" hint-placeholder-val="{{ false }}">
+<div role="radiogroup" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{delOpts}}" as="o" hint-placeholder-count="2">
+<button role="radio" aria-checked="{{o.aria}}" onClick="{{o.pick}}" style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; border: 2px solid {{o.border}}; background: {{o.bg}}; font-family: Outfit, sans-serif; text-align: left; color: #1D1A2B">
+<span style="width: 22px; height: 22px; border-radius: 11px; border: 2px solid {{o.ring}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{o.dot}}"></span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{o.title}}</span><span style="font-size: 12px; color: #5B5670">{{o.sub}}</span></span>
+</button>
+</sc-for>
+</div>
+<a href="Plan.dc.html" style="height: 56px; border-radius: 28px; background: #B42318; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">Obriši</a>
+<button onClick="{{cancelDelete}}" style="height: 48px; border: none; background: transparent; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #4B3B8F">Odustani</button>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    const mode = 'edit';
+    this.state = mode === 'new'
+      ? { mode, subj: 'baze', type: 'reading', units: [], day: 'mon', dur: 45, timeOn: false, del: 'move' }
+      : { mode, subj: 'sig', type: 'reading', units: ['4.6', '4.7'], day: 'wed', dur: 50, timeOn: true, del: 'move' };
+  }
+  renderVals() {
+    const s = this.state;
+    const subs = [['sig', 'Signali', '#C026B0', '#FBE3F6'], ['baze', 'Baze', '#7C6BD6', '#E9E4FB'], ['vjer', 'Vjerovatnoća', '#2563EB', '#E3EDFD']];
+    const U = { sig: ['4.4', '4.5', '4.6', '4.7', '5.1'], baze: ['5.1', '5.2', '5.3', '5.4'], vjer: ['3.1', '3.2', 'P1–P12'] };
+    const T = [['reading', 'Čitanje'], ['problems', 'Zadaci'], ['review', 'Ponavljanje'], ['questions', 'Pitanja'], ['deadline', 'Rok']];
+    const D = [['mon', 'Danas', '19.'], ['tue', 'Sutra', '20.'], ['wed', 'Sri', '21.'], ['thu', 'Čet', '22.'], ['fri', 'Pet', '23.']];
+    const isDelete = s.mode === 'delete';
+    const titles = { new: 'Novi blok', edit: 'Uredi blok', delete: 'Obriši blok?' };
+    const subj = subs.find((x) => x[0] === s.subj);
+    return {
+      title: titles[s.mode],
+      hasSub: s.mode !== 'new',
+      sub: isDelete ? 'Signali — 4.6–4.7 · sri, 21. okt · 50 min' : 'Signali · sri, 21. okt · ručno uređen',
+      isForm: !isDelete, isEdit: s.mode === 'edit', isDelete,
+      subjects: subs.map(([id, label, color, tint]) => {
+        const on = s.subj === id;
+        return { label, color, aria: on ? 'true' : 'false', border: on ? color : '#EEEBF5', bg: on ? tint : '#FFFFFF', pick: () => this.setState({ subj: id, units: [] }) };
+      }),
+      types: T.map(([id, label]) => {
+        const on = s.type === id;
+        return { label, aria: on ? 'true' : 'false', bg: on ? '#4B3B8F' : '#F1EFF7', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ type: id }) };
+      }),
+      units: U[s.subj].map((label) => {
+        const on = s.units.includes(label);
+        return { label, aria: on ? 'true' : 'false', border: on ? '#4B3B8F' : '#DCD7EA', bg: on ? '#E9E4FB' : '#FFFFFF', fg: on ? '#2F2363' : '#1D1A2B',
+          toggle: () => this.setState({ units: on ? s.units.filter((x) => x !== label) : [...s.units, label] }) };
+      }),
+      days: D.map(([id, top, bottom]) => {
+        const on = s.day === id;
+        return { top, bottom, aria: on ? 'true' : 'false', bg: on ? '#1D1A2B' : '#F1EFF7', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ day: id }) };
+      }),
+      durLabel: s.dur + ' min',
+      dec: () => this.setState({ dur: Math.max(15, s.dur - 5) }),
+      inc: () => this.setState({ dur: Math.min(240, s.dur + 5) }),
+      timeOn: s.timeOn, timeLabel: s.mode === 'new' ? '09:00' : '17:00',
+      timeHint: s.timeOn ? 'Fiksan termin u satnici' : 'Bez termina, plan ga smjesti u dan',
+      timeAria: s.timeOn ? 'true' : 'false', swBg: s.timeOn ? '#4B3B8F' : '#C9C3DE', swJust: s.timeOn ? 'flex-end' : 'flex-start',
+      toggleTime: () => this.setState({ timeOn: !s.timeOn }),
+      askDelete: () => this.setState({ mode: 'delete' }),
+      cancelDelete: () => this.setState({ mode: 'edit' }),
+      delOpts: [
+        { id: 'move', title: 'Prebaci gradivo na druge dane', sub: 'Plan ga rasporedi od sutra' },
+        { id: 'drop', title: 'Izbaci iz plana', sub: '4.6–4.7 ne ulaze u I parcijalu' }
+      ].map((o) => {
+        const on = s.del === o.id;
+        return { ...o, aria: on ? 'true' : 'false', border: on ? '#7C6BD6' : '#EEEBF5', bg: on ? '#F6F4FB' : '#FFFFFF', ring: on ? '#4B3B8F' : '#C9C3DE', dot: on ? '#4B3B8F' : 'transparent', pick: () => this.setState({ del: o.id }) };
+      }),
+      subjName: subj[1]
+    };
+  }
+}
+</script>
+</body>
+</html>

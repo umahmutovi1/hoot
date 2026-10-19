@@ -1,9 +1,9 @@
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { EmptyCard } from '@/components/EmptyCard'
 import { Mascot } from '@/components/Mascot'
 import { PageTitle } from '@/components/PageTitle'
 import { cn } from '@/lib/utils'
+import { CalendarView } from './CalendarView'
 
 export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
   const { t } = useTranslation()
@@ -33,7 +33,7 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
         ))}
       </div>
       {tab === 'calendar' ? (
-        <EmptyCard>{t('plan.calendarEmpty')}</EmptyCard>
+        <CalendarView />
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-card-lg bg-surface p-6 text-center">
           <Mascot pose="timer-head" size={96} />

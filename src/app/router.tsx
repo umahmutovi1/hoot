@@ -1,10 +1,14 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
+import { RequireName } from '@/features/onboarding/RequireName'
+import { WelcomePage } from '@/features/onboarding/WelcomePage'
 import { PlanPage } from '@/features/plan/PlanPage'
 import { ProgressPage } from '@/features/progress/ProgressPage'
 import { SessionStartPage } from '@/features/session/SessionStartPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
+import { SubjectFormPage } from '@/features/subjects/SubjectFormPage'
+import { SubjectPage } from '@/features/subjects/SubjectPage'
 import { SubjectsPage } from '@/features/subjects/SubjectsPage'
 import { TodayPage } from '@/features/today/TodayPage'
 import { AppShell } from './layout/AppShell'
@@ -16,20 +20,32 @@ export const router = createBrowserRouter([
     element: <RequireAuth />,
     children: [
       {
-        element: <AppShell />,
-        children: [
-          { index: true, element: <TodayPage /> },
-          { path: 'plan', element: <PlanPage tab="calendar" /> },
-          { path: 'plan/schedule', element: <PlanPage tab="schedule" /> },
-          { path: 'subjects', element: <SubjectsPage /> },
-          { path: 'progress', element: <ProgressPage /> },
-        ],
+        element: <PlainLayout />,
+        children: [{ path: 'welcome', element: <WelcomePage /> }],
       },
       {
-        element: <PlainLayout />,
+        element: <RequireName />,
         children: [
-          { path: 'settings', element: <SettingsPage /> },
-          { path: 'session/start', element: <SessionStartPage /> },
+          {
+            element: <AppShell />,
+            children: [
+              { index: true, element: <TodayPage /> },
+              { path: 'plan', element: <PlanPage tab="calendar" /> },
+              { path: 'plan/schedule', element: <PlanPage tab="schedule" /> },
+              { path: 'subjects', element: <SubjectsPage /> },
+              { path: 'progress', element: <ProgressPage /> },
+            ],
+          },
+          {
+            element: <PlainLayout />,
+            children: [
+              { path: 'settings', element: <SettingsPage /> },
+              { path: 'subjects/new', element: <SubjectFormPage /> },
+              { path: 'subjects/:id', element: <SubjectPage /> },
+              { path: 'subjects/:id/edit', element: <SubjectFormPage /> },
+              { path: 'session/start', element: <SessionStartPage /> },
+            ],
+          },
         ],
       },
     ],

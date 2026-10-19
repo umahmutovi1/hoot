@@ -16,6 +16,9 @@
   --color-ink-placeholder: #8a84a0;
   --color-line: #dcd7ea;
   --color-track: #e3dfef;
+  --color-hairline: #eeebf5;
+  --color-canvas-soft: #f6f4fb;
+  --color-radio-ring: #c9c3de;
 
   /* Brand */
   --color-brand: #4b3b8f;
@@ -28,19 +31,51 @@
   --color-mascot-halo: #e3dcfa;
   --color-mascot-halo-strong: #cbbff4;
 
-  /* Subjects */
+  /* Subjects: strong (bar, dot), soft (tiles, hero), track (bar background),
+     deep (icons, "in 9 days"), ink (percent, hero title). Pink, lavender and blue
+     come from the mockups; green, orange and slate are derived from their picker colors. */
   --color-subject-pink: #c026b0;
   --color-subject-pink-soft: #fbe3f6;
+  --color-subject-pink-track: #f6e8f3;
+  --color-subject-pink-deep: #7a1f6f;
+  --color-subject-pink-ink: #5b1252;
   --color-subject-lavender: #7c6bd6;
   --color-subject-lavender-soft: #e9e4fb;
+  --color-subject-lavender-track: #eeebf5;
+  --color-subject-lavender-deep: #4b3b8f;
+  --color-subject-lavender-ink: #2f2363;
   --color-subject-blue: #2563eb;
   --color-subject-blue-soft: #e3edfd;
+  --color-subject-blue-track: #e9f0fc;
+  --color-subject-blue-deep: #2a5bb0;
+  --color-subject-blue-ink: #0f2b5c;
+  --color-subject-green: #1f8a70;
+  --color-subject-green-soft: #dcefea;
+  --color-subject-green-track: #e8f4f0;
+  --color-subject-green-deep: #1f6b5a;
+  --color-subject-green-ink: #12443a;
+  --color-subject-orange: #d97706;
+  --color-subject-orange-soft: #fdebd3;
+  --color-subject-orange-track: #fdf1e2;
+  --color-subject-orange-deep: #9a4b0b;
+  --color-subject-orange-ink: #5c3208;
+  --color-subject-slate: #475569;
+  --color-subject-slate-soft: #e5e8ee;
+  --color-subject-slate-track: #eef0f4;
+  --color-subject-slate-deep: #334155;
+  --color-subject-slate-ink: #1e293b;
 
   /* Status */
   --color-success: #1f6b5a;
   --color-success-soft: #dcefea;
   --color-warning: #9a4b0b;
   --color-warning-soft: #fdebd3;
+  --color-warning-ink: #5c3208;
+  --color-warning-muted: #7a4210;
+
+  /* Calendar day highlights (Plan mockup legend) */
+  --color-calendar-exam: #f2b8e8;
+  --color-calendar-deadline: #fbd5a8;
   --color-danger: #b42318;
 
   /* Radii: inputs 18px, cards 24–28px, pills full */

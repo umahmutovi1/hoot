@@ -1,0 +1,34 @@
+import type { ReactNode } from 'react'
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+
+interface BottomSheetProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  subtitle?: string
+  children: ReactNode
+}
+
+/** Bottom sheet as in the UrediBlok mockups: white, 32 px top radius, handle, 22 px title. */
+export function BottomSheet({ open, onOpenChange, title, subtitle, children }: BottomSheetProps) {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="bottom"
+        showCloseButton={false}
+        className="mx-auto max-h-[92dvh] w-full max-w-[430px] gap-4 overflow-y-auto rounded-t-[32px] border-none bg-surface px-5 pt-3 pb-[calc(24px+env(safe-area-inset-bottom))] text-ink shadow-none"
+      >
+        <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-full bg-line" />
+        <div className="flex flex-col gap-1">
+          <SheetTitle className="text-[22px] font-bold text-ink">{title}</SheetTitle>
+          {subtitle ? (
+            <SheetDescription className="text-sm text-ink-muted">{subtitle}</SheetDescription>
+          ) : (
+            <SheetDescription className="sr-only">{title}</SheetDescription>
+          )}
+        </div>
+        {children}
+      </SheetContent>
+    </Sheet>
+  )
+}

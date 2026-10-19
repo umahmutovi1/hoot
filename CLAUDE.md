@@ -17,12 +17,12 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 - AI prompts receive the user's `locale`; source titles stay as written in the book.
 
 ## Stack
-React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router · TanStack Query (server state) · Zustand (UI state) · React Hook Form + Zod · date-fns · FullCalendar · Dexie (offline queue) · vite-plugin-pwa · Supabase (Postgres + RLS, Auth, Storage, Edge Functions/Deno) · Claude Haiku 5.5 via LLM wrapper · Vitest (+ Playwright later) · Cloudflare Pages · GitHub Actions.
+React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router · TanStack Query (server state) · Zustand (UI state) · React Hook Form + Zod · date-fns (own calendar grid, no FullCalendar) · ts-fsrs (spaced repetition) · react-markdown + KaTeX · Dexie (offline queue) · vite-plugin-pwa · Supabase (Postgres + RLS, Auth, Storage, Edge Functions/Deno) · Claude Haiku 5.5 via LLM wrapper (structured outputs) · Vitest + fast-check (+ Playwright later) · Cloudflare Pages · GitHub Actions.
 
 ## Layout
 - `src/app/` router, layout, providers, i18n setup
 - `src/features/<feature>/` screens, components and query hooks per feature (today, plan, schedule, subjects, sources, session, progress, settings)
-- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/`, `progress/`, `day.ts`, `sync/`, `supabase.ts`, `image.ts`
+- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
 - `src/types/database.ts` generated — never edit by hand
 - `supabase/migrations/` SQL migrations; `supabase/functions/_shared/` Zod schemas, `llm.ts`, prices, cors (imported by the frontend via `@shared/`)
 
@@ -33,14 +33,15 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 
 ## Architectural rules
 - Scheduling is deterministic code (`plan()`, `placeTimes()` in `src/lib/scheduler/`), never an LLM. AI only explains and proposes input changes.
-- Pure logic in `src/lib/` has no React/Supabase imports and is unit-tested (scheduler, estimates, srs, progress, day boundary, merge).
+- Subject priority, study mode (regular/campaign), manual campaign start, lecture logs and manual blocks are scheduler inputs; campaign start dates are computed in `plan()`, never by AI. Include every scheduler input in `input_hash`.
+- Pure logic in `src/lib/` has no React/Supabase imports and is unit-tested (scheduler, estimates, srs, progress, pace, day boundary, merge). Scheduler invariants also get property tests (`fast-check`).
 - Timer time is computed from segment timestamps, never from `setInterval` ticks. One active session per user.
 - "Day" starts at `profiles.day_start_min` in `profiles.timezone`; all `on_date` columns are local dates via `src/lib/day.ts`. Timestamps stay UTC.
 - IDs are generated on the client (`crypto.randomUUID()`); writes are idempotent upserts through the offline queue.
-- Progress is computed from `units`, never stored.
+- Progress and memory strength (FSRS retrievability) are computed from `units`, never stored.
 - Re-import merges by `label`; missing units are archived (`archived_at`), never deleted.
-- Manual user edits (`assigned_by = 'user'`) are never overwritten by AI.
-- AI calls only through Edge Functions using `_shared/llm.ts`; output validated with Zod before saving; every call logged in `ai_runs`. No API keys in the client.
+- Manual user edits (`assigned_by = 'user'`) are never overwritten by AI. Manual blocks (`plan_blocks.origin = 'user'`) are never deleted or moved by replan; they consume capacity and count as planned work.
+- AI calls only through Edge Functions using `_shared/llm.ts`; output via Anthropic structured outputs (`zodOutputFormat()` from one Zod schema in `_shared/schemas.ts`, no recursive schemas) and validated with Zod before saving; every call logged in `ai_runs`. No API keys in the client.
 
 ## Database
 - Schema changes = new migration file (`0002_*.sql`, ...). Never edit an applied migration.

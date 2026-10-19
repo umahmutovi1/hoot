@@ -120,7 +120,10 @@ export type Database = {
       assessments: {
         Row: {
           at: string
+          at_latest: string | null
+          contingent: boolean
           created_at: string
+          date_tentative: boolean
           format: Database["public"]["Enums"]["exam_format"]
           id: string
           kind: Database["public"]["Enums"]["assessment_kind"]
@@ -137,7 +140,10 @@ export type Database = {
         }
         Insert: {
           at: string
+          at_latest?: string | null
+          contingent?: boolean
           created_at?: string
+          date_tentative?: boolean
           format?: Database["public"]["Enums"]["exam_format"]
           id?: string
           kind?: Database["public"]["Enums"]["assessment_kind"]
@@ -154,7 +160,10 @@ export type Database = {
         }
         Update: {
           at?: string
+          at_latest?: string | null
+          contingent?: boolean
           created_at?: string
+          date_tentative?: boolean
           format?: Database["public"]["Enums"]["exam_format"]
           id?: string
           kind?: Database["public"]["Enums"]["assessment_kind"]
@@ -492,6 +501,7 @@ export type Database = {
           locale: string
           max_subjects_per_day: number
           min_block_minutes: number
+          name_confirmed_at: string | null
           recap_after_lecture: boolean
           srs_multiplier: number
           timer_mode: string
@@ -507,6 +517,7 @@ export type Database = {
           locale?: string
           max_subjects_per_day?: number
           min_block_minutes?: number
+          name_confirmed_at?: string | null
           recap_after_lecture?: boolean
           srs_multiplier?: number
           timer_mode?: string
@@ -522,6 +533,7 @@ export type Database = {
           locale?: string
           max_subjects_per_day?: number
           min_block_minutes?: number
+          name_confirmed_at?: string | null
           recap_after_lecture?: boolean
           srs_multiplier?: number
           timer_mode?: string
@@ -809,28 +821,37 @@ export type Database = {
       subjects: {
         Row: {
           archived: boolean
+          campaign_start_on: string | null
           color: string | null
           created_at: string
           id: string
           name: string
+          priority: number
+          study_mode: string
           updated_at: string
           user_id: string
         }
         Insert: {
           archived?: boolean
+          campaign_start_on?: string | null
           color?: string | null
           created_at?: string
           id?: string
           name: string
+          priority?: number
+          study_mode?: string
           updated_at?: string
           user_id?: string
         }
         Update: {
           archived?: boolean
+          campaign_start_on?: string | null
           color?: string | null
           created_at?: string
           id?: string
           name?: string
+          priority?: number
+          study_mode?: string
           updated_at?: string
           user_id?: string
         }
