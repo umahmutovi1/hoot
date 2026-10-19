@@ -28,7 +28,7 @@ Logika u `<script>` bloku na dnu fajla je samo demo interakcija.
 
 Maskota: vidi MASCOT.md.
 
-Donja navigacija: bijela traka sa zaobljenim vrhom i urezom u sredini za plutajuće timer dugme (bez sjene);
-aktivni tab ima svijetloljubičastu pilulu iza ikone.
+Donja navigacija (odstupa od mockupa, odluka nakon Etape 2): plutajuća poluprozirna pilula sa blurom, samo ikone
+(Danas, Plan, Predmeti, Napredak), aktivni tab ima svijetloljubičastu pilulu iza ljubičaste ikone. Timer dugme je ljubičasti krug u sredini pilule. Mockupi još prikazuju staru traku sa urezom.
 
 Varijante istog ekrana (npr. UrediBlok*, Provjera*, NoviPredmet*) su jedna komponenta sa stanjem, ne zasebne stranice.
