@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { Mascot } from '@/components/Mascot'
 import { Button } from '@/components/ui/button'
+import { statusLabel } from '@/features/schedule/format'
 import { LecturePrompts } from '@/features/schedule/LecturePrompts'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useDayBoundary, useProfile } from '@/features/settings/profile'
@@ -30,7 +31,7 @@ export function TodayPage() {
       <header className="flex flex-col gap-0.5">
         <span className="text-[13px] text-ink-muted first-letter:uppercase">
           {format(now, 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
-          {status && ` · ${t(`today.week.${status.kind}`, status)}`}
+          {status && ` · ${statusLabel(t, status)}`}
         </span>
         <span className="text-[17px] font-semibold">
           {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}

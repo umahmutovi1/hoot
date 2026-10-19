@@ -14,6 +14,7 @@ import { localDateOf } from '@/features/subjects/model'
 import { wallClock } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
+import { statusLabel } from '@/features/schedule/format'
 import { useAgenda, type DayClass } from './agenda'
 import {
   dayMarkers,
@@ -283,11 +284,7 @@ function DayDetails({
         <h2 className="text-lg font-semibold first-letter:uppercase">
           {format(selected, 'EEEE, d. MMMM', { locale: dfLocale })}
         </h2>
-        {status && (
-          <span className="text-[13px] text-ink-muted">
-            {t(`today.week.${status.kind}`, status)}
-          </span>
-        )}
+        {status && <span className="text-[13px] text-ink-muted">{statusLabel(t, status)}</span>}
       </div>
       <div className="flex flex-col gap-2">
         {empty && (

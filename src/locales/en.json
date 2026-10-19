@@ -57,7 +57,7 @@
     },
     "week": {
       "teaching": "Teaching week {{week}}",
-      "partial_exams": "{{title}}",
+      "partial": "{{title}}",
       "exam": "{{title}} · week {{week}}",
       "holiday": "Holiday · {{title}}"
     }
@@ -612,45 +612,42 @@
     "newTitle": "New period",
     "editTitle": "Edit period",
     "kindLabel": "Type",
-    "sessionLabel": "Session",
+    "sessionLabel": "Period type",
     "titleLabel": "Name",
     "from": "From",
     "to": "To",
     "kind": {
       "teaching": "Teaching",
-      "partial_exams": "Partials",
       "exam": "Exam period",
       "holiday": "Holidays"
     },
     "session": {
-      "regular": "Regular",
-      "makeup": "Make-up"
+      "partial": "Partials",
+      "regular": "Regular period",
+      "makeup": "Make-up period"
     },
     "section": {
       "teaching": "Teaching",
-      "partial_exams": "Partial exam weeks",
       "exam": "Exam periods",
       "holiday": "Holidays"
     },
     "empty": {
       "teaching": "Add a semester: when classes start and end. The timetable and teaching weeks are counted from here.",
-      "partial_exams": "No partial exam weeks.",
-      "exam": "No exam periods.",
+      "exam": "No exam periods. Add partial exam weeks and exam periods.",
       "holiday": "No holidays."
     },
     "hint": {
       "teaching": "The timetable applies in this period; teaching week 1 is odd.",
-      "partial_exams": "A partial exam without a date yet can be \"in this week\".",
-      "exam": "An exam without a date can be \"in this period\"; the plan aims for its first day.",
+      "exam": "An exam without a date can be \"in this period\"; the plan aims for its first day. Partials fall in the middle of teaching.",
       "holiday": "No classes on these days; your study availability stays."
     },
     "defaultTitle": {
       "winter": "Winter semester",
       "summer": "Summer semester",
-      "partial_exams": "Partial exam week",
       "exam_regular": "Regular exam period",
       "exam_makeup": "Make-up exam period",
-      "holiday": "Holiday"
+      "holiday": "Holiday",
+      "exam_partial": "Partial exam week"
     },
     "delete": "Delete period",
     "confirmDelete": "Delete for sure?"

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BackHeader } from '@/components/BackHeader'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
-import type { PeriodKind } from '@/lib/schedule'
+import type { ExamSession, PeriodKind } from '@/lib/schedule'
 import { usePeriods } from './api'
 import { DateTile } from './DateTile'
 import { dateRangeLabel, PERIOD_TILE } from './format'
@@ -82,7 +82,7 @@ function PeriodRowButton({
   const { t } = useTranslation()
   const tile = PERIOD_TILE[period.kind as PeriodKind]
   const detail = [
-    period.exam_session && t(`calendar.session.${period.exam_session as 'regular' | 'makeup'}`),
+    period.exam_session && t(`calendar.session.${period.exam_session as ExamSession}`),
     range,
   ].filter(Boolean)
   return (

@@ -237,6 +237,36 @@ export type Database = {
           },
         ]
       }
+      availability_days: {
+        Row: {
+          cap_min: number | null
+          created_at: string
+          id: string
+          on_date: string
+          slots: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cap_min?: number | null
+          created_at?: string
+          id?: string
+          on_date: string
+          slots?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          cap_min?: number | null
+          created_at?: string
+          id?: string
+          on_date?: string
+          slots?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       availability_exceptions: {
         Row: {
           end_min: number | null
@@ -282,6 +312,7 @@ export type Database = {
         Row: {
           end_min: number
           id: string
+          over_classes: boolean
           start_min: number
           updated_at: string
           user_id: string
@@ -290,6 +321,7 @@ export type Database = {
         Insert: {
           end_min: number
           id?: string
+          over_classes?: boolean
           start_min: number
           updated_at?: string
           user_id?: string
@@ -298,6 +330,7 @@ export type Database = {
         Update: {
           end_min?: number
           id?: string
+          over_classes?: boolean
           start_min?: number
           updated_at?: string
           user_id?: string
@@ -626,6 +659,7 @@ export type Database = {
         Row: {
           buffer_days: number
           created_at: string
+          daily_cap_min: number[]
           day_start_min: number
           display_name: string | null
           id: string
@@ -643,6 +677,7 @@ export type Database = {
         Insert: {
           buffer_days?: number
           created_at?: string
+          daily_cap_min?: number[]
           day_start_min?: number
           display_name?: string | null
           id: string
@@ -660,6 +695,7 @@ export type Database = {
         Update: {
           buffer_days?: number
           created_at?: string
+          daily_cap_min?: number[]
           day_start_min?: number
           display_name?: string | null
           id?: string
