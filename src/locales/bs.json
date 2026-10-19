@@ -60,7 +60,13 @@
   },
   "subjects": {
     "title": "Predmeti",
-    "empty": "Još nemaš predmeta."
+    "empty": "Još nemaš predmeta.",
+    "examTitle": {
+      "final": "Završni",
+      "partial1": "I parcijala",
+      "partial2": "II parcijala",
+      "integral": "Integralni"
+    }
   },
   "progress": {
     "title": "Napredak",
@@ -78,5 +84,13 @@
     "language": "Jezik",
     "timezone": "Vremenska zona",
     "signOut": "Odjava"
+  },
+  "validation": {
+    "required": "Obavezno polje",
+    "tooLong": "Predugo",
+    "date": "Neispravan datum",
+    "positive": "Mora biti veće od 0",
+    "tooLarge": "Prevelika vrijednost",
+    "campaignStartOnlyForCampaign": "Početak se postavlja samo u kampanji"
   }
 }
