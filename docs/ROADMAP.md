@@ -112,6 +112,10 @@ Odluke Etape 3: statusi 0–3 se do Etape 7 biraju ručno; „Uredi sadržaj“ 
 - [x] Kartica „Dokle ste stigli?“ na Danas nakon završenog predavanja (do kraja dana); ručni unos sa datumom na Predmetu
 - [x] `src/lib/pace/`: pređene jedinice, zaostatak u minutama, pravila prijedloga (prag > 2 predavanja ili > 4 h) + testovi
 - [x] Kartica „Predavanja“ na Predmetu (na predavanju / ti / kasniš) + upozorenje sa akcijama koje ne traže scheduler
+- [ ] Dorada nakon prvog pregleda: migracija `0006_availability_days.sql` (ispitni periodi sa podtipom `partial`, default dostupnost 06–24, `profiles.daily_cap_min`, `availability_days`, `availability_rules.over_classes`)
+- [ ] Dostupnost: sedmica sa datumima + vremenska osa, šablon i dnevni maksimum po danu u sedmici, izmjena „samo ovaj dan“ / „svaki“, upozorenje i „Učim umjesto nastave“
+- [ ] Kalendar: tačkice aktivnosti u sedmici i danu, detalji termina na tap, dugme „Raspored“ u Planu, `?date=` prečice
+- [ ] Zaostatak u mjeri izvora (str., pitanja…) sa vremenom sitno; bolji tok između ekrana (predmet ↔ termini ↔ kalendar ↔ akademski kalendar)
 - **DoD** → `v0.4.0`
 
 Odluke Etape 4: raspored važi za jedan period nastave iz akademskog kalendara, 1. sedmica nastave je neparna; akademski kalendar nema datume konkretnih ispita (oni dolaze uvozom u Etapi 6); neradni dan znači samo da nema nastave; „Dokle ste stigli?“ samo nakon predavanja, kartica do kraja dana; nastava nema tačkice u mjesečnoj mreži; dostupnost se snima odmah (dugme „Sačuvaj i preračunaj“ iz mockupa otpada dok nema schedulera).
@@ -121,7 +125,7 @@ Odluke Etape 4: raspored važi za jedan period nastave iz akademskog kalendara, 
 Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 
 - [ ] Mockup (HTML u stilu postojećih ekrana): polja bodova u ExamSheet/DeadlineSheet, sheet Rezultat, kartica „Bodovi i ocjena“ na Predmetu, sheet Skala ocjena, pregled na Napretku; odobren prije koda
-- [ ] Migracija `0006_grades.sql` (`assessments.points_max` umjesto `weight_pct`, `points_unit`, `pass_min_pct`, `entry_min_points`, `retake_of`, `result_annulled`; bodovi na `deadlines`; `subjects.points_total`, `grade_scale`, `target_grade`), regenerisan `database.ts`
+- [ ] Migracija `0007_grades.sql` (`assessments.points_max` umjesto `weight_pct`, `points_unit`, `pass_min_pct`, `entry_min_points`, `retake_of`, `result_annulled`; bodovi na `deadlines`; `subjects.points_total`, `grade_scale`, `target_grade`), regenerisan `database.ts`
 - [ ] `src/lib/grades/`: doprinos stavke, zadnji izlazak, popravni i integralni, pragovi (stavka, ukupno, uslov za izlazak), skala, projekcija „imam / treba / nedostižno“ + testovi (i `fast-check`: doprinos nikad ne prelazi maksimum)
 - [ ] ExamSheet i DeadlineSheet: bodovi ili %, prag, uslov za izlazak; popravni vezan za ispit i ugniježđen ispod njega
 - [ ] Sheet Rezultat: unos u bodovima ili %, automatski `passed`, „Poništi rezultat“ (odricanje) aktivira popravni
@@ -135,7 +139,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 
 - [ ] `supabase/functions/_shared/`: `llm.ts`, `providers/gemini.ts` (`responseSchema` iz `z.toJSONSchema()`), `providers/anthropic.ts` (`zodOutputFormat()` + `messages.parse()`), `schemas.ts` (bez rekurzivnih šema), `prices.ts`, `cors.ts`
 - [ ] Logiranje u `ai_runs`, rate limit 30 poziva/dan, jedan retry na Zod grešku; `LLM_PROVIDER`, `LLM_MODEL`, `GEMINI_API_KEY` kao Supabase secrets
-- [ ] Migracija `0007_ai_documents.sql` (pgvector, `documents`, `document_chunks`, novi `ai_task`), regenerisan `database.ts`
+- [ ] Migracija `0008_ai_documents.sql` (pgvector, `documents`, `document_chunks`, novi `ai_task`), regenerisan `database.ts`
 - [ ] `src/lib/image.ts` (1600 px, `browser-image-compression`), upload u `uploads/<user_id>/`; PDF ide direktno
 - [ ] Ekran „Uvezi“: tekst / slika / PDF → `parse-academic-calendar` i `parse-exam-schedule` → pregled novo / izmijenjeno → snimanje; uparivanje predmeta (`fuse.js`)
 - [ ] Dokumenti fakulteta: lista, upload, odlomci + embeddings (`gte-small`), RPC pretrage, `answer` sa citatima (dokument, stranica)
@@ -161,7 +165,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina, ručni override i „Počni odmah“, privremeno pojačanje prioriteta („Uzmi vrijeme od …“ sa izračunatom razlikom plana), meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, ciljna pokrivenost iz željene ocjene (PRD „Željena ocjena kao ulaz u plan“), novi razlozi „zašto ovo danas“
 - [ ] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan
 - [ ] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, ručni blokovi se ne mijenjaju, isti ulaz = isti plan
-- [ ] Migracija `0008_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
+- [ ] Migracija `0009_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
 - [ ] Kartice prijedloga (zaostatak sa „Uzmi vrijeme od“ / „Kreni ranije“ / „Dodaj X min dnevno“, deficit, željena ocjena nedostižna, najava kampanje 3 dana prije) na Danas i Predmetu; jedan tap mijenja ulaz → replan
 - [ ] `input_hash`, upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [ ] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno")
@@ -175,7 +179,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] Maskota: `celebrating-head` uz potvrdu „Sjećam se", `celebrating` 120 px na sažetku ProvjeraZnanja
 - [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2
 - [ ] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
-- [ ] Migracija `0009_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
+- [ ] Migracija `0010_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
 - [ ] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu, `next_review_on`, ograničenje na datum ispita, level 3 nakon 4 uspjeha + testovi
 - [ ] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
 - [ ] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje

@@ -243,7 +243,7 @@ Korisnik bilježi dokle se stiglo na nastavi, pa app zna koliko zaostaje i može
 
 **Model.** Unos (`lecture_logs`) vezuje datum, predmet, opcionalno termin iz rasporeda, izvor i jedinicu “do ovdje” (`up_to_unit_id`). Pređenim jedinicama se smatraju sve nearhivirane jedinice tog izvora sa `position` do te jedinice (uključivo, sa podjedinicama). Novi unos za isti izvor pomjera granicu (vrijedi unos sa najkasnijim `on_date`, pa `created_at`); raniji unosi ostaju kao historija. `cancelled = true` znači da nastave nije bilo; to pravi izuzetak dostupnosti (`is_busy = false`, termin ±15 min, `lecture_log_id` na unos) koji oslobađa taj termin za taj dan. Brisanje unosa briše i taj izuzetak.
 
-**Zaostatak** (`src/lib/pace/`, čista funkcija) = zbir minuta pređenih listova sa `level` 0. Minute su iste kao na ekranu izvora (`materialOf()` → `estimateUnits()`). Prikazuje se na predmetu kao “Na predavanju: pogl. 5 · Ti: pogl. 3 · kasniš ~4h 20min”, po jedan red za svaki izvor koji ima unos.
+**Zaostatak** (`src/lib/pace/`, čista funkcija) = zbir minuta pređenih listova sa `level` 0. Minute su iste kao na ekranu izvora (`materialOf()` → `estimateUnits()`). Prikazuje se u mjeri izvora, ne u minutama: “Kasniš 15 str. (Oppenheim) · 4 pitanja”, a ispod sitno “~1h 40min učenja”. Mjera prati izvor (stranice, slajdovi, pitanja, jedinice; zbir `amount` pređenih listova sa `level` 0). Na predmetu: “Na predavanju: pogl. 5 · Ti: pogl. 3”, po jedan red za svaki izvor koji ima unos.
 
 - “Na predavanju” = vršna jedinica (bez roditelja) koja sadrži granicu zadnjeg unosa.
 - “Ti” = zadnja vršna jedinica čiji su svi listovi `level` ≥ 1, gledano redom od početka bez praznina.
@@ -456,9 +456,16 @@ Korisnik unosi predavanja, vježbe i labove (ručno ili slikom rasporeda, isti A
 
 **Semestar.** Raspored važi za jedan period nastave iz akademskog kalendara (vidi ispod). Termin pamti period (`period_id`), a njegovi datumi se upisuju u `valid_from` / `valid_to` svakog termina (i ažuriraju kad se period promijeni). Parnost sedmica se broji od početka perioda nastave: sedmica (pon–ned) u kojoj nastava počinje je 1. (neparna). Na neradni dan termini se ne održavaju.
 
-**Dostupnost.** Sedmična pravila (dan, od–do) + izuzeci po danu: zauzeta cijeli dan, zauzeta od–do, dodatno slobodno od–do. Termini nastave (±15 min) se oduzimaju automatski, pa pravila smiju preklapati nastavu. “Ukupno Xh sedmično” je neto za tekuću sedmicu (pravila − nastava). Izmjene se snimaju odmah, bez dugmeta “Sačuvaj”; replan na izmjenu dolazi sa schedulerom.
+**Dostupnost.** Dvije stvari, obje sa sedmičnim šablonom i izmjenom za konkretan datum:
 
-**Kalendar.** Plan ima tri prikaza: Mjesec (postojeća mreža), Sedmica i Dan. U mjesečnoj mreži nastava nema tačkice (bila bi na skoro svakom danu); termini nastave su u listi izabranog dana, otkazani precrtani. Dan: traka dana kao pilule (izabrani dan taman) i vremenska osa sa karticama u boji predmeta (nastava, kasnije blokovi plana). Sedmica: ista traka i vremenska osa sa 7 uskih kolona.
+- **Kad možeš učiti** (termini). Default je uvijek osim 00:00–06:00 (06–24 svaki dan); novi korisnik ga dobija automatski. Termini nastave (±15 min) se oduzimaju sami, pa šablon ne treba prilagođavati rasporedu.
+- **Koliko najviše dnevno** (dnevni maksimum učenja, `profiles.daily_cap_min`, po danu u sedmici). Default 3 h radnim danima, 5 h vikendom. Plan nikad ne prelazi ni slobodne termine ni maksimum.
+- **Konkretan datum** (`availability_days`): termini i/ili maksimum samo za taj dan zamjenjuju šablon (npr. jedan ponedjeljak manje vremena, “zauzeta cijeli dan” = dan bez termina). Pri izmjeni app pita “Samo ovaj dan” ili “Svaki [ponedjeljak]”, kao kod ponavljajućih događaja u kalendaru.
+- **Preko nastave**: termin dostupnosti smije preklapati nastavu, uz upozorenje “U ovom terminu imaš Signali · predavanje 09:00–11:00” i prekidač “Učim umjesto nastave”. Bez prekidača nastava i dalje blokira taj dio; sa njim se taj dio računa kao slobodan.
+- **Ekran**: sedmica sa datumima (traka dana, strelice) i vremenska osa izabranog dana: termini dostupnosti, nastava (šrafirano, “iz rasporeda”), slobodno i maksimum tog dana; ispod šablon po danu u sedmici i lista datuma sa izmjenama. Izmjene se spašavaju odmah; replan na izmjenu dolazi sa schedulerom.
+- “Nastava otkazana” i dalje pravi izuzetak (`availability_exceptions`, `lecture_log_id`) koji oslobađa termin ±15 min.
+
+**Kalendar.** Plan ima tri prikaza: Mjesec (postojeća mreža), Sedmica i Dan. U mjesečnoj mreži nastava nema tačkice (bila bi na skoro svakom danu); termini nastave su u listi izabranog dana, otkazani precrtani. Dan: traka dana kao pilule (izabrani dan taman) i vremenska osa sa karticama u boji predmeta (nastava, kasnije blokovi plana). Sedmica: ista traka i vremenska osa sa 7 uskih kolona. Tačkice aktivnosti (ispiti, mogući ispiti, rokovi, kasnije planirano učenje) su pod danom u sva tri prikaza. Tap na termin nastave otvara detalje: predmet (link), tip, vrijeme, sala, sedmice, “Dokle ste stigli?”, “Otkaži za ovaj dan” / “Vrati termin”, “Uredi u rasporedu”. Zaglavlje Plana ima dva dugmeta: Dostupnost i Raspored. Kalendar prima `?date=` i `?view=`, pa drugi ekrani vode direktno na dan (npr. ispit na predmetu → “Prikaži u kalendaru”).
 
 Kartica “Uslikaj raspored” se prikazuje tek sa AI uvozom rasporeda (Etapa 10). Tabela `timetable_entries` je u konsolidovanoj migraciji; AI zadatak `parse_timetable` koristi isti pipeline kao uvoz sadržaja.
 
@@ -466,18 +473,17 @@ Kartica “Uslikaj raspored” se prikazuje tek sa AI uvozom rasporeda (Etapa 10
 
 Fakultet objavi akademski kalendar prije semestra: kad traje nastava, kad su ispitni rokovi i sedmice parcijalnih, i koji su dani neradni. Datume konkretnih ispita kalendar nema; oni dolaze kasnije (raspored parcijala, uvoz ispita).
 
-**Model** (`academic_periods`): vrsta, naziv, od–do (lokalni datumi).
+**Model** (`academic_periods`): vrsta, naziv, od–do (lokalni datumi). Sedmice parcijalnih i ispitni rokovi su jedan tip (“Ispitni period”) sa podtipom, pa akademski kalendar ima tri sekcije: Nastava, Ispitni periodi, Neradni dani.
 
 | Vrsta (`kind`) | Primjer | Šta radi |
 | --- | --- | --- |
 | `teaching` | Zimski semestar, 6. okt – 23. jan | Period važenja rasporeda i parnost sedmica; “7. sedmica nastave” na Danas |
-| `partial_exams` | Sedmica parcijalnih, 24.–28. nov | Rok za parcijale sa nepoznatim datumom; nastava teče po rasporedu osim ako je dan i neradni |
-| `exam` (+ `exam_session`: `regular` / `makeup`) | Januarsko-februarski redovni rok | Rok za završni, integralni i popravni sa nepoznatim datumom |
+| `exam` + `exam_session`: `partial` / `regular` / `makeup` | Sedmica parcijalnih, Januarsko-februarski rok, Popravni rok | Raspon za ispit sa nepoznatim datumom (parcijala → `partial`, završni/integralni → `regular`, popravni → `makeup`); nastava u sedmici parcijalnih teče po rasporedu osim neradnih dana |
 | `holiday` | Nova godina, 1.–2. jan | Nema nastave (termini se ne računaju, “Dokle ste stigli?” ne pita); dostupnost za učenje ostaje |
 
 - **Unos:** ručno na ekranu “Akademski kalendar” (Postavke, i iz Rasporeda) od Etape 4; AI uvoz iz slike, PDF-a ili teksta sa pregledom od Etape 6.
-- **Ispit u roku:** u ExamSheetu, uz “Datum još nije objavljen”, bira se rok (`assessments.exam_period_id`). Raspon ispita (`at` – `at_latest`) = raspon roka; plan cilja najraniji dan (isto pravilo kao okvirni datum). Prijedlog po tipu: parcijala → sedmica parcijalnih, završni/integralni → redovni rok, popravni → popravni rok. Promjena datuma roka pomjera i povezane okvirne ispite. Na NoviPredmet dugme “Datumi još nisu poznati?” to radi za sve ispite bez datuma odjednom: n-ta parcijala dobija n-tu sedmicu parcijalnih, ostali odgovarajući rok.
-- **Sedmica na Danas:** ispod datuma “7. sedmica nastave” (u periodu nastave), “Sedmica parcijalnih”, “Ispitni rok · [naziv]” ili “Neradni dan · [naziv]”; van svih perioda ništa.
+- **Ispit u roku:** u ExamSheetu, uz “Datum još nije objavljen”, bira se rok (`assessments.exam_period_id`). Raspon ispita (`at` – `at_latest`) = raspon roka; plan cilja najraniji dan (isto pravilo kao okvirni datum). Prijedlog po tipu: parcijala → ispitni period `partial`, završni/integralni → `regular`, popravni → `makeup`. Promjena datuma roka pomjera i povezane okvirne ispite. Na NoviPredmet dugme “Datumi još nisu poznati?” to radi za sve ispite bez datuma odjednom: n-ta parcijala dobija n-tu sedmicu parcijalnih, ostali odgovarajući rok.
+- **Sedmica na Danas:** ispod datuma “7. sedmica nastave” (u periodu nastave), “[naziv ispitnog perioda] · 2. sedmica” ili “Neradni dan · [naziv]”; van svih perioda ništa. Tap vodi na akademski kalendar.
 
 ## AI uvoz, dokumenti i asistent
 
@@ -970,7 +976,7 @@ alter table assessment_units
 create table academic_periods (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users on delete cascade,
-  kind text not null check (kind in ('teaching','partial_exams','exam','holiday')),
+  kind text not null check (kind in ('teaching','partial_exams','exam','holiday')),  -- 0006 spaja partial_exams u exam
   exam_session text check (exam_session in ('regular','makeup')),   -- samo za kind = 'exam'
   title text not null,
   starts_on date not null,
@@ -1003,7 +1009,24 @@ alter table profiles add column lecture_pace_days smallint not null default 7;
 alter table availability_exceptions
   add column lecture_log_id uuid references lecture_logs on delete cascade;  -- "Nastava otkazana"
 
--- 0006_grades.sql (Etapa 5)
+-- 0006_availability_days.sql (Etapa 4, dorada)
+update academic_periods set kind = 'exam', exam_session = 'partial' where kind = 'partial_exams';
+-- kind: ('teaching','exam','holiday'); exam_session: ('partial','regular','makeup')
+alter table availability_rules add column over_classes boolean not null default false;  -- "Učim umjesto nastave"
+alter table profiles add column daily_cap_min smallint[] not null
+  default '{180,180,180,180,180,300,300}';                  -- pon..ned, minute
+create table availability_days (                            -- izmjena za konkretan datum
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  on_date date not null,
+  slots jsonb,                                              -- [{start_min,end_min,over_classes}], null = šablon
+  cap_min smallint,                                         -- null = maksimum iz šablona
+  updated_at timestamptz not null default now(),
+  unique (user_id, on_date)
+);
+-- + RLS, grant, triger; default šablon 06–24 za postojeće korisnike i u handle_new_user()
+
+-- 0007_grades.sql (Etapa 5)
 alter table assessments rename column weight_pct to points_max;   -- nije korištena
 alter table assessments
   add column points_unit text not null default 'points' check (points_unit in ('points','percent')),
@@ -1022,7 +1045,7 @@ alter table subjects
   add column grade_scale jsonb,                        -- null = default skala
   add column target_grade smallint check (target_grade between 6 and 10);
 
--- 0007_ai_documents.sql (Etapa 6)
+-- 0008_ai_documents.sql (Etapa 6)
 create extension if not exists vector;
 alter type ai_task add value 'parse_academic_calendar';
 alter type ai_task add value 'parse_exam_schedule';
@@ -1049,7 +1072,7 @@ create table document_chunks (
 );
 -- + RLS owner_all, grant, HNSW indeks nad embedding, RPC match_document_chunks(query_embedding, k)
 
--- 0008_manual_blocks.sql (Etapa 8)
+-- 0009_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1057,7 +1080,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0009_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0010_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,
@@ -1341,7 +1364,10 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio.
 | Savjet na “Danas” | Svjež savjet strategista, inače “zašto ovo danas” iz scheduler-a |
 | Timer dugme | Izbor sesije; nastavak ako sesija traje |
 | Raspored nastave | Ručno ili slikom; automatski zauzeto; opcionalni recap 15 min; jedan semestar, parnost od početka semestra |
-| Kalendar prikazi | Mjesec / Sedmica / Dan; nastava samo u listi dana i na vremenskoj osi, ne kao tačkica u mjesecu |
+| Kalendar prikazi | Mjesec / Sedmica / Dan; nastava samo u listi dana i na vremenskoj osi, ne kao tačkica u mjesecu; tačkice aktivnosti u sva tri prikaza; tap na termin = detalji |
+| Dostupnost | Default 06–24 + dnevni maksimum (3 h radnim, 5 h vikendom); šablon po danu u sedmici i izmjena po datumu (“samo ovaj dan” / “svaki”); preko nastave uz upozorenje i “Učim umjesto nastave” |
+| Ispitni periodi | Sedmice parcijalnih i ispitni rokovi su jedan tip sa podtipom (parcijale / redovni / popravni) |
+| Zaostatak | U mjeri izvora (str., slajdovi, pitanja), vrijeme sitno ispod |
 | “Dokle ste stigli?” | Samo nakon predavanja; kartica do kraja dana; ostalo ručno na predmetu |
 | Bodovi | Bodovi ili procenti po stavci; zadnji izlazak vrijedi; popravni vezan za ispit, integralni zamjenjuje parcijale; poništavanje = odricanje |
 | Željena ocjena | Podiže ciljnu pokrivenost u `plan()`; prioritet se samo predlaže |
