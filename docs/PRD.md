@@ -46,7 +46,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Raspored | Raspored nastave | Ručno ili slikom; predavanja, vježbe, labovi, parne/neparne sedmice; automatski zauzeto |
 | Raspored | Dostupnost | Sedmični slobodni termini + izuzeci za konkretne dane |
 | Plan | “Danas” ekran | Fokus bar dana, kartica “Sljedeći blok”, lista blokova, 3 najranija ispita, “zašto ovo danas” |
-| Plan | Kalendar | Mjesec, sedmica i dan: ispiti, rokovi, nastava i planirani dani |
+| Plan | Kalendar | Mjesec i dan: ispiti, rokovi, nastava i planirani dani |
 | Plan | Satnica | Na zahtjev raspoređuje blokove u termine; keš preko `input_hash` |
 | Plan | Replan | Propušteno se preraspodijeli od sutra; deficit sa 3 opcije |
 | Plan | Ručni blokovi | Dodaj, izmijeni, obriši blok; ručni i izmijenjeni blokovi su zaključani od replana |
@@ -465,7 +465,7 @@ Korisnik unosi predavanja, vježbe i labove (ručno ili slikom rasporeda, isti A
 - **Ekran**: sedmica sa datumima (traka dana, strelice) i vremenska osa izabranog dana: termini dostupnosti, nastava (šrafirano, “iz rasporeda”), slobodno i maksimum tog dana; ispod šablon po danu u sedmici i lista datuma sa izmjenama. Izmjene se spašavaju odmah; replan na izmjenu dolazi sa schedulerom.
 - “Nastava otkazana” i dalje pravi izuzetak (`availability_exceptions`, `lecture_log_id`) koji oslobađa vrijeme termina.
 
-**Kalendar.** Plan ima tri prikaza: Mjesec (postojeća mreža), Sedmica i Dan. U mjesečnoj mreži nastava nema tačkice (bila bi na skoro svakom danu); termini nastave su u listi izabranog dana, otkazani precrtani. Dan: traka dana kao pilule (izabrani dan taman) i vremenska osa sa karticama u boji predmeta (nastava, kasnije blokovi plana). Sedmica: ista traka i vremenska osa sa 7 uskih kolona. Tačkice aktivnosti (ispiti, mogući ispiti, rokovi, kasnije planirano učenje) su pod danom u sva tri prikaza. Tap na termin nastave otvara detalje: predmet (link), tip, vrijeme, sala, sedmice, “Dokle ste stigli?”, “Otkaži za ovaj dan” / “Vrati termin”, “Uredi u rasporedu”. Zaglavlje Plana ima dva dugmeta: Dostupnost i Raspored. Kalendar prima `?date=` i `?view=`, pa drugi ekrani vode direktno na dan (npr. ispit na predmetu → “Prikaži u kalendaru”).
+**Kalendar.** Plan ima dva prikaza: Mjesec (postojeća mreža) i Dan (sedmični prikaz je izbačen nakon pregleda). U mjesečnoj mreži nastava nema tačkice (bila bi na skoro svakom danu); termini nastave su u listi izabranog dana, otkazani precrtani. Dan: traka dana kao pilule (izabrani dan taman) i vremenska osa sa karticama u boji predmeta (nastava, kasnije blokovi plana). Tačkice aktivnosti (ispiti, mogući ispiti, rokovi, kasnije planirano učenje) su pod danom u oba prikaza. Tap na termin nastave otvara detalje: predmet (link), tip, vrijeme, sala, sedmice, “Dokle ste stigli?”, “Otkaži za ovaj dan” / “Vrati termin”, “Uredi u rasporedu”. Zaglavlje Plana ima dva dugmeta: Dostupnost i Raspored. Kalendar prima `?date=` i `?view=`, pa drugi ekrani vode direktno na dan (npr. ispit na predmetu → “Prikaži u kalendaru”).
 
 Kartica “Uslikaj raspored” se prikazuje tek sa AI uvozom rasporeda (Etapa 10). Tabela `timetable_entries` je u konsolidovanoj migraciji; AI zadatak `parse_timetable` koristi isti pipeline kao uvoz sadržaja.
 
@@ -1325,7 +1325,7 @@ Sve je u prvoj verziji; ovo je samo redoslijed gradnje, tako da poslije svakog k
 1. **Temelj.** Kostur, migracija, login, i18n, deploy, CI.
 2. **Predmeti, ispiti, rokovi, kalendar.** Uključujući prioritet, režim, “samo ako zatreba” i okvirni datum (polja i UI).
 3. **Izvori i jedinice ručno.** Statusi, notes, kartice, progres, teme ručno, obim ispita.
-4. **Akademski kalendar, raspored nastave i dostupnost.** Plus praćenje predavanja, zaostatak, granica dana i sedmični/dnevni kalendar.
+4. **Akademski kalendar, raspored nastave i dostupnost.** Plus praćenje predavanja, zaostatak, granica dana i dnevni prikaz kalendara.
 5. **Bodovi i ocjene.** Bodovi ispita i rokova, pragovi, popravni/integralni, skala ocjena, rezultat i poništavanje, projekcija ocjene.
 6. **AI temelj, uvoz i dokumenti.** LLM wrapper (Gemini za sad), `ai_runs`, uvoz akademskog kalendara i rasporeda ispita sa pregledom, dokumenti fakulteta i RAG.
 7. **Timer i sesije.** Timer dugme, segmenti, offline red, kraj sesije, kalibracija.
@@ -1364,7 +1364,7 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio.
 | Savjet na “Danas” | Svjež savjet strategista, inače “zašto ovo danas” iz scheduler-a |
 | Timer dugme | Izbor sesije; nastavak ako sesija traje |
 | Raspored nastave | Ručno ili slikom; automatski zauzeto; opcionalni recap 15 min; jedan semestar, parnost od početka semestra |
-| Kalendar prikazi | Mjesec / Sedmica / Dan; nastava samo u listi dana i na vremenskoj osi, ne kao tačkica u mjesecu; tačkice aktivnosti u sva tri prikaza; tap na termin = detalji |
+| Kalendar prikazi | Mjesec / Dan; nastava samo u listi dana i na vremenskoj osi, ne kao tačkica u mjesecu; tačkice aktivnosti u oba prikaza; tap na termin = detalji |
 | Dostupnost | Default 06–24 + dnevni maksimum (3 h radnim, 5 h vikendom); šablon po danu u sedmici i izmjena po datumu (“samo ovaj dan” / “svaki”); preko nastave uz upozorenje i “Učim umjesto nastave” |
 | Ispitni periodi | Sedmice parcijalnih i ispitni rokovi su jedan tip sa podtipom (parcijale / redovni / popravni) |
 | Zaostatak | U mjeri izvora (str., slajdovi, pitanja), vrijeme sitno ispod |

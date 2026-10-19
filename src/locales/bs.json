@@ -95,13 +95,11 @@
     },
     "view": {
       "month": "Mjesec",
-      "week": "Sedmica",
       "day": "Dan"
     },
     "viewLabel": "Prikaz kalendara",
     "prevWeek": "Prethodna sedmica",
     "nextWeek": "Sljedeća sedmica",
-    "openDay": "Otvori dan {{day}}",
     "cancelled": "otkazano",
     "noClasses": "Nema nastave ovaj dan.",
     "timetableButton": "Raspored"
@@ -233,7 +231,8 @@
       "rangeLatest": "Najkasnije",
       "usePeriodsTitle": "Datumi još nisu poznati?",
       "usePeriodsBody": "Uzmi rokove iz akademskog kalendara: parcijale dobiju sedmice parcijalnih, završni i popravni svoj rok.",
-      "inPeriod": "u roku: {{title}}"
+      "inPeriod": "u roku: {{title}}",
+      "inPeriodOption": "U roku: {{title}}"
     },
     "detail": {
       "edit": "Uredi predmet",
@@ -321,7 +320,23 @@
     "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
     "inPeriod": "U roku",
     "manualRange": "Ručni raspon",
-    "showInCalendar": "Prikaži u kalendaru"
+    "showInCalendar": "Prikaži u kalendaru",
+    "dateMode": {
+      "label": "Kad je ispit?",
+      "exact": "Tačan datum",
+      "period": "U roku",
+      "range": "Okvirni raspon"
+    },
+    "sources": {
+      "label": "Izvori za ovaj ispit",
+      "none": "Predmet još nema izvora.",
+      "add": "Dodaj izvor",
+      "part": "Dio izvora · Obim ispita",
+      "all": "Cijeli",
+      "none_choice": "Ne ulazi",
+      "hint": "Dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita.",
+      "hintNew": "Nakon spašavanja dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita."
+    }
   },
   "deadlines": {
     "section": "Rokovi",

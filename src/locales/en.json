@@ -92,13 +92,11 @@
     },
     "view": {
       "month": "Month",
-      "week": "Week",
       "day": "Day"
     },
     "viewLabel": "Calendar view",
     "prevWeek": "Previous week",
     "nextWeek": "Next week",
-    "openDay": "Open day {{day}}",
     "cancelled": "cancelled",
     "noClasses": "No classes this day.",
     "timetableButton": "Timetable"
@@ -228,7 +226,8 @@
       "rangeLatest": "Latest",
       "usePeriodsTitle": "Dates not known yet?",
       "usePeriodsBody": "Use the academic calendar: partials get the partial exam weeks, final and make-up exams their periods.",
-      "inPeriod": "in: {{title}}"
+      "inPeriod": "in: {{title}}",
+      "inPeriodOption": "In: {{title}}"
     },
     "detail": {
       "edit": "Edit subject",
@@ -315,7 +314,23 @@
     "rangeHint": "The plan targets the earliest possible date, so you are ready even if the exam comes early. When the date is announced, turn this off and enter it.",
     "inPeriod": "In period",
     "manualRange": "Custom range",
-    "showInCalendar": "Show in calendar"
+    "showInCalendar": "Show in calendar",
+    "dateMode": {
+      "label": "When is the exam?",
+      "exact": "Exact date",
+      "period": "In a period",
+      "range": "Rough range"
+    },
+    "sources": {
+      "label": "Sources for this exam",
+      "none": "The subject has no sources yet.",
+      "add": "Add source",
+      "part": "Part of the source · Exam scope",
+      "all": "All",
+      "none_choice": "Not included",
+      "hint": "Pick part of a source (e.g. chapters 1–5) in Exam scope.",
+      "hintNew": "After saving, pick part of a source (e.g. chapters 1–5) in Exam scope."
+    }
   },
   "deadlines": {
     "section": "Deadlines",

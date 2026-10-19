@@ -14,7 +14,7 @@ import { toPeriod } from '@/features/schedule/model'
 import { useDayBoundary } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { localDay } from '@/lib/day'
-import { assignExamPeriods } from '@/lib/schedule'
+import { assignExamPeriods, type Period } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
@@ -230,6 +230,17 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
             }
             errors={form.formState.errors.assessments?.[index]}
             periodTitle={periods.find((p) => p.id === watchedExams[index]?.examPeriodId)?.title}
+            periods={periods.filter((p) => p.kind === 'exam' && p.endsOn >= today)}
+            onDateMode={(value) => {
+              const set = { shouldDirty: true } as const
+              const period = periods.find((p) => `p:${p.id}` === value)
+              form.setValue(`assessments.${index}.dateTentative`, value !== 'exact', set)
+              form.setValue(`assessments.${index}.examPeriodId`, period?.id ?? null, set)
+              if (period) {
+                form.setValue(`assessments.${index}.date`, period.startsOn, set)
+                form.setValue(`assessments.${index}.dateLatest`, period.endsOn, set)
+              }
+            }}
             clearPeriod={() =>
               form.setValue(`assessments.${index}.examPeriodId`, null, { shouldDirty: true })
             }
@@ -320,6 +331,8 @@ function ExamEditor({
   setValue,
   errors,
   periodTitle,
+  periods,
+  onDateMode,
   clearPeriod,
   onRemove,
 }: {
@@ -334,6 +347,10 @@ function ExamEditor({
   }
   /** Exam period the tentative range comes from ("U roku: …"). */
   periodTitle?: string
+  /** Exam periods of the academic calendar the exam can be "in". */
+  periods: Period[]
+  /** 'exact' | 'range' | 'p:<periodId>' */
+  onDateMode: (value: string) => void
   clearPeriod: () => void
   onRemove: () => void
 }) {
@@ -436,11 +453,29 @@ function ExamEditor({
           label={t('subjects.form.contingent')}
           onChange={(v) => setValue('contingent', v)}
         />
-        <Switch
-          checked={exam.dateTentative}
-          label={t('subjects.form.dateTentative')}
-          onChange={(v) => setValue('dateTentative', v)}
-        />
+        <span className="relative my-1 inline-flex self-start">
+          <select
+            aria-label={t('exams.dateMode.label')}
+            value={
+              exam.examPeriodId ? `p:${exam.examPeriodId}` : exam.dateTentative ? 'range' : 'exact'
+            }
+            onChange={(e) => onDateMode(e.target.value)}
+            className={cn(chip, 'h-10 appearance-none pr-8 font-semibold')}
+          >
+            <option value="exact">{t('exams.dateMode.exact')}</option>
+            {periods.map((p) => (
+              <option key={p.id} value={`p:${p.id}`}>
+                {t('subjects.form.inPeriodOption', { title: p.title })}
+              </option>
+            ))}
+            <option value="range">{t('exams.dateMode.range')}</option>
+          </select>
+          <ChevronDownIcon
+            size={14}
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-ink-muted"
+          />
+        </span>
       </div>
     </div>
   )
