@@ -7,6 +7,8 @@ import { PlanPage } from '@/features/plan/PlanPage'
 import { ProgressPage } from '@/features/progress/ProgressPage'
 import { SessionStartPage } from '@/features/session/SessionStartPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
+import { SubjectFormPage } from '@/features/subjects/SubjectFormPage'
+import { SubjectPage } from '@/features/subjects/SubjectPage'
 import { SubjectsPage } from '@/features/subjects/SubjectsPage'
 import { TodayPage } from '@/features/today/TodayPage'
 import { AppShell } from './layout/AppShell'
@@ -38,6 +40,9 @@ export const router = createBrowserRouter([
             element: <PlainLayout />,
             children: [
               { path: 'settings', element: <SettingsPage /> },
+              { path: 'subjects/new', element: <SubjectFormPage /> },
+              { path: 'subjects/:id', element: <SubjectPage /> },
+              { path: 'subjects/:id/edit', element: <SubjectFormPage /> },
               { path: 'session/start', element: <SessionStartPage /> },
             ],
           },
