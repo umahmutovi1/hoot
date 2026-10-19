@@ -736,5 +736,52 @@
     "itemDetail": "{{day}} · {{delta}} in the plan",
     "deleteException": "Delete exception",
     "itemDetailNone": "{{day}} · no change in the plan"
+  },
+  "lectures": {
+    "title": "How far did you get?",
+    "section": "Lectures",
+    "timetableLink": "Timetable",
+    "ended": "The {{subject}} lecture has ended.",
+    "enter": "Enter",
+    "context": "{{kind}} · today {{time}}",
+    "date": "Lecture date",
+    "noSources": "This subject has no source with units yet. Add a source to track how far the class got.",
+    "hint": "Tap the last unit covered.",
+    "coveredUpTo": "Covered up to",
+    "note": "Note",
+    "notePlaceholder": "e.g. the professor skipped 5.3, worked on problems",
+    "saveUpTo": "Save · up to {{label}}",
+    "cancelled": "Class cancelled",
+    "skip": "Skip",
+    "lastTime": "last time",
+    "upToHere": "up to here",
+    "empty": "After a lecture, note how far the class got so the app knows how far behind you are.",
+    "behind": "~{{time}} behind",
+    "upToDate": "You are keeping up with the lectures",
+    "add": "Add how far you got",
+    "chapter": "ch. {{label}}",
+    "notYet": "nothing yet",
+    "atLecture": "In class:",
+    "you": "You:",
+    "barLabel": "You are at part {{you}}, lectures at part {{lecture}} of {{total}}",
+    "youShort": "You · {{n}}",
+    "lectureShort": "Lecture · {{n}}",
+    "warnLectures_one": "{{count}} lecture behind",
+    "warnLectures_other": "{{count}} lectures behind",
+    "warnHours": "~{{time}} behind",
+    "warnBody": "Material covered in class that you have not started yet: ~{{time}}.",
+    "action": {
+      "raise_priority": "Raise priority to {{n}}",
+      "switch_to_regular": "Switch to regular",
+      "take_time_from": "Take time from another subject",
+      "start_earlier": "Start earlier",
+      "add_minutes": "Add time per day"
+    },
+    "done": {
+      "raise_priority": "Priority is now {{n}}.",
+      "switch_to_regular": "The subject is now in regular mode."
+    },
+    "later": "Later",
+    "promptSub": "How far did you get? · {{time}}"
   }
 }

@@ -14,6 +14,7 @@ import {
   subjectMaterialProgress,
   toScopeRows,
 } from '@/features/sources/model'
+import { SubjectLectures } from '@/features/schedule/SubjectLectures'
 import { ProgressRing, SubjectSources } from '@/features/sources/SubjectSources'
 import { useDeadlines, useSubject, useUpdateSubject } from './api'
 import { paletteOf, type SubjectPalette } from './colors'
@@ -133,6 +134,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
       </div>
 
       {subject.study_mode === 'campaign' && <CampaignCard subject={subject} now={now} />}
+
+      {hasMaterial && <SubjectLectures subject={subject} materials={materials} />}
 
       <div className="mt-1.5 flex items-center justify-between">
         <h2 className="text-lg font-semibold">{t('subjects.form.exams')}</h2>

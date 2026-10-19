@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { Mascot } from '@/components/Mascot'
 import { Button } from '@/components/ui/button'
+import { LecturePrompts } from '@/features/schedule/LecturePrompts'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useDayBoundary, useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
@@ -35,6 +36,10 @@ export function TodayPage() {
           {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}
         </span>
       </header>
+
+      <div className="mt-4 flex flex-col gap-2.5 empty:hidden">
+        <LecturePrompts />
+      </div>
 
       <section className="mt-14 flex flex-col items-center gap-3.5 px-3 text-center">
         <div className="flex size-[220px] items-center justify-center rounded-full bg-mascot-halo">

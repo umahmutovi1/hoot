@@ -300,3 +300,25 @@ export function assignExamPeriods(
     e.kind === 'partial' ? partialWeeks[n++] : suggestExamPeriod(e.kind, periods, today),
   )
 }
+
+/**
+ * Lectures of a day that have ended and still need "Dokle ste stigli?": kind lecture, held
+ * (not on a holiday), no log for that class and day, not skipped. `nowMin` is the wall-clock
+ * time on that date (past midnight it is ≥ 1440, so every lecture of the day has ended).
+ */
+export function lecturesToLog<T extends ClassEntry>(
+  date: LocalDate,
+  nowMin: number,
+  entries: T[],
+  periods: Period[],
+  logged: ReadonlySet<string>,
+  skipped: ReadonlySet<string>,
+): T[] {
+  return classesOn(date, entries, periods).filter(
+    (e) =>
+      e.kind === 'lecture' &&
+      e.endMin <= nowMin &&
+      !logged.has(`${e.id}:${date}`) &&
+      !skipped.has(`${e.id}:${date}`),
+  )
+}

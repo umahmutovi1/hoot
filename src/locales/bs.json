@@ -750,5 +750,53 @@
     "itemDetail": "{{day}} · {{delta}} iz plana",
     "deleteException": "Obriši izuzetak",
     "itemDetailNone": "{{day}} · bez promjene u planu"
+  },
+  "lectures": {
+    "title": "Dokle ste stigli?",
+    "section": "Predavanja",
+    "timetableLink": "Raspored",
+    "ended": "Predavanje iz predmeta {{subject}} je završilo.",
+    "enter": "Unesi",
+    "context": "{{kind}} · danas {{time}}",
+    "date": "Datum predavanja",
+    "noSources": "Ovaj predmet još nema izvor sa jedinicama. Dodaj izvor da bi bilježila dokle se stiglo.",
+    "hint": "Tapni zadnju jedinicu koja je obrađena.",
+    "coveredUpTo": "Obrađeno do",
+    "note": "Bilješka",
+    "notePlaceholder": "npr. profesor preskočio 5.3, rade se zadaci",
+    "saveUpTo": "Snimi · do {{label}}",
+    "cancelled": "Nastava otkazana",
+    "skip": "Preskoči",
+    "lastTime": "prošli put",
+    "upToHere": "do ovdje",
+    "empty": "Nakon predavanja zabilježi dokle se stiglo, pa app zna koliko kasniš.",
+    "behind": "Kasniš ~{{time}}",
+    "upToDate": "U toku si s predavanjima",
+    "add": "Dodaj dokle ste stigli",
+    "chapter": "pogl. {{label}}",
+    "notYet": "još ništa",
+    "atLecture": "Na predavanju:",
+    "you": "Ti:",
+    "barLabel": "Ti si na {{you}}. dijelu, predavanja na {{lecture}}. od {{total}}",
+    "youShort": "Ti · {{n}}",
+    "lectureShort": "Predavanje · {{n}}",
+    "warnLectures_one": "Zaostaješ {{count}} predavanje",
+    "warnLectures_few": "Zaostaješ {{count}} predavanja",
+    "warnLectures_other": "Zaostaješ {{count}} predavanja",
+    "warnHours": "Kasniš ~{{time}}",
+    "warnBody": "Gradivo pređeno na predavanjima koje još nisi počela: ~{{time}}.",
+    "action": {
+      "raise_priority": "Podigni prioritet na {{n}}",
+      "switch_to_regular": "Prebaci na redovno",
+      "take_time_from": "Uzmi vrijeme od drugog predmeta",
+      "start_earlier": "Kreni ranije",
+      "add_minutes": "Dodaj vrijeme dnevno"
+    },
+    "done": {
+      "raise_priority": "Prioritet je sada {{n}}.",
+      "switch_to_regular": "Predmet je sada u redovnom režimu."
+    },
+    "later": "Kasnije",
+    "promptSub": "Dokle ste stigli? · {{time}}"
   }
 }
