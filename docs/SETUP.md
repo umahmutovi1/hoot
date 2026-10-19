@@ -1,6 +1,6 @@
 # Hoot — ručna podešavanja servisa
 
-Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Anthropic), a ne u kodu. Tajne (lozinka baze, `re_…`, `sk-ant-…`, `service_role`) idu samo u password manager i Supabase secrets — nikad u repo, `.env` fajl ili chat.
+Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Gemini, Anthropic), a ne u kodu. Tajne (lozinka baze, `re_…`, Gemini `AIza…`, `sk-ant-…`, `service_role`) idu samo u password manager i Supabase secrets — nikad u repo, `.env` fajl ili chat.
 
 ## Pregled
 
@@ -10,7 +10,8 @@ Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Anthropic), a ne 
 | Cloudflare Pages | projekat `hoot` → `hoot-5ig.pages.dev`, production branch `main` | ✅ |
 | GitHub | repo `umahmutovi1/hoot`, ruleset `protect-main-dev`, secrets za keepalive | ✅ |
 | Resend | SMTP za auth emailove (kod za prijavu), šablon u stilu appa | ✅ |
-| Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (treba tek u Etapi 8) |
+| Gemini | API ključ (free tier) za AI dok nema Anthropic kartice | ⏳ treba za Etapu 6 |
+| Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (opcionalno, Etapa 10) |
 | Domena | za emailove drugim korisnicima i vlastiti URL | kasnije |
 
 ---
@@ -33,7 +34,7 @@ npx supabase link --project-ref lpyyatqzvrvqgcmwiqfr
 npx supabase db push        # primijeni nove migracije
 npm run db:types            # regeneriši src/types/database.ts
 ```
-Lozinka baze ovdje ne treba (CLI koristi login); treba za `backup.yml` u Etapi 10.
+Lozinka baze ovdje ne treba (CLI koristi login); treba za `backup.yml` u Etapi 11.
 
 **Authentication → URL Configuration**
 - Site URL: `https://hoot-5ig.pages.dev`
@@ -132,14 +133,46 @@ Email-safe tabele i inline stilovi u bojama appa; ikonica je PNG sa produkcije (
 3. Prepiši kod iz emaila (ne otvaraj link) → „Prijavi se kodom".
 4. Ako email ne stigne: Resend → Emails / Logs.
 
-## 4. Anthropic (Etapa 8)
+## 4. Gemini (AI za sad)
+
+Dok Anthropic nalog nema karticu, AI ide preko Gemini free tiera, iza istog LLM wrappera. Prelazak na Haiku je samo promjena secrets (korak 4 u sekciji 5).
+
+> Na free tieru Google može koristiti poslane podatke za poboljšanje proizvoda. Ne šalji lične dokumente koje ne želiš dijeliti; za njih sačekaj Anthropic ili plaćeni Gemini tier.
+
+**1. Ključ**
+1. Otvori aistudio.google.com i prijavi se Google nalogom.
+2. Lijevo **Get API key** → **Create API key** → izaberi ili napravi Google Cloud projekat (npr. `hoot`). Kartica nije potrebna.
+3. Kopiraj ključ (`AIza…`) direktno u password manager. Ne u chat, repo ili `.env` fajl.
+4. U AI Studio pogledaj listu modela i zapiši ime trenutnog **Flash** modela (npr. `gemini-2.5-flash`). Ime ide u `LLM_MODEL`, pa novi model ne traži promjenu koda.
+
+**2. Provjera ključa** (lokalni terminal; ključ se upisuje samo ovdje):
+```bash
+read -s GEMINI_API_KEY && export GEMINI_API_KEY   # zalijepi ključ, Enter (ne vidi se)
+curl -s "https://generativelanguage.googleapis.com/v1beta/models?key=$GEMINI_API_KEY" | head -20
+```
+Lista modela = ključ radi. `API_KEY_INVALID` = pogrešno kopiran ključ.
+
+**3. Supabase secrets** (isti terminal):
+```bash
+npx supabase secrets set GEMINI_API_KEY="$GEMINI_API_KEY" LLM_PROVIDER=gemini LLM_MODEL=gemini-2.5-flash
+npx supabase secrets list      # vidi se ime, ne vrijednost
+unset GEMINI_API_KEY
+```
+
+**4. Testiranje** (kad Etapa 6 donese edge funkcije):
+1. `npx supabase functions deploy <ime>` za svaku novu funkciju (lokalni `functions serve` traži Docker, pa se testira na pravom projektu).
+2. Otvori `dev.hoot-5ig.pages.dev` → Uvezi → zalijepi kratak tekst akademskog kalendara → pregled se pojavi.
+3. Supabase → Table Editor → `ai_runs`: red sa `provider = gemini`, tokenima i `ok = true`. Greške su u Edge Functions → Logs.
+4. Limiti free tiera (zahtjevi po minuti i danu) vide se u AI Studio → Usage; app ionako ima limit 30 poziva dnevno.
+
+## 5. Anthropic (opcionalno, Etapa 10)
 
 1. console.anthropic.com → Billing → Add credits (najmanji iznos), Auto-reload isključen.
 2. Settings → Limits → mjesečni spend limit (npr. $5).
 3. **Workspace** ključ: Settings → Workspaces → Default → API keys → Create → `sk-ant-api03-…`. Ne `sk-ant-usr-…` (korisnički ključ traži `anthropic-workspace-id` header).
-4. Ključ se unosi samo u terminal: `npx supabase secrets set ANTHROPIC_API_KEY=…`.
+4. Ključ se unosi samo u terminal: `npx supabase secrets set ANTHROPIC_API_KEY=… LLM_PROVIDER=anthropic LLM_MODEL=claude-haiku-5-5`.
 
-## 5. Otvaranje aplikacije za više korisnika
+## 6. Otvaranje aplikacije za više korisnika
 
 Kod i baza su već spremni (svaka tabela ima `user_id` + RLS, profil se pravi automatski). Treba samo email sa vlastite domene.
 
@@ -150,11 +183,11 @@ Kod i baza su već spremni (svaka tabela ima `user_id` + RLS, profil se pravi au
 5. **Supabase URL Configuration.** Site URL i Redirect URLs dopuni novom domenom.
 6. **Rate limits.** Authentication → Rate Limits → provjeri „emails sent per hour" (sa custom SMTP-om je podesivo).
 7. **Registracija.** Allow new users to sign up → uključeno.
-8. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Etapi 8), napomena o privatnosti ako postoji admin pregled, demo nalog.
+8. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Etapi 6), napomena o privatnosti ako postoji admin pregled, demo nalog.
 
 Besplatna alternativa bez domene: Gmail SMTP sa app passwordom (radi za bilo koji email, ~500 dnevno, ali šalje sa lične Gmail adrese).
 
-## 6. Troškovi
+## 7. Troškovi
 
 | Servis | Besplatno do | Plaća se kad |
 | --- | --- | --- |
@@ -163,4 +196,5 @@ Besplatna alternativa bez domene: Gmail SMTP sa app passwordom (radi za bilo koj
 | Resend | 3.000 emailova/mj, 100/dan, 1 domena | preko toga (20 USD/mj) |
 | GitHub | privatni repo, Actions | — |
 | Domena | — | ~10 USD/god (kad se otvori za druge) |
+| Gemini | free tier (dnevni limiti, podaci se mogu koristiti) | plaćeni tier po korištenju |
 | Anthropic | — | po korištenju, ~$0.001 po parsiranju |
