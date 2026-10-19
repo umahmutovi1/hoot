@@ -68,3 +68,38 @@ export function deadlinesAhead(day: Date, deadlines: Deadline[], days = 7): Dead
     return diff >= 0 && diff <= days && (!d.done || diff === 0)
   })
 }
+
+export type DayMarker =
+  { kind: 'exam' | 'possible'; id: string; color: string | null } | { kind: 'deadline'; id: string }
+
+export interface DayMarkers {
+  /** Shown as dots under the day number, in this order: exams, possible exams, deadlines. */
+  visible: DayMarker[]
+  /** How many did not fit ("+N"). */
+  more: number
+}
+
+/** Dots under a calendar day, like Apple Calendar: one per exam / possible exam / deadline. */
+export function dayMarkers(
+  day: Date,
+  subjects: SubjectWithAssessments[],
+  deadlines: Deadline[],
+  max = 3,
+): DayMarkers {
+  const all: DayMarker[] = [
+    ...examsOn(day, subjects).map(({ exam, subject }) => ({
+      kind: 'exam' as const,
+      id: exam.id,
+      color: subject.color,
+    })),
+    ...possibleExamsOn(day, subjects).map(({ exam, subject }) => ({
+      kind: 'possible' as const,
+      id: exam.id,
+      color: subject.color,
+    })),
+    ...deadlinesOn(day, deadlines).map((d) => ({ kind: 'deadline' as const, id: d.id })),
+  ]
+  // With overflow, the last slot becomes "+N" so the row never gets wider than `max`.
+  if (all.length <= max) return { visible: all, more: 0 }
+  return { visible: all.slice(0, max - 1), more: all.length - (max - 1) }
+}

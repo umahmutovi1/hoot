@@ -10,7 +10,14 @@ import { examDateLabel, relativeDays } from '@/features/subjects/format'
 import { localDateOf } from '@/features/subjects/model'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
-import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
+import {
+  dayMarkers,
+  deadlinesAhead,
+  deadlinesOn,
+  examsOn,
+  monthGrid,
+  possibleExamsOn,
+} from './calendar'
 
 /** Plan → Kalendar: month grid with exams and deadlines, and the selected day's list. */
 export function CalendarView() {
@@ -66,17 +73,20 @@ export function CalendarView() {
           {cells.map(({ date, inMonth }) => {
             const isSelected = isSameDay(date, selected)
             const isToday = isSameDay(date, today)
-            const exam = inMonth && examsOn(date, subjects).length > 0
-            const due = inMonth && deadlinesOn(date, deadlines).length > 0
-            const possible = inMonth && possibleExamsOn(date, subjects).length > 0
+            const markers = inMonth ? dayMarkers(date, subjects, deadlines) : null
+            const counts = inMonth
+              ? {
+                  exam: examsOn(date, subjects).length,
+                  possible: possibleExamsOn(date, subjects).length,
+                  deadline: deadlinesOn(date, deadlines).length,
+                }
+              : { exam: 0, possible: 0, deadline: 0 }
             const label = [
               format(date, 'd. MMMM', { locale: dfLocale }),
-              exam && t('plan.legendExam').toLowerCase(),
-              possible && t('plan.legendPossibleExam').toLowerCase(),
-              due && t('plan.legendDeadline').toLowerCase(),
-            ]
-              .filter(Boolean)
-              .join(', ')
+              ...(['exam', 'possible', 'deadline'] as const)
+                .filter((k) => counts[k] > 0)
+                .map((k) => t(`plan.dayCount.${k}`, { count: counts[k] })),
+            ].join(', ')
             return (
               <button
                 key={date.toISOString()}
@@ -87,38 +97,55 @@ export function CalendarView() {
                   setSelected(date)
                   if (!inMonth) setMonth(startOfMonth(date))
                 }}
-                className={cn(
-                  'flex h-11 items-center justify-center rounded-full text-[15px]',
-                  isSelected
-                    ? 'bg-ink font-bold text-white'
-                    : exam
-                      ? 'bg-calendar-exam font-medium'
-                      : due
-                        ? 'bg-calendar-deadline font-medium'
-                        : possible
-                          ? 'border-[1.5px] border-dashed border-subject-pink bg-calendar-exam/40 font-medium'
-                          : isToday
-                            ? 'bg-brand-soft font-bold'
-                            : 'font-medium',
-                  !inMonth && !isSelected && 'text-ink-placeholder',
-                )}
+                className="flex h-[52px] flex-col items-center justify-start gap-[3px] pt-0.5"
               >
-                {format(date, 'd')}
+                <span
+                  className={cn(
+                    'flex size-9 items-center justify-center rounded-full text-[15px]',
+                    isSelected
+                      ? 'bg-ink font-bold text-white'
+                      : isToday
+                        ? 'bg-brand-soft font-bold'
+                        : 'font-medium',
+                    !inMonth && !isSelected && 'text-ink-placeholder',
+                  )}
+                >
+                  {format(date, 'd')}
+                </span>
+                <span aria-hidden="true" className="flex h-[7px] items-center gap-[3px]">
+                  {markers?.visible.map((m) => (
+                    <span
+                      key={`${m.kind}-${m.id}`}
+                      className={cn(
+                        'size-[6px] rounded-full',
+                        m.kind === 'exam' && paletteOf(m.color).bar,
+                        m.kind === 'possible' && 'border-[1.5px] bg-surface',
+                        m.kind === 'possible' && paletteOf(m.color).border,
+                        m.kind === 'deadline' && 'bg-warning',
+                      )}
+                    />
+                  ))}
+                  {markers && markers.more > 0 && (
+                    <span className="text-[9px] leading-none font-bold text-ink-muted">
+                      +{markers.more}
+                    </span>
+                  )}
+                </span>
               </button>
             )
           })}
         </div>
         <div className="flex flex-wrap gap-3.5 px-1 text-xs text-ink-muted">
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-calendar-exam" />
+            <span className="size-2 rounded-full bg-ink-muted" />
             {t('plan.legendExam')}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full border border-dashed border-subject-pink bg-calendar-exam/40" />
+            <span className="size-2 rounded-full border-[1.5px] border-ink-muted bg-surface" />
             {t('plan.legendPossibleExam')}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-calendar-deadline" />
+            <span className="size-2 rounded-full bg-warning" />
             {t('plan.legendDeadline')}
           </span>
         </div>

@@ -67,7 +67,15 @@
     "addDeadline": "Add deadline",
     "legendPossibleExam": "Possible exam",
     "possibleExamItem": "Possible exam: {{subject}} · {{title}}",
-    "possibleExamRange": "date not announced · {{range}}"
+    "possibleExamRange": "date not announced · {{range}}",
+    "dayCount": {
+      "exam_one": "{{count}} exam",
+      "exam_other": "{{count}} exams",
+      "possible_one": "{{count}} possible exam",
+      "possible_other": "{{count}} possible exams",
+      "deadline_one": "{{count}} deadline",
+      "deadline_other": "{{count}} deadlines"
+    }
   },
   "subjects": {
     "title": "Subjects",
