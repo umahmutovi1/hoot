@@ -9,6 +9,9 @@ import { SourceEditorPage } from '@/features/sources/SourceEditorPage'
 import { SourcePage } from '@/features/sources/SourcePage'
 import { UnitPage } from '@/features/sources/UnitPage'
 import { ExamScopePage } from '@/features/sources/ExamScopePage'
+import { AcademicCalendarPage } from '@/features/schedule/AcademicCalendarPage'
+import { AvailabilityPage } from '@/features/schedule/AvailabilityPage'
+import { TimetablePage } from '@/features/schedule/TimetablePage'
 import { SessionStartPage } from '@/features/session/SessionStartPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { SubjectFormPage } from '@/features/subjects/SubjectFormPage'
@@ -44,6 +47,9 @@ export const router = createBrowserRouter([
             element: <PlainLayout />,
             children: [
               { path: 'settings', element: <SettingsPage /> },
+              { path: 'settings/calendar', element: <AcademicCalendarPage /> },
+              { path: 'plan/availability', element: <AvailabilityPage /> },
+              { path: 'plan/timetable', element: <TimetablePage /> },
               { path: 'subjects/new', element: <SubjectFormPage /> },
               { path: 'subjects/:id', element: <SubjectPage /> },
               { path: 'subjects/:id/edit', element: <SubjectFormPage /> },

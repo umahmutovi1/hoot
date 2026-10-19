@@ -82,3 +82,9 @@ export function cancelledOn(date: string, logs: LectureLogRow[]): Set<string> {
       .map((l) => l.timetable_entry_id!),
   )
 }
+
+/** Which of the three exception kinds a row is (Dostupnost → Izuzeci). */
+export function exceptionType(e: Pick<ExceptionRow, 'is_busy' | 'start_min'>) {
+  if (!e.is_busy) return 'extraFree' as const
+  return e.start_min === null ? ('busyDay' as const) : ('busyTime' as const)
+}

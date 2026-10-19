@@ -246,7 +246,10 @@
     "general": "Opće",
     "language": "Jezik",
     "timezone": "Vremenska zona",
-    "signOut": "Odjava"
+    "signOut": "Odjava",
+    "periodsCount_one": "{{count}} period",
+    "periodsCount_few": "{{count}} perioda",
+    "periodsCount_other": "{{count}} perioda"
   },
   "validation": {
     "required": "Obavezno polje",
@@ -259,7 +262,9 @@
     "rangeOrder": "Najkasniji datum mora biti poslije najranijeg",
     "pageOrder": "Krajnja stranica mora biti poslije početne",
     "outlineEmpty": "Upiši bar jednu jedinicu",
-    "labelTaken": "Ta oznaka već postoji"
+    "labelTaken": "Ta oznaka već postoji",
+    "time": "Neispravno vrijeme",
+    "timeOrder": "Kraj mora biti poslije početka"
   },
   "common": {
     "cancel": "Odustani",
@@ -568,5 +573,160 @@
     "greenBreak": "Pogled na zelenilo od samo 40 sekundi, i to na slici, pomogao je studentima da zadrže pažnju na dosadnom zadatku.",
     "sleepAfter": "San nekoliko sati nakon učenja pomaže da gradivo ostane. Neprospavana noć poslije učenja kvari pamćenje i nakon nadoknade sna.",
     "wakefulRest": "Deset minuta mirnog odmora (bez telefona i igrica) odmah nakon učenja poboljšalo je pamćenje i sedmicu kasnije."
+  },
+  "weekdays": {
+    "short": {
+      "0": "Pon",
+      "1": "Uto",
+      "2": "Sri",
+      "3": "Čet",
+      "4": "Pet",
+      "5": "Sub",
+      "6": "Ned"
+    },
+    "long": {
+      "0": "ponedjeljak",
+      "1": "utorak",
+      "2": "srijeda",
+      "3": "četvrtak",
+      "4": "petak",
+      "5": "subota",
+      "6": "nedjelja"
+    }
+  },
+  "calendar": {
+    "title": "Akademski kalendar",
+    "heading": "Akademska godina",
+    "intro": "Kad traje nastava, kad su parcijale i ispitni rokovi i koji su dani neradni. Datume pojedinih ispita unosiš na predmetu.",
+    "add": "+ Dodaj",
+    "newTitle": "Novi period",
+    "editTitle": "Uredi period",
+    "kindLabel": "Vrsta",
+    "sessionLabel": "Rok",
+    "titleLabel": "Naziv",
+    "from": "Od",
+    "to": "Do",
+    "kind": {
+      "teaching": "Nastava",
+      "partial_exams": "Parcijale",
+      "exam": "Ispitni rok",
+      "holiday": "Neradni dani"
+    },
+    "session": {
+      "regular": "Redovni",
+      "makeup": "Popravni"
+    },
+    "section": {
+      "teaching": "Nastava",
+      "partial_exams": "Sedmice parcijalnih",
+      "exam": "Ispitni rokovi",
+      "holiday": "Neradni dani"
+    },
+    "empty": {
+      "teaching": "Dodaj semestar: od kad do kad traje nastava. Raspored i sedmice nastave se računaju odavde.",
+      "partial_exams": "Nema sedmica parcijalnih.",
+      "exam": "Nema ispitnih rokova.",
+      "holiday": "Nema neradnih dana."
+    },
+    "hint": {
+      "teaching": "Raspored nastave važi u ovom periodu; 1. sedmica nastave je neparna.",
+      "partial_exams": "Parcijala čiji datum još nije objavljen može biti „u ovoj sedmici“.",
+      "exam": "Ispit bez datuma može biti „u ovom roku“; plan cilja prvi dan roka.",
+      "holiday": "Tih dana nema nastave; dostupnost za učenje ostaje."
+    },
+    "defaultTitle": {
+      "winter": "Zimski semestar",
+      "summer": "Ljetni semestar",
+      "partial_exams": "Sedmica parcijalnih",
+      "exam_regular": "Redovni ispitni rok",
+      "exam_makeup": "Popravni ispitni rok",
+      "holiday": "Neradni dan"
+    },
+    "delete": "Obriši period",
+    "confirmDelete": "Sigurno obrisati?"
+  },
+  "timetable": {
+    "title": "Raspored nastave",
+    "heading": "Predavanja i vježbe",
+    "periodLine_one": "{{title}} · važi do {{date}} · {{count}} termin sedmično",
+    "periodLine_few": "{{title}} · važi do {{date}} · {{count}} termina sedmično",
+    "periodLine_other": "{{title}} · važi do {{date}} · {{count}} termina sedmično",
+    "noPeriodTitle": "Prvo dodaj semestar",
+    "noPeriodBody": "U akademskom kalendaru unesi od kad do kad traje nastava.",
+    "add": "Dodaj termin",
+    "newTitle": "Novi termin",
+    "editTitle": "Uredi termin",
+    "dayEmpty": "Nema nastave ovaj dan",
+    "subject": "Predmet",
+    "pickSubject": "Izaberi predmet",
+    "noSubject": "Bez predmeta",
+    "kindLabel": "Tip",
+    "day": "Dan",
+    "start": "Od",
+    "end": "Do",
+    "location": "Sala",
+    "optional": "(opcionalno)",
+    "locationPlaceholder": "npr. S1 · amfiteatar",
+    "weeks": "Sedmice",
+    "period": "Semestar",
+    "kind": {
+      "lecture": "Predavanje",
+      "exercise": "Vježbe",
+      "lab": "Lab",
+      "other": "Ostalo"
+    },
+    "parity": {
+      "all": "Svake sedmice",
+      "odd": "Neparne",
+      "even": "Parne"
+    },
+    "parityShort": {
+      "odd": "neparne sedmice",
+      "even": "parne sedmice"
+    },
+    "howTitle": "Kako plan koristi raspored",
+    "busyTitle": "Termini nastave su zauzeti",
+    "busyHint": "plus 15 min za dolazak i odlazak",
+    "always": "uvijek",
+    "recapTitle": "Kratko ponavljanje nakon predavanja",
+    "recapHint": "15 min istog dana, prvi korak ponavljanja",
+    "delete": "Obriši termin",
+    "confirmDelete": "Sigurno obrisati?"
+  },
+  "availability": {
+    "title": "Dostupnost",
+    "heading": "Kad možeš učiti?",
+    "totalBefore": "Ove sedmice ukupno",
+    "perWeek": "{{hours}} sedmično",
+    "totalAfter": "Plan raspoređuje gradivo samo u ove termine; nastava se oduzima sama.",
+    "freeDay": "slobodan dan",
+    "addSlotFor": "Dodaj termin za {{day}}",
+    "newSlot": "Slobodan termin",
+    "editSlot": "Uredi termin",
+    "slotHint": "Smije preklapati nastavu: termini iz rasporeda (±15 min) se oduzimaju automatski.",
+    "deleteSlot": "Obriši termin",
+    "timetableLine_one": "{{count}} termin sedmično · automatski zauzeto",
+    "timetableLine_few": "{{count}} termina sedmično · automatski zauzeto",
+    "timetableLine_other": "{{count}} termina sedmično · automatski zauzeto",
+    "exceptions": "Izuzeci",
+    "noExceptions": "Nema izuzetaka. Dodaj dan kad si zauzeta ili imaš više vremena.",
+    "newException": "Novi izuzetak",
+    "editException": "Uredi izuzetak",
+    "exceptionType": "Šta je drugačije",
+    "date": "Datum",
+    "type": {
+      "busyDay": "Zauzeta cijeli dan",
+      "busyTime": "Zauzeta od–do",
+      "extraFree": "Dodatno slobodno"
+    },
+    "item": {
+      "busyDay": "Zauzeta cijeli dan",
+      "busyTime": "Zauzeta {{range}}",
+      "extraFree": "Dodatno slobodno {{range}}"
+    },
+    "cancelledClass": "Nastava otkazana {{range}}",
+    "itemDetail": "{{day}} · {{delta}} iz plana",
+    "deleteException": "Obriši izuzetak",
+    "itemDetailNone": "{{day}} · bez promjene u planu"
   }
 }

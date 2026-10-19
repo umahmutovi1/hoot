@@ -241,7 +241,9 @@
     "general": "General",
     "language": "Language",
     "timezone": "Time zone",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "periodsCount_one": "{{count}} period",
+    "periodsCount_other": "{{count}} periods"
   },
   "validation": {
     "required": "Required",
@@ -254,7 +256,9 @@
     "rangeOrder": "The latest date must be after the earliest",
     "pageOrder": "The end page must come after the start page",
     "outlineEmpty": "Enter at least one unit",
-    "labelTaken": "That label already exists"
+    "labelTaken": "That label already exists",
+    "time": "Invalid time",
+    "timeOrder": "End must be after start"
   },
   "common": {
     "cancel": "Cancel",
@@ -557,5 +561,158 @@
     "greenBreak": "Looking at greenery for just 40 seconds, even in a picture, helped students keep their attention on a boring task.",
     "sleepAfter": "Sleeping within a few hours after studying helps the material stick. A sleepless night after learning hurts recall even after catching up on sleep.",
     "wakefulRest": "Ten minutes of quiet rest (no phone, no games) right after learning improved memory even a week later."
+  },
+  "weekdays": {
+    "short": {
+      "0": "Mon",
+      "1": "Tue",
+      "2": "Wed",
+      "3": "Thu",
+      "4": "Fri",
+      "5": "Sat",
+      "6": "Sun"
+    },
+    "long": {
+      "0": "Monday",
+      "1": "Tuesday",
+      "2": "Wednesday",
+      "3": "Thursday",
+      "4": "Friday",
+      "5": "Saturday",
+      "6": "Sunday"
+    }
+  },
+  "calendar": {
+    "title": "Academic calendar",
+    "heading": "Academic year",
+    "intro": "When classes run, when partial exams and exam periods are, and which days are holidays. Dates of single exams go on the subject.",
+    "add": "+ Add",
+    "newTitle": "New period",
+    "editTitle": "Edit period",
+    "kindLabel": "Type",
+    "sessionLabel": "Session",
+    "titleLabel": "Name",
+    "from": "From",
+    "to": "To",
+    "kind": {
+      "teaching": "Teaching",
+      "partial_exams": "Partials",
+      "exam": "Exam period",
+      "holiday": "Holidays"
+    },
+    "session": {
+      "regular": "Regular",
+      "makeup": "Make-up"
+    },
+    "section": {
+      "teaching": "Teaching",
+      "partial_exams": "Partial exam weeks",
+      "exam": "Exam periods",
+      "holiday": "Holidays"
+    },
+    "empty": {
+      "teaching": "Add a semester: when classes start and end. The timetable and teaching weeks are counted from here.",
+      "partial_exams": "No partial exam weeks.",
+      "exam": "No exam periods.",
+      "holiday": "No holidays."
+    },
+    "hint": {
+      "teaching": "The timetable applies in this period; teaching week 1 is odd.",
+      "partial_exams": "A partial exam without a date yet can be \"in this week\".",
+      "exam": "An exam without a date can be \"in this period\"; the plan aims for its first day.",
+      "holiday": "No classes on these days; your study availability stays."
+    },
+    "defaultTitle": {
+      "winter": "Winter semester",
+      "summer": "Summer semester",
+      "partial_exams": "Partial exam week",
+      "exam_regular": "Regular exam period",
+      "exam_makeup": "Make-up exam period",
+      "holiday": "Holiday"
+    },
+    "delete": "Delete period",
+    "confirmDelete": "Delete for sure?"
+  },
+  "timetable": {
+    "title": "Class timetable",
+    "heading": "Lectures and exercises",
+    "periodLine_one": "{{title}} · until {{date}} · {{count}} class a week",
+    "periodLine_other": "{{title}} · until {{date}} · {{count}} classes a week",
+    "noPeriodTitle": "Add a semester first",
+    "noPeriodBody": "In the academic calendar, enter when classes start and end.",
+    "add": "Add class",
+    "newTitle": "New class",
+    "editTitle": "Edit class",
+    "dayEmpty": "No classes this day",
+    "subject": "Subject",
+    "pickSubject": "Pick a subject",
+    "noSubject": "No subject",
+    "kindLabel": "Type",
+    "day": "Day",
+    "start": "From",
+    "end": "To",
+    "location": "Room",
+    "optional": "(optional)",
+    "locationPlaceholder": "e.g. S1 · lecture hall",
+    "weeks": "Weeks",
+    "period": "Semester",
+    "kind": {
+      "lecture": "Lecture",
+      "exercise": "Exercises",
+      "lab": "Lab",
+      "other": "Other"
+    },
+    "parity": {
+      "all": "Every week",
+      "odd": "Odd",
+      "even": "Even"
+    },
+    "parityShort": {
+      "odd": "odd weeks",
+      "even": "even weeks"
+    },
+    "howTitle": "How the plan uses the timetable",
+    "busyTitle": "Class times are busy",
+    "busyHint": "plus 15 min to get there and back",
+    "always": "always",
+    "recapTitle": "Short review after a lecture",
+    "recapHint": "15 min the same day, the first review step",
+    "delete": "Delete class",
+    "confirmDelete": "Delete for sure?"
+  },
+  "availability": {
+    "title": "Availability",
+    "heading": "When can you study?",
+    "totalBefore": "This week in total",
+    "perWeek": "{{hours}} a week",
+    "totalAfter": "The plan only schedules material in these slots; classes are subtracted automatically.",
+    "freeDay": "free day",
+    "addSlotFor": "Add a slot for {{day}}",
+    "newSlot": "Free slot",
+    "editSlot": "Edit slot",
+    "slotHint": "May overlap classes: timetable classes (±15 min) are subtracted automatically.",
+    "deleteSlot": "Delete slot",
+    "timetableLine_one": "{{count}} class a week · automatically busy",
+    "timetableLine_other": "{{count}} classes a week · automatically busy",
+    "exceptions": "Exceptions",
+    "noExceptions": "No exceptions. Add a day when you are busy or have extra time.",
+    "newException": "New exception",
+    "editException": "Edit exception",
+    "exceptionType": "What is different",
+    "date": "Date",
+    "type": {
+      "busyDay": "Busy all day",
+      "busyTime": "Busy from–to",
+      "extraFree": "Extra free time"
+    },
+    "item": {
+      "busyDay": "Busy all day",
+      "busyTime": "Busy {{range}}",
+      "extraFree": "Extra free {{range}}"
+    },
+    "cancelledClass": "Class cancelled {{range}}",
+    "itemDetail": "{{day}} · {{delta}} in the plan",
+    "deleteException": "Delete exception",
+    "itemDetailNone": "{{day}} · no change in the plan"
   }
 }
