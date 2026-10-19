@@ -69,8 +69,6 @@ export interface AvailabilityException {
   isBusy: boolean
 }
 
-/** Minutes before and after a class that are busy too (getting there and back). */
-export const CLASS_MARGIN_MIN = 15
 export const DAY_MINUTES = 1440
 
 export const within = (date: LocalDate, from: LocalDate, to: LocalDate) =>
@@ -186,9 +184,9 @@ export function slotMinutes(slots: Slot[]): number {
   return mergeSlots(slots).reduce((sum, s) => sum + s.endMin - s.startMin, 0)
 }
 
-/** A class plus the margin before and after it. */
+/** The time a class blocks: exactly its own slot (no travel margin, user decision). */
 export function busySlotOf(entry: Slot): Slot {
-  return { startMin: entry.startMin - CLASS_MARGIN_MIN, endMin: entry.endMin + CLASS_MARGIN_MIN }
+  return { startMin: entry.startMin, endMin: entry.endMin }
 }
 
 const exceptionSlot = (e: AvailabilityException): Slot =>
@@ -225,7 +223,7 @@ export function capFor(date: LocalDate, input: Pick<DayInput, 'days' | 'caps'>):
 
 /**
  * Free study time on a date (PRD "Scheduler" step 1): the day's slots plus extra free time,
- * minus busy exceptions (a whole-day one leaves nothing), minus classes ±15 min that are not
+ * minus busy exceptions (a whole-day one leaves nothing), minus classes that are not
  * cancelled, except inside slots marked "Učim umjesto nastave".
  */
 export function freeSlotsOn(date: LocalDate, input: DayInput): Slot[] {

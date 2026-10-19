@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { CheckIcon, WarningIcon } from '@/components/icons'
-import { formatDuration } from '@/features/sources/format'
-import type { SourceMaterial } from '@/features/sources/model'
+import { amountLabel, formatDuration } from '@/features/sources/format'
+import { measureOf, type SourceMaterial } from '@/features/sources/model'
 import { useLocale } from '@/features/settings/useLocale'
 import { useUpdateSubject } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
@@ -19,6 +19,9 @@ import {
   type SourcePace,
 } from '@/lib/pace'
 import { useLectureLogs } from './api'
+import { clockRange } from './format'
+import { useScheduleData } from './useScheduleData'
+import { useWeekdayNames } from './weekdays'
 import { LectureSheet } from './LectureSheet'
 import { toPaceLog } from './model'
 
@@ -68,6 +71,20 @@ export function SubjectLectures({
     }))
     .filter((p): p is { material: SourceMaterial; pace: LecturePace } => p.pace !== null)
   const behind = subjectBehind(paces.map((p) => p.pace))
+  // "15 str. (Oppenheim) · 4 pitanja": behind in each source's own measure.
+  const behindText = paces
+    .filter((p) => p.pace.behindAmount > 0)
+    .map(
+      (p) =>
+        amountLabel(t, measureOf(p.material.source), p.pace.behindAmount) +
+        (paces.length > 1 ? ` (${p.material.source.title})` : ''),
+    )
+    .join(' · ')
+  const { classes } = useScheduleData()
+  const short = useWeekdayNames('short')
+  const own = classes
+    .filter((c) => c.subjectId === subject.id)
+    .sort((a, b) => a.weekday - b.weekday || a.startMin - b.startMin)
 
   return (
     <>
@@ -78,6 +95,19 @@ export function SubjectLectures({
             {t('lectures.timetableLink')} ›
           </Link>
         </div>
+        {own.length > 0 && (
+          <Link to="/plan/timetable" className="flex flex-wrap gap-1.5">
+            {own.map((c) => (
+              <span
+                key={c.id}
+                className="flex h-7 items-center rounded-full bg-canvas px-2.5 text-xs font-semibold"
+              >
+                {short[c.weekday]} {clockRange(c.startMin, c.endMin)} ·{' '}
+                {t(`timetable.kind.${c.kind}`).toLowerCase()}
+              </span>
+            ))}
+          </Link>
+        )}
         {paces.length === 0 ? (
           <span className="text-sm leading-[1.4] text-ink-muted">{t('lectures.empty')}</span>
         ) : (
@@ -90,17 +120,24 @@ export function SubjectLectures({
           ))
         )}
         {paces.length > 0 && (
-          <span
-            className={
-              behind.behindMinutes > 0
-                ? 'text-[15px] font-semibold text-warning'
-                : 'text-[15px] font-semibold text-success'
-            }
-          >
-            {behind.behindMinutes > 0
-              ? t('lectures.behind', { time: formatDuration(t, behind.behindMinutes) })
-              : t('lectures.upToDate')}
-          </span>
+          <div className="flex flex-col gap-0.5">
+            <span
+              className={
+                behind.behindMinutes > 0
+                  ? 'text-[15px] font-semibold text-warning'
+                  : 'text-[15px] font-semibold text-success'
+              }
+            >
+              {behind.behindMinutes > 0
+                ? t('lectures.behind', { amount: behindText })
+                : t('lectures.upToDate')}
+            </span>
+            {behind.behindMinutes > 0 && (
+              <span className="text-xs text-ink-muted">
+                {t('lectures.behindTime', { time: formatDuration(t, behind.behindMinutes) })}
+              </span>
+            )}
+          </div>
         )}
         <button
           type="button"
@@ -110,7 +147,7 @@ export function SubjectLectures({
           {t('lectures.add')}
         </button>
       </div>
-      <PaceWarning subject={subject} behind={behind} />
+      <PaceWarning subject={subject} behind={behind} behindText={behindText} />
       <LectureSheet
         subjectId={subject.id}
         subjectName={subject.name}
@@ -180,9 +217,11 @@ function PaceRow({ title, pace }: { title?: string; pace: LecturePace }) {
 function PaceWarning({
   subject,
   behind,
+  behindText,
 }: {
   subject: SubjectWithAssessments
   behind: ReturnType<typeof subjectBehind>
+  behindText: string
 }) {
   const { t } = useTranslation()
   const update = useUpdateSubject()
@@ -221,10 +260,13 @@ function PaceWarning({
           <span className="text-[15px] font-semibold text-warning-ink">
             {behind.behindLectures > 0
               ? t('lectures.warnLectures', { count: behind.behindLectures })
-              : t('lectures.warnHours', { time: formatDuration(t, behind.behindMinutes) })}
+              : t('lectures.behind', { amount: behindText })}
           </span>
           <span className="text-[13px] leading-[1.4] text-warning-muted">
-            {t('lectures.warnBody', { time: formatDuration(t, behind.behindMinutes) })}
+            {t('lectures.warnBody', {
+              amount: behindText,
+              time: formatDuration(t, behind.behindMinutes),
+            })}
           </span>
         </div>
       </div>

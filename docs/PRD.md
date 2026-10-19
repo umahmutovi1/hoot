@@ -241,7 +241,7 @@ Nisu svi predmeti jednako važni ni jednako teški. Prioritet kaže koliko je pr
 
 Korisnik bilježi dokle se stiglo na nastavi, pa app zna koliko zaostaje i može držati korak s predavanjima.
 
-**Model.** Unos (`lecture_logs`) vezuje datum, predmet, opcionalno termin iz rasporeda, izvor i jedinicu “do ovdje” (`up_to_unit_id`). Pređenim jedinicama se smatraju sve nearhivirane jedinice tog izvora sa `position` do te jedinice (uključivo, sa podjedinicama). Novi unos za isti izvor pomjera granicu (vrijedi unos sa najkasnijim `on_date`, pa `created_at`); raniji unosi ostaju kao historija. `cancelled = true` znači da nastave nije bilo; to pravi izuzetak dostupnosti (`is_busy = false`, termin ±15 min, `lecture_log_id` na unos) koji oslobađa taj termin za taj dan. Brisanje unosa briše i taj izuzetak.
+**Model.** Unos (`lecture_logs`) vezuje datum, predmet, opcionalno termin iz rasporeda, izvor i jedinicu “do ovdje” (`up_to_unit_id`). Pređenim jedinicama se smatraju sve nearhivirane jedinice tog izvora sa `position` do te jedinice (uključivo, sa podjedinicama). Novi unos za isti izvor pomjera granicu (vrijedi unos sa najkasnijim `on_date`, pa `created_at`); raniji unosi ostaju kao historija. `cancelled = true` znači da nastave nije bilo; to pravi izuzetak dostupnosti (`is_busy = false`, vrijeme termina, `lecture_log_id` na unos) koji oslobađa taj termin za taj dan. Brisanje unosa briše i taj izuzetak.
 
 **Zaostatak** (`src/lib/pace/`, čista funkcija) = zbir minuta pređenih listova sa `level` 0. Minute su iste kao na ekranu izvora (`materialOf()` → `estimateUnits()`). Prikazuje se u mjeri izvora, ne u minutama: “Kasniš 15 str. (Oppenheim) · 4 pitanja”, a ispod sitno “~1h 40min učenja”. Mjera prati izvor (stranice, slajdovi, pitanja, jedinice; zbir `amount` pređenih listova sa `level` 0). Na predmetu: “Na predavanju: pogl. 5 · Ti: pogl. 3”, po jedan red za svaki izvor koji ima unos.
 
@@ -271,7 +271,7 @@ Satnicu pravi čista TypeScript funkcija `plan(state) → blocks`, bez AI-ja: br
 
 **Algoritam**
 
-1. **Kapacitet.** Slobodne minute po danu = dostupnost − termini nastave (±15 min, osim otkazanih) − izuzeci − ručni blokovi.
+1. **Kapacitet.** Slobodne minute po danu = dostupnost − termini nastave (tačno vrijeme termina, osim otkazanih) − izuzeci − ručni blokovi.
 2. **Ponavljanja i provjere prvo.** Jedinice kojima je `next_review_on` danas ili ranije dobijaju blokove tipa `review` (vidi Spaced repetition), i za predmete u kampanji prije starta. Ponavljanja zauzimaju najviše `profiles.review_cap_pct` (default 40%) dnevnog kapaciteta; višak se slaže po bližem ispitu, pa po nižoj jačini, a ostatak prelazi na sljedeći dan. Uz uključen prekidač, dan sa predavanjem dobija blok `recap` od 15 min za taj predmet.
 3. **Start kampanje.** Za predmete u kampanji izračuna se dan starta (vidi Prioritet i režim); prije njega njihove jedinice nisu u bazenu.
 4. **Preostali rad po cilju.** Cilj je nepoložen, aktivan ispit (ne “samo ako zatreba” dok se ne aktivira) ili rok sa procjenom. Za jedinicu u obimu: level 0 → 100% minuta, level 1 → 40%, level 2+ → 0% (ide u ponavljanja). Pitanje: 0 → 100%, 1 → 50%. Jedinica pripada najranijem cilju koji je pokriva. Rad se dijeli na obavezan i opcionalan po ciljnoj pokrivenosti prioriteta. Planirane minute ručnih blokova za te jedinice oduzimaju se od preostalog rada.
@@ -448,7 +448,7 @@ App neće imati tekst knjige, pa test pamćenja koristi ono što stvarno postoji
 
 Korisnik unosi predavanja, vježbe i labove (ručno ili slikom rasporeda, isti AI pipeline kao za sadržaj). Ovo je MVP jer bez toga dostupnost ručno dupla raspored.
 
-- Termini nastave (+15 min prije i poslije) automatski su zauzeti; dostupnost ih ne mora ponavljati.
+- Termini nastave su automatski zauzeti, tačno u svom vremenu (bez margine za dolazak i odlazak, odluka nakon prvog pregleda); dostupnost ih ne mora ponavljati.
 - Prikazuju se u kalendaru i satnici kao “iz rasporeda nastave”.
 - Opcija “kratko ponavljanje nakon predavanja”: 15 min istog dana za taj predmet, prvi korak raspoređenog učenja.
 - Nakon svakog termina app pita “Dokle ste stigli?” (vidi Praćenje predavanja); otkazan termin se oslobađa za učenje.
@@ -458,12 +458,12 @@ Korisnik unosi predavanja, vježbe i labove (ručno ili slikom rasporeda, isti A
 
 **Dostupnost.** Dvije stvari, obje sa sedmičnim šablonom i izmjenom za konkretan datum:
 
-- **Kad možeš učiti** (termini). Default je uvijek osim 00:00–06:00 (06–24 svaki dan); novi korisnik ga dobija automatski. Termini nastave (±15 min) se oduzimaju sami, pa šablon ne treba prilagođavati rasporedu.
+- **Kad možeš učiti** (termini). Default je uvijek osim 00:00–06:00 (06–24 svaki dan); novi korisnik ga dobija automatski. Termini nastave (tačno vrijeme termina) se oduzimaju sami, pa šablon ne treba prilagođavati rasporedu.
 - **Koliko najviše dnevno** (dnevni maksimum učenja, `profiles.daily_cap_min`, po danu u sedmici). Default 3 h radnim danima, 5 h vikendom. Plan nikad ne prelazi ni slobodne termine ni maksimum.
 - **Konkretan datum** (`availability_days`): termini i/ili maksimum samo za taj dan zamjenjuju šablon (npr. jedan ponedjeljak manje vremena, “zauzeta cijeli dan” = dan bez termina). Pri izmjeni app pita “Samo ovaj dan” ili “Svaki [ponedjeljak]”, kao kod ponavljajućih događaja u kalendaru.
 - **Preko nastave**: termin dostupnosti smije preklapati nastavu, uz upozorenje “U ovom terminu imaš Signali · predavanje 09:00–11:00” i prekidač “Učim umjesto nastave”. Bez prekidača nastava i dalje blokira taj dio; sa njim se taj dio računa kao slobodan.
 - **Ekran**: sedmica sa datumima (traka dana, strelice) i vremenska osa izabranog dana: termini dostupnosti, nastava (šrafirano, “iz rasporeda”), slobodno i maksimum tog dana; ispod šablon po danu u sedmici i lista datuma sa izmjenama. Izmjene se spašavaju odmah; replan na izmjenu dolazi sa schedulerom.
-- “Nastava otkazana” i dalje pravi izuzetak (`availability_exceptions`, `lecture_log_id`) koji oslobađa termin ±15 min.
+- “Nastava otkazana” i dalje pravi izuzetak (`availability_exceptions`, `lecture_log_id`) koji oslobađa vrijeme termina.
 
 **Kalendar.** Plan ima tri prikaza: Mjesec (postojeća mreža), Sedmica i Dan. U mjesečnoj mreži nastava nema tačkice (bila bi na skoro svakom danu); termini nastave su u listi izabranog dana, otkazani precrtani. Dan: traka dana kao pilule (izabrani dan taman) i vremenska osa sa karticama u boji predmeta (nastava, kasnije blokovi plana). Sedmica: ista traka i vremenska osa sa 7 uskih kolona. Tačkice aktivnosti (ispiti, mogući ispiti, rokovi, kasnije planirano učenje) su pod danom u sva tri prikaza. Tap na termin nastave otvara detalje: predmet (link), tip, vrijeme, sala, sedmice, “Dokle ste stigli?”, “Otkaži za ovaj dan” / “Vrati termin”, “Uredi u rasporedu”. Zaglavlje Plana ima dva dugmeta: Dostupnost i Raspored. Kalendar prima `?date=` i `?view=`, pa drugi ekrani vode direktno na dan (npr. ispit na predmetu → “Prikaži u kalendaru”).
 

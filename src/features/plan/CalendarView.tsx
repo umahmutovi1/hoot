@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { addMonths, differenceInCalendarDays, format, isSameDay, startOfMonth } from 'date-fns'
 import { ChevronLeftIcon, ChevronRightIcon, FlagIcon, PlusIcon } from '@/components/icons'
@@ -11,19 +11,14 @@ import { paletteOf } from '@/features/subjects/colors'
 import { DeadlineSheet } from '@/features/subjects/DeadlineSheet'
 import { examDateLabel, relativeDays } from '@/features/subjects/format'
 import { localDateOf } from '@/features/subjects/model'
-import { wallClock } from '@/lib/day'
+import { toDisplayDate, wallClock } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
+import { ClassDetailSheet } from '@/features/schedule/ClassDetailSheet'
 import { statusLabel } from '@/features/schedule/format'
 import { useAgenda, type DayClass } from './agenda'
-import {
-  dayMarkers,
-  deadlinesAhead,
-  deadlinesOn,
-  examsOn,
-  monthGrid,
-  possibleExamsOn,
-} from './calendar'
+import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
+import { DayDots } from './DayDots'
 import { DayStrip } from './DayStrip'
 import { DayTimeline } from './DayTimeline'
 import { WeekGrid } from './WeekGrid'
@@ -40,7 +35,14 @@ export function CalendarView() {
     setParams(v === 'month' ? {} : { view: v }, { replace: true })
   const [today] = useState(() => new Date())
   const now = useNow()
-  const [selected, setSelected] = useState(today)
+  // `?date=yyyy-MM-dd` opens a day directly (e.g. "Prikaži u kalendaru" on an exam).
+  const [selected, setSelected] = useState(() => {
+    const date = params.get('date')
+    return date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? toDisplayDate(date) : today
+  })
+  const [detail, setDetail] = useState<{ item: DayClass; date: string } | null>(null)
+  const openClass = (item: DayClass, date: Date) =>
+    setDetail({ item, date: localDateOf(date.toISOString()) })
   const agenda = useAgenda()
   const boundary = useDayBoundary()
   const selectedDate = localDateOf(selected.toISOString())
@@ -78,6 +80,7 @@ export function CalendarView() {
               setSelected(d)
               setView('day')
             }}
+            onPickClass={openClass}
           />
         </div>
       )}
@@ -90,6 +93,7 @@ export function CalendarView() {
             )}
             <DayTimeline
               items={dayClasses}
+              onPick={(item) => openClass(item, selected)}
               nowMin={
                 isSameDay(selected, today) ? wallClock(now, boundary.timeZone).minutes : undefined
               }
@@ -103,6 +107,12 @@ export function CalendarView() {
         today={today}
         classes={view === 'day' ? [] : dayClasses}
         status={agenda.statusOf(selectedDate)}
+        onPickClass={(item) => openClass(item, selected)}
+      />
+      <ClassDetailSheet
+        item={detail?.item ?? null}
+        date={detail?.date ?? selectedDate}
+        onClose={() => setDetail(null)}
       />
     </div>
   )
@@ -171,7 +181,6 @@ function MonthGrid({
         {cells.map(({ date, inMonth }) => {
           const isSelected = isSameDay(date, selected)
           const isToday = isSameDay(date, today)
-          const markers = inMonth ? dayMarkers(date, subjects, deadlines) : null
           const counts = inMonth
             ? {
                 exam: examsOn(date, subjects).length,
@@ -210,25 +219,7 @@ function MonthGrid({
               >
                 {format(date, 'd')}
               </span>
-              <span aria-hidden="true" className="flex h-[7px] items-center gap-[3px]">
-                {markers?.visible.map((m) => (
-                  <span
-                    key={`${m.kind}-${m.id}`}
-                    className={cn(
-                      'size-[6px] rounded-full',
-                      m.kind === 'exam' && paletteOf(m.color).bar,
-                      m.kind === 'possible' && 'border-[1.5px] bg-surface',
-                      m.kind === 'possible' && paletteOf(m.color).border,
-                      m.kind === 'deadline' && 'bg-warning',
-                    )}
-                  />
-                ))}
-                {markers && markers.more > 0 && (
-                  <span className="text-[9px] leading-none font-bold text-ink-muted">
-                    +{markers.more}
-                  </span>
-                )}
-              </span>
+              {inMonth ? <DayDots date={date} /> : <span className="h-[7px]" />}
             </button>
           )
         })}
@@ -257,10 +248,12 @@ function DayDetails({
   today,
   classes,
   status,
+  onPickClass,
 }: {
   selected: Date
   today: Date
   classes: DayClass[]
+  onPickClass: (item: DayClass) => void
   status: ReturnType<ReturnType<typeof useAgenda>['statusOf']>
 }) {
   const { t } = useTranslation()
@@ -295,8 +288,9 @@ function DayDetails({
         {dayExams.map(({ exam, subject }) => {
           const palette = paletteOf(subject.color)
           return (
-            <div
+            <Link
               key={exam.id}
+              to={`/subjects/${subject.id}`}
               className={cn('flex items-center gap-3 rounded-[20px] px-4 py-3.5', palette.soft)}
             >
               <span className={cn('size-2.5 shrink-0 rounded-full', palette.bar)} />
@@ -314,7 +308,7 @@ function DayDetails({
                     .join(' · ')}
                 </span>
               </div>
-            </div>
+            </Link>
           )
         })}
         {dayPossible.map(({ exam, subject }) => {
@@ -339,9 +333,11 @@ function DayDetails({
         {classes.map((c) => {
           const palette = paletteOf(c.subject?.color ?? null)
           return (
-            <div
+            <button
+              type="button"
               key={c.id}
-              className="flex items-center gap-3 rounded-[20px] bg-surface px-4 py-3.5"
+              onClick={() => onPickClass(c)}
+              className="flex items-center gap-3 rounded-[20px] bg-surface px-4 py-3.5 text-left"
             >
               <span className={cn('w-1 self-stretch rounded-full', palette.bar)} />
               <div className="flex min-w-0 flex-col gap-0.5">
@@ -359,7 +355,7 @@ function DayDetails({
                     .join(' · ')}
                 </span>
               </div>
-            </div>
+            </button>
           )
         })}
         {dayDeadlines.map((d) => {

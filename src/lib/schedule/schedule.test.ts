@@ -184,10 +184,10 @@ describe('freeSlotsOn', () => {
     periods,
   }
 
-  it('subtracts classes with 15 min before and after', () => {
+  it('subtracts classes, exactly their own time', () => {
     expect(freeSlotsOn('2026-10-19', input)).toEqual([
-      { startMin: 8 * 60, endMin: 8 * 60 + 45 },
-      { startMin: 11 * 60 + 15, endMin: 12 * 60 },
+      { startMin: 8 * 60, endMin: 9 * 60 },
+      { startMin: 11 * 60, endMin: 12 * 60 },
       { startMin: 17 * 60, endMin: 20 * 60 },
     ])
   })
@@ -196,9 +196,7 @@ describe('freeSlotsOn', () => {
     const free = freeSlotsOn('2026-10-19', {
       ...input,
       cancelledEntryIds: new Set(['lec']),
-      exceptions: [
-        { onDate: '2026-10-19', startMin: 8 * 60 + 45, endMin: 11 * 60 + 15, isBusy: false },
-      ],
+      exceptions: [{ onDate: '2026-10-19', startMin: 9 * 60, endMin: 11 * 60, isBusy: false }],
     })
     expect(free).toEqual([
       { startMin: 8 * 60, endMin: 12 * 60 },
@@ -210,7 +208,7 @@ describe('freeSlotsOn', () => {
     const busy = { onDate: '2026-10-19', startMin: null, endMin: null, isBusy: true }
     expect(freeSlotsOn('2026-10-19', { ...input, exceptions: [busy] })).toEqual([])
     const extra = { onDate: '2026-10-19', startMin: 14 * 60, endMin: 16 * 60, isBusy: false }
-    expect(freeMinutesOn('2026-10-19', { ...input, exceptions: [extra] })).toBe(270 + 120)
+    expect(freeMinutesOn('2026-10-19', { ...input, exceptions: [extra] })).toBe(300 + 120)
   })
 
   it('uses the per-date slots instead of the template', () => {
@@ -239,7 +237,7 @@ describe('freeSlotsOn', () => {
     expect(studyMinutesOn('2026-10-19', { ...input, caps })).toBe(60)
     const day = { onDate: '2026-10-19', slots: null, capMin: 600 }
     expect(capFor('2026-10-19', { caps, days: [day] })).toBe(600)
-    expect(studyMinutesOn('2026-10-19', { ...input, caps, days: [day] })).toBe(270)
+    expect(studyMinutesOn('2026-10-19', { ...input, caps, days: [day] })).toBe(300)
     expect(weekStudyMinutes('2026-10-21', { ...input, caps })).toBe(60)
   })
 

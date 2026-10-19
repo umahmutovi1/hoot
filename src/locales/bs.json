@@ -60,7 +60,10 @@
       "partial": "{{title}}",
       "exam": "{{title}} · {{week}}. sedmica",
       "holiday": "Neradni dan · {{title}}"
-    }
+    },
+    "planSoonTitle": "Dnevni plan učenja stiže uskoro",
+    "planSoonBody": "Dok ga app ne računa, ovdje su nastava i predavanja za danas. Ispite, izvore i raspored uređuješ na predmetima i u kalendaru.",
+    "todayInCalendar": "Danas u kalendaru"
   },
   "plan": {
     "title": "Plan",
@@ -100,7 +103,8 @@
     "nextWeek": "Sljedeća sedmica",
     "openDay": "Otvori dan {{day}}",
     "cancelled": "otkazano",
-    "noClasses": "Nema nastave ovaj dan."
+    "noClasses": "Nema nastave ovaj dan.",
+    "timetableButton": "Raspored"
   },
   "subjects": {
     "title": "Predmeti",
@@ -316,7 +320,8 @@
     },
     "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
     "inPeriod": "U roku",
-    "manualRange": "Ručni raspon"
+    "manualRange": "Ručni raspon",
+    "showInCalendar": "Prikaži u kalendaru"
   },
   "deadlines": {
     "section": "Rokovi",
@@ -705,7 +710,7 @@
     },
     "howTitle": "Kako plan koristi raspored",
     "busyTitle": "Termini nastave su zauzeti",
-    "busyHint": "plus 15 min za dolazak i odlazak",
+    "busyHint": "tačno vrijeme termina",
     "always": "uvijek",
     "recapTitle": "Kratko ponavljanje nakon predavanja",
     "recapHint": "15 min istog dana, prvi korak ponavljanja",
@@ -721,7 +726,7 @@
     "dayLine": "Slobodno {{free}} · najviše {{cap}} učenja",
     "onlyThisDay": "samo ovaj dan",
     "editDay": "Uredi dan",
-    "planUses": "Plan može staviti do {{time}} učenja ovaj dan. Nastava (±15 min) je zauzeta sama.",
+    "planUses": "Plan može staviti do {{time}} učenja ovaj dan. Nastava je zauzeta sama.",
     "template": "Sedmični šablon",
     "templateHint": "Važi svake sedmice, osim dana koje izmijeniš posebno.",
     "templateFor": "Svaki {{day}}",
@@ -748,7 +753,8 @@
     "onlyDay": "Samo {{date}}",
     "everyWeekday": "Svaki {{day}}",
     "resetDay": "Vrati na šablon ({{day}})",
-    "deleteSlot": "Ukloni termin"
+    "deleteSlot": "Ukloni termin",
+    "breakdown": "{{slots}} termina − {{busy}} nastava"
   },
   "lectures": {
     "title": "Dokle ste stigli?",
@@ -769,7 +775,7 @@
     "lastTime": "prošli put",
     "upToHere": "do ovdje",
     "empty": "Nakon predavanja zabilježi dokle se stiglo, pa app zna koliko kasniš.",
-    "behind": "Kasniš ~{{time}}",
+    "behind": "Kasniš {{amount}}",
     "upToDate": "U toku si s predavanjima",
     "add": "Dodaj dokle ste stigli",
     "chapter": "pogl. {{label}}",
@@ -782,8 +788,7 @@
     "warnLectures_one": "Zaostaješ {{count}} predavanje",
     "warnLectures_few": "Zaostaješ {{count}} predavanja",
     "warnLectures_other": "Zaostaješ {{count}} predavanja",
-    "warnHours": "Kasniš ~{{time}}",
-    "warnBody": "Gradivo pređeno na predavanjima koje još nisi počela: ~{{time}}.",
+    "warnBody": "Pređeno na predavanjima, a još nije počelo: {{amount}} (~{{time}}).",
     "action": {
       "raise_priority": "Podigni prioritet na {{n}}",
       "switch_to_regular": "Prebaci na redovno",
@@ -796,6 +801,19 @@
       "switch_to_regular": "Predmet je sada u redovnom režimu."
     },
     "later": "Kasnije",
-    "promptSub": "Dokle ste stigli? · {{time}}"
+    "promptSub": "Dokle ste stigli? · {{time}}",
+    "contextDate": "{{kind}} · {{date}} {{time}}",
+    "behindTime": "~{{time}} učenja"
+  },
+  "classDetail": {
+    "room": "Sala",
+    "weeks": "Sedmice",
+    "period": "Semestar",
+    "cancelled": "Otkazano za ovaj dan",
+    "openSubject": "Otvori predmet",
+    "changeReached": "Promijeni dokle ste stigli",
+    "restore": "Vrati termin",
+    "cancel": "Otkaži za ovaj dan",
+    "edit": "Uredi u rasporedu"
   }
 }

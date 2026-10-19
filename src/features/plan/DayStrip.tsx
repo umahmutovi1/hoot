@@ -5,6 +5,7 @@ import { useWeekdayNames } from '@/features/schedule/weekdays'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
+import { DayDots } from './DayDots'
 
 /** The week around `selected` as day pills (Satnica mockup / day-view inspiration). */
 export function DayStrip({
@@ -70,6 +71,7 @@ export function DayStrip({
               >
                 <span className="text-lg font-bold">{format(d, 'd')}</span>
                 <span className={cn('text-[11px]', !on && 'text-ink-muted')}>{names[i]}</span>
+                <DayDots date={d} max={2} light={on} />
               </button>
             )
           })}

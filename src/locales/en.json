@@ -60,7 +60,10 @@
       "partial": "{{title}}",
       "exam": "{{title}} · week {{week}}",
       "holiday": "Holiday · {{title}}"
-    }
+    },
+    "planSoonTitle": "Your daily study plan is coming soon",
+    "planSoonBody": "Until the app computes it, today's classes and lectures show here. Edit exams, sources and the timetable on subjects and in the calendar.",
+    "todayInCalendar": "Today in the calendar"
   },
   "plan": {
     "title": "Plan",
@@ -97,7 +100,8 @@
     "nextWeek": "Next week",
     "openDay": "Open day {{day}}",
     "cancelled": "cancelled",
-    "noClasses": "No classes this day."
+    "noClasses": "No classes this day.",
+    "timetableButton": "Timetable"
   },
   "subjects": {
     "title": "Subjects",
@@ -310,7 +314,8 @@
     },
     "rangeHint": "The plan targets the earliest possible date, so you are ready even if the exam comes early. When the date is announced, turn this off and enter it.",
     "inPeriod": "In period",
-    "manualRange": "Custom range"
+    "manualRange": "Custom range",
+    "showInCalendar": "Show in calendar"
   },
   "deadlines": {
     "section": "Deadlines",
@@ -692,7 +697,7 @@
     },
     "howTitle": "How the plan uses the timetable",
     "busyTitle": "Class times are busy",
-    "busyHint": "plus 15 min to get there and back",
+    "busyHint": "exactly the class time",
     "always": "always",
     "recapTitle": "Short review after a lecture",
     "recapHint": "15 min the same day, the first review step",
@@ -708,7 +713,7 @@
     "dayLine": "Free {{free}} · at most {{cap}} of study",
     "onlyThisDay": "this day only",
     "editDay": "Edit day",
-    "planUses": "The plan can put up to {{time}} of study on this day. Classes (±15 min) are busy automatically.",
+    "planUses": "The plan can put up to {{time}} of study on this day. Classes are busy automatically.",
     "template": "Weekly template",
     "templateHint": "Applies every week, except days you change separately.",
     "templateFor": "Every {{day}}",
@@ -734,7 +739,8 @@
     "onlyDay": "Only {{date}}",
     "everyWeekday": "Every {{day}}",
     "resetDay": "Back to the template ({{day}})",
-    "deleteSlot": "Remove slot"
+    "deleteSlot": "Remove slot",
+    "breakdown": "{{slots}} of slots − {{busy}} of classes"
   },
   "lectures": {
     "title": "How far did you get?",
@@ -755,7 +761,7 @@
     "lastTime": "last time",
     "upToHere": "up to here",
     "empty": "After a lecture, note how far the class got so the app knows how far behind you are.",
-    "behind": "~{{time}} behind",
+    "behind": "{{amount}} behind",
     "upToDate": "You are keeping up with the lectures",
     "add": "Add how far you got",
     "chapter": "ch. {{label}}",
@@ -767,8 +773,7 @@
     "lectureShort": "Lecture · {{n}}",
     "warnLectures_one": "{{count}} lecture behind",
     "warnLectures_other": "{{count}} lectures behind",
-    "warnHours": "~{{time}} behind",
-    "warnBody": "Material covered in class that you have not started yet: ~{{time}}.",
+    "warnBody": "Covered in class but not started yet: {{amount}} (~{{time}}).",
     "action": {
       "raise_priority": "Raise priority to {{n}}",
       "switch_to_regular": "Switch to regular",
@@ -781,6 +786,19 @@
       "switch_to_regular": "The subject is now in regular mode."
     },
     "later": "Later",
-    "promptSub": "How far did you get? · {{time}}"
+    "promptSub": "How far did you get? · {{time}}",
+    "contextDate": "{{kind}} · {{date}} {{time}}",
+    "behindTime": "~{{time}} of study"
+  },
+  "classDetail": {
+    "room": "Room",
+    "weeks": "Weeks",
+    "period": "Semester",
+    "cancelled": "Cancelled for this day",
+    "openSubject": "Open subject",
+    "changeReached": "Change how far you got",
+    "restore": "Restore class",
+    "cancel": "Cancel for this day",
+    "edit": "Edit in timetable"
   }
 }

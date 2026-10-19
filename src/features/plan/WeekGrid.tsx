@@ -7,6 +7,7 @@ import { formatClock } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
 import type { DayClass } from './agenda'
 import { hourRange, layoutLanes } from './calendar'
+import { DayDots } from './DayDots'
 
 const HOUR_PX = 40
 const AXIS_PX = 34
@@ -17,11 +18,13 @@ export function WeekGrid({
   today,
   classesFor,
   onPickDay,
+  onPickClass,
 }: {
   selected: Date
   today: Date
   classesFor: (date: string) => DayClass[]
   onPickDay: (date: Date) => void
+  onPickClass: (item: DayClass, date: Date) => void
 }) {
   const { t } = useTranslation()
   const names = useWeekdayNames('short')
@@ -54,6 +57,7 @@ export function WeekGrid({
               >
                 {format(d, 'd')}
               </span>
+              <DayDots date={d} max={2} />
             </button>
           )
         })}
@@ -74,20 +78,18 @@ export function WeekGrid({
         ))}
         <div className="absolute top-0 right-0 bottom-0 flex" style={{ left: AXIS_PX }}>
           {perDay.map((items, i) => (
-            <button
+            <div
               key={i}
-              type="button"
-              tabIndex={-1}
-              aria-hidden="true"
-              onClick={() => onPickDay(days[i]!)}
               className="relative h-full flex-1 border-l border-hairline first:border-l-0"
             >
               {layoutLanes(items).map(({ item, lane, lanes }) => {
                 const palette = paletteOf(item.subject?.color ?? null)
                 return (
-                  <span
+                  <button
+                    type="button"
                     key={item.id}
-                    title={`${item.subject?.name ?? ''} ${formatClock(item.startMin)}`}
+                    onClick={() => onPickClass(item, days[i]!)}
+                    aria-label={`${item.subject?.name ?? ''} ${formatClock(item.startMin)}`}
                     className={cn(
                       'absolute overflow-hidden rounded-md border-l-2 px-0.5 text-left text-[9px] leading-tight font-semibold',
                       palette.soft,
@@ -103,10 +105,10 @@ export function WeekGrid({
                     }}
                   >
                     {item.subject?.name.split(' ')[0]}
-                  </span>
+                  </button>
                 )
               })}
-            </button>
+            </div>
           ))}
         </div>
       </div>

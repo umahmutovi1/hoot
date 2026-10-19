@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +19,13 @@ import { validationKey } from '@/lib/validation'
 import { useDeleteAssessment, useSaveAssessment } from './api'
 import { ChipGroup, fieldInput, fieldLabel } from './fields'
 import { assessmentToForm } from './mappers'
-import { ASSESSMENT_KINDS, EXAM_FORMATS, examKindDefaults, type Assessment } from './model'
+import {
+  ASSESSMENT_KINDS,
+  EXAM_FORMATS,
+  examKindDefaults,
+  localDateOf,
+  type Assessment,
+} from './model'
 import { assessmentFormSchema, type AssessmentForm } from './schemas'
 
 interface ExamSheetProps {
@@ -228,6 +235,14 @@ function ExamForm({
       <Button type="submit" size="pill" className="bg-brand text-white hover:bg-brand-strong">
         {t('common.save')}
       </Button>
+      {exam && (
+        <Link
+          to={`/plan?view=day&date=${localDateOf(exam.at)}`}
+          className="flex h-11 items-center justify-center text-sm font-semibold text-brand"
+        >
+          {t('exams.showInCalendar')}
+        </Link>
+      )}
       {exam && (
         <Button
           type="button"
