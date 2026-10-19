@@ -455,6 +455,65 @@
       "slideFrom": "Od slajda",
       "slideTo": "Do slajda",
       "rangeHint": "Bez kraja se kraj uzima od početka sljedeće jedinice."
+    },
+    "detail": {
+      "more": "Više opcija",
+      "archivedBadge": "Arhivirano",
+      "status": "Status",
+      "difficulty": "Težina",
+      "yours": "tvoja · početna: {{prior}}",
+      "prior": "početna procjena",
+      "estimate": "Procjena vremena",
+      "estimateHint": "iz obima i težine",
+      "topics": "Teme",
+      "addTopic": "Tema",
+      "editTopics": "Uredi",
+      "relatedQuestions": "Povezana ispitna pitanja",
+      "relatedChapters": "Povezana poglavlja",
+      "answer": "Odgovor",
+      "noAnswer": "Još nema odgovora. Tapni da ga upišeš.",
+      "notes": "Bilješke",
+      "noNotes": "Još nema bilješki. Tapni da ih napišeš.",
+      "editText": "Uredi",
+      "markdownHint": "Markdown: **podebljano**, - lista, formule u $…$ ili $$…$$.",
+      "edit": "Uredi naslov i stranice",
+      "archive": "Arhiviraj jedinicu",
+      "restore": "Vrati iz arhive",
+      "archiveHint": "Arhivirana jedinica ne ulazi u plan ni u napredak; vraćaš je sa ekrana izvora.",
+      "rateTitle": "Koliko ti je bilo teško?",
+      "rateBody": "Tvoja ocjena koriguje procjenu preostalih jedinica ovog izvora. Tapni ponovo da je ukloniš.",
+      "easy": "lako",
+      "hard": "jako teško",
+      "partOf": "Dio jedinice {{label}}",
+      "position": {
+        "chapter": "Poglavlje {{n}} od {{total}}",
+        "question": "Pitanje {{n}} od {{total}}"
+      },
+      "subUnits": "Podjedinice",
+      "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih."
+    },
+    "topics": {
+      "title": "Teme",
+      "body": "Teme povezuju poglavlja i ispitna pitanja ovog predmeta.",
+      "new": "Nova tema",
+      "newPlaceholder": "Nova tema, npr. Konvolucija",
+      "add": "Dodaj temu"
+    },
+    "cards": {
+      "title": "Kartice",
+      "add": "+ Kartica",
+      "none": "Nema kartica. Kartica je pitanje i odgovor za samotestiranje.",
+      "front": "Pitanje",
+      "back": "Odgovor",
+      "frontPlaceholder": "npr. Šta je Parsevalova teorema?",
+      "edit": "Uredi",
+      "showBack": "Prikaži odgovor",
+      "showFront": "Prikaži pitanje",
+      "flipHint": "Tapni karticu da vidiš odgovor.",
+      "newTitle": "Nova kartica",
+      "editTitle": "Uredi karticu",
+      "delete": "Obriši karticu",
+      "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
     }
   }
 }

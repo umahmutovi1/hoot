@@ -6,6 +6,7 @@ import {
   examProgress,
   levelsFor,
   materialOf,
+  relatedUnits,
   toScopeRows,
   type SourceWithUnits,
   type Unit,
@@ -183,5 +184,34 @@ describe('levelsFor', () => {
   it('questions skip "understood"', () => {
     expect(levelsFor('question')).toEqual([0, 1, 3])
     expect(levelsFor('chapter')).toEqual([0, 1, 2, 3])
+  })
+})
+
+describe('relatedUnits', () => {
+  const link = (unit_id: string, topic_id: string) => ({
+    user_id: 'u',
+    unit_id,
+    topic_id,
+    assigned_by: 'user' as const,
+  })
+  const topic = (id: string, links: ReturnType<typeof link>[]) => ({
+    id,
+    user_id: 'u',
+    subject_id: SUBJECT,
+    name: id,
+    unit_topics: links,
+  })
+
+  it('links chapters and questions through shared topics', () => {
+    const ch = unit('ch')
+    const q1 = unit('q1', { kind: 'question' })
+    const q2 = unit('q2', { kind: 'question' })
+    const other = unit('ch2')
+    const topics = [
+      topic('t1', [link('ch', 't1'), link('q1', 't1'), link('ch2', 't1')]),
+      topic('t2', [link('q2', 't2')]),
+    ]
+    expect(relatedUnits(ch, topics, [ch, q1, q2, other]).map((u) => u.id)).toEqual(['q1'])
+    expect(relatedUnits(q1, topics, [ch, q1, q2, other]).map((u) => u.id)).toEqual(['ch', 'ch2'])
   })
 })
