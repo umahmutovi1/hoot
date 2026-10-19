@@ -9,7 +9,6 @@ import { fieldInput, fieldLabel } from '@/features/subjects/fields'
 import { useDayBoundary } from '@/features/settings/profile'
 import { localDay } from '@/lib/day'
 import { latestLog } from '@/lib/pace'
-import { CLASS_MARGIN_MIN } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
 import { useLectureLogs, useSaveLectureLogs } from './api'
 import { skipLecture } from './lectureSkips'
@@ -115,8 +114,8 @@ function LectureForm({
       freeSlot: {
         id: crypto.randomUUID(),
         on_date: date,
-        start_min: Math.max(0, entry.start_min - CLASS_MARGIN_MIN),
-        end_min: Math.min(1440, entry.end_min + CLASS_MARGIN_MIN),
+        start_min: entry.start_min,
+        end_min: entry.end_min,
         is_busy: false,
         lecture_log_id: logId,
       },

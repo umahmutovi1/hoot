@@ -12,7 +12,15 @@ const AXIS_PX = 50
  * One day on a time axis (day-view inspiration, Satnica grid): 52 px per hour, cards in the
  * subject's colors, overlapping items side by side, a line at the current time.
  */
-export function DayTimeline({ items, nowMin }: { items: DayClass[]; nowMin?: number }) {
+export function DayTimeline({
+  items,
+  nowMin,
+  onPick,
+}: {
+  items: DayClass[]
+  nowMin?: number
+  onPick?: (item: DayClass) => void
+}) {
   const { t } = useTranslation()
   const [from, to] = hourRange(items)
   const top = (min: number) => ((min - from * 60) / 60) * HOUR_PX
@@ -38,10 +46,12 @@ export function DayTimeline({ items, nowMin }: { items: DayClass[]; nowMin?: num
         const height = Math.max(36, top(item.endMin) - top(item.startMin) - 4)
         const compact = height < 64
         return (
-          <div
+          <button
+            type="button"
             key={item.id}
+            onClick={() => onPick?.(item)}
             className={cn(
-              'absolute flex overflow-hidden rounded-2xl border-l-4 px-3 py-2',
+              'absolute flex overflow-hidden rounded-2xl border-l-4 px-3 py-2 text-left',
               palette.soft,
               palette.border,
               item.cancelled && 'opacity-60',
@@ -75,7 +85,7 @@ export function DayTimeline({ items, nowMin }: { items: DayClass[]; nowMin?: num
                 </span>
               )}
             </div>
-          </div>
+          </button>
         )
       })}
 

@@ -16,6 +16,7 @@ import {
   capFor,
   currentTeachingPeriod,
   freeMinutesOn,
+  slotMinutes,
   slotsFor,
   studyMinutesOn,
   weeklyClassCount,
@@ -51,6 +52,9 @@ export function AvailabilityPage() {
 
   const input = data.dayInput(date)
   const day = data.dayRows.find((d) => d.on_date === date)
+  const free = freeMinutesOn(date, input)
+  // Slots before classes are taken out, so "8h termina − 2h 15 nastava" explains the free time.
+  const slotTotal = slotMinutes(slotsFor(date, input))
   const teaching = currentTeachingPeriod(today, data.periods)
   const classes = data.classes.filter((c) => !teaching || c.row.period_id === teaching.id)
   const changedDays = data.dayRows
@@ -81,10 +85,18 @@ export function AvailabilityPage() {
             </span>
             <span className="text-[13px] text-ink-muted">
               {t('availability.dayLine', {
-                free: formatDuration(t, freeMinutesOn(date, input)),
+                free: formatDuration(t, free),
                 cap: formatDuration(t, capFor(date, input)),
               })}
             </span>
+            {slotTotal > free && (
+              <span className="text-xs text-ink-subtle">
+                {t('availability.breakdown', {
+                  slots: formatDuration(t, slotTotal),
+                  busy: formatDuration(t, slotTotal - free),
+                })}
+              </span>
+            )}
             {day && (
               <span className="self-start rounded-lg bg-brand-soft px-2 py-[3px] text-[11px] font-semibold text-avatar-ink">
                 {t('availability.onlyThisDay')}

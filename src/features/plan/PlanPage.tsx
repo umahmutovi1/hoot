@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ClockIcon } from '@/components/icons'
+import { CapIcon, ClockIcon } from '@/components/icons'
 import { Mascot } from '@/components/Mascot'
 import { PageTitle } from '@/components/PageTitle'
 import { cn } from '@/lib/utils'
@@ -17,13 +17,22 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
     <div className="flex flex-col gap-4">
       <PageTitle
         action={
-          <Link
-            to="/plan/availability"
-            className="flex h-11 items-center gap-2 rounded-full bg-surface px-4 text-sm font-semibold"
-          >
-            <ClockIcon size={18} className="text-brand" />
-            {t('availability.title')}
-          </Link>
+          <div className="flex gap-1.5">
+            <Link
+              to="/plan/timetable"
+              className="flex h-11 items-center gap-1.5 rounded-full bg-surface px-3.5 text-sm font-semibold"
+            >
+              <CapIcon size={18} className="text-brand" />
+              {t('plan.timetableButton')}
+            </Link>
+            <Link
+              to="/plan/availability"
+              className="flex h-11 items-center gap-1.5 rounded-full bg-surface px-3.5 text-sm font-semibold"
+            >
+              <ClockIcon size={18} className="text-brand" />
+              {t('availability.title')}
+            </Link>
+          </div>
         }
       >
         {t('plan.title')}
