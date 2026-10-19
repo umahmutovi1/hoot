@@ -17,7 +17,7 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 - AI prompts receive the user's `locale`; source titles stay as written in the book.
 
 ## Stack
-React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router · TanStack Query (server state) · Zustand (UI state) · React Hook Form + Zod · date-fns · FullCalendar · ts-fsrs (spaced repetition) · react-markdown + KaTeX · Dexie (offline queue) · vite-plugin-pwa · Supabase (Postgres + RLS, Auth, Storage, Edge Functions/Deno) · Claude Haiku 5.5 via LLM wrapper (structured outputs) · Vitest + fast-check (+ Playwright later) · Cloudflare Pages · GitHub Actions.
+React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router · TanStack Query (server state) · Zustand (UI state) · React Hook Form + Zod · date-fns (own calendar grid, no FullCalendar) · ts-fsrs (spaced repetition) · react-markdown + KaTeX · Dexie (offline queue) · vite-plugin-pwa · Supabase (Postgres + RLS, Auth, Storage, Edge Functions/Deno) · Claude Haiku 5.5 via LLM wrapper (structured outputs) · Vitest + fast-check (+ Playwright later) · Cloudflare Pages · GitHub Actions.
 
 ## Layout
 - `src/app/` router, layout, providers, i18n setup

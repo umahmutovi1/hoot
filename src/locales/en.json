@@ -55,8 +55,16 @@
     "title": "Plan",
     "tabCalendar": "Calendar",
     "tabSchedule": "Schedule",
-    "calendarEmpty": "Exams, deadlines and classes will show up here.",
-    "scheduleEmpty": "The schedule places today's blocks into your free time slots."
+    "scheduleEmpty": "The schedule places today's blocks into your free time slots.",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "legendExam": "Exam",
+    "legendDeadline": "Deadline",
+    "dayEmpty": "No exams or deadlines. The study plan appears once you add sources.",
+    "examItem": "Exam: {{subject}} · {{title}}",
+    "deadlineItem": "Due: {{title}}",
+    "deadlineItemSubject": "Due: {{title}} · {{subject}}",
+    "addDeadline": "Add deadline"
   },
   "subjects": {
     "title": "Subjects",
