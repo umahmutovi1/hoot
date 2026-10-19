@@ -107,14 +107,14 @@ Odluke Etape 3: statusi 0–3 se do Etape 7 biraju ručno; „Uredi sadržaj“ 
 - [x] ExamSheet: „Datum još nije objavljen“ → izbor roka iz akademskog kalendara (raspon roka = raspon ispita, prijedlog po tipu ispita); na NoviPredmet „Datumi još nisu poznati?“ uzme rokove za sve ispite bez datuma
 - [x] Raspored: ručni unos termina (sheet), tipovi, parne/neparne sedmice, period nastave iz akademskog kalendara; „Uslikaj raspored“ tek u Etapi 10
 - [x] Dostupnost: sedmična pravila + izuzeci po danu (zauzeta cijeli dan / od–do, dodatno slobodno), snimanje odmah; ulaz iz Plana i Postavki
-- [x] Kalendar: Mjesec / Sedmica / Dan; nastava u listi dana i na vremenskoj osi (dnevni prikaz po inspiraciji: traka dana + vremenska osa)
+- [x] Kalendar: Mjesec / Dan (sedmica izbačena nakon pregleda); nastava u listi dana i na vremenskoj osi (dnevni prikaz po inspiraciji: traka dana + vremenska osa)
 - [x] DokleSmoStigli sheet: tab po izvoru, jedinica „do ovdje“, bilješka, „Nastava otkazana“ (pravi izuzetak dostupnosti), „Preskoči“
 - [x] Kartica „Dokle ste stigli?“ na Danas nakon završenog predavanja (do kraja dana); ručni unos sa datumom na Predmetu
 - [x] `src/lib/pace/`: pređene jedinice, zaostatak u minutama, pravila prijedloga (prag > 2 predavanja ili > 4 h) + testovi
 - [x] Kartica „Predavanja“ na Predmetu (na predavanju / ti / kasniš) + upozorenje sa akcijama koje ne traže scheduler
 - [x] Dorada nakon prvog pregleda: migracija `0006_availability_days.sql` (ispitni periodi sa podtipom `partial`, default dostupnost 06–24, `profiles.daily_cap_min`, `availability_days`, `availability_rules.over_classes`)
 - [x] Dostupnost: sedmica sa datumima + vremenska osa, šablon i dnevni maksimum po danu u sedmici, izmjena „samo ovaj dan“ / „svaki“, upozorenje i „Učim umjesto nastave“
-- [x] Kalendar: tačkice aktivnosti u sedmici i danu, detalji termina na tap, dugme „Raspored“ u Planu, `?date=` prečice
+- [x] Kalendar: tačkice aktivnosti u traci dana, detalji termina na tap, dugme „Raspored“ u Planu, `?date=` prečice
 - [x] Zaostatak u mjeri izvora (str., pitanja…) sa vremenom sitno; bolji tok između ekrana (predmet ↔ termini ↔ kalendar ↔ akademski kalendar)
 - **DoD** → `v0.4.0`
 
@@ -124,7 +124,7 @@ Odluke Etape 4: raspored važi za jedan period nastave iz akademskog kalendara, 
 
 Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 
-- [ ] Mockup (HTML u stilu postojećih ekrana): polja bodova u ExamSheet/DeadlineSheet, sheet Rezultat, kartica „Bodovi i ocjena“ na Predmetu, sheet Skala ocjena, pregled na Napretku; odobren prije koda
+- [x] Mockup [`design/BodoviOcjene.html`](design/BodoviOcjene.html) (6 ekrana: kartica „Bodovi i ocjena“, ispiti sa rezultatom i popravnim, polja bodova u ExamSheetu, sheet Rezultat, sheet Skala ocjena, Napredak → Ocjene) — odobren
 - [ ] Migracija `0007_grades.sql` (`assessments.points_max` umjesto `weight_pct`, `points_unit`, `pass_min_pct`, `entry_min_points`, `retake_of`, `result_annulled`; bodovi na `deadlines`; `subjects.points_total`, `grade_scale`, `target_grade`), regenerisan `database.ts`
 - [ ] `src/lib/grades/`: doprinos stavke, zadnji izlazak, popravni i integralni, pragovi (stavka, ukupno, uslov za izlazak), skala, projekcija „imam / treba / nedostižno“ + testovi (i `fast-check`: doprinos nikad ne prelazi maksimum)
 - [ ] ExamSheet i DeadlineSheet: bodovi ili %, prag, uslov za izlazak; popravni vezan za ispit i ugniježđen ispod njega
@@ -245,6 +245,19 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - Supabase API ključ je novi „publishable" (`sb_publishable_…`), env `VITE_SUPABASE_PUBLISHABLE_KEY`.
 - Linter je oxlint (Vite 8 default) umjesto ESLinta.
 - Font Outfit se servira lokalno (`@fontsource-variable/outfit`), radi offline.
+
+## Prompt za Etapu 5 (sljedeći chat)
+
+> Pročitaj docs/PRD.md (sekcija „Bodovi, skala ocjena i projekcija ocjene“), docs/ROADMAP.md (Etapa 5), docs/design/README.md, docs/design/BodoviOcjene.html (odobren mockup, 6 ekrana) i CLAUDE.md, pa uradi Etapu 5 — Bodovi i ocjene.
+> Isti tok kao u Etapama 2–4: podijeli etapu na manje PR-ove u `dev` (prvo migracija `0007_grades.sql` i čista logika `src/lib/grades/` sa testovima i `fast-check`, pa ekrani), svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.5.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP.
+> Napomene iz Etape 4:
+> - Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki sheet ima × za zatvaranje (`BottomSheet`).
+> - ExamSheet već ima „Kad je ispit?“ (tačan datum / u roku iz akademskog kalendara / okvirni raspon) i „Izvori za ovaj ispit“; polja bodova, praga i uslova za izlazak idu ispod toga, kao na mockupu (ekran 3).
+> - Popravni se bira kao „Popravni za“ (`retake_of`) i prikazuje ugniježđen ispod ispita (ekran 2); integralni zamjenjuje parcijale; vrijedi zadnji izlazak; „Poništi rezultat“ = odricanje.
+> - Rokovi (`deadlines`) dobijaju bodove kao ispiti (zadaće, seminarski).
+> - Kalendar ima prikaze Mjesec i Dan (sedmica izbačena); nastava blokira tačno svoje vrijeme.
+> - Napredak je još prazan: lista „Ocjene“ (ekran 6) je prvi sadržaj; avatar na Danas vodi u Postavke.
+> - Gemini ključ: `LLM_MODEL=gemini-2.5-flash` (za Etapu 6).
 
 ## Prompt za početak etape (primjer)
 

@@ -21,12 +21,11 @@ import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from
 import { DayDots } from './DayDots'
 import { DayStrip } from './DayStrip'
 import { DayTimeline } from './DayTimeline'
-import { WeekGrid } from './WeekGrid'
 
-const VIEWS = ['month', 'week', 'day'] as const
+const VIEWS = ['month', 'day'] as const
 type CalendarMode = (typeof VIEWS)[number]
 
-/** Plan → Kalendar: month grid, week grid or day timeline, and the selected day's list. */
+/** Plan → Kalendar: month grid or day timeline, and the selected day's list. */
 export function CalendarView() {
   const { t } = useTranslation()
   const [params, setParams] = useSearchParams()
@@ -69,21 +68,6 @@ export function CalendarView() {
       </div>
 
       {view === 'month' && <MonthGrid today={today} selected={selected} onSelect={setSelected} />}
-      {view === 'week' && (
-        <div className="flex flex-col gap-3">
-          <DayStrip selected={selected} today={today} onSelect={setSelected} pills={false} />
-          <WeekGrid
-            selected={selected}
-            today={today}
-            classesFor={agenda.classesFor}
-            onPickDay={(d) => {
-              setSelected(d)
-              setView('day')
-            }}
-            onPickClass={openClass}
-          />
-        </div>
-      )}
       {view === 'day' && (
         <div className="flex flex-col gap-3">
           <DayStrip selected={selected} today={today} onSelect={setSelected} />

@@ -12,13 +12,10 @@ export function DayStrip({
   selected,
   today,
   onSelect,
-  pills = true,
 }: {
   selected: Date
   today: Date
   onSelect: (date: Date) => void
-  /** false = only the month and the week arrows (the week grid has its own day header). */
-  pills?: boolean
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -52,31 +49,29 @@ export function DayStrip({
           </button>
         </div>
       </div>
-      {pills && (
-        <div className="flex gap-1.5">
-          {days.map((d, i) => {
-            const on = isSameDay(d, selected)
-            const isToday = isSameDay(d, today)
-            return (
-              <button
-                key={d.toISOString()}
-                type="button"
-                aria-pressed={on}
-                aria-label={format(d, 'EEEE, d. MMMM', { locale: dfLocale })}
-                onClick={() => onSelect(d)}
-                className={cn(
-                  'flex h-[68px] flex-1 flex-col items-center justify-center gap-0.5 rounded-[22px]',
-                  on ? 'bg-ink text-white' : isToday ? 'bg-brand-soft' : 'bg-surface',
-                )}
-              >
-                <span className="text-lg font-bold">{format(d, 'd')}</span>
-                <span className={cn('text-[11px]', !on && 'text-ink-muted')}>{names[i]}</span>
-                <DayDots date={d} max={2} light={on} />
-              </button>
-            )
-          })}
-        </div>
-      )}
+      <div className="flex gap-1.5">
+        {days.map((d, i) => {
+          const on = isSameDay(d, selected)
+          const isToday = isSameDay(d, today)
+          return (
+            <button
+              key={d.toISOString()}
+              type="button"
+              aria-pressed={on}
+              aria-label={format(d, 'EEEE, d. MMMM', { locale: dfLocale })}
+              onClick={() => onSelect(d)}
+              className={cn(
+                'flex h-[68px] flex-1 flex-col items-center justify-center gap-0.5 rounded-[22px]',
+                on ? 'bg-ink text-white' : isToday ? 'bg-brand-soft' : 'bg-surface',
+              )}
+            >
+              <span className="text-lg font-bold">{format(d, 'd')}</span>
+              <span className={cn('text-[11px]', !on && 'text-ink-muted')}>{names[i]}</span>
+              <DayDots date={d} max={2} light={on} />
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }

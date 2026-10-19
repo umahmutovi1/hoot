@@ -16,7 +16,11 @@ import { dateFnsLocales } from '@/lib/locale'
 import { examPeriodsFor, suggestExamPeriod, type Period } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
+import { useSaveScope, useSources } from '@/features/sources/api'
+import { materialOf } from '@/features/sources/model'
 import { useDeleteAssessment, useSaveAssessment } from './api'
+import { rowsForSource, type SourceChoice } from './sourceScope'
+import { ExamSources } from './ExamSources'
 import { ChipGroup, fieldInput, fieldLabel } from './fields'
 import { assessmentToForm } from './mappers'
 import {
@@ -27,6 +31,10 @@ import {
   type Assessment,
 } from './model'
 import { assessmentFormSchema, type AssessmentForm } from './schemas'
+
+/** How the exam's date is known: exact day, "in a period" of the academic calendar, or a range. */
+const DATE_MODES = ['exact', 'period', 'range'] as const
+type DateMode = (typeof DATE_MODES)[number]
 
 interface ExamSheetProps {
   subjectId: string
@@ -60,6 +68,9 @@ function ExamForm({
 }) {
   const { t } = useTranslation()
   const save = useSaveAssessment()
+  const saveScope = useSaveScope(subjectId)
+  const { data: sources = [] } = useSources(subjectId)
+  const [sourceChoices, setSourceChoices] = useState<Record<string, SourceChoice>>({})
   const remove = useDeleteAssessment()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const form = useForm<AssessmentForm>({
@@ -90,9 +101,20 @@ function ExamForm({
   const errors = form.formState.errors
   const set = { shouldDirty: true, shouldValidate: form.formState.isSubmitted } as const
 
-  const submit = form.handleSubmit((values) => {
-    save.mutate({ subjectId, form: values })
+  const submit = form.handleSubmit(async (values) => {
     onDone()
+    // The exam row must exist before its scope rows (foreign key), so save in order.
+    await save.mutateAsync({ subjectId, form: values })
+    const examRef = { id: values.id, scopeAll: values.scopeAll }
+    for (const [sourceId, choice] of Object.entries(sourceChoices)) {
+      const material = sources.map(materialOf).find((m) => m.source.id === sourceId)
+      if (!material) continue
+      await saveScope.mutateAsync({
+        unitIds: material.units.map((u) => u.id),
+        examIds: [values.id],
+        rows: rowsForSource(material, examRef, choice),
+      })
+    }
   })
 
   /** "U roku": the tentative range becomes the exam period. */
@@ -103,9 +125,18 @@ function ExamForm({
     form.setValue('dateLatest', p.endsOn, set)
   }
 
-  const setTentative = (v: boolean) => {
-    form.setValue('dateTentative', v, set)
-    if (v && !form.getValues('date')) applyPeriod(suggestExamPeriod(kind, periods, today))
+  const mode: DateMode = !dateTentative ? 'exact' : examPeriodId ? 'period' : 'range'
+  const setMode = (m: DateMode) => {
+    form.setValue('dateTentative', m !== 'exact', set)
+    if (m === 'period') {
+      applyPeriod(
+        periodChoices.find((p) => p.id === examPeriodId) ??
+          suggestExamPeriod(kind, periods, today) ??
+          periodChoices[0],
+      )
+    } else {
+      form.setValue('examPeriodId', null, set)
+    }
   }
 
   const pickKind = (k: AssessmentForm['kind']) => {
@@ -149,57 +180,73 @@ function ExamForm({
       </label>
 
       <div className="flex flex-col gap-2">
-        <Switch
-          checked={dateTentative}
-          label={t('subjects.form.dateTentative')}
-          onChange={setTentative}
+        <span className={fieldLabel}>{t('exams.dateMode.label')}</span>
+        <ChipGroup
+          options={DATE_MODES.filter((m) => m !== 'period' || periodChoices.length > 0).map(
+            (m) => ({ value: m, label: t(`exams.dateMode.${m}`) }),
+          )}
+          value={mode}
+          onChange={setMode}
         />
-        {dateTentative && periodChoices.length > 0 && (
-          <div className="flex flex-col gap-2">
-            <span className={fieldLabel}>{t('exams.inPeriod')}</span>
-            <ChipGroup
-              options={[
-                ...periodChoices.map((p) => ({
-                  value: p.id,
-                  label: `${p.title} · ${dateRangeLabel(p.startsOn, p.endsOn, dateFnsLocales[locale])}`,
-                })),
-                { value: 'manual', label: t('exams.manualRange') },
-              ]}
-              value={examPeriodId ?? 'manual'}
-              onChange={(id) => applyPeriod(periodChoices.find((p) => p.id === id))}
-            />
+        {mode === 'period' && (
+          <div role="radiogroup" className="flex flex-col gap-1.5">
+            {periodChoices.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                role="radio"
+                aria-checked={examPeriodId === p.id}
+                onClick={() => applyPeriod(p)}
+                className={cn(
+                  'flex min-h-12 items-center justify-between gap-3 rounded-[16px] px-4 py-2 text-left',
+                  examPeriodId === p.id ? 'bg-brand text-white' : 'bg-canvas',
+                )}
+              >
+                <span className="text-sm font-semibold">{p.title}</span>
+                <span
+                  className={cn(
+                    'text-xs',
+                    examPeriodId === p.id ? 'text-white/80' : 'text-ink-muted',
+                  )}
+                >
+                  {dateRangeLabel(p.startsOn, p.endsOn, dateFnsLocales[locale])}
+                </span>
+              </button>
+            ))}
           </div>
         )}
-        <div className={cn('grid gap-2', dateTentative && 'grid-cols-2')}>
-          <label className="flex min-w-0 flex-col gap-2">
-            <span className={fieldLabel}>
-              {t(dateTentative ? 'subjects.form.rangeEarliest' : 'subjects.form.examDate')}
-            </span>
-            <input
-              type="date"
-              aria-invalid={Boolean(errors.date)}
-              className={cn(fieldInput, dateTentative && 'px-3')}
-              {...form.register('date', {
-                onChange: () => form.setValue('examPeriodId', null, set),
-              })}
-            />
-          </label>
-          {dateTentative && (
+        {mode !== 'period' && (
+          <div className={cn('grid gap-2', dateTentative && 'grid-cols-2')}>
             <label className="flex min-w-0 flex-col gap-2">
-              <span className={fieldLabel}>{t('subjects.form.rangeLatest')}</span>
+              <span className={fieldLabel}>
+                {t(dateTentative ? 'subjects.form.rangeEarliest' : 'subjects.form.examDate')}
+              </span>
               <input
                 type="date"
-                min={date || undefined}
-                aria-invalid={Boolean(errors.dateLatest)}
-                className={cn(fieldInput, 'px-3')}
-                {...form.register('dateLatest', {
-                  setValueAs: (v: string) => v || null,
+                aria-invalid={Boolean(errors.date)}
+                className={cn(fieldInput, dateTentative && 'px-3')}
+                {...form.register('date', {
                   onChange: () => form.setValue('examPeriodId', null, set),
                 })}
               />
             </label>
-          )}
-        </div>
+            {dateTentative && (
+              <label className="flex min-w-0 flex-col gap-2">
+                <span className={fieldLabel}>{t('subjects.form.rangeLatest')}</span>
+                <input
+                  type="date"
+                  min={date || undefined}
+                  aria-invalid={Boolean(errors.dateLatest)}
+                  className={cn(fieldInput, 'px-3')}
+                  {...form.register('dateLatest', {
+                    setValueAs: (v: string) => v || null,
+                    onChange: () => form.setValue('examPeriodId', null, set),
+                  })}
+                />
+              </label>
+            )}
+          </div>
+        )}
         {dateTentative && (
           <span className="text-xs leading-[1.4] text-ink-muted">{t('exams.rangeHint')}</span>
         )}
@@ -209,6 +256,14 @@ function ExamForm({
           </span>
         )}
       </div>
+
+      <ExamSources
+        subjectId={subjectId}
+        exam={{ id: form.getValues('id'), scopeAll }}
+        choices={sourceChoices}
+        onChange={(id, c) => setSourceChoices((prev) => ({ ...prev, [id]: c }))}
+        isNew={!exam}
+      />
 
       <div className="flex flex-col gap-2">
         <span className={fieldLabel}>{t('subjects.form.examFormat')}</span>
