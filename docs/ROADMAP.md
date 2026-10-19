@@ -75,7 +75,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [x] Predmeti (lista), NoviPredmet (naziv, boja, preset ispita, datum i format; < 30 s), Predmet (detalji)
 - [x] Migracija `0002_subjects_and_profile.sql` (prioritet, režim, „samo ako zatreba“, okvirni datum, `profiles.name_confirmed_at`), regenerisan `database.ts`
 - [x] Prioritet 1–5 i režim redovno/kampanja: sklopljeno „Napredno“ na NoviPredmet (defaulti 3 / redovno), čipovi + izmjena na Predmetu, ručni start kampanje. Efekat na plan dolazi u Etapi 6
-- [ ] CRUD ispita i rokova (procjena sati opcionalna); ispit „samo ako zatreba“ i „okvirni datum“
+- [x] CRUD ispita i rokova (procjena sati opcionalna); ispit „samo ako zatreba“ i „okvirni datum“
 - [ ] Plan tab: FullCalendar mjesečni prikaz ispita i rokova
 - [x] Query hookovi po featureu (`src/features/subjects/api.ts`), optimistični update
 - [x] Testovi: Zod šeme formi (uključujući prioritet, režim, okvirni datum), preset → lista ispita (integralni i popravni su „samo ako zatreba“)
