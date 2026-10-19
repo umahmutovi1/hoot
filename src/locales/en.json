@@ -60,12 +60,141 @@
   },
   "subjects": {
     "title": "Subjects",
-    "empty": "You have no subjects yet.",
+    "empty": "No subjects yet. Add your first one: a name and an exam date are enough.",
     "examTitle": {
       "final": "Final exam",
       "partial1": "Midterm I",
       "partial2": "Midterm II",
       "integral": "Comprehensive exam"
+    },
+    "new": "New",
+    "activeCount_one": "{{count}} active",
+    "activeCount_other": "{{count}} active",
+    "archived": "Archived subjects ({{count}})",
+    "noUpcomingExam": "No upcoming exams",
+    "days": {
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "inDays_one": "in {{count}} day",
+      "inDays_other": "in {{count}} days"
+    },
+    "color": {
+      "pink": "Pink",
+      "lavender": "Lavender",
+      "blue": "Blue",
+      "green": "Green",
+      "orange": "Orange",
+      "slate": "Grey"
+    },
+    "preset": {
+      "final": {
+        "title": "Final exam only",
+        "sub": "One exam, all material"
+      },
+      "partials": {
+        "title": "Two midterms + comprehensive",
+        "sub": "Each midterm covers its own part"
+      },
+      "custom": {
+        "title": "Custom",
+        "sub": "Add exams yourself"
+      }
+    },
+    "format": {
+      "written": "Written",
+      "oral": "Oral",
+      "combined": "Combined",
+      "project": "Project",
+      "other": "Other"
+    },
+    "scope": {
+      "all": "All material",
+      "part": "Part of the material"
+    },
+    "priority": {
+      "1": {
+        "name": "Easy",
+        "description": "Passing is enough"
+      },
+      "2": {
+        "name": "Less important",
+        "description": "No big ambitions"
+      },
+      "3": {
+        "name": "Standard",
+        "description": "Standard"
+      },
+      "4": {
+        "name": "Important",
+        "description": "I want a good grade"
+      },
+      "5": {
+        "name": "Required",
+        "description": "Must be passed"
+      }
+    },
+    "mode": {
+      "regular": {
+        "title": "Regular",
+        "sub": "From today, in step with lectures"
+      },
+      "campaign": {
+        "title": "Campaign",
+        "sub": "Starts before the exam, the app works out when"
+      }
+    },
+    "form": {
+      "newTitle": "New subject",
+      "editTitle": "Edit subject",
+      "name": "Name",
+      "namePlaceholder": "e.g. Signals and Systems",
+      "color": "Colour",
+      "howExamined": "How is it examined?",
+      "exams": "Exams",
+      "addExam": "Add exam",
+      "scopeLater": "You pick the material per exam when you add sources.",
+      "examTitle": "Exam name",
+      "examTitlePlaceholder": "Exam name",
+      "examDate": "Exam date",
+      "examFormat": "Exam format",
+      "pickDate": "Date",
+      "removeExam": "Remove exam",
+      "contingent": "Only if needed",
+      "dateTentative": "Tentative date",
+      "notPlannedAhead": "not planned ahead",
+      "dateNotConfirmed": "date not confirmed",
+      "advanced": "Advanced",
+      "advancedSummary": "Priority {{priority}} · {{mode}}",
+      "priority": "Priority",
+      "priorityDescription": "{{n}} · {{name}}: {{description}}",
+      "howStudied": "How do you study this subject?",
+      "campaignStart": "Start",
+      "campaignStartComputed": "Computed from the plan",
+      "campaignStartManual": "Manual · {{date}}",
+      "setManually": "Set manually",
+      "useComputed": "Use computed",
+      "campaignHint": "Computed backwards from the exam, from the remaining material and your availability, with a 20% reserve. Until then the subject is not planned.",
+      "create": "Create subject",
+      "archive": "Archive subject",
+      "unarchive": "Restore from archive"
+    },
+    "detail": {
+      "edit": "Edit subject",
+      "priorityChip": "Priority {{n}} · {{name}}",
+      "nextExam": "{{title}} {{when}}.",
+      "addExam": "+ Exam",
+      "noExams": "No exams yet.",
+      "tentative": "tentative date",
+      "contingent": "only if needed",
+      "passed": "passed"
+    },
+    "campaign": {
+      "label": "CAMPAIGN",
+      "startsOn": "Starts {{date}} · {{when}}",
+      "computedLater": "Start is computed from the plan",
+      "body": "Until then the subject is not planned, except reviews of what you already learned. The start is computed from the remaining material and your availability, with a 20% reserve.",
+      "move": "Move",
+      "startNow": "Start now"
     }
   },
   "progress": {
@@ -95,7 +224,8 @@
   },
   "common": {
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "close": "Close"
   },
   "profile": {
     "welcomeTitle": "What should I call you?",

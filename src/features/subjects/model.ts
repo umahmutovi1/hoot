@@ -17,6 +17,12 @@ export const STUDY_MODES = ['regular', 'campaign'] as const
 export type StudyMode = (typeof STUDY_MODES)[number]
 
 export const PRIORITIES = [1, 2, 3, 4, 5] as const
+export type Priority = (typeof PRIORITIES)[number]
+
+/** Clamps a stored or form priority to 1–5 (the DB check guarantees it; this keeps types narrow). */
+export function asPriority(n: number): Priority {
+  return Math.min(5, Math.max(1, Math.round(n))) as Priority
+}
 export const DEFAULT_PRIORITY = 3
 
 export const ASSESSMENT_KINDS = ['partial', 'final', 'integral', 'makeup', 'other'] as const

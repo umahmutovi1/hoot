@@ -73,3 +73,33 @@ export const ChevronLeftIcon = (p: IconProps) => (
     <path d="M15 5l-7 7 7 7" />
   </Icon>
 )
+
+export const PlusIcon = (p: IconProps) => (
+  <Icon strokeWidth={2.2} {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Icon>
+)
+
+export const CloseIcon = (p: IconProps) => (
+  <Icon strokeWidth={2} {...p}>
+    <path d="M6 6l12 12M18 6L6 18" />
+  </Icon>
+)
+
+export const PencilIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 20h4L19 9l-4-4L4 16z" />
+  </Icon>
+)
+
+export const ChevronDownIcon = (p: IconProps) => (
+  <Icon strokeWidth={2} {...p}>
+    <path d="M6 9l6 6 6-6" />
+  </Icon>
+)
+
+export const FlagIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 21V4M5 4h11l-2 4 2 4H5" />
+  </Icon>
+)
