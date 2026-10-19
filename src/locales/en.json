@@ -54,7 +54,16 @@
       "title": "Did you know?",
       "source": "Source: {{source}}",
       "sourceLabel": "Source: {{source}} (opens in a new window)"
-    }
+    },
+    "week": {
+      "teaching": "Teaching week {{week}}",
+      "partial": "{{title}}",
+      "exam": "{{title}} · week {{week}}",
+      "holiday": "Holiday · {{title}}"
+    },
+    "planSoonTitle": "Your daily study plan is coming soon",
+    "planSoonBody": "Until the app computes it, today's classes and lectures show here. Edit exams, sources and the timetable on subjects and in the calendar.",
+    "todayInCalendar": "Today in the calendar"
   },
   "plan": {
     "title": "Plan",
@@ -80,7 +89,17 @@
       "possible_other": "{{count}} possible exams",
       "deadline_one": "{{count}} deadline",
       "deadline_other": "{{count}} deadlines"
-    }
+    },
+    "view": {
+      "month": "Month",
+      "day": "Day"
+    },
+    "viewLabel": "Calendar view",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "cancelled": "cancelled",
+    "noClasses": "No classes this day.",
+    "timetableButton": "Timetable"
   },
   "subjects": {
     "title": "Subjects",
@@ -204,7 +223,11 @@
       "rangeBetween": "Possible between",
       "rangeAnd": "and",
       "rangeEarliest": "Earliest",
-      "rangeLatest": "Latest"
+      "rangeLatest": "Latest",
+      "usePeriodsTitle": "Dates not known yet?",
+      "usePeriodsBody": "Use the academic calendar: partials get the partial exam weeks, final and make-up exams their periods.",
+      "inPeriod": "in: {{title}}",
+      "inPeriodOption": "In: {{title}}"
     },
     "detail": {
       "edit": "Edit subject",
@@ -241,7 +264,9 @@
     "general": "General",
     "language": "Language",
     "timezone": "Time zone",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "periodsCount_one": "{{count}} period",
+    "periodsCount_other": "{{count}} periods"
   },
   "validation": {
     "required": "Required",
@@ -254,7 +279,9 @@
     "rangeOrder": "The latest date must be after the earliest",
     "pageOrder": "The end page must come after the start page",
     "outlineEmpty": "Enter at least one unit",
-    "labelTaken": "That label already exists"
+    "labelTaken": "That label already exists",
+    "time": "Invalid time",
+    "timeOrder": "End must be after start"
   },
   "common": {
     "cancel": "Cancel",
@@ -284,7 +311,26 @@
       "makeup": "Makeup",
       "other": "Other"
     },
-    "rangeHint": "The plan targets the earliest possible date, so you are ready even if the exam comes early. When the date is announced, turn this off and enter it."
+    "rangeHint": "The plan targets the earliest possible date, so you are ready even if the exam comes early. When the date is announced, turn this off and enter it.",
+    "inPeriod": "In period",
+    "manualRange": "Custom range",
+    "showInCalendar": "Show in calendar",
+    "dateMode": {
+      "label": "When is the exam?",
+      "exact": "Exact date",
+      "period": "In a period",
+      "range": "Rough range"
+    },
+    "sources": {
+      "label": "Sources for this exam",
+      "none": "The subject has no sources yet.",
+      "add": "Add source",
+      "part": "Part of the source · Exam scope",
+      "all": "All",
+      "none_choice": "Not included",
+      "hint": "Pick part of a source (e.g. chapters 1–5) in Exam scope.",
+      "hintNew": "After saving, pick part of a source (e.g. chapters 1–5) in Exam scope."
+    }
   },
   "deadlines": {
     "section": "Deadlines",
@@ -557,5 +603,217 @@
     "greenBreak": "Looking at greenery for just 40 seconds, even in a picture, helped students keep their attention on a boring task.",
     "sleepAfter": "Sleeping within a few hours after studying helps the material stick. A sleepless night after learning hurts recall even after catching up on sleep.",
     "wakefulRest": "Ten minutes of quiet rest (no phone, no games) right after learning improved memory even a week later."
+  },
+  "weekdays": {
+    "short": {
+      "0": "Mon",
+      "1": "Tue",
+      "2": "Wed",
+      "3": "Thu",
+      "4": "Fri",
+      "5": "Sat",
+      "6": "Sun"
+    },
+    "long": {
+      "0": "Monday",
+      "1": "Tuesday",
+      "2": "Wednesday",
+      "3": "Thursday",
+      "4": "Friday",
+      "5": "Saturday",
+      "6": "Sunday"
+    }
+  },
+  "calendar": {
+    "title": "Academic calendar",
+    "heading": "Academic year",
+    "intro": "When classes run, when partial exams and exam periods are, and which days are holidays. Dates of single exams go on the subject.",
+    "add": "+ Add",
+    "newTitle": "New period",
+    "editTitle": "Edit period",
+    "kindLabel": "Type",
+    "sessionLabel": "Period type",
+    "titleLabel": "Name",
+    "from": "From",
+    "to": "To",
+    "kind": {
+      "teaching": "Teaching",
+      "exam": "Exam period",
+      "holiday": "Holidays"
+    },
+    "session": {
+      "partial": "Partials",
+      "regular": "Regular period",
+      "makeup": "Make-up period"
+    },
+    "section": {
+      "teaching": "Teaching",
+      "exam": "Exam periods",
+      "holiday": "Holidays"
+    },
+    "empty": {
+      "teaching": "Add a semester: when classes start and end. The timetable and teaching weeks are counted from here.",
+      "exam": "No exam periods. Add partial exam weeks and exam periods.",
+      "holiday": "No holidays."
+    },
+    "hint": {
+      "teaching": "The timetable applies in this period; teaching week 1 is odd.",
+      "exam": "An exam without a date can be \"in this period\"; the plan aims for its first day. Partials fall in the middle of teaching.",
+      "holiday": "No classes on these days; your study availability stays."
+    },
+    "defaultTitle": {
+      "winter": "Winter semester",
+      "summer": "Summer semester",
+      "exam_regular": "Regular exam period",
+      "exam_makeup": "Make-up exam period",
+      "holiday": "Holiday",
+      "exam_partial": "Partial exam week"
+    },
+    "delete": "Delete period",
+    "confirmDelete": "Delete for sure?"
+  },
+  "timetable": {
+    "title": "Class timetable",
+    "heading": "Lectures and exercises",
+    "periodLine_one": "{{title}} · until {{date}} · {{count}} class a week",
+    "periodLine_other": "{{title}} · until {{date}} · {{count}} classes a week",
+    "noPeriodTitle": "Add a semester first",
+    "noPeriodBody": "In the academic calendar, enter when classes start and end.",
+    "add": "Add class",
+    "newTitle": "New class",
+    "editTitle": "Edit class",
+    "dayEmpty": "No classes this day",
+    "subject": "Subject",
+    "pickSubject": "Pick a subject",
+    "noSubject": "No subject",
+    "kindLabel": "Type",
+    "day": "Day",
+    "start": "From",
+    "end": "To",
+    "location": "Room",
+    "optional": "(optional)",
+    "locationPlaceholder": "e.g. S1 · lecture hall",
+    "weeks": "Weeks",
+    "period": "Semester",
+    "kind": {
+      "lecture": "Lecture",
+      "exercise": "Exercises",
+      "lab": "Lab",
+      "other": "Other"
+    },
+    "parity": {
+      "all": "Every week",
+      "odd": "Odd",
+      "even": "Even"
+    },
+    "parityShort": {
+      "odd": "odd weeks",
+      "even": "even weeks"
+    },
+    "howTitle": "How the plan uses the timetable",
+    "busyTitle": "Class times are busy",
+    "busyHint": "exactly the class time",
+    "always": "always",
+    "recapTitle": "Short review after a lecture",
+    "recapHint": "15 min the same day, the first review step",
+    "delete": "Delete class",
+    "confirmDelete": "Delete for sure?"
+  },
+  "availability": {
+    "title": "Availability",
+    "heading": "When can you study?",
+    "totalBefore": "This week up to",
+    "totalAfter": "of study. The plan never goes beyond your free slots or daily maximum.",
+    "perWeek": "{{hours}} a week",
+    "dayLine": "Free {{free}} · at most {{cap}} of study",
+    "onlyThisDay": "this day only",
+    "editDay": "Edit day",
+    "planUses": "The plan can put up to {{time}} of study on this day. Classes are busy automatically.",
+    "template": "Weekly template",
+    "templateHint": "Applies every week, except days you change separately.",
+    "templateFor": "Every {{day}}",
+    "freeDay": "no study",
+    "upTo": "up to {{time}}",
+    "timetableLine_one": "{{count}} class a week · automatically busy",
+    "timetableLine_other": "{{count}} classes a week · automatically busy",
+    "changedDays": "Changed days",
+    "noStudy": "No study",
+    "cancelledClass": "Class cancelled {{range}}",
+    "sheetSubtitle": "When you can study and how much at most",
+    "slots": "Free slots",
+    "overlap": "You have {{classes}} in this slot. Without the switch that part stays busy.",
+    "overClasses": "Study instead of class",
+    "noSlots": "No free slots: no study is planned that day.",
+    "addSlot": "Add slot",
+    "cap": "Most study",
+    "capHint": "The plan never puts more than this on one day.",
+    "capLess": "Less",
+    "capMore": "More",
+    "hours": "{{h}} h",
+    "applyTo": "Apply to",
+    "onlyDay": "Only {{date}}",
+    "everyWeekday": "Every {{day}}",
+    "resetDay": "Back to the template ({{day}})",
+    "deleteSlot": "Remove slot",
+    "breakdown": "{{slots}} of slots − {{busy}} of classes"
+  },
+  "lectures": {
+    "title": "How far did you get?",
+    "section": "Lectures",
+    "timetableLink": "Timetable",
+    "ended": "The {{subject}} lecture has ended.",
+    "enter": "Enter",
+    "context": "{{kind}} · today {{time}}",
+    "date": "Lecture date",
+    "noSources": "This subject has no source with units yet. Add a source to track how far the class got.",
+    "hint": "Tap the last unit covered.",
+    "coveredUpTo": "Covered up to",
+    "note": "Note",
+    "notePlaceholder": "e.g. the professor skipped 5.3, worked on problems",
+    "saveUpTo": "Save · up to {{label}}",
+    "cancelled": "Class cancelled",
+    "skip": "Skip",
+    "lastTime": "last time",
+    "upToHere": "up to here",
+    "empty": "After a lecture, note how far the class got so the app knows how far behind you are.",
+    "behind": "{{amount}} behind",
+    "upToDate": "You are keeping up with the lectures",
+    "add": "Add how far you got",
+    "chapter": "ch. {{label}}",
+    "notYet": "nothing yet",
+    "atLecture": "In class:",
+    "you": "You:",
+    "barLabel": "You are at part {{you}}, lectures at part {{lecture}} of {{total}}",
+    "youShort": "You · {{n}}",
+    "lectureShort": "Lecture · {{n}}",
+    "warnLectures_one": "{{count}} lecture behind",
+    "warnLectures_other": "{{count}} lectures behind",
+    "warnBody": "Covered in class but not started yet: {{amount}} (~{{time}}).",
+    "action": {
+      "raise_priority": "Raise priority to {{n}}",
+      "switch_to_regular": "Switch to regular",
+      "take_time_from": "Take time from another subject",
+      "start_earlier": "Start earlier",
+      "add_minutes": "Add time per day"
+    },
+    "done": {
+      "raise_priority": "Priority is now {{n}}.",
+      "switch_to_regular": "The subject is now in regular mode."
+    },
+    "later": "Later",
+    "promptSub": "How far did you get? · {{time}}",
+    "contextDate": "{{kind}} · {{date}} {{time}}",
+    "behindTime": "~{{time}} of study"
+  },
+  "classDetail": {
+    "room": "Room",
+    "weeks": "Weeks",
+    "period": "Semester",
+    "cancelled": "Cancelled for this day",
+    "openSubject": "Open subject",
+    "changeReached": "Change how far you got",
+    "restore": "Restore class",
+    "cancel": "Cancel for this day",
+    "edit": "Edit in timetable"
   }
 }

@@ -1,11 +1,15 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Avatar } from '@/components/Avatar'
 import { BackHeader } from '@/components/BackHeader'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { signOut } from '@/features/auth/api'
+import { useScheduleData } from '@/features/schedule/useScheduleData'
+import { formatDuration } from '@/features/sources/format'
+import { localDay } from '@/lib/day'
 import { DisplayNameForm } from './DisplayNameForm'
-import { useProfile } from './profile'
+import { useDayBoundary, useProfile } from './profile'
 import { useLocale } from './useLocale'
 
 export function SettingsPage() {
@@ -14,6 +18,10 @@ export function SettingsPage() {
   const { locale, setLocale } = useLocale()
   const name = profile?.display_name ?? ''
   const [editingName, setEditingName] = useState(false)
+  const boundary = useDayBoundary()
+  const [today] = useState(() => localDay(new Date(), boundary))
+  const schedule = useScheduleData()
+  const row = 'flex items-center justify-between border-b border-canvas py-3.5'
 
   return (
     <div className="flex min-h-[calc(100dvh-48px)] flex-col gap-3.5">
@@ -52,6 +60,21 @@ export function SettingsPage() {
           <span className="text-[15px]">{t('settings.language')}</span>
           <LocaleToggle value={locale} onChange={setLocale} className="bg-canvas" />
         </div>
+        <Link to="/plan/availability" className={row}>
+          <span className="text-[15px]">{t('availability.title')}</span>
+          <span className="text-sm text-ink-muted">
+            {t('availability.perWeek', {
+              hours: formatDuration(t, schedule.weekMinutes(today)),
+            })}{' '}
+            ›
+          </span>
+        </Link>
+        <Link to="/settings/calendar" className={row}>
+          <span className="text-[15px]">{t('calendar.title')}</span>
+          <span className="text-sm text-ink-muted">
+            {t('settings.periodsCount', { count: schedule.periodRows.length })} ›
+          </span>
+        </Link>
         <div className="flex items-center justify-between py-3.5">
           <span className="text-[15px]">{t('settings.timezone')}</span>
           <span className="text-sm text-ink-muted">{profile?.timezone}</span>

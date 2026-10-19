@@ -25,10 +25,13 @@ Logika u `<script>` bloku na dnu fajla je samo demo interakcija.
 - Predavanja: DokleSmoStigli (bottom sheet; ulaz: kartica na Danas i Predmet)
 - Uvoz: DodajIzvor → Parsiranje → ObimIspita
 - Ostalo: Postavke, Prijava
+- Bodovi i ocjene (Etapa 5): `BodoviOcjene.html` — jedan statičan fajl sa 6 ekrana (kartica na Predmetu, ispiti sa rezultatom i popravnim, polja bodova u ExamSheetu, sheet Rezultat, sheet Skala ocjena, Napredak → Ocjene). Dugmad pišu „Spasi“.
 
 Maskota: vidi MASCOT.md.
 
 Donja navigacija (odstupa od mockupa, odluka nakon Etape 2): plutajuća poluprozirna pilula sa blurom, samo ikone
 (Danas, Plan, Predmeti, Napredak), aktivni tab ima svijetloljubičastu pilulu iza ljubičaste ikone. Timer dugme je ljubičasti krug u sredini pilule. Mockupi još prikazuju staru traku sa urezom.
+
+Odstupanja nakon Etape 4: kalendar ima samo Mjesec i Dan; Dostupnost je sedmica sa datumima i vremenskom osom (umjesto liste po danu iz `Dostupnost.dc.html`); svaki bottom sheet ima × za zatvaranje.
 
 Varijante istog ekrana (npr. UrediBlok*, Provjera*, NoviPredmet*) su jedna komponenta sa stanjem, ne zasebne stranice.

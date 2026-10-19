@@ -1,13 +1,17 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { format } from 'date-fns'
 import { SparkleIcon } from '@/components/icons'
+import { useDayBoundary } from '@/features/settings/profile'
+import { localDay } from '@/lib/day'
 import { factOfDay } from './facts'
 
 /** "Znaš li?": one researched study fact per day, with its source as a small link. */
 export function FactCard() {
   const { t } = useTranslation()
-  const [fact] = useState(() => factOfDay(format(new Date(), 'yyyy-MM-dd')))
+  const boundary = useDayBoundary()
+  const [now] = useState(() => new Date())
+  // The local day (04:00 boundary), so the fact does not change at midnight.
+  const fact = factOfDay(localDay(now, boundary))
   return (
     <aside className="flex flex-col gap-2 rounded-card bg-surface p-4">
       <div className="flex items-center gap-2">

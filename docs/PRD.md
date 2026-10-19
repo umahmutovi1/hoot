@@ -31,6 +31,11 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Predmeti | Rokovi | Seminarski, zadaće, vlastiti rok; opcionalna procjena sati ulazi u plan |
 | Predmeti | Prioritet i režim | Prioritet 1–5 (5 = uslovni); režim redovno ili kampanja; start kampanje izračunat, ručno promjenjiv |
 | Predmeti | Praćenje predavanja | Nakon termina “Dokle ste stigli?” jednim tapom; zaostatak u satima; prijedlog akcije kad pređe prag |
+| Predmeti | Bodovi i skala ocjena | Ispit i rok nose bodove ili procente, opcionalni prag za prolaz i uslov za izlazak; popravni je vezan za ispit koji ponavlja; skala ocjena po predmetu (default 55/65/75/85/95) |
+| Predmeti | Projekcija ocjene | “Imam X od Y”, koliko treba na preostalim ispitima za svaku ocjenu i za željenu ocjenu; rezultat se može poništiti (odricanje) |
+| Raspored | Akademski kalendar | Periodi nastave, sedmice parcijalnih, ispitni rokovi (redovni/popravni), neradni dani; ručno ili AI uvoz; “7. sedmica nastave” na Danas |
+| Uvoz | Uvoz sa pregledom | Tekst, slika ili PDF → akademski kalendar ili raspored ispita; pregled novo/izmijenjeno prije snimanja |
+| Uvoz | Dokumenti i asistent | Dokumenti fakulteta sa pretragom (RAG, citat izvora); chat asistent predlaže izmjene kao kartice |
 | Predmeti | Izvori više tipova | 0..n izvora: knjiga, skripta, pitanja, prezentacije, ostalo |
 | Uvoz | Slikaj sadržaj | Slika sadržaja → jedinice sa stranicama, podjedinicama, težinom i temama; pregled prije snimanja |
 | Uvoz | Ručni unos | Paste ili jedna linija po jedinici; isti parser |
@@ -41,7 +46,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Raspored | Raspored nastave | Ručno ili slikom; predavanja, vježbe, labovi, parne/neparne sedmice; automatski zauzeto |
 | Raspored | Dostupnost | Sedmični slobodni termini + izuzeci za konkretne dane |
 | Plan | “Danas” ekran | Fokus bar dana, kartica “Sljedeći blok”, lista blokova, 3 najranija ispita, “zašto ovo danas” |
-| Plan | Kalendar | Mjesečni prikaz ispita, rokova, nastave i planiranih dana |
+| Plan | Kalendar | Mjesec i dan: ispiti, rokovi, nastava i planirani dani |
 | Plan | Satnica | Na zahtjev raspoređuje blokove u termine; keš preko `input_hash` |
 | Plan | Replan | Propušteno se preraspodijeli od sutra; deficit sa 3 opcije |
 | Plan | Ručni blokovi | Dodaj, izmijeni, obriši blok; ručni i izmijenjeni blokovi su zaključani od replana |
@@ -55,11 +60,11 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Učenje | Kvizovi | AI pitanja iz bilješki ili slike stranice |
 | Napredak | Progres | Po izvoru, ispitu, predmetu i temi |
 | Napredak | Statistika | Sati vs plan, ispunjenost, fokus, efikasnost po dobu dana |
-| Napredak | Prognoza spremnosti | “Ovim tempom pokrivaš X% do ispita”, svaki dan |
+| Napredak | Prognoza spremnosti | “Ovim tempom pokrivaš X% do ispita”, svaki dan; procjena ocjene iz prognoze |
 | Napredak | AI strategist | Sedmični pregled i najviše 3 akcije koje korisnik odobri |
 | Opće | Notifikacije | Prvi blok dana, propušten blok, ponavljanje na redu |
 | Opće | Jezik | Bosanski i engleski |
-| Opće | Rezultat ispita | Bodovi + spremnost dan prije; zatvara krug za prognozu |
+| Opće | Rezultat ispita | Bodovi (Etapa 5) + spremnost dan prije (Napredak); zatvara krug za prognozu |
 
 ## Ključni tokovi
 
@@ -101,9 +106,9 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 
 **6. Nakon predavanja**
 
-1. Kad termin iz rasporeda završi, na “Danas” se pojavi kartica “Dokle ste stigli iz [predmet]?” (kasnije i notifikacija).
-2. Sheet: izbor izvora, tap na jedinicu do koje se stiglo (sve prije nje je “pređeno na predavanju”), opcionalna bilješka.
-3. “Nastava otkazana” oslobađa taj termin u planu za taj dan; “Preskoči” samo zatvara karticu.
+1. Kad **predavanje** iz rasporeda završi, na “Danas” se pojavi kartica “Dokle ste stigli iz [predmet]?” (kasnije i notifikacija). Vježbe, labovi i ostalo ne pitaju; za njih postoji ručni unos (korak 4). Kartica stoji do kraja tog dana (granica dana), dok se ne unese ili preskoči.
+2. Sheet: izbor izvora (tab po izvoru), tap na jedinicu do koje se stiglo (sve prije nje je “pređeno na predavanju”), opcionalna bilješka. Snimanje pravi po jedan unos za svaki izvor kojem je granica promijenjena.
+3. “Nastava otkazana” oslobađa taj termin u planu za taj dan; “Preskoči” samo zatvara karticu za taj termin i dan.
 4. Isti unos postoji na ekranu predmeta, sa izborom datuma, za predavanja koja nisu u rasporedu ili su propuštena.
 5. Ako zaostatak pređe prag, pojavi se kartica prijedloga (vidi Praćenje predavanja).
 
@@ -172,7 +177,7 @@ Procjena minuta po jedinici kreće od heuristike i AI težine, a zatim je tvoje 
 
 Ovo su pretpostavke za start, ne izmjereni podaci; kalibracija ih brzo zamijeni. Kalibracija je uvijek po pojedinačnom izvoru (dva izvora tipa “Ostalo” uče svoje brzine odvojeno). Mjera izvora je u `sources.measure` (`pages`, `slides`, `questions`, `items`).
 
-**Ručni unos (“jedna linija po jedinici”).** Parser u `src/lib/outline/` (isti izlaz kao AI uvoz): `<oznaka> <naslov> <stranice>`, npr. `2.1 Konvolucija 75` ili `4 Fourierova transformacija 284-355`. Oznaka je opcionalna; tačke u oznaci prave podjedinice (najviše 3 nivoa). Jedan broj je početna stranica, a kraj je početak sljedeće jedinice − 1; `a-b` je raspon. Kod prezentacija jedan broj je broj slajdova. Kod pitanja i jedinica (“Ostalo”) cijela linija je naslov. Jedinica bez poznatog obima dobije prosjek ostalih i upozorenje. Pregled prije snimanja prikazuje težinu kao 5 tačkica (default 3, tap mijenja); ta početna težina se snima u `ai_difficulty` i koriguje ocjenama isto kao AI težina. U Etapi 8 ručni unos dobija i dugme “Procijeni težinu AI-jem”.
+**Ručni unos (“jedna linija po jedinici”).** Parser u `src/lib/outline/` (isti izlaz kao AI uvoz): `<oznaka> <naslov> <stranice>`, npr. `2.1 Konvolucija 75` ili `4 Fourierova transformacija 284-355`. Oznaka je opcionalna; tačke u oznaci prave podjedinice (najviše 3 nivoa). Jedan broj je početna stranica, a kraj je početak sljedeće jedinice − 1; `a-b` je raspon. Kod prezentacija jedan broj je broj slajdova. Kod pitanja i jedinica (“Ostalo”) cijela linija je naslov. Jedinica bez poznatog obima dobije prosjek ostalih i upozorenje. Pregled prije snimanja prikazuje težinu kao 5 tačkica (default 3, tap mijenja); ta početna težina se snima u `ai_difficulty` i koriguje ocjenama isto kao AI težina. U Etapi 10 ručni unos dobija i dugme “Procijeni težinu AI-jem”.
 
 **2. AI težina iz naslova.** Pri uvozu AI dodijeli svakoj jedinici `ai_difficulty` 1–5 na osnovu naslova, predmeta i konteksta susjednih poglavlja. Množitelj: 1 → 0.6, 2 → 0.8, 3 → 1.0, 4 → 1.3, 5 → 1.7.
 
@@ -236,9 +241,13 @@ Nisu svi predmeti jednako važni ni jednako teški. Prioritet kaže koliko je pr
 
 Korisnik bilježi dokle se stiglo na nastavi, pa app zna koliko zaostaje i može držati korak s predavanjima.
 
-**Model.** Unos (`lecture_logs`) vezuje datum, predmet, opcionalno termin iz rasporeda, izvor i jedinicu “do ovdje” (`up_to_unit_id`). Pređenim jedinicama se smatraju sve nearhivirane jedinice tog izvora sa `position` do te jedinice (uključivo, sa podjedinicama). Novi unos za isti izvor pomjera granicu; raniji unosi ostaju kao historija. `cancelled = true` znači da nastave nije bilo; to pravi izuzetak dostupnosti koji oslobađa taj termin (+15 min) za taj dan.
+**Model.** Unos (`lecture_logs`) vezuje datum, predmet, opcionalno termin iz rasporeda, izvor i jedinicu “do ovdje” (`up_to_unit_id`). Pređenim jedinicama se smatraju sve nearhivirane jedinice tog izvora sa `position` do te jedinice (uključivo, sa podjedinicama). Novi unos za isti izvor pomjera granicu (vrijedi unos sa najkasnijim `on_date`, pa `created_at`); raniji unosi ostaju kao historija. `cancelled = true` znači da nastave nije bilo; to pravi izuzetak dostupnosti (`is_busy = false`, vrijeme termina, `lecture_log_id` na unos) koji oslobađa taj termin za taj dan. Brisanje unosa briše i taj izuzetak.
 
-**Zaostatak** (`src/lib/pace/`, čista funkcija) = zbir preostalih minuta pređenih jedinica sa `level` 0 (ista formula preostalog rada kao u scheduleru). Prikazuje se na predmetu kao “Na predavanju: pogl. 5 · Ti: pogl. 3 · kasniš ~4h 20min”.
+**Zaostatak** (`src/lib/pace/`, čista funkcija) = zbir minuta pređenih listova sa `level` 0. Minute su iste kao na ekranu izvora (`materialOf()` → `estimateUnits()`). Prikazuje se u mjeri izvora, ne u minutama: “Kasniš 15 str. (Oppenheim) · 4 pitanja”, a ispod sitno “~1h 40min učenja”. Mjera prati izvor (stranice, slajdovi, pitanja, jedinice; zbir `amount` pređenih listova sa `level` 0). Na predmetu: “Na predavanju: pogl. 5 · Ti: pogl. 3”, po jedan red za svaki izvor koji ima unos.
+
+- “Na predavanju” = vršna jedinica (bez roditelja) koja sadrži granicu zadnjeg unosa.
+- “Ti” = zadnja vršna jedinica čiji su svi listovi `level` ≥ 1, gledano redom od početka bez praznina.
+- Broj predavanja u zaostatku = unosi (nisu otkazani) iza kojih je u pređenom dijelu ostala bar jedna jedinica sa `level` 0.
 
 **Meki rok (samo redovni režim).** Jedinica pređena na predavanju dobija meki rok `on_date + profiles.lecture_pace_days` (default 7) i ulazi u plan kao pseudo-cilj ispred ispita. Meki rok nikad ne pravi deficit: ako ne stane, ostaje vezan za ispit. Jedinice koje još nisu pređene na predavanju ne guraju se unaprijed, osim ako ispit to traži. U kampanji se predavanja samo bilježe i prikazuju.
 
@@ -254,13 +263,15 @@ Korisnik bilježi dokle se stiglo na nastavi, pa app zna koliko zaostaje i može
 
 Jedan tap mijenja ulaz i pokreće replan; “Kasnije” sakriva karticu 3 dana. Strategist dobija zaostatak u svom ulazu i može predložiti iste akcije u sedmičnom pregledu.
 
+Pravila (prag i lista akcija) su u `src/lib/pace/` od Etape 4. Dok nema schedulera, kartica na predmetu nudi samo akcije koje ne traže `plan()` (“Podigni prioritet”, “Prebaci na redovno”) i “Kasnije”; “Uzmi vrijeme od”, “Kreni ranije” i “Dodaj X min dnevno” dolaze sa schedulerom (Etapa 8).
+
 ## Scheduler, replan i AI strategist
 
 Satnicu pravi čista TypeScript funkcija `plan(state) → blocks`, bez AI-ja: brza je, besplatna, testabilna i daje isti rezultat za iste ulaze. AI strategist samo predlaže promjene ulaza (prioriteti, režim, sati, obim), a funkcija ponovo računa plan.
 
 **Algoritam**
 
-1. **Kapacitet.** Slobodne minute po danu = dostupnost − termini nastave (±15 min, osim otkazanih) − izuzeci − ručni blokovi.
+1. **Kapacitet.** Slobodne minute po danu = dostupnost − termini nastave (tačno vrijeme termina, osim otkazanih) − izuzeci − ručni blokovi.
 2. **Ponavljanja i provjere prvo.** Jedinice kojima je `next_review_on` danas ili ranije dobijaju blokove tipa `review` (vidi Spaced repetition), i za predmete u kampanji prije starta. Ponavljanja zauzimaju najviše `profiles.review_cap_pct` (default 40%) dnevnog kapaciteta; višak se slaže po bližem ispitu, pa po nižoj jačini, a ostatak prelazi na sljedeći dan. Uz uključen prekidač, dan sa predavanjem dobija blok `recap` od 15 min za taj predmet.
 3. **Start kampanje.** Za predmete u kampanji izračuna se dan starta (vidi Prioritet i režim); prije njega njihove jedinice nisu u bazenu.
 4. **Preostali rad po cilju.** Cilj je nepoložen, aktivan ispit (ne “samo ako zatreba” dok se ne aktivira) ili rok sa procjenom. Za jedinicu u obimu: level 0 → 100% minuta, level 1 → 40%, level 2+ → 0% (ide u ponavljanja). Pitanje: 0 → 100%, 1 → 50%. Jedinica pripada najranijem cilju koji je pokriva. Rad se dijeli na obavezan i opcionalan po ciljnoj pokrivenosti prioriteta. Planirane minute ručnih blokova za te jedinice oduzimaju se od preostalog rada.
@@ -437,13 +448,99 @@ App neće imati tekst knjige, pa test pamćenja koristi ono što stvarno postoji
 
 Korisnik unosi predavanja, vježbe i labove (ručno ili slikom rasporeda, isti AI pipeline kao za sadržaj). Ovo je MVP jer bez toga dostupnost ručno dupla raspored.
 
-- Termini nastave (+15 min prije i poslije) automatski su zauzeti; dostupnost ih ne mora ponavljati.
+- Termini nastave su automatski zauzeti, tačno u svom vremenu (bez margine za dolazak i odlazak, odluka nakon prvog pregleda); dostupnost ih ne mora ponavljati.
 - Prikazuju se u kalendaru i satnici kao “iz rasporeda nastave”.
 - Opcija “kratko ponavljanje nakon predavanja”: 15 min istog dana za taj predmet, prvi korak raspoređenog učenja.
 - Nakon svakog termina app pita “Dokle ste stigli?” (vidi Praćenje predavanja); otkazan termin se oslobađa za učenje.
 - Podržane parne/neparne sedmice (lab) i period važenja (semestar).
 
-Tabela `timetable_entries` je u konsolidovanoj migraciji; AI zadatak `parse_timetable` koristi isti pipeline kao uvoz sadržaja.
+**Semestar.** Raspored važi za jedan period nastave iz akademskog kalendara (vidi ispod). Termin pamti period (`period_id`), a njegovi datumi se upisuju u `valid_from` / `valid_to` svakog termina (i ažuriraju kad se period promijeni). Parnost sedmica se broji od početka perioda nastave: sedmica (pon–ned) u kojoj nastava počinje je 1. (neparna). Na neradni dan termini se ne održavaju.
+
+**Dostupnost.** Dvije stvari, obje sa sedmičnim šablonom i izmjenom za konkretan datum:
+
+- **Kad možeš učiti** (termini). Default je uvijek osim 00:00–06:00 (06–24 svaki dan); novi korisnik ga dobija automatski. Termini nastave (tačno vrijeme termina) se oduzimaju sami, pa šablon ne treba prilagođavati rasporedu.
+- **Koliko najviše dnevno** (dnevni maksimum učenja, `profiles.daily_cap_min`, po danu u sedmici). Default 3 h radnim danima, 5 h vikendom. Plan nikad ne prelazi ni slobodne termine ni maksimum.
+- **Konkretan datum** (`availability_days`): termini i/ili maksimum samo za taj dan zamjenjuju šablon (npr. jedan ponedjeljak manje vremena, “zauzeta cijeli dan” = dan bez termina). Pri izmjeni app pita “Samo ovaj dan” ili “Svaki [ponedjeljak]”, kao kod ponavljajućih događaja u kalendaru.
+- **Preko nastave**: termin dostupnosti smije preklapati nastavu, uz upozorenje “U ovom terminu imaš Signali · predavanje 09:00–11:00” i prekidač “Učim umjesto nastave”. Bez prekidača nastava i dalje blokira taj dio; sa njim se taj dio računa kao slobodan.
+- **Ekran**: sedmica sa datumima (traka dana, strelice) i vremenska osa izabranog dana: termini dostupnosti, nastava (šrafirano, “iz rasporeda”), slobodno i maksimum tog dana; ispod šablon po danu u sedmici i lista datuma sa izmjenama. Izmjene se spašavaju odmah; replan na izmjenu dolazi sa schedulerom.
+- “Nastava otkazana” i dalje pravi izuzetak (`availability_exceptions`, `lecture_log_id`) koji oslobađa vrijeme termina.
+
+**Kalendar.** Plan ima dva prikaza: Mjesec (postojeća mreža) i Dan (sedmični prikaz je izbačen nakon pregleda). U mjesečnoj mreži nastava nema tačkice (bila bi na skoro svakom danu); termini nastave su u listi izabranog dana, otkazani precrtani. Dan: traka dana kao pilule (izabrani dan taman) i vremenska osa sa karticama u boji predmeta (nastava, kasnije blokovi plana). Tačkice aktivnosti (ispiti, mogući ispiti, rokovi, kasnije planirano učenje) su pod danom u oba prikaza. Tap na termin nastave otvara detalje: predmet (link), tip, vrijeme, sala, sedmice, “Dokle ste stigli?”, “Otkaži za ovaj dan” / “Vrati termin”, “Uredi u rasporedu”. Zaglavlje Plana ima dva dugmeta: Dostupnost i Raspored. Kalendar prima `?date=` i `?view=`, pa drugi ekrani vode direktno na dan (npr. ispit na predmetu → “Prikaži u kalendaru”).
+
+Kartica “Uslikaj raspored” se prikazuje tek sa AI uvozom rasporeda (Etapa 10). Tabela `timetable_entries` je u konsolidovanoj migraciji; AI zadatak `parse_timetable` koristi isti pipeline kao uvoz sadržaja.
+
+## Akademski kalendar
+
+Fakultet objavi akademski kalendar prije semestra: kad traje nastava, kad su ispitni rokovi i sedmice parcijalnih, i koji su dani neradni. Datume konkretnih ispita kalendar nema; oni dolaze kasnije (raspored parcijala, uvoz ispita).
+
+**Model** (`academic_periods`): vrsta, naziv, od–do (lokalni datumi). Sedmice parcijalnih i ispitni rokovi su jedan tip (“Ispitni period”) sa podtipom, pa akademski kalendar ima tri sekcije: Nastava, Ispitni periodi, Neradni dani.
+
+| Vrsta (`kind`) | Primjer | Šta radi |
+| --- | --- | --- |
+| `teaching` | Zimski semestar, 6. okt – 23. jan | Period važenja rasporeda i parnost sedmica; “7. sedmica nastave” na Danas |
+| `exam` + `exam_session`: `partial` / `regular` / `makeup` | Sedmica parcijalnih, Januarsko-februarski rok, Popravni rok | Raspon za ispit sa nepoznatim datumom (parcijala → `partial`, završni/integralni → `regular`, popravni → `makeup`); nastava u sedmici parcijalnih teče po rasporedu osim neradnih dana |
+| `holiday` | Nova godina, 1.–2. jan | Nema nastave (termini se ne računaju, “Dokle ste stigli?” ne pita); dostupnost za učenje ostaje |
+
+- **Unos:** ručno na ekranu “Akademski kalendar” (Postavke, i iz Rasporeda) od Etape 4; AI uvoz iz slike, PDF-a ili teksta sa pregledom od Etape 6.
+- **Ispit u roku:** u ExamSheetu, uz “Datum još nije objavljen”, bira se rok (`assessments.exam_period_id`). Raspon ispita (`at` – `at_latest`) = raspon roka; plan cilja najraniji dan (isto pravilo kao okvirni datum). Prijedlog po tipu: parcijala → ispitni period `partial`, završni/integralni → `regular`, popravni → `makeup`. Promjena datuma roka pomjera i povezane okvirne ispite. Na NoviPredmet dugme “Datumi još nisu poznati?” to radi za sve ispite bez datuma odjednom: n-ta parcijala dobija n-tu sedmicu parcijalnih, ostali odgovarajući rok.
+- **Sedmica na Danas:** ispod datuma “7. sedmica nastave” (u periodu nastave), “[naziv ispitnog perioda] · 2. sedmica” ili “Neradni dan · [naziv]”; van svih perioda ništa. Tap vodi na akademski kalendar.
+
+## AI uvoz, dokumenti i asistent
+
+AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nikad ne piše direktno: svaki prijedlog prolazi pregled (novo / izmijenjeno / ostaje) i potvrdu.
+
+**Provajder.** Sve ide kroz LLM wrapper (`_shared/llm.ts`). Dok Anthropic nalog nema karticu, `LLM_PROVIDER=gemini` (Gemini Flash free tier, structured output preko `responseSchema` iz `z.toJSONSchema()`); prebacivanje na Haiku je promjena secrets, bez koda. Na free tieru Google može koristiti podatke za poboljšanje proizvoda, pa se šalju samo podaci koji su za to potrebni. Koraci za ključ su u [SETUP.md](SETUP.md).
+
+**Uvoz sa pregledom (Etapa 6).** Ekran “Uvezi”: zalijepi se tekst ili doda slika/PDF i bira šta je unutra.
+
+- Akademski kalendar → periodi (nastava, rokovi, sedmice parcijalnih, neradni dani).
+- Raspored ispita (npr. raspored parcijala) → ispiti sa datumima, upareni sa predmetima (`fuse.js` + AI), uz prijedlog izmjene postojećeg ispita (okvirni → tačan datum) umjesto duplikata.
+- Isti pregled kasnije koriste raspored nastave i sadržaj knjige (Etapa 10).
+
+**Dokumenti i RAG.** Korpus su tri stvari:
+
+1. **Dokumenti fakulteta** (`documents`: akademski kalendar, pravilnik, silabus, obavještenje). Za razliku od slika sadržaja, dokument se čuva u bucketu `uploads` dok ga korisnik ne obriše. Tekst se dijeli na odlomke (`document_chunks`) sa embeddingom (`gte-small`, pgvector, 384 dimenzije). Pretraga je RPC sa RLS-om (samo vlastiti dokumenti). Odgovor uvijek navodi dokument i stranicu.
+2. **Bilješke i jedinice**: naslovi jedinica, bilješke, kartice i ispitna pitanja dobijaju embedding (isti model). Služe recall pitanjima, vezi pitanje ↔ poglavlje i pretrazi “gdje sam pisala o …” (Etapa 10).
+3. **Stanje plana**: nije vektorska pretraga nego kompaktan JSON sažetak (predmeti, ispiti, bodovi, napredak, zaostatak), isti kao ulaz strategista.
+
+**Asistent (chat, Etapa 10).** Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi.
+
+## Bodovi, skala ocjena i projekcija ocjene
+
+Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih je osvojeno i šta treba za željenu ocjenu. Sve se računa čistim kodom u `src/lib/grades/` (testovi), ništa se ne snima osim unosa.
+
+**Bodovi.** Ispit (`assessments`) i rok (`deadlines`) mogu nositi bodove (`points_max`, npr. I parcijala 40, II parcijala 40, zadaće 20). Jedinica se bira po stavci (`points_unit`): bodovi, ili procenti ukupne ocjene. Ukupno predmeta (`subjects.points_total`, default 100) je osnova za procente i skalu: stavka od 20% nosi 20% od `points_total`. Stavka bez `points_max` ne ulazi u bodove (samo u plan).
+
+**Rezultat.** Unosi se kad izađe, kao bodovi (`result_points` od `result_max`, default `result_max` = bodovi stavke) ili kao procenat (`result_max` = 100). Doprinos stavke = bodovi stavke × `result_points` / `result_max`, pa test bodovan od 50 može nositi 40 bodova.
+
+- **Poništi rezultat** (odricanje, `result_annulled`): rezultat ostaje vidljiv precrtan, ne ulazi u zbir, ispit nije položen, pa se aktivira njegov popravni (“samo ako zatreba”).
+- **Položeno** (`passed`) app postavi pri unosu rezultata: rezultat se računa i, ako ispit ima prag, procenat ≥ `pass_min_pct`. Korisnik ga može ručno promijeniti (kao i do sad).
+
+**Popravni i integralni.**
+
+- Popravni (`kind = 'makeup'`) je uvijek vezan za ispit koji ponavlja (`retake_of`), pa se na predmetu prikazuje ispod njega (“Popravni I parcijale”) i odmah se zna šta zamjenjuje. Nosi iste bodove kao taj ispit. Popravni integralnog je takođe moguć.
+- Integralni (`kind = 'integral'`) zamjenjuje sve parcijale predmeta (sa njihovim popravnim) i nosi zbir njihovih bodova.
+- Računa se **zadnji izlazak**: za svaku stavku vrijedi rezultat najkasnijeg pokušaja (stavka ili njen popravni) koji ima rezultat i nije poništen. Ako je zadnji pokušaj u grupi parcijala integralni, on daje bodove za sve parcijale zajedno; inače svaka parcijala svoje.
+
+**Uslovi za prolaz.**
+
+- **Prag po stavci** (`pass_min_pct`, opcionalno, unos u bodovima ili % i snima se kao %): ispod praga stavka nije položena.
+- **Prag ukupno**: zbir mora dostići prag ocjene 6 iz skale.
+- **Uslov za izlazak** (`entry_min_points` na ispitu, opcionalno): zbir bodova sa stavki koje su prije tog ispita mora biti bar toliki (npr. 20 bodova iz zadaća i seminarskog za završni). Ako nije ispunjen, ispit i projekcija to pokažu.
+
+**Skala ocjena** (`subjects.grade_scale`, `null` = default): pragovi u procentima od `points_total`. Default bosanska skala: 0–54 → 5, 55–64 → 6, 65–74 → 7, 75–84 → 8, 85–94 → 9, 95–100 → 10. Mijenja se po predmetu (pragovi strogo rastući, Zod).
+
+**Projekcija ocjene** (`src/lib/grades/`):
+
+- **Imam**: zbir doprinosa uračunatih rezultata, uz maksimum do sad (“32 od 40”).
+- **Najviše moguće**: imam + bodovi preostalih stavki.
+- **Za ocjenu N treba**: max(0, prag N − imam) od preostalih bodova, i kao prosječan procenat na preostalim stavkama; uz pragove po stavci. Za svaku ocjenu 6–10: osigurano / treba X (Y%) / nedostižno.
+- **Željena ocjena** (`subjects.target_grade`, 6–10, opcionalno) je istaknut red projekcije.
+- **Procjena ocjene iz spremnosti** (Napredak, uz prognozu spremnosti): očekivani procenat na preostalom ispitu = prognozirana pokrivenost obima do datuma ispita × jačina znanja; daje vjerovatnu ocjenu i raspon. Rezultati i `readiness_before` je kalibrišu.
+
+**Željena ocjena kao ulaz u plan** (scheduler, Etapa 8): iz potrebnog prosjeka r na preostalim ispitima predmeta ciljna pokrivenost postaje max(pokrivenost iz prioriteta, min(100%, r + 10 p.p.)). Prioritet ostaje ručan; kad je cilj nedostižan ili r > 90% uz prioritet < 4, kartica prijedloga nudi “Podigni prioritet”. `target_grade` i bodovi ulaze u `input_hash`.
+
+**Gdje se vidi.** Polja bodova, praga i uslova u ExamSheet i DeadlineSheet; popravni ugniježđen ispod svog ispita; sheet “Rezultat” (bodovi ili %, poništi); kartica “Bodovi i ocjena” na Predmetu (imam / treba za željenu ocjenu / skala ocjena ›); kratak pregled po predmetima na Napretku. Mockup predlaže app u stilu postojećih ekrana, prije implementacije.
 
 ## Obim ispita: svi izvori i ručne izmjene
 
@@ -875,7 +972,24 @@ alter table assessment_units
   add column included boolean not null default true,   -- false = "ne ulazi"
   add constraint assessment_units_excluded_by_user check (included or assigned_by = 'user');
 
--- 0005_lecture_logs.sql (Etapa 4)
+-- 0005_calendar_and_lectures.sql (Etapa 4)
+create table academic_periods (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  kind text not null check (kind in ('teaching','partial_exams','exam','holiday')),  -- 0006 spaja partial_exams u exam
+  exam_session text check (exam_session in ('regular','makeup')),   -- samo za kind = 'exam'
+  title text not null,
+  starts_on date not null,
+  ends_on date not null check (ends_on >= starts_on),
+  updated_at timestamptz not null default now(),
+  check ((kind = 'exam') = (exam_session is not null))
+);
+-- + RLS owner_all, grant, set_updated_at triger, indeks (user_id, starts_on)
+alter table timetable_entries
+  add column period_id uuid references academic_periods on delete set null;
+alter table assessments
+  add column exam_period_id uuid references academic_periods on delete set null;  -- "ispit u roku"
+
 create table lecture_logs (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users on delete cascade,
@@ -892,8 +1006,73 @@ create table lecture_logs (
 );
 -- + RLS owner_all, grant, set_updated_at triger, indeks (user_id, subject_id, on_date)
 alter table profiles add column lecture_pace_days smallint not null default 7;
+alter table availability_exceptions
+  add column lecture_log_id uuid references lecture_logs on delete cascade;  -- "Nastava otkazana"
 
--- 0006_manual_blocks.sql (Etapa 6)
+-- 0006_availability_days.sql (Etapa 4, dorada)
+update academic_periods set kind = 'exam', exam_session = 'partial' where kind = 'partial_exams';
+-- kind: ('teaching','exam','holiday'); exam_session: ('partial','regular','makeup')
+alter table availability_rules add column over_classes boolean not null default false;  -- "Učim umjesto nastave"
+alter table profiles add column daily_cap_min smallint[] not null
+  default '{180,180,180,180,180,300,300}';                  -- pon..ned, minute
+create table availability_days (                            -- izmjena za konkretan datum
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  on_date date not null,
+  slots jsonb,                                              -- [{start_min,end_min,over_classes}], null = šablon
+  cap_min smallint,                                         -- null = maksimum iz šablona
+  updated_at timestamptz not null default now(),
+  unique (user_id, on_date)
+);
+-- + RLS, grant, triger; default šablon 06–24 za postojeće korisnike i u handle_new_user()
+
+-- 0007_grades.sql (Etapa 5)
+alter table assessments rename column weight_pct to points_max;   -- nije korištena
+alter table assessments
+  add column points_unit text not null default 'points' check (points_unit in ('points','percent')),
+  add column pass_min_pct numeric check (pass_min_pct between 0 and 100),
+  add column entry_min_points numeric check (entry_min_points >= 0),
+  add column retake_of uuid references assessments on delete cascade,   -- popravni → ispit
+  add column result_annulled boolean not null default false;          -- odricanje
+alter table deadlines
+  add column points_max numeric check (points_max > 0),
+  add column points_unit text not null default 'points' check (points_unit in ('points','percent')),
+  add column pass_min_pct numeric check (pass_min_pct between 0 and 100),
+  add column result_points numeric,
+  add column result_max numeric;
+alter table subjects
+  add column points_total numeric not null default 100 check (points_total > 0),
+  add column grade_scale jsonb,                        -- null = default skala
+  add column target_grade smallint check (target_grade between 6 and 10);
+
+-- 0008_ai_documents.sql (Etapa 6)
+create extension if not exists vector;
+alter type ai_task add value 'parse_academic_calendar';
+alter type ai_task add value 'parse_exam_schedule';
+alter type ai_task add value 'answer';
+create table documents (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  subject_id uuid references subjects on delete set null,      -- null = opći (kalendar, pravilnik)
+  kind text not null check (kind in ('academic_calendar','rules','syllabus','exam_schedule','notice','other')),
+  title text not null,
+  storage_path text,                                           -- uploads/<user_id>/...
+  pages int,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create table document_chunks (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  document_id uuid not null references documents on delete cascade,
+  page int,
+  position int not null,
+  content text not null,
+  embedding vector(384)
+);
+-- + RLS owner_all, grant, HNSW indeks nad embedding, RPC match_document_chunks(query_embedding, k)
+
+-- 0009_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -901,7 +1080,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0007_fsrs.sql (Etapa 7); SM-2 kolone još nisu korištene
+-- 0010_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,
@@ -922,13 +1101,17 @@ alter table review_logs
 
 ## AI integracija
 
-Sedam edge funkcija, sve sa strukturiranim JSON izlazom koji se validira Zod šemom prije snimanja. Uz Claude Haiku 5.5 jedno parsiranje košta otprilike desetinku centa.
+Edge funkcije, sve sa strukturiranim JSON izlazom koji se validira Zod šemom prije snimanja. Uz Claude Haiku 5.5 jedno parsiranje košta otprilike desetinku centa.
 
 | Edge funkcija | Ulaz | Izlaz |
 | --- | --- | --- |
 | `parse-toc` | 1–4 slike ili tekst, tip izvora, predmet, postojeće teme | jedinice, stranice, podjedinice, `ai_difficulty`, teme, upozorenja |
 | `parse-questions` | slika ili tekst liste pitanja, postojeće teme i poglavlja | pitanja, teme, prijedlog ispita |
 | `parse-timetable` | slika rasporeda, nazivi predmeta | termini (dan, vrijeme, tip, sala, parnost), veza na predmet |
+| `parse-academic-calendar` | tekst, slika ili PDF kalendara | periodi: nastava, sedmice parcijalnih, rokovi (redovni/popravni), neradni dani |
+| `parse-exam-schedule` | tekst, slika ili PDF rasporeda ispita, predmeti i postojeći ispiti | ispiti sa datumom, veza na predmet i postojeći ispit |
+| `documents` | PDF/slika/tekst dokumenta | odlomci sa embeddingom (`gte-small`), bez LLM poziva |
+| `answer` | pitanje + najrelevantniji odlomci + sažetak stanja | odgovor sa citatima (dokument, stranica) |
 | `recall-questions` | bilješke ili slika stranice ili naslov + podnaslovi | 3 pitanja sa odgovorima i oznakom izvora |
 | `propose-answer` | ispitno pitanje + bilješke povezanih jedinica | prijedlog odgovora, označen “provjeri” |
 | `quiz` | bilješke jedinice | 5–10 pitanja za kviz ili kartice |
@@ -1142,13 +1325,15 @@ Sve je u prvoj verziji; ovo je samo redoslijed gradnje, tako da poslije svakog k
 1. **Temelj.** Kostur, migracija, login, i18n, deploy, CI.
 2. **Predmeti, ispiti, rokovi, kalendar.** Uključujući prioritet, režim, “samo ako zatreba” i okvirni datum (polja i UI).
 3. **Izvori i jedinice ručno.** Statusi, notes, kartice, progres, teme ručno, obim ispita.
-4. **Raspored nastave i dostupnost.** Plus praćenje predavanja i zaostatak.
-5. **Timer i sesije.** Timer dugme, segmenti, offline red, kraj sesije, kalibracija.
-6. **Scheduler.** `plan()`, `placeTimes()`, granica dana, replan, deficit, prioritet, kampanja, meki rokovi predavanja, ručni blokovi, “Danas” ekran.
-7. **Recall gate, provjera znanja i FSRS.**
-8. **AI.** LLM wrapper, uvoz sadržaja, pitanja, rasporeda, merge pri ponovnom uvozu, recall pitanja.
-9. **Napredak.** Statistika, prognoza spremnosti, rezultat ispita, strategist.
-10. **Notifikacije i dorada.** Web Push, pristupačnost, testovi end-to-end.
+4. **Akademski kalendar, raspored nastave i dostupnost.** Plus praćenje predavanja, zaostatak, granica dana i dnevni prikaz kalendara.
+5. **Bodovi i ocjene.** Bodovi ispita i rokova, pragovi, popravni/integralni, skala ocjena, rezultat i poništavanje, projekcija ocjene.
+6. **AI temelj, uvoz i dokumenti.** LLM wrapper (Gemini za sad), `ai_runs`, uvoz akademskog kalendara i rasporeda ispita sa pregledom, dokumenti fakulteta i RAG.
+7. **Timer i sesije.** Timer dugme, segmenti, offline red, kraj sesije, kalibracija.
+8. **Scheduler.** `plan()`, `placeTimes()`, replan, deficit, prioritet, kampanja, meki rokovi predavanja, ručni blokovi, željena ocjena, “Danas” ekran.
+9. **Recall gate, provjera znanja i FSRS.**
+10. **AI sadržaj i asistent.** Uvoz sadržaja, pitanja i rasporeda nastave, merge pri ponovnom uvozu, recall pitanja, embeddings bilješki, chat asistent.
+11. **Napredak.** Statistika, prognoza spremnosti i procjena ocjene, spremnost dan prije ispita, strategist.
+12. **Notifikacije i dorada.** Web Push, pristupačnost, testovi end-to-end.
 
 Kasnije: read-only demo nalog sa seed podacima za portfolio.
 
@@ -1178,4 +1363,16 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio.
 | Granica dana | 04:00 po zoni korisnika, podesivo |
 | Savjet na “Danas” | Svjež savjet strategista, inače “zašto ovo danas” iz scheduler-a |
 | Timer dugme | Izbor sesije; nastavak ako sesija traje |
-| Raspored nastave | Ručno ili slikom; automatski zauzeto; opcionalni recap 15 min |
+| Raspored nastave | Ručno ili slikom; automatski zauzeto; opcionalni recap 15 min; jedan semestar, parnost od početka semestra |
+| Kalendar prikazi | Mjesec / Dan; nastava samo u listi dana i na vremenskoj osi, ne kao tačkica u mjesecu; tačkice aktivnosti u oba prikaza; tap na termin = detalji |
+| Dostupnost | Default 06–24 + dnevni maksimum (3 h radnim, 5 h vikendom); šablon po danu u sedmici i izmjena po datumu (“samo ovaj dan” / “svaki”); preko nastave uz upozorenje i “Učim umjesto nastave” |
+| Ispitni periodi | Sedmice parcijalnih i ispitni rokovi su jedan tip sa podtipom (parcijale / redovni / popravni) |
+| Zaostatak | U mjeri izvora (str., slajdovi, pitanja), vrijeme sitno ispod |
+| “Dokle ste stigli?” | Samo nakon predavanja; kartica do kraja dana; ostalo ručno na predmetu |
+| Bodovi | Bodovi ili procenti po stavci; zadnji izlazak vrijedi; popravni vezan za ispit, integralni zamjenjuje parcijale; poništavanje = odricanje |
+| Željena ocjena | Podiže ciljnu pokrivenost u `plan()`; prioritet se samo predlaže |
+| Akademski kalendar | Periodi nastave, sedmice parcijalnih, ispitni rokovi, neradni dani; ručno (Etapa 4) i AI uvoz (Etapa 6); bez datuma konkretnih ispita |
+| Ispit bez datuma | Bira se rok iz akademskog kalendara; raspon roka = okvirni raspon ispita |
+| AI provajder za sad | Gemini Flash free tier iza wrappera dok Anthropic nema karticu |
+| Uvoz i asistent | Prvo uvoz sa pregledom (Etapa 6), chat asistent na istim alatima kasnije (Etapa 10); AI nikad ne piše direktno |
+| RAG | Dokumenti fakulteta (čuvaju se) + bilješke i jedinice (embeddings `gte-small`) + sažetak stanja plana |

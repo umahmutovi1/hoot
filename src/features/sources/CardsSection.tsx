@@ -14,7 +14,7 @@ import { cardFormSchema, type CardForm } from './schemas'
 const textArea =
   'resize-none rounded-input border-2 border-transparent bg-canvas p-3.5 text-[15px] leading-normal outline-none focus-visible:border-brand-accent aria-invalid:border-danger'
 
-/** Question–answer cards of a unit (used by the recall gate in Stage 7). */
+/** Question–answer cards of a unit (used by the recall gate in Stage 8). */
 export function CardsSection({ unitId }: { unitId: string }) {
   const { t } = useTranslation()
   const { data: cards = [] } = useCards(unitId)

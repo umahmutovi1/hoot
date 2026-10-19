@@ -54,7 +54,16 @@
       "title": "Znaš li?",
       "source": "Izvor: {{source}}",
       "sourceLabel": "Izvor: {{source}} (otvara se u novom prozoru)"
-    }
+    },
+    "week": {
+      "teaching": "{{week}}. sedmica nastave",
+      "partial": "{{title}}",
+      "exam": "{{title}} · {{week}}. sedmica",
+      "holiday": "Neradni dan · {{title}}"
+    },
+    "planSoonTitle": "Dnevni plan učenja stiže uskoro",
+    "planSoonBody": "Dok ga app ne računa, ovdje su nastava i predavanja za danas. Ispite, izvore i raspored uređuješ na predmetima i u kalendaru.",
+    "todayInCalendar": "Danas u kalendaru"
   },
   "plan": {
     "title": "Plan",
@@ -65,7 +74,7 @@
     "nextMonth": "Sljedeći mjesec",
     "legendExam": "Ispit",
     "legendDeadline": "Rok",
-    "dayEmpty": "Nema ispita ni rokova. Plan učenja dolazi kad dodaš izvore.",
+    "dayEmpty": "Nema ispita, nastave ni rokova. Plan učenja dolazi kad dodaš izvore.",
     "examItem": "Ispit: {{subject}} · {{title}}",
     "deadlineItem": "Rok: {{title}}",
     "deadlineItemSubject": "Rok: {{title}} · {{subject}}",
@@ -83,7 +92,17 @@
       "deadline_one": "{{count}} rok",
       "deadline_few": "{{count}} roka",
       "deadline_other": "{{count}} rokova"
-    }
+    },
+    "view": {
+      "month": "Mjesec",
+      "day": "Dan"
+    },
+    "viewLabel": "Prikaz kalendara",
+    "prevWeek": "Prethodna sedmica",
+    "nextWeek": "Sljedeća sedmica",
+    "cancelled": "otkazano",
+    "noClasses": "Nema nastave ovaj dan.",
+    "timetableButton": "Raspored"
   },
   "subjects": {
     "title": "Predmeti",
@@ -209,7 +228,11 @@
       "rangeBetween": "Moguće između",
       "rangeAnd": "i",
       "rangeEarliest": "Najranije",
-      "rangeLatest": "Najkasnije"
+      "rangeLatest": "Najkasnije",
+      "usePeriodsTitle": "Datumi još nisu poznati?",
+      "usePeriodsBody": "Uzmi rokove iz akademskog kalendara: parcijale dobiju sedmice parcijalnih, završni i popravni svoj rok.",
+      "inPeriod": "u roku: {{title}}",
+      "inPeriodOption": "U roku: {{title}}"
     },
     "detail": {
       "edit": "Uredi predmet",
@@ -246,7 +269,10 @@
     "general": "Opće",
     "language": "Jezik",
     "timezone": "Vremenska zona",
-    "signOut": "Odjava"
+    "signOut": "Odjava",
+    "periodsCount_one": "{{count}} period",
+    "periodsCount_few": "{{count}} perioda",
+    "periodsCount_other": "{{count}} perioda"
   },
   "validation": {
     "required": "Obavezno polje",
@@ -259,11 +285,13 @@
     "rangeOrder": "Najkasniji datum mora biti poslije najranijeg",
     "pageOrder": "Krajnja stranica mora biti poslije početne",
     "outlineEmpty": "Upiši bar jednu jedinicu",
-    "labelTaken": "Ta oznaka već postoji"
+    "labelTaken": "Ta oznaka već postoji",
+    "time": "Neispravno vrijeme",
+    "timeOrder": "Kraj mora biti poslije početka"
   },
   "common": {
     "cancel": "Odustani",
-    "save": "Snimi",
+    "save": "Spasi",
     "close": "Zatvori"
   },
   "profile": {
@@ -272,7 +300,7 @@
     "nameLabel": "Ime",
     "namePlaceholder": "npr. Uma",
     "continue": "Nastavi",
-    "saveFailed": "Snimanje nije uspjelo. Pokušaj ponovo.",
+    "saveFailed": "Spašavanje nije uspjelo. Pokušaj ponovo.",
     "editName": "Promijeni ime"
   },
   "exams": {
@@ -289,7 +317,26 @@
       "makeup": "Popravni",
       "other": "Ostalo"
     },
-    "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum."
+    "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
+    "inPeriod": "U roku",
+    "manualRange": "Ručni raspon",
+    "showInCalendar": "Prikaži u kalendaru",
+    "dateMode": {
+      "label": "Kad je ispit?",
+      "exact": "Tačan datum",
+      "period": "U roku",
+      "range": "Okvirni raspon"
+    },
+    "sources": {
+      "label": "Izvori za ovaj ispit",
+      "none": "Predmet još nema izvora.",
+      "add": "Dodaj izvor",
+      "part": "Dio izvora · Obim ispita",
+      "all": "Cijeli",
+      "none_choice": "Ne ulazi",
+      "hint": "Dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita.",
+      "hintNew": "Nakon spašavanja dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita."
+    }
   },
   "deadlines": {
     "section": "Rokovi",
@@ -568,5 +615,220 @@
     "greenBreak": "Pogled na zelenilo od samo 40 sekundi, i to na slici, pomogao je studentima da zadrže pažnju na dosadnom zadatku.",
     "sleepAfter": "San nekoliko sati nakon učenja pomaže da gradivo ostane. Neprospavana noć poslije učenja kvari pamćenje i nakon nadoknade sna.",
     "wakefulRest": "Deset minuta mirnog odmora (bez telefona i igrica) odmah nakon učenja poboljšalo je pamćenje i sedmicu kasnije."
+  },
+  "weekdays": {
+    "short": {
+      "0": "Pon",
+      "1": "Uto",
+      "2": "Sri",
+      "3": "Čet",
+      "4": "Pet",
+      "5": "Sub",
+      "6": "Ned"
+    },
+    "long": {
+      "0": "ponedjeljak",
+      "1": "utorak",
+      "2": "srijeda",
+      "3": "četvrtak",
+      "4": "petak",
+      "5": "subota",
+      "6": "nedjelja"
+    }
+  },
+  "calendar": {
+    "title": "Akademski kalendar",
+    "heading": "Akademska godina",
+    "intro": "Kad traje nastava, kad su parcijale i ispitni rokovi i koji su dani neradni. Datume pojedinih ispita unosiš na predmetu.",
+    "add": "+ Dodaj",
+    "newTitle": "Novi period",
+    "editTitle": "Uredi period",
+    "kindLabel": "Vrsta",
+    "sessionLabel": "Vrsta perioda",
+    "titleLabel": "Naziv",
+    "from": "Od",
+    "to": "Do",
+    "kind": {
+      "teaching": "Nastava",
+      "exam": "Ispitni period",
+      "holiday": "Neradni dani"
+    },
+    "session": {
+      "partial": "Parcijale",
+      "regular": "Redovni rok",
+      "makeup": "Popravni rok"
+    },
+    "section": {
+      "teaching": "Nastava",
+      "exam": "Ispitni periodi",
+      "holiday": "Neradni dani"
+    },
+    "empty": {
+      "teaching": "Dodaj semestar: od kad do kad traje nastava. Raspored i sedmice nastave se računaju odavde.",
+      "exam": "Nema ispitnih perioda. Dodaj sedmice parcijalnih i ispitne rokove.",
+      "holiday": "Nema neradnih dana."
+    },
+    "hint": {
+      "teaching": "Raspored nastave važi u ovom periodu; 1. sedmica nastave je neparna.",
+      "exam": "Ispit bez datuma može biti „u ovom periodu“; plan cilja prvi dan. Parcijale padaju usred nastave.",
+      "holiday": "Tih dana nema nastave; dostupnost za učenje ostaje."
+    },
+    "defaultTitle": {
+      "winter": "Zimski semestar",
+      "summer": "Ljetni semestar",
+      "exam_regular": "Redovni ispitni rok",
+      "exam_makeup": "Popravni ispitni rok",
+      "holiday": "Neradni dan",
+      "exam_partial": "Sedmica parcijalnih"
+    },
+    "delete": "Obriši period",
+    "confirmDelete": "Sigurno obrisati?"
+  },
+  "timetable": {
+    "title": "Raspored nastave",
+    "heading": "Predavanja i vježbe",
+    "periodLine_one": "{{title}} · važi do {{date}} · {{count}} termin sedmično",
+    "periodLine_few": "{{title}} · važi do {{date}} · {{count}} termina sedmično",
+    "periodLine_other": "{{title}} · važi do {{date}} · {{count}} termina sedmično",
+    "noPeriodTitle": "Prvo dodaj semestar",
+    "noPeriodBody": "U akademskom kalendaru unesi od kad do kad traje nastava.",
+    "add": "Dodaj termin",
+    "newTitle": "Novi termin",
+    "editTitle": "Uredi termin",
+    "dayEmpty": "Nema nastave ovaj dan",
+    "subject": "Predmet",
+    "pickSubject": "Izaberi predmet",
+    "noSubject": "Bez predmeta",
+    "kindLabel": "Tip",
+    "day": "Dan",
+    "start": "Od",
+    "end": "Do",
+    "location": "Sala",
+    "optional": "(opcionalno)",
+    "locationPlaceholder": "npr. S1 · amfiteatar",
+    "weeks": "Sedmice",
+    "period": "Semestar",
+    "kind": {
+      "lecture": "Predavanje",
+      "exercise": "Vježbe",
+      "lab": "Lab",
+      "other": "Ostalo"
+    },
+    "parity": {
+      "all": "Svake sedmice",
+      "odd": "Neparne",
+      "even": "Parne"
+    },
+    "parityShort": {
+      "odd": "neparne sedmice",
+      "even": "parne sedmice"
+    },
+    "howTitle": "Kako plan koristi raspored",
+    "busyTitle": "Termini nastave su zauzeti",
+    "busyHint": "tačno vrijeme termina",
+    "always": "uvijek",
+    "recapTitle": "Kratko ponavljanje nakon predavanja",
+    "recapHint": "15 min istog dana, prvi korak ponavljanja",
+    "delete": "Obriši termin",
+    "confirmDelete": "Sigurno obrisati?"
+  },
+  "availability": {
+    "title": "Dostupnost",
+    "heading": "Kad možeš učiti?",
+    "totalBefore": "Ove sedmice do",
+    "totalAfter": "učenja. Plan nikad ne prelazi slobodne termine ni dnevni maksimum.",
+    "perWeek": "{{hours}} sedmično",
+    "dayLine": "Slobodno {{free}} · najviše {{cap}} učenja",
+    "onlyThisDay": "samo ovaj dan",
+    "editDay": "Uredi dan",
+    "planUses": "Plan može staviti do {{time}} učenja ovaj dan. Nastava je zauzeta sama.",
+    "template": "Sedmični šablon",
+    "templateHint": "Važi svake sedmice, osim dana koje izmijeniš posebno.",
+    "templateFor": "Svaki {{day}}",
+    "freeDay": "bez učenja",
+    "upTo": "do {{time}}",
+    "timetableLine_one": "{{count}} termin sedmično · automatski zauzeto",
+    "timetableLine_few": "{{count}} termina sedmično · automatski zauzeto",
+    "timetableLine_other": "{{count}} termina sedmično · automatski zauzeto",
+    "changedDays": "Izmijenjeni dani",
+    "noStudy": "Bez učenja",
+    "cancelledClass": "Nastava otkazana {{range}}",
+    "sheetSubtitle": "Kad možeš učiti i koliko najviše",
+    "slots": "Slobodni termini",
+    "overlap": "U ovom terminu imaš {{classes}}. Bez prekidača taj dio ostaje zauzet.",
+    "overClasses": "Učim umjesto nastave",
+    "noSlots": "Nema slobodnih termina: taj dan se ne planira učenje.",
+    "addSlot": "Dodaj termin",
+    "cap": "Najviše učenja",
+    "capHint": "Plan nikad ne stavi više od ovoga u jedan dan.",
+    "capLess": "Manje",
+    "capMore": "Više",
+    "hours": "{{h}} h",
+    "applyTo": "Primijeni na",
+    "onlyDay": "Samo {{date}}",
+    "everyWeekday": "Svaki {{day}}",
+    "resetDay": "Vrati na šablon ({{day}})",
+    "deleteSlot": "Ukloni termin",
+    "breakdown": "{{slots}} termina − {{busy}} nastava"
+  },
+  "lectures": {
+    "title": "Dokle ste stigli?",
+    "section": "Predavanja",
+    "timetableLink": "Raspored",
+    "ended": "Predavanje iz predmeta {{subject}} je završilo.",
+    "enter": "Unesi",
+    "context": "{{kind}} · danas {{time}}",
+    "date": "Datum predavanja",
+    "noSources": "Ovaj predmet još nema izvor sa jedinicama. Dodaj izvor da bi bilježila dokle se stiglo.",
+    "hint": "Tapni zadnju jedinicu koja je obrađena.",
+    "coveredUpTo": "Obrađeno do",
+    "note": "Bilješka",
+    "notePlaceholder": "npr. profesor preskočio 5.3, rade se zadaci",
+    "saveUpTo": "Spasi · do {{label}}",
+    "cancelled": "Nastava otkazana",
+    "skip": "Preskoči",
+    "lastTime": "prošli put",
+    "upToHere": "do ovdje",
+    "empty": "Nakon predavanja zabilježi dokle se stiglo, pa app zna koliko kasniš.",
+    "behind": "Kasniš {{amount}}",
+    "upToDate": "U toku si s predavanjima",
+    "add": "Dodaj dokle ste stigli",
+    "chapter": "pogl. {{label}}",
+    "notYet": "još ništa",
+    "atLecture": "Na predavanju:",
+    "you": "Ti:",
+    "barLabel": "Ti si na {{you}}. dijelu, predavanja na {{lecture}}. od {{total}}",
+    "youShort": "Ti · {{n}}",
+    "lectureShort": "Predavanje · {{n}}",
+    "warnLectures_one": "Zaostaješ {{count}} predavanje",
+    "warnLectures_few": "Zaostaješ {{count}} predavanja",
+    "warnLectures_other": "Zaostaješ {{count}} predavanja",
+    "warnBody": "Pređeno na predavanjima, a još nije počelo: {{amount}} (~{{time}}).",
+    "action": {
+      "raise_priority": "Podigni prioritet na {{n}}",
+      "switch_to_regular": "Prebaci na redovno",
+      "take_time_from": "Uzmi vrijeme od drugog predmeta",
+      "start_earlier": "Kreni ranije",
+      "add_minutes": "Dodaj vrijeme dnevno"
+    },
+    "done": {
+      "raise_priority": "Prioritet je sada {{n}}.",
+      "switch_to_regular": "Predmet je sada u redovnom režimu."
+    },
+    "later": "Kasnije",
+    "promptSub": "Dokle ste stigli? · {{time}}",
+    "contextDate": "{{kind}} · {{date}} {{time}}",
+    "behindTime": "~{{time}} učenja"
+  },
+  "classDetail": {
+    "room": "Sala",
+    "weeks": "Sedmice",
+    "period": "Semestar",
+    "cancelled": "Otkazano za ovaj dan",
+    "openSubject": "Otvori predmet",
+    "changeReached": "Promijeni dokle ste stigli",
+    "restore": "Vrati termin",
+    "cancel": "Otkaži za ovaj dan",
+    "edit": "Uredi u rasporedu"
   }
 }

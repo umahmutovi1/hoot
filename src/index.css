@@ -78,6 +78,9 @@
   --color-warning-soft: #fdebd3;
   --color-warning-ink: #5c3208;
   --color-warning-muted: #7a4210;
+  /* Lecture material not started yet (Predmet → Predavanja bar). */
+  --color-behind: #f5c58a;
+  --color-behind-soft: #fbddb5;
 
   --color-danger: #b42318;
 

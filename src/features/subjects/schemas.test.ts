@@ -21,6 +21,7 @@ const subject = (patch: Partial<SubjectForm> = {}): SubjectForm => ({
       contingent: false,
       dateTentative: false,
       dateLatest: null,
+      examPeriodId: null,
     },
   ],
   ...patch,

@@ -5,6 +5,8 @@ import {
   deadlinesAhead,
   deadlinesOn,
   examsOn,
+  hourRange,
+  layoutLanes,
   monthGrid,
   possibleExamsOn,
 } from './calendar'
@@ -66,6 +68,7 @@ describe('day events', () => {
         readiness_before: null,
         result_points: null,
         result_max: null,
+        exam_period_id: null,
         contingent: false,
         date_tentative: false,
         at_latest: null as string | null,
@@ -133,5 +136,33 @@ describe('day events', () => {
     const day = new Date(2026, 9, 19)
     expect(deadlinesOn(day, list).map((d) => d.id)).toEqual(['today'])
     expect(deadlinesAhead(day, list).map((d) => d.id)).toEqual(['today', 'friday'])
+  })
+})
+
+describe('layoutLanes', () => {
+  const at = (id: string, s: number, e: number) => ({ id, startMin: s, endMin: e })
+
+  it('keeps separate items in one lane', () => {
+    const placed = layoutLanes([at('a', 540, 660), at('b', 780, 960)])
+    expect(placed.map((p) => [p.item.id, p.lane, p.lanes])).toEqual([
+      ['a', 0, 1],
+      ['b', 0, 1],
+    ])
+  })
+
+  it('splits overlapping items and reuses a freed lane', () => {
+    const placed = layoutLanes([at('a', 540, 660), at('b', 600, 720), at('c', 660, 700)])
+    expect(placed.map((p) => [p.item.id, p.lane, p.lanes])).toEqual([
+      ['a', 0, 2],
+      ['b', 1, 2],
+      ['c', 0, 2],
+    ])
+  })
+})
+
+describe('hourRange', () => {
+  it('defaults to 08–20 and widens for early or late items', () => {
+    expect(hourRange([])).toEqual([8, 20])
+    expect(hourRange([{ id: 'x', startMin: 7 * 60 + 30, endMin: 21 * 60 + 15 }])).toEqual([7, 22])
   })
 })

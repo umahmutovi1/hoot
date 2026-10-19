@@ -39,6 +39,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      academic_periods: {
+        Row: {
+          created_at: string
+          ends_on: string
+          exam_session: string | null
+          id: string
+          kind: string
+          starts_on: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ends_on: string
+          exam_session?: string | null
+          id?: string
+          kind: string
+          starts_on: string
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          ends_on?: string
+          exam_session?: string | null
+          id?: string
+          kind?: string
+          starts_on?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_runs: {
         Row: {
           cost_usd: number | null
@@ -127,6 +163,7 @@ export type Database = {
           contingent: boolean
           created_at: string
           date_tentative: boolean
+          exam_period_id: string | null
           format: Database["public"]["Enums"]["exam_format"]
           id: string
           kind: Database["public"]["Enums"]["assessment_kind"]
@@ -147,6 +184,7 @@ export type Database = {
           contingent?: boolean
           created_at?: string
           date_tentative?: boolean
+          exam_period_id?: string | null
           format?: Database["public"]["Enums"]["exam_format"]
           id?: string
           kind?: Database["public"]["Enums"]["assessment_kind"]
@@ -167,6 +205,7 @@ export type Database = {
           contingent?: boolean
           created_at?: string
           date_tentative?: boolean
+          exam_period_id?: string | null
           format?: Database["public"]["Enums"]["exam_format"]
           id?: string
           kind?: Database["public"]["Enums"]["assessment_kind"]
@@ -183,6 +222,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "assessments_exam_period_id_fkey"
+            columns: ["exam_period_id"]
+            isOneToOne: false
+            referencedRelation: "academic_periods"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "assessments_subject_id_fkey"
             columns: ["subject_id"]
             isOneToOne: false
@@ -191,11 +237,42 @@ export type Database = {
           },
         ]
       }
+      availability_days: {
+        Row: {
+          cap_min: number | null
+          created_at: string
+          id: string
+          on_date: string
+          slots: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cap_min?: number | null
+          created_at?: string
+          id?: string
+          on_date: string
+          slots?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          cap_min?: number | null
+          created_at?: string
+          id?: string
+          on_date?: string
+          slots?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       availability_exceptions: {
         Row: {
           end_min: number | null
           id: string
           is_busy: boolean
+          lecture_log_id: string | null
           on_date: string
           start_min: number | null
           updated_at: string
@@ -205,6 +282,7 @@ export type Database = {
           end_min?: number | null
           id?: string
           is_busy?: boolean
+          lecture_log_id?: string | null
           on_date: string
           start_min?: number | null
           updated_at?: string
@@ -214,17 +292,27 @@ export type Database = {
           end_min?: number | null
           id?: string
           is_busy?: boolean
+          lecture_log_id?: string | null
           on_date?: string
           start_min?: number | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "availability_exceptions_lecture_log_id_fkey"
+            columns: ["lecture_log_id"]
+            isOneToOne: false
+            referencedRelation: "lecture_logs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       availability_rules: {
         Row: {
           end_min: number
           id: string
+          over_classes: boolean
           start_min: number
           updated_at: string
           user_id: string
@@ -233,6 +321,7 @@ export type Database = {
         Insert: {
           end_min: number
           id?: string
+          over_classes?: boolean
           start_min: number
           updated_at?: string
           user_id?: string
@@ -241,6 +330,7 @@ export type Database = {
         Update: {
           end_min?: number
           id?: string
+          over_classes?: boolean
           start_min?: number
           updated_at?: string
           user_id?: string
@@ -338,6 +428,77 @@ export type Database = {
             columns: ["subject_id"]
             isOneToOne: false
             referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lecture_logs: {
+        Row: {
+          cancelled: boolean
+          created_at: string
+          id: string
+          note: string | null
+          on_date: string
+          source_id: string | null
+          subject_id: string
+          timetable_entry_id: string | null
+          up_to_unit_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancelled?: boolean
+          created_at?: string
+          id?: string
+          note?: string | null
+          on_date: string
+          source_id?: string | null
+          subject_id: string
+          timetable_entry_id?: string | null
+          up_to_unit_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          cancelled?: boolean
+          created_at?: string
+          id?: string
+          note?: string | null
+          on_date?: string
+          source_id?: string | null
+          subject_id?: string
+          timetable_entry_id?: string | null
+          up_to_unit_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lecture_logs_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lecture_logs_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lecture_logs_timetable_entry_id_fkey"
+            columns: ["timetable_entry_id"]
+            isOneToOne: false
+            referencedRelation: "timetable_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lecture_logs_up_to_unit_id_fkey"
+            columns: ["up_to_unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
             referencedColumns: ["id"]
           },
         ]
@@ -498,9 +659,11 @@ export type Database = {
         Row: {
           buffer_days: number
           created_at: string
+          daily_cap_min: number[]
           day_start_min: number
           display_name: string | null
           id: string
+          lecture_pace_days: number
           locale: string
           max_subjects_per_day: number
           min_block_minutes: number
@@ -514,9 +677,11 @@ export type Database = {
         Insert: {
           buffer_days?: number
           created_at?: string
+          daily_cap_min?: number[]
           day_start_min?: number
           display_name?: string | null
           id: string
+          lecture_pace_days?: number
           locale?: string
           max_subjects_per_day?: number
           min_block_minutes?: number
@@ -530,9 +695,11 @@ export type Database = {
         Update: {
           buffer_days?: number
           created_at?: string
+          daily_cap_min?: number[]
           day_start_min?: number
           display_name?: string | null
           id?: string
+          lecture_pace_days?: number
           locale?: string
           max_subjects_per_day?: number
           min_block_minutes?: number
@@ -869,6 +1036,7 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["class_kind"]
           location: string | null
+          period_id: string | null
           start_min: number
           subject_id: string | null
           updated_at: string
@@ -883,6 +1051,7 @@ export type Database = {
           id?: string
           kind: Database["public"]["Enums"]["class_kind"]
           location?: string | null
+          period_id?: string | null
           start_min: number
           subject_id?: string | null
           updated_at?: string
@@ -897,6 +1066,7 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["class_kind"]
           location?: string | null
+          period_id?: string | null
           start_min?: number
           subject_id?: string | null
           updated_at?: string
@@ -907,6 +1077,13 @@ export type Database = {
           weekday?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "timetable_entries_period_id_fkey"
+            columns: ["period_id"]
+            isOneToOne: false
+            referencedRelation: "academic_periods"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "timetable_entries_subject_id_fkey"
             columns: ["subject_id"]

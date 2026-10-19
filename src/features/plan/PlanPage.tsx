@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { CapIcon, ClockIcon } from '@/components/icons'
 import { Mascot } from '@/components/Mascot'
 import { PageTitle } from '@/components/PageTitle'
 import { cn } from '@/lib/utils'
@@ -14,7 +15,28 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <PageTitle>{t('plan.title')}</PageTitle>
+      <PageTitle
+        action={
+          <div className="flex gap-1.5">
+            <Link
+              to="/plan/timetable"
+              className="flex h-11 items-center gap-1.5 rounded-full bg-surface px-3.5 text-sm font-semibold"
+            >
+              <CapIcon size={18} className="text-brand" />
+              {t('plan.timetableButton')}
+            </Link>
+            <Link
+              to="/plan/availability"
+              className="flex h-11 items-center gap-1.5 rounded-full bg-surface px-3.5 text-sm font-semibold"
+            >
+              <ClockIcon size={18} className="text-brand" />
+              {t('availability.title')}
+            </Link>
+          </div>
+        }
+      >
+        {t('plan.title')}
+      </PageTitle>
       <div role="tablist" className="flex rounded-[22px] bg-track p-1">
         {tabs.map((item) => (
           <NavLink

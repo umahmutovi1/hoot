@@ -37,6 +37,7 @@ export function toAssessmentRow(
     contingent: form.contingent,
     date_tentative: form.dateTentative,
     at_latest: form.dateTentative && form.dateLatest ? examAtFromDate(form.dateLatest) : null,
+    exam_period_id: form.dateTentative ? form.examPeriodId : null,
   }
 }
 
@@ -63,6 +64,7 @@ export function assessmentToForm(a: Assessment): AssessmentForm {
     contingent: a.contingent,
     dateTentative: a.date_tentative,
     dateLatest: a.at_latest ? localDateOf(a.at_latest) : null,
+    examPeriodId: a.exam_period_id,
   }
 }
 

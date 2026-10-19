@@ -1,8 +1,10 @@
+import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
 import type { Locale } from '@/lib/locale'
+import { DEFAULT_BOUNDARY, type DayBoundary } from '@/lib/day'
 import { useAuth } from '@/features/auth/auth-context'
 
 export type Profile = Tables<'profiles'>
@@ -21,6 +23,14 @@ export function useProfile() {
       return data
     },
   })
+}
+
+/** Day boundary from the profile (defaults until it loads): 04:00 in the user's zone. */
+export function useDayBoundary(): DayBoundary {
+  const { data: profile } = useProfile()
+  const timeZone = profile?.timezone ?? DEFAULT_BOUNDARY.timeZone
+  const dayStartMin = profile?.day_start_min ?? DEFAULT_BOUNDARY.dayStartMin
+  return useMemo(() => ({ timeZone, dayStartMin }), [timeZone, dayStartMin])
 }
 
 export function useUpdateLocale() {
@@ -63,6 +73,27 @@ export function useUpdateDisplayName() {
         old
           ? { ...old, display_name: displayName, name_confirmed_at: new Date().toISOString() }
           : old,
+      )
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: profileKey(userId) }),
+  })
+}
+
+/** Partial update of profile settings (recap after lecture, pace days, …). */
+export function useUpdateProfile() {
+  const { session } = useAuth()
+  const userId = session?.user.id
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (
+      patch: Partial<Pick<Profile, 'recap_after_lecture' | 'lecture_pace_days' | 'daily_cap_min'>>,
+    ) => {
+      const { error } = await supabase.from('profiles').update(patch).eq('id', userId!)
+      if (error) throw error
+    },
+    onMutate: (patch) => {
+      queryClient.setQueryData<Profile>(profileKey(userId), (old) =>
+        old ? { ...old, ...patch } : old,
       )
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: profileKey(userId) }),

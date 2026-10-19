@@ -6,7 +6,7 @@ import type { Assessment, Deadline, Subject, SubjectWithAssessments } from './mo
 import type { AssessmentForm, DeadlineForm, SubjectForm } from './schemas'
 
 // IDs come from the client (crypto.randomUUID()), so every write is an idempotent upsert.
-// The offline queue (Stage 5) will wrap these same writes.
+// The offline queue (Stage 6) will wrap these same writes.
 
 export const subjectsKey = (userId: string | undefined) => ['subjects', userId] as const
 export const deadlinesKey = (userId: string | undefined) => ['deadlines', userId] as const
@@ -125,6 +125,7 @@ function optimisticAssessment(userId: string, subjectId: string, form: Assessmen
     readiness_before: null,
     result_points: null,
     result_max: null,
+    exam_period_id: row.exam_period_id ?? null,
   }
 }
 
