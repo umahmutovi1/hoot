@@ -73,17 +73,19 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [x] Resend SMTP + šablon emaila sa kodom, da login radi u instaliranoj PWA ([SETUP.md](SETUP.md#3-resend-smtp-kod-za-prijavu-u-emailu))
 - [ ] Ime korisnika: `profiles.display_name` se sad uzima iz dijela emaila prije `@`. Dodati pitanje „Kako da te zovem?" pri prvom ulasku i izmjenu imena u Postavkama (profilna kartica)
 - [ ] Predmeti (lista), NoviPredmet (naziv, boja, preset ispita, datum i format; < 30 s), Predmet (detalji)
-- [ ] CRUD ispita i rokova (procjena sati opcionalna)
+- [ ] Migracija `0002_subject_priority.sql` (PRD „Kasnije migracije“), regenerisan `database.ts`
+- [ ] Prioritet 1–5 i režim redovno/kampanja: sklopljeno „Napredno“ na NoviPredmet (defaulti 3 / redovno), čipovi + izmjena na Predmetu, ručni start kampanje. Efekat na plan dolazi u Etapi 6
+- [ ] CRUD ispita i rokova (procjena sati opcionalna); ispit „samo ako zatreba“ i „okvirni datum“
 - [ ] Plan tab: FullCalendar mjesečni prikaz ispita i rokova
 - [ ] Query hookovi po featureu (`src/features/subjects/api.ts`), optimistični update
-- [ ] Testovi: Zod šeme formi, preset → lista ispita
+- [ ] Testovi: Zod šeme formi (uključujući prioritet, režim, okvirni datum), preset → lista ispita (integralni i popravni su „samo ako zatreba“)
 - **DoD** → `v0.2.0`
 
 ## Etapa 3 — Izvori i jedinice ručno
 
 - [ ] Izvor (tipovi knjiga/skripta/pitanja/prezentacije/ostalo), lista jedinica, podjedinice
 - [ ] Ručni unos „jedna linija po jedinici" — parser u `src/lib/` + testovi (isti parser kasnije koristi AI uvoz)
-- [ ] Jedinica: level, markdown bilješke, odgovor (pitanja), kartice, teme ručno
+- [ ] Jedinica: level, markdown bilješke (`react-markdown` + `remark-math` + `rehype-katex`), odgovor (pitanja), kartice, teme ručno
 - [ ] `src/lib/progress/` — formule progresa jedinice, izvora, predmeta, ispita + testovi
 - [ ] `src/lib/estimates/` — heuristika po tipu, AI množitelj težine, korekcija ocjenom + testovi
 - [ ] ObimIspita ručno (`assessment_units`, `assigned_by = 'user'`)
@@ -96,6 +98,11 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] Dostupnost: sedmična pravila + izuzeci po danu
 - [ ] Termini nastave u kalendaru
 - [ ] `src/lib/day.ts`: granica dana (04:00, timezone), lokalni datumi + testovi
+- [ ] Migracija `0003_lecture_logs.sql`, regenerisan `database.ts`
+- [ ] DokleSmoStigli sheet: izbor izvora i jedinice „do ovdje“, bilješka, „Nastava otkazana“ (pravi izuzetak dostupnosti), „Preskoči“
+- [ ] Kartica „Dokle ste stigli?“ na Danas nakon završenog termina; ručni unos sa datumom na Predmetu
+- [ ] `src/lib/pace/`: pređene jedinice, zaostatak u minutama, pravila prijedloga (prag > 2 predavanja ili > 4 h) + testovi
+- [ ] Kartica „Predavanja“ na Predmetu (na predavanju / ti / kasniš)
 - **DoD** → `v0.4.0`
 
 ## Etapa 5 — Timer i sesije
@@ -113,7 +120,11 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 - [ ] `plan(state)` u `src/lib/scheduler/`: kapacitet, ponavljanja, preostali rad po cilju, buffer, hitnost, redoslijed, tipovi blokova, dijeljenje dugih jedinica, deficit, „zašto ovo danas"
 - [ ] `placeTimes()` za Satnicu
-- [ ] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost
+- [ ] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina, ručni override i „Počni odmah“, privremeno pojačanje prioriteta („Uzmi vrijeme od …“ sa izračunatom razlikom plana), meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, novi razlozi „zašto ovo danas“
+- [ ] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan
+- [ ] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, ručni blokovi se ne mijenjaju, isti ulaz = isti plan
+- [ ] Migracija `0004_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
+- [ ] Kartice prijedloga (zaostatak, deficit, najava kampanje 3 dana prije) na Danas i Predmetu; jedan tap mijenja ulaz → replan
 - [ ] `input_hash`, upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [ ] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno")
 - [ ] Replan sheet: deficit + 3 opcije
@@ -121,41 +132,47 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] Danas ekran (fokus bar, Sljedeći blok, lista, 3 ispita, savjet) i Satnica tab
 - **DoD** → `v0.6.0`
 
-## Etapa 7 — Recall gate i spaced repetition
+## Etapa 7 — Recall gate, provjera znanja i FSRS
 
-- [ ] Maskota: `celebrating-head` uz potvrdu „Sjećam se"
+- [ ] Maskota: `celebrating-head` uz potvrdu „Sjećam se", `celebrating` 120 px na sažetku ProvjeraZnanja
 - [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2
-- [ ] `src/lib/srs/`: SM-2 varijanta, lični množitelj, ograničenje na datum ispita + testovi
-- [ ] `review_logs`, prelaz na level 2/3, review i recap blokovi u scheduleru
+- [ ] Migracija `0005_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
+- [ ] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu, `next_review_on`, ograničenje na datum ispita, level 3 nakon 4 uspjeha + testovi
+- [ ] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
+- [ ] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje
+- [ ] `review_logs` (proteklo dana, stabilnost prije/poslije), prelaz na level 2/3, review i recap blokovi u scheduleru, dnevni limit ponavljanja (`review_cap_pct`), prije starta kampanje samo ponavljanja već naučenog
+- [ ] ProvjeraZnanja: review blok kao niz recall gate-ova + sažetak promjene jačine; kartica „Znanje slabi“ na Danas; kartica „Jačina znanja“ na Predmetu
 - **DoD** → `v0.7.0`
 
 ## Etapa 8 — AI
 
-- [ ] `supabase/functions/_shared/`: `llm.ts`, `providers/anthropic.ts` (tool use), `schemas.ts`, `prices.ts`, `cors.ts`
+- [ ] `supabase/functions/_shared/`: `llm.ts`, `providers/anthropic.ts` (structured outputs: `zodOutputFormat()` + `messages.parse()`), `schemas.ts` (bez rekurzivnih šema), `prices.ts`, `cors.ts`; prompt caching za sistemske promptove
 - [ ] Logiranje u `ai_runs`, rate limit 30 poziva/dan, jedan retry na Zod grešku
 - [ ] `ANTHROPIC_API_KEY`, `LLM_PROVIDER`, `LLM_MODEL` kao Supabase secrets
-- [ ] `src/lib/image.ts` (1600 px), privatni bucket `uploads` + politika vlastitog foldera, brisanje nakon parsiranja
+- [ ] `src/lib/image.ts` (1600 px, `browser-image-compression`), privatni bucket `uploads` + politika vlastitog foldera, brisanje nakon parsiranja
+- [ ] Embeddings: pgvector + ugrađeni `gte-small` (`Supabase.ai.Session`) za jedinice, pitanja i teme; prijedlog veza pitanje ↔ poglavlje i dedupe tema bez LLM poziva
+- [ ] `evals/` sa `promptfoo`: fiksne slike sadržaja i rasporeda, provjera Zod šeme i očekivanog broja jedinica
 - [ ] `parse-toc` → DodajIzvor → Parsiranje (pregled: novo / izmijenjeno / arhivira se)
 - [ ] Merge po `label` + testovi
 - [ ] `parse-questions`, teme pri uvozu (postojeće teme u promptu, ručne se ne prepisuju)
 - [ ] ObimIspita: AI prijedlog, ručna izmjena zaključana
-- [ ] `parse-timetable`, `recall-questions`, `propose-answer`, `quiz`
+- [ ] `parse-timetable` (uparivanje predmeta preko `fuse.js`), `recall-questions`, `propose-answer`, `quiz`
 - [ ] AI dugmad onemogućena offline
 - **DoD** → `v0.8.0`
 
 ## Etapa 9 — Napredak
 
-- [ ] Progres po izvoru, ispitu, predmetu i temi
+- [ ] Progres po izvoru, ispitu, predmetu i temi; jačina po temama (`recharts`)
 - [ ] Statistika: sati vs plan, ispunjenost, fokus, efikasnost po dobu dana (SQL view / RPC)
 - [ ] Prognoza spremnosti na Danas i Napredak
 - [ ] Rezultat ispita + spremnost dan prije; `celebrating` 120 px u toastu/modalu za položen ispit
 - [ ] Maskota: `reading-head` 52 px kao avatar strategista (Danas savjet, Napredak sedmični pregled)
-- [ ] `strategist` edge funkcija (sedmično / na dugme), odobravanje akcija jednim tapom → replan
+- [ ] `strategist` edge funkcija (sedmično / na dugme), odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`; zaostatak po predavanjima i jačina po temama u ulazu
 - **DoD** → `v0.9.0`
 
 ## Etapa 10 — Notifikacije i dorada
 
-- [ ] Web Push: service worker; ikone notifikacija `celebrating-head` / `timer-head`, `notify` edge funkcija, `pg_cron` (prvi blok, propušten blok, ponavljanje)
+- [ ] Web Push: service worker; ikone notifikacija `celebrating-head` / `timer-head`, `notify` edge funkcija, `pg_cron` (prvi blok, propušten blok, ponavljanje, „Dokle ste stigli?“ nakon termina, kampanja počinje za 3 dana)
 - [ ] Postavke kompletne (plan, timer, jezik, potrošnja AI iz `ai_runs`)
 - [ ] Pristupačnost: touch ≥ 44 px, kontrast, aria, fokus
 - [ ] Playwright E2E: novi predmet, dodaj izvor, sesija, replan
@@ -166,6 +183,9 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 ## Kasnije
 
 - Read-only demo nalog sa seed podacima za portfolio.
+- Lični FSRS parametri (`@open-spaced-repetition/binding` optimizer) kad bude ~100+ ponavljanja u `review_logs`.
+- Prijedlog obima parcijale iz onoga što je pređeno na predavanjima do datuma parcijale.
+- Strategist kroz Message Batches API (−50%) kad bude više korisnika.
 - Admin pregled (read-only): oznaka `role: admin` u `app_metadata`, funkcija `is_admin()` i dodatna `select` RLS politika po tabeli, ekran `/admin`.
 - Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#5-otvaranje-aplikacije-za-više-korisnika)).
 
