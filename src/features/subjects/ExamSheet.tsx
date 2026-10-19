@@ -10,7 +10,7 @@ import { validationKey } from '@/lib/validation'
 import { useDeleteAssessment, useSaveAssessment } from './api'
 import { ChipGroup, fieldInput, fieldLabel } from './fields'
 import { assessmentToForm } from './mappers'
-import { ASSESSMENT_KINDS, EXAM_FORMATS, type Assessment } from './model'
+import { ASSESSMENT_KINDS, EXAM_FORMATS, examKindDefaults, type Assessment } from './model'
 import { assessmentFormSchema, type AssessmentForm } from './schemas'
 
 interface ExamSheetProps {
@@ -57,8 +57,7 @@ function ExamForm({
           title: '',
           date: '',
           format: 'written',
-          scopeAll: true,
-          contingent: false,
+          ...examKindDefaults('final'),
           dateTentative: false,
           dateLatest: null,
         },
@@ -76,13 +75,16 @@ function ExamForm({
   })
 
   const pickKind = (k: AssessmentForm['kind']) => {
+    const previous = form.getValues('kind')
     form.setValue('kind', k, set)
-    // Integral and makeup exams usually cover everything and are only taken if needed.
-    if (k === 'integral' || k === 'makeup') {
-      form.setValue('scopeAll', true, set)
-      form.setValue('contingent', true, set)
+    const defaults = examKindDefaults(k)
+    form.setValue('scopeAll', defaults.scopeAll, set)
+    form.setValue('contingent', defaults.contingent, set)
+    // Follow the type in the name until the user writes their own.
+    const title = form.getValues('title').trim()
+    if (!title || title === t(`exams.kind.${previous}`)) {
+      form.setValue('title', t(`exams.kind.${k}`), set)
     }
-    if (!form.getValues('title')) form.setValue('title', t(`exams.kind.${k}`), set)
   }
 
   return (
