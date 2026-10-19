@@ -125,6 +125,7 @@ function optimisticAssessment(userId: string, subjectId: string, form: Assessmen
     readiness_before: null,
     result_points: null,
     result_max: null,
+    exam_period_id: null,
   }
 }
 
