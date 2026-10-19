@@ -109,3 +109,44 @@ export const ChevronRightIcon = (p: IconProps) => (
     <path d="M9 5l7 7-7 7" />
   </Icon>
 )
+
+export const CameraIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+    <circle cx="12" cy="13" r="3.5" />
+  </Icon>
+)
+
+export const SparkleIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+  </Icon>
+)
+
+export const WarningIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3l10 18H2z" />
+    <path d="M12 10v4M12 17h.01" />
+  </Icon>
+)
+
+export const MoreIcon = ({ size = 20, ...props }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+    {...props}
+  >
+    <circle cx="5" cy="12" r="1.8" />
+    <circle cx="12" cy="12" r="1.8" />
+    <circle cx="19" cy="12" r="1.8" />
+  </svg>
+)
+
+export const CheckIcon = (p: IconProps) => (
+  <Icon strokeWidth={2.2} {...p}>
+    <path d="M5 12l5 5 9-10" />
+  </Icon>
+)

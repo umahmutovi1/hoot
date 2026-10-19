@@ -49,7 +49,12 @@
     "addSubject": "Add subject",
     "firstRunMascotAlt": "Owl reading a book",
     "firstRunTitle": "Let's build your plan",
-    "firstRunBody": "Add your first subject and exam date. You can photograph your reading list now or later."
+    "firstRunBody": "Add your first subject and exam date. You can photograph your reading list now or later.",
+    "fact": {
+      "title": "Did you know?",
+      "source": "Source: {{source}}",
+      "sourceLabel": "Source: {{source}} (opens in a new window)"
+    }
   },
   "plan": {
     "title": "Plan",
@@ -67,7 +72,15 @@
     "addDeadline": "Add deadline",
     "legendPossibleExam": "Possible exam",
     "possibleExamItem": "Possible exam: {{subject}} · {{title}}",
-    "possibleExamRange": "date not announced · {{range}}"
+    "possibleExamRange": "date not announced · {{range}}",
+    "dayCount": {
+      "exam_one": "{{count}} exam",
+      "exam_other": "{{count}} exams",
+      "possible_one": "{{count}} possible exam",
+      "possible_other": "{{count}} possible exams",
+      "deadline_one": "{{count}} deadline",
+      "deadline_other": "{{count}} deadlines"
+    }
   },
   "subjects": {
     "title": "Subjects",
@@ -238,7 +251,10 @@
     "tooLarge": "Value too large",
     "campaignStartOnlyForCampaign": "Start date is only set in campaign mode",
     "rangeEnd": "Enter the latest possible date",
-    "rangeOrder": "The latest date must be after the earliest"
+    "rangeOrder": "The latest date must be after the earliest",
+    "pageOrder": "The end page must come after the start page",
+    "outlineEmpty": "Enter at least one unit",
+    "labelTaken": "That label already exists"
   },
   "common": {
     "cancel": "Cancel",
@@ -298,5 +314,248 @@
     "doneShort": "done",
     "delete": "Delete deadline",
     "confirmDelete": "Sure? Tap again to delete"
+  },
+  "sources": {
+    "editor": {
+      "newTitle": "New source",
+      "editTitle": "Edit contents",
+      "kind": "Source type",
+      "measure": "Measured in",
+      "measureOption": {
+        "pages": "Pages",
+        "items": "Units"
+      },
+      "minutesPerItem": "How many minutes per unit?",
+      "minutesPerItemHint": "A starting estimate. Once you use the timer, the app learns your time for this exact source.",
+      "title": "Title",
+      "titlePlaceholder": "e.g. Oppenheim — Signals & Systems",
+      "mode": {
+        "photo": "Photograph contents",
+        "text": "Type"
+      },
+      "photoSoon": "Photo import is coming soon",
+      "photoSoonBody": "For now, type or paste the contents, one line per unit.",
+      "outline": "Contents",
+      "placeholder": {
+        "pages": "One chapter per line, e.g.\n1 Introduction 1\n2 LTI systems 74\n2.1 Convolution 75",
+        "slides": "One deck per line, e.g.\nL1 Introduction 34\nL2 Convolution 1-28",
+        "questions": "One question per line, e.g.\n1. List the properties of LTI systems\n2. Compute the convolution x[n] * h[n]",
+        "items": "One unit per line, e.g.\n1 Workbook, exercise 1\n2 Lab exercise 1"
+      },
+      "hint": {
+        "pages": "The number at the end is the start page (the end is the next start − 1); 20-35 is a range. 2.1 is a sub-chapter of 2.",
+        "slides": "The number at the end is the slide count; 1-28 is a slide range.",
+        "questions": "The whole line is the question; a leading number becomes the label (P1, P2 …).",
+        "items": "The whole line is one unit; a leading number is the label."
+      },
+      "review": "Review units",
+      "delete": "Delete source",
+      "confirmDelete": "Sure? Units and notes are deleted too. Tap again"
+    },
+    "section": "Sources",
+    "add": "+ Source",
+    "none": "No sources yet. Add a book, script, exam questions or slides.",
+    "kind": {
+      "book": "Book",
+      "script": "Script",
+      "questions": "Questions",
+      "slides": "Slides",
+      "other": "Other"
+    },
+    "kindUnit": {
+      "book": "pages",
+      "script": "pages",
+      "questions": "list",
+      "slides": "slides",
+      "other": "anything"
+    },
+    "amount": {
+      "pages_one": "{{count}} page",
+      "pages_other": "{{count}} pages",
+      "slides_one": "{{count}} slide",
+      "slides_other": "{{count}} slides",
+      "questions_one": "{{count}} question",
+      "questions_other": "{{count}} questions",
+      "items_one": "{{count}} unit",
+      "items_other": "{{count}} units"
+    },
+    "pagesRange": "p. {{range}}",
+    "slidesRange": "slides {{range}}",
+    "review": {
+      "title": "Review units",
+      "add": "+ Add",
+      "summary_one": "{{count}} unit",
+      "summary_other": "{{count}} units",
+      "estimate": "Estimate ~{{time}} · tap the dots to change difficulty",
+      "warning": {
+        "missingAmount": "The end of {{labels}} is unknown, so the average of the others is used. Add a range, e.g. 654-730.",
+        "pageOrder": "For {{labels}} the end comes before the start. Fix the range.",
+        "duplicateLabel": "Duplicate labels were renamed: {{labels}}."
+      },
+      "empty": "No units. Add some or go back to the text.",
+      "status": {
+        "new": "new",
+        "changed": "changed",
+        "unchanged": "unchanged",
+        "restored": "restored"
+      },
+      "difficulty": "Difficulty {{d}} of 5, tap to change",
+      "remove": "Remove {{label}}",
+      "archiving": "Archived ({{count}})",
+      "archivingHint": "Progress and notes stay; restore them from “Archived units”.",
+      "unknownAmount": "size unknown",
+      "saveAndSplit": "Save and split by exam"
+    },
+    "detail": {
+      "editContent": "Edit contents",
+      "done": "done",
+      "remaining": "left",
+      "rate": {
+        "pages": "min/page · estimate",
+        "slides": "min/slide · estimate",
+        "questions": "min/question · estimate",
+        "items": "min/unit · estimate"
+      },
+      "empty": "No units yet. Add them with “Edit contents”.",
+      "difficulty": "difficulty {{d}}",
+      "archived": "Archived units ({{count}})",
+      "restore": "Restore",
+      "filter": "Filter by exam",
+      "all": "All",
+      "noneInExam": "No unit of this source is in this exam yet. Assign them in “Exam scope”."
+    }
+  },
+  "time": {
+    "minutes": "{{m}} min",
+    "hours": "{{h}}h",
+    "hoursMinutes": "{{h}}h {{m}}"
+  },
+  "units": {
+    "status": {
+      "chapter": {
+        "0": "Not started",
+        "1": "Read",
+        "2": "Understood",
+        "3": "Reviewed"
+      },
+      "question": {
+        "0": "Don't know",
+        "1": "Partly",
+        "3": "Know"
+      }
+    },
+    "sheet": {
+      "newTitle": "New unit",
+      "editTitle": "Edit unit",
+      "label": "Label",
+      "title": "Title",
+      "pageFrom": "From page",
+      "pageTo": "To page",
+      "slideFrom": "From slide",
+      "slideTo": "To slide",
+      "rangeHint": "Without an end, it runs to the start of the next unit."
+    },
+    "detail": {
+      "more": "More options",
+      "archivedBadge": "Archived",
+      "status": "Status",
+      "difficulty": "Difficulty",
+      "yours": "yours · initial: {{prior}}",
+      "prior": "initial estimate",
+      "estimate": "Time estimate",
+      "estimateHint": "from size and difficulty",
+      "topics": "Topics",
+      "addTopic": "Topic",
+      "editTopics": "Edit",
+      "relatedQuestions": "Related exam questions",
+      "relatedChapters": "Related chapters",
+      "answer": "Answer",
+      "noAnswer": "No answer yet. Tap to write one.",
+      "notes": "Notes",
+      "noNotes": "No notes yet. Tap to write some.",
+      "editText": "Edit",
+      "markdownHint": "Markdown: **bold**, - lists, formulas in $…$ or $$…$$.",
+      "edit": "Edit title and pages",
+      "archive": "Archive unit",
+      "restore": "Restore from archive",
+      "archiveHint": "An archived unit is left out of the plan and progress; restore it from the source screen.",
+      "rateTitle": "How hard was it?",
+      "rateBody": "Your rating adjusts the estimate of this source's remaining units. Tap again to remove it.",
+      "easy": "easy",
+      "hard": "very hard",
+      "partOf": "Part of unit {{label}}",
+      "position": {
+        "chapter": "Chapter {{n}} of {{total}}",
+        "question": "Question {{n}} of {{total}}"
+      },
+      "subUnits": "Sub-units",
+      "subUnitsHint": "Status is set on the sub-units; the chapter is computed from them."
+    },
+    "topics": {
+      "title": "Topics",
+      "body": "Topics link this subject's chapters and exam questions.",
+      "new": "New topic",
+      "newPlaceholder": "New topic, e.g. Convolution",
+      "add": "Add topic"
+    },
+    "cards": {
+      "title": "Cards",
+      "add": "+ Card",
+      "none": "No cards. A card is a question and answer for self-testing.",
+      "front": "Question",
+      "back": "Answer",
+      "frontPlaceholder": "e.g. What is Parseval's theorem?",
+      "edit": "Edit",
+      "showBack": "Show answer",
+      "showFront": "Show question",
+      "flipHint": "Tap a card to see the answer.",
+      "newTitle": "New card",
+      "editTitle": "Edit card",
+      "delete": "Delete card",
+      "confirmDelete": "Sure? Tap again to delete"
+    }
+  },
+  "scope": {
+    "title": "Exam scope",
+    "heading": "What goes into which exam?",
+    "lead": "Assign chapters and questions to exams. Your choice is never overwritten, not even by a later AI import.",
+    "noUnits": "Add a source with units first.",
+    "source": "Source",
+    "summary_one": "{{count}} item · ~{{time}}",
+    "summary_other": "{{count}} items · ~{{time}}",
+    "legendAi": "suggestion",
+    "legendUser": "your change",
+    "legendAll": "Comprehensive and final exams cover everything except “Not included”",
+    "tagAi": "AI",
+    "tagUser": "MANUAL",
+    "included": "Included",
+    "excluded": "Not included",
+    "all": "All",
+    "unassigned": "not assigned yet",
+    "unassignedAll": "not assigned · comprehensive / final only",
+    "unitExams": "Exam for {{label}}",
+    "link": "Exam scope"
+  },
+  "facts": {
+    "testingWeek": "A week after studying, students who had tested themselves three times on a text remembered 61% of it; those who had read it four times remembered 40%.",
+    "rereadConfidence": "Students who only reread a text were the most confident they would remember it, and a week later they remembered the least. Feeling that you know is not knowing.",
+    "retrievalConceptMaps": "Recalling material without looking gave better results on a test a week later than drawing concept maps, even though most students expected the opposite.",
+    "interleaving": "When different problem types were mixed, practice went worse (60% vs 89%), but on the test a week later the score was 63% vs 20%.",
+    "spacingSessions": "The same problems split into two sessions a week apart gave 74% on a later test; done in one go, 49%.",
+    "spacingGap": "If the exam is a week away, the best time to review is about 1 to 3 days after first studying. The further away the exam, the longer the gap can be.",
+    "techniquesRanking": "A large review of ten study techniques rated self-testing and spaced practice the most useful, and highlighting and rereading of low use.",
+    "studentsReread": "In one survey, 84% of students said they study by rereading, and only 11% said they test themselves.",
+    "multitasking": "Brief mental blocks when switching between tasks can cost as much as 40% of productive time.",
+    "interruption": "In Gloria Mark's research, interrupted work that was resumed the same day waited on average 23 minutes and 15 seconds, with other tasks in between.",
+    "taskSwitching": "People at work switch activities about every three minutes on average. An uninterrupted session is worth more than you think.",
+    "mindWandering": "Our minds wander in almost half of our waking moments (46.9%), and we are less happy on average when they do.",
+    "notifications": "Just receiving a notification, without looking at the phone, hurt attention on a demanding task almost as much as calling or texting.",
+    "mediaMultitaskers": "People who constantly use several media at once are more easily distracted by irrelevant things and worse at switching between tasks.",
+    "writeWorries": "Ten minutes of writing about worries before an exam improved scores, most of all for students with strong test anxiety.",
+    "hypercorrection": "Errors made with high confidence are easier to fix: when you see the right answer, you remember it better than after a mere guess.",
+    "expectTeach": "When people study expecting to explain the material to someone, they recall more and in a better order, even if they never end up teaching.",
+    "greenBreak": "Looking at greenery for just 40 seconds, even in a picture, helped students keep their attention on a boring task.",
+    "sleepAfter": "Sleeping within a few hours after studying helps the material stick. A sleepless night after learning hurts recall even after catching up on sleep.",
+    "wakefulRest": "Ten minutes of quiet rest (no phone, no games) right after learning improved memory even a week later."
   }
 }

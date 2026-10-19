@@ -168,8 +168,11 @@ Procjena minuta po jedinici kreće od heuristike i AI težine, a zatim je tvoje 
 | Skripta | stranica | 6 |
 | Prezentacije | slajd | 1.5 |
 | Pitanja | pitanje | 8 |
+| Ostalo | stranica, ili jedinica | 4 po stranici; za jedinice korisnik upiše minute po jedinici pri dodavanju izvora (default 30) |
 
-Ovo su pretpostavke za start, ne izmjereni podaci; kalibracija ih brzo zamijeni.
+Ovo su pretpostavke za start, ne izmjereni podaci; kalibracija ih brzo zamijeni. Kalibracija je uvijek po pojedinačnom izvoru (dva izvora tipa “Ostalo” uče svoje brzine odvojeno). Mjera izvora je u `sources.measure` (`pages`, `slides`, `questions`, `items`).
+
+**Ručni unos (“jedna linija po jedinici”).** Parser u `src/lib/outline/` (isti izlaz kao AI uvoz): `<oznaka> <naslov> <stranice>`, npr. `2.1 Konvolucija 75` ili `4 Fourierova transformacija 284-355`. Oznaka je opcionalna; tačke u oznaci prave podjedinice (najviše 3 nivoa). Jedan broj je početna stranica, a kraj je početak sljedeće jedinice − 1; `a-b` je raspon. Kod prezentacija jedan broj je broj slajdova. Kod pitanja i jedinica (“Ostalo”) cijela linija je naslov. Jedinica bez poznatog obima dobije prosjek ostalih i upozorenje. Pregled prije snimanja prikazuje težinu kao 5 tačkica (default 3, tap mijenja); ta početna težina se snima u `ai_difficulty` i koriguje ocjenama isto kao AI težina. U Etapi 8 ručni unos dobija i dugme “Procijeni težinu AI-jem”.
 
 **2. AI težina iz naslova.** Pri uvozu AI dodijeli svakoj jedinici `ai_difficulty` 1–5 na osnovu naslova, predmeta i konteksta susjednih poglavlja. Množitelj: 1 → 0.6, 2 → 0.8, 3 → 1.0, 4 → 1.3, 5 → 1.7.
 
@@ -444,7 +447,7 @@ Tabela `timetable_entries` je u konsolidovanoj migraciji; AI zadatak `parse_time
 
 ## Obim ispita: svi izvori i ručne izmjene
 
-Obim se bira za svaki tip izvora (knjiga, skripta, pitanja, prezentacije, ostalo), jer `assessment_units` već vezuje bilo koju jedinicu. AI predlaže raspodjelu (za pitanja preko tema), a korisnik svaku stavku može prebaciti na I, II, oba ili “ne ulazi”. Ručna izmjena je zaključana: ponovno AI parsiranje je ne mijenja. “Ne ulazi” je red sa `included = false`, pa radi i za ispit sa `scope_all = true` (isto koristi “Izbaci iz plana” pri brisanju bloka).
+Obim se bira za svaki tip izvora (knjiga, skripta, pitanja, prezentacije, ostalo), jer `assessment_units` već vezuje bilo koju jedinicu. AI predlaže raspodjelu (za pitanja preko tema), a korisnik svaku stavku može prebaciti na jedan od ispita bez “cijelo gradivo” (I, II, …), na sve njih (“Sve”, kad ih je bar dva) ili na “ne ulazi”. Ispiti sa `scope_all` (integralni, završni) uvijek obuhvataju sve osim “ne ulazi”. Red na roditelju važi i za podjedinice. Ručna izmjena je zaključana: ponovno AI parsiranje je ne mijenja. “Ne ulazi” je red sa `included = false`, pa radi i za ispit sa `scope_all = true` (isto koristi “Izbaci iz plana” pri brisanju bloka).
 
 Kolona `assessment_units.assigned_by` je u konsolidovanoj migraciji.
 
@@ -864,7 +867,15 @@ alter table assessments
   add constraint assessments_at_latest_check
     check (at_latest is null or (date_tentative and at_latest >= at));
 
--- 0004_lecture_logs.sql (Etapa 4)
+-- 0004_sources_and_scope.sql (Etapa 3)
+alter table sources
+  add column measure text not null default 'pages'
+    check (measure in ('pages','slides','questions','items'));
+alter table assessment_units
+  add column included boolean not null default true,   -- false = "ne ulazi"
+  add constraint assessment_units_excluded_by_user check (included or assigned_by = 'user');
+
+-- 0005_lecture_logs.sql (Etapa 4)
 create table lecture_logs (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users on delete cascade,
@@ -882,17 +893,15 @@ create table lecture_logs (
 -- + RLS owner_all, grant, set_updated_at triger, indeks (user_id, subject_id, on_date)
 alter table profiles add column lecture_pace_days smallint not null default 7;
 
--- 0005_manual_blocks.sql (Etapa 6)
+-- 0006_manual_blocks.sql (Etapa 6)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
   alter column plan_run_id drop not null;
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
-alter table assessment_units
-  add column included boolean not null default true;   -- false = "ne ulazi" (uvijek assigned_by = 'user')
 
--- 0006_fsrs.sql (Etapa 7); SM-2 kolone još nisu korištene
+-- 0007_fsrs.sql (Etapa 7); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,

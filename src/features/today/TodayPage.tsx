@@ -8,6 +8,7 @@ import { useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { greetingPart } from '@/lib/greeting'
 import { dateFnsLocales } from '@/lib/locale'
+import { FactCard } from './FactCard'
 
 // Stage 1 has no subjects yet, so "Today" always shows the first-run state (DanasPrazno).
 export function TodayPage() {
@@ -38,6 +39,10 @@ export function TodayPage() {
           <Link to="/subjects">{t('today.addSubject')}</Link>
         </Button>
       </section>
+
+      <div className="mt-10">
+        <FactCard />
+      </div>
     </div>
   )
 }

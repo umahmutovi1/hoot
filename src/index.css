@@ -65,6 +65,12 @@
   --color-subject-slate-deep: #334155;
   --color-subject-slate-ink: #1e293b;
 
+  /* Unit levels in progress bars (Izvor mockup): 3 brand, 2 brand-accent, 1 below, 0 hairline.
+     Question sources use the blue scale: 3 subject-blue, 1 below, 0 subject-blue-track. */
+  --color-level-1: #c3b9f0;
+  --color-question-1: #9dbdf5;
+  --color-brand-muted: #5b4fa0;
+
   /* Status */
   --color-success: #1f6b5a;
   --color-success-soft: #dcefea;
@@ -73,9 +79,6 @@
   --color-warning-ink: #5c3208;
   --color-warning-muted: #7a4210;
 
-  /* Calendar day highlights (Plan mockup legend) */
-  --color-calendar-exam: #f2b8e8;
-  --color-calendar-deadline: #fbd5a8;
   --color-danger: #b42318;
 
   /* Radii: inputs 18px, cards 24–28px, pills full */
@@ -147,5 +150,35 @@
   }
   input::placeholder {
     @apply text-ink-placeholder;
+  }
+}
+
+/* Rendered Markdown in notes and answers */
+@layer components {
+  .markdown > * + * {
+    @apply mt-1.5;
+  }
+  .markdown strong {
+    @apply font-semibold;
+  }
+  .markdown ul {
+    @apply list-disc pl-5;
+  }
+  .markdown ol {
+    @apply list-decimal pl-5;
+  }
+  .markdown h1,
+  .markdown h2,
+  .markdown h3 {
+    @apply text-[15px] font-semibold;
+  }
+  .markdown code {
+    @apply rounded-[6px] bg-canvas px-1 text-[13px];
+  }
+  .markdown a {
+    @apply text-brand underline;
+  }
+  .markdown .katex-display {
+    @apply overflow-x-auto overflow-y-hidden py-1;
   }
 }

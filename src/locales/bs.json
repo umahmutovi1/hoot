@@ -49,7 +49,12 @@
     "addSubject": "Dodaj predmet",
     "firstRunMascotAlt": "Sova čita knjigu",
     "firstRunTitle": "Hajde da napravimo plan",
-    "firstRunBody": "Dodaj prvi predmet i datum ispita. Literaturu možeš uslikati odmah ili kasnije."
+    "firstRunBody": "Dodaj prvi predmet i datum ispita. Literaturu možeš uslikati odmah ili kasnije.",
+    "fact": {
+      "title": "Znaš li?",
+      "source": "Izvor: {{source}}",
+      "sourceLabel": "Izvor: {{source}} (otvara se u novom prozoru)"
+    }
   },
   "plan": {
     "title": "Plan",
@@ -67,7 +72,18 @@
     "addDeadline": "Dodaj rok",
     "legendPossibleExam": "Mogući ispit",
     "possibleExamItem": "Mogući ispit: {{subject}} · {{title}}",
-    "possibleExamRange": "datum još nije objavljen · {{range}}"
+    "possibleExamRange": "datum još nije objavljen · {{range}}",
+    "dayCount": {
+      "exam_one": "{{count}} ispit",
+      "exam_few": "{{count}} ispita",
+      "exam_other": "{{count}} ispita",
+      "possible_one": "{{count}} mogući ispit",
+      "possible_few": "{{count}} moguća ispita",
+      "possible_other": "{{count}} mogućih ispita",
+      "deadline_one": "{{count}} rok",
+      "deadline_few": "{{count}} roka",
+      "deadline_other": "{{count}} rokova"
+    }
   },
   "subjects": {
     "title": "Predmeti",
@@ -240,7 +256,10 @@
     "tooLarge": "Prevelika vrijednost",
     "campaignStartOnlyForCampaign": "Početak se postavlja samo u kampanji",
     "rangeEnd": "Unesi najkasniji mogući datum",
-    "rangeOrder": "Najkasniji datum mora biti poslije najranijeg"
+    "rangeOrder": "Najkasniji datum mora biti poslije najranijeg",
+    "pageOrder": "Krajnja stranica mora biti poslije početne",
+    "outlineEmpty": "Upiši bar jednu jedinicu",
+    "labelTaken": "Ta oznaka već postoji"
   },
   "common": {
     "cancel": "Odustani",
@@ -300,5 +319,254 @@
     "doneShort": "završeno",
     "delete": "Obriši rok",
     "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
+  },
+  "sources": {
+    "editor": {
+      "newTitle": "Novi izvor",
+      "editTitle": "Uredi sadržaj",
+      "kind": "Tip izvora",
+      "measure": "Mjeri se u",
+      "measureOption": {
+        "pages": "Stranicama",
+        "items": "Jedinicama"
+      },
+      "minutesPerItem": "Koliko minuta treba po jedinici?",
+      "minutesPerItemHint": "Početna procjena. Kad počneš koristiti tajmer, app uči tvoje vrijeme za baš ovaj izvor.",
+      "title": "Naziv",
+      "titlePlaceholder": "npr. Oppenheim — Signals & Systems",
+      "mode": {
+        "photo": "Slikaj sadržaj",
+        "text": "Ukucaj"
+      },
+      "photoSoon": "Uvoz slikom dolazi uskoro",
+      "photoSoonBody": "Za sada ukucaj ili zalijepi sadržaj, jedna linija po jedinici.",
+      "outline": "Sadržaj",
+      "placeholder": {
+        "pages": "Jedno poglavlje po liniji, npr.\n1 Uvod 1\n2 LTI sistemi 74\n2.1 Konvolucija 75",
+        "slides": "Jedna prezentacija po liniji, npr.\nL1 Uvod 34\nL2 Konvolucija 1-28",
+        "questions": "Jedno pitanje po liniji, npr.\n1. Navedi svojstva LTI sistema\n2. Izračunaj konvoluciju x[n] * h[n]",
+        "items": "Jedna jedinica po liniji, npr.\n1 Zbirka, vježba 1\n2 Laboratorijska vježba 1"
+      },
+      "hint": {
+        "pages": "Broj na kraju je početna stranica (kraj je početak sljedeće − 1), a 20-35 je raspon. 2.1 je podpoglavlje od 2.",
+        "slides": "Broj na kraju je broj slajdova, a 1-28 je raspon slajdova.",
+        "questions": "Cijela linija je pitanje; broj na početku postaje oznaka (P1, P2 …).",
+        "items": "Cijela linija je jedna jedinica; broj na početku je oznaka."
+      },
+      "review": "Pregledaj jedinice",
+      "delete": "Obriši izvor",
+      "confirmDelete": "Sigurno? Brišu se i jedinice i bilješke. Tapni ponovo"
+    },
+    "section": "Izvori",
+    "add": "+ Izvor",
+    "none": "Još nema izvora. Dodaj knjigu, skriptu, ispitna pitanja ili prezentacije.",
+    "kind": {
+      "book": "Knjiga",
+      "script": "Skripta",
+      "questions": "Pitanja",
+      "slides": "Prezentacije",
+      "other": "Ostalo"
+    },
+    "kindUnit": {
+      "book": "stranice",
+      "script": "stranice",
+      "questions": "lista",
+      "slides": "slajdovi",
+      "other": "bilo šta"
+    },
+    "amount": {
+      "pages_one": "{{count}} str.",
+      "pages_few": "{{count}} str.",
+      "pages_other": "{{count}} str.",
+      "slides_one": "{{count}} slajd",
+      "slides_few": "{{count}} slajda",
+      "slides_other": "{{count}} slajdova",
+      "questions_one": "{{count}} pitanje",
+      "questions_few": "{{count}} pitanja",
+      "questions_other": "{{count}} pitanja",
+      "items_one": "{{count}} jedinica",
+      "items_few": "{{count}} jedinice",
+      "items_other": "{{count}} jedinica"
+    },
+    "pagesRange": "str. {{range}}",
+    "slidesRange": "slajdovi {{range}}",
+    "review": {
+      "title": "Pregled jedinica",
+      "add": "+ Dodaj",
+      "summary_one": "{{count}} jedinica",
+      "summary_few": "{{count}} jedinice",
+      "summary_other": "{{count}} jedinica",
+      "estimate": "Procjena ~{{time}} · tapni tačkice da promijeniš težinu",
+      "warning": {
+        "missingAmount": "Za {{labels}} nije poznat kraj, pa je uzet prosjek ostalih. Dopiši raspon, npr. 654-730.",
+        "pageOrder": "Kod {{labels}} je kraj prije početka. Ispravi raspon.",
+        "duplicateLabel": "Duple oznake su preimenovane: {{labels}}."
+      },
+      "empty": "Nema jedinica. Dodaj ih ili se vrati na unos.",
+      "status": {
+        "new": "novo",
+        "changed": "izmijenjeno",
+        "unchanged": "bez promjene",
+        "restored": "vraćeno"
+      },
+      "difficulty": "Težina {{d}} od 5, tapni za promjenu",
+      "remove": "Ukloni {{label}}",
+      "archiving": "Arhivira se ({{count}})",
+      "archivingHint": "Napredak i bilješke ostaju; vraćaš ih iz „Arhivirane jedinice”.",
+      "unknownAmount": "obim nepoznat",
+      "saveAndSplit": "Sačuvaj i podijeli po ispitima"
+    },
+    "detail": {
+      "editContent": "Uredi sadržaj",
+      "done": "pređeno",
+      "remaining": "preostalo",
+      "rate": {
+        "pages": "min/str. · procjena",
+        "slides": "min/slajdu · procjena",
+        "questions": "min/pitanju · procjena",
+        "items": "min/jedinici · procjena"
+      },
+      "empty": "Još nema jedinica. Dodaj ih kroz „Uredi sadržaj”.",
+      "difficulty": "težina {{d}}",
+      "archived": "Arhivirane jedinice ({{count}})",
+      "restore": "Vrati",
+      "filter": "Filter po ispitu",
+      "all": "Sve",
+      "noneInExam": "Nijedna jedinica ovog izvora još nije u ovom ispitu. Rasporedi ih u „Obim ispita”."
+    }
+  },
+  "time": {
+    "minutes": "{{m}} min",
+    "hours": "{{h}}h",
+    "hoursMinutes": "{{h}}h {{m}}"
+  },
+  "units": {
+    "status": {
+      "chapter": {
+        "0": "Nije počelo",
+        "1": "Pročitano",
+        "2": "Razumijem",
+        "3": "Ponovljeno"
+      },
+      "question": {
+        "0": "Ne znam",
+        "1": "Djelimično",
+        "3": "Znam"
+      }
+    },
+    "sheet": {
+      "newTitle": "Nova jedinica",
+      "editTitle": "Uredi jedinicu",
+      "label": "Oznaka",
+      "title": "Naslov",
+      "pageFrom": "Od str.",
+      "pageTo": "Do str.",
+      "slideFrom": "Od slajda",
+      "slideTo": "Do slajda",
+      "rangeHint": "Bez kraja se kraj uzima od početka sljedeće jedinice."
+    },
+    "detail": {
+      "more": "Više opcija",
+      "archivedBadge": "Arhivirano",
+      "status": "Status",
+      "difficulty": "Težina",
+      "yours": "tvoja · početna: {{prior}}",
+      "prior": "početna procjena",
+      "estimate": "Procjena vremena",
+      "estimateHint": "iz obima i težine",
+      "topics": "Teme",
+      "addTopic": "Tema",
+      "editTopics": "Uredi",
+      "relatedQuestions": "Povezana ispitna pitanja",
+      "relatedChapters": "Povezana poglavlja",
+      "answer": "Odgovor",
+      "noAnswer": "Još nema odgovora. Tapni da ga upišeš.",
+      "notes": "Bilješke",
+      "noNotes": "Još nema bilješki. Tapni da ih napišeš.",
+      "editText": "Uredi",
+      "markdownHint": "Markdown: **podebljano**, - lista, formule u $…$ ili $$…$$.",
+      "edit": "Uredi naslov i stranice",
+      "archive": "Arhiviraj jedinicu",
+      "restore": "Vrati iz arhive",
+      "archiveHint": "Arhivirana jedinica ne ulazi u plan ni u napredak; vraćaš je sa ekrana izvora.",
+      "rateTitle": "Koliko ti je bilo teško?",
+      "rateBody": "Tvoja ocjena koriguje procjenu preostalih jedinica ovog izvora. Tapni ponovo da je ukloniš.",
+      "easy": "lako",
+      "hard": "jako teško",
+      "partOf": "Dio jedinice {{label}}",
+      "position": {
+        "chapter": "Poglavlje {{n}} od {{total}}",
+        "question": "Pitanje {{n}} od {{total}}"
+      },
+      "subUnits": "Podjedinice",
+      "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih."
+    },
+    "topics": {
+      "title": "Teme",
+      "body": "Teme povezuju poglavlja i ispitna pitanja ovog predmeta.",
+      "new": "Nova tema",
+      "newPlaceholder": "Nova tema, npr. Konvolucija",
+      "add": "Dodaj temu"
+    },
+    "cards": {
+      "title": "Kartice",
+      "add": "+ Kartica",
+      "none": "Nema kartica. Kartica je pitanje i odgovor za samotestiranje.",
+      "front": "Pitanje",
+      "back": "Odgovor",
+      "frontPlaceholder": "npr. Šta je Parsevalova teorema?",
+      "edit": "Uredi",
+      "showBack": "Prikaži odgovor",
+      "showFront": "Prikaži pitanje",
+      "flipHint": "Tapni karticu da vidiš odgovor.",
+      "newTitle": "Nova kartica",
+      "editTitle": "Uredi karticu",
+      "delete": "Obriši karticu",
+      "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
+    }
+  },
+  "scope": {
+    "title": "Obim ispita",
+    "heading": "Šta ulazi u koji ispit?",
+    "lead": "Rasporedi poglavlja i pitanja po ispitima. Tvoj izbor se ne prepisuje ni kasnijim AI uvozom.",
+    "noUnits": "Prvo dodaj izvor sa jedinicama.",
+    "source": "Izvor",
+    "summary_one": "{{count}} stavka · ~{{time}}",
+    "summary_few": "{{count}} stavke · ~{{time}}",
+    "summary_other": "{{count}} stavki · ~{{time}}",
+    "legendAi": "prijedlog",
+    "legendUser": "tvoja izmjena",
+    "legendAll": "Integralni i završni obuhvataju sve osim „Ne ulazi”",
+    "tagAi": "AI",
+    "tagUser": "RUČNO",
+    "included": "Ulazi",
+    "excluded": "Ne ulazi",
+    "all": "Sve",
+    "unassigned": "još nije raspoređeno",
+    "unassignedAll": "nije raspoređeno · samo integralni / završni",
+    "unitExams": "Ispit za {{label}}",
+    "link": "Obim ispita"
+  },
+  "facts": {
+    "testingWeek": "Sedmicu nakon učenja, studenti koji su se tri puta testirali iz teksta sjećali su se 61 % gradiva, a oni koji su ga četiri puta pročitali samo 40 %.",
+    "rereadConfidence": "Studenti koji su tekst samo iznova čitali bili su najsigurniji da će ga zapamtiti, a sedmicu kasnije zapamtili su najmanje. Osjećaj da „znaš” nije isto što i znanje.",
+    "retrievalConceptMaps": "Prisjećanje gradiva bez gledanja dalo je bolji rezultat na testu sedmicu kasnije od pravljenja mapa pojmova, iako je većina studenata očekivala suprotno.",
+    "interleaving": "Kad su se miješali različiti tipovi zadataka, vježba je išla lošije (60 % prema 89 %), ali je na testu sedmicu kasnije rezultat bio 63 % prema 20 %.",
+    "spacingSessions": "Isti zadaci podijeljeni na dvije sesije u razmaku od sedmice dali su 74 % na kasnijem testu, a odrađeni u jednom komadu 49 %.",
+    "spacingGap": "Ako je ispit za sedmicu, najbolje je gradivo ponoviti otprilike 1 do 3 dana nakon prvog učenja. Što je ispit dalje, to razmak smije biti duži.",
+    "techniquesRanking": "Veliki pregled deset tehnika učenja ocijenio je samotestiranje i raspoređeno učenje kao najkorisnije, a podvlačenje i ponovno čitanje kao slabo korisne.",
+    "studentsReread": "U jednoj anketi 84 % studenata reklo je da uči ponovnim čitanjem, a samo 11 % da se samo testira.",
+    "multitasking": "Kratke mentalne blokade pri prebacivanju između zadataka mogu odnijeti i do 40 % produktivnog vremena.",
+    "interruption": "U istraživanju Glorije Mark, prekinut posao koji je nastavljen istog dana čekao je u prosjeku 23 minute i 15 sekundi, uz druge zadatke usput.",
+    "taskSwitching": "Ljudi na poslu mijenjaju aktivnost u prosjeku svake tri minute. Sesija bez prekidanja vrijedi više nego što misliš.",
+    "mindWandering": "Misli nam lutaju u skoro polovini budnih trenutaka (46,9 %), a tada smo u prosjeku i manje sretni.",
+    "notifications": "Samo primanje notifikacije, i bez gledanja u telefon, pokvarilo je pažnju na zahtjevnom zadatku skoro koliko i razgovor ili dopisivanje.",
+    "mediaMultitaskers": "Ljudi koji stalno prate više medija odjednom lakše se ometaju nebitnim stvarima i slabije se prebacuju između zadataka.",
+    "writeWorries": "Deset minuta pisanja o strahovima prije ispita poboljšalo je rezultate, najviše kod studenata s velikom tremom.",
+    "hypercorrection": "Greške napravljene s puno sigurnosti lakše se ispravljaju: kad vidiš tačan odgovor, pamtiš ga bolje nego poslije običnog nagađanja.",
+    "expectTeach": "Kad uče s mišlju da će gradivo nekome objasniti, ljudi se sjećaju više i bolje organizovano, čak i kad na kraju nikome ne predaju.",
+    "greenBreak": "Pogled na zelenilo od samo 40 sekundi, i to na slici, pomogao je studentima da zadrže pažnju na dosadnom zadatku.",
+    "sleepAfter": "San nekoliko sati nakon učenja pomaže da gradivo ostane. Neprospavana noć poslije učenja kvari pamćenje i nakon nadoknade sna.",
+    "wakefulRest": "Deset minuta mirnog odmora (bez telefona i igrica) odmah nakon učenja poboljšalo je pamćenje i sedmicu kasnije."
   }
 }

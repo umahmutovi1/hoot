@@ -84,14 +84,18 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 ## Etapa 3 — Izvori i jedinice ručno
 
-- [ ] Izvor (tipovi knjiga/skripta/pitanja/prezentacije/ostalo), lista jedinica, podjedinice
-- [ ] Ručni unos „jedna linija po jedinici" — parser u `src/lib/` + testovi (isti parser kasnije koristi AI uvoz)
-- [ ] Jedinica: level, markdown bilješke (`react-markdown` + `remark-math` + `rehype-katex`), odgovor (pitanja), kartice, teme ručno
-- [ ] `src/lib/progress/` — formule progresa jedinice, izvora, predmeta, ispita + testovi
-- [ ] `src/lib/estimates/` — heuristika po tipu, AI množitelj težine, korekcija ocjenom + testovi
-- [ ] ObimIspita ručno (`assessment_units`, `assigned_by = 'user'`)
-- [ ] Arhivirane jedinice (prikaz i vraćanje)
+- [x] Izvor (tipovi knjiga/skripta/pitanja/prezentacije/ostalo), lista jedinica, podjedinice
+- [x] Ručni unos „jedna linija po jedinici" — parser u `src/lib/` + testovi (isti parser kasnije koristi AI uvoz)
+- [x] Jedinica: level, markdown bilješke (`react-markdown` + `remark-math` + `rehype-katex`), odgovor (pitanja), kartice, teme ručno
+- [x] `src/lib/progress/` — formule progresa jedinice, izvora, predmeta, ispita + testovi
+- [x] `src/lib/estimates/` — heuristika po tipu, AI množitelj težine, korekcija ocjenom + testovi
+- [x] ObimIspita ručno (`assessment_units`, `assigned_by = 'user'`)
+- [x] Arhivirane jedinice (prikaz i vraćanje)
+- [x] Migracija `0004_sources_and_scope.sql` (`sources.measure`, `assessment_units.included` pomjeren iz Etape 6), regenerisan `database.ts`
+- [x] Danas: kartica „Znaš li?“ — jedna istražena činjenica o učenju dnevno, sa izvorom (link)
 - **DoD** → `v0.3.0`
+
+Odluke Etape 3: statusi 0–3 se do Etape 7 biraju ručno; „Uredi sadržaj“ koristi isti parser i merge po `label` kao kasniji AI uvoz; tip „Ostalo“ mjeri stranice (kao knjiga) ili jedinice sa minutama po jedinici koje korisnik upiše; obim ispita nudi svaki ispit bez „cijelo gradivo“, „Sve“ i „Ne ulazi“.
 
 ## Etapa 4 — Raspored nastave i dostupnost
 
@@ -99,7 +103,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] Dostupnost: sedmična pravila + izuzeci po danu
 - [ ] Termini nastave u kalendaru
 - [ ] `src/lib/day.ts`: granica dana (04:00, timezone), lokalni datumi + testovi
-- [ ] Migracija `0004_lecture_logs.sql`, regenerisan `database.ts`
+- [ ] Migracija `0005_lecture_logs.sql`, regenerisan `database.ts`
 - [ ] DokleSmoStigli sheet: izbor izvora i jedinice „do ovdje“, bilješka, „Nastava otkazana“ (pravi izuzetak dostupnosti), „Preskoči“
 - [ ] Kartica „Dokle ste stigli?“ na Danas nakon završenog termina; ručni unos sa datumom na Predmetu
 - [ ] `src/lib/pace/`: pređene jedinice, zaostatak u minutama, pravila prijedloga (prag > 2 predavanja ili > 4 h) + testovi
@@ -124,7 +128,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina, ručni override i „Počni odmah“, privremeno pojačanje prioriteta („Uzmi vrijeme od …“ sa izračunatom razlikom plana), meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, novi razlozi „zašto ovo danas“
 - [ ] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan
 - [ ] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, ručni blokovi se ne mijenjaju, isti ulaz = isti plan
-- [ ] Migracija `0005_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
+- [ ] Migracija `0006_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
 - [ ] Kartice prijedloga (zaostatak, deficit, najava kampanje 3 dana prije) na Danas i Predmetu; jedan tap mijenja ulaz → replan
 - [ ] `input_hash`, upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [ ] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno")
@@ -137,7 +141,8 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 - [ ] Maskota: `celebrating-head` uz potvrdu „Sjećam se", `celebrating` 120 px na sažetku ProvjeraZnanja
 - [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2
-- [ ] Migracija `0006_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
+- [ ] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
+- [ ] Migracija `0007_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
 - [ ] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu, `next_review_on`, ograničenje na datum ispita, level 3 nakon 4 uspjeha + testovi
 - [ ] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
 - [ ] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje
@@ -154,7 +159,8 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [ ] Embeddings: pgvector + ugrađeni `gte-small` (`Supabase.ai.Session`) za jedinice, pitanja i teme; prijedlog veza pitanje ↔ poglavlje i dedupe tema bez LLM poziva
 - [ ] `evals/` sa `promptfoo`: fiksne slike sadržaja i rasporeda, provjera Zod šeme i očekivanog broja jedinica
 - [ ] `parse-toc` → DodajIzvor → Parsiranje (pregled: novo / izmijenjeno / arhivira se)
-- [ ] Merge po `label` + testovi
+- [ ] Merge po `label` + testovi (merge iz Etape 3 se koristi i za AI uvoz)
+- [ ] Ručni unos: dugme „Procijeni težinu AI-jem“ u pregledu
 - [ ] `parse-questions`, teme pri uvozu (postojeće teme u promptu, ručne se ne prepisuju)
 - [ ] ObimIspita: AI prijedlog, ručna izmjena zaključana
 - [ ] `parse-timetable` (uparivanje predmeta preko `fuse.js`), `recall-questions`, `propose-answer`, `quiz`

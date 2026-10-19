@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { examAtFromDate, dueAtFromDate, type Deadline } from '@/features/subjects/model'
-import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
+import {
+  dayMarkers,
+  deadlinesAhead,
+  deadlinesOn,
+  examsOn,
+  monthGrid,
+  possibleExamsOn,
+} from './calendar'
 
 const deadline = (id: string, date: string, done = false): Deadline => ({
   id,
@@ -87,6 +94,32 @@ describe('day events', () => {
       d === 30 ? new Date(2026, 10, 30) : new Date(2026, 11, d),
     )
     expect(days.map((d) => possibleExamsOn(d, [s]).length)).toEqual([0, 1, 1, 1, 0])
+  })
+
+  it('marks every exam and deadline of the day, with "+N" past three', () => {
+    const day = new Date(2026, 9, 28)
+    const s = subject(false)
+    const second = {
+      ...s,
+      id: 's2',
+      color: 'blue',
+      assessments: [{ ...s.assessments[0]!, id: 'b' }],
+    }
+    const one = dayMarkers(day, [s, second], [deadline('d', '2026-10-28')])
+    expect(one.visible.map((m) => [m.kind, m.id])).toEqual([
+      ['exam', 'a'],
+      ['exam', 'b'],
+      ['deadline', 'd'],
+    ])
+    expect(one.more).toBe(0)
+    const many = dayMarkers(
+      day,
+      [s, second],
+      [deadline('d', '2026-10-28'), deadline('e', '2026-10-28')],
+    )
+    expect(many.visible.map((m) => m.id)).toEqual(['a', 'b'])
+    expect(many.more).toBe(2)
+    expect(dayMarkers(new Date(2026, 9, 27), [s], []).visible).toEqual([])
   })
 
   it('finds deadlines on the day and open ones within a week', () => {
