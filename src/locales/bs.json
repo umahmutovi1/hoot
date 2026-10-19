@@ -288,7 +288,7 @@
   },
   "common": {
     "cancel": "Odustani",
-    "save": "Snimi",
+    "save": "Spasi",
     "close": "Zatvori"
   },
   "profile": {
@@ -297,7 +297,7 @@
     "nameLabel": "Ime",
     "namePlaceholder": "npr. Uma",
     "continue": "Nastavi",
-    "saveFailed": "Snimanje nije uspjelo. Pokušaj ponovo.",
+    "saveFailed": "Spašavanje nije uspjelo. Pokušaj ponovo.",
     "editName": "Promijeni ime"
   },
   "exams": {
@@ -764,7 +764,7 @@
     "coveredUpTo": "Obrađeno do",
     "note": "Bilješka",
     "notePlaceholder": "npr. profesor preskočio 5.3, rade se zadaci",
-    "saveUpTo": "Snimi · do {{label}}",
+    "saveUpTo": "Spasi · do {{label}}",
     "cancelled": "Nastava otkazana",
     "skip": "Preskoči",
     "lastTime": "prošli put",
