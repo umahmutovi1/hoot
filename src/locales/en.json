@@ -54,6 +54,12 @@
       "title": "Did you know?",
       "source": "Source: {{source}}",
       "sourceLabel": "Source: {{source}} (opens in a new window)"
+    },
+    "week": {
+      "teaching": "Teaching week {{week}}",
+      "partial_exams": "{{title}}",
+      "exam": "{{title}} · week {{week}}",
+      "holiday": "Holiday · {{title}}"
     }
   },
   "plan": {
@@ -80,7 +86,18 @@
       "possible_other": "{{count}} possible exams",
       "deadline_one": "{{count}} deadline",
       "deadline_other": "{{count}} deadlines"
-    }
+    },
+    "view": {
+      "month": "Month",
+      "week": "Week",
+      "day": "Day"
+    },
+    "viewLabel": "Calendar view",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "openDay": "Open day {{day}}",
+    "cancelled": "cancelled",
+    "noClasses": "No classes this day."
   },
   "subjects": {
     "title": "Subjects",

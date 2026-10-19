@@ -54,6 +54,12 @@
       "title": "Znaš li?",
       "source": "Izvor: {{source}}",
       "sourceLabel": "Izvor: {{source}} (otvara se u novom prozoru)"
+    },
+    "week": {
+      "teaching": "{{week}}. sedmica nastave",
+      "partial_exams": "{{title}}",
+      "exam": "{{title}} · {{week}}. sedmica",
+      "holiday": "Neradni dan · {{title}}"
     }
   },
   "plan": {
@@ -65,7 +71,7 @@
     "nextMonth": "Sljedeći mjesec",
     "legendExam": "Ispit",
     "legendDeadline": "Rok",
-    "dayEmpty": "Nema ispita ni rokova. Plan učenja dolazi kad dodaš izvore.",
+    "dayEmpty": "Nema ispita, nastave ni rokova. Plan učenja dolazi kad dodaš izvore.",
     "examItem": "Ispit: {{subject}} · {{title}}",
     "deadlineItem": "Rok: {{title}}",
     "deadlineItemSubject": "Rok: {{title}} · {{subject}}",
@@ -83,7 +89,18 @@
       "deadline_one": "{{count}} rok",
       "deadline_few": "{{count}} roka",
       "deadline_other": "{{count}} rokova"
-    }
+    },
+    "view": {
+      "month": "Mjesec",
+      "week": "Sedmica",
+      "day": "Dan"
+    },
+    "viewLabel": "Prikaz kalendara",
+    "prevWeek": "Prethodna sedmica",
+    "nextWeek": "Sljedeća sedmica",
+    "openDay": "Otvori dan {{day}}",
+    "cancelled": "otkazano",
+    "noClasses": "Nema nastave ovaj dan."
   },
   "subjects": {
     "title": "Predmeti",
