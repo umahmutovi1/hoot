@@ -226,7 +226,10 @@
       "rangeBetween": "Moguće između",
       "rangeAnd": "i",
       "rangeEarliest": "Najranije",
-      "rangeLatest": "Najkasnije"
+      "rangeLatest": "Najkasnije",
+      "usePeriodsTitle": "Datumi još nisu poznati?",
+      "usePeriodsBody": "Uzmi rokove iz akademskog kalendara: parcijale dobiju sedmice parcijalnih, završni i popravni svoj rok.",
+      "inPeriod": "u roku: {{title}}"
     },
     "detail": {
       "edit": "Uredi predmet",
@@ -311,7 +314,9 @@
       "makeup": "Popravni",
       "other": "Ostalo"
     },
-    "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum."
+    "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
+    "inPeriod": "U roku",
+    "manualRange": "Ručni raspon"
   },
   "deadlines": {
     "section": "Rokovi",

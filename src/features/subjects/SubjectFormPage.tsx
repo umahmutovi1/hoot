@@ -4,12 +4,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { ChevronDownIcon, CloseIcon, PlusIcon } from '@/components/icons'
+import { CalendarIcon, ChevronDownIcon, CloseIcon, PlusIcon } from '@/components/icons'
 import { RadioCard } from '@/components/RadioCard'
 import { SplashScreen } from '@/components/SplashScreen'
 import { Switch } from '@/components/Switch'
 import { Button } from '@/components/ui/button'
+import { usePeriods } from '@/features/schedule/api'
+import { toPeriod } from '@/features/schedule/model'
+import { useDayBoundary } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
+import { localDay } from '@/lib/day'
+import { assignExamPeriods } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
@@ -61,6 +66,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       contingent: e.contingent,
       dateTentative: false,
       dateLatest: null,
+      examPeriodId: null,
     }))
 
   const form = useForm<SubjectForm>({
@@ -81,6 +87,25 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
     name: ['color', 'priority', 'studyMode'],
   })
   const nameError = form.formState.errors.name?.message
+  const boundary = useDayBoundary()
+  const [today] = useState(() => localDay(new Date(), boundary))
+  const periods = (usePeriods().data ?? []).map(toPeriod)
+  const watchedExams = useWatch({ control: form.control, name: 'assessments' })
+  const suggested = assignExamPeriods(watchedExams, periods, today)
+  const canUsePeriods = watchedExams.some((e, i) => !e.date && suggested[i])
+
+  /** Exams without a date get the range of the matching period from the academic calendar. */
+  const applyPeriodsToUndated = () => {
+    watchedExams.forEach((e, i) => {
+      const p = suggested[i]
+      if (e.date || !p) return
+      const set = { shouldDirty: true } as const
+      form.setValue(`assessments.${i}.dateTentative`, true, set)
+      form.setValue(`assessments.${i}.date`, p.startsOn, set)
+      form.setValue(`assessments.${i}.dateLatest`, p.endsOn, set)
+      form.setValue(`assessments.${i}.examPeriodId`, p.id, set)
+    })
+  }
 
   const pickPreset = (p: ExamPreset) => {
     setPreset(p)
@@ -98,6 +123,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       ...examKindDefaults(kind),
       dateTentative: false,
       dateLatest: null,
+      examPeriodId: null,
     })
   }
 
@@ -178,6 +204,21 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
 
       <div className="flex flex-col gap-2">
         <span className={sectionLabel}>{t('subjects.form.exams')}</span>
+        {canUsePeriods && (
+          <button
+            type="button"
+            onClick={applyPeriodsToUndated}
+            className="flex items-center gap-3 rounded-[20px] bg-brand-soft px-4 py-3 text-left"
+          >
+            <CalendarIcon size={20} className="shrink-0 text-brand" />
+            <span className="flex flex-col gap-0.5">
+              <span className="text-sm font-semibold text-brand-strong">
+                {t('subjects.form.usePeriodsTitle')}
+              </span>
+              <span className="text-xs text-avatar-ink">{t('subjects.form.usePeriodsBody')}</span>
+            </span>
+          </button>
+        )}
         {exams.fields.map((field, index) => (
           <ExamEditor
             key={field.key}
@@ -188,6 +229,10 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
               form.setValue(`assessments.${index}.${name}`, value, { shouldDirty: true })
             }
             errors={form.formState.errors.assessments?.[index]}
+            periodTitle={periods.find((p) => p.id === watchedExams[index]?.examPeriodId)?.title}
+            clearPeriod={() =>
+              form.setValue(`assessments.${index}.examPeriodId`, null, { shouldDirty: true })
+            }
             onRemove={() => exams.remove(index)}
           />
         ))}
@@ -274,6 +319,8 @@ function ExamEditor({
   register,
   setValue,
   errors,
+  periodTitle,
+  clearPeriod,
   onRemove,
 }: {
   index: number
@@ -285,6 +332,9 @@ function ExamEditor({
     date?: { message?: string }
     dateLatest?: { message?: string }
   }
+  /** Exam period the tentative range comes from ("U roku: …"). */
+  periodTitle?: string
+  clearPeriod: () => void
   onRemove: () => void
 }) {
   const { t } = useTranslation()
@@ -298,7 +348,10 @@ function ExamEditor({
   const scope = [
     t(exam.scopeAll ? 'subjects.scope.all' : 'subjects.scope.part'),
     exam.contingent && t('subjects.form.notPlannedAhead'),
-    exam.dateTentative && t('subjects.form.dateNotConfirmed'),
+    exam.dateTentative &&
+      (periodTitle
+        ? t('subjects.form.inPeriod', { title: periodTitle })
+        : t('subjects.form.dateNotConfirmed')),
   ]
     .filter(Boolean)
     .join(' · ')
@@ -354,7 +407,7 @@ function ExamEditor({
               type="date"
               aria-label={t('subjects.form.rangeEarliest')}
               className="absolute inset-0 opacity-0"
-              {...register(`assessments.${index}.date`)}
+              {...register(`assessments.${index}.date`, { onChange: clearPeriod })}
             />
           </DateChip>
           {t('subjects.form.rangeAnd')}
@@ -366,6 +419,7 @@ function ExamEditor({
               className="absolute inset-0 opacity-0"
               {...register(`assessments.${index}.dateLatest`, {
                 setValueAs: (v: string) => v || null,
+                onChange: clearPeriod,
               })}
             />
           </DateChip>

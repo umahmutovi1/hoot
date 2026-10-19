@@ -5,6 +5,14 @@ import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Switch } from '@/components/Switch'
 import { Button } from '@/components/ui/button'
+import { usePeriods } from '@/features/schedule/api'
+import { dateRangeLabel } from '@/features/schedule/format'
+import { toPeriod } from '@/features/schedule/model'
+import { useDayBoundary } from '@/features/settings/profile'
+import { useLocale } from '@/features/settings/useLocale'
+import { localDay } from '@/lib/day'
+import { dateFnsLocales } from '@/lib/locale'
+import { examPeriodsFor, suggestExamPeriod, type Period } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
 import { useDeleteAssessment, useSaveAssessment } from './api'
@@ -60,12 +68,18 @@ function ExamForm({
           ...examKindDefaults('final'),
           dateTentative: false,
           dateLatest: null,
+          examPeriodId: null,
         },
   })
-  const [kind, examFormat, scopeAll, contingent, dateTentative, date] = useWatch({
+  const [kind, examFormat, scopeAll, contingent, dateTentative, date, examPeriodId] = useWatch({
     control: form.control,
-    name: ['kind', 'format', 'scopeAll', 'contingent', 'dateTentative', 'date'],
+    name: ['kind', 'format', 'scopeAll', 'contingent', 'dateTentative', 'date', 'examPeriodId'],
   })
+  const { locale } = useLocale()
+  const boundary = useDayBoundary()
+  const [today] = useState(() => localDay(new Date(), boundary))
+  const periods = (usePeriods().data ?? []).map(toPeriod)
+  const periodChoices = examPeriodsFor(kind, periods).filter((p) => p.endsOn >= today)
   const errors = form.formState.errors
   const set = { shouldDirty: true, shouldValidate: form.formState.isSubmitted } as const
 
@@ -73,6 +87,19 @@ function ExamForm({
     save.mutate({ subjectId, form: values })
     onDone()
   })
+
+  /** "U roku": the tentative range becomes the exam period. */
+  const applyPeriod = (p: Period | undefined) => {
+    form.setValue('examPeriodId', p?.id ?? null, set)
+    if (!p) return
+    form.setValue('date', p.startsOn, set)
+    form.setValue('dateLatest', p.endsOn, set)
+  }
+
+  const setTentative = (v: boolean) => {
+    form.setValue('dateTentative', v, set)
+    if (v && !form.getValues('date')) applyPeriod(suggestExamPeriod(kind, periods, today))
+  }
 
   const pickKind = (k: AssessmentForm['kind']) => {
     const previous = form.getValues('kind')
@@ -118,8 +145,24 @@ function ExamForm({
         <Switch
           checked={dateTentative}
           label={t('subjects.form.dateTentative')}
-          onChange={(v) => form.setValue('dateTentative', v, set)}
+          onChange={setTentative}
         />
+        {dateTentative && periodChoices.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <span className={fieldLabel}>{t('exams.inPeriod')}</span>
+            <ChipGroup
+              options={[
+                ...periodChoices.map((p) => ({
+                  value: p.id,
+                  label: `${p.title} · ${dateRangeLabel(p.startsOn, p.endsOn, dateFnsLocales[locale])}`,
+                })),
+                { value: 'manual', label: t('exams.manualRange') },
+              ]}
+              value={examPeriodId ?? 'manual'}
+              onChange={(id) => applyPeriod(periodChoices.find((p) => p.id === id))}
+            />
+          </div>
+        )}
         <div className={cn('grid gap-2', dateTentative && 'grid-cols-2')}>
           <label className="flex min-w-0 flex-col gap-2">
             <span className={fieldLabel}>
@@ -129,7 +172,9 @@ function ExamForm({
               type="date"
               aria-invalid={Boolean(errors.date)}
               className={cn(fieldInput, dateTentative && 'px-3')}
-              {...form.register('date')}
+              {...form.register('date', {
+                onChange: () => form.setValue('examPeriodId', null, set),
+              })}
             />
           </label>
           {dateTentative && (
@@ -140,7 +185,10 @@ function ExamForm({
                 min={date || undefined}
                 aria-invalid={Boolean(errors.dateLatest)}
                 className={cn(fieldInput, 'px-3')}
-                {...form.register('dateLatest', { setValueAs: (v: string) => v || null })}
+                {...form.register('dateLatest', {
+                  setValueAs: (v: string) => v || null,
+                  onChange: () => form.setValue('examPeriodId', null, set),
+                })}
               />
             </label>
           )}

@@ -476,7 +476,7 @@ Fakultet objavi akademski kalendar prije semestra: kad traje nastava, kad su isp
 | `holiday` | Nova godina, 1.–2. jan | Nema nastave (termini se ne računaju, “Dokle ste stigli?” ne pita); dostupnost za učenje ostaje |
 
 - **Unos:** ručno na ekranu “Akademski kalendar” (Postavke, i iz Rasporeda) od Etape 4; AI uvoz iz slike, PDF-a ili teksta sa pregledom od Etape 6.
-- **Ispit u roku:** u ExamSheetu, uz “Datum još nije objavljen”, bira se rok (`assessments.exam_period_id`). Raspon ispita (`at` – `at_latest`) = raspon roka; plan cilja najraniji dan (isto pravilo kao okvirni datum). Prijedlog po tipu: parcijala → sedmica parcijalnih, završni/integralni → redovni rok, popravni → popravni rok. Promjena datuma roka pomjera i povezane okvirne ispite.
+- **Ispit u roku:** u ExamSheetu, uz “Datum još nije objavljen”, bira se rok (`assessments.exam_period_id`). Raspon ispita (`at` – `at_latest`) = raspon roka; plan cilja najraniji dan (isto pravilo kao okvirni datum). Prijedlog po tipu: parcijala → sedmica parcijalnih, završni/integralni → redovni rok, popravni → popravni rok. Promjena datuma roka pomjera i povezane okvirne ispite. Na NoviPredmet dugme “Datumi još nisu poznati?” to radi za sve ispite bez datuma odjednom: n-ta parcijala dobija n-tu sedmicu parcijalnih, ostali odgovarajući rok.
 - **Sedmica na Danas:** ispod datuma “7. sedmica nastave” (u periodu nastave), “Sedmica parcijalnih”, “Ispitni rok · [naziv]” ili “Neradni dan · [naziv]”; van svih perioda ništa.
 
 ## AI uvoz, dokumenti i asistent

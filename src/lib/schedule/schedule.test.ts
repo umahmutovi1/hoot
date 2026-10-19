@@ -12,6 +12,7 @@ import {
   slotMinutes,
   subtractSlots,
   suggestExamPeriod,
+  assignExamPeriods,
   weekFreeMinutes,
   weekNumber,
   type ClassEntry,
@@ -226,5 +227,23 @@ describe('clock', () => {
     expect(parseClock('24:00')).toBe(1440)
     expect(parseClock('25:00')).toBeNull()
     expect(parseClock('abc')).toBeNull()
+  })
+})
+
+describe('assignExamPeriods', () => {
+  it('gives partials successive partial-exam weeks', () => {
+    const second: Period = { ...partials, id: 'p2', startsOn: '2027-01-11', endsOn: '2027-01-15' }
+    const got = assignExamPeriods(
+      [{ kind: 'partial' }, { kind: 'partial' }, { kind: 'integral' }, { kind: 'makeup' }],
+      [...periods, second],
+      '2026-10-19',
+    )
+    expect(got.map((p) => p?.id)).toEqual(['p', 'p2', 'j', 'm'])
+  })
+
+  it('leaves an exam without a fitting period empty', () => {
+    expect(
+      assignExamPeriods([{ kind: 'partial' }, { kind: 'partial' }], periods, '2026-10-19')[1],
+    ).toBeUndefined()
   })
 })

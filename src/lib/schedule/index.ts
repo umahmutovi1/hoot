@@ -282,3 +282,21 @@ export function suggestExamPeriod(
     .filter((p) => suits(kind, p) && p.endsOn >= today)
     .sort((a, b) => a.startsOn.localeCompare(b.startsOn))[0]
 }
+
+/**
+ * Periods for a subject's exams whose dates are not known yet ("uzmi rokove"): the n-th partial
+ * gets the n-th upcoming partial-exam week, the rest the next period that suits their kind.
+ */
+export function assignExamPeriods(
+  exams: { kind: ExamKind }[],
+  periods: Period[],
+  today: LocalDate,
+): (Period | undefined)[] {
+  const partialWeeks = periods
+    .filter((p) => p.kind === 'partial_exams' && p.endsOn >= today)
+    .sort((a, b) => a.startsOn.localeCompare(b.startsOn))
+  let n = 0
+  return exams.map((e) =>
+    e.kind === 'partial' ? partialWeeks[n++] : suggestExamPeriod(e.kind, periods, today),
+  )
+}
