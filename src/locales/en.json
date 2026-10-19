@@ -92,5 +92,18 @@
     "positive": "Must be greater than 0",
     "tooLarge": "Value too large",
     "campaignStartOnlyForCampaign": "Start date is only set in campaign mode"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "profile": {
+    "welcomeTitle": "What should I call you?",
+    "welcomeBody": "I use your name in the greeting at the start of the day. You can change it in Settings.",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Uma",
+    "continue": "Continue",
+    "saveFailed": "Saving failed. Try again.",
+    "editName": "Change name"
   }
 }
