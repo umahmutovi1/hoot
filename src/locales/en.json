@@ -850,7 +850,7 @@
     "points_other": "{{n}} points",
     "shareOfGrade": "{{n}}% of grade",
     "thresholdShort": "threshold {{pct}}%",
-    "entryShort": "entry requirement: {{n}} pts",
+    "entryShort": "entry requirement: {{points}}",
     "replacesPartials": "replaces the partials",
     "enterResult": "Enter result",
     "score": "{{points}}/{{max}}",
@@ -878,6 +878,48 @@
       "restore": "Restore result",
       "clear": "Delete result",
       "contributes": "Counts {{points}} of {{max}} points"
+    },
+    "card": {
+      "title": "Points and grade",
+      "scale": "Scale ›",
+      "empty": "Enter what the exams and deadlines carry (edit an exam or deadline) to see your points and what each grade needs.",
+      "haveOf": "you have {{have}} of {{max}} possible so far",
+      "nothingYet": "no results yet",
+      "targetChip": "Target: {{grade}}",
+      "targetRow": "{{grade}} · target",
+      "secured": "secured",
+      "unreachable": "out of reach",
+      "needs": "needs {{points}} ({{pct}}%)",
+      "targetNeeds": "For {{grade}} you still need {{points}}",
+      "targetNeedsSub": "of {{remaining}} left · ~{{pct}}% on: {{items}}",
+      "targetSecured": "Grade {{grade}} is secured",
+      "targetUnreachable": "{{grade}} is out of reach",
+      "targetUnreachableSub": "Most possible: {{max}} points",
+      "entryMissing": "Entry requirement for {{title}}: {{points}} to go"
+    },
+    "scale": {
+      "title": "Grade scale",
+      "subtitle": "{{name}} · {{total}} points in total",
+      "total": "Total points",
+      "pass": "pass",
+      "from": "from",
+      "thresholdFor": "Threshold for grade {{grade}}",
+      "below": "below {{pct}}%",
+      "reset": "Back to the Bosnian scale",
+      "target": "Target grade",
+      "noTarget": "no target",
+      "targetHint": "The plan will raise the target coverage so you can reach {{grade}}.",
+      "noTargetHint": "Without a target the plan follows the subject's priority only."
+    },
+    "overview": {
+      "title": "Grades",
+      "entry": "Requirement for {{title}}: {{points}} to go",
+      "targetNeeds": "Target {{grade}} · needs {{points}} of {{remaining}} left ({{pct}}%)",
+      "passNeeds": "To pass: {{points}} of {{remaining}} left ({{pct}}%)",
+      "passSecured": "Pass secured",
+      "passUnreachable": "Passing is out of reach without a make-up",
+      "noPoints": "No points entered",
+      "addOnSubject": "Add on the subject"
     }
   }
 }

@@ -22,9 +22,11 @@ import { DeadlineRow } from './DeadlineRow'
 import { DeadlineSheet } from './DeadlineSheet'
 import { ExamSheet } from './ExamSheet'
 import { examDateLabel, relativeDays } from './format'
-import { gradeItemsOf, pointsDetails, worthOf } from './grades'
+import { gradeItemsOf, pointsDetails, pointsLabel, worthOf } from './grades'
 import { ResultChip } from './ResultChip'
+import { GradesCard } from './GradesCard'
 import { ResultSheet } from './ResultSheet'
+import { ScaleSheet } from './ScaleSheet'
 import { retakeStatus, type GradeItem } from '@/lib/grades'
 import {
   asPriority,
@@ -68,6 +70,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const [deadlineSheet, setDeadlineSheet] = useState<{ open: boolean; id?: string }>({
     open: false,
   })
+  const [scaleOpen, setScaleOpen] = useState(false)
   const [resultSheet, setResultSheet] = useState<{
     open: boolean
     kind?: 'exam' | 'deadline'
@@ -171,6 +174,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
 
       {subject.study_mode === 'campaign' && <CampaignCard subject={subject} now={now} />}
 
+      <GradesCard subject={subject} deadlines={deadlines} onScale={() => setScaleOpen(true)} />
+
       {hasMaterial && <SubjectLectures subject={subject} materials={materials} />}
 
       <div className="mt-1.5 flex items-center justify-between">
@@ -261,6 +266,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         open={examSheet.open}
         onOpenChange={(open) => setExamSheet((s) => ({ ...s, open }))}
       />
+      <ScaleSheet subject={subject} open={scaleOpen} onOpenChange={setScaleOpen} />
       <ResultSheet
         target={
           resultSheet.kind === 'exam' && resultExam
@@ -329,7 +335,7 @@ function ExamRow({
     points.length === 0 && t(exam.scope_all ? 'subjects.scope.all' : 'subjects.scope.part'),
     points.length === 0 && t(`subjects.format.${exam.format}`).toLowerCase(),
     exam.entry_min_points !== null &&
-      t('grades.entryShort', { n: exam.entry_min_points.toLocaleString(locale) }),
+      t('grades.entryShort', { points: pointsLabel(t, exam.entry_min_points, locale) }),
     nested && examDateLabel(exam, dfLocale),
     !nested &&
       exam.date_tentative &&
