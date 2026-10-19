@@ -247,7 +247,9 @@
     "campaignStartOnlyForCampaign": "Start date is only set in campaign mode",
     "rangeEnd": "Enter the latest possible date",
     "rangeOrder": "The latest date must be after the earliest",
-    "pageOrder": "The end page must come after the start page"
+    "pageOrder": "The end page must come after the start page",
+    "outlineEmpty": "Enter at least one unit",
+    "labelTaken": "That label already exists"
   },
   "common": {
     "cancel": "Cancel",
@@ -310,7 +312,139 @@
   },
   "sources": {
     "editor": {
-      "empty": "Enter at least one unit"
+      "newTitle": "New source",
+      "editTitle": "Edit contents",
+      "kind": "Source type",
+      "measure": "Measured in",
+      "measureOption": {
+        "pages": "Pages",
+        "items": "Units"
+      },
+      "minutesPerItem": "How many minutes per unit?",
+      "minutesPerItemHint": "A starting estimate. Once you use the timer, the app learns your time for this exact source.",
+      "title": "Title",
+      "titlePlaceholder": "e.g. Oppenheim — Signals & Systems",
+      "mode": {
+        "photo": "Photograph contents",
+        "text": "Type"
+      },
+      "photoSoon": "Photo import is coming soon",
+      "photoSoonBody": "For now, type or paste the contents, one line per unit.",
+      "outline": "Contents",
+      "placeholder": {
+        "pages": "One chapter per line, e.g.\n1 Introduction 1\n2 LTI systems 74\n2.1 Convolution 75",
+        "slides": "One deck per line, e.g.\nL1 Introduction 34\nL2 Convolution 1-28",
+        "questions": "One question per line, e.g.\n1. List the properties of LTI systems\n2. Compute the convolution x[n] * h[n]",
+        "items": "One unit per line, e.g.\n1 Workbook, exercise 1\n2 Lab exercise 1"
+      },
+      "hint": {
+        "pages": "The number at the end is the start page (the end is the next start − 1); 20-35 is a range. 2.1 is a sub-chapter of 2.",
+        "slides": "The number at the end is the slide count; 1-28 is a slide range.",
+        "questions": "The whole line is the question; a leading number becomes the label (P1, P2 …).",
+        "items": "The whole line is one unit; a leading number is the label."
+      },
+      "review": "Review units",
+      "delete": "Delete source",
+      "confirmDelete": "Sure? Units and notes are deleted too. Tap again"
+    },
+    "section": "Sources",
+    "add": "+ Source",
+    "none": "No sources yet. Add a book, script, exam questions or slides.",
+    "kind": {
+      "book": "Book",
+      "script": "Script",
+      "questions": "Questions",
+      "slides": "Slides",
+      "other": "Other"
+    },
+    "kindUnit": {
+      "book": "pages",
+      "script": "pages",
+      "questions": "list",
+      "slides": "slides",
+      "other": "anything"
+    },
+    "amount": {
+      "pages_one": "{{count}} page",
+      "pages_other": "{{count}} pages",
+      "slides_one": "{{count}} slide",
+      "slides_other": "{{count}} slides",
+      "questions_one": "{{count}} question",
+      "questions_other": "{{count}} questions",
+      "items_one": "{{count}} unit",
+      "items_other": "{{count}} units"
+    },
+    "pagesRange": "p. {{range}}",
+    "slidesRange": "slides {{range}}",
+    "review": {
+      "title": "Review units",
+      "add": "+ Add",
+      "summary_one": "{{count}} unit",
+      "summary_other": "{{count}} units",
+      "estimate": "Estimate ~{{time}} · tap the dots to change difficulty",
+      "warning": {
+        "missingAmount": "The end of {{labels}} is unknown, so the average of the others is used. Add a range, e.g. 654-730.",
+        "pageOrder": "For {{labels}} the end comes before the start. Fix the range.",
+        "duplicateLabel": "Duplicate labels were renamed: {{labels}}."
+      },
+      "empty": "No units. Add some or go back to the text.",
+      "status": {
+        "new": "new",
+        "changed": "changed",
+        "unchanged": "unchanged",
+        "restored": "restored"
+      },
+      "difficulty": "Difficulty {{d}} of 5, tap to change",
+      "remove": "Remove {{label}}",
+      "archiving": "Archived ({{count}})",
+      "archivingHint": "Progress and notes stay; restore them from “Archived units”.",
+      "unknownAmount": "size unknown"
+    },
+    "detail": {
+      "editContent": "Edit contents",
+      "done": "done",
+      "remaining": "left",
+      "rate": {
+        "pages": "min/page · estimate",
+        "slides": "min/slide · estimate",
+        "questions": "min/question · estimate",
+        "items": "min/unit · estimate"
+      },
+      "empty": "No units yet. Add them with “Edit contents”.",
+      "difficulty": "difficulty {{d}}",
+      "archived": "Archived units ({{count}})",
+      "restore": "Restore"
+    }
+  },
+  "time": {
+    "minutes": "{{m}} min",
+    "hours": "{{h}}h",
+    "hoursMinutes": "{{h}}h {{m}}"
+  },
+  "units": {
+    "status": {
+      "chapter": {
+        "0": "Not started",
+        "1": "Read",
+        "2": "Understood",
+        "3": "Reviewed"
+      },
+      "question": {
+        "0": "Don't know",
+        "1": "Partly",
+        "3": "Know"
+      }
+    },
+    "sheet": {
+      "newTitle": "New unit",
+      "editTitle": "Edit unit",
+      "label": "Label",
+      "title": "Title",
+      "pageFrom": "From page",
+      "pageTo": "To page",
+      "slideFrom": "From slide",
+      "slideTo": "To slide",
+      "rangeHint": "Without an end, it runs to the start of the next unit."
     }
   }
 }

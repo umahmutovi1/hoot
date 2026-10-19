@@ -7,6 +7,9 @@ import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
+import { useSources } from '@/features/sources/api'
+import { materialOf, subjectMaterialProgress } from '@/features/sources/model'
+import { ProgressRing, SubjectSources } from '@/features/sources/SubjectSources'
 import { useDeadlines, useSubject, useUpdateSubject } from './api'
 import { paletteOf, type SubjectPalette } from './colors'
 import { DeadlineRow } from './DeadlineRow'
@@ -22,8 +25,9 @@ import {
 } from './model'
 
 /**
- * Predmet / PredmetKampanja. Stage 2 shows the header, priority and mode chips, the campaign
- * card and exams; lectures, knowledge strength, sources and weak topics come with their stages.
+ * Predmet / PredmetKampanja: header with progress, priority and mode chips, the campaign card,
+ * exams, sources and deadlines. Lectures, knowledge strength and weak topics come with their
+ * stages.
  */
 export function SubjectPage() {
   const { id } = useParams()
@@ -46,6 +50,9 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const deadlines = allDeadlines.filter((d) => d.subject_id === subject.id)
   // Sheets keep only the id, so they always render the latest cached row.
   const [examSheet, setExamSheet] = useState<{ open: boolean; id?: string }>({ open: false })
+  const { data: sources = [] } = useSources(subject.id)
+  const materials = sources.map(materialOf)
+  const hasMaterial = materials.some((m) => m.units.length > 0)
   const [deadlineSheet, setDeadlineSheet] = useState<{ open: boolean; id?: string }>({
     open: false,
   })
@@ -70,41 +77,52 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         </Link>
       </div>
 
-      <div className={cn('flex flex-col gap-2 rounded-[32px] p-5', palette.soft)}>
-        <h1 className={cn('text-[23px] leading-[1.15] font-bold', palette.inkText)}>
-          {subject.name}
-        </h1>
-        <div className="flex flex-wrap gap-1.5">
-          <Link
-            to={editPath}
-            className={cn(
-              'flex h-7 items-center rounded-full bg-surface px-2.5 text-xs font-semibold',
-              palette.inkText,
-            )}
-          >
-            {t('subjects.detail.priorityChip', {
-              n: subject.priority,
-              name: t(`subjects.priority.${asPriority(subject.priority)}.name`).toLowerCase(),
-            })}
-          </Link>
-          <Link
-            to={editPath}
-            className={cn(
-              'flex h-7 items-center rounded-full bg-surface px-2.5 text-xs font-semibold',
-              palette.inkText,
-            )}
-          >
-            {t(`subjects.mode.${subject.study_mode === 'campaign' ? 'campaign' : 'regular'}.title`)}
-          </Link>
-        </div>
-        {next && (
-          <span className={cn('text-[13px] leading-[1.35]', palette.inkText)}>
-            {t('subjects.detail.nextExam', {
-              title: next.title,
-              when: relativeDays(t, differenceInCalendarDays(new Date(next.at), now)),
-            })}
-          </span>
+      <div className={cn('flex items-center gap-4 rounded-[32px] p-5', palette.soft)}>
+        {hasMaterial && (
+          <ProgressRing
+            fraction={subjectMaterialProgress(materials)}
+            strokeClass={palette.stroke}
+            textClass={palette.inkText}
+          />
         )}
+        <div className="flex min-w-0 flex-col gap-2">
+          <h1 className={cn('text-[23px] leading-[1.15] font-bold', palette.inkText)}>
+            {subject.name}
+          </h1>
+          <div className="flex flex-wrap gap-1.5">
+            <Link
+              to={editPath}
+              className={cn(
+                'flex h-7 items-center rounded-full bg-surface px-2.5 text-xs font-semibold',
+                palette.inkText,
+              )}
+            >
+              {t('subjects.detail.priorityChip', {
+                n: subject.priority,
+                name: t(`subjects.priority.${asPriority(subject.priority)}.name`).toLowerCase(),
+              })}
+            </Link>
+            <Link
+              to={editPath}
+              className={cn(
+                'flex h-7 items-center rounded-full bg-surface px-2.5 text-xs font-semibold',
+                palette.inkText,
+              )}
+            >
+              {t(
+                `subjects.mode.${subject.study_mode === 'campaign' ? 'campaign' : 'regular'}.title`,
+              )}
+            </Link>
+          </div>
+          {next && (
+            <span className={cn('text-[13px] leading-[1.35]', palette.inkText)}>
+              {t('subjects.detail.nextExam', {
+                title: next.title,
+                when: relativeDays(t, differenceInCalendarDays(new Date(next.at), now)),
+              })}
+            </span>
+          )}
+        </div>
       </div>
 
       {subject.study_mode === 'campaign' && <CampaignCard subject={subject} now={now} />}
@@ -139,6 +157,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
           ))}
         </div>
       )}
+
+      <SubjectSources subjectId={subject.id} materials={materials} />
 
       <div className="mt-1.5 flex items-center justify-between">
         <h2 className="text-lg font-semibold">{t('deadlines.section')}</h2>

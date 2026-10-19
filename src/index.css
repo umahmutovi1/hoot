@@ -65,6 +65,12 @@
   --color-subject-slate-deep: #334155;
   --color-subject-slate-ink: #1e293b;
 
+  /* Unit levels in progress bars (Izvor mockup): 3 brand, 2 brand-accent, 1 below, 0 hairline.
+     Question sources use the blue scale: 3 subject-blue, 1 below, 0 subject-blue-track. */
+  --color-level-1: #c3b9f0;
+  --color-question-1: #9dbdf5;
+  --color-brand-muted: #5b4fa0;
+
   /* Status */
   --color-success: #1f6b5a;
   --color-success-soft: #dcefea;

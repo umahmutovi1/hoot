@@ -31,7 +31,7 @@ export const OUTLINE_MAX_LENGTH = 30000
 export const outlineTextSchema = z
   .string()
   .max(OUTLINE_MAX_LENGTH, 'validation.tooLong')
-  .refine((s) => s.trim().length > 0, 'sources.editor.empty')
+  .refine((s) => s.trim().length > 0, 'validation.outlineEmpty')
 
 /** One unit edited in the review list or on the unit page. */
 export const unitFormSchema = z

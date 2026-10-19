@@ -5,6 +5,8 @@ import { RequireName } from '@/features/onboarding/RequireName'
 import { WelcomePage } from '@/features/onboarding/WelcomePage'
 import { PlanPage } from '@/features/plan/PlanPage'
 import { ProgressPage } from '@/features/progress/ProgressPage'
+import { SourceEditorPage } from '@/features/sources/SourceEditorPage'
+import { SourcePage } from '@/features/sources/SourcePage'
 import { SessionStartPage } from '@/features/session/SessionStartPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { SubjectFormPage } from '@/features/subjects/SubjectFormPage'
@@ -43,6 +45,9 @@ export const router = createBrowserRouter([
               { path: 'subjects/new', element: <SubjectFormPage /> },
               { path: 'subjects/:id', element: <SubjectPage /> },
               { path: 'subjects/:id/edit', element: <SubjectFormPage /> },
+              { path: 'subjects/:id/sources/new', element: <SourceEditorPage /> },
+              { path: 'subjects/:id/sources/:sourceId', element: <SourcePage /> },
+              { path: 'subjects/:id/sources/:sourceId/edit', element: <SourceEditorPage /> },
               { path: 'session/start', element: <SessionStartPage /> },
             ],
           },
