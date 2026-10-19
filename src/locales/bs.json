@@ -49,7 +49,12 @@
     "addSubject": "Dodaj predmet",
     "firstRunMascotAlt": "Sova čita knjigu",
     "firstRunTitle": "Hajde da napravimo plan",
-    "firstRunBody": "Dodaj prvi predmet i datum ispita. Literaturu možeš uslikati odmah ili kasnije."
+    "firstRunBody": "Dodaj prvi predmet i datum ispita. Literaturu možeš uslikati odmah ili kasnije.",
+    "fact": {
+      "title": "Znaš li?",
+      "source": "Izvor: {{source}}",
+      "sourceLabel": "Izvor: {{source}} (otvara se u novom prozoru)"
+    }
   },
   "plan": {
     "title": "Plan",
@@ -541,5 +546,27 @@
     "unassignedAll": "nije raspoređeno · samo integralni / završni",
     "unitExams": "Ispit za {{label}}",
     "link": "Obim ispita"
+  },
+  "facts": {
+    "testingWeek": "Sedmicu nakon učenja, studenti koji su se tri puta testirali iz teksta sjećali su se 61 % gradiva, a oni koji su ga četiri puta pročitali samo 40 %.",
+    "rereadConfidence": "Studenti koji su tekst samo iznova čitali bili su najsigurniji da će ga zapamtiti, a sedmicu kasnije zapamtili su najmanje. Osjećaj da „znaš” nije isto što i znanje.",
+    "retrievalConceptMaps": "Prisjećanje gradiva bez gledanja dalo je bolji rezultat na testu sedmicu kasnije od pravljenja mapa pojmova, iako je većina studenata očekivala suprotno.",
+    "interleaving": "Kad su se miješali različiti tipovi zadataka, vježba je išla lošije (60 % prema 89 %), ali je na testu sedmicu kasnije rezultat bio 63 % prema 20 %.",
+    "spacingSessions": "Isti zadaci podijeljeni na dvije sesije u razmaku od sedmice dali su 74 % na kasnijem testu, a odrađeni u jednom komadu 49 %.",
+    "spacingGap": "Ako je ispit za sedmicu, najbolje je gradivo ponoviti otprilike 1 do 3 dana nakon prvog učenja. Što je ispit dalje, to razmak smije biti duži.",
+    "techniquesRanking": "Veliki pregled deset tehnika učenja ocijenio je samotestiranje i raspoređeno učenje kao najkorisnije, a podvlačenje i ponovno čitanje kao slabo korisne.",
+    "studentsReread": "U jednoj anketi 84 % studenata reklo je da uči ponovnim čitanjem, a samo 11 % da se samo testira.",
+    "multitasking": "Kratke mentalne blokade pri prebacivanju između zadataka mogu odnijeti i do 40 % produktivnog vremena.",
+    "interruption": "U istraživanju Glorije Mark, prekinut posao koji je nastavljen istog dana čekao je u prosjeku 23 minute i 15 sekundi, uz druge zadatke usput.",
+    "taskSwitching": "Ljudi na poslu mijenjaju aktivnost u prosjeku svake tri minute. Sesija bez prekidanja vrijedi više nego što misliš.",
+    "mindWandering": "Misli nam lutaju u skoro polovini budnih trenutaka (46,9 %), a tada smo u prosjeku i manje sretni.",
+    "notifications": "Samo primanje notifikacije, i bez gledanja u telefon, pokvarilo je pažnju na zahtjevnom zadatku skoro koliko i razgovor ili dopisivanje.",
+    "mediaMultitaskers": "Ljudi koji stalno prate više medija odjednom lakše se ometaju nebitnim stvarima i slabije se prebacuju između zadataka.",
+    "writeWorries": "Deset minuta pisanja o strahovima prije ispita poboljšalo je rezultate, najviše kod studenata s velikom tremom.",
+    "hypercorrection": "Greške napravljene s puno sigurnosti lakše se ispravljaju: kad vidiš tačan odgovor, pamtiš ga bolje nego poslije običnog nagađanja.",
+    "expectTeach": "Kad uče s mišlju da će gradivo nekome objasniti, ljudi se sjećaju više i bolje organizovano, čak i kad na kraju nikome ne predaju.",
+    "greenBreak": "Pogled na zelenilo od samo 40 sekundi, i to na slici, pomogao je studentima da zadrže pažnju na dosadnom zadatku.",
+    "sleepAfter": "San nekoliko sati nakon učenja pomaže da gradivo ostane. Neprospavana noć poslije učenja kvari pamćenje i nakon nadoknade sna.",
+    "wakefulRest": "Deset minuta mirnog odmora (bez telefona i igrica) odmah nakon učenja poboljšalo je pamćenje i sedmicu kasnije."
   }
 }
