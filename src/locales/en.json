@@ -60,7 +60,13 @@
   },
   "subjects": {
     "title": "Subjects",
-    "empty": "You have no subjects yet."
+    "empty": "You have no subjects yet.",
+    "examTitle": {
+      "final": "Final exam",
+      "partial1": "Midterm I",
+      "partial2": "Midterm II",
+      "integral": "Comprehensive exam"
+    }
   },
   "progress": {
     "title": "Progress",
@@ -78,5 +84,13 @@
     "language": "Language",
     "timezone": "Time zone",
     "signOut": "Sign out"
+  },
+  "validation": {
+    "required": "Required",
+    "tooLong": "Too long",
+    "date": "Invalid date",
+    "positive": "Must be greater than 0",
+    "tooLarge": "Value too large",
+    "campaignStartOnlyForCampaign": "Start date is only set in campaign mode"
   }
 }

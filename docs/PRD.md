@@ -847,7 +847,7 @@ Napomene:
 `0001_init.sql` je primijenjen i ne mijenja se. Svaka izmjena šeme je nova migracija u etapi kojoj treba (vidi ROADMAP). Nove tabele dobijaju `user_id default auth.uid()`, RLS `owner_all ... to authenticated`, `grant select, insert, update, delete ... to authenticated`, a sinhronizovane i `updated_at` + triger `set_updated_at`. Skica:
 
 ```sql
--- 0002_subject_priority.sql (Etapa 2)
+-- 0002_subjects_and_profile.sql (Etapa 2, primijenjena)
 alter table subjects
   add column priority smallint not null default 3 check (priority between 1 and 5),
   add column study_mode text not null default 'regular' check (study_mode in ('regular','campaign')),
@@ -855,6 +855,8 @@ alter table subjects
 alter table assessments
   add column contingent boolean not null default false,       -- "samo ako zatreba"
   add column date_tentative boolean not null default false;   -- okvirni datum
+alter table profiles
+  add column name_confirmed_at timestamptz;                   -- null = pitaj "Kako da te zovem?"
 
 -- 0003_lecture_logs.sql (Etapa 4)
 create table lecture_logs (
