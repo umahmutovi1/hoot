@@ -80,7 +80,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 - [x] Plan tab: mjesečni kalendar ispita i rokova (vlastita mreža sa date-fns, kao mockup; FullCalendar izbačen iz stacka) + rokovi bez predmeta
 - [x] Query hookovi po featureu (`src/features/subjects/api.ts`), optimistični update
 - [x] Testovi: Zod šeme formi (uključujući prioritet, režim, okvirni datum), preset → lista ispita (integralni i popravni su „samo ako zatreba“)
-- **DoD** → `v0.2.0`
+- **DoD** ✓ → `v0.2.0`
 
 ## Etapa 3 — Izvori i jedinice ručno
 
