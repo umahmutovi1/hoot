@@ -16,9 +16,9 @@ Logika u `<script>` bloku na dnu fajla je samo demo interakcija.
 ## Ekrani po toku
 - Tab ekrani (sa donjom navigacijom): Danas, Plan, Satnica, Predmeti, Napredak
 - Prazna stanja "Danas": DanasPrazno (prvi ulazak), DanasSlobodno (dan bez plana)
-- Sesija: PokreniSesiju → Sesija → KrajSesije → RecallGate
-- Plan: Plan (kalendar), Satnica, Replan, Dostupnost, Raspored
-- Predmeti: Predmeti, Predmet, NoviPredmet, Izvor, Jedinica
+- Sesija: PokreniSesiju → Sesija → KrajSesije → RecallGate; ProvjeraZnanja (review blok kao niz recall gate-ova + sažetak)
+- Plan: Plan (kalendar), Satnica, Replan, Dostupnost, Raspored, UrediBlok (dodaj / izmijeni / obriši blok)
+- Predmeti: Predmeti, Predmet, NoviPredmet, Izvor, Jedinica, DokleSmoStigli (unos predavanja)
 - Uvoz: DodajIzvor → Parsiranje → ObimIspita
 - Ostalo: Postavke, Prijava
 
