@@ -103,3 +103,9 @@ export const FlagIcon = (p: IconProps) => (
     <path d="M5 21V4M5 4h11l-2 4 2 4H5" />
   </Icon>
 )
+
+export const ChevronRightIcon = (p: IconProps) => (
+  <Icon strokeWidth={2} {...p}>
+    <path d="M9 5l7 7-7 7" />
+  </Icon>
+)

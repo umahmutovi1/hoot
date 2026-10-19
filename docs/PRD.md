@@ -469,7 +469,7 @@ React SPA kao PWA na Cloudflare Pages, Supabase za bazu, auth i storage, a AI po
 | Server state | TanStack Query | Keširanje, optimistični update statusa jedinica |
 | Lokalni state | Zustand | UI state (aktivna sesija, filteri) |
 | Forme + validacija | React Hook Form + Zod | Isti Zod šeme validiraju i AI JSON izlaz |
-| Kalendar | FullCalendar (React) | Mjesečni/sedmični prikaz bez pisanja od nule |
+| Kalendar | Vlastita mreža (date-fns) | Mockup je jednostavna mjesečna mreža; bez ~100 KB biblioteke i prepisivanja njenog CSS-a |
 | Datumi | date-fns | Male, tree-shakable funkcije |
 | Baza | Supabase Postgres | RLS po `user_id`, SQL koji znaš |
 | Auth | Supabase Auth (magic link ili Google) | Bez lozinki za jednog korisnika, auth-ready za više |
@@ -1049,7 +1049,7 @@ study-planner/
 ```bash
 npm create vite@latest study-planner -- --template react-ts
 cd study-planner
-npm i @supabase/supabase-js @tanstack/react-query react-router-dom zustand zod react-hook-form @hookform/resolvers date-fns @fullcalendar/react @fullcalendar/daygrid @fullcalendar/timegrid
+npm i @supabase/supabase-js @tanstack/react-query react-router-dom zustand zod react-hook-form @hookform/resolvers date-fns
 npm i -D tailwindcss @tailwindcss/vite vite-plugin-pwa vitest supabase
 npx shadcn@latest init
 npx supabase init
@@ -1158,6 +1158,7 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio.
 | Rokovi | Sa procjenom sati ulaze u plan kao blokovi `deadline` |
 | Ponovni uvoz | Merge po `label`; nestale jedinice se arhiviraju |
 | Offline | Lokalni red u IndexedDB, klijentski UUID-ovi, idempotentni upsert |
+| Kalendar | Vlastita mjesečna mreža (date-fns) umjesto FullCalendar-a, kao u mockupu |
 | Kalibracija | Po izvoru × načinu učenja, uz povratak na vrijednost izvora dok nema 3 mjerenja |
 | Granica dana | 04:00 po zoni korisnika, podesivo |
 | Savjet na “Danas” | Svjež savjet strategista, inače “zašto ovo danas” iz scheduler-a |

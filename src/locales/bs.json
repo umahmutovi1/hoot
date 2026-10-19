@@ -55,8 +55,16 @@
     "title": "Plan",
     "tabCalendar": "Kalendar",
     "tabSchedule": "Satnica",
-    "calendarEmpty": "Ispiti, rokovi i nastava pojavit će se ovdje.",
-    "scheduleEmpty": "Satnica raspoređuje današnje blokove u slobodne termine."
+    "scheduleEmpty": "Satnica raspoređuje današnje blokove u slobodne termine.",
+    "prevMonth": "Prethodni mjesec",
+    "nextMonth": "Sljedeći mjesec",
+    "legendExam": "Ispit",
+    "legendDeadline": "Rok",
+    "dayEmpty": "Nema ispita ni rokova. Plan učenja dolazi kad dodaš izvore.",
+    "examItem": "Ispit: {{subject}} · {{title}}",
+    "deadlineItem": "Rok: {{title}}",
+    "deadlineItemSubject": "Rok: {{title}} · {{subject}}",
+    "addDeadline": "Dodaj rok"
   },
   "subjects": {
     "title": "Predmeti",
