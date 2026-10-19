@@ -150,3 +150,18 @@ export const CheckIcon = (p: IconProps) => (
     <path d="M5 12l5 5 9-10" />
   </Icon>
 )
+
+export const ClockIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="8" />
+    <path d="M12 8v4l3 2" />
+  </Icon>
+)
+
+/** Graduation cap: timetable and lectures. */
+export const CapIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 9l9-5 9 5-9 5z" />
+    <path d="M7 11v5c3 2 7 2 10 0v-5" />
+  </Icon>
+)

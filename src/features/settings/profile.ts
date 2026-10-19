@@ -78,3 +78,24 @@ export function useUpdateDisplayName() {
     onSettled: () => queryClient.invalidateQueries({ queryKey: profileKey(userId) }),
   })
 }
+
+/** Partial update of profile settings (recap after lecture, pace days, …). */
+export function useUpdateProfile() {
+  const { session } = useAuth()
+  const userId = session?.user.id
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (
+      patch: Partial<Pick<Profile, 'recap_after_lecture' | 'lecture_pace_days'>>,
+    ) => {
+      const { error } = await supabase.from('profiles').update(patch).eq('id', userId!)
+      if (error) throw error
+    },
+    onMutate: (patch) => {
+      queryClient.setQueryData<Profile>(profileKey(userId), (old) =>
+        old ? { ...old, ...patch } : old,
+      )
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: profileKey(userId) }),
+  })
+}
