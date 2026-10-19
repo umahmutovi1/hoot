@@ -252,7 +252,9 @@
     "campaignStartOnlyForCampaign": "Početak se postavlja samo u kampanji",
     "rangeEnd": "Unesi najkasniji mogući datum",
     "rangeOrder": "Najkasniji datum mora biti poslije najranijeg",
-    "pageOrder": "Krajnja stranica mora biti poslije početne"
+    "pageOrder": "Krajnja stranica mora biti poslije početne",
+    "outlineEmpty": "Upiši bar jednu jedinicu",
+    "labelTaken": "Ta oznaka već postoji"
   },
   "common": {
     "cancel": "Odustani",
@@ -315,7 +317,144 @@
   },
   "sources": {
     "editor": {
-      "empty": "Upiši bar jednu jedinicu"
+      "newTitle": "Novi izvor",
+      "editTitle": "Uredi sadržaj",
+      "kind": "Tip izvora",
+      "measure": "Mjeri se u",
+      "measureOption": {
+        "pages": "Stranicama",
+        "items": "Jedinicama"
+      },
+      "minutesPerItem": "Koliko minuta treba po jedinici?",
+      "minutesPerItemHint": "Početna procjena. Kad počneš koristiti tajmer, app uči tvoje vrijeme za baš ovaj izvor.",
+      "title": "Naziv",
+      "titlePlaceholder": "npr. Oppenheim — Signals & Systems",
+      "mode": {
+        "photo": "Slikaj sadržaj",
+        "text": "Ukucaj"
+      },
+      "photoSoon": "Uvoz slikom dolazi uskoro",
+      "photoSoonBody": "Za sada ukucaj ili zalijepi sadržaj, jedna linija po jedinici.",
+      "outline": "Sadržaj",
+      "placeholder": {
+        "pages": "Jedno poglavlje po liniji, npr.\n1 Uvod 1\n2 LTI sistemi 74\n2.1 Konvolucija 75",
+        "slides": "Jedna prezentacija po liniji, npr.\nL1 Uvod 34\nL2 Konvolucija 1-28",
+        "questions": "Jedno pitanje po liniji, npr.\n1. Navedi svojstva LTI sistema\n2. Izračunaj konvoluciju x[n] * h[n]",
+        "items": "Jedna jedinica po liniji, npr.\n1 Zbirka, vježba 1\n2 Laboratorijska vježba 1"
+      },
+      "hint": {
+        "pages": "Broj na kraju je početna stranica (kraj je početak sljedeće − 1), a 20-35 je raspon. 2.1 je podpoglavlje od 2.",
+        "slides": "Broj na kraju je broj slajdova, a 1-28 je raspon slajdova.",
+        "questions": "Cijela linija je pitanje; broj na početku postaje oznaka (P1, P2 …).",
+        "items": "Cijela linija je jedna jedinica; broj na početku je oznaka."
+      },
+      "review": "Pregledaj jedinice",
+      "delete": "Obriši izvor",
+      "confirmDelete": "Sigurno? Brišu se i jedinice i bilješke. Tapni ponovo"
+    },
+    "section": "Izvori",
+    "add": "+ Izvor",
+    "none": "Još nema izvora. Dodaj knjigu, skriptu, ispitna pitanja ili prezentacije.",
+    "kind": {
+      "book": "Knjiga",
+      "script": "Skripta",
+      "questions": "Pitanja",
+      "slides": "Prezentacije",
+      "other": "Ostalo"
+    },
+    "kindUnit": {
+      "book": "stranice",
+      "script": "stranice",
+      "questions": "lista",
+      "slides": "slajdovi",
+      "other": "bilo šta"
+    },
+    "amount": {
+      "pages_one": "{{count}} str.",
+      "pages_few": "{{count}} str.",
+      "pages_other": "{{count}} str.",
+      "slides_one": "{{count}} slajd",
+      "slides_few": "{{count}} slajda",
+      "slides_other": "{{count}} slajdova",
+      "questions_one": "{{count}} pitanje",
+      "questions_few": "{{count}} pitanja",
+      "questions_other": "{{count}} pitanja",
+      "items_one": "{{count}} jedinica",
+      "items_few": "{{count}} jedinice",
+      "items_other": "{{count}} jedinica"
+    },
+    "pagesRange": "str. {{range}}",
+    "slidesRange": "slajdovi {{range}}",
+    "review": {
+      "title": "Pregled jedinica",
+      "add": "+ Dodaj",
+      "summary_one": "{{count}} jedinica",
+      "summary_few": "{{count}} jedinice",
+      "summary_other": "{{count}} jedinica",
+      "estimate": "Procjena ~{{time}} · tapni tačkice da promijeniš težinu",
+      "warning": {
+        "missingAmount": "Za {{labels}} nije poznat kraj, pa je uzet prosjek ostalih. Dopiši raspon, npr. 654-730.",
+        "pageOrder": "Kod {{labels}} je kraj prije početka. Ispravi raspon.",
+        "duplicateLabel": "Duple oznake su preimenovane: {{labels}}."
+      },
+      "empty": "Nema jedinica. Dodaj ih ili se vrati na unos.",
+      "status": {
+        "new": "novo",
+        "changed": "izmijenjeno",
+        "unchanged": "bez promjene",
+        "restored": "vraćeno"
+      },
+      "difficulty": "Težina {{d}} od 5, tapni za promjenu",
+      "remove": "Ukloni {{label}}",
+      "archiving": "Arhivira se ({{count}})",
+      "archivingHint": "Napredak i bilješke ostaju; vraćaš ih iz „Arhivirane jedinice”.",
+      "unknownAmount": "obim nepoznat"
+    },
+    "detail": {
+      "editContent": "Uredi sadržaj",
+      "done": "pređeno",
+      "remaining": "preostalo",
+      "rate": {
+        "pages": "min/str. · procjena",
+        "slides": "min/slajdu · procjena",
+        "questions": "min/pitanju · procjena",
+        "items": "min/jedinici · procjena"
+      },
+      "empty": "Još nema jedinica. Dodaj ih kroz „Uredi sadržaj”.",
+      "difficulty": "težina {{d}}",
+      "archived": "Arhivirane jedinice ({{count}})",
+      "restore": "Vrati"
+    }
+  },
+  "time": {
+    "minutes": "{{m}} min",
+    "hours": "{{h}}h",
+    "hoursMinutes": "{{h}}h {{m}}"
+  },
+  "units": {
+    "status": {
+      "chapter": {
+        "0": "Nije počelo",
+        "1": "Pročitano",
+        "2": "Razumijem",
+        "3": "Ponovljeno"
+      },
+      "question": {
+        "0": "Ne znam",
+        "1": "Djelimično",
+        "3": "Znam"
+      }
+    },
+    "sheet": {
+      "newTitle": "Nova jedinica",
+      "editTitle": "Uredi jedinicu",
+      "label": "Oznaka",
+      "title": "Naslov",
+      "pageFrom": "Od str.",
+      "pageTo": "Do str.",
+      "slideFrom": "Od slajda",
+      "slideTo": "Do slajda",
+      "rangeHint": "Bez kraja se kraj uzima od početka sljedeće jedinice."
     }
   }
 }

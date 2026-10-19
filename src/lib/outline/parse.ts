@@ -24,6 +24,8 @@ export interface OutlineUnit {
   depth: number
   pageStart: number | null
   pageEnd: number | null
+  /** True when the end page was not written but taken from the next unit's start. */
+  pageEndDerived: boolean
   /** Pages, slides or 1 (questions, items). */
   amount: number
   /** True when the amount could not be read and is the average of the other units. */
@@ -134,6 +136,7 @@ export function parseOutline(text: string, measure: Measure): ParsedOutline {
       depth,
       pageStart: line.start,
       pageEnd: line.end,
+      pageEndDerived: false,
       amount: 1,
       amountGuessed: false,
       difficulty: null,
@@ -156,7 +159,10 @@ export function parseOutline(text: string, measure: Measure): ParsedOutline {
     }
     if (u.pageStart !== null && u.pageEnd === null && measure === 'pages') {
       const next = units.slice(i + 1).find((n) => n.depth <= u.depth && n.pageStart !== null)
-      if (next) u.pageEnd = Math.max(u.pageStart, next.pageStart! - 1)
+      if (next) {
+        u.pageEnd = Math.max(u.pageStart, next.pageStart! - 1)
+        u.pageEndDerived = true
+      }
     }
     const reversed = u.pageStart !== null && u.pageEnd !== null && u.pageEnd < u.pageStart
     if (reversed) {
@@ -199,6 +205,10 @@ export interface FormattableUnit {
   pageStart: number | null
   pageEnd: number | null
   amount: number
+  /** A derived end page is not written, so it follows the next unit's start again. */
+  pageEndDerived?: boolean
+  /** A guessed amount is not written, so it is guessed again from the other units. */
+  amountGuessed?: boolean
 }
 
 /** Writes units back as lines that parse to the same outline (explicit ranges, explicit labels). */
@@ -207,8 +217,10 @@ export function formatOutline(units: FormattableUnit[], measure: Measure): strin
     .map((u) => {
       const head = [u.label, u.title].filter(Boolean).join(' ')
       if (measure === 'questions' || measure === 'items') return head
-      if (u.pageStart !== null && u.pageEnd !== null) return `${head} ${u.pageStart}-${u.pageEnd}`
-      if (measure === 'slides') return `${head} ${u.amount}`
+      if (u.pageStart !== null && u.pageEnd !== null && !u.pageEndDerived) {
+        return `${head} ${u.pageStart}-${u.pageEnd}`
+      }
+      if (measure === 'slides' && !u.amountGuessed) return `${head} ${u.amount}`
       if (u.pageStart !== null) return `${head} ${u.pageStart}`
       return head
     })
