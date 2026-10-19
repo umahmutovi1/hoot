@@ -12,16 +12,28 @@ const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'validation.date')
 const name = (max: number) =>
   z.string().trim().min(1, 'validation.required').max(max, 'validation.tooLong')
 
-export const assessmentFormSchema = z.object({
-  id: z.uuid(),
-  kind: z.enum(ASSESSMENT_KINDS),
-  title: name(60),
-  date: isoDate,
-  format: z.enum(EXAM_FORMATS),
-  scopeAll: z.boolean(),
-  contingent: z.boolean(),
-  dateTentative: z.boolean(),
-})
+export const assessmentFormSchema = z
+  .object({
+    id: z.uuid(),
+    kind: z.enum(ASSESSMENT_KINDS),
+    title: name(60),
+    /** Exam day, or the earliest possible day when the date is tentative. */
+    date: isoDate,
+    format: z.enum(EXAM_FORMATS),
+    scopeAll: z.boolean(),
+    contingent: z.boolean(),
+    dateTentative: z.boolean(),
+    /** Latest possible day of a tentative exam; ignored otherwise. */
+    dateLatest: isoDate.nullable(),
+  })
+  .superRefine((a, ctx) => {
+    if (!a.dateTentative) return
+    if (!a.dateLatest) {
+      ctx.addIssue({ code: 'custom', path: ['dateLatest'], message: 'validation.rangeEnd' })
+    } else if (a.dateLatest < a.date) {
+      ctx.addIssue({ code: 'custom', path: ['dateLatest'], message: 'validation.rangeOrder' })
+    }
+  })
 export type AssessmentForm = z.infer<typeof assessmentFormSchema>
 
 export const subjectFormSchema = z

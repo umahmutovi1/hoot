@@ -140,7 +140,7 @@ p_u = \frac{level_u}{3} \qquad P_{izvor} = \frac{\sum_u p_u \, m_u}{\sum_u m_u} 
 - Integralni / popravni: obično `scope_all = true`.
 - Označiš ispit kao položen (`passed`): njegove jedinice ispadaju iz plana, osim ako ih pokriva neki drugi nadolazeći ispit.
 - “Samo ako zatreba” (`contingent`, tipično integralni i popravni): ispit je u kalendaru, ali ne ulazi u plan dok neki raniji ispit istog predmeta nije unesen kao nepoložen (rezultat unesen, `passed = false`) ili ga korisnik ručno ne aktivira.
-- Okvirni datum (`date_tentative`): datum još nije objavljen; plan i start kampanje računaju sa njim, ali se ispit prikazuje sa oznakom “okvirno” i app podsjeti da se datum potvrdi.
+- Okvirni datum (`date_tentative`): datum još nije objavljen, pa se unosi raspon u kojem ispit može biti: najraniji dan (`at`) i najkasniji dan (`at_latest`). Gradivo mora biti spremno do **najranijeg** dana: plan, buffer i start kampanje računaju se prema `at`, kao da je ispit tog dana. Kalendar označava cijeli raspon kao “mogući ispit”. Kad datum bude objavljen, korisnik isključi “Datum još nije objavljen” i unese tačan datum; plan se preračuna.
 - “Ne ulazi” (`assessment_units.included = false`, uvijek `assigned_by = 'user'`): jedinica je isključena iz obima tog ispita i kad je `scope_all = true`.
 
 **Rok jedinice** = datum najranijeg nepoloženog nadolazećeg ispita koji je pokriva. Jedinica koju ne pokriva nijedan nadolazeći ispit ne ulazi u plan. Progres se prikazuje i po ispitu (ista formula nad njegovim obimom).
@@ -227,7 +227,7 @@ Nisu svi predmeti jednako važni ni jednako teški. Prioritet kaže koliko je pr
 - Ručni start (`subjects.campaign_start_on`) ima prednost i ne mijenja se replanom. Ako ručni start ne daje dovoljno vremena, plan pravi deficit i nudi “Kreni ranije: [izračunat dan]”.
 - Izračunat start se ne snima u predmet; dio je izlaza `plan_runs` i prikazuje se na predmetu (“Kampanja kreće 2. dec”).
 - 3 dana prije starta “Danas” pokaže najavu; na dan starta “zašto ovo danas” kaže “kampanja počinje danas”.
-- Ispit sa okvirnim datumom računa start po okvirnom datumu, uz oznaku “okvirno”.
+- Ispit sa okvirnim datumom računa start prema najranijem mogućem danu raspona.
 
 ## Praćenje predavanja
 
@@ -858,7 +858,13 @@ alter table assessments
 alter table profiles
   add column name_confirmed_at timestamptz;                   -- null = pitaj "Kako da te zovem?"
 
--- 0003_lecture_logs.sql (Etapa 4)
+-- 0003_exam_date_range.sql (Etapa 2, primijenjena)
+alter table assessments
+  add column at_latest timestamptz,                   -- najkasniji mogući dan okvirnog ispita
+  add constraint assessments_at_latest_check
+    check (at_latest is null or (date_tentative and at_latest >= at));
+
+-- 0004_lecture_logs.sql (Etapa 4)
 create table lecture_logs (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users on delete cascade,
@@ -876,7 +882,7 @@ create table lecture_logs (
 -- + RLS owner_all, grant, set_updated_at triger, indeks (user_id, subject_id, on_date)
 alter table profiles add column lecture_pace_days smallint not null default 7;
 
--- 0004_manual_blocks.sql (Etapa 6)
+-- 0005_manual_blocks.sql (Etapa 6)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -886,7 +892,7 @@ alter table subjects
 alter table assessment_units
   add column included boolean not null default true;   -- false = "ne ulazi" (uvijek assigned_by = 'user')
 
--- 0005_fsrs.sql (Etapa 7); SM-2 kolone još nisu korištene
+-- 0006_fsrs.sql (Etapa 7); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,

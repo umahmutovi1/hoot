@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { examAtFromDate, dueAtFromDate, type Deadline } from '@/features/subjects/model'
-import { deadlinesAhead, deadlinesOn, examsOn, monthGrid } from './calendar'
+import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
 
 const deadline = (id: string, date: string, done = false): Deadline => ({
   id,
@@ -61,6 +61,7 @@ describe('day events', () => {
         result_max: null,
         contingent: false,
         date_tentative: false,
+        at_latest: null as string | null,
         created_at: '',
         updated_at: '',
       },
@@ -71,6 +72,21 @@ describe('day events', () => {
     const found = examsOn(new Date(2026, 9, 28), [subject(false), subject(true)])
     expect(found.map((e) => e.exam.id)).toEqual(['a'])
     expect(examsOn(new Date(2026, 9, 27), [subject(false)])).toEqual([])
+  })
+
+  it('spreads a tentative exam with a range over every day of the range', () => {
+    const s = subject(false)
+    s.assessments[0] = {
+      ...s.assessments[0]!,
+      date_tentative: true,
+      at: examAtFromDate('2026-12-01'),
+      at_latest: examAtFromDate('2026-12-03'),
+    }
+    expect(examsOn(new Date(2026, 11, 1), [s])).toEqual([])
+    const days = [30, 1, 2, 3, 4].map((d) =>
+      d === 30 ? new Date(2026, 10, 30) : new Date(2026, 11, d),
+    )
+    expect(days.map((d) => possibleExamsOn(d, [s]).length)).toEqual([0, 1, 1, 1, 0])
   })
 
   it('finds deadlines on the day and open ones within a week', () => {

@@ -20,6 +20,7 @@ const subject = (patch: Partial<SubjectForm> = {}): SubjectForm => ({
       scopeAll: false,
       contingent: false,
       dateTentative: false,
+      dateLatest: null,
     },
   ],
   ...patch,
@@ -60,9 +61,23 @@ describe('subjectFormSchema', () => {
     const bad = subject()
     bad.assessments[0]!.date = '28.10.2026'
     expect(firstError(subjectFormSchema.safeParse(bad))).toBe('validation.date')
+  })
+
+  it('requires a valid range for a tentative date', () => {
     const tentative = subject()
-    tentative.assessments[0]!.dateTentative = true
+    const exam = tentative.assessments[0]!
+    exam.dateTentative = true
+    expect(firstError(subjectFormSchema.safeParse(tentative))).toBe('validation.rangeEnd')
+    exam.dateLatest = '2026-10-20'
+    expect(firstError(subjectFormSchema.safeParse(tentative))).toBe('validation.rangeOrder')
+    exam.dateLatest = '2026-11-05'
     expect(subjectFormSchema.safeParse(tentative).success).toBe(true)
+  })
+
+  it('ignores the range end when the date is confirmed', () => {
+    const confirmed = subject()
+    confirmed.assessments[0]!.dateLatest = '2026-10-01'
+    expect(subjectFormSchema.safeParse(confirmed).success).toBe(true)
   })
 })
 

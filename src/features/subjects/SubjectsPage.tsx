@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { differenceInCalendarDays, format } from 'date-fns'
+import { differenceInCalendarDays } from 'date-fns'
 import { EmptyCard } from '@/components/EmptyCard'
 import { PlusIcon } from '@/components/icons'
 import { PageTitle } from '@/components/PageTitle'
@@ -10,7 +10,7 @@ import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { useSubjects } from './api'
 import { paletteOf } from './colors'
-import { relativeDays } from './format'
+import { examDateLabel, relativeDays } from './format'
 import { nextAssessment, type SubjectWithAssessments } from './model'
 
 /** Predmeti: active subjects with their next exam; archived ones behind a toggle. */
@@ -94,7 +94,7 @@ function SubjectCard({ subject, now }: { subject: SubjectWithAssessments; now: D
       <div className="flex justify-between gap-3 text-[13px]">
         <span className="text-ink-muted">
           {next
-            ? `${next.title} · ${next.date_tentative ? '~' : ''}${format(new Date(next.at), 'd. MMM', { locale: dateFnsLocales[locale] })}`
+            ? `${next.title} · ${examDateLabel(next, dateFnsLocales[locale])}`
             : t('subjects.noUpcomingExam')}
         </span>
         {next && (

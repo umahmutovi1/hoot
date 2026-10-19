@@ -64,7 +64,10 @@
     "examItem": "Ispit: {{subject}} · {{title}}",
     "deadlineItem": "Rok: {{title}}",
     "deadlineItemSubject": "Rok: {{title}} · {{subject}}",
-    "addDeadline": "Dodaj rok"
+    "addDeadline": "Dodaj rok",
+    "legendPossibleExam": "Mogući ispit",
+    "possibleExamItem": "Mogući ispit: {{subject}} · {{title}}",
+    "possibleExamRange": "datum još nije objavljen · {{range}}"
   },
   "subjects": {
     "title": "Predmeti",
@@ -170,9 +173,9 @@
       "pickDate": "Datum",
       "removeExam": "Ukloni ispit",
       "contingent": "Samo ako zatreba",
-      "dateTentative": "Okvirni datum",
+      "dateTentative": "Datum još nije objavljen",
       "notPlannedAhead": "ne planira se unaprijed",
-      "dateNotConfirmed": "datum nije potvrđen",
+      "dateNotConfirmed": "datum nije objavljen",
       "advanced": "Napredno",
       "advancedSummary": "Prioritet {{priority}} · {{mode}}",
       "priority": "Prioritet",
@@ -186,7 +189,11 @@
       "campaignHint": "Izračunato unazad od ispita, iz preostalog gradiva i tvoje dostupnosti, uz 20% rezerve. Do tada se predmet ne planira.",
       "create": "Kreiraj predmet",
       "archive": "Arhiviraj predmet",
-      "unarchive": "Vrati iz arhive"
+      "unarchive": "Vrati iz arhive",
+      "rangeBetween": "Moguće između",
+      "rangeAnd": "i",
+      "rangeEarliest": "Najranije",
+      "rangeLatest": "Najkasnije"
     },
     "detail": {
       "edit": "Uredi predmet",
@@ -194,9 +201,10 @@
       "nextExam": "{{title}} {{when}}.",
       "addExam": "+ Ispit",
       "noExams": "Još nema ispita.",
-      "tentative": "okvirni datum",
+      "tentative": "datum okvirno",
       "contingent": "samo ako zatreba",
-      "passed": "položen"
+      "passed": "položen",
+      "tentativeUntil": "datum okvirno, najkasnije {{date}}"
     },
     "campaign": {
       "label": "KAMPANJA",
@@ -230,7 +238,9 @@
     "date": "Neispravan datum",
     "positive": "Mora biti veće od 0",
     "tooLarge": "Prevelika vrijednost",
-    "campaignStartOnlyForCampaign": "Početak se postavlja samo u kampanji"
+    "campaignStartOnlyForCampaign": "Početak se postavlja samo u kampanji",
+    "rangeEnd": "Unesi najkasniji mogući datum",
+    "rangeOrder": "Najkasniji datum mora biti poslije najranijeg"
   },
   "common": {
     "cancel": "Odustani",
@@ -259,7 +269,8 @@
       "integral": "Integralni",
       "makeup": "Popravni",
       "other": "Ostalo"
-    }
+    },
+    "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum."
   },
   "deadlines": {
     "section": "Rokovi",

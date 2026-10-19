@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { deadlineToForm, subjectToForm, toDeadlineRow, toSubjectRow } from './mappers'
+import {
+  assessmentToForm,
+  deadlineToForm,
+  subjectToForm,
+  toAssessmentRow,
+  toDeadlineRow,
+  toSubjectRow,
+} from './mappers'
 import { examAtFromDate, localDateOf, nextAssessment, type Assessment } from './model'
 
 const assessment = (patch: Partial<Assessment>): Assessment => ({
@@ -18,6 +25,7 @@ const assessment = (patch: Partial<Assessment>): Assessment => ({
   result_max: null,
   contingent: false,
   date_tentative: false,
+  at_latest: null,
   created_at: '',
   updated_at: '',
   ...patch,
@@ -64,6 +72,33 @@ describe('subject mapping', () => {
     expect(form.color).toBe('lavender')
     expect(form.assessments.map((a) => a.title)).toEqual(['I parcijala', 'II parcijala'])
     expect(form.assessments[0]?.dateTentative).toBe(true)
+  })
+})
+
+describe('exam date range', () => {
+  const form = {
+    id: 'a',
+    kind: 'partial' as const,
+    title: 'II parcijala',
+    date: '2026-12-01',
+    format: 'written' as const,
+    scopeAll: false,
+    contingent: false,
+    dateTentative: true,
+    dateLatest: '2026-12-12',
+  }
+
+  it('stores the range end only for tentative exams', () => {
+    expect(localDateOf(toAssessmentRow('s', form).at_latest!)).toBe('2026-12-12')
+    expect(toAssessmentRow('s', { ...form, dateTentative: false }).at_latest).toBeNull()
+  })
+
+  it('round-trips the range', () => {
+    const row = toAssessmentRow('s', form)
+    const back = assessmentToForm(
+      assessment({ at: row.at, at_latest: row.at_latest ?? null, date_tentative: true }),
+    )
+    expect([back.date, back.dateLatest]).toEqual(['2026-12-01', '2026-12-12'])
   })
 })
 
