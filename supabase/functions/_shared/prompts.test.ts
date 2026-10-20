@@ -130,6 +130,12 @@ describe('answer', () => {
     today: '2026-10-20',
   }
 
+  it('tells the owl it cannot change data from the chat', () => {
+    const r = answerRequest(req, passages)
+    expect(r.system).toContain('never claim you did')
+    expect(r.system).toContain('Plan → Raspored')
+  })
+
   it('puts the state in the cacheable prefix and the question last', () => {
     const r = answerRequest(req, passages)
     expect(r.system).toContain('Bosnian')
