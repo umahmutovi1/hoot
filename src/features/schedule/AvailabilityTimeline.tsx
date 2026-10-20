@@ -9,16 +9,15 @@ const HOUR_PX = 30
 
 /**
  * One day of availability: free slots as lavender bands, classes on top (hatched, "iz
- * rasporeda nastave" as in Satnica). Tapping anywhere edits the day.
+ * rasporeda nastave" as in Satnica). Read-only: "Uredi dan" edits the day, so a stray tap (or the
+ * tap that dismisses the sheet) never reopens it.
  */
 export function AvailabilityTimeline({
   slots,
   classes,
-  onEdit,
 }: {
   slots: FreeSlot[]
   classes: DayClass[]
-  onEdit: () => void
 }) {
   const { t } = useTranslation()
   const [from, to] = hourRange([...slots.map((s, i) => ({ id: `s${i}`, ...s })), ...classes], 6, 22)
@@ -26,13 +25,7 @@ export function AvailabilityTimeline({
   const hours = Array.from({ length: to - from + 1 }, (_, i) => from + i)
 
   return (
-    <button
-      type="button"
-      onClick={onEdit}
-      aria-label={t('availability.editDay')}
-      className="relative block w-full text-left"
-      style={{ height: (to - from) * HOUR_PX + 10 }}
-    >
+    <div className="relative w-full" style={{ height: (to - from) * HOUR_PX + 10 }}>
       {hours.map((h) => (
         <div
           key={h}
@@ -85,6 +78,6 @@ export function AvailabilityTimeline({
           </span>
         </div>
       ))}
-    </button>
+    </div>
   )
 }

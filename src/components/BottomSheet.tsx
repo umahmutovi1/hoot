@@ -19,6 +19,13 @@ export function BottomSheet({ open, onOpenChange, title, subtitle, children }: B
       <SheetContent
         side="bottom"
         showCloseButton={false}
+        // Focus the sheet itself, not its first field: on mobile a focused <input type="time">
+        // pops the native picker the moment the sheet opens.
+        onOpenAutoFocus={(e) => {
+          e.preventDefault()
+          const content = e.currentTarget as HTMLElement | null
+          content?.focus()
+        }}
         className="mx-auto max-h-[92dvh] w-full max-w-[430px] gap-4 overflow-y-auto rounded-t-[32px] border-none bg-surface px-5 pt-3 pb-[calc(24px+env(safe-area-inset-bottom))] text-ink shadow-none"
       >
         <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-full bg-line" />

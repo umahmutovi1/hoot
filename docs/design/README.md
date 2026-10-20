@@ -34,4 +34,6 @@ Donja navigacija (odstupa od mockupa, odluka nakon Etape 2): plutajuća poluproz
 
 Odstupanja nakon Etape 4: kalendar ima samo Mjesec i Dan; Dostupnost je sedmica sa datumima i vremenskom osom (umjesto liste po danu iz `Dostupnost.dc.html`); svaki bottom sheet ima × za zatvaranje.
 
+Odstupanja nakon Etape 5: Dostupnost nema sekcije „Sedmični šablon“, „Izmijenjeni dani“ ni karticu „Raspored nastave“ iz `Dostupnost.dc.html`. „Uredi dan“ nudi „Samo ovaj dan / Svaki <dan>“, a nastava se vidi na vremenskoj osi (osa je samo za čitanje, ne otvara sheet). Raspored je dostupan s Plana i Predmeta. Bottom sheet pri otvaranju ne fokusira prvo polje, da se na mobilnom ne otvori native time picker.
+
 Varijante istog ekrana (npr. UrediBlok*, Provjera*, NoviPredmet*) su jedna komponenta sa stanjem, ne zasebne stranice.

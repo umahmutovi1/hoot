@@ -30,21 +30,17 @@ import { useScheduleData } from './useScheduleData'
 import { useWeekdayNames } from './weekdays'
 
 interface DaySheetProps {
-  /** A date ("Samo ovaj dan" / "Svaki ponedjeljak"); undefined = the weekday template only. */
-  date?: LocalDate
-  weekday: number
+  /** The day being edited; the form saves it as "Samo ovaj dan" or "Svaki <dan>". */
+  date: LocalDate
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
 /** Edit when you can study on a day (slots) and how much at most (cap). */
-export function DaySheet({ date, weekday, open, onOpenChange }: DaySheetProps) {
+export function DaySheet({ date, open, onOpenChange }: DaySheetProps) {
   const { t } = useTranslation()
   const { locale } = useLocale()
-  const long = useWeekdayNames('long')
-  const title = date
-    ? format(toDisplayDate(date), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })
-    : t('availability.templateFor', { day: long[weekday] })
+  const title = format(toDisplayDate(date), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })
   return (
     <BottomSheet
       open={open}
@@ -52,20 +48,12 @@ export function DaySheet({ date, weekday, open, onOpenChange }: DaySheetProps) {
       title={title.charAt(0).toUpperCase() + title.slice(1)}
       subtitle={t('availability.sheetSubtitle')}
     >
-      {open && <DayFormView date={date} weekday={weekday} onDone={() => onOpenChange(false)} />}
+      {open && <DayFormView date={date} onDone={() => onOpenChange(false)} />}
     </BottomSheet>
   )
 }
 
-function DayFormView({
-  date,
-  weekday,
-  onDone,
-}: {
-  date?: LocalDate
-  weekday: number
-  onDone: () => void
-}) {
+function DayFormView({ date, onDone }: { date: LocalDate; onDone: () => void }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
   const long = useWeekdayNames('long')
@@ -74,12 +62,11 @@ function DayFormView({
   const saveDay = useSaveDay()
   const deleteDay = useDeleteDay()
   const saveTemplate = useSaveWeekdayTemplate()
-  const day = date ? data.dayRows.find((d) => d.on_date === date) : undefined
+  const weekday = weekdayOf(date)
+  const day = data.dayRows.find((d) => d.on_date === date)
   const input = { rules: data.rules, days: data.days, caps: data.caps }
-  const initialSlots = date
-    ? slotsFor(date, input)
-    : data.rules.filter((r) => r.weekday === weekday)
-  const initialCap = date ? capFor(date, input) : (data.caps[weekday] ?? 0)
+  const initialSlots = slotsFor(date, input)
+  const initialCap = capFor(date, input)
 
   const form = useForm<DayForm>({
     resolver: zodResolver(dayFormSchema),
@@ -109,7 +96,7 @@ function DayFormView({
       overClasses: s.overClasses,
     }))
     const capMin = Math.round(v.capHours * 60)
-    if (date && v.scope === 'day') {
+    if (v.scope === 'day') {
       saveDay.mutate({
         id: day?.id ?? crypto.randomUUID(),
         on_date: date,
@@ -145,12 +132,9 @@ function DayFormView({
           const end = parseEndClock(values[i]?.end ?? '')
           const overlaps =
             start !== null && end !== null && end > start
-              ? classesOverlapping(
-                  { startMin: start, endMin: end },
-                  data.classes,
-                  data.periods,
-                  date ? { date } : { weekday },
-                )
+              ? classesOverlapping({ startMin: start, endMin: end }, data.classes, data.periods, {
+                  date,
+                })
               : []
           const error = errors?.[i]?.end?.message ?? errors?.[i]?.start?.message
           return (
@@ -259,27 +243,25 @@ function DayFormView({
         </div>
       </div>
 
-      {date && (
-        <div className="flex flex-col gap-2">
-          <span className={fieldLabel}>{t('availability.applyTo')}</span>
-          <ChipGroup
-            options={[
-              {
-                value: 'day' as const,
-                label: t('availability.onlyDay', {
-                  date: format(toDisplayDate(date), 'd. MMM', { locale: dateFnsLocales[locale] }),
-                }),
-              },
-              {
-                value: 'weekday' as const,
-                label: t('availability.everyWeekday', { day: long[weekdayOf(date)] }),
-              },
-            ]}
-            value={scope}
-            onChange={(s) => form.setValue('scope', s, { shouldDirty: true })}
-          />
-        </div>
-      )}
+      <div className="flex flex-col gap-2">
+        <span className={fieldLabel}>{t('availability.applyTo')}</span>
+        <ChipGroup
+          options={[
+            {
+              value: 'day' as const,
+              label: t('availability.onlyDay', {
+                date: format(toDisplayDate(date), 'd. MMM', { locale: dateFnsLocales[locale] }),
+              }),
+            },
+            {
+              value: 'weekday' as const,
+              label: t('availability.everyWeekday', { day: long[weekday] }),
+            },
+          ]}
+          value={scope}
+          onChange={(s) => form.setValue('scope', s, { shouldDirty: true })}
+        />
+      </div>
 
       <Button type="submit" size="pill" className="bg-brand text-white hover:bg-brand-strong">
         {t('common.save')}

@@ -16,15 +16,6 @@ export function clockRange(startMin: number, endMin: number) {
   return `${formatClock(startMin)}–${endMin >= 1440 ? '24:00' : formatClock(endMin)}`
 }
 
-/** "09–11" when both are full hours (Dostupnost chips), otherwise "09:30–11:00". */
-export function shortClockRange(startMin: number, endMin: number) {
-  if (startMin % 60 === 0 && endMin % 60 === 0) {
-    const h = (m: number) => String(m / 60).padStart(2, '0')
-    return `${h(startMin)}–${h(endMin)}`
-  }
-  return clockRange(startMin, endMin)
-}
-
 /** Winter semester when teaching starts between August and January. */
 export function isWinterTerm(startsOn: LocalDate) {
   const month = Number(startsOn.slice(5, 7))
