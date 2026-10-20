@@ -33,6 +33,33 @@ export function useDayBoundary(): DayBoundary {
   return useMemo(() => ({ timeZone, dayStartMin }), [timeZone, dayStartMin])
 }
 
+/** Grade scale for all subjects (until the profile loads: undefined = defaults). */
+export function useGlobalScale() {
+  const { data: profile } = useProfile()
+  return profile
+    ? { points_total: profile.points_total, grade_scale: profile.grade_scale }
+    : undefined
+}
+
+/** Saves the grade scale that applies to every subject without its own. */
+export function useUpdateGlobalScale() {
+  const { session } = useAuth()
+  const userId = session?.user.id
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (patch: Pick<Profile, 'points_total' | 'grade_scale'>) => {
+      const { error } = await supabase.from('profiles').update(patch).eq('id', userId!)
+      if (error) throw error
+    },
+    onMutate: (patch) => {
+      queryClient.setQueryData<Profile>(profileKey(userId), (old) =>
+        old ? { ...old, ...patch } : old,
+      )
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: profileKey(userId) }),
+  })
+}
+
 export function useUpdateLocale() {
   const { session } = useAuth()
   const userId = session?.user.id

@@ -8,7 +8,10 @@ import { signOut } from '@/features/auth/api'
 import { useDocuments } from '@/features/owl/api'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { formatDuration } from '@/features/sources/format'
+import { formatPoints } from '@/features/subjects/grades'
+import { ScaleSheet } from '@/features/subjects/ScaleSheet'
 import { localDay } from '@/lib/day'
+import { cn } from '@/lib/utils'
 import { DisplayNameForm } from './DisplayNameForm'
 import { useDayBoundary, useProfile } from './profile'
 import { useLocale } from './useLocale'
@@ -19,6 +22,7 @@ export function SettingsPage() {
   const { locale, setLocale } = useLocale()
   const name = profile?.display_name ?? ''
   const [editingName, setEditingName] = useState(false)
+  const [scaleOpen, setScaleOpen] = useState(false)
   const boundary = useDayBoundary()
   const [today] = useState(() => localDay(new Date(), boundary))
   const schedule = useScheduleData()
@@ -77,6 +81,14 @@ export function SettingsPage() {
             {t('settings.periodsCount', { count: schedule.periodRows.length })} ›
           </span>
         </Link>
+        <button type="button" onClick={() => setScaleOpen(true)} className={cn(row, 'text-left')}>
+          <span className="text-[15px]">{t('settings.grades')}</span>
+          <span className="text-sm text-ink-muted">
+            {t('settings.gradesValue', {
+              total: formatPoints(profile?.points_total ?? 100, locale),
+            })}
+          </span>
+        </button>
         <Link to="/settings/documents" className={row}>
           <span className="text-[15px]">{t('owl.documents.title')}</span>
           <span className="text-sm text-ink-muted">
@@ -88,6 +100,8 @@ export function SettingsPage() {
           <span className="text-sm text-ink-muted">{profile?.timezone}</span>
         </div>
       </div>
+
+      <ScaleSheet open={scaleOpen} onOpenChange={setScaleOpen} />
 
       <button
         type="button"

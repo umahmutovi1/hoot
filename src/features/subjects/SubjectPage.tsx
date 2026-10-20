@@ -22,7 +22,8 @@ import { DeadlineRow } from './DeadlineRow'
 import { DeadlineSheet } from './DeadlineSheet'
 import { ExamSheet } from './ExamSheet'
 import { examDateLabel, relativeDays } from './format'
-import { gradeItemsOf, pointsDetails, pointsLabel, worthOf } from './grades'
+import { useGlobalScale } from '@/features/settings/profile'
+import { gradeItemsOf, gradeSubjectOf, pointsDetails, pointsLabel, worthOf } from './grades'
 import { ResultChip } from './ResultChip'
 import { GradesCard } from './GradesCard'
 import { ResultSheet } from './ResultSheet'
@@ -52,6 +53,7 @@ export function SubjectPage() {
 
 function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const { t } = useTranslation()
+  const globalScale = useGlobalScale()
   const { locale } = useLocale()
   const navigate = useNavigate()
   const [now] = useState(() => new Date())
@@ -78,8 +80,9 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
     id?: string
   }>({ open: false })
   const items = gradeItemsOf(subject, allDeadlines)
+  const { pointsTotal } = gradeSubjectOf(subject, globalScale)
   const itemOf = (id: string) => items.find((i) => i.id === id)!
-  const worth = (id: string) => worthOf(id, items, subject.points_total)
+  const worth = (id: string) => worthOf(id, items, pointsTotal)
   const todayDate = localDateOf(now.toISOString())
   const isDue = (iso: string) => localDateOf(iso) <= todayDate
   // Makeups are listed under the exam they repeat.

@@ -1,6 +1,6 @@
 import { MAX_STATE_CHARS } from '@shared/schemas.ts'
 import { project } from '@/lib/grades'
-import { gradeItemsOf, gradeSubjectOf } from '@/features/subjects/grades'
+import { gradeItemsOf, gradeSubjectOf, type GlobalScale } from '@/features/subjects/grades'
 import { localDateOf, type Deadline, type SubjectWithAssessments } from '@/features/subjects/model'
 
 interface PeriodLike {
@@ -20,12 +20,14 @@ export function buildStateSummary(input: {
   subjects: SubjectWithAssessments[]
   deadlines: Deadline[]
   periods: PeriodLike[]
+  globalScale: GlobalScale | undefined
 }): string {
   const subjects = input.subjects
     .filter((s) => !s.archived)
     .map((s) => {
       const items = gradeItemsOf(s, input.deadlines)
-      const projection = project(items, gradeSubjectOf(s))
+      const grading = gradeSubjectOf(s, input.globalScale)
+      const projection = project(items, grading)
       const target = s.target_grade
         ? projection.grades.find((g) => g.grade === s.target_grade)
         : undefined
@@ -55,7 +57,7 @@ export function buildStateSummary(input: {
                 have: projection.have,
                 possible_so_far: projection.maxSoFar,
                 still_open: projection.remaining,
-                total: s.points_total,
+                total: grading.pointsTotal,
                 grades: projection.grades.map((g) =>
                   g.kind === 'needs' ? `${g.grade}: needs ${g.points}` : `${g.grade}: ${g.kind}`,
                 ),

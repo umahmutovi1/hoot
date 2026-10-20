@@ -62,9 +62,29 @@ export function parseScale(json: unknown): number[] | null {
   return isValidScale(scale) ? scale : null
 }
 
-export function gradeSubjectOf(s: Pick<Subject, 'points_total' | 'grade_scale'>): GradeSubject {
-  return { pointsTotal: s.points_total, scale: parseScale(s.grade_scale) ?? DEFAULT_SCALE }
+/** The profile's scale for all subjects (`profiles.points_total`, `grade_scale`). */
+export interface GlobalScale {
+  points_total: number
+  grade_scale: unknown
 }
+
+/** Points total and scale of a subject: its own when `custom_scale`, otherwise the global one. */
+export function gradeSubjectOf(
+  s: Pick<Subject, 'points_total' | 'grade_scale' | 'custom_scale'>,
+  global: GlobalScale | undefined,
+): GradeSubject {
+  return scaleOf(s.custom_scale ? s : global)
+}
+
+/** Points total and scale from stored values; undefined = defaults (profile not loaded). */
+export function scaleOf(stored: GlobalScale | undefined): GradeSubject {
+  return {
+    pointsTotal: stored?.points_total ?? DEFAULT_POINTS_TOTAL,
+    scale: parseScale(stored?.grade_scale) ?? DEFAULT_SCALE,
+  }
+}
+
+export const DEFAULT_POINTS_TOTAL = 100
 
 /** Points an exam or deadline carries within its subject; null = no points. */
 export function worthOf(id: string, items: GradeItem[], pointsTotal: number): number | null {

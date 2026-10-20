@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Switch } from '@/components/Switch'
 import { Button } from '@/components/ui/button'
+import { useGlobalScale } from '@/features/settings/profile'
 import { validationKey } from '@/lib/validation'
 import { useDeleteDeadline, useSaveDeadline, useSetDeadlineDone, useSubjects } from './api'
 import { paletteOf } from './colors'
 import { ChipGroup, fieldInput, fieldLabel } from './fields'
+import { gradeSubjectOf } from './grades'
 import { deadlineToForm } from './mappers'
 import { DEADLINE_KINDS, type Deadline } from './model'
 import { PointsFields } from './PointsFields'
@@ -66,6 +68,7 @@ function DeadlineFormBody({
   onDone: () => void
 }) {
   const { t } = useTranslation()
+  const globalScale = useGlobalScale()
   const { data: subjects = [] } = useSubjects()
   const save = useSaveDeadline()
   const remove = useDeleteDeadline()
@@ -205,7 +208,7 @@ function DeadlineFormBody({
             if (patch.pointsUnit) form.setValue('pointsUnit', patch.pointsUnit, set)
             if (patch.passMinPct !== undefined) form.setValue('passMinPct', patch.passMinPct, set)
           }}
-          pointsTotal={subject.points_total}
+          pointsTotal={gradeSubjectOf(subject, globalScale).pointsTotal}
           thresholdHint={t('grades.fields.thresholdHintDeadline')}
           errors={{
             pointsMax: errors.pointsMax && validationKey(errors.pointsMax.message),

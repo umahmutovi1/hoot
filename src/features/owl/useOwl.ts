@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/auth-context'
 import { usePeriods } from '@/features/schedule/api'
-import { useDayBoundary } from '@/features/settings/profile'
+import { useDayBoundary, useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { useDeadlines, useSubjects } from '@/features/subjects/api'
 import { localDay } from '@/lib/day'
@@ -21,6 +21,7 @@ export function useOwl() {
   const subjects = useSubjects().data
   const deadlines = useDeadlines().data
   const periods = usePeriods().data
+  const profile = useProfile().data
   const queryClient = useQueryClient()
   const ensureUser = useOwlStore((s) => s.ensureUser)
 
@@ -52,10 +53,11 @@ export function useOwl() {
                 subjects: subjects ?? [],
                 deadlines: deadlines ?? [],
                 periods: periods ?? [],
+                globalScale: profile,
               }),
               ctx,
             )
           : Promise.resolve(),
     }
-  }, [userId, locale, today, subjects, deadlines, periods, queryClient])
+  }, [userId, locale, today, subjects, deadlines, periods, profile, queryClient])
 }

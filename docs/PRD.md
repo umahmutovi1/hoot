@@ -203,6 +203,13 @@ k = broj jedinica sa zabilježenim vremenom. Nakon 5 jedinica izmjereno i heuris
 
 **Način učenja.** Svaka sesija ima `mode` (čitanje, zadaci, ponavljanje, pitanja). Kalibracija se vodi po paru izvor × način: blok čitanja koristi izmjerenu brzinu čitanja, a blok ponavljanja onu iz ponavljanja. Dok par nema bar 3 mjerenja, koristi se vrijednost izvora za sve načine.
 
+**Prije mjerenja (odluka, Etapa 7).** Dok izvor nema bar 3 završene sesije, app ne obećava obim: plan interno koristi heuristiku da rasporedi blokove, ali blok i sesija prikazuju samo predloženo trajanje (“predloženo 45 min”), a na kraju sesije korisnik upiše dokle je stigao. Od 3. sesije izvor prikazuje vlastitu procjenu obima (“str. 75–95”), a shrinkage iznad postepeno daje sve veću težinu mjerenjima.
+
+- **Prvi prolaz ili ponavljanje** se ne bira nego čita iz statusa jedinice: jedinica koja još nije pređena = prvi prolaz, pređena ili “razumijem” = ponavljanje. Svaki ima svoju brzinu po izvoru (par izvor × način, uz fallback na izvor dok par nema 3 mjerenja). Na početku sesije može se ručno promijeniti.
+- **Kraj sesije**: “do koje stranice” (stranica, slajd, pitanje ili jedinica; može i dio poglavlja), plus težina 1–5 po jedinici. Razlike između poglavlja dolaze iz izmjerenog vremena po poglavlju i ocjene težine, ne iz AI-ja.
+
+**Izvor “Pitanja” (odluka, Etapa 7).** Pitanja se ne mjere vremenom nego uspjehom: koliko pitanja znaš odgovoriti (recall 0–2, FSRS jačina). Vrijeme po pitanju služi samo planu za kapacitet (heuristika pa prosjek iz sesija), ne prikazuje se kao procjena i ne kalibriše se po pitanju. Pitanja su vezana za poglavlja izvora (preko tema ili direktno); AI predloži veze (embeddings + `parse-questions`, Etapa 10), korisnik ih ispravi, a ručna veza se ne prepisuje. U sesiji, nakon čitanja ili ponavljanja poglavlja, app odmah ponudi pitanja iz te oblasti koja su unesena u app (recall gate, Etapa 9).
+
 **Web pretraga** težine konkretne knjige nije default; može doći kao opcionalno dugme u v2.
 
 ## Prioritet i režim učenja
@@ -533,7 +540,9 @@ Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih 
 - **Prag ukupno**: zbir mora dostići prag ocjene 6 iz skale.
 - **Uslov za izlazak** (`entry_min_points` na ispitu, opcionalno): zbir bodova sa stavki koje su prije tog ispita mora biti bar toliki (npr. 20 bodova iz zadaća i seminarskog za završni). Ako nije ispunjen, ispit i projekcija to pokažu.
 
-**Skala ocjena** (`subjects.grade_scale`, `null` = default): pragovi u procentima od `points_total`, snimljeni kao niz od 5 brojeva za ocjene 6–10 (`[55,65,75,85,95]`). Default bosanska skala: 0–54 → 5, 55–64 → 6, 65–74 → 7, 75–84 → 8, 85–94 → 9, 95–100 → 10. Mijenja se po predmetu (pragovi strogo rastući, Zod). Sheet “Skala ocjena” ima i polje “Ukupno bodova” (`points_total`); pragovi se unose i prikazuju u % (odluka, Etapa 5).
+**Skala ocjena** (`subjects.grade_scale`, `null` = default): pragovi u procentima od `points_total`, snimljeni kao niz od 5 brojeva za ocjene 6–10 (`[55,65,75,85,95]`). Default bosanska skala: 0–54 → 5, 55–64 → 6, 65–74 → 7, 75–84 → 8, 85–94 → 9, 95–100 → 10. Pragovi strogo rastući (Zod). Sheet “Skala ocjena” ima i polje “Ukupno bodova” (`points_total`); pragovi se unose i prikazuju u % (odluka, Etapa 5).
+
+**Zajednička skala** (odluka nakon Etape 6, migracija `0011_global_grade_scale.sql`): skala i ukupno bodova su obično isti za sve predmete, pa žive na profilu (`profiles.points_total`, `profiles.grade_scale`) i važe za svaki predmet. Predmet ima svoju samo kad je `subjects.custom_scale = true` (tada važe `subjects.points_total` / `grade_scale`). Sheet “Skala ocjena” na predmetu bira “Za sve predmete” (mijenja zajedničku) ili “Samo ovaj predmet”; Postavke → “Bodovi i ocjene” otvara zajedničku. Željena ocjena ostaje po predmetu.
 
 **Projekcija ocjene** (`src/lib/grades/`):
 
@@ -1083,7 +1092,7 @@ create table document_chunks (
 
 -- 0010_owl_chats.sql (Etapa 6): owl_conversations (naslov, zadnja poruka, cache_name/cache_key/cache_expires_at), owl_messages (role, type, payload jsonb), RLS; ai_runs.cached_tokens
 
--- 0011_manual_blocks.sql (Etapa 8)
+-- 0012_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1091,7 +1100,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0012_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0013_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,

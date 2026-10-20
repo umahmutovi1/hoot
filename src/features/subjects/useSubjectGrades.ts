@@ -1,4 +1,5 @@
 import type { TFunction } from 'i18next'
+import { useGlobalScale } from '@/features/settings/profile'
 import { entryConditions, project, type GradeStatus } from '@/lib/grades'
 import { gradeItemsOf, gradeSubjectOf, pointsLabel } from './grades'
 import type { Deadline, SubjectWithAssessments } from './model'
@@ -6,17 +7,24 @@ import type { Deadline, SubjectWithAssessments } from './model'
 /** Projection and entry conditions of one subject (exams + its deadlines). */
 export function useSubjectGrades(subject: SubjectWithAssessments, deadlines: Deadline[]) {
   const items = gradeItemsOf(subject, deadlines)
-  const projection = project(items, gradeSubjectOf(subject))
+  const grading = gradeSubjectOf(subject, useGlobalScale())
+  const projection = project(items, grading)
   const titles = new Map<string, string>([
     ...subject.assessments.map((a) => [a.id, a.title] as const),
     ...deadlines.map((d) => [d.id, d.title] as const),
   ])
-  const entries = entryConditions(items, subject.points_total).filter((e) => {
+  const entries = entryConditions(items, grading.pointsTotal).filter((e) => {
     const exam = subject.assessments.find((a) => a.id === e.itemId)
     // Only exams still ahead: the condition no longer matters once there is a result.
     return e.missing > 0 && exam?.result_points === null
   })
-  return { projection, titles, entries, hasPoints: projection.slots.length > 0 }
+  return {
+    projection,
+    titles,
+    entries,
+    hasPoints: projection.slots.length > 0,
+    pointsTotal: grading.pointsTotal,
+  }
 }
 
 /** "Za 8 treba ti još 29 bodova" / "8 je osigurana" / "8 više nije dostižna". */

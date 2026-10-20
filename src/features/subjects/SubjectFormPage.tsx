@@ -19,16 +19,9 @@ import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
 import { useArchiveSubject, useSaveSubject, useSubject } from './api'
-import { SUBJECT_PALETTES } from './colors'
+import { ColorSwatch } from './fields'
 import { subjectToForm } from './mappers'
-import {
-  asPriority,
-  EXAM_FORMATS,
-  examKindDefaults,
-  PRIORITIES,
-  SUBJECT_COLORS,
-  type SubjectColor,
-} from './model'
+import { asPriority, EXAM_FORMATS, examKindDefaults, PRIORITIES, SUBJECT_COLORS } from './model'
 import { EXAM_PRESETS, presetExams, type ExamPreset } from './presets'
 import {
   EXAM_GRADE_DEFAULTS,
@@ -300,32 +293,6 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
         )}
       </div>
     </form>
-  )
-}
-
-function ColorSwatch({
-  color,
-  checked,
-  onSelect,
-}: {
-  color: SubjectColor
-  checked: boolean
-  onSelect: () => void
-}) {
-  const { t } = useTranslation()
-  return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={checked}
-      aria-label={t(`subjects.color.${color}`)}
-      onClick={onSelect}
-      className={cn(
-        'size-11 rounded-full border-[3px]',
-        SUBJECT_PALETTES[color].bar,
-        checked ? 'border-ink' : 'border-surface',
-      )}
-    />
   )
 }
 

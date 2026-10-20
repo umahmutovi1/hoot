@@ -247,6 +247,12 @@
       "body": "Until then the subject is not planned, except reviews of what you already learned. The start is computed from the remaining material and your availability, with a 20% reserve.",
       "move": "Move",
       "startNow": "Start now"
+    },
+    "quick": {
+      "open": "New subject",
+      "title": "New subject name",
+      "hint": "Add exams and the rest later on the subject.",
+      "create": "Add subject"
     }
   },
   "progress": {
@@ -266,7 +272,9 @@
     "timezone": "Time zone",
     "signOut": "Sign out",
     "periodsCount_one": "{{count}} period",
-    "periodsCount_other": "{{count}} periods"
+    "periodsCount_other": "{{count}} periods",
+    "grades": "Points and grades",
+    "gradesValue": "{{total}} points · scale ›"
   },
   "validation": {
     "required": "Required",
@@ -326,18 +334,29 @@
       "range": "Rough range"
     },
     "sources": {
-      "label": "Sources for this exam",
-      "none": "The subject has no sources yet.",
+      "label": "Sources",
+      "none": "This subject has no sources yet.",
       "add": "Add source",
-      "part": "Part of the source · Exam scope",
-      "all": "All",
-      "none_choice": "Not included",
-      "hint": "Pick part of a source (e.g. chapters 1–5) in Exam scope.",
-      "hintNew": "After saving, pick part of a source (e.g. chapters 1–5) in Exam scope."
+      "count_one": "{{count}} of {{total}} units",
+      "count_other": "{{count}} of {{total}} units",
+      "choice": {
+        "all": "All",
+        "part": "Part",
+        "none": "Not included"
+      },
+      "scopeAllOn": "All of the subject's material is in, including sources added later. You can leave parts out below.",
+      "scopeAllOff": "Only what you check below is in."
     },
     "retakeOf": "Make-up for",
     "retakeOfNone": "First add the exam this make-up repeats.",
-    "makeupTitle": "Make-up: {{title}}"
+    "makeupTitle": "Make-up: {{title}}",
+    "steps": {
+      "label": "Steps",
+      "1": "1 · Basics",
+      "2": "2 · What's on it",
+      "next": "Next: what's on it",
+      "back": "Back"
+    }
   },
   "deadlines": {
     "section": "Deadlines",
@@ -899,7 +918,13 @@
       "target": "Target grade",
       "noTarget": "no target",
       "targetHint": "The plan will raise the target coverage so you can reach {{grade}}.",
-      "noTargetHint": "Without a target the plan follows the subject's priority only."
+      "noTargetHint": "Without a target the plan follows the subject's priority only.",
+      "globalSubtitle": "For all subjects",
+      "applies": "Which subjects it applies to",
+      "appliesAll": "All subjects",
+      "appliesSubject": "This subject only",
+      "appliesAllHint": "The same scale and points total apply to every subject without its own. Changing it here changes it for all of them.",
+      "appliesSubjectHint": "{{name}} gets its own scale; the other subjects stay on the shared one."
     },
     "overview": {
       "title": "Grades",

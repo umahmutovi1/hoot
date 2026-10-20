@@ -252,6 +252,12 @@
       "body": "Do tada se predmet ne planira, osim ponavljanja već naučenog. Početak se računa iz preostalog gradiva i tvoje dostupnosti, uz 20% rezerve.",
       "move": "Pomjeri",
       "startNow": "Počni odmah"
+    },
+    "quick": {
+      "open": "Novi predmet",
+      "title": "Naziv novog predmeta",
+      "hint": "Ispite i ostalo dodaješ kasnije na predmetu.",
+      "create": "Dodaj predmet"
     }
   },
   "progress": {
@@ -272,7 +278,9 @@
     "signOut": "Odjava",
     "periodsCount_one": "{{count}} period",
     "periodsCount_few": "{{count}} perioda",
-    "periodsCount_other": "{{count}} perioda"
+    "periodsCount_other": "{{count}} perioda",
+    "grades": "Bodovi i ocjene",
+    "gradesValue": "{{total}} bodova · skala ›"
   },
   "validation": {
     "required": "Obavezno polje",
@@ -332,18 +340,30 @@
       "range": "Okvirni raspon"
     },
     "sources": {
-      "label": "Izvori za ovaj ispit",
+      "label": "Izvori",
       "none": "Predmet još nema izvora.",
       "add": "Dodaj izvor",
-      "part": "Dio izvora · Obim ispita",
-      "all": "Cijeli",
-      "none_choice": "Ne ulazi",
-      "hint": "Dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita.",
-      "hintNew": "Nakon spašavanja dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita."
+      "count_one": "{{count}} od {{total}} jedinica",
+      "count_few": "{{count}} od {{total}} jedinice",
+      "count_other": "{{count}} od {{total}} jedinica",
+      "choice": {
+        "all": "Cijeli",
+        "part": "Dio",
+        "none": "Ne ulazi"
+      },
+      "scopeAllOn": "Ulazi sve gradivo predmeta, i izvori koje dodaš kasnije. Ispod možeš izbaciti dio.",
+      "scopeAllOff": "Ulazi samo ono što označiš ispod."
     },
     "retakeOf": "Popravni za",
     "retakeOfNone": "Prvo dodaj ispit koji popravni ponavlja.",
-    "makeupTitle": "Popravni: {{title}}"
+    "makeupTitle": "Popravni: {{title}}",
+    "steps": {
+      "label": "Koraci",
+      "1": "1 · Osnovno",
+      "2": "2 · Šta ulazi",
+      "next": "Dalje: šta ulazi",
+      "back": "Nazad"
+    }
   },
   "deadlines": {
     "section": "Rokovi",
@@ -914,7 +934,13 @@
       "target": "Željena ocjena",
       "noTarget": "bez cilja",
       "targetHint": "Plan će podići ciljnu pokrivenost da stigneš do {{grade}}.",
-      "noTargetHint": "Bez cilja plan prati samo prioritet predmeta."
+      "noTargetHint": "Bez cilja plan prati samo prioritet predmeta.",
+      "globalSubtitle": "Za sve predmete",
+      "applies": "Za koje predmete važi",
+      "appliesAll": "Za sve predmete",
+      "appliesSubject": "Samo ovaj predmet",
+      "appliesAllHint": "Ista skala i ukupno bodova važe za sve predmete koji nemaju svoju. Izmjena ovdje mijenja ih za sve.",
+      "appliesSubjectHint": "{{name}} dobija svoju skalu; ostali predmeti ostaju na zajedničkoj."
     },
     "overview": {
       "title": "Ocjene",
