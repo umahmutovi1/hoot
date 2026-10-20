@@ -27,5 +27,11 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: deno check (Edge Functions)
+        working-directory: supabase/functions
+        run: deno check --config deno.json $(find . -name '*.ts' ! -name '*.test.ts' ! -path './node_modules/*')
       - run: npm test
       - run: npm run build
