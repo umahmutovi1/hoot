@@ -981,14 +981,16 @@
       "bad_request": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
       "unauthorized": "Prijava je istekla. Prijavi se ponovo.",
       "failed": "Nešto nije uspjelo. Pokušaj ponovo.",
-      "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst."
+      "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
+      "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h)."
     },
     "document": {
       "stored": "Spremila sam „{{title}}“ u Dokumente.",
       "found_one": "Našla sam {{count}} stavku. Pogledaj prije nego spasim:",
       "found_few": "Našla sam {{count}} stavke. Pogledaj prije nego spasim:",
       "found_other": "Našla sam {{count}} stavki. Pogledaj prije nego spasim:",
-      "noDates": "Datume nisam našla, ali dokument čuvam za pitanja."
+      "noDates": "Datume nisam našla, ali dokument čuvam za pitanja.",
+      "notStored": "„{{title}}“ nisam uspjela spremiti u Dokumente, pa iz njega ne mogu odgovarati. Pošalji ga ponovo kasnije."
     },
     "kind": {
       "academic_calendar": "Akademski kalendar",
@@ -1011,7 +1013,7 @@
     "saved_one": "Spašena {{count}} stavka.",
     "saved_few": "Spašene {{count}} stavke.",
     "saved_other": "Spašeno {{count}} stavki.",
-    "nothingToSave": "Sve je već u planu.",
+    "nothingToSave": "Nema šta spasiti",
     "page": "str. {{page}}",
     "stateRef": {
       "grades": "Bodovi i ocjena",

@@ -38,6 +38,8 @@ export type OwlMessage =
       kind: string
       title: string
       documentId: string
+      /** False when the passages could not be stored; the proposal still stands. */
+      stored: boolean
       found: number
     }
   | { id: string; role: 'owl'; type: 'proposal'; proposal: ImportProposal }

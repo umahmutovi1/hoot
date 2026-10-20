@@ -145,7 +145,11 @@ export type ParseDocumentRequest = z.infer<typeof parseDocumentRequestSchema>
 // documents (chunks + embeddings, no LLM)
 // ---------------------------------------------------------------------------
 
-export const EMBED_BATCH = 16
+/**
+ * Chunks per `documents` call. gte-small runs inside the Edge Function's CPU budget: two
+ * 1000-character chunks fit reliably, three or more sometimes hit WORKER_RESOURCE_LIMIT.
+ */
+export const EMBED_BATCH = 2
 
 export const embedChunksRequestSchema = z.object({
   document_id: z.uuid(),
@@ -226,6 +230,7 @@ export const AI_ERRORS = [
   'bad_request',
   'no_key',
   'rate_limited',
+  'quota_exhausted',
   'provider_busy',
   'invalid_output',
   'failed',

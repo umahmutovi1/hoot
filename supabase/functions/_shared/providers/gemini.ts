@@ -9,8 +9,15 @@ const API = 'https://generativelanguage.googleapis.com/v1beta/models'
 export interface GeminiConfig {
   apiKey: string
   model: string
+  /** Tried when `model` is busy or out of free quota (quotas are per model). */
+  fallbackModel?: string | null
   fetch?: typeof fetch
+  sleep?: (ms: number) => Promise<void>
 }
+
+/** "Model is overloaded" (503) and 500 pass within seconds; 429 is the quota, not retried. */
+const RETRY_STATUSES = new Set([500, 503])
+const RETRY_DELAY_MS = 2000
 
 export function buildGeminiBody(model: string, req: LlmRequest<unknown>) {
   const parts: Record<string, unknown>[] = (req.files ?? []).map((f) => ({
@@ -62,28 +69,48 @@ export function readGeminiResponse(body: GeminiResponse): LlmRawResult {
   return { json, inputTokens, outputTokens }
 }
 
+/** 429 per-day quota (free tier) vs. per-minute limit or overload. */
+export async function busyError(res: Response): Promise<LlmError> {
+  const body = res.status === 429 ? await res.text().catch(() => '') : ''
+  return /PerDay/i.test(body)
+    ? new LlmError('quota_exhausted', `gemini 429 per-day quota`)
+    : new ProviderBusyError(`gemini ${res.status}`)
+}
+
 export function geminiProvider({
   apiKey,
   model,
+  fallbackModel = null,
   fetch: doFetch = fetch,
+  sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 }: GeminiConfig): LlmProvider {
   return {
     name: 'gemini',
     model,
     async generate(req) {
-      const res = await doFetch(`${API}/${encodeURIComponent(model)}:generateContent`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
-        body: JSON.stringify(buildGeminiBody(model, req)),
-      })
-      if (res.status === 429 || res.status === 503) {
-        throw new ProviderBusyError(`gemini ${res.status}`)
-      }
-      if (!res.ok) {
+      const call = (m: string) =>
+        doFetch(`${API}/${encodeURIComponent(m)}:generateContent`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+          body: JSON.stringify(buildGeminiBody(m, req)),
+        })
+      const models = fallbackModel && fallbackModel !== model ? [model, fallbackModel] : [model]
+      let busy: LlmError | null = null
+      for (const m of models) {
+        let res = await call(m)
+        if (RETRY_STATUSES.has(res.status)) {
+          await sleep(RETRY_DELAY_MS)
+          res = await call(m)
+        }
+        if (res.ok) return { ...readGeminiResponse((await res.json()) as GeminiResponse), model: m }
+        if (res.status === 429 || RETRY_STATUSES.has(res.status)) {
+          busy = await busyError(res)
+          continue
+        }
         const detail = (await res.text()).slice(0, 300)
         throw new LlmError('failed', `gemini ${res.status}: ${detail}`)
       }
-      return readGeminiResponse((await res.json()) as GeminiResponse)
+      throw busy ?? new ProviderBusyError('gemini')
     },
   }
 }

@@ -42,7 +42,12 @@ export function serve(env: LlmEnv, handler: EdgeHandler) {
       return await handler(req, { userId: data.user.id, db, admin, env })
     } catch (err) {
       if (err instanceof LlmError) {
-        const status = err.code === 'rate_limited' ? 429 : err.code === 'no_key' ? 503 : 502
+        const status =
+          err.code === 'rate_limited' || err.code === 'quota_exhausted'
+            ? 429
+            : err.code === 'no_key'
+              ? 503
+              : 502
         console.error(err.code, err.message)
         return json({ error: err.code }, status)
       }

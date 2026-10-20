@@ -173,7 +173,11 @@ function Message({ message: m }: { message: OwlMessage }) {
     case 'document':
       return (
         <OwlBubble>
-          <span>{t('owl.document.stored', { title: m.title })}</span>
+          <span>
+            {m.stored === false
+              ? t('owl.document.notStored', { title: m.title })
+              : t('owl.document.stored', { title: m.title })}
+          </span>
           {m.found > 0 ? (
             <span>{t('owl.document.found', { count: m.found })}</span>
           ) : (

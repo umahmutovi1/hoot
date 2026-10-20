@@ -28,6 +28,8 @@ export interface LlmRawResult {
   json: unknown
   inputTokens: number
   outputTokens: number
+  /** The model that answered when a provider fell back to another one. */
+  model?: string
 }
 
 export interface LlmProvider {
@@ -87,6 +89,7 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
   const { provider } = deps
   let inputTokens = 0
   let outputTokens = 0
+  let model = provider.model
   let lastError: unknown = null
 
   // One retry, only when the output does not pass the Zod schema.
@@ -100,13 +103,14 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
     }
     inputTokens += raw.inputTokens
     outputTokens += raw.outputTokens
+    model = raw.model ?? provider.model
     const parsed = req.schema.safeParse(raw.json)
     if (parsed.success) {
-      const cost = costUsd(provider.model, inputTokens, outputTokens)
+      const cost = costUsd(model, inputTokens, outputTokens)
       await deps.logRun({
         task: req.task,
         provider: provider.name,
-        model: provider.model,
+        model,
         input_tokens: inputTokens,
         output_tokens: outputTokens,
         cost_usd: cost,
@@ -116,7 +120,7 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
       return {
         data: parsed.data,
         provider: provider.name,
-        model: provider.model,
+        model,
         inputTokens,
         outputTokens,
         costUsd: cost,
@@ -130,10 +134,10 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
   await deps.logRun({
     task: req.task,
     provider: provider.name,
-    model: provider.model,
+    model,
     input_tokens: inputTokens,
     output_tokens: outputTokens,
-    cost_usd: costUsd(provider.model, inputTokens, outputTokens),
+    cost_usd: costUsd(model, inputTokens, outputTokens),
     ok: false,
     error: `${error.code}: ${error.message}`.slice(0, 1000),
   })
@@ -155,7 +159,11 @@ export async function getProvider(env: LlmEnv): Promise<LlmProvider | null> {
     const key = env.get('GEMINI_API_KEY')
     if (!key) return null
     const { geminiProvider } = await import('./providers/gemini.ts')
-    return geminiProvider({ apiKey: key, model: env.get('LLM_MODEL') ?? 'gemini-2.5-flash' })
+    return geminiProvider({
+      apiKey: key,
+      model: env.get('LLM_MODEL') ?? 'gemini-2.5-flash',
+      fallbackModel: env.get('LLM_FALLBACK_MODEL') ?? null,
+    })
   }
   if (name === 'anthropic') {
     const key = env.get('ANTHROPIC_API_KEY')

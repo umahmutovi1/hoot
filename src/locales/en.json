@@ -966,13 +966,15 @@
       "bad_request": "I can't read this. Send an image, a PDF or text.",
       "unauthorized": "Your session expired. Sign in again.",
       "failed": "Something went wrong. Try again.",
-      "file": "I can't read this. Send an image, a PDF or text."
+      "file": "I can't read this. Send an image, a PDF or text.",
+      "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET)."
     },
     "document": {
       "stored": "I saved “{{title}}” to Documents.",
       "found_one": "I found {{count}} item. Have a look before I save:",
       "found_other": "I found {{count}} items. Have a look before I save:",
-      "noDates": "I found no dates, but I keep the document for questions."
+      "noDates": "I found no dates, but I keep the document for questions.",
+      "notStored": "I couldn’t save “{{title}}” to Documents, so I can’t answer from it. Send it again later."
     },
     "kind": {
       "academic_calendar": "Academic calendar",
@@ -994,7 +996,7 @@
     "saveCount": "Save {{count}}",
     "saved_one": "Saved {{count}} item.",
     "saved_other": "Saved {{count}} items.",
-    "nothingToSave": "Everything is already in the plan.",
+    "nothingToSave": "Nothing to save",
     "page": "p. {{page}}",
     "stateRef": {
       "grades": "Points and grade",
