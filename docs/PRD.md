@@ -1061,7 +1061,8 @@ create table documents (
   subject_id uuid references subjects on delete set null,      -- null = opći (kalendar, pravilnik)
   kind text not null check (kind in ('academic_calendar','rules','syllabus','exam_schedule','notice','other')),
   title text not null,
-  storage_path text,                                           -- uploads/<user_id>/...
+  storage_path text,                                           -- uploads/<user_id>/documents/...
+  media_type text,                                             -- null = zalijepljen tekst
   pages int,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
