@@ -35,7 +35,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Predmeti | Projekcija ocjene | “Imam X od Y”, koliko treba na preostalim ispitima za svaku ocjenu i za željenu ocjenu; rezultat se može poništiti (odricanje) |
 | Raspored | Akademski kalendar | Periodi nastave, sedmice parcijalnih, ispitni rokovi (redovni/popravni), neradni dani; ručno ili AI uvoz; “7. sedmica nastave” na Danas |
 | Uvoz | Uvoz sa pregledom | Tekst, slika ili PDF → akademski kalendar ili raspored ispita; pregled novo/izmijenjeno prije snimanja |
-| Uvoz | Dokumenti i asistent | Dokumenti fakulteta sa pretragom (RAG, citat izvora); chat asistent predlaže izmjene kao kartice |
+| Uvoz | Dokumenti i sova (agent) | Dokumenti fakulteta sa pretragom (RAG, citat izvora); sova na dnu ekrana Danas je jedan ulaz za pitanja i dokumente, prijedlozi izmjena kao kartice |
 | Predmeti | Izvori više tipova | 0..n izvora: knjiga, skripta, pitanja, prezentacije, ostalo |
 | Uvoz | Slikaj sadržaj | Slika sadržaja → jedinice sa stranicama, podjedinicama, težinom i temama; pregled prije snimanja |
 | Uvoz | Ručni unos | Paste ili jedna linija po jedinici; isti parser |
@@ -491,7 +491,9 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 
 **Provajder.** Sve ide kroz LLM wrapper (`_shared/llm.ts`). Dok Anthropic nalog nema karticu, `LLM_PROVIDER=gemini` (Gemini Flash free tier, structured output preko `responseSchema` iz `z.toJSONSchema()`); prebacivanje na Haiku je promjena secrets, bez koda. Na free tieru Google može koristiti podatke za poboljšanje proizvoda, pa se šalju samo podaci koji su za to potrebni. Koraci za ključ su u [SETUP.md](SETUP.md).
 
-**Uvoz sa pregledom (Etapa 6).** Ekran “Uvezi”: zalijepi se tekst ili doda slika/PDF i bira šta je unutra.
+**Sova (agent) na Danas (Etapa 6).** Na dnu ekrana Danas, iznad tab bara, stoji traka sa sovom („Pitaj sovu…“ i dugme +). To je jedan ulaz za sve AI radnje: pitanje (odgovor iz dokumenata sa citatom ili iz sažetka stanja), dodavanje dokumenta (uslikaj, slika, PDF, zalijepi tekst) i prijedlozi izmjena kao kartice sa pregledom. Tap na traku otvara razgovor preko cijelog ekrana. Iznad trake je današnji savjet strategista (oblačić, × ga skloni do sutra) i prijedlozi pitanja. Offline ili bez ključa traka je onemogućena. Za sad je samo na Danas; traka ili plutajuća sova na ostalim tabovima je varijanta za kasnije. Mockup: `design/SovaAgent.html`.
+
+**Uvoz sa pregledom (Etapa 6).** Kroz sovu (dugme +) ili ekran “Uvezi”: zalijepi se tekst ili doda slika/PDF i bira šta je unutra (ili sova pogodi).
 
 - Akademski kalendar → periodi (nastava, rokovi, sedmice parcijalnih, neradni dani).
 - Raspored ispita (npr. raspored parcijala) → ispiti sa datumima, upareni sa predmetima (`fuse.js` + AI), uz prijedlog izmjene postojećeg ispita (okvirni → tačan datum) umjesto duplikata.
@@ -503,7 +505,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 2. **Bilješke i jedinice**: naslovi jedinica, bilješke, kartice i ispitna pitanja dobijaju embedding (isti model). Služe recall pitanjima, vezi pitanje ↔ poglavlje i pretrazi “gdje sam pisala o …” (Etapa 10).
 3. **Stanje plana**: nije vektorska pretraga nego kompaktan JSON sažetak (predmeti, ispiti, bodovi, napredak, zaostatak), isti kao ulaz strategista.
 
-**Asistent (chat, Etapa 10).** Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi.
+**Asistent (chat).** Razgovor sa sovom postoji od Etape 6 (dokumenti, sažetak stanja, prijedlozi uvoza). Etapa 10 dodaje ostale alate. Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi.
 
 ## Bodovi, skala ocjena i projekcija ocjene
 
@@ -1375,5 +1377,5 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio.
 | Akademski kalendar | Periodi nastave, sedmice parcijalnih, ispitni rokovi, neradni dani; ručno (Etapa 4) i AI uvoz (Etapa 6); bez datuma konkretnih ispita |
 | Ispit bez datuma | Bira se rok iz akademskog kalendara; raspon roka = okvirni raspon ispita |
 | AI provajder za sad | Gemini Flash free tier iza wrappera dok Anthropic nema karticu |
-| Uvoz i asistent | Prvo uvoz sa pregledom (Etapa 6), chat asistent na istim alatima kasnije (Etapa 10); AI nikad ne piše direktno |
+| Uvoz i asistent | Sova na Danas kao jedan ulaz od Etape 6 (uvoz sa pregledom, pitanja o dokumentima); bilješke, recall i ostali alati u Etapi 10; AI nikad ne piše direktno |
 | RAG | Dokumenti fakulteta (čuvaju se) + bilješke i jedinice (embeddings `gte-small`) + sažetak stanja plana |

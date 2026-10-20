@@ -137,6 +137,9 @@ Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 
 Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini free tier ([SETUP.md](SETUP.md#4-gemini-ai-za-sad)).
 
+- [x] Mockup [`design/SovaAgent.html`](design/SovaAgent.html) (traka sa sovom na Danas, razgovor sa citatom, „Daj sovi dokument“, prijedlog uvoza kao kartica, offline, prazno stanje; varijanta za sve tabove za kasnije) — odobren
+- [ ] Sova na Danas: traka na dnu (savjet strategista u oblačiću, prijedlozi), razgovor preko cijelog ekrana, + → dokument; uvoz i pitanja o dokumentima idu kroz nju
+
 - [ ] `supabase/functions/_shared/`: `llm.ts`, `providers/gemini.ts` (`responseSchema` iz `z.toJSONSchema()`), `providers/anthropic.ts` (`zodOutputFormat()` + `messages.parse()`), `schemas.ts` (bez rekurzivnih šema), `prices.ts`, `cors.ts`
 - [ ] Logiranje u `ai_runs`, rate limit 30 poziva/dan, jedan retry na Zod grešku; `LLM_PROVIDER`, `LLM_MODEL`, `GEMINI_API_KEY` kao Supabase secrets
 - [ ] Migracija `0008_ai_documents.sql` (pgvector, `documents`, `document_chunks`, novi `ai_task`), regenerisan `database.ts`
@@ -200,7 +203,7 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - [ ] `parse-questions`, teme pri uvozu (postojeće teme u promptu, ručne se ne prepisuju)
 - [ ] ObimIspita: AI prijedlog, ručna izmjena zaključana
 - [ ] `parse-timetable` + „Uslikaj raspored“ (uparivanje predmeta preko `fuse.js`), `recall-questions`, `propose-answer`, `quiz`
-- [ ] Chat asistent: pretraga dokumenata i bilješki, sažetak stanja, prijedlozi kao kartice sa pregledom (isti alati kao uvoz), historija razgovora
+- [ ] Sova dobija ostale alate: pretraga bilješki, recall, raspored nastave i sadržaj kroz isti razgovor (osnova je iz Etape 6), historija razgovora
 - **DoD** → `v0.10.0`
 
 ## Etapa 11 — Napredak

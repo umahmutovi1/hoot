@@ -32,7 +32,7 @@ body { margin:0; background:#E4E1EE; font-family:Outfit, sans-serif; color:var(-
 .chip { height:28px; padding:0 10px; border-radius:14px; display:inline-flex; align-items:center; font-size:12px; font-weight:600; }
 .pill { height:52px; border-radius:26px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px; flex:1; }
 .pill.ghost { background:var(--soft); color:var(--brand); }
-.avatar { width:36px; height:36px; border-radius:18px; background:var(--avatar); color:var(--avatar-ink); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+.avatar { width:36px; height:36px; margin-right:4px; border-radius:18px; background:var(--avatar); color:var(--avatar-ink); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
 .icon-btn { width:44px; height:44px; border-radius:22px; background:var(--surface); display:flex; align-items:center; justify-content:center; color:var(--brand); }
 .sheet-bg { position:absolute; inset:0; background:rgba(29,26,43,.45); }
 .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--surface); border-radius:32px 32px 0 0; padding:12px 20px 24px; display:flex; flex-direction:column; gap:14px; }
@@ -251,6 +251,128 @@ body { margin:0; background:#E4E1EE; font-family:Outfit, sans-serif; color:var(-
   </div>
 </div>
 <div class="note" style="margin-top:10px">Bez interneta ili bez AI ključa traka je onemogućena (PRD: „AI dugmad onemogućena offline i bez ključa“). Plan i timer rade normalno.</div>
+</div>
+
+<div class="frame">
+<h3>6 · Danas prazno → velika sova + traka</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Danas</h1><div class="avatar">U</div></div>
+  <div style="display:flex;flex-direction:column;gap:2px;margin-top:-6px"><span style="font-size:17px;font-weight:600">Dobro došla, Uma</span><span class="small">Utorak, 20. oktobra</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:8px"><div style="width:200px;height:200px;border-radius:100px;background:var(--soft);display:flex;align-items:center;justify-content:center"><img src="../../public/mascot/reading.webp" width="170" height="170" alt=""></div><span style="font-size:20px;font-weight:700;text-align:center">Hajmo napraviti plan</span><span class="small" style="text-align:center;font-size:14px;max-width:290px">Dodaj predmet ručno ili daj sovi akademski kalendar ili raspored ispita.</span></div>
+  <div class="agent">
+    <div class="sugg"><span>+ Dodaj predmet</span><span>Uvezi akademski kalendar</span><span>Uvezi raspored ispita</span></div>
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Daj mi raspored ispita…</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab on"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Izuzetak od pravila „jedna sova po ekranu“: na praznim stanjima Danas (prvi ulazak, slobodan dan) velika sova i sova u traci idu zajedno. Prijedlozi vode u prvi korak.</div>
+</div>
+
+<div style="flex-basis:100%;font-size:15px;font-weight:700;color:var(--brand-strong);margin:12px 4px -8px">Varijanta za kasnije: sova na svim tab ekranima (za sad je samo na Danas)</div>
+
+<div class="frame">
+<h3>7A · Plan → ista traka</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Plan</h1><div class="avatar">U</div></div>
+  <div class="row" style="gap:6px;margin-top:-6px"><span class="chip" style="height:44px;padding:0 14px;border-radius:22px;background:var(--surface);font-size:14px">Raspored</span><span class="chip" style="height:44px;padding:0 14px;border-radius:22px;background:var(--surface);font-size:14px">Dostupnost</span></div>
+  <div style="display:flex;background:var(--track);border-radius:22px;padding:4px"><span style="flex:1;height:40px;border-radius:18px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Kalendar</span><span style="flex:1;height:40px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--muted)">Satnica</span></div>
+  <div class="card" style="height:300px"><span style="font-size:16px;font-weight:600">Oktobar 2026</span><span class="small">… mjesečni kalendar …</span></div>
+  <div class="agent">
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Pitaj o planu ili daj raspored…</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab on"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Ista traka na svakom tabu, sa tekstom prema ekranu. Minus: uzima ~70 px visine tamo gdje je prostor tijesan (kalendar, Satnica).</div>
+</div>
+
+<div class="frame">
+<h3>7B · Plan → sova kao plutajuće dugme</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Plan</h1><div class="avatar">U</div></div>
+  <div class="row" style="gap:6px;margin-top:-6px"><span class="chip" style="height:44px;padding:0 14px;border-radius:22px;background:var(--surface);font-size:14px">Raspored</span><span class="chip" style="height:44px;padding:0 14px;border-radius:22px;background:var(--surface);font-size:14px">Dostupnost</span></div>
+  <div style="display:flex;background:var(--track);border-radius:22px;padding:4px"><span style="flex:1;height:40px;border-radius:18px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Kalendar</span><span style="flex:1;height:40px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--muted)">Satnica</span></div>
+  <div class="card" style="height:370px"><span style="font-size:16px;font-weight:600">Oktobar 2026</span><span class="small">… mjesečni kalendar …</span></div>
+  <div style="position:absolute;right:20px;bottom:100px;width:60px;height:60px;border-radius:30px;background:var(--surface);box-shadow:0 6px 24px rgba(47,35,99,.18);display:flex;align-items:center;justify-content:center"><div class="owl" style="width:52px;height:52px"><img src="../../public/mascot/reading-head.webp" alt="" style="width:52px;height:52px"></div></div>
+  <div class="tabbar">
+    <div class="tab"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab on"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Na Danas puna traka, na ostalim tabovima samo sova u krugu dole desno; tap otvara isti razgovor (ekran 2). Manje zauzima, ali je pitanje jedan tap dalje.</div>
+</div>
+
+<div class="frame">
+<h3>8 · Predmeti → traka</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Predmeti</h1><div class="avatar">U</div></div>
+  <div class="between" style="margin-top:-6px"><span class="small" style="font-size:14px">3 aktivna</span><span class="chip" style="height:44px;padding:0 16px;border-radius:22px;background:var(--brand);color:#fff;font-size:14px">+ Novi</span></div>
+  <div class="card" style="background:var(--pink-soft)"><span style="font-size:17px;font-weight:700;color:var(--pink-ink)">Signali i sistemi</span><span style="font-size:13px;color:var(--pink-ink)">II parcijala za 23 dana</span></div>
+  <div class="card" style="background:var(--soft)"><span style="font-size:17px;font-weight:700;color:var(--brand-strong)">Matematika 2</span><span style="font-size:13px;color:var(--brand)">II parcijala za 46 dana</span></div>
+  <div class="card" style="background:var(--blue-soft)"><span style="font-size:17px;font-weight:700;color:#1E3A8A">Baze podataka</span><span style="font-size:13px;color:var(--blue)">Zadaća 2 za 5 dana</span></div>
+  <div class="agent">
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Daj silabus ili pitaj o predmetu…</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab on"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Na stranici jednog predmeta traka zna kontekst („Pitaj o Signalima…“), a dodan dokument se veže za taj predmet.</div>
+</div>
+
+<div class="frame">
+<h3>9 · Napredak → traka</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Napredak</h1><div class="avatar">U</div></div>
+  <span style="font-size:18px;font-weight:600">Ocjene</span>
+  <div class="card" style="padding:6px;gap:0"><div class="between" style="padding:12px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Signali i sistemi</span><span class="small">46 / 100 · cilj 8</span></div><span class="chip" style="background:var(--soft);color:var(--brand-strong)">treba 29</span></div><div style="height:1px;background:var(--hair);margin:0 12px"></div><div class="between" style="padding:12px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Matematika 2</span><span class="small">18 / 100 · cilj 7</span></div><span class="chip" style="background:var(--soft);color:var(--brand-strong)">treba 47</span></div></div>
+  <div class="agent">
+    <div class="sugg"><span>Gdje najviše gubim?</span><span>Koliko treba za 8?</span></div>
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Kako stojim? Šta da popravim?</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab on"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Prijedlozi pitanja se mijenjaju po ekranu; na Napretku su o bodovima i zaostatku.</div>
 </div>
 
 </div>

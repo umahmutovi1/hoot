@@ -18,9 +18,11 @@ Koristi uvijek isti `<Mascot pose="reading" size={120} />` komponent:
 | `celebrating` | Položen ispit / unesen rezultat (toast ili modal) | 120 px | — (isti stil kao KrajSesije) |
 | `celebrating` | Sažetak provjere znanja | 120 px, centrirano | ProvjeraSazetak.dc.html |
 | `reading-head` | Avatar strategista: savjet na "Danas" i sedmični pregled | 52 px | Danas.dc.html, Napredak.dc.html |
+| `reading-head` | Sova agent: traka na dnu "Danas" i zaglavlje razgovora (zamjenjuje avatar strategista na Danas) | 44 px traka, 40 px razgovor | SovaAgent.html |
+| `sleeping-head` | Sova agent offline / bez ključa | 44 px | SovaAgent.html |
 | `sleeping-head` | Replan sheet "Plan je ažuriran" (propušten blok) | 76 px, gore desno | Replan.dc.html |
 | `celebrating-head` | Web Push notifikacije (ikona), recall gate "Sjećam se" potvrda | 48–72 px | — |
 | `timer-head` | Notifikacija "blok počinje", prazno stanje Satnice | 48–96 px | — |
 
-Pravila: najviše jedna sova po ekranu; ne koristiti je na listama ni u tab baru;
+Pravila: najviše jedna sova po ekranu (izuzetak: prazna stanja Danas imaju veliku sovu i sovu u traci); ne koristiti je na listama ni u tab baru;
 ne mijenjati boje slike (već je usklađena sa paletom #7C6BD6 / #E9E4FB).
