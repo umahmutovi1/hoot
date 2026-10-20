@@ -131,7 +131,7 @@ Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 - [x] Sheet Rezultat: unos u bodovima ili %, automatski `passed`, „Poništi rezultat“ (odricanje) aktivira popravni
 - [x] Kartica „Bodovi i ocjena“ na Predmetu + sheet Skala ocjena + željena ocjena
 - [x] Napredak: kratak pregled bodova i ocjena po predmetima
-- **DoD** → `v0.5.0`
+- **DoD** ✓ → `v0.5.0`
 
 ## Etapa 6 — AI temelj, uvoz i dokumenti
 
