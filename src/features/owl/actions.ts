@@ -19,7 +19,7 @@ import { supabase } from '@/lib/supabase'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
 import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
 import { pdfText } from './pdfText'
-import { useOwlStore, type OwlMessage } from './store'
+import { historyWritten, useOwlStore, type OwlMessage } from './store'
 
 export type DocumentInput = { type: 'file'; file: File } | { type: 'text'; text: string }
 
@@ -264,7 +264,10 @@ export async function ask(question: string, state: string, ctx: OwlContext) {
   const pendingId = id()
   s.push({ id: pendingId, role: 'owl', type: 'pending', stage: 'thinking' })
   try {
+    // The conversation row must exist before the server keeps its prompt cache on it.
+    await historyWritten()
     const request: AnswerRequest = {
+      conversation_id: store().conversationId,
       question: question.trim().slice(0, 1000),
       history: history.map((h) => ({ ...h, text: h.text.slice(0, 2000) })),
       state,

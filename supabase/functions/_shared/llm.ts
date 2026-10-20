@@ -14,9 +14,21 @@ export interface LlmFile {
   base64: string
 }
 
+/** Where a provider keeps the name of an explicit prompt cache (per conversation). */
+export interface PromptCacheStore {
+  /** Cache name for this key; '' = caching was refused, do not try again for now. */
+  lookup(key: string): Promise<string | null>
+  save(key: string, name: string, expiresAt: Date): Promise<void>
+}
+
 export interface LlmRequest<T> {
   task: AiTask
   system: string
+  /** Stable text sent right after the system prompt (e.g. the state summary); cacheable. */
+  prefix?: string
+  /** Lets the provider cache system + prefix explicitly across calls. */
+  cache?: PromptCacheStore
+  /** The part that changes on every call (question, passages, document). */
   text: string
   files?: LlmFile[]
   schema: z.ZodType<T>
@@ -30,6 +42,8 @@ export interface LlmRawResult {
   outputTokens: number
   /** The model that answered when a provider fell back to another one. */
   model?: string
+  /** Input tokens served from a prompt cache (explicit or implicit). */
+  cachedTokens?: number
 }
 
 export interface LlmProvider {
@@ -54,6 +68,7 @@ export interface AiRunLog {
   input_tokens: number
   output_tokens: number
   cost_usd: number | null
+  cached_tokens: number | null
   ok: boolean
   error: string | null
 }
@@ -90,6 +105,7 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
   let inputTokens = 0
   let outputTokens = 0
   let model = provider.model
+  let cachedTokens: number | null = null
   let lastError: unknown = null
 
   // One retry, only when the output does not pass the Zod schema.
@@ -104,6 +120,7 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
     inputTokens += raw.inputTokens
     outputTokens += raw.outputTokens
     model = raw.model ?? provider.model
+    if (raw.cachedTokens !== undefined) cachedTokens = (cachedTokens ?? 0) + raw.cachedTokens
     const parsed = req.schema.safeParse(raw.json)
     if (parsed.success) {
       const cost = costUsd(model, inputTokens, outputTokens)
@@ -114,6 +131,7 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
         input_tokens: inputTokens,
         output_tokens: outputTokens,
         cost_usd: cost,
+        cached_tokens: cachedTokens,
         ok: true,
         error: null,
       })
@@ -138,6 +156,7 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
     input_tokens: inputTokens,
     output_tokens: outputTokens,
     cost_usd: costUsd(model, inputTokens, outputTokens),
+    cached_tokens: cachedTokens,
     ok: false,
     error: `${error.code}: ${error.message}`.slice(0, 1000),
   })

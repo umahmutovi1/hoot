@@ -49,6 +49,7 @@ function SheetBody({ initialKind }: { initialKind: ImportKind }) {
   const navigate = useNavigate()
   const location = useLocation()
   const closeSheet = useOwlStore((s) => s.closeSheet)
+  const newConversation = useOwlStore((s) => s.newConversation)
   const owl = useOwl()
   const [kind, setKind] = useState<ImportKind>(initialKind)
   const [step, setStep] = useState<'choose' | 'paste' | 'confirm'>('choose')
@@ -74,7 +75,10 @@ function SheetBody({ initialKind }: { initialKind: ImportKind }) {
   const send = () => {
     if (!picked) return
     closeSheet()
-    if (location.pathname !== '/owl') navigate('/owl')
+    if (location.pathname !== '/owl') {
+      newConversation()
+      navigate('/owl')
+    }
     void owl.giveDocument(picked, kind, note.trim() || null)
   }
 

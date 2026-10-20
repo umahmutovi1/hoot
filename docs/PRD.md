@@ -507,7 +507,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 2. **Bilješke i jedinice**: naslovi jedinica, bilješke, kartice i ispitna pitanja dobijaju embedding (isti model). Služe recall pitanjima, vezi pitanje ↔ poglavlje i pretrazi “gdje sam pisala o …” (Etapa 10).
 3. **Stanje plana**: nije vektorska pretraga nego kompaktan JSON sažetak (predmeti, ispiti, bodovi, napredak, zaostatak), isti kao ulaz strategista.
 
-**Asistent (chat).** Razgovor sa sovom postoji od Etape 6 (dokumenti, sažetak stanja, prijedlozi uvoza). Etapa 10 dodaje ostale alate. Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi. U Etapi 6 razgovor živi samo na uređaju (do kraja dana ili dok ga ne očistiš); trošak je u `ai_runs`. Trajna historija u bazi dolazi sa ostalim alatima u Etapi 10.
+**Asistent (chat).** Razgovor sa sovom postoji od Etape 6 (dokumenti, sažetak stanja, prijedlozi uvoza). Etapa 10 dodaje ostale alate. Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi. Od Etape 6 razgovori se čuvaju u bazi (`owl_conversations`, `owl_messages`): svaki ulaz sa Danas (traka, prijedlog, +) počinje novi razgovor, a stari su u Historiji (sat u zaglavlju razgovora; tap nastavlja razgovor, kanta ga briše). Svako pitanje šalje zadnjih 6 poruka razgovora, odlomke i sažetak stanja; model ništa ne pamti između poziva. **Prompt caching:** stalni dio ide prvi (uputa, pa sažetak stanja), pa razgovor, odlomci i pitanje. Gemini to implicitno kešira (`ai_runs.cached_tokens`); eksplicitni cache (`cachedContents`, TTL 10 min, po razgovoru) se pokušava kad je prefiks dovoljno dug, a free tier ga odbija, pa se odbijanje pamti sat vremena i poziv ide bez njega. Anthropic adapter stavlja `cache_control` na uputu i sažetak.
 
 ## Bodovi, skala ocjena i projekcija ocjene
 
@@ -1081,7 +1081,9 @@ create table document_chunks (
 
 -- 0009_ai_runs_writer.sql (Etapa 6): grant select, insert on ai_runs to service_role (Edge Functions logiraju AI pozive)
 
--- 0010_manual_blocks.sql (Etapa 8)
+-- 0010_owl_chats.sql (Etapa 6): owl_conversations (naslov, zadnja poruka, cache_name/cache_key/cache_expires_at), owl_messages (role, type, payload jsonb), RLS; ai_runs.cached_tokens
+
+-- 0011_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1089,7 +1091,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0011_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0012_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,

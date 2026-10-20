@@ -154,6 +154,10 @@ export interface Passage {
   content: string
 }
 
+/**
+ * Prompt order for caching: system and STATE first (stable within a conversation), then the
+ * conversation, the passages found for this question and the question itself.
+ */
 export function answerRequest(req: AnswerRequest, passages: Passage[]): LlmRequest<AnswerOutput> {
   const system = `You are Sova, the owl assistant in Hoot, a study planner for one student.
 Answer in ${LANGUAGE[req.locale]}, briefly (at most 4 sentences), plain text without markdown.
@@ -177,10 +181,12 @@ Never invent dates, rules or numbers. Today is ${req.today}.`
     const where = p.page ? `${p.title}, page ${p.page}` : p.title
     lines.push(`[${i + 1}] ${where}`, p.content)
   })
-  lines.push('STATE:', req.state, 'QUESTION:', req.question)
+  lines.push('QUESTION:', req.question)
   return {
     task: 'answer',
     system,
+    // Stable within a conversation, so it sits right after the system prompt and is cached.
+    prefix: `STATE:\n${req.state}`,
     text: lines.join('\n'),
     schema: answerOutputSchema,
     maxTokens: 1500,

@@ -24,6 +24,7 @@ export function OwlBar({ empty }: { empty: boolean }) {
   const { state } = useAiAvailability()
   const owl = useOwl()
   const openSheet = useOwlStore((s) => s.openSheet)
+  const newConversation = useOwlStore((s) => s.newConversation)
   const enabled = state === 'ready'
 
   const suggestions: Suggestion[] = empty
@@ -41,6 +42,7 @@ export function OwlBar({ empty }: { empty: boolean }) {
   const pick = (s: Suggestion) => {
     if ('to' in s) return navigate(s.to)
     if ('kind' in s) return openSheet(s.kind)
+    newConversation()
     navigate('/owl')
     void owl.ask(s.question)
   }
@@ -76,7 +78,11 @@ export function OwlBar({ empty }: { empty: boolean }) {
       <div className="flex h-14 items-center gap-2 rounded-full bg-surface px-1.5 shadow-[0_6px_24px_rgba(47,35,99,0.14)]">
         <button
           type="button"
-          onClick={() => navigate('/owl')}
+          onClick={() => {
+            // Every visit from Today starts a new conversation; old ones are in the history.
+            newConversation()
+            navigate('/owl')
+          }}
           aria-label={t('owl.open')}
           className="flex h-11 min-w-0 flex-1 items-center gap-2 text-left"
         >

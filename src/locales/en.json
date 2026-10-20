@@ -922,7 +922,6 @@
     "disabled": "The owl is not set up yet (no AI key).",
     "add": "Give the owl a document",
     "send": "Send",
-    "clear": "Clear conversation",
     "intro": "Ask me about exams, points and deadlines, or give me a document with +. I never change anything without your confirmation.",
     "suggest": {
       "important": "What matters most today?",
@@ -1038,6 +1037,14 @@
       "openFile": "Open file",
       "count_one": "{{count}} document",
       "count_other": "{{count}} documents"
+    },
+    "history": {
+      "title": "Conversation history",
+      "empty": "No conversations with the owl yet.",
+      "new": "New conversation",
+      "delete": "Delete conversation",
+      "confirmDelete": "Delete this conversation?",
+      "untitled": "Conversation"
     }
   }
 }

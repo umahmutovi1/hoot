@@ -77,6 +77,7 @@ export type Database = {
       }
       ai_runs: {
         Row: {
+          cached_tokens: number | null
           cost_usd: number | null
           created_at: string
           error: string | null
@@ -90,6 +91,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cached_tokens?: number | null
           cost_usd?: number | null
           created_at?: string
           error?: string | null
@@ -103,6 +105,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          cached_tokens?: number | null
           cost_usd?: number | null
           created_at?: string
           error?: string | null
@@ -624,6 +627,83 @@ export type Database = {
             columns: ["up_to_unit_id"]
             isOneToOne: false
             referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      owl_conversations: {
+        Row: {
+          cache_expires_at: string | null
+          cache_key: string | null
+          cache_name: string | null
+          created_at: string
+          id: string
+          last_message_at: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cache_expires_at?: string | null
+          cache_key?: string | null
+          cache_name?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          cache_expires_at?: string | null
+          cache_key?: string | null
+          cache_name?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      owl_messages: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          payload: Json
+          role: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          payload: Json
+          role: string
+          type: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          role?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "owl_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "owl_conversations"
             referencedColumns: ["id"]
           },
         ]
