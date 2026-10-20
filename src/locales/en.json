@@ -56,7 +56,7 @@
       "sourceLabel": "Source: {{source}} (opens in a new window)"
     },
     "week": {
-      "teaching": "Teaching week {{week}}",
+      "teaching": "Week {{week}} of classes",
       "partial": "{{title}}",
       "exam": "{{title}} · week {{week}}",
       "holiday": "Holiday · {{title}}"
@@ -281,7 +281,11 @@
     "outlineEmpty": "Enter at least one unit",
     "labelTaken": "That label already exists",
     "time": "Invalid time",
-    "timeOrder": "End must be after start"
+    "timeOrder": "End must be after start",
+    "percentMax": "At most 100%",
+    "retakeOf": "Pick the exam this make-up repeats",
+    "resultOverMax": "Can't be more than the maximum",
+    "scaleOrder": "Each threshold must be higher than the one before"
   },
   "common": {
     "cancel": "Cancel",
@@ -330,7 +334,10 @@
       "none_choice": "Not included",
       "hint": "Pick part of a source (e.g. chapters 1–5) in Exam scope.",
       "hintNew": "After saving, pick part of a source (e.g. chapters 1–5) in Exam scope."
-    }
+    },
+    "retakeOf": "Make-up for",
+    "retakeOfNone": "First add the exam this make-up repeats.",
+    "makeupTitle": "Make-up: {{title}}"
   },
   "deadlines": {
     "section": "Deadlines",
@@ -637,7 +644,7 @@
     "from": "From",
     "to": "To",
     "kind": {
-      "teaching": "Teaching",
+      "teaching": "Classes",
       "exam": "Exam period",
       "holiday": "Holidays"
     },
@@ -647,18 +654,18 @@
       "makeup": "Make-up period"
     },
     "section": {
-      "teaching": "Teaching",
+      "teaching": "Classes",
       "exam": "Exam periods",
       "holiday": "Holidays"
     },
     "empty": {
-      "teaching": "Add a semester: when classes start and end. The timetable and teaching weeks are counted from here.",
+      "teaching": "Add a semester: when classes start and end. The timetable and weeks of classes are counted from here.",
       "exam": "No exam periods. Add partial exam weeks and exam periods.",
       "holiday": "No holidays."
     },
     "hint": {
-      "teaching": "The timetable applies in this period; teaching week 1 is odd.",
-      "exam": "An exam without a date can be \"in this period\"; the plan aims for its first day. Partials fall in the middle of teaching.",
+      "teaching": "The timetable applies in this period; week 1 of classes is odd.",
+      "exam": "An exam without a date can be \"in this period\"; the plan aims for its first day. Partials fall in the middle of the semester.",
       "holiday": "No classes on these days; your study availability stays."
     },
     "defaultTitle": {
@@ -729,16 +736,6 @@
     "onlyThisDay": "this day only",
     "editDay": "Edit day",
     "planUses": "The plan can put up to {{time}} of study on this day. Classes are busy automatically.",
-    "template": "Weekly template",
-    "templateHint": "Applies every week, except days you change separately.",
-    "templateFor": "Every {{day}}",
-    "freeDay": "no study",
-    "upTo": "up to {{time}}",
-    "timetableLine_one": "{{count}} class a week · automatically busy",
-    "timetableLine_other": "{{count}} classes a week · automatically busy",
-    "changedDays": "Changed days",
-    "noStudy": "No study",
-    "cancelledClass": "Class cancelled {{range}}",
     "sheetSubtitle": "When you can study and how much at most",
     "slots": "Free slots",
     "overlap": "You have {{classes}} in this slot. Without the switch that part stays busy.",
@@ -815,5 +812,104 @@
     "restore": "Restore class",
     "cancel": "Cancel for this day",
     "edit": "Edit in timetable"
+  },
+  "grades": {
+    "unit": {
+      "points": "points",
+      "ofGrade": "% of grade"
+    },
+    "fields": {
+      "heading": "Points",
+      "carries": "Carries",
+      "noPoints": "no points",
+      "noPointsHint": "When you find out what it carries, enter it here. Until then it is only in the plan, not in the points.",
+      "percentIs": "= {{points}} of the subject's {{total}} points",
+      "threshold": "Pass threshold",
+      "noThreshold": "none",
+      "thresholdIsPct": "= {{pct}}%.",
+      "thresholdIsPoints": "= {{points}} pts.",
+      "thresholdHintExam": "Below the threshold the exam is not passed and the make-up is needed.",
+      "thresholdHintDeadline": "Below the threshold the deadline is not passed.",
+      "entry": "Entry requirement",
+      "entryPlaceholder": "e.g. 10 points from earlier items",
+      "entryHint": "Points needed from earlier exams and deadlines to sit this exam.",
+      "makeupCarries": "Carries the same points as {{title}} ({{points}}) and replaces that exam if you sit it.",
+      "integralCarries": "Sum of the partials' points; replaces them if you sit it."
+    },
+    "points_one": "{{n}} point",
+    "points_other": "{{n}} points",
+    "shareOfGrade": "{{n}}% of grade",
+    "thresholdShort": "threshold {{pct}}%",
+    "entryShort": "entry requirement: {{points}}",
+    "replacesPartials": "replaces the partials",
+    "enterResult": "Enter result",
+    "score": "{{points}}/{{max}}",
+    "annulled": "waived",
+    "retakeNeeded": "needed",
+    "result": {
+      "title": "Result",
+      "modeLabel": "Entry",
+      "modePoints": "Points",
+      "modePercent": "Percentage",
+      "points": "Points",
+      "max": "Out of",
+      "of": "of",
+      "percent": "Percentage",
+      "rescaleHint": "If the test was marked differently (e.g. out of 50), enter that; it is scaled to {{points}} points.",
+      "pct": "{{pct}}%",
+      "passedLine": "{{pct}}% · passed",
+      "failedLine": "{{pct}}% · not passed",
+      "thresholdNote": "threshold {{pct}}%",
+      "passed": "Passed",
+      "save": "Save result",
+      "annul": "Waive result",
+      "annulHint": "Giving up the points: the exam is not passed and the make-up is needed. The result stays in the history.",
+      "annulled": "The result is waived and not in the sum.",
+      "restore": "Restore result",
+      "clear": "Delete result",
+      "contributes": "Counts {{points}} of {{max}} points"
+    },
+    "card": {
+      "title": "Points and grade",
+      "scale": "Scale ›",
+      "empty": "Enter what the exams and deadlines carry (edit an exam or deadline) to see your points and what each grade needs.",
+      "haveOf": "you have {{have}} of {{max}} possible so far",
+      "nothingYet": "no results yet",
+      "targetChip": "Target: {{grade}}",
+      "targetRow": "{{grade}} · target",
+      "secured": "secured",
+      "unreachable": "out of reach",
+      "needs": "needs {{points}} ({{pct}}%)",
+      "targetNeeds": "For {{grade}} you still need {{points}}",
+      "targetNeedsSub": "of {{remaining}} left · ~{{pct}}% on: {{items}}",
+      "targetSecured": "Grade {{grade}} is secured",
+      "targetUnreachable": "{{grade}} is out of reach",
+      "targetUnreachableSub": "Most possible: {{max}} points",
+      "entryMissing": "Entry requirement for {{title}}: {{points}} to go"
+    },
+    "scale": {
+      "title": "Grade scale",
+      "subtitle": "{{name}} · {{total}} points in total",
+      "total": "Total points",
+      "pass": "pass",
+      "from": "from",
+      "thresholdFor": "Threshold for grade {{grade}}",
+      "below": "below {{pct}}%",
+      "reset": "Back to the Bosnian scale",
+      "target": "Target grade",
+      "noTarget": "no target",
+      "targetHint": "The plan will raise the target coverage so you can reach {{grade}}.",
+      "noTargetHint": "Without a target the plan follows the subject's priority only."
+    },
+    "overview": {
+      "title": "Grades",
+      "entry": "Requirement for {{title}}: {{points}} to go",
+      "targetNeeds": "Target {{grade}} · needs {{points}} of {{remaining}} left ({{pct}}%)",
+      "passNeeds": "To pass: {{points}} of {{remaining}} left ({{pct}}%)",
+      "passSecured": "Pass secured",
+      "passUnreachable": "Passing is out of reach without a make-up",
+      "noPoints": "No points entered",
+      "addOnSubject": "Add on the subject"
+    }
   }
 }

@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next'
 import { useMemo, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -612,7 +613,7 @@ function Review({
   )
 }
 
-function unitMeta(t: ReturnType<typeof useTranslation>['t'], measure: Measure, u: OutlineUnit) {
+function unitMeta(t: TFunction, measure: Measure, u: OutlineUnit) {
   if (measure === 'questions' || measure === 'items') return null
   if (u.pageStart === null) {
     return u.amountGuessed ? t('sources.review.unknownAmount') : amountLabel(t, measure, u.amount)

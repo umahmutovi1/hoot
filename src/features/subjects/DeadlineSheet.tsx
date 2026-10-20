@@ -11,7 +11,8 @@ import { paletteOf } from './colors'
 import { ChipGroup, fieldInput, fieldLabel } from './fields'
 import { deadlineToForm } from './mappers'
 import { DEADLINE_KINDS, type Deadline } from './model'
-import { deadlineFormSchema, type DeadlineForm } from './schemas'
+import { PointsFields } from './PointsFields'
+import { deadlineFormSchema, GRADE_FIELD_DEFAULTS, type DeadlineForm } from './schemas'
 
 const NO_SUBJECT = 'none'
 const HOURS_STEP = 0.5
@@ -82,12 +83,14 @@ function DeadlineFormBody({
           date,
           estHours: null,
           notes: null,
+          ...GRADE_FIELD_DEFAULTS,
         },
   })
-  const [kind, selectedSubject, estHours] = useWatch({
+  const [kind, selectedSubject, estHours, pointsMax, pointsUnit, passMinPct] = useWatch({
     control: form.control,
-    name: ['kind', 'subjectId', 'estHours'],
+    name: ['kind', 'subjectId', 'estHours', 'pointsMax', 'pointsUnit', 'passMinPct'],
   })
+  const subject = subjects.find((s) => s.id === selectedSubject)
   const errors = form.formState.errors
   const set = { shouldDirty: true, shouldValidate: form.formState.isSubmitted } as const
   const activeSubjects = subjects.filter((s) => !s.archived || s.id === selectedSubject)
@@ -193,6 +196,23 @@ function DeadlineFormBody({
           </div>
         )}
       </div>
+
+      {subject && (
+        <PointsFields
+          value={{ pointsMax, pointsUnit, passMinPct }}
+          onChange={(patch) => {
+            if (patch.pointsMax !== undefined) form.setValue('pointsMax', patch.pointsMax, set)
+            if (patch.pointsUnit) form.setValue('pointsUnit', patch.pointsUnit, set)
+            if (patch.passMinPct !== undefined) form.setValue('passMinPct', patch.passMinPct, set)
+          }}
+          pointsTotal={subject.points_total}
+          thresholdHint={t('grades.fields.thresholdHintDeadline')}
+          errors={{
+            pointsMax: errors.pointsMax && validationKey(errors.pointsMax.message),
+            passMinPct: errors.passMinPct && validationKey(errors.passMinPct.message),
+          }}
+        />
+      )}
 
       <label className="flex flex-col gap-2">
         <span className={fieldLabel}>

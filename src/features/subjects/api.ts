@@ -88,13 +88,16 @@ const placeholderMeta = (userId: string) => {
 function optimisticSubject(
   userId: string,
   form: SubjectForm,
-  existing: Subject | undefined,
+  existing: SubjectWithAssessments | undefined,
 ): SubjectWithAssessments {
   const row = toSubjectRow(form)
   const meta = placeholderMeta(userId)
   return {
     ...meta,
     archived: false,
+    points_total: 100,
+    grade_scale: null,
+    target_grade: null,
     ...existing,
     id: form.id,
     name: row.name,
@@ -102,14 +105,33 @@ function optimisticSubject(
     priority: row.priority ?? 3,
     study_mode: row.study_mode ?? 'regular',
     campaign_start_on: row.campaign_start_on ?? null,
-    assessments: form.assessments.map((a) => optimisticAssessment(userId, form.id, a)),
+    assessments: form.assessments.map((a) =>
+      optimisticAssessment(
+        userId,
+        form.id,
+        a,
+        existing?.assessments.find((e) => e.id === a.id),
+      ),
+    ),
   }
 }
 
-function optimisticAssessment(userId: string, subjectId: string, form: AssessmentForm): Assessment {
+/** Form fields over the cached row, so results entered elsewhere stay. */
+function optimisticAssessment(
+  userId: string,
+  subjectId: string,
+  form: AssessmentForm,
+  existing?: Assessment,
+): Assessment {
   const row = toAssessmentRow(subjectId, form)
   return {
     ...placeholderMeta(userId),
+    passed: false,
+    readiness_before: null,
+    result_points: null,
+    result_max: null,
+    result_annulled: false,
+    ...existing,
     id: form.id,
     subject_id: subjectId,
     kind: form.kind,
@@ -120,12 +142,12 @@ function optimisticAssessment(userId: string, subjectId: string, form: Assessmen
     contingent: form.contingent,
     date_tentative: form.dateTentative,
     at_latest: row.at_latest ?? null,
-    passed: false,
-    weight_pct: null,
-    readiness_before: null,
-    result_points: null,
-    result_max: null,
     exam_period_id: row.exam_period_id ?? null,
+    points_max: row.points_max ?? null,
+    points_unit: row.points_unit ?? 'points',
+    pass_min_pct: row.pass_min_pct ?? null,
+    entry_min_points: row.entry_min_points ?? null,
+    retake_of: row.retake_of ?? null,
   }
 }
 
@@ -175,7 +197,7 @@ export function useArchiveSubject() {
   })
 }
 
-/** Partial update of subject fields that are edited outside the full form (priority, mode). */
+/** Partial update of subject fields edited outside the full form (priority, mode, scale). */
 export function useUpdateSubject() {
   const userId = useUserId()
   const queryClient = useQueryClient()
@@ -185,7 +207,17 @@ export function useUpdateSubject() {
       patch,
     }: {
       id: string
-      patch: Partial<Pick<Subject, 'priority' | 'study_mode' | 'campaign_start_on'>>
+      patch: Partial<
+        Pick<
+          Subject,
+          | 'priority'
+          | 'study_mode'
+          | 'campaign_start_on'
+          | 'points_total'
+          | 'grade_scale'
+          | 'target_grade'
+        >
+      >
     }) => {
       const { error } = await supabase.from('subjects').update(patch).eq('id', id)
       if (error) throw error
@@ -213,10 +245,15 @@ export function useSaveAssessment() {
           s.id === subjectId
             ? {
                 ...s,
-                assessments: upsertById(s.assessments, {
-                  ...s.assessments.find((a) => a.id === form.id),
-                  ...optimisticAssessment(userId!, subjectId, form),
-                }),
+                assessments: upsertById(
+                  s.assessments,
+                  optimisticAssessment(
+                    userId!,
+                    subjectId,
+                    form,
+                    s.assessments.find((a) => a.id === form.id),
+                  ),
+                ),
               }
             : s,
         ),
@@ -259,6 +296,8 @@ export function useSaveDeadline() {
           ...placeholderMeta(userId!),
           done: false,
           done_minutes: 0,
+          result_points: null,
+          result_max: null,
           ...existing,
           id: form.id,
           subject_id: form.subjectId,
@@ -267,6 +306,9 @@ export function useSaveDeadline() {
           due_at: row.due_at,
           est_minutes: row.est_minutes ?? null,
           notes: row.notes ?? null,
+          points_max: row.points_max ?? null,
+          points_unit: row.points_unit ?? 'points',
+          pass_min_pct: row.pass_min_pct ?? null,
         }
         return upsertById(list, next).sort((a, b) => a.due_at.localeCompare(b.due_at))
       }),
@@ -303,6 +345,51 @@ export function useDeleteDeadline() {
     onMutate: (id) =>
       patchDeadlines(queryClient, userId, (list) => list.filter((d) => d.id !== id)),
     onError: (_error, _id, rollback) => rollback?.(),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: deadlinesKey(userId) }),
+  })
+}
+
+export type ExamResultPatch = Partial<
+  Pick<Assessment, 'result_points' | 'result_max' | 'passed' | 'result_annulled'>
+>
+
+/** "Rezultat": points, maximum, passed and waiver of one exam. */
+export function useSaveExamResult() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, patch }: { id: string; patch: ExamResultPatch }) => {
+      const { error } = await supabase.from('assessments').update(patch).eq('id', id)
+      if (error) throw error
+    },
+    onMutate: ({ id, patch }) =>
+      patchSubjects(queryClient, userId, (list) =>
+        list.map((s) => ({
+          ...s,
+          assessments: s.assessments.map((a) => (a.id === id ? { ...a, ...patch } : a)),
+        })),
+      ),
+    onError: (_error, _vars, rollback) => rollback?.(),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: subjectsKey(userId) }),
+  })
+}
+
+export type DeadlineResultPatch = Partial<Pick<Deadline, 'result_points' | 'result_max' | 'done'>>
+
+/** Result of a homework or seminar paper; entering one also marks the deadline done. */
+export function useSaveDeadlineResult() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, patch }: { id: string; patch: DeadlineResultPatch }) => {
+      const { error } = await supabase.from('deadlines').update(patch).eq('id', id)
+      if (error) throw error
+    },
+    onMutate: ({ id, patch }) =>
+      patchDeadlines(queryClient, userId, (list) =>
+        list.map((d) => (d.id === id ? { ...d, ...patch } : d)),
+      ),
+    onError: (_error, _vars, rollback) => rollback?.(),
     onSettled: () => queryClient.invalidateQueries({ queryKey: deadlinesKey(userId) }),
   })
 }

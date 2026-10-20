@@ -7,36 +7,9 @@ import {
   toDeadlineRow,
   toSubjectRow,
 } from './mappers'
-import {
-  examAtFromDate,
-  examKindDefaults,
-  localDateOf,
-  nextAssessment,
-  type Assessment,
-} from './model'
-
-const assessment = (patch: Partial<Assessment>): Assessment => ({
-  id: crypto.randomUUID(),
-  user_id: 'u',
-  subject_id: 's',
-  kind: 'partial',
-  title: 'I parcijala',
-  at: examAtFromDate('2026-10-28'),
-  format: 'written',
-  weight_pct: null,
-  scope_all: false,
-  passed: false,
-  readiness_before: null,
-  result_points: null,
-  result_max: null,
-  exam_period_id: null,
-  contingent: false,
-  date_tentative: false,
-  at_latest: null,
-  created_at: '',
-  updated_at: '',
-  ...patch,
-})
+import { examAtFromDate, examKindDefaults, localDateOf, nextAssessment } from './model'
+import { assessmentRow as assessment, deadlineRow, subjectRow } from './fixtures'
+import { EXAM_GRADE_DEFAULTS, GRADE_FIELD_DEFAULTS } from './schemas'
 
 describe('dates', () => {
   it('round-trips a local exam date', () => {
@@ -64,16 +37,7 @@ describe('subject mapping', () => {
     const later = assessment({ title: 'II parcijala', at: examAtFromDate('2026-12-09') })
     const earlier = assessment({ title: 'I parcijala', date_tentative: true })
     const form = subjectToForm({
-      id: 's',
-      user_id: 'u',
-      name: 'Signali',
-      color: 'unknown',
-      archived: false,
-      priority: 5,
-      study_mode: 'campaign',
-      campaign_start_on: null,
-      created_at: '',
-      updated_at: '',
+      ...subjectRow({ color: 'unknown', priority: 5, study_mode: 'campaign' }),
       assessments: [later, earlier],
     })
     expect(form.color).toBe('lavender')
@@ -94,6 +58,7 @@ describe('exam date range', () => {
     dateTentative: true,
     dateLatest: '2026-12-12',
     examPeriodId: 'period-1',
+    ...EXAM_GRADE_DEFAULTS,
   }
 
   it('stores the range end only for tentative exams', () => {
@@ -113,6 +78,16 @@ describe('exam date range', () => {
     )
     expect([back.date, back.dateLatest]).toEqual(['2026-12-01', '2026-12-12'])
   })
+
+  it('stores points, but lets a makeup carry the points of the exam it repeats', () => {
+    const graded = { ...form, pointsMax: 40, passMinPct: 50, retakeOf: 'x' }
+    expect(toAssessmentRow('s', graded)).toMatchObject({ points_max: 40, retake_of: null })
+    expect(toAssessmentRow('s', { ...graded, kind: 'makeup' })).toMatchObject({
+      points_max: null,
+      pass_min_pct: 50,
+      retake_of: 'x',
+    })
+  })
 })
 
 describe('deadline mapping', () => {
@@ -125,22 +100,13 @@ describe('deadline mapping', () => {
       date: '2026-10-23',
       estHours: 4.5,
       notes: '',
+      ...GRADE_FIELD_DEFAULTS,
     })
     expect(row.est_minutes).toBe(270)
     expect(row.notes).toBeNull()
-    const form = deadlineToForm({
-      ...row,
-      user_id: 'u',
-      subject_id: null,
-      kind: 'assignment',
-      done: false,
-      done_minutes: 0,
-      notes: null,
-      est_minutes: 270,
-      created_at: '',
-      updated_at: '',
-      id: 'd',
-    })
+    const form = deadlineToForm(
+      deadlineRow({ id: 'd', kind: 'assignment', due_at: row.due_at, est_minutes: 270 }),
+    )
     expect(form.estHours).toBe(4.5)
     expect(form.date).toBe('2026-10-23')
   })
@@ -169,9 +135,10 @@ describe('nextAssessment', () => {
 })
 
 describe('examKindDefaults', () => {
-  it('turns all material and only-if-needed on only for the comprehensive exam', () => {
+  it('turns all material on for the integral and only-if-needed for it and the makeup', () => {
     expect(examKindDefaults('integral')).toEqual({ scopeAll: true, contingent: true })
-    for (const kind of ['partial', 'final', 'makeup', 'other'] as const) {
+    expect(examKindDefaults('makeup')).toEqual({ scopeAll: false, contingent: true })
+    for (const kind of ['partial', 'final', 'other'] as const) {
       expect(examKindDefaults(kind)).toEqual({ scopeAll: false, contingent: false })
     }
   })

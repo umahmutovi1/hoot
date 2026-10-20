@@ -30,7 +30,12 @@ import {
   type SubjectColor,
 } from './model'
 import { EXAM_PRESETS, presetExams, type ExamPreset } from './presets'
-import { subjectFormSchema, type AssessmentForm, type SubjectForm } from './schemas'
+import {
+  EXAM_GRADE_DEFAULTS,
+  subjectFormSchema,
+  type AssessmentForm,
+  type SubjectForm,
+} from './schemas'
 
 const sectionLabel = 'text-sm font-semibold'
 const chip = 'flex h-9 items-center rounded-[12px] bg-canvas px-3 text-[13px]'
@@ -67,6 +72,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       dateTentative: false,
       dateLatest: null,
       examPeriodId: null,
+      ...EXAM_GRADE_DEFAULTS,
     }))
 
   const form = useForm<SubjectForm>({
@@ -124,6 +130,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       dateTentative: false,
       dateLatest: null,
       examPeriodId: null,
+      ...EXAM_GRADE_DEFAULTS,
     })
   }
 

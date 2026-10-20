@@ -163,20 +163,25 @@ export type Database = {
           contingent: boolean
           created_at: string
           date_tentative: boolean
+          entry_min_points: number | null
           exam_period_id: string | null
           format: Database["public"]["Enums"]["exam_format"]
           id: string
           kind: Database["public"]["Enums"]["assessment_kind"]
+          pass_min_pct: number | null
           passed: boolean
+          points_max: number | null
+          points_unit: string
           readiness_before: number | null
+          result_annulled: boolean
           result_max: number | null
           result_points: number | null
+          retake_of: string | null
           scope_all: boolean
           subject_id: string
           title: string
           updated_at: string
           user_id: string
-          weight_pct: number | null
         }
         Insert: {
           at: string
@@ -184,20 +189,25 @@ export type Database = {
           contingent?: boolean
           created_at?: string
           date_tentative?: boolean
+          entry_min_points?: number | null
           exam_period_id?: string | null
           format?: Database["public"]["Enums"]["exam_format"]
           id?: string
           kind?: Database["public"]["Enums"]["assessment_kind"]
+          pass_min_pct?: number | null
           passed?: boolean
+          points_max?: number | null
+          points_unit?: string
           readiness_before?: number | null
+          result_annulled?: boolean
           result_max?: number | null
           result_points?: number | null
+          retake_of?: string | null
           scope_all?: boolean
           subject_id: string
           title: string
           updated_at?: string
           user_id?: string
-          weight_pct?: number | null
         }
         Update: {
           at?: string
@@ -205,20 +215,25 @@ export type Database = {
           contingent?: boolean
           created_at?: string
           date_tentative?: boolean
+          entry_min_points?: number | null
           exam_period_id?: string | null
           format?: Database["public"]["Enums"]["exam_format"]
           id?: string
           kind?: Database["public"]["Enums"]["assessment_kind"]
+          pass_min_pct?: number | null
           passed?: boolean
+          points_max?: number | null
+          points_unit?: string
           readiness_before?: number | null
+          result_annulled?: boolean
           result_max?: number | null
           result_points?: number | null
+          retake_of?: string | null
           scope_all?: boolean
           subject_id?: string
           title?: string
           updated_at?: string
           user_id?: string
-          weight_pct?: number | null
         }
         Relationships: [
           {
@@ -226,6 +241,13 @@ export type Database = {
             columns: ["exam_period_id"]
             isOneToOne: false
             referencedRelation: "academic_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessments_retake_of_fkey"
+            columns: ["retake_of"]
+            isOneToOne: false
+            referencedRelation: "assessments"
             referencedColumns: ["id"]
           },
           {
@@ -389,6 +411,11 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["deadline_kind"]
           notes: string | null
+          pass_min_pct: number | null
+          points_max: number | null
+          points_unit: string
+          result_max: number | null
+          result_points: number | null
           subject_id: string | null
           title: string
           updated_at: string
@@ -403,6 +430,11 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["deadline_kind"]
           notes?: string | null
+          pass_min_pct?: number | null
+          points_max?: number | null
+          points_unit?: string
+          result_max?: number | null
+          result_points?: number | null
           subject_id?: string | null
           title: string
           updated_at?: string
@@ -417,6 +449,11 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["deadline_kind"]
           notes?: string | null
+          pass_min_pct?: number | null
+          points_max?: number | null
+          points_unit?: string
+          result_max?: number | null
+          result_points?: number | null
           subject_id?: string | null
           title?: string
           updated_at?: string
@@ -997,10 +1034,13 @@ export type Database = {
           campaign_start_on: string | null
           color: string | null
           created_at: string
+          grade_scale: Json | null
           id: string
           name: string
+          points_total: number
           priority: number
           study_mode: string
+          target_grade: number | null
           updated_at: string
           user_id: string
         }
@@ -1009,10 +1049,13 @@ export type Database = {
           campaign_start_on?: string | null
           color?: string | null
           created_at?: string
+          grade_scale?: Json | null
           id?: string
           name: string
+          points_total?: number
           priority?: number
           study_mode?: string
+          target_grade?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -1021,10 +1064,13 @@ export type Database = {
           campaign_start_on?: string | null
           color?: string | null
           created_at?: string
+          grade_scale?: Json | null
           id?: string
           name?: string
+          points_total?: number
           priority?: number
           study_mode?: string
+          target_grade?: number | null
           updated_at?: string
           user_id?: string
         }
