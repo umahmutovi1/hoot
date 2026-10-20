@@ -149,7 +149,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [x] Dokumenti fakulteta (Postavke → Dokumenti): lista, upload kroz sovu, odlomci + embeddings (`gte-small`), RPC pretrage, `answer` sa citatima (dokument, stranica)
 - [x] `evals/` sa `promptfoo`: fiksni primjeri kalendara i rasporeda ispita
 - [x] AI dugmad onemogućena offline i bez ključa (poruka)
-- **DoD** → `v0.6.0`
+- **DoD** ✓ → `v0.6.0`
 
 ## Etapa 7 — Timer i sesije
 
@@ -250,18 +250,19 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - Linter je oxlint (Vite 8 default) umjesto ESLinta.
 - Font Outfit se servira lokalno (`@fontsource-variable/outfit`), radi offline.
 
-## Prompt za Etapu 6 (sljedeći chat)
+## Prompt za Etapu 7 (sljedeći chat)
 
-> Pročitaj CLAUDE.md, docs/PRD.md (sekcija „AI uvoz, dokumenti i asistent“), docs/ROADMAP.md (Etapa 6), docs/SETUP.md (sekcija 4 „Gemini“), docs/design/README.md, docs/design/MASCOT.md i docs/design/SovaAgent.html (odobren mockup), pa uradi Etapu 6 — AI temelj, uvoz i dokumenti.
-> Isti tok kao u Etapama 2–5: podijeli etapu na manje PR-ove u `dev` (prvo `_shared/` LLM wrapper sa providerima, Zod šemama, `ai_runs` logiranjem i rate limitom + testovi; pa migracija `0008_ai_documents.sql`; pa edge funkcije uvoza i dokumenata; pa ekrani), svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.6.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Prije release-a označi DoD u ROADMAP-u. Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP. Ako treba nešto u dashboardu (Supabase secrets, pgvector, Gemini ključ), napiši mi tačne korake i ažuriraj SETUP.md.
-> Napomene iz Etape 5:
-> - Sova je jedini AI ulaz i za sad je samo na Danas: traka na dnu iznad tab bara (`reading-head`, „Pitaj sovu…“, +), razgovor preko cijelog ekrana, + → „Daj sovi dokument“ (uslikaj / slika / PDF / zalijepi tekst; „Pogodi sama“ ili tip), prijedlog uvoza kao kartica novo / izmijenjeno / preskačem → „Pregledaj“ / „Spasi N“. Ništa se ne upisuje bez potvrde. Offline ili bez ključa: traka ugašena, `sleeping-head`.
-> - Oblačić sa savjetom strategista još ne postoji (strategist je Etapa 11); iznad trake su samo prijedlozi. Plutajuća sova na ostalim tabovima (varijanta 7B) dolazi kasnije, ne u ovoj etapi.
-> - Prazna stanja Danas: velika sova i sova u traci idu zajedno (izuzetak u MASCOT.md).
-> - Odgovori iz dokumenata uvijek navode dokument i stranicu; pitanja o bodovima i planu idu iz sažetka stanja, ne iz vektorske pretrage.
-> - Zaglavlje tab ekrana je `PageTitle` (samo naslov + avatar koji otvara Postavke); ostalo ide u red ispod.
-> - Provajder: `LLM_PROVIDER=gemini`, `LLM_MODEL=gemini-2.5-flash`; free tier, šalji samo potrebne podatke. Prelazak na Haiku je samo promjena secrets.
-> - Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki sheet ima × (`BottomSheet`, bez auto-fokusa prvog polja).
+> Pročitaj CLAUDE.md, docs/PRD.md (sekcije „Timer, pauza i rekalibracija“, „Timer dugme u navigaciji“, „Procjena težine i vremena“ i „Podaci za strategista“), docs/ROADMAP.md (Etapa 7), docs/design/README.md, docs/design/MASCOT.md i mockupe PokreniSesiju.dc.html, Sesija.dc.html i KrajSesije.dc.html, pa uradi Etapu 7 — Timer i sesije.
+> Isti tok kao u Etapama 2–6: podijeli etapu na manje PR-ove u `dev` (prvo čista logika u `src/lib/` sa testovima: vrijeme iz segmenata, zaboravljen timer, raspodjela minuta po jedinicama i kalibracija procjena; pa `src/lib/sync/` (Dexie red, upsert, retry, last-write-wins) sa testovima; pa migracija ako treba; pa ekrani), svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.7.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Prije release-a označi DoD u ROADMAP-u. Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP. Ako treba nešto u dashboardu, napiši mi tačne korake i ažuriraj SETUP.md.
+> Napomene iz Etape 6:
+> - Timer je zapis segmenata u bazi, nikad `setInterval` brojač; jedna aktivna sesija po korisniku. DoD (zaključan telefon, zatvoren tab, offline) testiraj stvarno u browseru (ponovno otvaranje, `setOffline`), ne samo unit testovima.
+> - Offline red (Dexie) je za upise sesija i segmenata; AI pozivi (sova) ostaju samo online. Ostale upise (predmeti, ispiti) kroz isti red samo ako je jednostavno, kao zaseban PR.
+> - Ova etapa nema AI poziva: kalibracija je deterministička (shrinkage, izvor × način, fallback ispod 3 mjerenja). Ne troši Gemini kvotu (free tier: 3.5 Flash-Lite, oko 500 zahtjeva dnevno).
+> - Maskota: `timer` 84 px u sheetu „Šta učiš sad?“, `celebrating` 140 px na KrajSesije, `sleeping` 190 px u offline poruci; najviše jedna sova po ekranu, sova-traka na Danas se ne prikazuje dok je otvoren sheet ili ekran sesije.
+> - Dok sesija traje ima prednost nad sovom: timer dugme u navigaciji vodi u aktivnu sesiju (nastavak).
+> - Back dugmad samo preko `goBack()` iz `src/app/navigation.ts`; ekrani preko cijelog ekrana imaju ljepljivo zaglavlje sa `env(safe-area-inset-top)`. Svaki sheet ima × (`BottomSheet`, bez auto-fokusa prvog polja). Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki tekst u `bs.json` i `en.json`.
+> - Za end-to-end test koristi privremenog test korisnika (service key samo u varijabli shell-a) i obriši ga na kraju zajedno sa fajlovima u storageu.
+> - Dnevni plan (preporučeni blok) dolazi sa schedulerom u Etapi 8; do tad PokreniSesiju nudi ručni izbor predmeta, izvora i jedinice uz slobodnu sesiju, a preporuku samo pripremi kao prazan slot.
 
 ## Prompt za početak etape (primjer)
 
