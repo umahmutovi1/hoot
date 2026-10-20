@@ -256,8 +256,7 @@
   },
   "progress": {
     "title": "Napredak",
-    "empty": "Napredak se prikazuje kad počneš učiti.",
-    "settings": "Postavke"
+    "empty": "Napredak se prikazuje kad počneš učiti."
   },
   "session": {
     "title": "Sesija učenja",
@@ -265,6 +264,7 @@
   },
   "settings": {
     "title": "Postavke",
+    "open": "Profil i postavke",
     "signedInWith": "Prijava putem magic linka",
     "general": "Opće",
     "language": "Jezik",

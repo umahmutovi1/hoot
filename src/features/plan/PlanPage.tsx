@@ -20,17 +20,19 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
           <div className="flex gap-1.5">
             <Link
               to="/plan/timetable"
-              className="flex h-11 items-center gap-1.5 rounded-full bg-surface px-3.5 text-sm font-semibold"
+              aria-label={t('plan.timetableButton')}
+              title={t('plan.timetableButton')}
+              className="flex size-11 items-center justify-center rounded-full bg-surface"
             >
-              <CapIcon size={18} className="text-brand" />
-              {t('plan.timetableButton')}
+              <CapIcon size={20} className="text-brand" />
             </Link>
             <Link
               to="/plan/availability"
-              className="flex h-11 items-center gap-1.5 rounded-full bg-surface px-3.5 text-sm font-semibold"
+              aria-label={t('availability.title')}
+              title={t('availability.title')}
+              className="flex size-11 items-center justify-center rounded-full bg-surface"
             >
-              <ClockIcon size={18} className="text-brand" />
-              {t('availability.title')}
+              <ClockIcon size={20} className="text-brand" />
             </Link>
           </div>
         }

@@ -251,8 +251,7 @@
   },
   "progress": {
     "title": "Progress",
-    "empty": "Progress shows up once you start studying.",
-    "settings": "Settings"
+    "empty": "Progress shows up once you start studying."
   },
   "session": {
     "title": "Study session",
@@ -260,6 +259,7 @@
   },
   "settings": {
     "title": "Settings",
+    "open": "Profile and settings",
     "signedInWith": "Signed in with a magic link",
     "general": "General",
     "language": "Language",
