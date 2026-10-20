@@ -26,6 +26,8 @@ Logika u `<script>` bloku na dnu fajla je samo demo interakcija.
 - Uvoz: DodajIzvor → Parsiranje → ObimIspita
 - Ostalo: Postavke, Prijava
 - Bodovi i ocjene (Etapa 5): `BodoviOcjene.html` — jedan statičan fajl sa 6 ekrana (kartica na Predmetu, ispiti sa rezultatom i popravnim, polja bodova u ExamSheetu, sheet Rezultat, sheet Skala ocjena, Napredak → Ocjene). Dugmad pišu „Spasi“.
+- Sova agent (Etapa 6): `SovaAgent.html` — traka sa sovom na dnu Danas, razgovor sa citatom iz dokumenta, „Daj sovi dokument“, prijedlog uvoza kao kartica, offline traka, prazno stanje; varijanta za sve tabove (za kasnije).
+- Zaglavlja tab ekrana: `Zaglavlja.html` — prvi red samo naslov lijevo i mali avatar desno (otvara Postavke), sve ostalo u redu ispod.
 
 Maskota: vidi MASCOT.md.
 

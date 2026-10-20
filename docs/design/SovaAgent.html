@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sova agent — prijedlog</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Prijedlog mockupa: sova kao agent na "Danas" (PRD "AI uvoz, dokumenti i asistent").
+   Statičan HTML u stilu postojećih .dc.html ekrana: 390 px, isti tokeni.
+   Sova je jedan ulaz za sve AI radnje: pitanje (RAG nad dokumentima i bilješkama),
+   dodavanje dokumenta/slike/PDF-a (uvoz sa pregledom) i prijedlozi izmjena kao kartice. */
+:root {
+  --canvas:#F1EFF7; --surface:#FFFFFF; --ink:#1D1A2B; --muted:#5B5670; --subtle:#6E6985; --line:#DCD7EA; --track:#E3DFEF; --hair:#EEEBF5;
+  --brand:#4B3B8F; --brand-strong:#2F2363; --accent:#7C6BD6; --soft:#E9E4FB; --avatar:#D9D1F7; --avatar-ink:#3B2D7A;
+  --pink:#C026B0; --pink-soft:#FBE3F6; --pink-ink:#5B1252; --pink-deep:#7A1F6F;
+  --blue:#2563EB; --blue-soft:#E3EDFD;
+  --green:#1F6B5A; --green-soft:#DCEFEA; --green-ink:#12443A; --green-bar:#2E9E6A;
+  --warn:#9A4B0B; --warn-soft:#FDEBD3; --warn-ink:#5C3208;
+}
+* { box-sizing: border-box; }
+body { margin:0; background:#E4E1EE; font-family:Outfit, sans-serif; color:var(--ink); }
+.board { display:flex; flex-wrap:wrap; gap:28px; padding:28px; align-items:flex-start; }
+.frame { width:390px; flex-shrink:0; }
+.frame > h3 { margin:0 0 8px 4px; font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+.screen { width:390px; height:800px; background:var(--canvas); border-radius:36px; padding:24px 16px 28px; display:flex; flex-direction:column; gap:14px; position:relative; overflow:hidden; }
+.card { background:var(--surface); border-radius:24px; padding:16px; display:flex; flex-direction:column; gap:10px; }
+.row { display:flex; align-items:center; gap:12px; }
+.between { display:flex; justify-content:space-between; align-items:center; }
+.title { font-size:30px; font-weight:700; margin:0; }
+.small { font-size:12px; color:var(--muted); }
+.chip { height:28px; padding:0 10px; border-radius:14px; display:inline-flex; align-items:center; font-size:12px; font-weight:600; }
+.pill { height:52px; border-radius:26px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px; flex:1; }
+.pill.ghost { background:var(--soft); color:var(--brand); }
+.avatar { width:36px; height:36px; margin-right:4px; border-radius:18px; background:var(--avatar); color:var(--avatar-ink); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+.icon-btn { width:44px; height:44px; border-radius:22px; background:var(--surface); display:flex; align-items:center; justify-content:center; color:var(--brand); }
+.sheet-bg { position:absolute; inset:0; background:rgba(29,26,43,.45); }
+.sheet { position:absolute; left:0; right:0; bottom:0; background:var(--surface); border-radius:32px 32px 0 0; padding:12px 20px 24px; display:flex; flex-direction:column; gap:14px; }
+.handle { width:40px; height:5px; border-radius:3px; background:var(--line); align-self:center; }
+.note { font-size:12px; line-height:1.4; color:var(--muted); background:#FFFDF5; border:1px dashed #E6D8B5; border-radius:14px; padding:8px 10px; }
+.block { display:flex; gap:12px; align-items:center; background:var(--surface); border-radius:20px; padding:12px 14px; }
+.bar { width:4px; align-self:stretch; border-radius:2px; }
+/* tab bar: floating translucent pill, icons only, timer circle in the middle */
+.tabbar { position:absolute; left:24px; right:24px; bottom:20px; height:64px; border-radius:32px; background:rgba(255,255,255,.82); backdrop-filter:blur(12px); box-shadow:0 6px 24px rgba(47,35,99,.12); display:flex; align-items:center; justify-content:space-around; padding:0 10px; }
+.tab { width:48px; height:40px; border-radius:20px; display:flex; align-items:center; justify-content:center; color:var(--subtle); }
+.tab.on { background:var(--soft); color:var(--brand); }
+.timer { width:52px; height:52px; border-radius:26px; background:var(--brand); display:flex; align-items:center; justify-content:center; color:#fff; }
+/* the owl agent bar, docked above the tab bar */
+.agent { position:absolute; left:16px; right:16px; bottom:96px; display:flex; flex-direction:column; gap:8px; }
+.agent-bar { height:56px; border-radius:28px; background:var(--surface); box-shadow:0 6px 24px rgba(47,35,99,.14); display:flex; align-items:center; gap:8px; padding:0 6px 0 6px; }
+.owl { width:44px; height:44px; border-radius:22px; background:var(--soft); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; }
+.owl img { width:44px; height:44px; }
+.bubble { background:var(--surface); border-radius:20px 20px 20px 6px; padding:10px 14px; font-size:13px; line-height:1.4; box-shadow:0 4px 16px rgba(47,35,99,.10); }
+.sugg { display:flex; gap:6px; overflow:hidden; }
+.sugg span { height:34px; padding:0 12px; border-radius:17px; background:var(--surface); display:inline-flex; align-items:center; font-size:12px; font-weight:600; color:var(--brand); white-space:nowrap; box-shadow:0 2px 8px rgba(47,35,99,.08); }
+.msg-me { align-self:flex-end; max-width:80%; background:var(--brand); color:#fff; border-radius:20px 20px 6px 20px; padding:10px 14px; font-size:14px; line-height:1.4; }
+.msg-owl { align-self:flex-start; max-width:88%; display:flex; gap:8px; align-items:flex-end; }
+.msg-owl .text { background:var(--surface); border-radius:20px 20px 20px 6px; padding:12px 14px; font-size:14px; line-height:1.45; display:flex; flex-direction:column; gap:8px; }
+.cite { align-self:flex-start; height:28px; padding:0 10px; border-radius:14px; background:var(--canvas); display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--brand); }
+.opt { display:flex; align-items:center; gap:12px; padding:12px; border-radius:18px; background:var(--canvas); }
+.opt .ic { width:44px; height:44px; border-radius:14px; background:var(--surface); display:flex; align-items:center; justify-content:center; color:var(--brand); flex-shrink:0; }
+.status { height:24px; padding:0 8px; border-radius:12px; font-size:11px; font-weight:600; display:inline-flex; align-items:center; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 10h16M9 3v4M15 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 2-2h12v16H7a2 2 0 0 0-2 2z M5 21V5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" fill="currentColor"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z M14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-img" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 16l5-5 4 4 2-2 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6h14M5 11h14M5 16h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="board">
+
+<!-- 1. Danas: sova-agent na dnu -->
+<div class="frame">
+<h3>1 · Danas → sova na dnu</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Danas</h1><div class="avatar">U</div></div>
+  <div style="display:flex;flex-direction:column;gap:2px;margin-top:-6px">
+    <span style="font-size:17px;font-weight:600">Dobro jutro, Uma</span>
+    <span class="small">Utorak, 20. oktobra · 4. sedmica nastave</span>
+  </div>
+
+  <div class="block"><span class="bar" style="background:var(--pink)"></span>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Signali i sistemi</span><span class="small">09:00–10:30 · poglavlje 3.2–3.4</span></div>
+    <span class="chip" style="background:var(--soft);color:var(--brand)">1h 30</span></div>
+  <div class="block"><span class="bar" style="background:var(--accent)"></span>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Matematika 2</span><span class="small">16:00–17:00 · ponavljanje, 12 pitanja</span></div>
+    <span class="chip" style="background:var(--soft);color:var(--brand)">1h</span></div>
+  <div class="block"><span class="bar" style="background:var(--blue)"></span>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Baze podataka</span><span class="small">19:00–19:45 · zadaća 2</span></div>
+    <span class="chip" style="background:var(--soft);color:var(--brand)">45 min</span></div>
+
+  <div class="agent">
+    <div class="bubble" style="display:flex;gap:8px;align-items:flex-start"><span style="flex:1">Do II parcijale iz Signala su 23 dana. Danas je 3.2–3.4, ostalo stiže. Pitaj me bilo šta ili mi daj dokument.</span><svg width="16" height="16" style="color:var(--subtle);flex-shrink:0;margin-top:2px"><use href="#i-x"/></svg></div>
+    <div class="sugg"><span>Šta je danas najvažnije?</span><span>Uvezi raspored ispita</span><span>Kad je popravni?</span></div>
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Pitaj sovu…</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <div class="tab on"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Sova u traci zamjenjuje avatar strategista (<code>reading-head</code>), pa ostaje jedna sova po ekranu. Oblačić je današnji savjet strategista; × ga skloni do sutra. Traka je uvijek tu na Danas, lista se skroluje iznad nje.</div>
+</div>
+
+<!-- 2. Razgovor: odgovor iz dokumenta sa citatom -->
+<div class="frame">
+<h3>2 · Razgovor → odgovor iz dokumenta</h3>
+<div class="screen" style="padding-bottom:16px">
+  <div class="between">
+    <div class="row" style="gap:10px"><div class="owl" style="width:40px;height:40px"><img src="../../public/mascot/reading-head.webp" alt="" style="width:40px;height:40px"></div>
+      <div style="display:flex;flex-direction:column"><span style="font-size:18px;font-weight:700">Sova</span><span class="small">zna tvoje dokumente, bilješke i plan</span></div></div>
+    <div class="icon-btn" style="color:var(--muted)"><svg width="18" height="18"><use href="#i-x"/></svg></div>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;gap:12px;justify-content:flex-end">
+    <div class="msg-me">Kad je popravni rok i do kad se prijavljuje?</div>
+    <div class="msg-owl">
+      <div class="text">
+        <span>Popravni rok je od <b>15. do 26. februara</b>. Prijava ide najkasnije 7 dana prije ispita, preko studentske službe.</span>
+        <span class="cite"><svg width="14" height="14"><use href="#i-doc"/></svg>Akademski kalendar 2026/27 · str. 2</span>
+        <span class="cite"><svg width="14" height="14"><use href="#i-doc"/></svg>Pravilnik o studiranju · str. 14</span>
+      </div>
+    </div>
+    <div class="msg-me">A koliko mi treba na II parcijali za osmicu?</div>
+    <div class="msg-owl">
+      <div class="text">
+        <span>Iz Signala imaš 46 bodova. Za 8 ti treba još 29, odnosno oko 63% na II parcijali i seminarskom.</span>
+        <span class="cite" style="background:var(--soft)">Signali i sistemi › Bodovi i ocjena</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="agent-bar" style="box-shadow:none;background:var(--surface)">
+    <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    <span style="flex:1;font-size:15px;color:var(--subtle)">Pitaj sovu…</span>
+    <div class="icon-btn" style="background:var(--brand);color:#fff"><svg width="20" height="20"><use href="#i-send"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Razgovor se otvara preko cijelog ekrana (tap na traku). Svaki odgovor iz dokumenta navodi dokument i stranicu; tap na citat otvara dokument. Odgovori o bodovima i planu dolaze iz sažetka stanja, ne iz pretrage.</div>
+</div>
+
+<!-- 3. + → dodaj dokument -->
+<div class="frame">
+<h3>3 · + → Daj sovi dokument</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Danas</h1><div class="avatar">U</div></div>
+  <div class="block"><span class="bar" style="background:var(--pink)"></span><div style="flex:1"><span style="font-size:15px;font-weight:600">Signali i sistemi</span></div></div>
+  <div class="sheet-bg"></div>
+  <div class="sheet">
+    <span class="handle"></span>
+    <div class="between" style="align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:22px;font-weight:700">Daj sovi dokument</span><span style="font-size:14px;color:var(--muted)">Pročitat će ga i predložiti šta da doda. Ništa se ne mijenja bez tvoje potvrde.</span></div>
+      <div class="icon-btn" style="background:var(--canvas);color:var(--muted);flex-shrink:0"><svg width="16" height="16"><use href="#i-x"/></svg></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="opt"><span class="ic"><svg width="20" height="20"><use href="#i-cam"/></svg></span><span style="font-size:14px;font-weight:600">Uslikaj</span></div>
+      <div class="opt"><span class="ic"><svg width="20" height="20"><use href="#i-img"/></svg></span><span style="font-size:14px;font-weight:600">Slika</span></div>
+      <div class="opt"><span class="ic"><svg width="20" height="20"><use href="#i-doc"/></svg></span><span style="font-size:14px;font-weight:600">PDF</span></div>
+      <div class="opt"><span class="ic"><svg width="20" height="20"><use href="#i-text"/></svg></span><span style="font-size:14px;font-weight:600">Zalijepi tekst</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:14px;font-weight:600">Šta je unutra? <span style="font-weight:400;color:var(--muted)">(sova pogodi sama)</span></span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="chip" style="height:38px;padding:0 12px;border-radius:19px;background:var(--brand);color:#fff">Pogodi sama</span>
+        <span class="chip" style="height:38px;padding:0 12px;border-radius:19px;background:var(--canvas)">Akademski kalendar</span>
+        <span class="chip" style="height:38px;padding:0 12px;border-radius:19px;background:var(--canvas)">Raspored ispita</span>
+        <span class="chip" style="height:38px;padding:0 12px;border-radius:19px;background:var(--canvas)">Pravilnik, silabus, obavještenje</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Kalendar i raspored ispita idu kroz uvoz sa pregledom (ekran 4). Pravilnik, silabus i obavještenje se samo čuvaju u „Dokumentima“ i služe za odgovore (ekran 2).</div>
+</div>
+
+<!-- 4. Prijedlog uvoza kao kartica -->
+<div class="frame">
+<h3>4 · Razgovor → prijedlog uvoza</h3>
+<div class="screen" style="padding-bottom:16px">
+  <div class="between">
+    <div class="row" style="gap:10px"><div class="owl" style="width:40px;height:40px"><img src="../../public/mascot/reading-head.webp" alt="" style="width:40px;height:40px"></div>
+      <span style="font-size:18px;font-weight:700">Sova</span></div>
+    <div class="icon-btn" style="color:var(--muted)"><svg width="18" height="18"><use href="#i-x"/></svg></div>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;gap:12px;justify-content:flex-end">
+    <div class="msg-me" style="display:flex;align-items:center;gap:8px"><svg width="18" height="18"><use href="#i-doc"/></svg>Raspored parcijala.pdf</div>
+    <div class="msg-owl"><div class="text"><span>Našla sam 4 ispita za tvoje predmete. Pogledaj prije nego spasim:</span></div></div>
+
+    <div class="card" style="gap:0;padding:6px">
+      <div class="row" style="padding:10px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Signali i sistemi · II parcijala</span><span class="small"><s>~1. dec (okvirno)</s> → 3. dec, 09:00</span></div>
+        <span class="status" style="background:var(--warn-soft);color:var(--warn-ink)">izmijenjeno</span></div>
+      <div style="height:1px;background:var(--hair);margin:0 10px"></div>
+      <div class="row" style="padding:10px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Matematika 2 · II parcijala</span><span class="small">5. dec, 12:00</span></div>
+        <span class="status" style="background:var(--green-soft);color:var(--green-ink)">novo</span></div>
+      <div style="height:1px;background:var(--hair);margin:0 10px"></div>
+      <div class="row" style="padding:10px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Baze podataka · II parcijala</span><span class="small">8. dec, 10:00</span></div>
+        <span class="status" style="background:var(--green-soft);color:var(--green-ink)">novo</span></div>
+      <div style="height:1px;background:var(--hair);margin:0 10px"></div>
+      <div class="row" style="padding:10px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600;color:var(--muted)">Fizika · II parcijala</span><span class="small">nemaš ovaj predmet</span></div>
+        <span class="status" style="background:var(--canvas);color:var(--muted)">preskačem</span></div>
+      <div class="row" style="padding:8px 4px 4px;gap:8px">
+        <div class="pill ghost" style="height:48px">Pregledaj</div>
+        <div class="pill" style="height:48px">Spasi 3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="agent-bar" style="box-shadow:none">
+    <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    <span style="flex:1;font-size:15px;color:var(--subtle)">Pitaj sovu…</span>
+    <div class="icon-btn" style="background:var(--brand);color:#fff"><svg width="20" height="20"><use href="#i-send"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Isti pregled kao ekran „Uvezi“ (novo / izmijenjeno / ostaje). „Pregledaj“ otvara puni pregled sa izmjenom pojedinačnih stavki. Okvirni datum postaje tačan, bez duplikata.</div>
+</div>
+
+<!-- 5. Offline / bez AI -->
+<div class="frame">
+<h3>5 · Traka offline</h3>
+<div class="screen" style="height:auto;min-height:220px;justify-content:flex-end">
+  <div class="agent" style="position:static">
+    <div class="agent-bar" style="opacity:.7">
+      <div class="owl"><img src="../../public/mascot/sleeping-head.webp" alt=""></div>
+      <span style="flex:1;font-size:14px;color:var(--subtle)">Sova je offline. Vraća se kad se povežeš.</span>
+    </div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Bez interneta ili bez AI ključa traka je onemogućena (PRD: „AI dugmad onemogućena offline i bez ključa“). Plan i timer rade normalno.</div>
+</div>
+
+<div class="frame">
+<h3>6 · Danas prazno → velika sova + traka</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Danas</h1><div class="avatar">U</div></div>
+  <div style="display:flex;flex-direction:column;gap:2px;margin-top:-6px"><span style="font-size:17px;font-weight:600">Dobro došla, Uma</span><span class="small">Utorak, 20. oktobra</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:8px"><div style="width:200px;height:200px;border-radius:100px;background:var(--soft);display:flex;align-items:center;justify-content:center"><img src="../../public/mascot/reading.webp" width="170" height="170" alt=""></div><span style="font-size:20px;font-weight:700;text-align:center">Hajmo napraviti plan</span><span class="small" style="text-align:center;font-size:14px;max-width:290px">Dodaj predmet ručno ili daj sovi akademski kalendar ili raspored ispita.</span></div>
+  <div class="agent">
+    <div class="sugg"><span>+ Dodaj predmet</span><span>Uvezi akademski kalendar</span><span>Uvezi raspored ispita</span></div>
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Daj mi raspored ispita…</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab on"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Izuzetak od pravila „jedna sova po ekranu“: na praznim stanjima Danas (prvi ulazak, slobodan dan) velika sova i sova u traci idu zajedno. Prijedlozi vode u prvi korak.</div>
+</div>
+
+<div style="flex-basis:100%;font-size:15px;font-weight:700;color:var(--brand-strong);margin:12px 4px -8px">Varijanta za kasnije: sova na svim tab ekranima (za sad je samo na Danas)</div>
+
+<div class="frame">
+<h3>7A · Plan → ista traka</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Plan</h1><div class="avatar">U</div></div>
+  <div class="row" style="gap:6px;margin-top:-6px"><span class="chip" style="height:44px;padding:0 14px;border-radius:22px;background:var(--surface);font-size:14px">Raspored</span><span class="chip" style="height:44px;padding:0 14px;border-radius:22px;background:var(--surface);font-size:14px">Dostupnost</span></div>
+  <div style="display:flex;background:var(--track);border-radius:22px;padding:4px"><span style="flex:1;height:40px;border-radius:18px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Kalendar</span><span style="flex:1;height:40px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--muted)">Satnica</span></div>
+  <div class="card" style="height:300px"><span style="font-size:16px;font-weight:600">Oktobar 2026</span><span class="small">… mjesečni kalendar …</span></div>
+  <div class="agent">
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Pitaj o planu ili daj raspored…</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab on"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Ista traka na svakom tabu, sa tekstom prema ekranu. Minus: uzima ~70 px visine tamo gdje je prostor tijesan (kalendar, Satnica).</div>
+</div>
+
+<div class="frame">
+<h3>7B · Plan → sova kao plutajuće dugme</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Plan</h1><div class="avatar">U</div></div>
+  <div class="row" style="gap:6px;margin-top:-6px"><span class="chip" style="height:44px;padding:0 14px;border-radius:22px;background:var(--surface);font-size:14px">Raspored</span><span class="chip" style="height:44px;padding:0 14px;border-radius:22px;background:var(--surface);font-size:14px">Dostupnost</span></div>
+  <div style="display:flex;background:var(--track);border-radius:22px;padding:4px"><span style="flex:1;height:40px;border-radius:18px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Kalendar</span><span style="flex:1;height:40px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--muted)">Satnica</span></div>
+  <div class="card" style="height:370px"><span style="font-size:16px;font-weight:600">Oktobar 2026</span><span class="small">… mjesečni kalendar …</span></div>
+  <div style="position:absolute;right:20px;bottom:100px;width:60px;height:60px;border-radius:30px;background:var(--surface);box-shadow:0 6px 24px rgba(47,35,99,.18);display:flex;align-items:center;justify-content:center"><div class="owl" style="width:52px;height:52px"><img src="../../public/mascot/reading-head.webp" alt="" style="width:52px;height:52px"></div></div>
+  <div class="tabbar">
+    <div class="tab"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab on"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Na Danas puna traka, na ostalim tabovima samo sova u krugu dole desno; tap otvara isti razgovor (ekran 2). Manje zauzima, ali je pitanje jedan tap dalje.</div>
+</div>
+
+<div class="frame">
+<h3>8 · Predmeti → traka</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Predmeti</h1><div class="avatar">U</div></div>
+  <div class="between" style="margin-top:-6px"><span class="small" style="font-size:14px">3 aktivna</span><span class="chip" style="height:44px;padding:0 16px;border-radius:22px;background:var(--brand);color:#fff;font-size:14px">+ Novi</span></div>
+  <div class="card" style="background:var(--pink-soft)"><span style="font-size:17px;font-weight:700;color:var(--pink-ink)">Signali i sistemi</span><span style="font-size:13px;color:var(--pink-ink)">II parcijala za 23 dana</span></div>
+  <div class="card" style="background:var(--soft)"><span style="font-size:17px;font-weight:700;color:var(--brand-strong)">Matematika 2</span><span style="font-size:13px;color:var(--brand)">II parcijala za 46 dana</span></div>
+  <div class="card" style="background:var(--blue-soft)"><span style="font-size:17px;font-weight:700;color:#1E3A8A">Baze podataka</span><span style="font-size:13px;color:var(--blue)">Zadaća 2 za 5 dana</span></div>
+  <div class="agent">
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Daj silabus ili pitaj o predmetu…</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab on"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Na stranici jednog predmeta traka zna kontekst („Pitaj o Signalima…“), a dodan dokument se veže za taj predmet.</div>
+</div>
+
+<div class="frame">
+<h3>9 · Napredak → traka</h3>
+<div class="screen">
+  <div class="between"><h1 class="title">Napredak</h1><div class="avatar">U</div></div>
+  <span style="font-size:18px;font-weight:600">Ocjene</span>
+  <div class="card" style="padding:6px;gap:0"><div class="between" style="padding:12px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Signali i sistemi</span><span class="small">46 / 100 · cilj 8</span></div><span class="chip" style="background:var(--soft);color:var(--brand-strong)">treba 29</span></div><div style="height:1px;background:var(--hair);margin:0 12px"></div><div class="between" style="padding:12px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Matematika 2</span><span class="small">18 / 100 · cilj 7</span></div><span class="chip" style="background:var(--soft);color:var(--brand-strong)">treba 47</span></div></div>
+  <div class="agent">
+    <div class="sugg"><span>Gdje najviše gubim?</span><span>Koliko treba za 8?</span></div>
+    <div class="agent-bar">
+      <div class="owl"><img src="../../public/mascot/reading-head.webp" alt=""></div>
+      <span style="flex:1;font-size:15px;color:var(--subtle)">Kako stojim? Šta da popravim?</span>
+      <div class="icon-btn" style="background:var(--canvas)"><svg width="20" height="20"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg width="22" height="22"><use href="#i-home"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-cal"/></svg></div>
+    <div class="timer"><svg width="20" height="20"><use href="#i-play"/></svg></div>
+    <div class="tab"><svg width="22" height="22"><use href="#i-book"/></svg></div>
+    <div class="tab on"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+  </div>
+</div>
+<div class="note" style="margin-top:10px">Prijedlozi pitanja se mijenjaju po ekranu; na Napretku su o bodovima i zaostatku.</div>
+</div>
+
+</div>
+</body>
+</html>
