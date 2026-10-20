@@ -138,7 +138,7 @@ Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini free tier ([SETUP.md](SETUP.md#4-gemini-ai-za-sad)).
 
 - [x] Mockup [`design/SovaAgent.html`](design/SovaAgent.html) (traka sa sovom na Danas, razgovor sa citatom, „Daj sovi dokument“, prijedlog uvoza kao kartica, offline, prazno stanje; varijanta za sve tabove za kasnije) — odobren
-- [ ] Sova na Danas: traka na dnu (savjet strategista u oblačiću, prijedlozi), razgovor preko cijelog ekrana, + → dokument; uvoz i pitanja o dokumentima idu kroz nju
+- [ ] Sova na Danas: traka na dnu (prijedlozi; oblačić sa savjetom tek sa strategistom u Etapi 11), razgovor preko cijelog ekrana, + → „Daj sovi dokument“; uvoz i pitanja o dokumentima idu kroz nju. Plutajuća sova na ostalim tabovima (7B) kasnije
 
 - [ ] `supabase/functions/_shared/`: `llm.ts`, `providers/gemini.ts` (`responseSchema` iz `z.toJSONSchema()`), `providers/anthropic.ts` (`zodOutputFormat()` + `messages.parse()`), `schemas.ts` (bez rekurzivnih šema), `prices.ts`, `cors.ts`
 - [ ] Logiranje u `ai_runs`, rate limit 30 poziva/dan, jedan retry na Zod grešku; `LLM_PROVIDER`, `LLM_MODEL`, `GEMINI_API_KEY` kao Supabase secrets
@@ -249,18 +249,18 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - Linter je oxlint (Vite 8 default) umjesto ESLinta.
 - Font Outfit se servira lokalno (`@fontsource-variable/outfit`), radi offline.
 
-## Prompt za Etapu 5 (sljedeći chat)
+## Prompt za Etapu 6 (sljedeći chat)
 
-> Pročitaj docs/PRD.md (sekcija „Bodovi, skala ocjena i projekcija ocjene“), docs/ROADMAP.md (Etapa 5), docs/design/README.md, docs/design/BodoviOcjene.html (odobren mockup, 6 ekrana) i CLAUDE.md, pa uradi Etapu 5 — Bodovi i ocjene.
-> Isti tok kao u Etapama 2–4: podijeli etapu na manje PR-ove u `dev` (prvo migracija `0007_grades.sql` i čista logika `src/lib/grades/` sa testovima i `fast-check`, pa ekrani), svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.5.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP.
-> Napomene iz Etape 4:
-> - Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki sheet ima × za zatvaranje (`BottomSheet`).
-> - ExamSheet već ima „Kad je ispit?“ (tačan datum / u roku iz akademskog kalendara / okvirni raspon) i „Izvori za ovaj ispit“; polja bodova, praga i uslova za izlazak idu ispod toga, kao na mockupu (ekran 3).
-> - Popravni se bira kao „Popravni za“ (`retake_of`) i prikazuje ugniježđen ispod ispita (ekran 2); integralni zamjenjuje parcijale; vrijedi zadnji izlazak; „Poništi rezultat“ = odricanje.
-> - Rokovi (`deadlines`) dobijaju bodove kao ispiti (zadaće, seminarski).
-> - Kalendar ima prikaze Mjesec i Dan (sedmica izbačena); nastava blokira tačno svoje vrijeme.
-> - Napredak je još prazan: lista „Ocjene“ (ekran 6) je prvi sadržaj; avatar na Danas vodi u Postavke.
-> - Gemini ključ: `LLM_MODEL=gemini-2.5-flash` (za Etapu 6).
+> Pročitaj CLAUDE.md, docs/PRD.md (sekcija „AI uvoz, dokumenti i asistent“), docs/ROADMAP.md (Etapa 6), docs/SETUP.md (sekcija 4 „Gemini“), docs/design/README.md, docs/design/MASCOT.md i docs/design/SovaAgent.html (odobren mockup), pa uradi Etapu 6 — AI temelj, uvoz i dokumenti.
+> Isti tok kao u Etapama 2–5: podijeli etapu na manje PR-ove u `dev` (prvo `_shared/` LLM wrapper sa providerima, Zod šemama, `ai_runs` logiranjem i rate limitom + testovi; pa migracija `0008_ai_documents.sql`; pa edge funkcije uvoza i dokumenata; pa ekrani), svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.6.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Prije release-a označi DoD u ROADMAP-u. Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP. Ako treba nešto u dashboardu (Supabase secrets, pgvector, Gemini ključ), napiši mi tačne korake i ažuriraj SETUP.md.
+> Napomene iz Etape 5:
+> - Sova je jedini AI ulaz i za sad je samo na Danas: traka na dnu iznad tab bara (`reading-head`, „Pitaj sovu…“, +), razgovor preko cijelog ekrana, + → „Daj sovi dokument“ (uslikaj / slika / PDF / zalijepi tekst; „Pogodi sama“ ili tip), prijedlog uvoza kao kartica novo / izmijenjeno / preskačem → „Pregledaj“ / „Spasi N“. Ništa se ne upisuje bez potvrde. Offline ili bez ključa: traka ugašena, `sleeping-head`.
+> - Oblačić sa savjetom strategista još ne postoji (strategist je Etapa 11); iznad trake su samo prijedlozi. Plutajuća sova na ostalim tabovima (varijanta 7B) dolazi kasnije, ne u ovoj etapi.
+> - Prazna stanja Danas: velika sova i sova u traci idu zajedno (izuzetak u MASCOT.md).
+> - Odgovori iz dokumenata uvijek navode dokument i stranicu; pitanja o bodovima i planu idu iz sažetka stanja, ne iz vektorske pretrage.
+> - Zaglavlje tab ekrana je `PageTitle` (samo naslov + avatar koji otvara Postavke); ostalo ide u red ispod.
+> - Provajder: `LLM_PROVIDER=gemini`, `LLM_MODEL=gemini-2.5-flash`; free tier, šalji samo potrebne podatke. Prelazak na Haiku je samo promjena secrets.
+> - Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki sheet ima × (`BottomSheet`, bez auto-fokusa prvog polja).
 
 ## Prompt za početak etape (primjer)
 
