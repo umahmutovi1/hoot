@@ -498,6 +498,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 - Akademski kalendar → periodi (nastava, rokovi, sedmice parcijalnih, neradni dani).
 - Raspored ispita (npr. raspored parcijala) → ispiti sa datumima, upareni sa predmetima (`fuse.js` + AI), uz prijedlog izmjene postojećeg ispita (okvirni → tačan datum) umjesto duplikata.
 - Isti pregled kasnije koriste raspored nastave i sadržaj knjige (Etapa 10).
+- Prije slanja korisnik potvrdi prilog i može dodati poruku sovi (“samo II godina, grupa B”); poruka ide u prompt i sužava šta se izvlači, ali nikad ne zamjenjuje datume iz dokumenta.
 - **Odluke (Etapa 6):** “Pogodi sama” je jedan AI poziv (`parse-document`): isti poziv prepozna vrstu i izvuče periode ili ispite; izabran tip daje užu šemu. Dat dokument se odmah sprema u Dokumente (fajl + odlomci; briše se tamo), jer je davanje dokumenta već potvrda. Potvrdu traže samo izmjene plana (periodi, ispiti) kroz karticu novo / izmijenjeno / preskačem.
 
 **Dokumenti i RAG.** Korpus su tri stvari:

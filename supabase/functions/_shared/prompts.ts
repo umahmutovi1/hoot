@@ -84,6 +84,14 @@ export function parseRequest(
   if ((req.kind === 'exam_schedule' || req.kind === 'auto') && req.subjects.length > 0) {
     lines.push('Subjects (id: name):', ...req.subjects.map((s) => `${s.id}: ${s.name}`))
   }
+  if (req.note) {
+    // The student's own hint narrows what to extract; it never replaces what the document says.
+    lines.push(
+      "Student's note about this document (follow it to choose what to extract, e.g. which " +
+        'year or group; never invent dates from it):',
+      req.note,
+    )
+  }
   if (req.text) {
     lines.push('Document text:')
     for (const p of req.text) lines.push(`--- page ${p.page} ---`, p.text)

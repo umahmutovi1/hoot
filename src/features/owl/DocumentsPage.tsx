@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { supabase } from '@/lib/supabase'
-import { openDocumentFile, useDeleteDocument, useDocuments, type DocumentRow } from './api'
+import { useDeleteDocument, useDocumentFileUrl, useDocuments, type DocumentRow } from './api'
 
 /** Documents the owl answers from (Postavke → Dokumenti). */
 export function DocumentsPage() {
@@ -73,6 +73,7 @@ export function DocumentPage() {
   const doc = useDocuments().data?.find((d) => d.id === id)
   const remove = useDeleteDocument()
   const [confirming, setConfirming] = useState(false)
+  const fileUrl = useDocumentFileUrl(doc?.storage_path).data
   const chunks = useQuery({
     queryKey: ['document-chunks', id],
     enabled: Boolean(id),
@@ -96,15 +97,11 @@ export function DocumentPage() {
         <h2 className="text-[22px] leading-tight font-bold">{doc.title}</h2>
         <span className="text-[13px] text-ink-muted">{documentMeta(t, doc, locale)}</span>
       </div>
-      {doc.storage_path && (
-        <Button
-          type="button"
-          variant="secondary"
-          size="pill-sm"
-          className="bg-brand-soft text-brand"
-          onClick={() => void openDocumentFile(doc.storage_path!, null)}
-        >
-          {t('owl.documents.openFile')}
+      {fileUrl && (
+        <Button asChild variant="secondary" size="pill-sm" className="bg-brand-soft text-brand">
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+            {t('owl.documents.openFile')}
+          </a>
         </Button>
       )}
       <div className="flex flex-col gap-3 rounded-card bg-surface p-4 text-sm leading-[1.5]">

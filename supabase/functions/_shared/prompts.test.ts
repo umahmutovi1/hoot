@@ -32,6 +32,12 @@ describe('parseRequest', () => {
     expect(parseRequest(request({ kind: 'academic_calendar' }), []).text).not.toContain(SIGNALI)
   })
 
+  it("passes the student's note before the document, only when given", () => {
+    const withNote = parseRequest(request({ note: 'samo II godina' }), [])
+    expect(withNote.text).toContain('never invent dates from it):\nsamo II godina\nDocument text:')
+    expect(parseRequest(request(), []).text).not.toContain('note about this document')
+  })
+
   it('pages the text and leaves more room when a file must be transcribed', () => {
     const withText = parseRequest(request(), [])
     expect(withText.text).toContain('--- page 1 ---\nRaspored parcijala')

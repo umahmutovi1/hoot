@@ -16,6 +16,7 @@ import { ClassSheet } from './ClassSheet'
 import { CLASS_KIND_STYLE } from './format'
 import { toClass, toPeriod, type TimetableRow } from './model'
 import { useWeekdayNames } from './weekdays'
+import { goBack } from '@/app/navigation'
 
 /** Raspored nastave: classes of the current teaching period, one weekday at a time. */
 export function TimetablePage() {
@@ -53,9 +54,7 @@ export function TimetablePage() {
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={() =>
-            window.history.length > 1 ? navigate(-1) : navigate('/plan/availability')
-          }
+          onClick={() => goBack(navigate, '/plan/availability')}
           aria-label={t('app.back')}
           className="flex size-11 items-center justify-center rounded-full bg-surface"
         >

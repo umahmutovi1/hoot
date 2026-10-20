@@ -950,7 +950,14 @@
       "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
       "textSend": "Give to the owl",
       "back": "Back",
-      "privacy": "On the free AI plan Google may use what you send. Don't send personal documents."
+      "privacy": "On the free AI plan Google may use what you send. Don't send personal documents.",
+      "next": "Next",
+      "change": "Change",
+      "noteLabel": "Note to the owl",
+      "noteHint": "(optional)",
+      "notePlaceholder": "e.g. only 2nd year, group B",
+      "chars_one": "{{count}} character",
+      "chars_other": "{{count}} characters"
     },
     "pending": {
       "thinking": "Thinking…",

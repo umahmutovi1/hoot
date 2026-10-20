@@ -92,12 +92,17 @@ const EXTENSIONS: Record<string, string> = {
  * Give the owl a document: keep it in Documents (file + passages for answers) right away, and
  * for a calendar or exam schedule add a proposal that waits for "Spasi".
  */
-export async function giveDocument(input: DocumentInput, kind: ImportKind, ctx: OwlContext) {
+export async function giveDocument(
+  input: DocumentInput,
+  kind: ImportKind,
+  note: string | null,
+  ctx: OwlContext,
+) {
   const s = store()
   if (s.busy) return
   s.setBusy(true)
   const name = input.type === 'file' ? input.file.name : input.text.split('\n')[0]!.slice(0, 60)
-  s.push({ id: id(), role: 'user', type: 'file', name })
+  s.push({ id: id(), role: 'user', type: 'file', name, ...(note ? { note } : {}) })
   const pendingId = id()
   s.push({ id: pendingId, role: 'owl', type: 'pending', stage: 'reading' })
 
@@ -139,6 +144,7 @@ export async function giveDocument(input: DocumentInput, kind: ImportKind, ctx: 
       file:
         text || !storagePath || !mediaType ? null : { path: storagePath, media_type: mediaType },
       subjects: ctx.subjects.filter((x) => !x.archived).map((x) => ({ id: x.id, name: x.name })),
+      note,
     }
     const result = await invokeAi<ParseResult>('parse-document', request)
     void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })

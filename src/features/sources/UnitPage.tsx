@@ -30,6 +30,7 @@ import {
 import { NOTES_MAX_LENGTH } from './schemas'
 import { TopicsSheet } from './TopicsSheet'
 import { UnitSheet } from './UnitSheet'
+import { goBack } from '@/app/navigation'
 
 /** Jedinica: status, difficulty, estimate, topics, related units, notes / answer and cards. */
 export function UnitPage() {
@@ -88,11 +89,7 @@ function UnitDetail({
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={() =>
-            window.history.length > 1
-              ? navigate(-1)
-              : navigate(`/subjects/${subject.id}/sources/${source.id}`)
-          }
+          onClick={() => goBack(navigate, `/subjects/${subject.id}/sources/${source.id}`)}
           aria-label={t('app.back')}
           className="flex size-11 items-center justify-center rounded-full bg-surface"
         >

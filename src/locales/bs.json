@@ -965,7 +965,15 @@
       "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
       "textSend": "Daj sovi",
       "back": "Nazad",
-      "privacy": "Na besplatnom AI planu Google može koristiti poslane podatke. Ne šalji lične dokumente."
+      "privacy": "Na besplatnom AI planu Google može koristiti poslane podatke. Ne šalji lične dokumente.",
+      "next": "Dalje",
+      "change": "Promijeni",
+      "noteLabel": "Poruka sovi",
+      "noteHint": "(nije obavezno)",
+      "notePlaceholder": "npr. samo II godina, grupa B",
+      "chars_one": "{{count}} znak",
+      "chars_few": "{{count}} znaka",
+      "chars_other": "{{count}} znakova"
     },
     "pending": {
       "thinking": "Razmišljam…",

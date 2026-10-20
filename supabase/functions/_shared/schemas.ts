@@ -121,6 +121,8 @@ export type UploadMediaType = z.infer<typeof uploadMediaTypeSchema>
 
 /** Pasted or extracted text sent to the model is capped to stay small (free tier, cost). */
 export const MAX_DOCUMENT_CHARS = 60_000
+/** "Poruka sovi" sent along with a document. */
+export const MAX_NOTE_CHARS = 500
 
 export const parseDocumentRequestSchema = z
   .object({
@@ -134,6 +136,8 @@ export const parseDocumentRequestSchema = z
     file: z.object({ path: z.string().min(1), media_type: uploadMediaTypeSchema }).nullable(),
     /** Active subjects, so the model can link exams; diffing against existing exams is local. */
     subjects: z.array(z.object({ id: z.uuid(), name: z.string() })).max(60),
+    /** What the student says about the document, e.g. "only 2nd year, group B". */
+    note: z.string().trim().max(MAX_NOTE_CHARS).nullable().optional(),
   })
   .refine((r) => r.text !== null || r.file !== null, { message: 'text or file is required' })
   .refine((r) => !r.text || r.text.reduce((n, p) => n + p.text.length, 0) <= MAX_DOCUMENT_CHARS, {

@@ -19,7 +19,7 @@ export interface ImportProposal {
 
 export type OwlMessage =
   | { id: string; role: 'user'; type: 'text'; text: string }
-  | { id: string; role: 'user'; type: 'file'; name: string }
+  | { id: string; role: 'user'; type: 'file'; name: string; note?: string }
   | {
       id: string
       role: 'owl'
