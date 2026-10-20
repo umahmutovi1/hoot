@@ -68,6 +68,7 @@ export const subjectRow = (patch: Partial<Subject> = {}): Subject => ({
   campaign_start_on: null,
   points_total: 100,
   grade_scale: null,
+  custom_scale: false,
   target_grade: null,
   created_at: '',
   updated_at: '',

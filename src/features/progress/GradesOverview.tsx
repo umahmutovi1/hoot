@@ -45,7 +45,10 @@ function SubjectGrades({
   const { t } = useTranslation()
   const { locale } = useLocale()
   const palette = paletteOf(subject.color)
-  const { projection, titles, entries, hasPoints } = useSubjectGrades(subject, deadlines)
+  const { projection, titles, entries, hasPoints, pointsTotal } = useSubjectGrades(
+    subject,
+    deadlines,
+  )
   const fmt = (n: number) => formatPoints(n, locale)
   const target = projection.grades.find((g) => g.grade === subject.target_grade)
   const pass = projection.grades[0]!
@@ -83,7 +86,7 @@ function SubjectGrades({
           <span className="truncate text-[15px] font-semibold">{subject.name}</span>
         </span>
         <span className="shrink-0 text-[15px] font-bold">
-          {hasPoints ? `${fmt(projection.have)}/${fmt(subject.points_total)}` : '—'}
+          {hasPoints ? `${fmt(projection.have)}/${fmt(pointsTotal)}` : '—'}
         </span>
       </div>
       {hasPoints ? (
@@ -91,7 +94,7 @@ function SubjectGrades({
           <div className="h-2 overflow-hidden rounded-full bg-track">
             <div
               className={cn('h-2', palette.bar)}
-              style={{ width: `${Math.min(100, (projection.have / subject.points_total) * 100)}%` }}
+              style={{ width: `${Math.min(100, (projection.have / pointsTotal) * 100)}%` }}
             />
           </div>
           <span

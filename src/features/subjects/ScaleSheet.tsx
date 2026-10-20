@@ -2,53 +2,71 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/ui/button'
+import { useGlobalScale, useUpdateGlobalScale } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { DEFAULT_SCALE, GRADES } from '@/lib/grades'
 import { validationKey } from '@/lib/validation'
 import { useUpdateSubject } from './api'
-import { ChipGroup, fieldLabel, NumberField } from './fields'
-import { formatPoints, parseScale } from './grades'
+import { ChipGroup, fieldLabel, NumberField, Segmented } from './fields'
+import { formatPoints, gradeSubjectOf, scaleOf } from './grades'
 import type { SubjectWithAssessments } from './model'
 import { gradeScaleFormSchema } from './schemas'
 
 const NO_TARGET = 'none'
 
-/** "Skala ocjena": points total, thresholds in % for 6–10, target grade (mockup screen 5). */
+type Applies = 'all' | 'subject'
+
+/**
+ * "Skala ocjena": points total, thresholds in % for 6–10, target grade (mockup screen 5).
+ * The scale is the same for every subject unless one gets its own; without `subject` (from
+ * Postavke) the sheet edits only the global scale.
+ */
 export function ScaleSheet({
   subject,
   open,
   onOpenChange,
 }: {
-  subject: SubjectWithAssessments
+  subject?: SubjectWithAssessments
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
+  const global = useGlobalScale()
   return (
     <BottomSheet
       open={open}
       onOpenChange={onOpenChange}
       title={t('grades.scale.title')}
-      subtitle={t('grades.scale.subtitle', {
-        name: subject.name,
-        total: formatPoints(subject.points_total, locale),
-      })}
+      subtitle={
+        subject
+          ? t('grades.scale.subtitle', {
+              name: subject.name,
+              total: formatPoints(gradeSubjectOf(subject, global).pointsTotal, locale),
+            })
+          : t('grades.scale.globalSubtitle')
+      }
     >
       {open && <ScaleForm subject={subject} onDone={() => onOpenChange(false)} />}
     </BottomSheet>
   )
 }
 
-function ScaleForm({ subject, onDone }: { subject: SubjectWithAssessments; onDone: () => void }) {
+function ScaleForm({ subject, onDone }: { subject?: SubjectWithAssessments; onDone: () => void }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
   const update = useUpdateSubject()
-  const [total, setTotal] = useState<number | null>(subject.points_total)
-  const [scale, setScale] = useState<(number | null)[]>(
-    () => parseScale(subject.grade_scale) ?? [...DEFAULT_SCALE],
-  )
-  const [target, setTarget] = useState<number | null>(subject.target_grade)
+  const updateGlobal = useUpdateGlobalScale()
+  const global = useGlobalScale()
+  const [applies, setApplies] = useState<Applies>(subject?.custom_scale ? 'subject' : 'all')
+  /** Values shown for a choice: the subject's own, or the global ones (also the start of own). */
+  const valuesFor = (a: Applies) =>
+    scaleOf(subject && a === 'subject' && subject.custom_scale ? subject : global)
+  const [total, setTotal] = useState<number | null>(() => valuesFor(applies).pointsTotal)
+  const [scale, setScale] = useState<(number | null)[]>(() => [
+    ...(valuesFor(applies).scale ?? DEFAULT_SCALE),
+  ])
+  const [target, setTarget] = useState<number | null>(subject?.target_grade ?? null)
   // Remount the inputs after "Vrati bosansku skalu".
   const [resetKey, setResetKey] = useState(0)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -64,14 +82,21 @@ function ScaleForm({ subject, onDone }: { subject: SubjectWithAssessments; onDon
       return
     }
     const isDefault = parsed.data.scale.every((n, i) => n === DEFAULT_SCALE[i])
-    update.mutate({
-      id: subject.id,
-      patch: {
-        points_total: parsed.data.pointsTotal,
-        grade_scale: isDefault ? null : parsed.data.scale,
-        target_grade: parsed.data.targetGrade,
-      },
-    })
+    const values = {
+      points_total: parsed.data.pointsTotal,
+      grade_scale: isDefault ? null : parsed.data.scale,
+    }
+    if (applies === 'all') updateGlobal.mutate(values)
+    if (subject) {
+      update.mutate({
+        id: subject.id,
+        patch: {
+          ...(applies === 'subject' ? values : {}),
+          custom_scale: applies === 'subject',
+          target_grade: parsed.data.targetGrade,
+        },
+      })
+    }
     onDone()
   }
 
@@ -82,11 +107,42 @@ function ScaleForm({ subject, onDone }: { subject: SubjectWithAssessments; onDon
       </span>
     )
 
+  const pickApplies = (a: Applies) => {
+    setApplies(a)
+    const values = valuesFor(a)
+    setTotal(values.pointsTotal)
+    setScale([...(values.scale ?? DEFAULT_SCALE)])
+    setResetKey((k) => k + 1)
+    setErrors({})
+  }
+
   return (
     <div className="flex flex-col gap-4">
+      {subject && (
+        <div className="flex flex-col gap-2">
+          <Segmented
+            label={t('grades.scale.applies')}
+            options={[
+              { value: 'all' as const, label: t('grades.scale.appliesAll') },
+              { value: 'subject' as const, label: t('grades.scale.appliesSubject') },
+            ]}
+            value={applies}
+            onChange={pickApplies}
+          />
+          <span className="text-xs leading-[1.4] text-ink-muted">
+            {t(
+              applies === 'all' ? 'grades.scale.appliesAllHint' : 'grades.scale.appliesSubjectHint',
+              {
+                name: subject.name,
+              },
+            )}
+          </span>
+        </div>
+      )}
       <div className="flex items-center justify-between gap-3">
         <span className={fieldLabel}>{t('grades.scale.total')}</span>
         <NumberField
+          key={resetKey}
           label={t('grades.scale.total')}
           value={total}
           invalid={Boolean(errors.pointsTotal)}
@@ -147,22 +203,24 @@ function ScaleForm({ subject, onDone }: { subject: SubjectWithAssessments; onDon
         {t('grades.scale.reset')}
       </button>
 
-      <div className="flex flex-col gap-2">
-        <span className={fieldLabel}>{t('grades.scale.target')}</span>
-        <ChipGroup
-          options={[
-            ...GRADES.map((g) => ({ value: String(g), label: String(g) })),
-            { value: NO_TARGET, label: t('grades.scale.noTarget') },
-          ]}
-          value={target === null ? NO_TARGET : String(target)}
-          onChange={(v) => setTarget(v === NO_TARGET ? null : Number(v))}
-        />
-        <span className="text-xs leading-[1.4] text-ink-muted">
-          {target === null
-            ? t('grades.scale.noTargetHint')
-            : t('grades.scale.targetHint', { grade: target })}
-        </span>
-      </div>
+      {subject && (
+        <div className="flex flex-col gap-2">
+          <span className={fieldLabel}>{t('grades.scale.target')}</span>
+          <ChipGroup
+            options={[
+              ...GRADES.map((g) => ({ value: String(g), label: String(g) })),
+              { value: NO_TARGET, label: t('grades.scale.noTarget') },
+            ]}
+            value={target === null ? NO_TARGET : String(target)}
+            onChange={(v) => setTarget(v === NO_TARGET ? null : Number(v))}
+          />
+          <span className="text-xs leading-[1.4] text-ink-muted">
+            {target === null
+              ? t('grades.scale.noTargetHint')
+              : t('grades.scale.targetHint', { grade: target })}
+          </span>
+        </div>
+      )}
 
       <Button
         type="button"

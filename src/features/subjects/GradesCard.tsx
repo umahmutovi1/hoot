@@ -29,7 +29,10 @@ export function GradesCard({
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
-  const { projection, titles, entries, hasPoints } = useSubjectGrades(subject, deadlines)
+  const { projection, titles, entries, hasPoints, pointsTotal } = useSubjectGrades(
+    subject,
+    deadlines,
+  )
   const fmt = (n: number) => formatPoints(n, locale)
   const target = projection.grades.find((g) => g.grade === subject.target_grade)
 
@@ -54,9 +57,7 @@ export function GradesCard({
             <div className="flex flex-col gap-0.5">
               <span className="text-[30px] leading-none font-bold">
                 {fmt(projection.have)}{' '}
-                <span className="text-base font-medium text-ink-muted">
-                  / {fmt(subject.points_total)}
-                </span>
+                <span className="text-base font-medium text-ink-muted">/ {fmt(pointsTotal)}</span>
               </span>
               <span className="text-xs text-ink-muted">
                 {projection.maxSoFar > 0

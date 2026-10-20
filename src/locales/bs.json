@@ -278,7 +278,9 @@
     "signOut": "Odjava",
     "periodsCount_one": "{{count}} period",
     "periodsCount_few": "{{count}} perioda",
-    "periodsCount_other": "{{count}} perioda"
+    "periodsCount_other": "{{count}} perioda",
+    "grades": "Bodovi i ocjene",
+    "gradesValue": "{{total}} bodova · skala ›"
   },
   "validation": {
     "required": "Obavezno polje",
@@ -932,7 +934,13 @@
       "target": "Željena ocjena",
       "noTarget": "bez cilja",
       "targetHint": "Plan će podići ciljnu pokrivenost da stigneš do {{grade}}.",
-      "noTargetHint": "Bez cilja plan prati samo prioritet predmeta."
+      "noTargetHint": "Bez cilja plan prati samo prioritet predmeta.",
+      "globalSubtitle": "Za sve predmete",
+      "applies": "Za koje predmete važi",
+      "appliesAll": "Za sve predmete",
+      "appliesSubject": "Samo ovaj predmet",
+      "appliesAllHint": "Ista skala i ukupno bodova važe za sve predmete koji nemaju svoju. Izmjena ovdje mijenja ih za sve.",
+      "appliesSubjectHint": "{{name}} dobija svoju skalu; ostali predmeti ostaju na zajedničkoj."
     },
     "overview": {
       "title": "Ocjene",

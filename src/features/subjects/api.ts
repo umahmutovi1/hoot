@@ -97,6 +97,7 @@ function optimisticSubject(
     archived: false,
     points_total: 100,
     grade_scale: null,
+    custom_scale: false,
     target_grade: null,
     ...existing,
     id: form.id,
@@ -215,6 +216,7 @@ export function useUpdateSubject() {
           | 'campaign_start_on'
           | 'points_total'
           | 'grade_scale'
+          | 'custom_scale'
           | 'target_grade'
         >
       >

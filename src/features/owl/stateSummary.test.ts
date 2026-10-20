@@ -37,6 +37,7 @@ describe('buildStateSummary', () => {
         deadlineRow({ id: 'd1', subject_id: 's1', title: 'Zadaća 2', done: false }),
         deadlineRow({ id: 'd2', subject_id: null, title: 'Upis', done: true }),
       ],
+      globalScale: undefined,
       periods: [
         {
           kind: 'exam',
