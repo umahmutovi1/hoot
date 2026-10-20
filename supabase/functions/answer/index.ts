@@ -2,7 +2,7 @@
 // and from the state summary the app sends (points, exams, calendar).
 import { json } from '../_shared/cors.ts'
 import { embed } from '../_shared/embed.ts'
-import { llmDeps, readJson, serve } from '../_shared/edge.ts'
+import { conversationCache, llmDeps, readJson, serve } from '../_shared/edge.ts'
 import { generate } from '../_shared/llm.ts'
 import { answerRequest, citationsFor } from '../_shared/prompts.ts'
 import type { Passage } from '../_shared/prompts.ts'
@@ -35,7 +35,9 @@ Deno.serve(
         content: m.content,
       }))
 
-    const result = await generate(deps, answerRequest(body, passages))
+    const request = answerRequest(body, passages)
+    if (body.conversation_id) request.cache = conversationCache(ctx, body.conversation_id)
+    const result = await generate(deps, request)
     const response: AnswerResponse = {
       answer: result.data.answer,
       citations: citationsFor(result.data, passages),

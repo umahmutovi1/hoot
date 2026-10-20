@@ -15,7 +15,12 @@ export function anthropicProvider({ apiKey, model }: AnthropicConfig): LlmProvid
     name: 'anthropic',
     model,
     async generate(req) {
-      const content: Anthropic.ContentBlockParam[] = (req.files ?? []).map((f) =>
+      // The stable prefix comes first with a cache breakpoint, so system + prefix are reused
+      // across calls (Anthropic ignores breakpoints below its minimum prefix length).
+      const content: Anthropic.ContentBlockParam[] = req.prefix
+        ? [{ type: 'text', text: req.prefix, cache_control: { type: 'ephemeral' } }]
+        : []
+      const files: Anthropic.ContentBlockParam[] = (req.files ?? []).map((f) =>
         f.mediaType === 'application/pdf'
           ? {
               type: 'document',
@@ -23,12 +28,12 @@ export function anthropicProvider({ apiKey, model }: AnthropicConfig): LlmProvid
             }
           : { type: 'image', source: { type: 'base64', media_type: f.mediaType, data: f.base64 } },
       )
-      content.push({ type: 'text', text: req.text })
+      content.push(...files, { type: 'text', text: req.text })
       try {
         const response = await client.messages.parse({
           model,
           max_tokens: req.maxTokens,
-          system: req.system,
+          system: [{ type: 'text', text: req.system, cache_control: { type: 'ephemeral' } }],
           messages: [{ role: 'user', content }],
           // Extraction and short answers: low effort keeps thinking (and cost) small.
           output_config: { effort: 'low', format: zodOutputFormat(req.schema) },
@@ -37,8 +42,13 @@ export function anthropicProvider({ apiKey, model }: AnthropicConfig): LlmProvid
         return {
           // null when the output did not parse; the wrapper treats that as invalid and retries.
           json: response.parsed_output ?? null,
-          inputTokens: response.usage.input_tokens,
+          // input_tokens excludes cached tokens; count all of them like Gemini does.
+          inputTokens:
+            response.usage.input_tokens +
+            (response.usage.cache_read_input_tokens ?? 0) +
+            (response.usage.cache_creation_input_tokens ?? 0),
           outputTokens: response.usage.output_tokens,
+          cachedTokens: response.usage.cache_read_input_tokens ?? 0,
         }
       } catch (err) {
         if (

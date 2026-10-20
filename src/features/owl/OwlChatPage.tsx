@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CloseIcon, DocIcon, PlusIcon, SendIcon, TrashIcon } from '@/components/icons'
+import { ClockIcon, CloseIcon, DocIcon, PencilIcon, PlusIcon, SendIcon } from '@/components/icons'
 import { useSubjects } from '@/features/subjects/api'
 import { cn } from '@/lib/utils'
 import type { Citation } from '@shared/schemas.ts'
@@ -20,7 +20,7 @@ export function OwlChatPage() {
   const messages = useOwlStore((s) => s.messages)
   const busy = useOwlStore((s) => s.busy)
   const openSheet = useOwlStore((s) => s.openSheet)
-  const clear = useOwlStore((s) => s.clear)
+  const newConversation = useOwlStore((s) => s.newConversation)
   const { state } = useAiAvailability()
   const owl = useOwl()
   const [question, setQuestion] = useState('')
@@ -51,15 +51,22 @@ export function OwlChatPage() {
           </div>
         </div>
         <div className="flex gap-1.5">
+          <Link
+            to="/owl/history"
+            aria-label={t('owl.history.title')}
+            className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted"
+          >
+            <ClockIcon size={18} />
+          </Link>
           {messages.length > 0 && (
             <button
               type="button"
-              onClick={clear}
+              onClick={newConversation}
               disabled={busy}
-              aria-label={t('owl.clear')}
-              className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted"
+              aria-label={t('owl.history.new')}
+              className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted disabled:opacity-60"
             >
-              <TrashIcon size={18} />
+              <PencilIcon size={18} />
             </button>
           )}
           <button

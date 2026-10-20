@@ -202,6 +202,8 @@ export const answerRequestSchema = z.object({
   state: z.string().max(MAX_STATE_CHARS),
   locale: localeSchema,
   today: isoDate,
+  /** Conversation the question belongs to; keeps its prompt cache. */
+  conversation_id: z.uuid().nullable().optional(),
 })
 export type AnswerRequest = z.infer<typeof answerRequestSchema>
 

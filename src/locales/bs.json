@@ -937,7 +937,6 @@
     "disabled": "Sova još nije podešena (nema AI ključa).",
     "add": "Daj sovi dokument",
     "send": "Pošalji",
-    "clear": "Očisti razgovor",
     "intro": "Pitaj me o ispitima, bodovima i rokovima ili mi daj dokument preko +. Ništa ne mijenjam bez tvoje potvrde.",
     "suggest": {
       "important": "Šta je danas najvažnije?",
@@ -1058,6 +1057,14 @@
       "count_one": "{{count}} dokument",
       "count_few": "{{count}} dokumenta",
       "count_other": "{{count}} dokumenata"
+    },
+    "history": {
+      "title": "Historija razgovora",
+      "empty": "Još nema razgovora sa sovom.",
+      "new": "Novi razgovor",
+      "delete": "Obriši razgovor",
+      "confirmDelete": "Obrisati ovaj razgovor?",
+      "untitled": "Razgovor"
     }
   }
 }

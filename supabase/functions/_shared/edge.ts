@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { corsHeaders, json } from './cors.ts'
 import { DAILY_AI_LIMIT, getProvider, LlmError } from './llm.ts'
-import type { LlmDeps, LlmEnv, LlmProvider } from './llm.ts'
+import type { LlmDeps, LlmEnv, LlmProvider, PromptCacheStore } from './llm.ts'
 
 export interface EdgeContext {
   userId: string
@@ -83,6 +83,27 @@ export async function llmDeps(ctx: EdgeContext): Promise<LlmDeps> {
     logRun: async (run) => {
       const { error } = await ctx.admin.from('ai_runs').insert({ ...run, user_id: ctx.userId })
       if (error) console.error('ai_runs insert failed', error.message)
+    },
+  }
+}
+
+/** Prompt cache bookkeeping on the conversation row (RLS: only the user's own). */
+export function conversationCache(ctx: EdgeContext, conversationId: string): PromptCacheStore {
+  return {
+    async lookup(key) {
+      const { data } = await ctx.db
+        .from('owl_conversations')
+        .select('cache_name, cache_key, cache_expires_at')
+        .eq('id', conversationId)
+        .maybeSingle()
+      if (!data || data.cache_key !== key || !data.cache_expires_at) return null
+      return new Date(data.cache_expires_at) > new Date() ? (data.cache_name ?? '') : null
+    },
+    async save(key, name, expiresAt) {
+      await ctx.db
+        .from('owl_conversations')
+        .update({ cache_key: key, cache_name: name, cache_expires_at: expiresAt.toISOString() })
+        .eq('id', conversationId)
     },
   }
 }

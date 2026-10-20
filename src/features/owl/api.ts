@@ -5,6 +5,7 @@ import { AI_ERRORS, type AiErrorCode, type AiStatus } from '@shared/schemas.ts'
 import { useAuth } from '@/features/auth/auth-context'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
+import type { OwlMessage } from './store'
 
 export type DocumentRow = Tables<'documents'>
 
@@ -122,5 +123,51 @@ export function useDocumentFileUrl(path: string | null | undefined) {
       if (error) throw error
       return data.signedUrl
     },
+  })
+}
+
+export type ConversationRow = Tables<'owl_conversations'>
+
+export const conversationsKey = (userId: string | undefined) =>
+  ['owl-conversations', userId] as const
+
+/** Past conversations with the owl, newest first. */
+export function useConversations() {
+  const userId = useAuth().session?.user.id
+  return useQuery({
+    queryKey: conversationsKey(userId),
+    enabled: Boolean(userId),
+    queryFn: async (): Promise<ConversationRow[]> => {
+      const { data, error } = await supabase
+        .from('owl_conversations')
+        .select('*')
+        .order('last_message_at', { ascending: false })
+        .limit(100)
+      if (error) throw error
+      return data
+    },
+  })
+}
+
+/** Messages of one conversation, as the chat renders them. */
+export async function loadConversationMessages(id: string): Promise<OwlMessage[]> {
+  const { data, error } = await supabase
+    .from('owl_messages')
+    .select('payload')
+    .eq('conversation_id', id)
+    .order('created_at')
+  if (error) throw error
+  return data.map((row) => row.payload as unknown as OwlMessage)
+}
+
+export function useDeleteConversation() {
+  const userId = useAuth().session?.user.id
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('owl_conversations').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: conversationsKey(userId) }),
   })
 }

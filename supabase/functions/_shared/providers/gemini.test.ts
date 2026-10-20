@@ -15,7 +15,7 @@ const req = {
 describe('buildGeminiBody', () => {
   it('puts files before the text and asks for JSON by schema', () => {
     const body = buildGeminiBody('gemini-2.5-flash', req)
-    expect(body.systemInstruction.parts[0]?.text).toBe('You read documents.')
+    expect(body).toMatchObject({ systemInstruction: { parts: [{ text: 'You read documents.' }] } })
     expect(body.contents[0]?.parts).toEqual([
       { inlineData: { mimeType: 'application/pdf', data: 'QUJD' } },
       { text: 'Hello' },
@@ -44,7 +44,12 @@ describe('readGeminiResponse', () => {
       candidates: [{ content: { parts: [{ text: '{"title":' }, { text: '"A","note":null}' }] } }],
       usageMetadata: { promptTokenCount: 120, candidatesTokenCount: 30, thoughtsTokenCount: 5 },
     })
-    expect(result).toEqual({ json: { title: 'A', note: null }, inputTokens: 120, outputTokens: 35 })
+    expect(result).toEqual({
+      json: { title: 'A', note: null },
+      inputTokens: 120,
+      outputTokens: 35,
+      cachedTokens: 0,
+    })
   })
 
   it('returns null json for truncated output so the wrapper retries', () => {
@@ -164,5 +169,110 @@ describe('geminiProvider', () => {
       sleep,
     })
     await expect(provider.generate(req)).rejects.toMatchObject({ code: 'quota_exhausted' })
+  })
+})
+
+describe('explicit prompt cache', () => {
+  const sleep = async () => {}
+  const answer = () =>
+    new Response(
+      JSON.stringify({
+        candidates: [{ content: { parts: [{ text: '{"title":"x","note":null}' }] } }],
+        usageMetadata: { promptTokenCount: 1500, cachedContentTokenCount: 1200 },
+      }),
+    )
+  const memoryCache = () => {
+    const rows = new Map<string, string>()
+    return {
+      rows,
+      lookup: vi.fn(async (key: string) => rows.get(key) ?? null),
+      save: vi.fn(async (key: string, name: string) => void rows.set(key, name)),
+    }
+  }
+  const cachedReq = (cache: ReturnType<typeof memoryCache>) => ({
+    ...req,
+    files: [],
+    prefix: 'STATE:\n' + 'x'.repeat(5000),
+    cache,
+  })
+  const bodyOf = (call: unknown[]) => JSON.parse((call[1] as RequestInit).body as string)
+
+  it('creates a cache once and sends only the changing part with it', async () => {
+    const cache = memoryCache()
+    const fetchMock = vi.fn(async (url: string | URL | Request, _init?: RequestInit) =>
+      String(url).endsWith('/cachedContents')
+        ? new Response(JSON.stringify({ name: 'cachedContents/abc' }))
+        : answer(),
+    )
+    const provider = geminiProvider({
+      apiKey: 'k',
+      model: 'gemini-3.5-flash-lite',
+      fetch: fetchMock,
+      sleep,
+    })
+    const first = await provider.generate(cachedReq(cache))
+    await provider.generate(cachedReq(cache))
+    const creates = fetchMock.mock.calls.filter((c) => String(c[0]).endsWith('/cachedContents'))
+    expect(creates).toHaveLength(1)
+    const generate = bodyOf(fetchMock.mock.calls.at(-1)!)
+    expect(generate.cachedContent).toBe('cachedContents/abc')
+    expect(generate).not.toHaveProperty('systemInstruction')
+    expect(JSON.stringify(generate.contents)).not.toContain('STATE:')
+    expect(first.cachedTokens).toBe(1200)
+  })
+
+  it('remembers a refused cache and sends the full prompt', async () => {
+    const cache = memoryCache()
+    const fetchMock = vi.fn(async (url: string | URL | Request, _init?: RequestInit) =>
+      String(url).endsWith('/cachedContents') ? new Response('no', { status: 400 }) : answer(),
+    )
+    const provider = geminiProvider({
+      apiKey: 'k',
+      model: 'gemini-3.5-flash-lite',
+      fetch: fetchMock,
+      sleep,
+    })
+    await provider.generate(cachedReq(cache))
+    await provider.generate(cachedReq(cache))
+    expect(
+      fetchMock.mock.calls.filter((c) => String(c[0]).endsWith('/cachedContents')),
+    ).toHaveLength(1)
+    expect([...cache.rows.values()]).toEqual([''])
+    const generate = bodyOf(fetchMock.mock.calls.at(-1)!)
+    expect(generate).toHaveProperty('systemInstruction')
+    expect(JSON.stringify(generate.contents)).toContain('STATE:')
+  })
+
+  it('falls back to the full prompt when a stored cache is gone', async () => {
+    const cache = memoryCache()
+    const fetchMock = vi
+      .fn<(url: string | URL | Request, init?: RequestInit) => Promise<Response>>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ name: 'cachedContents/old' })))
+      .mockResolvedValueOnce(new Response('expired', { status: 403 }))
+      .mockResolvedValueOnce(answer())
+    const provider = geminiProvider({
+      apiKey: 'k',
+      model: 'gemini-3.5-flash-lite',
+      fetch: fetchMock,
+      sleep,
+    })
+    await expect(provider.generate(cachedReq(cache))).resolves.toMatchObject({
+      json: { title: 'x' },
+    })
+    expect(bodyOf(fetchMock.mock.calls[2]!)).toHaveProperty('systemInstruction')
+  })
+
+  it('skips caching for short prompts', async () => {
+    const cache = memoryCache()
+    const fetchMock = vi.fn(async () => answer())
+    const provider = geminiProvider({
+      apiKey: 'k',
+      model: 'gemini-3.5-flash-lite',
+      fetch: fetchMock,
+      sleep,
+    })
+    await provider.generate({ ...req, files: [], prefix: 'STATE:\n{}', cache })
+    expect(cache.lookup).not.toHaveBeenCalled()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })

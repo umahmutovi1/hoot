@@ -22,11 +22,11 @@ export function useOwl() {
   const deadlines = useDeadlines().data
   const periods = usePeriods().data
   const queryClient = useQueryClient()
-  const ensureSession = useOwlStore((s) => s.ensureSession)
+  const ensureUser = useOwlStore((s) => s.ensureUser)
 
   useEffect(() => {
-    if (userId) ensureSession(userId, today)
-  }, [userId, today, ensureSession])
+    if (userId) ensureUser(userId)
+  }, [userId, ensureUser])
 
   return useMemo(() => {
     const ctx: OwlContext | null = userId

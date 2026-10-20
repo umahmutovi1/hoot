@@ -6,6 +6,7 @@ import { WelcomePage } from '@/features/onboarding/WelcomePage'
 import { DocumentPage, DocumentsPage } from '@/features/owl/DocumentsPage'
 import { ImportReviewPage } from '@/features/owl/ImportReviewPage'
 import { OwlChatPage } from '@/features/owl/OwlChatPage'
+import { OwlHistoryPage } from '@/features/owl/OwlHistoryPage'
 import { PlanPage } from '@/features/plan/PlanPage'
 import { ProgressPage } from '@/features/progress/ProgressPage'
 import { SourceEditorPage } from '@/features/sources/SourceEditorPage'
@@ -54,6 +55,7 @@ export const router = createBrowserRouter([
               { path: 'settings/documents', element: <DocumentsPage /> },
               { path: 'settings/documents/:id', element: <DocumentPage /> },
               { path: 'owl', element: <OwlChatPage /> },
+              { path: 'owl/history', element: <OwlHistoryPage /> },
               { path: 'owl/import/:id', element: <ImportReviewPage /> },
               { path: 'plan/availability', element: <AvailabilityPage /> },
               { path: 'plan/timetable', element: <TimetablePage /> },

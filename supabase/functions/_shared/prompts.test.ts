@@ -130,9 +130,11 @@ describe('answer', () => {
     today: '2026-10-20',
   }
 
-  it('numbers passages and puts state and question last', () => {
+  it('puts the state in the cacheable prefix and the question last', () => {
     const r = answerRequest(req, passages)
     expect(r.system).toContain('Bosnian')
+    expect(r.prefix).toBe('STATE:\n{"subjects":[]}')
+    expect(r.text).not.toContain('STATE:')
     expect(r.text).toContain('[1] Akademski kalendar, page 2')
     expect(r.text).toContain('Student: Zdravo')
     expect(r.text.trim().endsWith('Kad je popravni?')).toBe(true)
