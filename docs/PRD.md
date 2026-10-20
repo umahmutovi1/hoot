@@ -1078,7 +1078,9 @@ create table document_chunks (
 );
 -- + RLS owner_all, grant, HNSW indeks nad embedding, RPC match_document_chunks(query_embedding, k)
 
--- 0009_manual_blocks.sql (Etapa 8)
+-- 0009_ai_runs_writer.sql (Etapa 6): grant select, insert on ai_runs to service_role (Edge Functions logiraju AI pozive)
+
+-- 0010_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1086,7 +1088,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0010_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0011_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,

@@ -18,5 +18,6 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["supabase/functions/_shared"]
+  "include": ["supabase/functions/_shared"],
+  "exclude": ["supabase/functions/_shared/embed.ts"]
 }
