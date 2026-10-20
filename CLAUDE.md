@@ -30,6 +30,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `npm run dev` · `npm run build` · `npm run lint` (oxlint) · `npm run format` (Prettier) · `npm run typecheck` · `npm test`
 - `npx supabase db push` · `npm run db:types` (regenerates `src/types/database.ts` from the linked project)
 - `npx supabase functions serve` / `npx supabase functions deploy <name>`
+- `npm run eval` (promptfoo evals for `parse-document`; needs `GEMINI_API_KEY` in the shell)
 
 ## Architectural rules
 - Scheduling is deterministic code (`plan()`, `placeTimes()` in `src/lib/scheduler/`), never an LLM. AI only explains and proposes input changes.

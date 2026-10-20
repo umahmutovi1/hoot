@@ -15,10 +15,14 @@ import { localDay } from '@/lib/day'
 import { greetingPart } from '@/lib/greeting'
 import { calendarStatus } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
+import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
+import { OwlBar } from '@/features/owl/OwlBar'
 import { FactCard } from './FactCard'
 
 // Without subjects "Today" is the first-run state (DanasPrazno); the real day plan comes with
 // the scheduler (Stage 8), until then a short card links to subjects and the calendar.
+// The owl bar is docked at the bottom; on the empty state the big owl and the bar owl go
+// together (the one exception in MASCOT.md).
 export function TodayPage() {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -32,7 +36,7 @@ export function TodayPage() {
   const hasSubjects = (subjects ?? []).some((x) => !x.archived)
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pb-28">
       <PageTitle>{t('nav.today')}</PageTitle>
       <div className="mt-1.5 flex min-w-0 flex-col gap-0.5">
         <span className="text-[17px] font-semibold">
@@ -90,6 +94,9 @@ export function TodayPage() {
       <div className="mt-10">
         <FactCard />
       </div>
+
+      <OwlBar empty={!hasSubjects} />
+      <GiveDocumentSheet />
     </div>
   )
 }

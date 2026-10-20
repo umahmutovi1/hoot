@@ -29,6 +29,7 @@ const exam = (over: Partial<ParsedExam>): ParsedExam => ({
 const existing = (over: Partial<ExistingExam>): ExistingExam => ({
   id: 'x',
   subjectId: 'sis',
+  title: 'II parcijala',
   kind: 'partial',
   date: '2026-11-25',
   time: '09:00',
@@ -63,7 +64,12 @@ describe('proposeExams', () => {
     const [p] = proposeExams([exam({ number: null })], subjects, [
       existing({ id: 'p2', tentative: true, date: '2026-11-30', dateLatest: '2026-12-11' }),
     ])
-    expect(p).toMatchObject({ status: 'changed', existingId: 'p2', include: true })
+    expect(p).toMatchObject({
+      status: 'changed',
+      existingId: 'p2',
+      existingTitle: 'II parcijala',
+      include: true,
+    })
     expect(p?.previous).toEqual({ date: '2026-11-30', dateLatest: '2026-12-11', tentative: true })
   })
 

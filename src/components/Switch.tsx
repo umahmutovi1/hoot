@@ -4,17 +4,19 @@ interface SwitchProps {
   checked: boolean
   label: string
   onChange: (checked: boolean) => void
+  disabled?: boolean
 }
 
 /** Labeled toggle with a 44 px touch target. */
-export function Switch({ checked, label, onChange }: SwitchProps) {
+export function Switch({ checked, label, onChange, disabled }: SwitchProps) {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
+      disabled={disabled}
       onClick={() => onChange(!checked)}
-      className="flex min-h-11 items-center gap-2 text-[13px]"
+      className="flex min-h-11 items-center gap-2 text-[13px] disabled:opacity-50"
     >
       <span
         className={cn(

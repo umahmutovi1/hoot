@@ -911,5 +911,124 @@
       "noPoints": "No points entered",
       "addOnSubject": "Add on the subject"
     }
+  },
+  "owl": {
+    "name": "Owl",
+    "tagline": "knows your documents and plan",
+    "ask": "Ask the owl…",
+    "askEmpty": "Give me your exam schedule…",
+    "open": "Open the conversation with the owl",
+    "offline": "The owl is offline. Back when you reconnect.",
+    "disabled": "The owl is not set up yet (no AI key).",
+    "add": "Give the owl a document",
+    "send": "Send",
+    "clear": "Clear conversation",
+    "intro": "Ask me about exams, points and deadlines, or give me a document with +. I never change anything without your confirmation.",
+    "suggest": {
+      "important": "What matters most today?",
+      "importExams": "Import exam schedule",
+      "makeup": "When is the makeup exam?",
+      "addSubject": "+ Add subject",
+      "importCalendar": "Import academic calendar"
+    },
+    "sheet": {
+      "title": "Give the owl a document",
+      "subtitle": "It reads it and proposes what to add. Nothing changes without your confirmation.",
+      "camera": "Take photo",
+      "image": "Image",
+      "pdf": "PDF",
+      "text": "Paste text",
+      "kindLabel": "What's inside?",
+      "kindHint": "(the owl can guess)",
+      "kind": {
+        "auto": "Guess",
+        "academic_calendar": "Academic calendar",
+        "exam_schedule": "Exam schedule",
+        "document": "Rules, syllabus, notice"
+      },
+      "textLabel": "Text",
+      "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
+      "textSend": "Give to the owl",
+      "back": "Back",
+      "privacy": "On the free AI plan Google may use what you send. Don't send personal documents."
+    },
+    "pending": {
+      "thinking": "Thinking…",
+      "reading": "Reading the document…",
+      "storing": "Saving to Documents…"
+    },
+    "error": {
+      "offline": "No internet. Try again when you're online.",
+      "rate_limited": "That's enough for today: all 30 AI calls are used. More tomorrow.",
+      "provider_busy": "The AI service is busy. Try again in a minute.",
+      "no_key": "AI is not set up yet.",
+      "invalid_output": "I couldn't read this. Try a clearer photo or the text.",
+      "bad_request": "I can't read this. Send an image, a PDF or text.",
+      "unauthorized": "Your session expired. Sign in again.",
+      "failed": "Something went wrong. Try again.",
+      "file": "I can't read this. Send an image, a PDF or text."
+    },
+    "document": {
+      "stored": "I saved “{{title}}” to Documents.",
+      "found_one": "I found {{count}} item. Have a look before I save:",
+      "found_other": "I found {{count}} items. Have a look before I save:",
+      "noDates": "I found no dates, but I keep the document for questions."
+    },
+    "kind": {
+      "academic_calendar": "Academic calendar",
+      "exam_schedule": "Exam schedule",
+      "rules": "Rules",
+      "syllabus": "Syllabus",
+      "notice": "Notice",
+      "other": "Document"
+    },
+    "status": {
+      "new": "new",
+      "changed": "changed",
+      "unchanged": "stays",
+      "skipped": "skipping"
+    },
+    "noSubject": "not one of your subjects",
+    "tentative": "tentative",
+    "review": "Review",
+    "saveCount": "Save {{count}}",
+    "saved_one": "Saved {{count}} item.",
+    "saved_other": "Saved {{count}} items.",
+    "nothingToSave": "Everything is already in the plan.",
+    "page": "p. {{page}}",
+    "stateRef": {
+      "grades": "Points and grade",
+      "exams": "Exams",
+      "calendar": "Academic calendar",
+      "plan": "Plan"
+    },
+    "examTitle": "Midterm {{n}}",
+    "reviewPage": {
+      "title": "Review import",
+      "periods": "Academic calendar",
+      "exams": "Exams",
+      "include": "Include",
+      "pickSubject": "Pick a subject",
+      "skipSubject": "Skip",
+      "date": "Date",
+      "time": "Time",
+      "from": "From",
+      "to": "To",
+      "warnings": "Notes from the owl",
+      "missing": "This proposal no longer exists."
+    },
+    "documents": {
+      "title": "Documents",
+      "intro": "The owl answers from these and names the document and page. Give it new ones on Today (+).",
+      "empty": "No documents yet.",
+      "pages_one": "{{count}} page",
+      "pages_other": "{{count}} pages",
+      "pasted": "pasted text",
+      "delete": "Delete document",
+      "confirmDelete": "Delete the document and its search passages?",
+      "openFile": "Open file",
+      "count_one": "{{count}} document",
+      "count_other": "{{count}} documents"
+    }
   }
 }
