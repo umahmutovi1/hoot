@@ -252,6 +252,12 @@
       "body": "Do tada se predmet ne planira, osim ponavljanja već naučenog. Početak se računa iz preostalog gradiva i tvoje dostupnosti, uz 20% rezerve.",
       "move": "Pomjeri",
       "startNow": "Počni odmah"
+    },
+    "quick": {
+      "open": "Novi predmet",
+      "title": "Naziv novog predmeta",
+      "hint": "Ispite i ostalo dodaješ kasnije na predmetu.",
+      "create": "Dodaj predmet"
     }
   },
   "progress": {

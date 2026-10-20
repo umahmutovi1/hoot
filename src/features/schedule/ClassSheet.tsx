@@ -3,10 +3,12 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
+import { PlusIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
 import { ChipGroup, fieldInput, fieldLabel } from '@/features/subjects/fields'
+import { QuickSubject } from '@/features/subjects/QuickSubject'
 import { formatClock, parseClock } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
@@ -62,6 +64,8 @@ function ClassFormView({
   const save = useSaveClass()
   const remove = useDeleteClass()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  // With no subjects yet, the new class starts with creating one.
+  const [newSubject, setNewSubject] = useState(!entry && active.length === 0)
   const form = useForm<ClassForm>({
     resolver: zodResolver(classFormSchema),
     defaultValues: entry
@@ -126,6 +130,25 @@ function ClassFormView({
           value={subjectId || null}
           onChange={(id) => form.setValue('subjectId', id, set)}
         />
+        {newSubject ? (
+          <QuickSubject
+            autoFocus={active.length > 0}
+            onCreated={(id) => {
+              form.setValue('subjectId', id, set)
+              setNewSubject(false)
+            }}
+            onCancel={() => setNewSubject(false)}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setNewSubject(true)}
+            className="flex h-11 items-center gap-1.5 self-start rounded-full px-1 text-[13px] font-semibold text-brand"
+          >
+            <PlusIcon className="size-4" />
+            {t('subjects.quick.open')}
+          </button>
+        )}
         {errors.subjectId && (
           <span role="alert" className="text-sm text-danger">
             {t('timetable.pickSubject')}
