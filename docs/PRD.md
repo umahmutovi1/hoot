@@ -489,7 +489,7 @@ Fakultet objavi akademski kalendar prije semestra: kad traje nastava, kad su isp
 
 AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nikad ne piše direktno: svaki prijedlog prolazi pregled (novo / izmijenjeno / ostaje) i potvrdu.
 
-**Provajder.** Sve ide kroz LLM wrapper (`_shared/llm.ts`). Dok Anthropic nalog nema karticu, `LLM_PROVIDER=gemini` (Gemini Flash free tier, structured output preko `responseSchema` iz `z.toJSONSchema()`); prebacivanje na Haiku je promjena secrets, bez koda. Na free tieru Google može koristiti podatke za poboljšanje proizvoda, pa se šalju samo podaci koji su za to potrebni. Koraci za ključ su u [SETUP.md](SETUP.md).
+**Provajder.** Sve ide kroz LLM wrapper (`_shared/llm.ts`). Dok Anthropic nalog nema karticu, `LLM_PROVIDER=gemini` (Gemini Flash free tier, structured output preko `responseJsonSchema` iz `z.toJSONSchema()`); prebacivanje na Haiku je promjena secrets, bez koda. Na free tieru Google može koristiti podatke za poboljšanje proizvoda, pa se šalju samo podaci koji su za to potrebni. Koraci za ključ su u [SETUP.md](SETUP.md).
 
 **Sova (agent) na Danas (Etapa 6).** Na dnu ekrana Danas, iznad tab bara, stoji traka sa sovom („Pitaj sovu…“ i dugme +). To je jedan ulaz za sve AI radnje: pitanje (odgovor iz dokumenata sa citatom ili iz sažetka stanja), dodavanje dokumenta (uslikaj, slika, PDF, zalijepi tekst) i prijedlozi izmjena kao kartice sa pregledom. Tap na traku otvara razgovor preko cijelog ekrana. Iznad trake je današnji savjet strategista (oblačić, × ga skloni do sutra) i prijedlozi pitanja. Offline ili bez ključa traka je onemogućena. Za sad je samo na Danas; kasnije najvjerovatnije plutajuća sova (krug dole desno) na ostalim tabovima, varijanta 7B u mockupu. Oblačić sa savjetom dolazi sa strategistom (Etapa 11); do tad iznad trake stoje samo prijedlozi. Mockup: `design/SovaAgent.html`.
 
@@ -498,6 +498,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 - Akademski kalendar → periodi (nastava, rokovi, sedmice parcijalnih, neradni dani).
 - Raspored ispita (npr. raspored parcijala) → ispiti sa datumima, upareni sa predmetima (`fuse.js` + AI), uz prijedlog izmjene postojećeg ispita (okvirni → tačan datum) umjesto duplikata.
 - Isti pregled kasnije koriste raspored nastave i sadržaj knjige (Etapa 10).
+- **Odluke (Etapa 6):** “Pogodi sama” je jedan AI poziv (`parse-document`): isti poziv prepozna vrstu i izvuče periode ili ispite; izabran tip daje užu šemu. Dat dokument se odmah sprema u Dokumente (fajl + odlomci; briše se tamo), jer je davanje dokumenta već potvrda. Potvrdu traže samo izmjene plana (periodi, ispiti) kroz karticu novo / izmijenjeno / preskačem.
 
 **Dokumenti i RAG.** Korpus su tri stvari:
 
@@ -505,7 +506,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 2. **Bilješke i jedinice**: naslovi jedinica, bilješke, kartice i ispitna pitanja dobijaju embedding (isti model). Služe recall pitanjima, vezi pitanje ↔ poglavlje i pretrazi “gdje sam pisala o …” (Etapa 10).
 3. **Stanje plana**: nije vektorska pretraga nego kompaktan JSON sažetak (predmeti, ispiti, bodovi, napredak, zaostatak), isti kao ulaz strategista.
 
-**Asistent (chat).** Razgovor sa sovom postoji od Etape 6 (dokumenti, sažetak stanja, prijedlozi uvoza). Etapa 10 dodaje ostale alate. Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi.
+**Asistent (chat).** Razgovor sa sovom postoji od Etape 6 (dokumenti, sažetak stanja, prijedlozi uvoza). Etapa 10 dodaje ostale alate. Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi. U Etapi 6 razgovor živi samo na uređaju (do kraja dana ili dok ga ne očistiš); trošak je u `ai_runs`. Trajna historija u bazi dolazi sa ostalim alatima u Etapi 10.
 
 ## Bodovi, skala ocjena i projekcija ocjene
 
@@ -1052,6 +1053,7 @@ alter table subjects
 create extension if not exists vector;
 alter type ai_task add value 'parse_academic_calendar';
 alter type ai_task add value 'parse_exam_schedule';
+alter type ai_task add value 'parse_document';
 alter type ai_task add value 'answer';
 create table documents (
   id uuid primary key default gen_random_uuid(),
@@ -1111,10 +1113,10 @@ Edge funkcije, sve sa strukturiranim JSON izlazom koji se validira Zod šemom pr
 | `parse-toc` | 1–4 slike ili tekst, tip izvora, predmet, postojeće teme | jedinice, stranice, podjedinice, `ai_difficulty`, teme, upozorenja |
 | `parse-questions` | slika ili tekst liste pitanja, postojeće teme i poglavlja | pitanja, teme, prijedlog ispita |
 | `parse-timetable` | slika rasporeda, nazivi predmeta | termini (dan, vrijeme, tip, sala, parnost), veza na predmet |
-| `parse-academic-calendar` | tekst, slika ili PDF kalendara | periodi: nastava, sedmice parcijalnih, rokovi (redovni/popravni), neradni dani |
-| `parse-exam-schedule` | tekst, slika ili PDF rasporeda ispita, predmeti i postojeći ispiti | ispiti sa datumom, veza na predmet i postojeći ispit |
-| `documents` | PDF/slika/tekst dokumenta | odlomci sa embeddingom (`gte-small`), bez LLM poziva |
+| `parse-document` | tekst (zalijepljen ili tekst iz PDF-a po stranicama), slika ili skenirani PDF; vrsta (`auto` / akademski kalendar / raspored ispita / dokument); predmeti i postojeći ispiti | vrsta i naslov dokumenta, periodi (nastava, ispitni periodi, neradni dani) ili ispiti sa datumom i vezom na predmet, prepis po stranicama kad tekst nije dat. `ai_task`: `parse_academic_calendar`, `parse_exam_schedule` ili `parse_document` |
+| `documents` | odlomci dokumenta (najviše 16 po pozivu) | embedding (`gte-small`) i upis odlomaka, bez LLM poziva |
 | `answer` | pitanje + najrelevantniji odlomci + sažetak stanja | odgovor sa citatima (dokument, stranica) |
+| `ai-status` | — | da li je AI podešen i koliko je poziva ostalo (traka sove) |
 | `recall-questions` | bilješke ili slika stranice ili naslov + podnaslovi | 3 pitanja sa odgovorima i oznakom izvora |
 | `propose-answer` | ispitno pitanje + bilješke povezanih jedinica | prijedlog odgovora, označen “provjeri” |
 | `quiz` | bilješke jedinice | 5–10 pitanja za kviz ili kartice |
@@ -1152,7 +1154,7 @@ Ograničenja šema za structured outputs:
 
 - Slika se smanjuje na klijentu na max 1600 px duže strane prije uploada.
 - `max_tokens` ograničen (npr. 4000 za parse, 1500 za strategist).
-- Rate limit u edge funkciji: npr. max 30 AI poziva dnevno po korisniku, provjera preko `ai_runs`.
+- Rate limit u edge funkciji: max 30 AI poziva u zadnja 24 sata po korisniku, provjera preko `ai_runs` (embeddings se ne broje).
 - Svaki poziv se logira u `ai_runs` sa tokenima i cijenom, pa u postavkama vidiš potrošnju.
 
 **Procjena troška (Haiku 5.5: $0.10 / 1M ulaznih, $0.50 / 1M izlaznih tokena do 100k tokena prompta)**
