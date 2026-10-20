@@ -272,7 +272,9 @@
     "timezone": "Time zone",
     "signOut": "Sign out",
     "periodsCount_one": "{{count}} period",
-    "periodsCount_other": "{{count}} periods"
+    "periodsCount_other": "{{count}} periods",
+    "grades": "Points and grades",
+    "gradesValue": "{{total}} points · scale ›"
   },
   "validation": {
     "required": "Required",
@@ -916,7 +918,13 @@
       "target": "Target grade",
       "noTarget": "no target",
       "targetHint": "The plan will raise the target coverage so you can reach {{grade}}.",
-      "noTargetHint": "Without a target the plan follows the subject's priority only."
+      "noTargetHint": "Without a target the plan follows the subject's priority only.",
+      "globalSubtitle": "For all subjects",
+      "applies": "Which subjects it applies to",
+      "appliesAll": "All subjects",
+      "appliesSubject": "This subject only",
+      "appliesAllHint": "The same scale and points total apply to every subject without its own. Changing it here changes it for all of them.",
+      "appliesSubjectHint": "{{name}} gets its own scale; the other subjects stay on the shared one."
     },
     "overview": {
       "title": "Grades",

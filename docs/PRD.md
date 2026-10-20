@@ -540,7 +540,9 @@ Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih 
 - **Prag ukupno**: zbir mora dostići prag ocjene 6 iz skale.
 - **Uslov za izlazak** (`entry_min_points` na ispitu, opcionalno): zbir bodova sa stavki koje su prije tog ispita mora biti bar toliki (npr. 20 bodova iz zadaća i seminarskog za završni). Ako nije ispunjen, ispit i projekcija to pokažu.
 
-**Skala ocjena** (`subjects.grade_scale`, `null` = default): pragovi u procentima od `points_total`, snimljeni kao niz od 5 brojeva za ocjene 6–10 (`[55,65,75,85,95]`). Default bosanska skala: 0–54 → 5, 55–64 → 6, 65–74 → 7, 75–84 → 8, 85–94 → 9, 95–100 → 10. Mijenja se po predmetu (pragovi strogo rastući, Zod). Sheet “Skala ocjena” ima i polje “Ukupno bodova” (`points_total`); pragovi se unose i prikazuju u % (odluka, Etapa 5).
+**Skala ocjena** (`subjects.grade_scale`, `null` = default): pragovi u procentima od `points_total`, snimljeni kao niz od 5 brojeva za ocjene 6–10 (`[55,65,75,85,95]`). Default bosanska skala: 0–54 → 5, 55–64 → 6, 65–74 → 7, 75–84 → 8, 85–94 → 9, 95–100 → 10. Pragovi strogo rastući (Zod). Sheet “Skala ocjena” ima i polje “Ukupno bodova” (`points_total`); pragovi se unose i prikazuju u % (odluka, Etapa 5).
+
+**Zajednička skala** (odluka nakon Etape 6, migracija `0011_global_grade_scale.sql`): skala i ukupno bodova su obično isti za sve predmete, pa žive na profilu (`profiles.points_total`, `profiles.grade_scale`) i važe za svaki predmet. Predmet ima svoju samo kad je `subjects.custom_scale = true` (tada važe `subjects.points_total` / `grade_scale`). Sheet “Skala ocjena” na predmetu bira “Za sve predmete” (mijenja zajedničku) ili “Samo ovaj predmet”; Postavke → “Bodovi i ocjene” otvara zajedničku. Željena ocjena ostaje po predmetu.
 
 **Projekcija ocjene** (`src/lib/grades/`):
 
@@ -1090,7 +1092,7 @@ create table document_chunks (
 
 -- 0010_owl_chats.sql (Etapa 6): owl_conversations (naslov, zadnja poruka, cache_name/cache_key/cache_expires_at), owl_messages (role, type, payload jsonb), RLS; ai_runs.cached_tokens
 
--- 0011_manual_blocks.sql (Etapa 8)
+-- 0012_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1098,7 +1100,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0012_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0013_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,

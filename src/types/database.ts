@@ -867,12 +867,14 @@ export type Database = {
           daily_cap_min: number[]
           day_start_min: number
           display_name: string | null
+          grade_scale: Json | null
           id: string
           lecture_pace_days: number
           locale: string
           max_subjects_per_day: number
           min_block_minutes: number
           name_confirmed_at: string | null
+          points_total: number
           recap_after_lecture: boolean
           srs_multiplier: number
           timer_mode: string
@@ -885,12 +887,14 @@ export type Database = {
           daily_cap_min?: number[]
           day_start_min?: number
           display_name?: string | null
+          grade_scale?: Json | null
           id: string
           lecture_pace_days?: number
           locale?: string
           max_subjects_per_day?: number
           min_block_minutes?: number
           name_confirmed_at?: string | null
+          points_total?: number
           recap_after_lecture?: boolean
           srs_multiplier?: number
           timer_mode?: string
@@ -903,12 +907,14 @@ export type Database = {
           daily_cap_min?: number[]
           day_start_min?: number
           display_name?: string | null
+          grade_scale?: Json | null
           id?: string
           lecture_pace_days?: number
           locale?: string
           max_subjects_per_day?: number
           min_block_minutes?: number
           name_confirmed_at?: string | null
+          points_total?: number
           recap_after_lecture?: boolean
           srs_multiplier?: number
           timer_mode?: string
@@ -1202,6 +1208,7 @@ export type Database = {
           campaign_start_on: string | null
           color: string | null
           created_at: string
+          custom_scale: boolean
           grade_scale: Json | null
           id: string
           name: string
@@ -1217,6 +1224,7 @@ export type Database = {
           campaign_start_on?: string | null
           color?: string | null
           created_at?: string
+          custom_scale?: boolean
           grade_scale?: Json | null
           id?: string
           name: string
@@ -1232,6 +1240,7 @@ export type Database = {
           campaign_start_on?: string | null
           color?: string | null
           created_at?: string
+          custom_scale?: boolean
           grade_scale?: Json | null
           id?: string
           name?: string

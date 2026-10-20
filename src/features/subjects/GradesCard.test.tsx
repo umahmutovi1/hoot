@@ -5,6 +5,7 @@ import { assessmentRow, deadlineRow, subjectRow } from './fixtures'
 import { GradesCard } from './GradesCard'
 
 vi.mock('@/features/settings/useLocale', () => ({ useLocale: () => ({ locale: 'bs' }) }))
+vi.mock('@/features/settings/profile', () => ({ useGlobalScale: () => undefined }))
 
 // The mockup subject (BodoviOcjene, screen 1) with target grade 8.
 const subject = {

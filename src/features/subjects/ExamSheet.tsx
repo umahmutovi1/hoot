@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { usePeriods } from '@/features/schedule/api'
 import { dateRangeLabel } from '@/features/schedule/format'
 import { toPeriod } from '@/features/schedule/model'
-import { useDayBoundary } from '@/features/settings/profile'
+import { useDayBoundary, useGlobalScale } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { localDay } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
@@ -23,7 +23,7 @@ import { useDeleteAssessment, useSaveAssessment, useSubject } from './api'
 import { leavesOfPick, pickOf, rowsForLeaves, type SourcePick } from './sourceScope'
 import { ExamSources } from './ExamSources'
 import { ChipGroup, fieldInput, fieldLabel, NumberField, Segmented } from './fields'
-import { examItem, formatPoints } from './grades'
+import { examItem, formatPoints, gradeSubjectOf } from './grades'
 import { PointsFields } from './PointsFields'
 import { assessmentToForm } from './mappers'
 import {
@@ -70,6 +70,7 @@ function ExamForm({
   onDone: () => void
 }) {
   const { t } = useTranslation()
+  const globalScale = useGlobalScale()
   const save = useSaveAssessment()
   const saveScope = useSaveScope(subjectId)
   const { data: sources = [] } = useSources(subjectId)
@@ -129,7 +130,7 @@ function ExamForm({
     ],
   })
   const subject = useSubject(subjectId).data
-  const pointsTotal = subject?.points_total ?? 100
+  const pointsTotal = subject ? gradeSubjectOf(subject, globalScale).pointsTotal : 100
   const others = (subject?.assessments ?? []).filter((a) => a.id !== form.getValues('id'))
   const otherItems = others.map(examItem)
   const retakeTargets = others
