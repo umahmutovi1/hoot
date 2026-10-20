@@ -332,18 +332,29 @@
       "range": "Rough range"
     },
     "sources": {
-      "label": "Sources for this exam",
-      "none": "The subject has no sources yet.",
+      "label": "Sources",
+      "none": "This subject has no sources yet.",
       "add": "Add source",
-      "part": "Part of the source · Exam scope",
-      "all": "All",
-      "none_choice": "Not included",
-      "hint": "Pick part of a source (e.g. chapters 1–5) in Exam scope.",
-      "hintNew": "After saving, pick part of a source (e.g. chapters 1–5) in Exam scope."
+      "count_one": "{{count}} of {{total}} units",
+      "count_other": "{{count}} of {{total}} units",
+      "choice": {
+        "all": "All",
+        "part": "Part",
+        "none": "Not included"
+      },
+      "scopeAllOn": "All of the subject's material is in, including sources added later. You can leave parts out below.",
+      "scopeAllOff": "Only what you check below is in."
     },
     "retakeOf": "Make-up for",
     "retakeOfNone": "First add the exam this make-up repeats.",
-    "makeupTitle": "Make-up: {{title}}"
+    "makeupTitle": "Make-up: {{title}}",
+    "steps": {
+      "label": "Steps",
+      "1": "1 · Basics",
+      "2": "2 · What's on it",
+      "next": "Next: what's on it",
+      "back": "Back"
+    }
   },
   "deadlines": {
     "section": "Deadlines",

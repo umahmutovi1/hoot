@@ -338,18 +338,30 @@
       "range": "Okvirni raspon"
     },
     "sources": {
-      "label": "Izvori za ovaj ispit",
+      "label": "Izvori",
       "none": "Predmet još nema izvora.",
       "add": "Dodaj izvor",
-      "part": "Dio izvora · Obim ispita",
-      "all": "Cijeli",
-      "none_choice": "Ne ulazi",
-      "hint": "Dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita.",
-      "hintNew": "Nakon spašavanja dio izvora (npr. poglavlja 1–5) biraš u Obimu ispita."
+      "count_one": "{{count}} od {{total}} jedinica",
+      "count_few": "{{count}} od {{total}} jedinice",
+      "count_other": "{{count}} od {{total}} jedinica",
+      "choice": {
+        "all": "Cijeli",
+        "part": "Dio",
+        "none": "Ne ulazi"
+      },
+      "scopeAllOn": "Ulazi sve gradivo predmeta, i izvori koje dodaš kasnije. Ispod možeš izbaciti dio.",
+      "scopeAllOff": "Ulazi samo ono što označiš ispod."
     },
     "retakeOf": "Popravni za",
     "retakeOfNone": "Prvo dodaj ispit koji popravni ponavlja.",
-    "makeupTitle": "Popravni: {{title}}"
+    "makeupTitle": "Popravni: {{title}}",
+    "steps": {
+      "label": "Koraci",
+      "1": "1 · Osnovno",
+      "2": "2 · Šta ulazi",
+      "next": "Dalje: šta ulazi",
+      "back": "Nazad"
+    }
   },
   "deadlines": {
     "section": "Rokovi",
