@@ -1,0 +1,56 @@
+# Prompt evals for parse-document. Run before changing a prompt or model:
+#   GEMINI_API_KEY=... npm run eval
+# Every case must pass the Zod schema (the provider validates) and match the expected
+# kind, counts and dates.
+description: Hoot parse-document
+prompts: ['{{fixture}}']
+providers: ['file://provider.ts']
+defaultTest:
+  options:
+    provider: file://provider.ts
+tests:
+  - description: calendar text, guessed kind
+    vars: { kind: auto, fixture: calendar.txt }
+    assert:
+      - type: javascript
+        value: |
+          const p = output.periods
+          const find = (k, s) => p.filter((x) => x.kind === k && x.exam_session === s)
+          return output.kind === 'academic_calendar' && p.length === 7 &&
+            find('teaching', null)[0]?.starts_on === '2026-10-05' &&
+            find('exam', 'partial')[0]?.ends_on === '2026-11-27' &&
+            find('exam', 'makeup')[0]?.starts_on === '2027-02-15' &&
+            find('holiday', null).length === 3
+  - description: calendar as a table, summer semester
+    vars: { kind: academic_calendar, fixture: calendar-table.txt }
+    assert:
+      - type: javascript
+        value: |
+          const p = output.periods
+          return p.length === 5 &&
+            p.some((x) => x.kind === 'exam' && x.exam_session === 'makeup' && x.starts_on === '2027-08-30') &&
+            p.some((x) => x.kind === 'exam' && x.exam_session === 'partial' && x.starts_on === '2027-04-26') &&
+            p.some((x) => x.kind === 'holiday' && x.ends_on === '2027-05-02')
+  - description: exam schedule text, subjects matched despite abbreviations
+    vars: { kind: exam_schedule, fixture: exam-schedule.txt }
+    assert:
+      - type: javascript
+        value: |
+          const e = output.exams
+          const sis = e.find((x) => x.subject_id === '11111111-1111-4111-8111-111111111111')
+          return e.length === 4 && sis?.date === '2026-12-03' && sis?.time === '09:00' &&
+            sis?.kind === 'partial' && sis?.number === 2 &&
+            e.filter((x) => x.subject_id === null).length === 1
+  - description: exam schedule photo, guessed kind and transcribed
+    vars: { kind: auto, fixture: exam-schedule.png }
+    assert:
+      - type: javascript
+        value: |
+          return output.kind === 'exam_schedule' && output.exams.length === 3 &&
+            output.exams.every((x) => x.subject_id !== null && x.date.startsWith('2026-12')) &&
+            output.pages.length === 1
+  - description: rulebook is a document, no periods or exams
+    vars: { kind: auto, fixture: rules.txt }
+    assert:
+      - type: javascript
+        value: output.kind === 'rules' && output.periods.length === 0 && output.exams.length === 0

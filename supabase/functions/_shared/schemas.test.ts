@@ -98,7 +98,6 @@ describe('request schemas', () => {
     locale: 'bs',
     today: '2026-10-20',
     subjects: [],
-    exams: [],
   }
 
   it('needs text or a file', () => {

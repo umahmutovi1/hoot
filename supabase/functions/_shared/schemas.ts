@@ -132,18 +132,8 @@ export const parseDocumentRequestSchema = z
     text: z.array(pageTextSchema).max(200).nullable(),
     /** Image or scanned PDF in the `uploads` bucket: `<user_id>/documents/<file>`. */
     file: z.object({ path: z.string().min(1), media_type: uploadMediaTypeSchema }).nullable(),
+    /** Active subjects, so the model can link exams; diffing against existing exams is local. */
     subjects: z.array(z.object({ id: z.uuid(), name: z.string() })).max(60),
-    exams: z
-      .array(
-        z.object({
-          id: z.uuid(),
-          subject_id: z.uuid(),
-          kind: z.string(),
-          title: z.string(),
-          date: isoDate,
-        }),
-      )
-      .max(200),
   })
   .refine((r) => r.text !== null || r.file !== null, { message: 'text or file is required' })
   .refine((r) => !r.text || r.text.reduce((n, p) => n + p.text.length, 0) <= MAX_DOCUMENT_CHARS, {
