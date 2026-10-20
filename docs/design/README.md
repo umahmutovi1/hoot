@@ -38,4 +38,6 @@ Odstupanja nakon Etape 4: kalendar ima samo Mjesec i Dan; Dostupnost je sedmica 
 
 Odstupanja nakon Etape 5: Dostupnost nema sekcije „Sedmični šablon“, „Izmijenjeni dani“ ni karticu „Raspored nastave“ iz `Dostupnost.dc.html`. „Uredi dan“ nudi „Samo ovaj dan / Svaki <dan>“, a nastava se vidi na vremenskoj osi (osa je samo za čitanje, ne otvara sheet). Raspored je dostupan s Plana i Predmeta. Bottom sheet pri otvaranju ne fokusira prvo polje, da se na mobilnom ne otvori native time picker.
 
+Odstupanja nakon Etape 6: iznad trake sove nema oblačića sa savjetom (dolazi sa strategistom u Etapi 11), samo prijedlozi; iza trake je blagi fade da lista ispod ne smeta. Razgovor ima i dugme „Očisti razgovor“ (kanta) pored ×. „Pregledaj“ otvara ekran „Pregled uvoza“ (prekidač „Uključi“ po stavci, izmjena datuma i vremena, izbor predmeta za „preskačem“) sa „Spasi N“ na dnu. Dokumenti su u Postavkama (lista → dokument sa tekstom po stranicama, „Otvori fajl“, „Obriši dokument“); tap na citat otvara fajl na toj stranici.
+
 Varijante istog ekrana (npr. UrediBlok*, Provjera*, NoviPredmet*) su jedna komponenta sa stanjem, ne zasebne stranice.

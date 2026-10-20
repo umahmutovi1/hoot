@@ -82,6 +82,7 @@ export interface ImportSubject {
 export interface ExistingExam {
   id: string
   subjectId: string
+  title: string
   kind: ExamKind
   date: string
   time: string
@@ -97,6 +98,8 @@ export interface ExamProposal extends ParsedExam {
   /** Matched subject; null = "nemaš ovaj predmet" (skipped until one is picked). */
   subjectId: string | null
   existingId: string | null
+  /** Title of the exam this one updates, so the review shows "II parcijala". */
+  existingTitle: string | null
   previous: { date: string; dateLatest: string | null; tentative: boolean } | null
 }
 
@@ -172,6 +175,7 @@ export function proposeExams(
         include: false,
         subjectId: null,
         existingId: null,
+        existingTitle: null,
         previous: null,
       }
     }
@@ -190,6 +194,7 @@ export function proposeExams(
       include: status !== 'unchanged',
       subjectId,
       existingId: match?.id ?? null,
+      existingTitle: match?.title ?? null,
       previous:
         match && !same
           ? { date: match.date, dateLatest: match.dateLatest, tentative: match.tentative }

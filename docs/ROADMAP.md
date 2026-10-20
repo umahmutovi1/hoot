@@ -138,16 +138,16 @@ Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini free tier ([SETUP.md](SETUP.md#4-gemini-ai-za-sad)).
 
 - [x] Mockup [`design/SovaAgent.html`](design/SovaAgent.html) (traka sa sovom na Danas, razgovor sa citatom, „Daj sovi dokument“, prijedlog uvoza kao kartica, offline, prazno stanje; varijanta za sve tabove za kasnije) — odobren
-- [ ] Sova na Danas: traka na dnu (prijedlozi; oblačić sa savjetom tek sa strategistom u Etapi 11), razgovor preko cijelog ekrana, + → „Daj sovi dokument“; uvoz i pitanja o dokumentima idu kroz nju. Plutajuća sova na ostalim tabovima (7B) kasnije
+- [x] Sova na Danas: traka na dnu (prijedlozi; oblačić sa savjetom tek sa strategistom u Etapi 11), razgovor preko cijelog ekrana, + → „Daj sovi dokument“; uvoz i pitanja o dokumentima idu kroz nju. Plutajuća sova na ostalim tabovima (7B) kasnije
 
 - [x] `supabase/functions/_shared/`: `llm.ts`, `providers/gemini.ts` (`responseJsonSchema` iz `z.toJSONSchema()`), `providers/anthropic.ts` (`zodOutputFormat()` + `messages.parse()`), `schemas.ts` (bez rekurzivnih šema), `prices.ts`, `cors.ts`
 - [x] Logiranje u `ai_runs`, rate limit 30 poziva/dan, jedan retry na Zod grešku; `LLM_PROVIDER`, `LLM_MODEL`, `GEMINI_API_KEY` kao Supabase secrets
 - [x] Migracija `0008_ai_documents.sql` (pgvector, `documents`, `document_chunks`, novi `ai_task`), regenerisan `database.ts`
-- [ ] `src/lib/image.ts` (1600 px, `browser-image-compression`), upload u `uploads/<user_id>/`; PDF ide direktno
-- [ ] Ekran „Uvezi“ (pregled iz razgovora sa sovom): tekst / slika / PDF → `parse-document` (jedan poziv i za „Pogodi sama“) → pregled novo / izmijenjeno → spašavanje; uparivanje predmeta (`fuse.js`)
-- [ ] Dokumenti fakulteta: lista, upload, odlomci + embeddings (`gte-small`), RPC pretrage, `answer` sa citatima (dokument, stranica)
+- [x] `src/lib/image.ts` (1600 px, `browser-image-compression`), upload u `uploads/<user_id>/`; PDF ide direktno
+- [x] Ekran „Uvezi“ (pregled iz razgovora sa sovom): tekst / slika / PDF → `parse-document` (jedan poziv i za „Pogodi sama“) → pregled novo / izmijenjeno → spašavanje; uparivanje predmeta (`fuse.js`)
+- [x] Dokumenti fakulteta (Postavke → Dokumenti): lista, upload kroz sovu, odlomci + embeddings (`gte-small`), RPC pretrage, `answer` sa citatima (dokument, stranica)
 - [x] `evals/` sa `promptfoo`: fiksni primjeri kalendara i rasporeda ispita
-- [ ] AI dugmad onemogućena offline i bez ključa (poruka)
+- [x] AI dugmad onemogućena offline i bez ključa (poruka)
 - **DoD** → `v0.6.0`
 
 ## Etapa 7 — Timer i sesije

@@ -159,11 +159,27 @@ npx supabase secrets list      # vidi se ime, ne vrijednost
 unset GEMINI_API_KEY
 ```
 
-**4. Testiranje** (kad Etapa 6 donese edge funkcije):
-1. `npx supabase functions deploy <ime>` za svaku novu funkciju (lokalni `functions serve` traži Docker, pa se testira na pravom projektu).
-2. Otvori `dev.hoot-5ig.pages.dev` → Uvezi → zalijepi kratak tekst akademskog kalendara → pregled se pojavi.
-3. Supabase → Table Editor → `ai_runs`: red sa `provider = gemini`, tokenima i `ok = true`. Greške su u Edge Functions → Logs.
-4. Limiti free tiera (zahtjevi po minuti i danu) vide se u AI Studio → Usage; app ionako ima limit 30 poziva dnevno.
+**4. Edge funkcije** (Etapa 6: `parse-document`, `documents`, `answer`, `ai-status`):
+```bash
+for f in ai-status parse-document documents answer; do npx supabase functions deploy $f; done
+```
+- `supabase/config.toml` za svaku ima `verify_jwt = false` (funkcija sama provjerava token preko `auth.getUser`, što radi i sa novim JWT ključevima) i `import_map = "./functions/deno.json"`. Bez `import_map` deploy pada sa „Relative import path \"@supabase/supabase-js\"“.
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY` i `SUPABASE_SERVICE_ROLE_KEY` Supabase sam daje funkcijama; ne postavljaju se ručno.
+- pgvector se uključuje migracijom `0008` (nije potreban klik u dashboardu); `0009` daje `service_role` pravo da piše `ai_runs`.
+- Lokalni `functions serve` traži Docker, pa se testira na pravom projektu.
+
+**5. Testiranje**
+1. `dev.hoot-5ig.pages.dev` → Danas → + na traci sove → „Zalijepi tekst“ → kratak tekst akademskog kalendara → u razgovoru se pojavi kartica novo / izmijenjeno → „Spasi N“.
+2. Pitaj sovu nešto iz tog teksta: odgovor ima čip sa nazivom dokumenta i stranicom.
+3. Supabase → Table Editor → `ai_runs`: red sa `provider = gemini`, tokenima, `cost_usd` (cijena po cjenovniku; free tier se ne naplaćuje) i `ok = true`. Greške su u Edge Functions → Logs.
+4. Limiti free tiera (zahtjevi po minuti i danu) vide se u AI Studio → Usage; app ionako ima limit 30 poziva u 24 sata.
+
+**6. Evali promptova** (prije promjene prompta ili modela), lokalno:
+```bash
+read -s GEMINI_API_KEY && export GEMINI_API_KEY
+npm run eval          # evals/promptfooconfig.yaml, 5 fiksnih primjera
+unset GEMINI_API_KEY
+```
 
 ## 5. Anthropic (opcionalno, Etapa 10)
 

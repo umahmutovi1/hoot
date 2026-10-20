@@ -5,6 +5,7 @@ import { Avatar } from '@/components/Avatar'
 import { BackHeader } from '@/components/BackHeader'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { signOut } from '@/features/auth/api'
+import { useDocuments } from '@/features/owl/api'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { formatDuration } from '@/features/sources/format'
 import { localDay } from '@/lib/day'
@@ -21,6 +22,7 @@ export function SettingsPage() {
   const boundary = useDayBoundary()
   const [today] = useState(() => localDay(new Date(), boundary))
   const schedule = useScheduleData()
+  const documents = useDocuments().data
   const row = 'flex items-center justify-between border-b border-canvas py-3.5'
 
   return (
@@ -73,6 +75,12 @@ export function SettingsPage() {
           <span className="text-[15px]">{t('calendar.title')}</span>
           <span className="text-sm text-ink-muted">
             {t('settings.periodsCount', { count: schedule.periodRows.length })} ›
+          </span>
+        </Link>
+        <Link to="/settings/documents" className={row}>
+          <span className="text-[15px]">{t('owl.documents.title')}</span>
+          <span className="text-sm text-ink-muted">
+            {t('owl.documents.count', { count: documents?.length ?? 0 })} ›
           </span>
         </Link>
         <div className="flex items-center justify-between py-3.5">

@@ -165,3 +165,36 @@ export const CapIcon = (p: IconProps) => (
     <path d="M7 11v5c3 2 7 2 10 0v-5" />
   </Icon>
 )
+
+/** Owl conversation: send (arrow up). */
+export const SendIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 19V5M6 11l6-6 6 6" />
+  </Icon>
+)
+
+export const DocIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+    <path d="M14 3v5h5" />
+  </Icon>
+)
+
+export const ImageIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="4" y="5" width="16" height="14" rx="3" />
+    <path d="M4 16l5-5 4 4 2-2 5 5" />
+  </Icon>
+)
+
+export const TextIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 6h14M5 11h14M5 16h9" />
+  </Icon>
+)
+
+export const TrashIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13" />
+  </Icon>
+)

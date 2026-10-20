@@ -3,6 +3,9 @@ import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
 import { RequireName } from '@/features/onboarding/RequireName'
 import { WelcomePage } from '@/features/onboarding/WelcomePage'
+import { DocumentPage, DocumentsPage } from '@/features/owl/DocumentsPage'
+import { ImportReviewPage } from '@/features/owl/ImportReviewPage'
+import { OwlChatPage } from '@/features/owl/OwlChatPage'
 import { PlanPage } from '@/features/plan/PlanPage'
 import { ProgressPage } from '@/features/progress/ProgressPage'
 import { SourceEditorPage } from '@/features/sources/SourceEditorPage'
@@ -48,6 +51,10 @@ export const router = createBrowserRouter([
             children: [
               { path: 'settings', element: <SettingsPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
+              { path: 'settings/documents', element: <DocumentsPage /> },
+              { path: 'settings/documents/:id', element: <DocumentPage /> },
+              { path: 'owl', element: <OwlChatPage /> },
+              { path: 'owl/import/:id', element: <ImportReviewPage /> },
               { path: 'plan/availability', element: <AvailabilityPage /> },
               { path: 'plan/timetable', element: <TimetablePage /> },
               { path: 'subjects/new', element: <SubjectFormPage /> },
