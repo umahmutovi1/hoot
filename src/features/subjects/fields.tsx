@@ -1,5 +1,8 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+import { SUBJECT_PALETTES } from './colors'
+import type { SubjectColor } from './model'
 
 export const fieldLabel = 'text-sm font-semibold'
 export const fieldInput =
@@ -128,4 +131,31 @@ function parseDecimal(text: string): number | null {
   if (trimmed === '') return null
   const n = Number(trimmed)
   return Number.isFinite(n) ? n : null
+}
+
+/** Round color pick for a subject (NoviPredmet). */
+export function ColorSwatch({
+  color,
+  checked,
+  onSelect,
+}: {
+  color: SubjectColor
+  checked: boolean
+  onSelect: () => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={checked}
+      aria-label={t(`subjects.color.${color}`)}
+      onClick={onSelect}
+      className={cn(
+        'size-11 rounded-full border-[3px]',
+        SUBJECT_PALETTES[color].bar,
+        checked ? 'border-ink' : 'border-surface',
+      )}
+    />
+  )
 }

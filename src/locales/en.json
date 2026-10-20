@@ -247,6 +247,12 @@
       "body": "Until then the subject is not planned, except reviews of what you already learned. The start is computed from the remaining material and your availability, with a 20% reserve.",
       "move": "Move",
       "startNow": "Start now"
+    },
+    "quick": {
+      "open": "New subject",
+      "title": "New subject name",
+      "hint": "Add exams and the rest later on the subject.",
+      "create": "Add subject"
     }
   },
   "progress": {
