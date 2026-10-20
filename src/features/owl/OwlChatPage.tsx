@@ -5,12 +5,13 @@ import { CloseIcon, DocIcon, PlusIcon, SendIcon, TrashIcon } from '@/components/
 import { useSubjects } from '@/features/subjects/api'
 import { cn } from '@/lib/utils'
 import type { Citation } from '@shared/schemas.ts'
-import { openDocumentFile, useAiAvailability, useDocuments } from './api'
+import { useAiAvailability, useDocumentFileUrl, useDocuments } from './api'
 import { GiveDocumentSheet } from './GiveDocumentSheet'
 import { ImportCard } from './ImportCard'
 import { OwlHead } from './OwlBar'
 import { useOwlStore, type OwlMessage, type StateRef } from './store'
 import { useOwl } from './useOwl'
+import { goBack } from '@/app/navigation'
 
 /** Conversation with the owl over the whole screen (SovaAgent mockups 2 and 4). */
 export function OwlChatPage() {
@@ -30,7 +31,7 @@ export function OwlChatPage() {
     end.current?.scrollIntoView({ block: 'end' })
   }, [messages])
 
-  const close = () => (window.history.length > 1 ? navigate(-1) : navigate('/'))
+  const close = () => goBack(navigate, '/')
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -141,9 +142,12 @@ function Message({ message: m }: { message: OwlMessage }) {
       )
     case 'file':
       return (
-        <div className="flex max-w-[80%] items-center gap-2 self-end rounded-[20px_20px_6px_20px] bg-brand px-3.5 py-2.5 text-sm text-white">
-          <DocIcon size={18} />
-          <span className="truncate">{m.name}</span>
+        <div className="flex max-w-[80%] flex-col gap-1.5 self-end rounded-[20px_20px_6px_20px] bg-brand px-3.5 py-2.5 text-sm text-white">
+          <span className="flex min-w-0 items-center gap-2">
+            <DocIcon size={18} className="shrink-0" />
+            <span className="truncate">{m.name}</span>
+          </span>
+          {m.note && <span className="leading-[1.4] whitespace-pre-wrap">{m.note}</span>}
         </div>
       )
     case 'pending':
@@ -198,20 +202,31 @@ const chip =
 /** "Akademski kalendar 2026/27 · str. 2"; opens the stored file at that page. */
 function CitationChip({ citation }: { citation: Citation }) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const doc = useDocuments().data?.find((d) => d.id === citation.document_id)
-  const open = () => {
-    if (doc?.storage_path) void openDocumentFile(doc.storage_path, citation.page)
-    else navigate(`/settings/documents/${citation.document_id}`)
-  }
-  return (
-    <button type="button" onClick={open} className={cn(chip, 'bg-canvas text-left')}>
-      <DocIcon size={14} />
+  const fileUrl = useDocumentFileUrl(doc?.storage_path).data
+  const label = (
+    <>
+      <DocIcon size={14} className="shrink-0" />
       <span className="truncate">
         {citation.title}
         {citation.page ? ` · ${t('owl.page', { page: citation.page })}` : ''}
       </span>
-    </button>
+    </>
+  )
+  // A stored file opens in a new tab at the page; pasted text opens its document page.
+  return fileUrl ? (
+    <a
+      href={citation.page ? `${fileUrl}#page=${citation.page}` : fileUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(chip, 'bg-canvas')}
+    >
+      {label}
+    </a>
+  ) : (
+    <Link to={`/settings/documents/${citation.document_id}`} className={cn(chip, 'bg-canvas')}>
+      {label}
+    </Link>
   )
 }
 

@@ -31,6 +31,7 @@ import {
   type AssessmentUnit,
   type SourceMaterial,
 } from './model'
+import { goBack } from '@/app/navigation'
 
 /** ObimIspita: which top-level unit of each source goes into which exam. */
 export function ExamScopePage() {
@@ -132,8 +133,7 @@ function ScopeEditor({
 
   const current = withUnits.find((m) => m.source.id === sourceId)
   const top = current?.units.filter((u) => u.parent_id === null) ?? []
-  const back = () =>
-    window.history.length > 1 ? navigate(-1) : navigate(`/subjects/${subject.id}`)
+  const back = () => goBack(navigate, `/subjects/${subject.id}`)
 
   return (
     <div className="flex flex-col gap-3.5">

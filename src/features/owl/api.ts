@@ -108,15 +108,19 @@ export function useDeleteDocument() {
   })
 }
 
-/** A short-lived link to the stored file, opened in a new tab (PDF viewers jump to #page=N). */
-export async function openDocumentFile(path: string, page: number | null) {
-  const tab = window.open('', '_blank')
-  const { data, error } = await supabase.storage.from('uploads').createSignedUrl(path, 300)
-  if (error || !data) {
-    tab?.close()
-    throw error ?? new Error('no url')
-  }
-  const url = page ? `${data.signedUrl}#page=${page}` : data.signedUrl
-  if (tab) tab.location.href = url
-  else window.location.href = url
+/**
+ * Signed link to a stored document file, fetched ahead so it opens as a plain link in a new tab
+ * (no popup blocker, the app window never navigates away). PDF viewers jump to `#page=N`.
+ */
+export function useDocumentFileUrl(path: string | null | undefined) {
+  return useQuery({
+    queryKey: ['document-url', path],
+    enabled: Boolean(path),
+    staleTime: 8 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage.from('uploads').createSignedUrl(path!, 600)
+      if (error) throw error
+      return data.signedUrl
+    },
+  })
 }

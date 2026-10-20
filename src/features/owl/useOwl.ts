@@ -41,8 +41,8 @@ export function useOwl() {
       : null
     return {
       ready: ctx !== null && subjects !== undefined && periods !== undefined,
-      giveDocument: (input: DocumentInput, kind: ImportKind) =>
-        ctx ? giveDocument(input, kind, ctx) : Promise.resolve(),
+      giveDocument: (input: DocumentInput, kind: ImportKind, note: string | null = null) =>
+        ctx ? giveDocument(input, kind, note, ctx) : Promise.resolve(),
       ask: (question: string) =>
         ctx
           ? ask(

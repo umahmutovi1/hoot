@@ -35,6 +35,7 @@ import {
   type Assessment,
   type SubjectWithAssessments,
 } from './model'
+import { goBack } from '@/app/navigation'
 
 /**
  * Predmet / PredmetKampanja: header with progress, priority and mode chips, the campaign card,
@@ -109,7 +110,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/subjects'))}
+          onClick={() => goBack(navigate, '/subjects')}
           aria-label={t('app.back')}
           className="flex size-11 items-center justify-center rounded-full bg-surface"
         >
