@@ -203,6 +203,11 @@ k = broj jedinica sa zabilježenim vremenom. Nakon 5 jedinica izmjereno i heuris
 
 **Način učenja.** Svaka sesija ima `mode` (čitanje, zadaci, ponavljanje, pitanja). Kalibracija se vodi po paru izvor × način: blok čitanja koristi izmjerenu brzinu čitanja, a blok ponavljanja onu iz ponavljanja. Dok par nema bar 3 mjerenja, koristi se vrijednost izvora za sve načine.
 
+**Prije mjerenja (odluka, Etapa 7).** Dok izvor nema bar 3 završene sesije, app ne obećava obim: plan interno koristi heuristiku da rasporedi blokove, ali blok i sesija prikazuju samo predloženo trajanje (“predloženo 45 min”), a na kraju sesije korisnik upiše dokle je stigao. Od 3. sesije izvor prikazuje vlastitu procjenu obima (“str. 75–95”), a shrinkage iznad postepeno daje sve veću težinu mjerenjima.
+
+- **Prvi prolaz ili ponavljanje** se ne bira nego čita iz statusa jedinice: jedinica koja još nije pređena = prvi prolaz, pređena ili “razumijem” = ponavljanje. Svaki ima svoju brzinu po izvoru (par izvor × način, uz fallback na izvor dok par nema 3 mjerenja). Na početku sesije može se ručno promijeniti.
+- **Kraj sesije**: “do koje stranice” (stranica, slajd, pitanje ili jedinica; može i dio poglavlja), plus težina 1–5 po jedinici. Razlike između poglavlja dolaze iz izmjerenog vremena po poglavlju i ocjene težine, ne iz AI-ja.
+
 **Web pretraga** težine konkretne knjige nije default; može doći kao opcionalno dugme u v2.
 
 ## Prioritet i režim učenja

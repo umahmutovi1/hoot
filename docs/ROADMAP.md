@@ -160,6 +160,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] Zaboravljen timer (> 3 h) — ispravka kraja
 - [ ] Offline: Dexie red u `src/lib/sync/`, klijentski UUID, upsert, retry, last-write-wins po `updated_at`
 - [ ] Kalibracija (shrinkage, izvor × način, fallback ispod 3 mjerenja) + testovi
+- [ ] Prije 3 sesije po izvoru: samo predloženo trajanje bloka/sesije, kraj sesije pita „do koje stranice“; prvi prolaz vs ponavljanje iz statusa jedinice (PRD „Prije mjerenja“)
 - **DoD:** timer preživi zaključan telefon, zatvoren tab i offline → `v0.7.0`
 
 ## Etapa 8 — Scheduler
