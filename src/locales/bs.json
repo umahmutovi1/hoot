@@ -256,8 +256,7 @@
   },
   "progress": {
     "title": "Napredak",
-    "empty": "Napredak se prikazuje kad počneš učiti.",
-    "settings": "Postavke"
+    "empty": "Napredak se prikazuje kad počneš učiti."
   },
   "session": {
     "title": "Sesija učenja",
@@ -265,6 +264,7 @@
   },
   "settings": {
     "title": "Postavke",
+    "open": "Profil i postavke",
     "signedInWith": "Prijava putem magic linka",
     "general": "Opće",
     "language": "Jezik",
@@ -925,6 +925,146 @@
       "passUnreachable": "Prolaz više nije dostižan bez popravnog",
       "noPoints": "Bodovi nisu uneseni",
       "addOnSubject": "Dodaj na predmetu"
+    }
+  },
+  "owl": {
+    "name": "Sova",
+    "tagline": "zna tvoje dokumente i plan",
+    "ask": "Pitaj sovu…",
+    "askEmpty": "Daj mi raspored ispita…",
+    "open": "Otvori razgovor sa sovom",
+    "offline": "Sova je offline. Vraća se kad se povežeš.",
+    "disabled": "Sova još nije podešena (nema AI ključa).",
+    "add": "Daj sovi dokument",
+    "send": "Pošalji",
+    "intro": "Pitaj me o ispitima, bodovima i rokovima ili mi daj dokument preko +. Ništa ne mijenjam bez tvoje potvrde.",
+    "suggest": {
+      "important": "Šta je danas najvažnije?",
+      "importExams": "Uvezi raspored ispita",
+      "makeup": "Kad je popravni?",
+      "addSubject": "+ Dodaj predmet",
+      "importCalendar": "Uvezi akademski kalendar"
+    },
+    "sheet": {
+      "title": "Daj sovi dokument",
+      "subtitle": "Pročitat će ga i predložiti šta da doda. Ništa se ne mijenja bez tvoje potvrde.",
+      "camera": "Uslikaj",
+      "image": "Slika",
+      "pdf": "PDF",
+      "text": "Zalijepi tekst",
+      "kindLabel": "Šta je unutra?",
+      "kindHint": "(sova pogodi sama)",
+      "kind": {
+        "auto": "Pogodi sama",
+        "academic_calendar": "Akademski kalendar",
+        "exam_schedule": "Raspored ispita",
+        "document": "Pravilnik, silabus, obavještenje"
+      },
+      "textLabel": "Tekst",
+      "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
+      "textSend": "Daj sovi",
+      "back": "Nazad",
+      "privacy": "Na besplatnom AI planu Google može koristiti poslane podatke. Ne šalji lične dokumente.",
+      "next": "Dalje",
+      "change": "Promijeni",
+      "noteLabel": "Poruka sovi",
+      "noteHint": "(nije obavezno)",
+      "notePlaceholder": "npr. samo II godina, grupa B",
+      "chars_one": "{{count}} znak",
+      "chars_few": "{{count}} znaka",
+      "chars_other": "{{count}} znakova"
+    },
+    "pending": {
+      "thinking": "Razmišljam…",
+      "reading": "Čitam dokument…",
+      "storing": "Spremam u Dokumente…"
+    },
+    "error": {
+      "offline": "Nema interneta. Pokušaj kad se povežeš.",
+      "rate_limited": "Za danas je dosta: iskorišteno je 30 AI poziva. Sutra nastavljamo.",
+      "provider_busy": "AI servis je trenutno zauzet. Pokušaj za minut.",
+      "no_key": "AI još nije podešen.",
+      "invalid_output": "Nisam uspjela pročitati ovo. Probaj jasniju sliku ili tekst.",
+      "bad_request": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
+      "unauthorized": "Prijava je istekla. Prijavi se ponovo.",
+      "failed": "Nešto nije uspjelo. Pokušaj ponovo.",
+      "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
+      "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h)."
+    },
+    "document": {
+      "stored": "Spremila sam „{{title}}“ u Dokumente.",
+      "found_one": "Našla sam {{count}} stavku. Pogledaj prije nego spasim:",
+      "found_few": "Našla sam {{count}} stavke. Pogledaj prije nego spasim:",
+      "found_other": "Našla sam {{count}} stavki. Pogledaj prije nego spasim:",
+      "noDates": "Datume nisam našla, ali dokument čuvam za pitanja.",
+      "notStored": "„{{title}}“ nisam uspjela spremiti u Dokumente, pa iz njega ne mogu odgovarati. Pošalji ga ponovo kasnije."
+    },
+    "kind": {
+      "academic_calendar": "Akademski kalendar",
+      "exam_schedule": "Raspored ispita",
+      "rules": "Pravilnik",
+      "syllabus": "Silabus",
+      "notice": "Obavještenje",
+      "other": "Dokument"
+    },
+    "status": {
+      "new": "novo",
+      "changed": "izmijenjeno",
+      "unchanged": "ostaje",
+      "skipped": "preskačem"
+    },
+    "noSubject": "nemaš ovaj predmet",
+    "tentative": "okvirno",
+    "review": "Pregledaj",
+    "saveCount": "Spasi {{count}}",
+    "saved_one": "Spašena {{count}} stavka.",
+    "saved_few": "Spašene {{count}} stavke.",
+    "saved_other": "Spašeno {{count}} stavki.",
+    "nothingToSave": "Nema šta spasiti",
+    "page": "str. {{page}}",
+    "stateRef": {
+      "grades": "Bodovi i ocjena",
+      "exams": "Ispiti",
+      "calendar": "Akademski kalendar",
+      "plan": "Plan"
+    },
+    "examTitle": "{{n}} parcijala",
+    "reviewPage": {
+      "title": "Pregled uvoza",
+      "periods": "Akademski kalendar",
+      "exams": "Ispiti",
+      "include": "Uključi",
+      "pickSubject": "Izaberi predmet",
+      "skipSubject": "Preskoči",
+      "date": "Datum",
+      "time": "Vrijeme",
+      "from": "Od",
+      "to": "Do",
+      "warnings": "Napomene sove",
+      "missing": "Ovaj prijedlog više ne postoji."
+    },
+    "documents": {
+      "title": "Dokumenti",
+      "intro": "Sova iz njih odgovara na pitanja i navodi dokument i stranicu. Nove daješ sovi na Danas (+).",
+      "empty": "Još nema dokumenata.",
+      "pages_one": "{{count}} str.",
+      "pages_few": "{{count}} str.",
+      "pages_other": "{{count}} str.",
+      "pasted": "zalijepljen tekst",
+      "delete": "Obriši dokument",
+      "confirmDelete": "Obrisati dokument i odlomke za pretragu?",
+      "openFile": "Otvori fajl",
+      "count_one": "{{count}} dokument",
+      "count_few": "{{count}} dokumenta",
+      "count_other": "{{count}} dokumenata"
+    },
+    "history": {
+      "title": "Historija razgovora",
+      "empty": "Još nema razgovora sa sovom.",
+      "new": "Novi razgovor",
+      "delete": "Obriši razgovor",
+      "confirmDelete": "Obrisati ovaj razgovor?",
+      "untitled": "Razgovor"
     }
   }
 }

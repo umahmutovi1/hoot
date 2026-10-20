@@ -137,15 +137,19 @@ Specifikacija: PRD „Bodovi, skala ocjena i projekcija ocjene“.
 
 Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini free tier ([SETUP.md](SETUP.md#4-gemini-ai-za-sad)).
 
-- [ ] `supabase/functions/_shared/`: `llm.ts`, `providers/gemini.ts` (`responseSchema` iz `z.toJSONSchema()`), `providers/anthropic.ts` (`zodOutputFormat()` + `messages.parse()`), `schemas.ts` (bez rekurzivnih šema), `prices.ts`, `cors.ts`
-- [ ] Logiranje u `ai_runs`, rate limit 30 poziva/dan, jedan retry na Zod grešku; `LLM_PROVIDER`, `LLM_MODEL`, `GEMINI_API_KEY` kao Supabase secrets
-- [ ] Migracija `0008_ai_documents.sql` (pgvector, `documents`, `document_chunks`, novi `ai_task`), regenerisan `database.ts`
-- [ ] `src/lib/image.ts` (1600 px, `browser-image-compression`), upload u `uploads/<user_id>/`; PDF ide direktno
-- [ ] Ekran „Uvezi“: tekst / slika / PDF → `parse-academic-calendar` i `parse-exam-schedule` → pregled novo / izmijenjeno → snimanje; uparivanje predmeta (`fuse.js`)
-- [ ] Dokumenti fakulteta: lista, upload, odlomci + embeddings (`gte-small`), RPC pretrage, `answer` sa citatima (dokument, stranica)
-- [ ] `evals/` sa `promptfoo`: fiksni primjeri kalendara i rasporeda ispita
-- [ ] AI dugmad onemogućena offline i bez ključa (poruka)
-- **DoD** → `v0.6.0`
+- [x] Mockup [`design/SovaAgent.html`](design/SovaAgent.html) (traka sa sovom na Danas, razgovor sa citatom, „Daj sovi dokument“, prijedlog uvoza kao kartica, offline, prazno stanje; varijanta za sve tabove za kasnije) — odobren
+- [x] Historija razgovora u bazi (`0010_owl_chats.sql`), novi razgovor na svaki ulaz sa Danas, ekran Historija; prompt caching (redoslijed za implicitni cache, eksplicitni `cachedContents` / `cache_control` gdje je dostupan, `ai_runs.cached_tokens`)
+- [x] Sova na Danas: traka na dnu (prijedlozi; oblačić sa savjetom tek sa strategistom u Etapi 11), razgovor preko cijelog ekrana, + → „Daj sovi dokument“; uvoz i pitanja o dokumentima idu kroz nju. Plutajuća sova na ostalim tabovima (7B) kasnije
+
+- [x] `supabase/functions/_shared/`: `llm.ts`, `providers/gemini.ts` (`responseJsonSchema` iz `z.toJSONSchema()`), `providers/anthropic.ts` (`zodOutputFormat()` + `messages.parse()`), `schemas.ts` (bez rekurzivnih šema), `prices.ts`, `cors.ts`
+- [x] Logiranje u `ai_runs`, rate limit 30 poziva/dan, jedan retry na Zod grešku; `LLM_PROVIDER`, `LLM_MODEL` (`gemini-3.5-flash-lite`), `LLM_FALLBACK_MODEL` (`gemini-2.5-flash`), `GEMINI_API_KEY` kao Supabase secrets; Gemini 503 se ponovi jednom, 429/503 prelazi na rezervni model
+- [x] Migracija `0008_ai_documents.sql` (pgvector, `documents`, `document_chunks`, novi `ai_task`), regenerisan `database.ts`
+- [x] `src/lib/image.ts` (1600 px, `browser-image-compression`), upload u `uploads/<user_id>/`; PDF ide direktno
+- [x] Ekran „Uvezi“ (pregled iz razgovora sa sovom): tekst / slika / PDF → `parse-document` (jedan poziv i za „Pogodi sama“) → pregled novo / izmijenjeno → spašavanje; uparivanje predmeta (`fuse.js`)
+- [x] Dokumenti fakulteta (Postavke → Dokumenti): lista, upload kroz sovu, odlomci + embeddings (`gte-small`), RPC pretrage, `answer` sa citatima (dokument, stranica)
+- [x] `evals/` sa `promptfoo`: fiksni primjeri kalendara i rasporeda ispita
+- [x] AI dugmad onemogućena offline i bez ključa (poruka)
+- **DoD** ✓ → `v0.6.0`
 
 ## Etapa 7 — Timer i sesije
 
@@ -165,7 +169,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina, ručni override i „Počni odmah“, privremeno pojačanje prioriteta („Uzmi vrijeme od …“ sa izračunatom razlikom plana), meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, ciljna pokrivenost iz željene ocjene (PRD „Željena ocjena kao ulaz u plan“), novi razlozi „zašto ovo danas“
 - [ ] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan
 - [ ] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, ručni blokovi se ne mijenjaju, isti ulaz = isti plan
-- [ ] Migracija `0009_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
+- [ ] Migracija `0011_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
 - [ ] Kartice prijedloga (zaostatak sa „Uzmi vrijeme od“ / „Kreni ranije“ / „Dodaj X min dnevno“, deficit, željena ocjena nedostižna, najava kampanje 3 dana prije) na Danas i Predmetu; jedan tap mijenja ulaz → replan
 - [ ] `input_hash`, upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [ ] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno")
@@ -179,7 +183,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] Maskota: `celebrating-head` uz potvrdu „Sjećam se", `celebrating` 120 px na sažetku ProvjeraZnanja
 - [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2
 - [ ] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
-- [ ] Migracija `0010_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
+- [ ] Migracija `0012_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
 - [ ] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu, `next_review_on`, ograničenje na datum ispita, level 3 nakon 4 uspjeha + testovi
 - [ ] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
 - [ ] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje
@@ -199,8 +203,8 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - [ ] Ručni unos: dugme „Procijeni težinu AI-jem“ u pregledu
 - [ ] `parse-questions`, teme pri uvozu (postojeće teme u promptu, ručne se ne prepisuju)
 - [ ] ObimIspita: AI prijedlog, ručna izmjena zaključana
-- [ ] `parse-timetable` + „Uslikaj raspored“ (uparivanje predmeta preko `fuse.js`), `recall-questions`, `propose-answer`, `quiz`
-- [ ] Chat asistent: pretraga dokumenata i bilješki, sažetak stanja, prijedlozi kao kartice sa pregledom (isti alati kao uvoz), historija razgovora
+- [ ] `parse-timetable` + „Uslikaj raspored“ i vrsta „Raspored nastave“ u „Daj sovi dokument“ (tekst ili slika sa „pon: od 9 do 10:30 (farma)“, napomene uz termin; uparivanje predmeta preko `fuse.js`), `recall-questions`, `propose-answer`, `quiz`
+- [ ] Sova dobija ostale alate: pretraga bilješki, recall, raspored nastave i sadržaj kroz isti razgovor (osnova je iz Etape 6); uvoz iz razgovora („ubaci mi ovo“ za već dat dokument) kao kartica za pregled. Do tad sova iz razgovora ništa ne mijenja i to kaže (odluka iz Etape 6)
 - **DoD** → `v0.10.0`
 
 ## Etapa 11 — Napredak
@@ -246,18 +250,19 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - Linter je oxlint (Vite 8 default) umjesto ESLinta.
 - Font Outfit se servira lokalno (`@fontsource-variable/outfit`), radi offline.
 
-## Prompt za Etapu 5 (sljedeći chat)
+## Prompt za Etapu 7 (sljedeći chat)
 
-> Pročitaj docs/PRD.md (sekcija „Bodovi, skala ocjena i projekcija ocjene“), docs/ROADMAP.md (Etapa 5), docs/design/README.md, docs/design/BodoviOcjene.html (odobren mockup, 6 ekrana) i CLAUDE.md, pa uradi Etapu 5 — Bodovi i ocjene.
-> Isti tok kao u Etapama 2–4: podijeli etapu na manje PR-ove u `dev` (prvo migracija `0007_grades.sql` i čista logika `src/lib/grades/` sa testovima i `fast-check`, pa ekrani), svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.5.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP.
-> Napomene iz Etape 4:
-> - Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki sheet ima × za zatvaranje (`BottomSheet`).
-> - ExamSheet već ima „Kad je ispit?“ (tačan datum / u roku iz akademskog kalendara / okvirni raspon) i „Izvori za ovaj ispit“; polja bodova, praga i uslova za izlazak idu ispod toga, kao na mockupu (ekran 3).
-> - Popravni se bira kao „Popravni za“ (`retake_of`) i prikazuje ugniježđen ispod ispita (ekran 2); integralni zamjenjuje parcijale; vrijedi zadnji izlazak; „Poništi rezultat“ = odricanje.
-> - Rokovi (`deadlines`) dobijaju bodove kao ispiti (zadaće, seminarski).
-> - Kalendar ima prikaze Mjesec i Dan (sedmica izbačena); nastava blokira tačno svoje vrijeme.
-> - Napredak je još prazan: lista „Ocjene“ (ekran 6) je prvi sadržaj; avatar na Danas vodi u Postavke.
-> - Gemini ključ: `LLM_MODEL=gemini-2.5-flash` (za Etapu 6).
+> Pročitaj CLAUDE.md, docs/PRD.md (sekcije „Timer, pauza i rekalibracija“, „Timer dugme u navigaciji“, „Procjena težine i vremena“ i „Podaci za strategista“), docs/ROADMAP.md (Etapa 7), docs/design/README.md, docs/design/MASCOT.md i mockupe PokreniSesiju.dc.html, Sesija.dc.html i KrajSesije.dc.html, pa uradi Etapu 7 — Timer i sesije.
+> Isti tok kao u Etapama 2–6: podijeli etapu na manje PR-ove u `dev` (prvo čista logika u `src/lib/` sa testovima: vrijeme iz segmenata, zaboravljen timer, raspodjela minuta po jedinicama i kalibracija procjena; pa `src/lib/sync/` (Dexie red, upsert, retry, last-write-wins) sa testovima; pa migracija ako treba; pa ekrani), svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.7.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Prije release-a označi DoD u ROADMAP-u. Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP. Ako treba nešto u dashboardu, napiši mi tačne korake i ažuriraj SETUP.md.
+> Napomene iz Etape 6:
+> - Timer je zapis segmenata u bazi, nikad `setInterval` brojač; jedna aktivna sesija po korisniku. DoD (zaključan telefon, zatvoren tab, offline) testiraj stvarno u browseru (ponovno otvaranje, `setOffline`), ne samo unit testovima.
+> - Offline red (Dexie) je za upise sesija i segmenata; AI pozivi (sova) ostaju samo online. Ostale upise (predmeti, ispiti) kroz isti red samo ako je jednostavno, kao zaseban PR.
+> - Ova etapa nema AI poziva: kalibracija je deterministička (shrinkage, izvor × način, fallback ispod 3 mjerenja). Ne troši Gemini kvotu (free tier: 3.5 Flash-Lite, oko 500 zahtjeva dnevno).
+> - Maskota: `timer` 84 px u sheetu „Šta učiš sad?“, `celebrating` 140 px na KrajSesije, `sleeping` 190 px u offline poruci; najviše jedna sova po ekranu, sova-traka na Danas se ne prikazuje dok je otvoren sheet ili ekran sesije.
+> - Dok sesija traje ima prednost nad sovom: timer dugme u navigaciji vodi u aktivnu sesiju (nastavak).
+> - Back dugmad samo preko `goBack()` iz `src/app/navigation.ts`; ekrani preko cijelog ekrana imaju ljepljivo zaglavlje sa `env(safe-area-inset-top)`. Svaki sheet ima × (`BottomSheet`, bez auto-fokusa prvog polja). Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki tekst u `bs.json` i `en.json`.
+> - Za end-to-end test koristi privremenog test korisnika (service key samo u varijabli shell-a) i obriši ga na kraju zajedno sa fajlovima u storageu.
+> - Dnevni plan (preporučeni blok) dolazi sa schedulerom u Etapi 8; do tad PokreniSesiju nudi ručni izbor predmeta, izvora i jedinice uz slobodnu sesiju, a preporuku samo pripremi kao prazan slot.
 
 ## Prompt za početak etape (primjer)
 

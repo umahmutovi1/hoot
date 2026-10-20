@@ -26,6 +26,8 @@ Logika u `<script>` bloku na dnu fajla je samo demo interakcija.
 - Uvoz: DodajIzvor → Parsiranje → ObimIspita
 - Ostalo: Postavke, Prijava
 - Bodovi i ocjene (Etapa 5): `BodoviOcjene.html` — jedan statičan fajl sa 6 ekrana (kartica na Predmetu, ispiti sa rezultatom i popravnim, polja bodova u ExamSheetu, sheet Rezultat, sheet Skala ocjena, Napredak → Ocjene). Dugmad pišu „Spasi“.
+- Sova agent (Etapa 6): `SovaAgent.html` — traka sa sovom na dnu Danas, razgovor sa citatom iz dokumenta, „Daj sovi dokument“, prijedlog uvoza kao kartica, offline traka, prazno stanje; varijanta za sve tabove (za kasnije).
+- Zaglavlja tab ekrana: `Zaglavlja.html` — prvi red samo naslov lijevo i mali avatar desno (otvara Postavke), sve ostalo u redu ispod.
 
 Maskota: vidi MASCOT.md.
 
@@ -35,5 +37,7 @@ Donja navigacija (odstupa od mockupa, odluka nakon Etape 2): plutajuća poluproz
 Odstupanja nakon Etape 4: kalendar ima samo Mjesec i Dan; Dostupnost je sedmica sa datumima i vremenskom osom (umjesto liste po danu iz `Dostupnost.dc.html`); svaki bottom sheet ima × za zatvaranje.
 
 Odstupanja nakon Etape 5: Dostupnost nema sekcije „Sedmični šablon“, „Izmijenjeni dani“ ni karticu „Raspored nastave“ iz `Dostupnost.dc.html`. „Uredi dan“ nudi „Samo ovaj dan / Svaki <dan>“, a nastava se vidi na vremenskoj osi (osa je samo za čitanje, ne otvara sheet). Raspored je dostupan s Plana i Predmeta. Bottom sheet pri otvaranju ne fokusira prvo polje, da se na mobilnom ne otvori native time picker.
+
+Odstupanja nakon Etape 6: iznad trake sove nema oblačića sa savjetom (dolazi sa strategistom u Etapi 11), samo prijedlozi; iza trake je blagi fade da lista ispod ne smeta. „Daj sovi dokument“ ne šalje odmah: nakon izbora fajla ili lijepljenja teksta sheet pokaže prilog (sličica, naziv, veličina, „Promijeni“), polje „Poruka sovi“ (nije obavezno, npr. „samo II godina“), vrstu i dugme „Daj sovi“; poruka se vidi uz fajl u razgovoru. Zaglavlje razgovora ima sat (Historija razgovora: lista sa naslovom i vremenom, tap nastavlja, kanta briše), olovku (Novi razgovor) i ×; svaki ulaz sa Danas otvara novi razgovor. „Pregledaj“ otvara ekran „Pregled uvoza“ (prekidač „Uključi“ po stavci, izmjena datuma i vremena, izbor predmeta za „preskačem“) sa „Spasi N“ na dnu. Dokumenti su u Postavkama (lista → dokument sa tekstom po stranicama, „Otvori fajl“, „Obriši dokument“); tap na citat otvara fajl na toj stranici.
 
 Varijante istog ekrana (npr. UrediBlok*, Provjera*, NoviPredmet*) su jedna komponenta sa stanjem, ne zasebne stranice.

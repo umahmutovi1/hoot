@@ -1,0 +1,173 @@
+import { create } from 'zustand'
+import { createJSONStorage, persist } from 'zustand/middleware'
+import type { AiErrorCode, Citation, ImportKind } from '@shared/schemas.ts'
+import type { ExamProposal, PeriodProposal } from '@/lib/import'
+import { supabase } from '@/lib/supabase'
+import type { Json } from '@/types/database'
+
+// The open conversation with the owl. Every finished message is written to the database
+// (owl_conversations / owl_messages) so past conversations show up in the history; the
+// current one is also kept on the device for a reload.
+
+export type StateRef = { subject: string | null; topic: 'grades' | 'exams' | 'calendar' | 'plan' }
+
+export interface ImportProposal {
+  documentId: string
+  documentTitle: string
+  periods: PeriodProposal[]
+  exams: ExamProposal[]
+  warnings: string[]
+  savedCount: number | null
+}
+
+export type OwlMessage =
+  | { id: string; role: 'user'; type: 'text'; text: string }
+  | { id: string; role: 'user'; type: 'file'; name: string; note?: string }
+  | {
+      id: string
+      role: 'owl'
+      type: 'answer'
+      text: string
+      citations: Citation[]
+      stateRefs: StateRef[]
+    }
+  | { id: string; role: 'owl'; type: 'pending'; stage: 'thinking' | 'reading' | 'storing' }
+  | { id: string; role: 'owl'; type: 'error'; code: AiErrorCode | 'offline' | 'file' }
+  | {
+      id: string
+      role: 'owl'
+      type: 'document'
+      /** What the owl did with it: stored only, or stored with a proposal below. */
+      kind: string
+      title: string
+      documentId: string
+      /** False when the passages could not be stored; the proposal still stands. */
+      stored: boolean
+      found: number
+    }
+  | { id: string; role: 'owl'; type: 'proposal'; proposal: ImportProposal }
+
+interface OwlState {
+  userId: string | null
+  /** null until the first message of a new conversation is sent. */
+  conversationId: string | null
+  messages: OwlMessage[]
+  /** Kind preselected when the "give a document" sheet opens from a suggestion. */
+  sheet: { open: boolean; kind: ImportKind; nonce: number }
+  busy: boolean
+  /** Forgets the open conversation when another user signs in. */
+  ensureUser: (userId: string) => void
+  /** An empty conversation; the previous one stays in the history. */
+  newConversation: () => void
+  /** Opens a conversation from the history. */
+  openConversation: (id: string, messages: OwlMessage[]) => void
+  push: (message: OwlMessage) => void
+  replace: (id: string, message: OwlMessage) => void
+  updateProposal: (id: string, update: (p: ImportProposal) => ImportProposal) => void
+  setBusy: (busy: boolean) => void
+  openSheet: (kind?: ImportKind) => void
+  closeSheet: () => void
+}
+
+// Writes run one after another, so a conversation row exists before its first message.
+let writes: Promise<void> = Promise.resolve()
+function enqueue(write: () => PromiseLike<{ error: unknown }>) {
+  writes = writes.then(async () => {
+    const { error } = await write()
+    if (error) console.error('owl history write failed', error)
+  })
+}
+/** Resolves when every queued history write has been sent. */
+export const historyWritten = () => writes
+
+function titleOf(m: OwlMessage) {
+  const text = m.type === 'text' ? m.text : m.type === 'file' ? (m.note ?? m.name) : ''
+  return text.replace(/\s+/g, ' ').trim().slice(0, 80)
+}
+
+function saveMessage(conversationId: string, m: OwlMessage) {
+  if (m.type === 'pending') return
+  enqueue(() =>
+    supabase.from('owl_messages').upsert({
+      id: m.id,
+      conversation_id: conversationId,
+      role: m.role,
+      type: m.type,
+      payload: m as unknown as Json,
+    }),
+  )
+  enqueue(() =>
+    supabase
+      .from('owl_conversations')
+      .update({ last_message_at: new Date().toISOString() })
+      .eq('id', conversationId),
+  )
+}
+
+export const useOwlStore = create<OwlState>()(
+  persist(
+    (set, get) => ({
+      userId: null,
+      conversationId: null,
+      messages: [],
+      sheet: { open: false, kind: 'auto', nonce: 0 },
+      busy: false,
+      ensureUser: (userId) => {
+        if (get().userId !== userId)
+          set({ userId, conversationId: null, messages: [], busy: false })
+      },
+      newConversation: () => {
+        if (!get().busy) set({ conversationId: null, messages: [] })
+      },
+      openConversation: (id, messages) => set({ conversationId: id, messages, busy: false }),
+      push: (message) => {
+        let { conversationId } = get()
+        if (!conversationId && message.role === 'user') {
+          conversationId = crypto.randomUUID()
+          const id = conversationId
+          enqueue(() => supabase.from('owl_conversations').insert({ id, title: titleOf(message) }))
+          set({ conversationId })
+        }
+        set((s) => ({ messages: [...s.messages, message] }))
+        if (conversationId) saveMessage(conversationId, message)
+      },
+      replace: (id, message) => {
+        set((s) => ({ messages: s.messages.map((m) => (m.id === id ? message : m)) }))
+        const { conversationId } = get()
+        if (conversationId) saveMessage(conversationId, message)
+      },
+      updateProposal: (id, update) => {
+        set((s) => ({
+          messages: s.messages.map((m) =>
+            m.id === id && m.type === 'proposal' ? { ...m, proposal: update(m.proposal) } : m,
+          ),
+        }))
+        const { conversationId, messages } = get()
+        const updated = messages.find((m) => m.id === id)
+        if (conversationId && updated) saveMessage(conversationId, updated)
+      },
+      setBusy: (busy) => set({ busy }),
+      openSheet: (kind = 'auto') =>
+        set((s) => ({ sheet: { open: true, kind, nonce: s.sheet.nonce + 1 } })),
+      closeSheet: () => set((s) => ({ sheet: { ...s.sheet, open: false } })),
+    }),
+    {
+      name: 'hoot-owl',
+      version: 2,
+      storage: createJSONStorage(() => localStorage),
+      // A pending message from a closed tab would spin forever; drop it on reload.
+      partialize: (s) => ({
+        userId: s.userId,
+        conversationId: s.conversationId,
+        messages: s.messages.filter((m) => m.type !== 'pending'),
+      }),
+      // Stage 6 kept one device-only chat per day; it is not in the database, start fresh.
+      migrate: () => ({ userId: null, conversationId: null, messages: [] }),
+    },
+  ),
+)
+
+export function findProposal(messages: OwlMessage[], id: string | undefined) {
+  const m = messages.find((x) => x.id === id)
+  return m?.type === 'proposal' ? m.proposal : undefined
+}

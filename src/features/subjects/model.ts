@@ -69,7 +69,7 @@ export function dueAtFromDate(date: string): string {
   return localDateAt(date, 23, 59).toISOString()
 }
 
-function localDateAt(date: string, hours: number, minutes: number) {
+export function localDateAt(date: string, hours: number, minutes: number) {
   const [y = NaN, m = NaN, d = NaN] = date.split('-').map(Number)
   return new Date(y, m - 1, d, hours, minutes)
 }

@@ -77,6 +77,7 @@ export type Database = {
       }
       ai_runs: {
         Row: {
+          cached_tokens: number | null
           cost_usd: number | null
           created_at: string
           error: string | null
@@ -90,6 +91,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cached_tokens?: number | null
           cost_usd?: number | null
           created_at?: string
           error?: string | null
@@ -103,6 +105,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          cached_tokens?: number | null
           cost_usd?: number | null
           created_at?: string
           error?: string | null
@@ -469,6 +472,94 @@ export type Database = {
           },
         ]
       }
+      document_chunks: {
+        Row: {
+          content: string
+          created_at: string
+          document_id: string
+          embedding: string | null
+          id: string
+          page: number | null
+          position: number
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          document_id: string
+          embedding?: string | null
+          id?: string
+          page?: number | null
+          position: number
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          document_id?: string
+          embedding?: string | null
+          id?: string
+          page?: number | null
+          position?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_chunks_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          media_type: string | null
+          pages: number | null
+          storage_path: string | null
+          subject_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          media_type?: string | null
+          pages?: number | null
+          storage_path?: string | null
+          subject_id?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          media_type?: string | null
+          pages?: number | null
+          storage_path?: string | null
+          subject_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lecture_logs: {
         Row: {
           cancelled: boolean
@@ -536,6 +627,83 @@ export type Database = {
             columns: ["up_to_unit_id"]
             isOneToOne: false
             referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      owl_conversations: {
+        Row: {
+          cache_expires_at: string | null
+          cache_key: string | null
+          cache_name: string | null
+          created_at: string
+          id: string
+          last_message_at: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cache_expires_at?: string | null
+          cache_key?: string | null
+          cache_name?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          cache_expires_at?: string | null
+          cache_key?: string | null
+          cache_name?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      owl_messages: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          payload: Json
+          role: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          payload: Json
+          role: string
+          type: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          role?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "owl_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "owl_conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -1315,6 +1483,17 @@ export type Database = {
     }
     Functions: {
       keepalive: { Args: never; Returns: string }
+      match_document_chunks: {
+        Args: { match_count?: number; query_embedding: string }
+        Returns: {
+          content: string
+          document_id: string
+          id: string
+          page: number
+          similarity: number
+          title: string
+        }[]
+      }
     }
     Enums: {
       ai_task:
@@ -1325,6 +1504,10 @@ export type Database = {
         | "propose_answer"
         | "quiz"
         | "strategist"
+        | "parse_academic_calendar"
+        | "parse_exam_schedule"
+        | "parse_document"
+        | "answer"
       assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
       assigned_by: "ai" | "user"
       block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
@@ -1481,6 +1664,10 @@ export const Constants = {
         "propose_answer",
         "quiz",
         "strategist",
+        "parse_academic_calendar",
+        "parse_exam_schedule",
+        "parse_document",
+        "answer",
       ],
       assessment_kind: ["partial", "final", "integral", "makeup", "other"],
       assigned_by: ["ai", "user"],

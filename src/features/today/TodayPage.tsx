@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { Avatar } from '@/components/Avatar'
 import { Mascot } from '@/components/Mascot'
+import { PageTitle } from '@/components/PageTitle'
 import { Button } from '@/components/ui/button'
 import { statusLabel } from '@/features/schedule/format'
 import { LecturePrompts } from '@/features/schedule/LecturePrompts'
@@ -15,10 +15,14 @@ import { localDay } from '@/lib/day'
 import { greetingPart } from '@/lib/greeting'
 import { calendarStatus } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
+import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
+import { OwlBar } from '@/features/owl/OwlBar'
 import { FactCard } from './FactCard'
 
 // Without subjects "Today" is the first-run state (DanasPrazno); the real day plan comes with
 // the scheduler (Stage 8), until then a short card links to subjects and the calendar.
+// The owl bar is docked at the bottom; on the empty state the big owl and the bar owl go
+// together (the one exception in MASCOT.md).
 export function TodayPage() {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -32,28 +36,24 @@ export function TodayPage() {
   const hasSubjects = (subjects ?? []).some((x) => !x.archived)
 
   return (
-    <div className="flex flex-col">
-      <header className="flex items-center gap-3">
-        <Link to="/settings" aria-label={t('settings.title')} className="shrink-0">
-          <Avatar name={name} className="size-12 text-lg" />
-        </Link>
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <span className="text-[13px] text-ink-muted first-letter:uppercase">
-            {format(now, 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
-            {status && (
-              <>
-                {' · '}
-                <Link to="/settings/calendar" className="underline-offset-2 hover:underline">
-                  {statusLabel(t, status)}
-                </Link>
-              </>
-            )}
-          </span>
-          <span className="text-[17px] font-semibold">
-            {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}
-          </span>
-        </div>
-      </header>
+    <div className="flex flex-col pb-28">
+      <PageTitle>{t('nav.today')}</PageTitle>
+      <div className="mt-1.5 flex min-w-0 flex-col gap-0.5">
+        <span className="text-[17px] font-semibold">
+          {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}
+        </span>
+        <span className="text-[13px] text-ink-muted first-letter:uppercase">
+          {format(now, 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
+          {status && (
+            <>
+              {' · '}
+              <Link to="/settings/calendar" className="underline-offset-2 hover:underline">
+                {statusLabel(t, status)}
+              </Link>
+            </>
+          )}
+        </span>
+      </div>
 
       <div className="mt-4 flex flex-col gap-2.5 empty:hidden">
         <LecturePrompts />
@@ -94,6 +94,9 @@ export function TodayPage() {
       <div className="mt-10">
         <FactCard />
       </div>
+
+      <OwlBar empty={!hasSubjects} />
+      <GiveDocumentSheet />
     </div>
   )
 }

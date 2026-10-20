@@ -35,7 +35,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Predmeti | Projekcija ocjene | “Imam X od Y”, koliko treba na preostalim ispitima za svaku ocjenu i za željenu ocjenu; rezultat se može poništiti (odricanje) |
 | Raspored | Akademski kalendar | Periodi nastave, sedmice parcijalnih, ispitni rokovi (redovni/popravni), neradni dani; ručno ili AI uvoz; “7. sedmica nastave” na Danas |
 | Uvoz | Uvoz sa pregledom | Tekst, slika ili PDF → akademski kalendar ili raspored ispita; pregled novo/izmijenjeno prije snimanja |
-| Uvoz | Dokumenti i asistent | Dokumenti fakulteta sa pretragom (RAG, citat izvora); chat asistent predlaže izmjene kao kartice |
+| Uvoz | Dokumenti i sova (agent) | Dokumenti fakulteta sa pretragom (RAG, citat izvora); sova na dnu ekrana Danas je jedan ulaz za pitanja i dokumente, prijedlozi izmjena kao kartice |
 | Predmeti | Izvori više tipova | 0..n izvora: knjiga, skripta, pitanja, prezentacije, ostalo |
 | Uvoz | Slikaj sadržaj | Slika sadržaja → jedinice sa stranicama, podjedinicama, težinom i temama; pregled prije snimanja |
 | Uvoz | Ručni unos | Paste ili jedna linija po jedinici; isti parser |
@@ -489,13 +489,17 @@ Fakultet objavi akademski kalendar prije semestra: kad traje nastava, kad su isp
 
 AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nikad ne piše direktno: svaki prijedlog prolazi pregled (novo / izmijenjeno / ostaje) i potvrdu.
 
-**Provajder.** Sve ide kroz LLM wrapper (`_shared/llm.ts`). Dok Anthropic nalog nema karticu, `LLM_PROVIDER=gemini` (Gemini Flash free tier, structured output preko `responseSchema` iz `z.toJSONSchema()`); prebacivanje na Haiku je promjena secrets, bez koda. Na free tieru Google može koristiti podatke za poboljšanje proizvoda, pa se šalju samo podaci koji su za to potrebni. Koraci za ključ su u [SETUP.md](SETUP.md).
+**Provajder.** Sve ide kroz LLM wrapper (`_shared/llm.ts`). Dok Anthropic nalog nema karticu, `LLM_PROVIDER=gemini` (Gemini 3.5 Flash-Lite free tier, uz `LLM_FALLBACK_MODEL` kad je prvi model zauzet ili bez kvote; structured output preko `responseJsonSchema` iz `z.toJSONSchema()`); prebacivanje na Haiku je promjena secrets, bez koda. Na free tieru Google može koristiti podatke za poboljšanje proizvoda, pa se šalju samo podaci koji su za to potrebni. Koraci za ključ su u [SETUP.md](SETUP.md).
 
-**Uvoz sa pregledom (Etapa 6).** Ekran “Uvezi”: zalijepi se tekst ili doda slika/PDF i bira šta je unutra.
+**Sova (agent) na Danas (Etapa 6).** Na dnu ekrana Danas, iznad tab bara, stoji traka sa sovom („Pitaj sovu…“ i dugme +). To je jedan ulaz za sve AI radnje: pitanje (odgovor iz dokumenata sa citatom ili iz sažetka stanja), dodavanje dokumenta (uslikaj, slika, PDF, zalijepi tekst) i prijedlozi izmjena kao kartice sa pregledom. Tap na traku otvara razgovor preko cijelog ekrana. Iznad trake je današnji savjet strategista (oblačić, × ga skloni do sutra) i prijedlozi pitanja. Offline ili bez ključa traka je onemogućena. Za sad je samo na Danas; kasnije najvjerovatnije plutajuća sova (krug dole desno) na ostalim tabovima, varijanta 7B u mockupu. Oblačić sa savjetom dolazi sa strategistom (Etapa 11); do tad iznad trake stoje samo prijedlozi. Mockup: `design/SovaAgent.html`.
+
+**Uvoz sa pregledom (Etapa 6).** Kroz sovu (dugme +) ili ekran “Uvezi”: zalijepi se tekst ili doda slika/PDF i bira šta je unutra (ili sova pogodi).
 
 - Akademski kalendar → periodi (nastava, rokovi, sedmice parcijalnih, neradni dani).
 - Raspored ispita (npr. raspored parcijala) → ispiti sa datumima, upareni sa predmetima (`fuse.js` + AI), uz prijedlog izmjene postojećeg ispita (okvirni → tačan datum) umjesto duplikata.
 - Isti pregled kasnije koriste raspored nastave i sadržaj knjige (Etapa 10).
+- Prije slanja korisnik potvrdi prilog i može dodati poruku sovi (“samo II godina, grupa B”); poruka ide u prompt i sužava šta se izvlači, ali nikad ne zamjenjuje datume iz dokumenta.
+- **Odluke (Etapa 6):** “Pogodi sama” je jedan AI poziv (`parse-document`): isti poziv prepozna vrstu i izvuče periode ili ispite; izabran tip daje užu šemu. Dat dokument se odmah sprema u Dokumente (fajl + odlomci; briše se tamo), jer je davanje dokumenta već potvrda. Potvrdu traže samo izmjene plana (periodi, ispiti) kroz karticu novo / izmijenjeno / preskačem.
 
 **Dokumenti i RAG.** Korpus su tri stvari:
 
@@ -503,7 +507,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 2. **Bilješke i jedinice**: naslovi jedinica, bilješke, kartice i ispitna pitanja dobijaju embedding (isti model). Služe recall pitanjima, vezi pitanje ↔ poglavlje i pretrazi “gdje sam pisala o …” (Etapa 10).
 3. **Stanje plana**: nije vektorska pretraga nego kompaktan JSON sažetak (predmeti, ispiti, bodovi, napredak, zaostatak), isti kao ulaz strategista.
 
-**Asistent (chat, Etapa 10).** Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi.
+**Asistent (chat).** Razgovor sa sovom postoji od Etape 6 (dokumenti, sažetak stanja, prijedlozi uvoza). Etapa 10 dodaje ostale alate. Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi. Od Etape 6 razgovori se čuvaju u bazi (`owl_conversations`, `owl_messages`): svaki ulaz sa Danas (traka, prijedlog, +) počinje novi razgovor, a stari su u Historiji (sat u zaglavlju razgovora; tap nastavlja razgovor, kanta ga briše). Svako pitanje šalje zadnjih 6 poruka razgovora, odlomke i sažetak stanja; model ništa ne pamti između poziva. **Prompt caching:** stalni dio ide prvi (uputa, pa sažetak stanja), pa razgovor, odlomci i pitanje. Gemini to implicitno kešira (`ai_runs.cached_tokens`); eksplicitni cache (`cachedContents`, TTL 10 min, po razgovoru) se pokušava kad je prefiks dovoljno dug, a free tier ga odbija, pa se odbijanje pamti sat vremena i poziv ide bez njega. Anthropic adapter stavlja `cache_control` na uputu i sažetak.
 
 ## Bodovi, skala ocjena i projekcija ocjene
 
@@ -1050,6 +1054,7 @@ alter table subjects
 create extension if not exists vector;
 alter type ai_task add value 'parse_academic_calendar';
 alter type ai_task add value 'parse_exam_schedule';
+alter type ai_task add value 'parse_document';
 alter type ai_task add value 'answer';
 create table documents (
   id uuid primary key default gen_random_uuid(),
@@ -1057,7 +1062,8 @@ create table documents (
   subject_id uuid references subjects on delete set null,      -- null = opći (kalendar, pravilnik)
   kind text not null check (kind in ('academic_calendar','rules','syllabus','exam_schedule','notice','other')),
   title text not null,
-  storage_path text,                                           -- uploads/<user_id>/...
+  storage_path text,                                           -- uploads/<user_id>/documents/...
+  media_type text,                                             -- null = zalijepljen tekst
   pages int,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -1073,7 +1079,11 @@ create table document_chunks (
 );
 -- + RLS owner_all, grant, HNSW indeks nad embedding, RPC match_document_chunks(query_embedding, k)
 
--- 0009_manual_blocks.sql (Etapa 8)
+-- 0009_ai_runs_writer.sql (Etapa 6): grant select, insert on ai_runs to service_role (Edge Functions logiraju AI pozive)
+
+-- 0010_owl_chats.sql (Etapa 6): owl_conversations (naslov, zadnja poruka, cache_name/cache_key/cache_expires_at), owl_messages (role, type, payload jsonb), RLS; ai_runs.cached_tokens
+
+-- 0011_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1081,7 +1091,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0010_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0012_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,
@@ -1109,10 +1119,10 @@ Edge funkcije, sve sa strukturiranim JSON izlazom koji se validira Zod šemom pr
 | `parse-toc` | 1–4 slike ili tekst, tip izvora, predmet, postojeće teme | jedinice, stranice, podjedinice, `ai_difficulty`, teme, upozorenja |
 | `parse-questions` | slika ili tekst liste pitanja, postojeće teme i poglavlja | pitanja, teme, prijedlog ispita |
 | `parse-timetable` | slika rasporeda, nazivi predmeta | termini (dan, vrijeme, tip, sala, parnost), veza na predmet |
-| `parse-academic-calendar` | tekst, slika ili PDF kalendara | periodi: nastava, sedmice parcijalnih, rokovi (redovni/popravni), neradni dani |
-| `parse-exam-schedule` | tekst, slika ili PDF rasporeda ispita, predmeti i postojeći ispiti | ispiti sa datumom, veza na predmet i postojeći ispit |
-| `documents` | PDF/slika/tekst dokumenta | odlomci sa embeddingom (`gte-small`), bez LLM poziva |
+| `parse-document` | tekst (zalijepljen ili tekst iz PDF-a po stranicama), slika ili skenirani PDF; vrsta (`auto` / akademski kalendar / raspored ispita / dokument); predmeti i postojeći ispiti | vrsta i naslov dokumenta, periodi (nastava, ispitni periodi, neradni dani) ili ispiti sa datumom i vezom na predmet, prepis po stranicama kad tekst nije dat. `ai_task`: `parse_academic_calendar`, `parse_exam_schedule` ili `parse_document` |
+| `documents` | odlomci dokumenta (najviše 16 po pozivu) | embedding (`gte-small`) i upis odlomaka, bez LLM poziva |
 | `answer` | pitanje + najrelevantniji odlomci + sažetak stanja | odgovor sa citatima (dokument, stranica) |
+| `ai-status` | — | da li je AI podešen i koliko je poziva ostalo (traka sove) |
 | `recall-questions` | bilješke ili slika stranice ili naslov + podnaslovi | 3 pitanja sa odgovorima i oznakom izvora |
 | `propose-answer` | ispitno pitanje + bilješke povezanih jedinica | prijedlog odgovora, označen “provjeri” |
 | `quiz` | bilješke jedinice | 5–10 pitanja za kviz ili kartice |
@@ -1150,7 +1160,7 @@ Ograničenja šema za structured outputs:
 
 - Slika se smanjuje na klijentu na max 1600 px duže strane prije uploada.
 - `max_tokens` ograničen (npr. 4000 za parse, 1500 za strategist).
-- Rate limit u edge funkciji: npr. max 30 AI poziva dnevno po korisniku, provjera preko `ai_runs`.
+- Rate limit u edge funkciji: max 30 AI poziva u zadnja 24 sata po korisniku, provjera preko `ai_runs` (embeddings se ne broje).
 - Svaki poziv se logira u `ai_runs` sa tokenima i cijenom, pa u postavkama vidiš potrošnju.
 
 **Procjena troška (Haiku 5.5: $0.10 / 1M ulaznih, $0.50 / 1M izlaznih tokena do 100k tokena prompta)**
@@ -1375,5 +1385,5 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio.
 | Akademski kalendar | Periodi nastave, sedmice parcijalnih, ispitni rokovi, neradni dani; ručno (Etapa 4) i AI uvoz (Etapa 6); bez datuma konkretnih ispita |
 | Ispit bez datuma | Bira se rok iz akademskog kalendara; raspon roka = okvirni raspon ispita |
 | AI provajder za sad | Gemini Flash free tier iza wrappera dok Anthropic nema karticu |
-| Uvoz i asistent | Prvo uvoz sa pregledom (Etapa 6), chat asistent na istim alatima kasnije (Etapa 10); AI nikad ne piše direktno |
+| Uvoz i asistent | Sova na Danas kao jedan ulaz od Etape 6 (uvoz sa pregledom, pitanja o dokumentima); bilješke, recall i ostali alati u Etapi 10; AI nikad ne piše direktno |
 | RAG | Dokumenti fakulteta (čuvaju se) + bilješke i jedinice (embeddings `gte-small`) + sažetak stanja plana |

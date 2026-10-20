@@ -36,6 +36,8 @@ export default defineConfig({
       workbox: {
         navigateFallback: '/index.html',
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
+        // pdf.js is loaded only when a PDF goes to the owl, which needs a connection anyway.
+        globIgnores: ['**/assets/pdf-*.js'],
       },
     }),
   ],

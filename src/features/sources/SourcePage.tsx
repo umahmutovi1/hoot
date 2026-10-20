@@ -21,6 +21,7 @@ import {
   type SourceMaterial,
   type SourceWithUnits,
 } from './model'
+import { goBack } from '@/app/navigation'
 
 /** Izvor: progress of one source and its units; archived units can be restored. */
 export function SourcePage() {
@@ -59,9 +60,7 @@ function SourceDetail({
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={() =>
-            window.history.length > 1 ? navigate(-1) : navigate(`/subjects/${subject.id}`)
-          }
+          onClick={() => goBack(navigate, `/subjects/${subject.id}`)}
           aria-label={t('app.back')}
           className="flex size-11 items-center justify-center rounded-full bg-surface"
         >
