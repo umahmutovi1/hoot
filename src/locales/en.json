@@ -56,7 +56,7 @@
       "sourceLabel": "Source: {{source}} (opens in a new window)"
     },
     "week": {
-      "teaching": "Teaching week {{week}}",
+      "teaching": "Week {{week}} of classes",
       "partial": "{{title}}",
       "exam": "{{title}} · week {{week}}",
       "holiday": "Holiday · {{title}}"
@@ -644,7 +644,7 @@
     "from": "From",
     "to": "To",
     "kind": {
-      "teaching": "Teaching",
+      "teaching": "Classes",
       "exam": "Exam period",
       "holiday": "Holidays"
     },
@@ -654,18 +654,18 @@
       "makeup": "Make-up period"
     },
     "section": {
-      "teaching": "Teaching",
+      "teaching": "Classes",
       "exam": "Exam periods",
       "holiday": "Holidays"
     },
     "empty": {
-      "teaching": "Add a semester: when classes start and end. The timetable and teaching weeks are counted from here.",
+      "teaching": "Add a semester: when classes start and end. The timetable and weeks of classes are counted from here.",
       "exam": "No exam periods. Add partial exam weeks and exam periods.",
       "holiday": "No holidays."
     },
     "hint": {
-      "teaching": "The timetable applies in this period; teaching week 1 is odd.",
-      "exam": "An exam without a date can be \"in this period\"; the plan aims for its first day. Partials fall in the middle of teaching.",
+      "teaching": "The timetable applies in this period; week 1 of classes is odd.",
+      "exam": "An exam without a date can be \"in this period\"; the plan aims for its first day. Partials fall in the middle of the semester.",
       "holiday": "No classes on these days; your study availability stays."
     },
     "defaultTitle": {
