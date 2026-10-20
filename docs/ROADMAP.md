@@ -142,7 +142,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 
 - [x] `supabase/functions/_shared/`: `llm.ts`, `providers/gemini.ts` (`responseJsonSchema` iz `z.toJSONSchema()`), `providers/anthropic.ts` (`zodOutputFormat()` + `messages.parse()`), `schemas.ts` (bez rekurzivnih šema), `prices.ts`, `cors.ts`
 - [ ] Logiranje u `ai_runs`, rate limit 30 poziva/dan, jedan retry na Zod grešku; `LLM_PROVIDER`, `LLM_MODEL`, `GEMINI_API_KEY` kao Supabase secrets
-- [ ] Migracija `0008_ai_documents.sql` (pgvector, `documents`, `document_chunks`, novi `ai_task`), regenerisan `database.ts`
+- [x] Migracija `0008_ai_documents.sql` (pgvector, `documents`, `document_chunks`, novi `ai_task`), regenerisan `database.ts`
 - [ ] `src/lib/image.ts` (1600 px, `browser-image-compression`), upload u `uploads/<user_id>/`; PDF ide direktno
 - [ ] Ekran „Uvezi“ (pregled iz razgovora sa sovom): tekst / slika / PDF → `parse-document` (jedan poziv i za „Pogodi sama“) → pregled novo / izmijenjeno → spašavanje; uparivanje predmeta (`fuse.js`)
 - [ ] Dokumenti fakulteta: lista, upload, odlomci + embeddings (`gte-small`), RPC pretrage, `answer` sa citatima (dokument, stranica)

@@ -469,6 +469,94 @@ export type Database = {
           },
         ]
       }
+      document_chunks: {
+        Row: {
+          content: string
+          created_at: string
+          document_id: string
+          embedding: string | null
+          id: string
+          page: number | null
+          position: number
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          document_id: string
+          embedding?: string | null
+          id?: string
+          page?: number | null
+          position: number
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          document_id?: string
+          embedding?: string | null
+          id?: string
+          page?: number | null
+          position?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_chunks_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          media_type: string | null
+          pages: number | null
+          storage_path: string | null
+          subject_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          media_type?: string | null
+          pages?: number | null
+          storage_path?: string | null
+          subject_id?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          media_type?: string | null
+          pages?: number | null
+          storage_path?: string | null
+          subject_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lecture_logs: {
         Row: {
           cancelled: boolean
@@ -1315,6 +1403,17 @@ export type Database = {
     }
     Functions: {
       keepalive: { Args: never; Returns: string }
+      match_document_chunks: {
+        Args: { match_count?: number; query_embedding: string }
+        Returns: {
+          content: string
+          document_id: string
+          id: string
+          page: number
+          similarity: number
+          title: string
+        }[]
+      }
     }
     Enums: {
       ai_task:
@@ -1325,6 +1424,10 @@ export type Database = {
         | "propose_answer"
         | "quiz"
         | "strategist"
+        | "parse_academic_calendar"
+        | "parse_exam_schedule"
+        | "parse_document"
+        | "answer"
       assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
       assigned_by: "ai" | "user"
       block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
@@ -1481,6 +1584,10 @@ export const Constants = {
         "propose_answer",
         "quiz",
         "strategist",
+        "parse_academic_calendar",
+        "parse_exam_schedule",
+        "parse_document",
+        "answer",
       ],
       assessment_kind: ["partial", "final", "integral", "makeup", "other"],
       assigned_by: ["ai", "user"],
