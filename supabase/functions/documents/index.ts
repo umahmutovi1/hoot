@@ -1,5 +1,5 @@
 // Embeds document chunks with gte-small and stores them. No LLM call, not rate limited.
-// The app sends at most EMBED_BATCH chunks per call to stay inside the CPU limit.
+// The app sends at most EMBED_BATCH (2) chunks per call to stay inside the CPU limit.
 import { json } from '../_shared/cors.ts'
 import { embed } from '../_shared/embed.ts'
 import { readJson, serve } from '../_shared/edge.ts'

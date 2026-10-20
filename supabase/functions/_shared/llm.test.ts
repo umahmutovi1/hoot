@@ -82,6 +82,21 @@ describe('generate', () => {
     expect(runs[0]).toMatchObject({ ok: false, error: 'failed: boom' })
   })
 
+  it('logs and prices the model a provider fell back to', async () => {
+    const provider = fakeProvider([
+      {
+        json: { answer: 'x' },
+        inputTokens: 1_000_000,
+        outputTokens: 0,
+        model: 'gemini-2.5-flash-lite',
+      },
+    ])
+    const { d, runs } = deps(provider)
+    const result = await generate(d, req)
+    expect(result.model).toBe('gemini-2.5-flash-lite')
+    expect(runs[0]).toMatchObject({ model: 'gemini-2.5-flash-lite', cost_usd: 0.1 })
+  })
+
   it('keeps the code of provider LlmErrors', async () => {
     const provider = fakeProvider([new LlmError('provider_busy', 'gemini 429')])
     const { d } = deps(provider)

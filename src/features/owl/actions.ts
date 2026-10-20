@@ -148,16 +148,23 @@ export async function giveDocument(input: DocumentInput, kind: ImportKind, ctx: 
     const pages = text ?? result.pages
     const title = result.title.trim() || name
     const docKind: DocumentKind = result.kind
-    const { error: docError } = await supabase.from('documents').insert({
-      id: documentId,
-      kind: docKind,
-      title,
-      storage_path: storagePath,
-      media_type: storagePath ? mediaType : null,
-      pages: pages.length || null,
-    })
-    if (docError) throw docError
-    await storeChunks(documentId, pages)
+    // If this fails the AI result is not thrown away: the proposal below still stands.
+    let stored = true
+    try {
+      const { error: docError } = await supabase.from('documents').insert({
+        id: documentId,
+        kind: docKind,
+        title,
+        storage_path: storagePath,
+        media_type: storagePath ? mediaType : null,
+        pages: pages.length || null,
+      })
+      if (docError) throw docError
+      await storeChunks(documentId, pages)
+    } catch {
+      stored = false
+      await removeDocument(documentId, storagePath)
+    }
     void ctx.queryClient.invalidateQueries({ queryKey: documentsKey(ctx.userId) })
 
     // 4. A proposal for the calendar or exams, never written without "Spasi".
@@ -175,6 +182,7 @@ export async function giveDocument(input: DocumentInput, kind: ImportKind, ctx: 
       kind: docKind,
       title,
       documentId,
+      stored,
       found,
     }
     store().replace(pendingId, done)
@@ -194,23 +202,42 @@ export async function giveDocument(input: DocumentInput, kind: ImportKind, ctx: 
       })
     }
   } catch (err) {
-    // Nothing half-stored: the document row cascades its chunks, the file goes too.
-    await supabase.from('documents').delete().eq('id', documentId)
-    if (storagePath) await supabase.storage.from('uploads').remove([storagePath])
+    await removeDocument(documentId, storagePath)
     fail(pendingId, err)
   } finally {
     store().setBusy(false)
   }
 }
 
+/** Nothing half-stored: the document row cascades its chunks, the file goes too. */
+async function removeDocument(documentId: string, storagePath: string | null) {
+  await supabase.from('documents').delete().eq('id', documentId)
+  if (storagePath) await supabase.storage.from('uploads').remove([storagePath])
+}
+
+/** Parallel `documents` calls; each embeds EMBED_BATCH chunks inside its CPU budget. */
+const EMBED_PARALLEL = 3
+
 async function storeChunks(documentId: string, pages: PageText[]) {
   const chunks = chunkPages(pages).map((c) => ({ ...c, id: id() }))
-  for (let i = 0; i < chunks.length; i += EMBED_BATCH) {
-    await invokeAi('documents', {
-      document_id: documentId,
-      chunks: chunks.slice(i, i + EMBED_BATCH),
-    })
+  const batches: (typeof chunks)[] = []
+  for (let i = 0; i < chunks.length; i += EMBED_BATCH)
+    batches.push(chunks.slice(i, i + EMBED_BATCH))
+  const send = (batch: typeof chunks) =>
+    invokeAi('documents', { document_id: documentId, chunks: batch })
+  let next = 0
+  const worker = async () => {
+    while (next < batches.length) {
+      const batch = batches[next++]!
+      try {
+        await send(batch)
+      } catch {
+        // A cold start or a busy worker: retry one chunk at a time (upsert, so no duplicates).
+        for (const chunk of batch) await send([chunk])
+      }
+    }
   }
+  await Promise.all(Array.from({ length: Math.min(EMBED_PARALLEL, batches.length) }, worker))
 }
 
 /** Ask the owl; answers come from documents (cited) and the state summary. */

@@ -154,10 +154,12 @@ Lista modela = ključ radi. `API_KEY_INVALID` = pogrešno kopiran ključ.
 
 **3. Supabase secrets** (isti terminal):
 ```bash
-npx supabase secrets set GEMINI_API_KEY="$GEMINI_API_KEY" LLM_PROVIDER=gemini LLM_MODEL=gemini-2.5-flash
+npx supabase secrets set GEMINI_API_KEY="$GEMINI_API_KEY" LLM_PROVIDER=gemini LLM_MODEL=gemini-3.5-flash-lite LLM_FALLBACK_MODEL=gemini-2.5-flash
 npx supabase secrets list      # vidi se ime, ne vrijednost
 unset GEMINI_API_KEY
 ```
+
+> **Modeli i limiti (stanje 20. 10. 2026).** Free tier ima limit po modelu: Gemini 2.5 Flash samo 5 zahtjeva u minuti i 20 dnevno, a `gemini-2.5-flash-lite` više nije dostupan novim nalozima (404). Zato je `LLM_MODEL=gemini-3.5-flash-lite`, a `LLM_FALLBACK_MODEL=gemini-2.5-flash` se koristi kad prvi vrati 429 ili 503 (kvote su po modelu). Trenutne limite vidiš u AI Studio → Rate Limit. Antigravity iz te liste je Googleov agent, ne model za API. Promjena modela je samo `secrets set`, bez deploya.
 
 **4. Edge funkcije** (Etapa 6: `parse-document`, `documents`, `answer`, `ai-status`):
 ```bash
