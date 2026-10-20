@@ -42,7 +42,8 @@ export function OwlChatPage() {
 
   return (
     <div className="flex min-h-[calc(100dvh-48px)] flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
+      {/* Sticky, so the header stays reachable and clear of the phone's status bar. */}
+      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 bg-canvas/90 px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 backdrop-blur-md">
         <div className="flex min-w-0 items-center gap-2.5">
           <OwlHead pose={enabled ? 'reading-head' : 'sleeping-head'} size={40} />
           <div className="flex min-w-0 flex-col">

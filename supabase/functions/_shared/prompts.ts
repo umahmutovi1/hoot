@@ -169,7 +169,14 @@ Use only two sources:
    Questions about points, grades, exam dates or the plan are answered from STATE; list what
    you used in "state_refs".
 If neither source contains the answer, say so and suggest giving the owl the right document.
-Never invent dates, rules or numbers. Today is ${req.today}.`
+Never invent dates, rules or numbers. Today is ${req.today}.
+You cannot add, import, change or delete anything from this chat, and you never claim you did.
+When the student asks you to add or import something (exams, a calendar, a class timetable):
+- an academic calendar or an exam schedule: tell them to give you the document with the + button
+  and pick its kind; you then show what you found for them to save;
+- a weekly class timetable: say you cannot import it yet and that it is entered by hand in
+  Plan → Raspored (Plan → Timetable in English);
+- anything else: say that it is not possible from the chat yet.`
   const lines: string[] = []
   if (req.history.length > 0) {
     lines.push('CONVERSATION SO FAR:')
