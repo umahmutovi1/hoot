@@ -208,6 +208,8 @@ k = broj jedinica sa zabilježenim vremenom. Nakon 5 jedinica izmjereno i heuris
 - **Prvi prolaz ili ponavljanje** se ne bira nego čita iz statusa jedinice: jedinica koja još nije pređena = prvi prolaz, pređena ili “razumijem” = ponavljanje. Svaki ima svoju brzinu po izvoru (par izvor × način, uz fallback na izvor dok par nema 3 mjerenja). Na početku sesije može se ručno promijeniti.
 - **Kraj sesije**: “do koje stranice” (stranica, slajd, pitanje ili jedinica; može i dio poglavlja), plus težina 1–5 po jedinici. Razlike između poglavlja dolaze iz izmjerenog vremena po poglavlju i ocjene težine, ne iz AI-ja.
 
+**Izvor “Pitanja” (odluka, Etapa 7).** Pitanja se ne mjere vremenom nego uspjehom: koliko pitanja znaš odgovoriti (recall 0–2, FSRS jačina). Vrijeme po pitanju služi samo planu za kapacitet (heuristika pa prosjek iz sesija), ne prikazuje se kao procjena i ne kalibriše se po pitanju. Pitanja su vezana za poglavlja izvora (preko tema ili direktno); AI predloži veze (embeddings + `parse-questions`, Etapa 10), korisnik ih ispravi, a ručna veza se ne prepisuje. U sesiji, nakon čitanja ili ponavljanja poglavlja, app odmah ponudi pitanja iz te oblasti koja su unesena u app (recall gate, Etapa 9).
+
 **Web pretraga** težine konkretne knjige nije default; može doći kao opcionalno dugme u v2.
 
 ## Prioritet i režim učenja
