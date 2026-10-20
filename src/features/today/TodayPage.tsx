@@ -34,7 +34,7 @@ export function TodayPage() {
   return (
     <div className="flex flex-col">
       <PageTitle>{t('nav.today')}</PageTitle>
-      <div className="mt-2 flex min-w-0 flex-col gap-0.5">
+      <div className="mt-1.5 flex min-w-0 flex-col gap-0.5">
         <span className="text-[17px] font-semibold">
           {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}
         </span>

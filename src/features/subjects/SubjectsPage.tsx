@@ -24,24 +24,19 @@ export function SubjectsPage() {
 
   return (
     <div className="flex flex-col">
-      <PageTitle
-        action={
-          <Link
-            to="/subjects/new"
-            className="flex h-11 items-center gap-1.5 rounded-full bg-brand px-4 text-sm font-semibold text-white"
-          >
-            <PlusIcon size={16} />
-            {t('subjects.new')}
-          </Link>
-        }
-      >
-        {t('subjects.title')}
-      </PageTitle>
-      {!isPending && (
-        <p className="mt-1.5 mb-4 text-sm text-ink-muted">
-          {t('subjects.activeCount', { count: active.length })}
-        </p>
-      )}
+      <PageTitle>{t('subjects.title')}</PageTitle>
+      <div className="mt-1.5 mb-4 flex items-center justify-between gap-3">
+        <span className="text-sm text-ink-muted">
+          {!isPending && t('subjects.activeCount', { count: active.length })}
+        </span>
+        <Link
+          to="/subjects/new"
+          className="flex h-11 items-center gap-1.5 rounded-full bg-brand px-4 text-sm font-semibold text-white"
+        >
+          <PlusIcon size={16} />
+          {t('subjects.new')}
+        </Link>
+      </div>
 
       <div className="flex flex-col gap-3">
         {!isPending && active.length === 0 && <EmptyCard>{t('subjects.empty')}</EmptyCard>}
