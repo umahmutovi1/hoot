@@ -22,7 +22,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 ## Layout
 - `src/app/` router, layout, providers, i18n setup
 - `src/features/<feature>/` screens, components and query hooks per feature (today, plan, schedule, subjects, sources, session, progress, settings)
-- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `schedule/` (timetable occurrences, availability), `grades/` (points, grade scale, grade projection), `session/` (timer from segments, coverage, minutes per unit), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
+- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `schedule/` (timetable occurrences, availability), `grades/` (points, grade scale, grade projection), `session/` (timer from segments, coverage, minutes per unit), `slots/` (study-time slot scores), `strategist/` (rule-based action candidates), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
 - `src/types/database.ts` generated — never edit by hand
 - `supabase/migrations/` SQL migrations; `supabase/functions/_shared/` Zod schemas, `llm.ts`, prices, cors (imported by the frontend via `@shared/`)
 
@@ -34,7 +34,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 
 ## Architectural rules
 - Scheduling is deterministic code (`plan()`, `placeTimes()` in `src/lib/scheduler/`), never an LLM. AI only explains and proposes input changes.
-- Subject priority, study mode (regular/campaign), manual campaign start, lecture logs and manual blocks are scheduler inputs; campaign start dates are computed in `plan()`, never by AI. Include every scheduler input in `input_hash`.
+- Subject priority, study mode (regular/campaign), manual campaign start, lecture logs, manual blocks, busy time from connected calendars, the realization factor, slot scores and the default session preset are scheduler inputs; campaign start dates are computed in `plan()`, never by AI. Include every scheduler input in `input_hash`.
 - Pure logic in `src/lib/` has no React/Supabase imports and is unit-tested (scheduler, estimates, srs, progress, pace, schedule, grades, day boundary, merge). Scheduler invariants also get property tests (`fast-check`).
 - Timer time is computed from segment timestamps, never from `setInterval` ticks. One active session per user.
 - "Day" starts at `profiles.day_start_min` in `profiles.timezone`; all `on_date` columns are local dates via `src/lib/day.ts`. Timestamps stay UTC.
