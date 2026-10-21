@@ -1,4 +1,4 @@
-import { isMeasured, type LearnedRate, type StudyMode } from '@/lib/estimates/calibration'
+import { isMeasured } from '@/lib/estimates/calibration'
 import { blendedRate } from '@/lib/estimates'
 import type { Measure } from '@/lib/outline/parse'
 import { leavesOf } from '@/lib/progress'
@@ -9,7 +9,6 @@ import {
   type SourceMaterial,
   type SourceWithUnits,
 } from '@/features/sources/model'
-import type { ModeRate } from './api'
 import type { EndSource } from './end'
 
 export type MaterialUnit = SourceMaterial['units'][number]
@@ -58,30 +57,17 @@ export function nextLeaves(s: SessionSource, count: number): MaterialUnit[] {
   return s.leaves.slice(from, from + count)
 }
 
-function pairOf(rates: ModeRate[] | undefined, sourceId: string, mode: StudyMode | null) {
-  if (!rates || !mode) return null
-  const row = rates.find((r) => r.source_id === sourceId && r.mode === mode)
-  return row ? { rate: Number(row.min_per_unit), samples: row.samples } : { rate: null, samples: 0 }
-}
-
-/** Inputs for `planEnd()`; `rates` undefined = calibration per mode not loaded (offline). */
-export function toEndSources(
-  sources: SessionSource[],
-  rates: ModeRate[] | undefined,
-  mode: StudyMode | null,
-): EndSource[] {
+/** Inputs for `planEnd()`. */
+export function toEndSources(sources: SessionSource[]): EndSource[] {
   return sources.map(({ source, measure, leaves }) => {
-    const learned: LearnedRate = {
-      rate: source.learned_min_per_unit === null ? null : Number(source.learned_min_per_unit),
-      samples: source.learned_samples,
-    }
     return {
       id: source.id,
       measure,
-      rate: blendedRate(source.base_min_per_unit, learned.rate, learned.samples),
-      learned,
-      measuredSessions: source.measured_sessions,
-      pair: pairOf(rates, source.id, mode),
+      rate: blendedRate(
+        source.base_min_per_unit,
+        source.learned_min_per_unit === null ? null : Number(source.learned_min_per_unit),
+        source.learned_samples,
+      ),
       units: leaves.map((u) => ({
         id: u.id,
         kind: u.kind,

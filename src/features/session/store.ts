@@ -18,6 +18,10 @@ interface SessionUiState {
   /** Forgotten-timer question answered with "Da, nastavi" for this segment. */
   keptSegmentId: string | null
   keepSegment: (id: string) => void
+  /** Subjects whose sessions changed: their calibration is recomputed once online. */
+  recalibrate: string[]
+  needsRecalibration: (subjectId: string) => void
+  recalibrated: (subjectId: string) => void
 }
 
 export const useSessionUi = create<SessionUiState>()(
@@ -32,6 +36,10 @@ export const useSessionUi = create<SessionUiState>()(
       setNextUnit: (nextUnit) => set({ nextUnit }),
       keptSegmentId: null,
       keepSegment: (keptSegmentId) => set({ keptSegmentId }),
+      recalibrate: [],
+      needsRecalibration: (id) =>
+        set((s) => (s.recalibrate.includes(id) ? s : { recalibrate: [...s.recalibrate, id] })),
+      recalibrated: (id) => set((s) => ({ recalibrate: s.recalibrate.filter((x) => x !== id) })),
     }),
     {
       name: 'hoot-session-ui',
@@ -40,6 +48,7 @@ export const useSessionUi = create<SessionUiState>()(
         timerMode: s.timerMode,
         nextUnit: s.nextUnit,
         keptSegmentId: s.keptSegmentId,
+        recalibrate: s.recalibrate,
       }),
     },
   ),

@@ -86,6 +86,64 @@ export function useSession(id: string | undefined) {
   })
 }
 
+export type SessionListItem = SessionRow & { study_segments: SegmentRow[] }
+
+/** Finished sessions, newest first (the history); unsent local sessions are included. */
+export function useSessions() {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: ['session', 'list', userId] as const,
+    enabled: Boolean(userId),
+    networkMode: 'always',
+    queryFn: async (): Promise<SessionListItem[]> => {
+      const queue = syncQueueFor(userId!)
+      const { data, error } = await supabase
+        .from('study_sessions')
+        .select(`${SESSION_COLUMNS}, study_segments(${SEGMENT_COLUMNS})`)
+        .not('ended_at', 'is', null)
+        .order('started_at', { ascending: false })
+        .limit(500)
+      const remote = (error ? [] : data) as unknown as SessionListItem[]
+      const merged = (error
+        ? (await queue.local('study_sessions')).map((r) => r.row)
+        : await queue.merge(
+            'study_sessions',
+            remote as unknown as Row[],
+          )) as unknown as SessionListItem[]
+      const out: SessionListItem[] = []
+      for (const s of merged) {
+        if (!s.ended_at) continue
+        const local = (await queue.local('study_segments', { session_id: s.id })).map(
+          (r) => r.row as unknown as SegmentRow,
+        )
+        const remoteSegs = remote.find((r) => r.id === s.id)?.study_segments ?? []
+        const segs = new Map([...remoteSegs, ...local].map((x) => [x.id, x]))
+        out.push({ ...s, study_segments: [...segs.values()] })
+      }
+      return out.sort((a, b) => b.started_at.localeCompare(a.started_at))
+    },
+  })
+}
+
+export type SessionUnitRow = Omit<Tables<'session_units'>, 'user_id'>
+
+/** Saved minutes, amount and ratings of one session (editing it from the history). */
+export function useSessionUnits(sessionId: string | undefined) {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: ['session', 'units', userId, sessionId] as const,
+    enabled: Boolean(userId && sessionId),
+    queryFn: async (): Promise<SessionUnitRow[]> => {
+      const { data, error } = await supabase
+        .from('session_units')
+        .select('session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty')
+        .eq('session_id', sessionId!)
+      if (error) throw error
+      return data
+    },
+  })
+}
+
 export type ModeRate = Pick<
   Tables<'source_mode_rates'>,
   'source_id' | 'mode' | 'min_per_unit' | 'samples'
@@ -249,6 +307,80 @@ export function useSessionWriter() {
           session: { ...session, ended_at: end },
           segments: kept,
         })
+      },
+
+      /** Saved segments edited in the history; the session spans its first to last segment. */
+      saveSegments: async (
+        session: SessionRow,
+        segments: SegmentRow[],
+        removed: string[],
+        units: Row[],
+      ) => {
+        const sorted = [...segments].sort((a, b) => a.started_at.localeCompare(b.started_at))
+        const end = sorted.reduce(
+          (m, x) => (x.ended_at! > m ? x.ended_at! : m),
+          sorted[0]!.ended_at!,
+        )
+        const row = {
+          ...session,
+          started_at: sorted[0]!.started_at,
+          ended_at: end,
+          updated_at: nowIso(),
+        }
+        await write([
+          sessionOp(row),
+          ...removed.map((id): Op => ({ kind: 'delete', table: 'study_segments', match: { id } })),
+          segmentOp(sorted),
+          ...(units.length > 0
+            ? [
+                {
+                  kind: 'upsert',
+                  table: 'session_units',
+                  onConflict: 'session_id,unit_id',
+                  rows: units,
+                } as Op,
+              ]
+            : []),
+        ])
+        queryClient.setQueryData(sessionKey(userId, session.id), { session: row, segments: sorted })
+      },
+
+      /** A session studied without the timer: one segment, never used for speed calibration. */
+      addManual: async (input: {
+        subjectId: string
+        mode: StudyMode | null
+        start: Date
+        end: Date
+      }) => {
+        const session: SessionRow = {
+          id: crypto.randomUUID(),
+          subject_id: input.subjectId,
+          block_id: null,
+          mode: input.mode,
+          timer_mode: 'free',
+          origin: 'manual',
+          planned_minutes: null,
+          started_at: input.start.toISOString(),
+          ended_at: input.end.toISOString(),
+          focus: null,
+          reflection: null,
+          updated_at: nowIso(),
+        }
+        const segment: SegmentRow = {
+          id: crypto.randomUUID(),
+          session_id: session.id,
+          unit_id: null,
+          started_at: session.started_at,
+          ended_at: session.ended_at,
+        }
+        await write([sessionOp(session), segmentOp([segment])])
+        queryClient.setQueryData(sessionKey(userId, session.id), { session, segments: [segment] })
+        return session.id
+      },
+
+      /** Deletes a saved session with its segments and units (cascade). */
+      remove: async (session: SessionRow) => {
+        await write([{ kind: 'delete', table: 'study_sessions', match: { id: session.id } }])
       },
 
       /** "Odbaci": the session is deleted and nothing is calibrated. */

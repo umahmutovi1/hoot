@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Mascot } from '@/components/Mascot'
@@ -14,9 +14,19 @@ import { useSubject } from '@/features/subjects/api'
 import { pageOffset } from '@/lib/session/coverage'
 import type { Op } from '@/lib/sync'
 import { cn } from '@/lib/utils'
-import { useModeRates, useSession, useSessionWriter } from './api'
-import { coveredUnits, defaultLevel, planEnd, summarize, type EndAnswers, type Range } from './end'
+import { useSession, useSessionUnits, useSessionWriter, type SessionUnitRow } from './api'
+import {
+  coveredUnits,
+  defaultLevel,
+  planEnd,
+  savedRanges,
+  summarize,
+  type EndAnswers,
+  type Range,
+} from './end'
 import { toEndSources, sessionSources, unitTitle, type SessionSource } from './material'
+import { useSessionUi } from './store'
+import { SessionHeader } from './SessionHeader'
 
 interface RangeDraft {
   sourceId: string
@@ -65,25 +75,50 @@ function initialRanges(sources: SessionSource[], unitIds: (string | null)[]): Ra
   return out
 }
 
-/** KrajSesije: how far, difficulty per unit, focus, reflection; "Spasi" calibrates. */
+/** Saved ranges back as drafts (pages for page-based sources). */
+function draftsOf(sources: SessionSource[], ranges: Range[]): RangeDraft[] {
+  return ranges.flatMap((r) => {
+    const s = sources.find((x) => x.source.id === r.sourceId)
+    const from = s?.leaves.find((u) => u.id === r.from.unitId)
+    const to = s?.leaves.find((u) => u.id === r.to.unitId)
+    if (!s || !from || !to) return []
+    return [
+      {
+        sourceId: r.sourceId,
+        fromUnit: from.id,
+        fromPage: from.page_start === null ? null : from.page_start + r.from.offset,
+        toUnit: to.id,
+        toPage: to.page_start === null ? null : to.page_start + r.to.offset - 1,
+      },
+    ]
+  })
+}
+
+/**
+ * KrajSesije: how far, difficulty per unit, focus, reflection. Opened from the history
+ * (`?from=history`) it edits the saved answers instead.
+ */
 export function SessionEndPage() {
   const { id } = useParams()
   const online = useOnline()
   const { data, isPending } = useSession(id)
   const { data: sourceRows, isPending: sourcesPending } = useSources(data?.session.subject_id)
+  const { data: saved, isPending: savedPending } = useSessionUnits(id)
 
-  if (isPending || (data && sourcesPending && online)) return null
+  if (isPending || (data && (sourcesPending || savedPending) && online)) return null
   if (!data) return online ? <Navigate to="/" replace /> : <OfflineNotice />
   if (!data.session.ended_at) return <Navigate to="/session" replace />
-  return <EndForm data={data} sourceRows={sourceRows ?? []} />
+  return <EndForm data={data} sourceRows={sourceRows ?? []} saved={saved ?? []} />
 }
 
 function EndForm({
   data,
   sourceRows,
+  saved,
 }: {
   data: NonNullable<ReturnType<typeof useSession>['data']>
   sourceRows: SourceWithUnits[]
+  saved: SessionUnitRow[]
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -93,20 +128,29 @@ function EndForm({
   const { session, segments } = data
   const { data: subject } = useSubject(session.subject_id)
   const sources = sessionSources(sourceRows)
-  const { data: rates, isError } = useModeRates(
-    session.subject_id,
-    sources.map((s) => s.source.id),
-  )
   const studied = segments.map((s) => s.unit_id)
+  const [params] = useSearchParams()
+  const fromHistory = params.get('from') === 'history'
+  const needsRecalibration = useSessionUi((s) => s.needsRecalibration)
+  const endSources = toEndSources(sources)
 
-  const [ranges, setRanges] = useState<RangeDraft[]>(() => initialRanges(sources, studied))
-  const [ratings, setRatings] = useState<Record<string, number>>({})
-  const [levels, setLevels] = useState<Record<string, number>>({})
-  const [focus, setFocus] = useState<number | null>(null)
-  const [reflection, setReflection] = useState('')
+  const [ranges, setRanges] = useState<RangeDraft[]>(() =>
+    saved.length > 0
+      ? draftsOf(sources, savedRanges(endSources, saved))
+      : initialRanges(sources, studied),
+  )
+  const [ratings, setRatings] = useState<Record<string, number>>(() =>
+    Object.fromEntries(saved.flatMap((r) => (r.difficulty ? [[r.unit_id, r.difficulty]] : []))),
+  )
+  const [levels, setLevels] = useState<Record<string, number>>(() =>
+    Object.fromEntries(
+      saved.flatMap((r) => (r.level_after === null ? [] : [[r.unit_id, r.level_after]])),
+    ),
+  )
+  const [focus, setFocus] = useState<number | null>(session.focus)
+  const [reflection, setReflection] = useState(session.reflection ?? '')
   const [busy, setBusy] = useState(false)
 
-  const endSources = toEndSources(sources, isError ? undefined : rates, session.mode)
   const answers: EndAnswers = {
     ranges: ranges.flatMap((d) => {
       const s = sources.find((x) => x.source.id === d.sourceId)
@@ -117,7 +161,7 @@ function EndForm({
     focus,
     reflection,
   }
-  const plan = planEnd(session, segments, endSources, answers)
+  const plan = planEnd(session, segments, endSources, answers, new Date(session.ended_at!), saved)
   const covered = coveredUnits(endSources, answers.ranges)
   const summary = summarize(session, segments, new Date(session.ended_at ?? session.started_at))
 
@@ -140,10 +184,11 @@ function EndForm({
     setBusy(true)
     patchSources(queryClient, userId, session.subject_id, plan.ops)
     await writer.write(plan.ops)
+    if (session.origin === 'timer') needsRecalibration(session.subject_id)
     const queue = syncQueueFor(userId)
     if (navigator.onLine)
       void queue.flush().then(() => queryClient.invalidateQueries({ queryKey: ['sources'] }))
-    navigate('/', { replace: true })
+    navigate(fromHistory ? `/sessions/${session.id}` : '/', { replace: true })
   }
 
   const addRange = (s: SessionSource) => {
@@ -161,20 +206,28 @@ function EndForm({
   }
 
   return (
-    <div className="flex flex-col gap-4 pt-[env(safe-area-inset-top)]">
-      <div className="flex flex-col items-center gap-2.5 pt-2">
-        <Mascot pose="celebrating" size={140} className="-mb-1.5" />
-        <h1 className="text-[26px] font-bold">{t('session.end.title')}</h1>
-        <p className="text-center text-sm text-ink-muted">
-          {[
-            subject?.name,
-            t('session.end.studied', { count: Math.round(summary.activeMin) }),
-            t('session.end.pauses', { count: summary.pauses }),
-          ]
-            .filter(Boolean)
-            .join(' · ')}
-        </p>
-      </div>
+    <div className={cn('flex flex-col gap-4', !fromHistory && 'pt-[env(safe-area-inset-top)]')}>
+      {fromHistory ? (
+        <SessionHeader
+          title={t('session.history.editEnd')}
+          subtitle={subject?.name}
+          fallback={`/sessions/${session.id}`}
+        />
+      ) : (
+        <div className="flex flex-col items-center gap-2.5 pt-2">
+          <Mascot pose="celebrating" size={140} className="-mb-1.5" />
+          <h1 className="text-[26px] font-bold">{t('session.end.title')}</h1>
+          <p className="text-center text-sm text-ink-muted">
+            {[
+              subject?.name,
+              t('session.end.studied', { count: Math.round(summary.activeMin) }),
+              t('session.end.pauses', { count: summary.pauses }),
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-2">
         <Stat
