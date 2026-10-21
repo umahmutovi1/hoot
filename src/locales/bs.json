@@ -63,8 +63,19 @@
       "holiday": "Neradni dan · {{title}}"
     },
     "planSoonTitle": "Dnevni plan učenja stiže uskoro",
-    "planSoonBody": "Dok ga app ne računa, ovdje su nastava i predavanja za danas. Ispite, izvore i raspored uređuješ na predmetima i u kalendaru.",
-    "todayInCalendar": "Danas u kalendaru"
+    "planSoonBody": "Dok app ne računa plan, sesiju pokrećeš ovdje, a nastavu i ispite vidiš u kalendaru.",
+    "todayInCalendar": "Danas u kalendaru",
+    "next": {
+      "label": "Sljedeće",
+      "freeTitle": "Slobodna sesija",
+      "freeSub": "Izaberi predmet i koliko vremena imaš",
+      "start": "Počni",
+      "running": "U toku",
+      "paused": "Pauza",
+      "resume": "Nastavi"
+    },
+    "exams": "Ispiti",
+    "examsAll": "Sve"
   },
   "plan": {
     "title": "Plan",
