@@ -21,13 +21,13 @@ export function SubjectSources({
         <h2 className="text-lg font-semibold">{t('sources.section')}</h2>
         <Link
           to={`/subjects/${subjectId}/sources/new`}
-          className="flex h-9 items-center rounded-full bg-surface px-3 text-[13px] font-semibold text-brand"
+          className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
         >
           {t('sources.add')}
         </Link>
       </div>
       {materials.length === 0 ? (
-        <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">{t('sources.none')}</p>
+        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.none')}</p>
       ) : (
         materials.map((m) => <SourceCard key={m.source.id} subjectId={subjectId} material={m} />)
       )}
@@ -50,7 +50,7 @@ function SourceCard({ subjectId, material }: { subjectId: string; material: Sour
   return (
     <Link
       to={`/subjects/${subjectId}/sources/${source.id}`}
-      className="flex flex-col gap-2.5 rounded-card bg-surface p-4"
+      className="flex flex-col gap-2.5 rounded-card glass p-4"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-0.5">

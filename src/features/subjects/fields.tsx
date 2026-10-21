@@ -27,7 +27,7 @@ export function ChipGroup<T extends string>({ options, value, onChange }: ChipGr
           onClick={() => onChange(o.value)}
           className={cn(
             'flex h-[38px] items-center gap-2 rounded-full px-3 text-[13px] font-semibold',
-            value === o.value ? 'bg-brand text-white' : 'bg-canvas text-ink',
+            value === o.value ? 'bg-ink text-white' : 'bg-white/50 text-ink',
           )}
         >
           {o.dot && <span className={cn('size-2.5 rounded-full', o.dot)} />}
@@ -69,7 +69,7 @@ export function Segmented<T extends string>({
           onClick={() => onChange(o.value)}
           className={cn(
             'flex h-10 flex-1 items-center justify-center rounded-[13px] px-3 text-[13px] font-semibold whitespace-nowrap',
-            value === o.value ? 'bg-surface text-ink' : 'text-ink-muted',
+            value === o.value ? 'glass text-ink' : 'text-ink-muted',
           )}
         >
           {o.label}

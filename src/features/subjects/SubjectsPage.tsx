@@ -31,7 +31,7 @@ export function SubjectsPage() {
         </span>
         <Link
           to="/subjects/new"
-          className="flex h-11 items-center gap-1.5 rounded-full bg-brand px-4 text-sm font-semibold text-white"
+          className="flex h-11 items-center gap-1.5 rounded-full btn-primary px-4 text-sm font-semibold"
         >
           <PlusIcon size={16} />
           {t('subjects.new')}
@@ -69,7 +69,7 @@ function SubjectCard({ subject, now }: { subject: SubjectWithAssessments; now: D
     <Link
       to={`/subjects/${subject.id}`}
       className={cn(
-        'flex flex-col gap-3.5 rounded-card-lg bg-surface p-[18px]',
+        'flex flex-col gap-3.5 rounded-card-lg glass p-[18px]',
         subject.archived && 'opacity-70',
       )}
     >

@@ -1,7 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CapIcon, ClockIcon } from '@/components/icons'
-import { Mascot } from '@/components/Mascot'
 import { PageTitle } from '@/components/PageTitle'
 import { cn } from '@/lib/utils'
 import { CalendarView } from './CalendarView'
@@ -19,14 +18,14 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
       <div className="-mt-2 flex gap-1.5">
         <Link
           to="/plan/timetable"
-          className="flex h-11 items-center gap-1.5 rounded-full bg-surface px-3.5 text-sm font-semibold"
+          className="flex h-11 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold"
         >
           <CapIcon size={18} className="text-brand" />
           {t('plan.timetableButton')}
         </Link>
         <Link
           to="/plan/availability"
-          className="flex h-11 items-center gap-1.5 rounded-full bg-surface px-3.5 text-sm font-semibold"
+          className="flex h-11 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold"
         >
           <ClockIcon size={18} className="text-brand" />
           {t('availability.title')}
@@ -42,7 +41,7 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
             aria-selected={tab === item.id}
             className={cn(
               'flex h-10 flex-1 items-center justify-center rounded-[18px] text-sm font-semibold',
-              tab === item.id ? 'bg-surface text-ink' : 'text-ink-muted',
+              tab === item.id ? 'glass text-ink' : 'text-ink-muted',
             )}
           >
             {item.label}
@@ -52,8 +51,7 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
       {tab === 'calendar' ? (
         <CalendarView />
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-card-lg bg-surface p-6 text-center">
-          <Mascot pose="timer-head" size={96} />
+        <div className="flex flex-col items-center gap-3 rounded-card-lg glass p-6 text-center">
           <p className="text-sm leading-snug text-ink-muted">{t('plan.scheduleEmpty')}</p>
         </div>
       )}

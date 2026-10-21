@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Mascot } from '@/components/Mascot'
 import { OfflineNotice } from '@/components/OfflineNotice'
+import { CheckIcon } from '@/components/icons'
 import { syncQueueFor } from '@/app/sync'
 import { useAuth } from '@/features/auth/auth-context'
 import { useOnline } from '@/features/owl/api'
@@ -215,7 +215,12 @@ function EndForm({
         />
       ) : (
         <div className="flex flex-col items-center gap-2.5 pt-2">
-          <Mascot pose="celebrating" size={140} className="-mb-1.5" />
+          <span
+            aria-hidden="true"
+            className="icon-tile flex size-16 items-center justify-center rounded-[20px]"
+          >
+            <CheckIcon size={30} />
+          </span>
           <h1 className="text-[26px] font-bold">{t('session.end.title')}</h1>
           <p className="text-center text-sm text-ink-muted">
             {[
@@ -263,7 +268,7 @@ function EndForm({
         const set = (patch: Partial<RangeDraft>) =>
           setRanges((r) => r.map((x, j) => (j === i ? { ...x, ...patch } : x)))
         return (
-          <div key={d.sourceId + i} className="flex flex-col gap-3 rounded-[24px] bg-surface p-4">
+          <div key={d.sourceId + i} className="flex flex-col gap-3 rounded-[24px] glass p-4">
             <span className="text-[15px] font-semibold">{s.source.title}</span>
             <RangeRow
               label={t('session.end.from')}
@@ -293,7 +298,7 @@ function EndForm({
                 key={s.source.id}
                 type="button"
                 onClick={() => addRange(s)}
-                className="flex h-11 items-center rounded-full bg-surface px-4 text-[13px] font-semibold text-brand"
+                className="flex h-11 items-center rounded-full glass px-4 text-[13px] font-semibold text-brand"
               >
                 + {s.source.title}
               </button>
@@ -308,7 +313,7 @@ function EndForm({
         const level = levels[unit.id] ?? defaultLevel(unit, covered.get(unit.id))
         const options = levelsFor(unit.kind)
         return (
-          <div key={unit.id} className="flex flex-col gap-3 rounded-[24px] bg-surface p-4">
+          <div key={unit.id} className="flex flex-col gap-3 rounded-[24px] glass p-4">
             <div className="flex items-start justify-between gap-2">
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="text-[15px] font-semibold">{unitTitle(unit)}</span>
@@ -359,7 +364,7 @@ function EndForm({
                   }
                   className={cn(
                     'h-11 flex-1 rounded-[14px] text-base font-semibold',
-                    ratings[unit.id] === n ? 'bg-brand text-white' : 'bg-canvas text-ink',
+                    ratings[unit.id] === n ? 'bg-ink text-white' : 'bg-white/50 text-ink',
                   )}
                 >
                   {n}
@@ -384,7 +389,7 @@ function EndForm({
             onClick={() => setFocus(focus === n ? null : n)}
             className={cn(
               'h-12 flex-1 rounded-full text-sm font-semibold',
-              focus === n ? 'bg-brand text-white' : 'bg-surface text-ink',
+              focus === n ? 'bg-ink text-white' : 'bg-white/50 text-ink',
             )}
           >
             {t(`session.end.focusLevel.${n}`)}
@@ -402,7 +407,7 @@ function EndForm({
           value={reflection}
           onChange={(e) => setReflection(e.target.value)}
           placeholder={t('session.end.reflectionPlaceholder')}
-          className="resize-none rounded-[20px] bg-surface px-4 py-3.5 text-[15px] placeholder:text-ink-placeholder"
+          className="resize-none rounded-[20px] glass px-4 py-3.5 text-[15px] placeholder:text-ink-placeholder"
         />
       </label>
 
@@ -410,7 +415,7 @@ function EndForm({
         type="button"
         onClick={save}
         disabled={busy}
-        className="mt-2 h-14 rounded-full bg-brand text-base font-semibold text-white disabled:opacity-50"
+        className="mt-2 h-14 rounded-full btn-primary text-base font-semibold disabled:opacity-50"
       >
         {t('common.save')}
       </button>
@@ -420,7 +425,7 @@ function EndForm({
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 rounded-[20px] bg-surface p-3">
+    <div className="flex flex-col items-center gap-0.5 rounded-[20px] glass p-3">
       <span className="text-xl font-bold">{value}</span>
       <span className="text-center text-xs text-ink-muted">{label}</span>
     </div>

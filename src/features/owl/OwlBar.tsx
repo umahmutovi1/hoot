@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { PlusIcon } from '@/components/icons'
-import { Mascot } from '@/components/Mascot'
+import { AiSparkIcon, PlusIcon } from '@/components/icons'
 import { cn } from '@/lib/utils'
 import type { ImportKind } from '@shared/schemas.ts'
 import { useAiAvailability } from './api'
@@ -43,15 +42,15 @@ export function OwlBar({ empty }: { empty: boolean }) {
     if ('to' in s) return navigate(s.to)
     if ('kind' in s) return openSheet(s.kind)
     newConversation()
-    navigate('/owl')
+    navigate('/chat')
     void owl.ask(s.question)
   }
 
   if (state === 'offline' || state === 'disabled') {
     return (
       <Dock>
-        <div className="flex h-14 items-center gap-2 rounded-full bg-surface px-1.5 opacity-70 shadow-[0_6px_24px_rgba(47,35,99,0.14)]">
-          <OwlHead pose="sleeping-head" />
+        <div className="flex h-14 items-center gap-2 rounded-full glass px-1.5 opacity-70 shadow-[0_6px_24px_rgba(47,35,99,0.14)]">
+          <OwlHead enabled={false} />
           <span className="flex-1 text-sm text-ink-subtle">
             {state === 'offline' ? t('owl.offline') : t('owl.disabled')}
           </span>
@@ -69,24 +68,24 @@ export function OwlBar({ empty }: { empty: boolean }) {
             type="button"
             disabled={!enabled && !('to' in s)}
             onClick={() => pick(s)}
-            className="h-[34px] shrink-0 rounded-full bg-surface px-3 text-xs font-semibold whitespace-nowrap text-brand shadow-[0_2px_8px_rgba(47,35,99,0.08)] disabled:opacity-60"
+            className="h-[34px] shrink-0 rounded-full glass px-3 text-xs font-semibold whitespace-nowrap text-brand shadow-[0_2px_8px_rgba(47,35,99,0.08)] disabled:opacity-60"
           >
             {s.label}
           </button>
         ))}
       </div>
-      <div className="flex h-14 items-center gap-2 rounded-full bg-surface px-1.5 shadow-[0_6px_24px_rgba(47,35,99,0.14)]">
+      <div className="flex h-14 items-center gap-2 rounded-full glass px-1.5 shadow-[0_6px_24px_rgba(47,35,99,0.14)]">
         <button
           type="button"
           onClick={() => {
             // Every visit from Today starts a new conversation; old ones are in the history.
             newConversation()
-            navigate('/owl')
+            navigate('/chat')
           }}
           aria-label={t('owl.open')}
           className="flex h-11 min-w-0 flex-1 items-center gap-2 text-left"
         >
-          <OwlHead pose="reading-head" />
+          <OwlHead />
           <span className="truncate text-[15px] text-ink-subtle">
             {empty ? t('owl.askEmpty') : t('owl.ask')}
           </span>
@@ -119,24 +118,26 @@ export function Dock({ children }: { children: React.ReactNode }) {
   )
 }
 
+/** The assistant's avatar: the AI spark on a glass circle, dimmed when it is unavailable. */
 export function OwlHead({
-  pose,
+  enabled = true,
   size = 44,
   className,
 }: {
-  pose: 'reading-head' | 'sleeping-head'
+  enabled?: boolean
   size?: number
   className?: string
 }) {
   return (
     <span
       className={cn(
-        'flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-soft',
+        'flex shrink-0 items-center justify-center rounded-full bg-white/60',
+        enabled ? 'text-brand-accent' : 'text-ink-subtle',
         className,
       )}
       style={{ width: size, height: size }}
     >
-      <Mascot pose={pose} size={size} />
+      <AiSparkIcon size={Math.round(size * 0.48)} />
     </span>
   )
 }

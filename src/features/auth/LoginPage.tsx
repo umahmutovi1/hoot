@@ -6,7 +6,6 @@ import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { LocaleToggle } from '@/components/LocaleToggle'
-import { Mascot } from '@/components/Mascot'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
 import { sendMagicLink, verifyEmailCode } from './api'
@@ -16,7 +15,7 @@ const emailSchema = z.object({ email: z.email() })
 const codeSchema = z.object({ code: z.string().regex(/^\d{6,10}$/) })
 
 const inputClass =
-  'h-[54px] rounded-input border-none bg-surface px-4 text-base text-ink outline-none focus-visible:ring-2 focus-visible:ring-brand-accent'
+  'h-[54px] rounded-input border-none glass px-4 text-base text-ink outline-none focus-visible:ring-2 focus-visible:ring-brand-accent'
 
 function EmailStep({ onSent }: { onSent: (email: string) => void }) {
   const { t } = useTranslation()
@@ -84,7 +83,7 @@ function CodeStep({ email, onBack }: { email: string; onBack: () => void }) {
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-3.5">
-      <div className="rounded-card bg-surface p-4">
+      <div className="rounded-card glass p-4">
         <h2 className="text-base font-semibold">{t('auth.checkEmailTitle')}</h2>
         <p className="mt-1 text-sm leading-snug text-ink-muted">
           {t('auth.checkEmailBody', { email })}
@@ -134,9 +133,6 @@ export function LoginPage() {
           variant="short"
           className="absolute top-6 right-5 bg-white/60"
         />
-        <div className="flex size-[260px] items-center justify-center rounded-full bg-mascot-halo-strong">
-          <Mascot pose="reading" size={220} alt={t('auth.mascotAlt')} />
-        </div>
       </div>
       <div className="flex flex-1 flex-col gap-3.5 px-6 py-7">
         <h1 className="text-[30px] leading-[1.15] font-bold whitespace-pre-line">

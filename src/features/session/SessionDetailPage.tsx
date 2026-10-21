@@ -127,7 +127,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
       </div>
 
       <h2 className="mt-1 text-lg font-semibold">{t('session.history.segments')}</h2>
-      <div className="flex flex-col gap-2 rounded-[24px] bg-surface p-3">
+      <div className="flex flex-col gap-2 rounded-[24px] glass p-3">
         {drafts.map((d, i) => (
           <div key={d.id} className="flex flex-col gap-2 rounded-[18px] bg-canvas p-2.5">
             <div className="flex items-center gap-2">
@@ -136,7 +136,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
                 value={d.start}
                 onChange={(e) => edit(i, { start: e.target.value })}
                 aria-label={t('session.history.from')}
-                className="h-11 min-w-0 flex-1 rounded-[14px] bg-surface px-3 text-[15px] tabular-nums"
+                className="h-11 min-w-0 flex-1 rounded-[14px] glass px-3 text-[15px] tabular-nums"
               />
               <span className="text-ink-muted">–</span>
               <input
@@ -144,7 +144,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
                 value={d.end}
                 onChange={(e) => edit(i, { end: e.target.value })}
                 aria-label={t('session.history.to')}
-                className="h-11 min-w-0 flex-1 rounded-[14px] bg-surface px-3 text-[15px] tabular-nums"
+                className="h-11 min-w-0 flex-1 rounded-[14px] glass px-3 text-[15px] tabular-nums"
               />
               <button
                 type="button"
@@ -153,7 +153,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
                   setDirty(true)
                 }}
                 aria-label={t('session.history.removeSegment')}
-                className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-ink-muted"
+                className="flex size-11 shrink-0 items-center justify-center rounded-full glass text-ink-muted"
               >
                 <CloseIcon size={16} />
               </button>
@@ -162,7 +162,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
               value={d.unitId ?? ''}
               onChange={(e) => edit(i, { unitId: e.target.value || null })}
               aria-label={t('session.start.unit')}
-              className="h-11 rounded-[14px] bg-surface px-3 text-sm"
+              className="h-11 rounded-[14px] glass px-3 text-sm"
             >
               <option value="">{t('session.units.none')}</option>
               {sources.map((s) => (
@@ -202,7 +202,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
             type="button"
             onClick={save}
             disabled={!('segments' in result)}
-            className="h-12 rounded-full bg-brand text-[15px] font-semibold text-white disabled:opacity-50"
+            className="h-12 rounded-full btn-primary text-[15px] font-semibold disabled:opacity-50"
           >
             {t('common.save')}
           </button>
@@ -221,7 +221,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
       {saved.length === 0 ? (
         <span className="text-sm text-ink-muted">{t('session.history.noUnits')}</span>
       ) : (
-        <div className="flex flex-col gap-0.5 rounded-[24px] bg-surface p-1.5">
+        <div className="flex flex-col gap-0.5 rounded-[24px] glass p-1.5">
           {saved.map((r) => {
             const found = findUnit(sources, r.unit_id)
             const level = r.level_after ?? 0
@@ -265,7 +265,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
       )}
 
       {(session.focus || session.reflection) && (
-        <div className="flex flex-col gap-1 rounded-[24px] bg-surface p-4 text-sm">
+        <div className="flex flex-col gap-1 rounded-[24px] glass p-4 text-sm">
           {session.focus && (
             <span>
               <span className="text-ink-muted">{t('session.end.focus')} </span>
@@ -285,7 +285,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
             <button
               type="button"
               onClick={() => setConfirm(false)}
-              className="h-11 flex-1 rounded-full bg-surface text-sm font-semibold"
+              className="h-11 flex-1 rounded-full glass text-sm font-semibold"
             >
               {t('common.cancel')}
             </button>
@@ -302,7 +302,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
         <button
           type="button"
           onClick={() => setConfirm(true)}
-          className="h-12 rounded-full bg-surface text-[15px] font-semibold text-warning"
+          className="h-12 rounded-full glass text-[15px] font-semibold text-warning"
         >
           {t('session.history.delete')}
         </button>
@@ -313,7 +313,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 rounded-[20px] bg-surface p-3">
+    <div className="flex flex-col items-center gap-0.5 rounded-[20px] glass p-3">
       <span className="text-xl font-bold">{value}</span>
       <span className="text-center text-xs text-ink-muted">{label}</span>
     </div>

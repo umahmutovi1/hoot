@@ -37,13 +37,13 @@ export function AcademicCalendarPage() {
               <button
                 type="button"
                 onClick={() => setSheet({ open: true, kind })}
-                className="flex h-10 items-center rounded-full bg-surface px-3.5 text-sm font-semibold text-brand"
+                className="flex h-10 items-center rounded-full glass px-3.5 text-sm font-semibold text-brand"
               >
                 {t('calendar.add')}
               </button>
             </div>
             {list.length === 0 ? (
-              <p className="rounded-[20px] bg-surface px-4 py-3.5 text-sm text-ink-muted">
+              <p className="rounded-[20px] glass px-4 py-3.5 text-sm text-ink-muted">
                 {t(`calendar.empty.${kind}`)}
               </p>
             ) : (
@@ -89,7 +89,7 @@ function PeriodRowButton({
     <button
       type="button"
       onClick={onOpen}
-      className="flex items-center gap-3 rounded-[20px] bg-surface px-4 py-3.5 text-left"
+      className="flex items-center gap-3 rounded-[20px] glass px-4 py-3.5 text-left"
     >
       <DateTile
         date={period.starts_on}

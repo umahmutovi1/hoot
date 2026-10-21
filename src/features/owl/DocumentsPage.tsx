@@ -23,12 +23,10 @@ export function DocumentsPage() {
       <BackHeader title={t('owl.documents.title')} fallback="/settings" />
       <p className="px-1 text-sm leading-[1.45] text-ink-muted">{t('owl.documents.intro')}</p>
       {documents && documents.length === 0 && (
-        <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
-          {t('owl.documents.empty')}
-        </p>
+        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('owl.documents.empty')}</p>
       )}
       {documents && documents.length > 0 && (
-        <div className="flex flex-col rounded-card bg-surface px-4 py-1.5">
+        <div className="flex flex-col rounded-card glass px-4 py-1.5">
           {documents.map((d, i) => (
             <Link
               key={d.id}
@@ -104,7 +102,7 @@ export function DocumentPage() {
           </a>
         </Button>
       )}
-      <div className="flex flex-col gap-3 rounded-card bg-surface p-4 text-sm leading-[1.5]">
+      <div className="flex flex-col gap-3 rounded-card glass p-4 text-sm leading-[1.5]">
         {(chunks.data ?? []).map((c, i, all) => (
           <div key={c.id} className="flex flex-col gap-1">
             {c.page && c.page !== all[i - 1]?.page && (
@@ -117,7 +115,7 @@ export function DocumentPage() {
         ))}
       </div>
       {confirming ? (
-        <div className="flex flex-col gap-2 rounded-card bg-surface p-4">
+        <div className="flex flex-col gap-2 rounded-card glass p-4">
           <span className="text-sm">{t('owl.documents.confirmDelete')}</span>
           <div className="flex gap-2">
             <Button
@@ -148,7 +146,7 @@ export function DocumentPage() {
         <button
           type="button"
           onClick={() => setConfirming(true)}
-          className="h-[52px] rounded-full bg-surface text-[15px] font-semibold text-danger"
+          className="h-[52px] rounded-full glass text-[15px] font-semibold text-danger"
         >
           {t('owl.documents.delete')}
         </button>

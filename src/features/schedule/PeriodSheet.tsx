@@ -178,7 +178,7 @@ function PeriodFormView({
       )}
       <span className="text-xs leading-[1.4] text-ink-muted">{t(`calendar.hint.${kind}`)}</span>
 
-      <Button type="submit" size="pill" className="bg-brand text-white hover:bg-brand-strong">
+      <Button type="submit" size="pill" className="btn-primary">
         {t('common.save')}
       </Button>
       {period && (

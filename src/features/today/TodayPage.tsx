@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { Mascot } from '@/components/Mascot'
 import { PageTitle } from '@/components/PageTitle'
 import { Button } from '@/components/ui/button'
 import { statusLabel } from '@/features/schedule/format'
@@ -69,7 +68,7 @@ export function TodayPage() {
       </div>
 
       {hasSubjects ? (
-        <section className="mt-6 flex flex-col gap-2.5 rounded-card bg-surface p-4">
+        <section className="mt-6 flex flex-col gap-2.5 rounded-card glass p-4">
           <span className="text-[15px] font-semibold">{t('today.planSoonTitle')}</span>
           <span className="text-sm leading-[1.45] text-ink-muted">{t('today.planSoonBody')}</span>
           <div className="flex flex-wrap gap-2">
@@ -89,9 +88,6 @@ export function TodayPage() {
         </section>
       ) : (
         <section className="mt-14 flex flex-col items-center gap-3.5 px-3 text-center">
-          <div className="flex size-[220px] items-center justify-center rounded-full bg-mascot-halo">
-            <Mascot pose="reading" size={190} alt={t('today.firstRunMascotAlt')} />
-          </div>
           <h1 className="mt-2 text-[26px] leading-tight font-bold">{t('today.firstRunTitle')}</h1>
           <p className="text-[15px] leading-[1.45] text-ink-muted">{t('today.firstRunBody')}</p>
           <Button asChild size="pill" className="mt-2 px-7">

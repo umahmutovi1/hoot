@@ -177,7 +177,7 @@ function ClassFormView({
               onClick={() => form.setValue('weekday', i, set)}
               className={cn(
                 'h-11 rounded-full text-[13px] font-semibold',
-                day === i ? 'bg-brand text-white' : 'bg-canvas',
+                day === i ? 'bg-ink text-white' : 'bg-white/50',
               )}
             >
               {name}
@@ -242,7 +242,7 @@ function ClassFormView({
         </div>
       )}
 
-      <Button type="submit" size="pill" className="bg-brand text-white hover:bg-brand-strong">
+      <Button type="submit" size="pill" className="btn-primary">
         {t('common.save')}
       </Button>
       {entry && (

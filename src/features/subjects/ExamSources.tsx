@@ -128,9 +128,7 @@ function SourceCard({
                   <span
                     className={cn(
                       'flex size-[22px] shrink-0 items-center justify-center rounded-[7px] border-2',
-                      state === 'off'
-                        ? 'border-line bg-surface'
-                        : 'border-brand bg-brand text-white',
+                      state === 'off' ? 'border-line glass' : 'border-brand bg-brand text-white',
                     )}
                   >
                     {state === 'on' && <CheckIcon size={14} />}

@@ -19,7 +19,7 @@ export function ActiveSessionBar({ data }: { data: ActiveSession }) {
     <Dock>
       <Link
         to="/session"
-        className="flex h-14 items-center gap-2 rounded-full bg-brand px-1.5 text-white shadow-[0_6px_24px_rgba(47,35,99,0.24)]"
+        className="flex h-14 items-center gap-2 rounded-full btn-primary px-1.5 shadow-[0_6px_24px_rgba(47,35,99,0.24)]"
       >
         <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/15">
           <TimerIcon size={22} />

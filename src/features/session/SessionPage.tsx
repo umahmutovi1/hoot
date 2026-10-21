@@ -109,12 +109,12 @@ export function SessionPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 bg-canvas/90 px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 backdrop-blur-md">
+      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 glass-bar px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 ">
         <button
           type="button"
           onClick={() => goBack(navigate, '/')}
           aria-label={t('app.back')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full glass"
         >
           <ChevronLeftIcon size={20} />
         </button>
@@ -130,7 +130,7 @@ export function SessionPage() {
           type="button"
           onClick={() => setTimerSheet(true)}
           aria-label={t('session.timer.settings')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full glass"
         >
           <svg
             width="20"
@@ -162,7 +162,7 @@ export function SessionPage() {
         ))}
       </div>
 
-      <section className="flex flex-col items-center gap-[18px] rounded-[32px] bg-surface px-5 py-6">
+      <section className="flex flex-col items-center gap-[18px] rounded-[32px] glass px-5 py-6">
         <div className="relative size-[236px]">
           <svg width="236" height="236" viewBox="0 0 236 236" aria-hidden="true">
             <circle
@@ -205,14 +205,14 @@ export function SessionPage() {
           <button
             type="button"
             onClick={toggle}
-            className="flex h-14 items-center gap-2 rounded-full border-2 border-brand bg-surface px-[22px] text-base font-semibold text-brand"
+            className="flex h-14 items-center gap-2 rounded-full border-2 border-brand glass px-[22px] text-base font-semibold text-brand"
           >
             {open ? t('session.timer.pause') : t('session.timer.resume')}
           </button>
           <button
             type="button"
             onClick={() => void finish()}
-            className="flex h-14 items-center gap-2 rounded-full bg-brand px-[26px] text-base font-semibold text-white"
+            className="flex h-14 items-center gap-2 rounded-full btn-primary px-[26px] text-base font-semibold"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <rect x="6" y="6" width="12" height="12" rx="2" />
@@ -239,7 +239,7 @@ export function SessionPage() {
       <div
         role="radiogroup"
         aria-label={t('session.units.title')}
-        className="flex flex-col gap-0.5 rounded-[24px] bg-surface p-1.5"
+        className="flex flex-col gap-0.5 rounded-[24px] glass p-1.5"
       >
         {unitRows(
           sources,
@@ -268,7 +268,7 @@ export function SessionPage() {
       {picked && (
         <Link
           to={`/subjects/${session.subject_id}/sources/${picked.source.source.id}/units/${picked.unit.id}`}
-          className="flex h-[52px] items-center justify-center gap-2 rounded-full bg-surface text-[15px] font-semibold"
+          className="flex h-[52px] items-center justify-center gap-2 rounded-full glass text-[15px] font-semibold"
         >
           <PencilIcon size={18} className="text-brand" />
           {t('session.units.note')}

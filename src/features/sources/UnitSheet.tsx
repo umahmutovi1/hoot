@@ -123,7 +123,7 @@ function UnitFormFields({
         </div>
       )}
 
-      <Button type="submit" size="pill" className="bg-brand text-white hover:bg-brand-strong">
+      <Button type="submit" size="pill" className="btn-primary">
         {t('common.save')}
       </Button>
     </form>

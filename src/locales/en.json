@@ -19,7 +19,9 @@
     "subjects": "Subjects",
     "progress": "Progress",
     "startSession": "Start session",
-    "resumeSession": "Resume session"
+    "resumeSession": "Resume session",
+    "ai": "AI",
+    "aiLabel": "AI assistant"
   },
   "auth": {
     "headline": "Study smarter,\nnot longer.",
@@ -38,8 +40,7 @@
     "verifying": "Checking…",
     "codeInvalid": "The code is wrong or has expired.",
     "useOtherEmail": "Use another email",
-    "sendFailed": "Couldn't send the email. Try again in a minute.",
-    "mascotAlt": "Owl mascot reading a book"
+    "sendFailed": "Couldn't send the email. Try again in a minute."
   },
   "today": {
     "greeting": {
@@ -48,7 +49,6 @@
       "evening": "Good evening, {{name}}"
     },
     "addSubject": "Add subject",
-    "firstRunMascotAlt": "Owl reading a book",
     "firstRunTitle": "Let's build your plan",
     "firstRunBody": "Add your first subject and exam date. You can photograph your reading list now or later.",
     "fact": {

@@ -38,7 +38,7 @@ export function ForgottenSheet({
       <button
         type="button"
         onClick={() => keep(segment.id)}
-        className="h-14 rounded-full bg-brand text-base font-semibold text-white"
+        className="h-14 rounded-full btn-primary text-base font-semibold"
       >
         {t('session.forgotten.yes')}
       </button>
@@ -49,14 +49,14 @@ export function ForgottenSheet({
             type="time"
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="h-11 rounded-[14px] bg-surface px-3 text-[15px]"
+            className="h-11 rounded-[14px] glass px-3 text-[15px]"
           />
         </label>
         <button
           type="button"
           disabled={!end}
           onClick={() => end && onFinish(end)}
-          className="h-12 rounded-full bg-surface text-[15px] font-semibold text-brand disabled:opacity-50"
+          className="h-12 rounded-full glass text-[15px] font-semibold text-brand disabled:opacity-50"
         >
           {t('session.forgotten.finishAt', { time })}
         </button>

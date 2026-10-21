@@ -43,9 +43,9 @@ export function OwlChatPage() {
   return (
     <div className="flex min-h-[calc(100dvh-48px)] flex-col gap-3">
       {/* Sticky, so the header stays reachable and clear of the phone's status bar. */}
-      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 bg-canvas/90 px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 backdrop-blur-md">
+      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 glass-bar px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 ">
         <div className="flex min-w-0 items-center gap-2.5">
-          <OwlHead pose={enabled ? 'reading-head' : 'sleeping-head'} size={40} />
+          <OwlHead enabled={enabled} size={40} />
           <div className="flex min-w-0 flex-col">
             <h1 className="text-lg font-bold">{t('owl.name')}</h1>
             <span className="truncate text-xs text-ink-muted">{t('owl.tagline')}</span>
@@ -53,9 +53,9 @@ export function OwlChatPage() {
         </div>
         <div className="flex gap-1.5">
           <Link
-            to="/owl/history"
+            to="/chat/history"
             aria-label={t('owl.history.title')}
-            className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted"
+            className="flex size-11 items-center justify-center rounded-full glass text-ink-muted"
           >
             <ClockIcon size={18} />
           </Link>
@@ -65,7 +65,7 @@ export function OwlChatPage() {
               onClick={newConversation}
               disabled={busy}
               aria-label={t('owl.history.new')}
-              className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted disabled:opacity-60"
+              className="flex size-11 items-center justify-center rounded-full glass text-ink-muted disabled:opacity-60"
             >
               <PencilIcon size={18} />
             </button>
@@ -74,7 +74,7 @@ export function OwlChatPage() {
             type="button"
             onClick={close}
             aria-label={t('common.close')}
-            className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted"
+            className="flex size-11 items-center justify-center rounded-full glass text-ink-muted"
           >
             <CloseIcon size={18} />
           </button>
@@ -91,7 +91,7 @@ export function OwlChatPage() {
 
       <form
         onSubmit={submit}
-        className="sticky bottom-[calc(12px+env(safe-area-inset-bottom))] flex h-14 items-center gap-2 rounded-full bg-surface px-1.5 shadow-[0_6px_24px_rgba(47,35,99,0.10)]"
+        className="sticky bottom-[calc(12px+env(safe-area-inset-bottom))] flex h-14 items-center gap-2 rounded-full glass px-1.5 shadow-[0_6px_24px_rgba(47,35,99,0.10)]"
       >
         <button
           type="button"
@@ -121,7 +121,7 @@ export function OwlChatPage() {
           type="submit"
           disabled={!enabled || busy || !question.trim()}
           aria-label={t('owl.send')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white disabled:opacity-60"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full btn-primary disabled:opacity-60"
         >
           <SendIcon size={20} />
         </button>
@@ -133,7 +133,7 @@ export function OwlChatPage() {
 
 function OwlBubble({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex max-w-[88%] flex-col gap-2 self-start rounded-[20px_20px_20px_6px] bg-surface px-3.5 py-3 text-sm leading-[1.45]">
+    <div className="flex max-w-[88%] flex-col gap-2 self-start rounded-[20px_20px_20px_6px] glass px-3.5 py-3 text-sm leading-[1.45]">
       {children}
     </div>
   )

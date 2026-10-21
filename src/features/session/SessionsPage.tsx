@@ -51,7 +51,7 @@ export function SessionsPage() {
             type="button"
             onClick={() => setAdding(true)}
             aria-label={t('session.history.add')}
-            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-brand"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full glass text-brand"
           >
             <PlusIcon size={20} />
           </button>
@@ -91,7 +91,7 @@ export function SessionsPage() {
               })}
             </span>
           </div>
-          <div className="flex flex-col gap-0.5 rounded-[24px] bg-surface p-1.5">
+          <div className="flex flex-col gap-0.5 rounded-[24px] glass p-1.5">
             {items.map((s) => {
               const subject = subjects?.find((x) => x.id === s.subject_id)
               return (
@@ -246,7 +246,7 @@ function AddSessionSheet({
         type="button"
         onClick={next}
         disabled={!valid || busy}
-        className="h-14 rounded-full bg-brand text-base font-semibold text-white disabled:opacity-50"
+        className="h-14 rounded-full btn-primary text-base font-semibold disabled:opacity-50"
       >
         {t('session.history.next')}
       </button>

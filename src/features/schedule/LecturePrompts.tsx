@@ -44,10 +44,7 @@ export function LecturePrompts() {
         if (!subject) return null
         const palette = paletteOf(subject.color)
         return (
-          <div
-            key={entry.id}
-            className="flex items-center gap-3 rounded-card bg-surface p-3.5 pl-4"
-          >
+          <div key={entry.id} className="flex items-center gap-3 rounded-card glass p-3.5 pl-4">
             <div
               className={cn(
                 'flex size-11 shrink-0 items-center justify-center rounded-[14px]',
@@ -68,7 +65,7 @@ export function LecturePrompts() {
             <button
               type="button"
               onClick={() => setOpen(entry.id)}
-              className="flex h-10 items-center rounded-full bg-brand px-4 text-sm font-semibold text-white"
+              className="flex h-10 items-center rounded-full btn-primary px-4 text-sm font-semibold"
             >
               {t('lectures.enter')}
             </button>

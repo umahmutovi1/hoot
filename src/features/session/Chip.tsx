@@ -26,7 +26,7 @@ export function Chip({
             : 'bg-brand text-white'
           : tone === 'dark'
             ? 'bg-canvas text-ink'
-            : 'border border-line bg-surface font-normal text-ink',
+            : 'border border-line glass font-normal text-ink',
       )}
     >
       {children}

@@ -20,7 +20,7 @@
     "eval": "npx -y promptfoo@0.124.1 eval -c evals/promptfooconfig.yaml --no-cache"
   },
   "dependencies": {
-    "@fontsource-variable/outfit": "^5.3.0",
+    "@fontsource-variable/geist": "^5.3.0",
     "@hookform/resolvers": "^5.9.2",
     "@supabase/supabase-js": "^2.118.0",
     "@tanstack/query-async-storage-persister": "^5.104.5",

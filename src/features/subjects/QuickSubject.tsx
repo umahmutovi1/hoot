@@ -85,11 +85,7 @@ export function QuickSubject({
         <Button type="button" variant="ghost" className="h-11 rounded-full" onClick={onCancel}>
           {t('common.cancel')}
         </Button>
-        <Button
-          type="button"
-          className="h-11 rounded-full bg-brand text-white hover:bg-brand-strong"
-          onClick={create}
-        >
+        <Button type="button" className="h-11 rounded-full btn-primary" onClick={create}>
           {t('subjects.quick.create')}
         </Button>
       </div>

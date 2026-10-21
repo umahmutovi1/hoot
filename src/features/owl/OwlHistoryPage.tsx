@@ -29,7 +29,7 @@ export function OwlHistoryPage() {
     setOpening(id)
     try {
       openConversation(id, await loadConversationMessages(id))
-      navigate('/owl', { replace: true })
+      navigate('/chat', { replace: true })
     } finally {
       setOpening(null)
     }
@@ -37,14 +37,12 @@ export function OwlHistoryPage() {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <BackHeader title={t('owl.history.title')} fallback="/owl" />
+      <BackHeader title={t('owl.history.title')} fallback="/chat" />
       {conversations && conversations.length === 0 && (
-        <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
-          {t('owl.history.empty')}
-        </p>
+        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('owl.history.empty')}</p>
       )}
       {conversations && conversations.length > 0 && (
-        <div className="flex flex-col rounded-card bg-surface px-4 py-1.5">
+        <div className="flex flex-col rounded-card glass px-4 py-1.5">
           {conversations.map((c, i) => (
             <div key={c.id} className={i > 0 ? 'border-t border-canvas' : ''}>
               {confirming === c.id ? (

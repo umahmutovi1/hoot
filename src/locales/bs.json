@@ -19,7 +19,9 @@
     "subjects": "Predmeti",
     "progress": "Napredak",
     "startSession": "Pokreni sesiju",
-    "resumeSession": "Nastavi sesiju"
+    "resumeSession": "Nastavi sesiju",
+    "ai": "AI",
+    "aiLabel": "AI asistent"
   },
   "auth": {
     "headline": "Uči pametnije,\nne duže.",
@@ -38,8 +40,7 @@
     "verifying": "Provjeravam…",
     "codeInvalid": "Kod nije ispravan ili je istekao.",
     "useOtherEmail": "Drugi email",
-    "sendFailed": "Slanje nije uspjelo. Pokušaj ponovo za minutu.",
-    "mascotAlt": "Sova maskota čita knjigu"
+    "sendFailed": "Slanje nije uspjelo. Pokušaj ponovo za minutu."
   },
   "today": {
     "greeting": {
@@ -48,7 +49,6 @@
       "evening": "Dobro veče, {{name}}"
     },
     "addSubject": "Dodaj predmet",
-    "firstRunMascotAlt": "Sova čita knjigu",
     "firstRunTitle": "Hajde da napravimo plan",
     "firstRunBody": "Dodaj prvi predmet i datum ispita. Literaturu možeš uslikati odmah ili kasnije.",
     "fact": {

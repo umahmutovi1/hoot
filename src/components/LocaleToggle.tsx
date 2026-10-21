@@ -28,7 +28,7 @@ export function LocaleToggle({ value, onChange, variant = 'long', className }: P
           className={cn(
             'rounded-[15px] text-[13px] font-semibold text-ink transition-colors',
             variant === 'short' ? 'h-8 px-3' : 'h-[34px] px-3.5',
-            value === locale ? 'bg-surface' : 'bg-transparent',
+            value === locale ? 'glass' : 'bg-transparent',
           )}
         >
           {t(variant === 'short' ? `locale.${locale}Short` : `locale.${locale}`)}

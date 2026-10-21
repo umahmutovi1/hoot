@@ -155,7 +155,7 @@ function LectureForm({
                   onClick={() => setTab(i)}
                   className={cn(
                     'h-10 min-w-0 flex-1 truncate rounded-[18px] px-2 text-sm font-semibold',
-                    i === tab && 'bg-surface',
+                    i === tab && 'glass',
                   )}
                 >
                   {m.source.title}
@@ -195,7 +195,7 @@ function LectureForm({
         size="pill"
         disabled={changed.length === 0}
         onClick={submit}
-        className="bg-brand text-white hover:bg-brand-strong"
+        className="btn-primary"
       >
         {currentUnit && changed.length > 0
           ? t('lectures.saveUpTo', { label: currentUnit.label ?? currentUnit.title })
@@ -289,7 +289,7 @@ function UnitPicker({
             <span
               className={cn(
                 'flex size-[22px] shrink-0 items-center justify-center rounded-full border-2',
-                done ? 'border-brand bg-brand text-white' : 'border-radio-ring bg-surface',
+                done ? 'border-brand bg-brand text-white' : 'border-radio-ring glass',
               )}
             >
               {done && <CheckIcon size={12} strokeWidth={3.5} />}
