@@ -198,3 +198,18 @@ export const TrashIcon = (p: IconProps) => (
     <path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13" />
   </Icon>
 )
+
+/** The assistant's mark: a filled four-point sparkle with a small one (AI tab, chat). */
+export const AiSparkIcon = ({ size = 22, ...props }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+    {...props}
+  >
+    <path d="M11 2.5l2.1 6 6.4 2.1-6.4 2.1-2.1 6.3-2.1-6.3-6.4-2.1 6.4-2.1z" />
+    <path d="M19.2 15.2l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" />
+  </svg>
+)

@@ -116,14 +116,14 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
           type="button"
           onClick={() => goBack(navigate, '/subjects')}
           aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 items-center justify-center rounded-full glass"
         >
           <ChevronLeftIcon size={20} />
         </button>
         <Link
           to={editPath}
           aria-label={t('subjects.detail.edit')}
-          className="flex size-11 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 items-center justify-center rounded-full glass"
         >
           <PencilIcon size={18} />
         </Link>
@@ -145,7 +145,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
             <Link
               to={editPath}
               className={cn(
-                'flex h-7 items-center rounded-full bg-surface px-2.5 text-xs font-semibold',
+                'flex h-7 items-center rounded-full glass px-2.5 text-xs font-semibold',
                 palette.inkText,
               )}
             >
@@ -157,7 +157,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
             <Link
               to={editPath}
               className={cn(
-                'flex h-7 items-center rounded-full bg-surface px-2.5 text-xs font-semibold',
+                'flex h-7 items-center rounded-full glass px-2.5 text-xs font-semibold',
                 palette.inkText,
               )}
             >
@@ -190,17 +190,17 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         <button
           type="button"
           onClick={() => setExamSheet({ open: true })}
-          className="flex h-9 items-center rounded-full bg-surface px-3 text-[13px] font-semibold text-brand"
+          className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
         >
           {t('subjects.detail.addExam')}
         </button>
       </div>
       {exams.length === 0 ? (
-        <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
+        <p className="rounded-card glass p-4 text-sm text-ink-muted">
           {t('subjects.detail.noExams')}
         </p>
       ) : (
-        <div className="flex flex-col rounded-card bg-surface p-1.5">
+        <div className="flex flex-col rounded-card glass p-1.5">
           {exams
             .filter((e) => !isNested(e))
             .map((exam, i) => (
@@ -236,15 +236,15 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         <button
           type="button"
           onClick={() => setDeadlineSheet({ open: true })}
-          className="flex h-9 items-center rounded-full bg-surface px-3 text-[13px] font-semibold text-brand"
+          className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
         >
           {t('deadlines.add')}
         </button>
       </div>
       {deadlines.length === 0 ? (
-        <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">{t('deadlines.none')}</p>
+        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('deadlines.none')}</p>
       ) : (
-        <div className="flex flex-col rounded-card bg-surface p-1.5">
+        <div className="flex flex-col rounded-card glass p-1.5">
           {deadlines.map((d, i) => (
             <div key={d.id}>
               {i > 0 && <div className="mx-3 h-px bg-hairline" />}
@@ -426,7 +426,7 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
   return (
     <div className="flex flex-col gap-3 rounded-card bg-brand-soft p-[18px]">
       <div className="flex items-center gap-3">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-surface text-brand">
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] glass text-brand">
           <FlagIcon />
         </div>
         <div className="flex flex-col gap-0.5">
@@ -447,7 +447,7 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
       <div className="flex gap-2">
         <Link
           to={`/subjects/${subject.id}/edit`}
-          className="flex h-11 items-center rounded-full bg-surface px-[18px] text-sm font-semibold"
+          className="flex h-11 items-center rounded-full glass px-[18px] text-sm font-semibold"
         >
           {t('subjects.campaign.move')}
         </Link>

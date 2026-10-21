@@ -169,7 +169,7 @@ function SourceEditor({
           type="button"
           onClick={() => navigate(-1)}
           aria-label={t('common.close')}
-          className="flex size-11 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 items-center justify-center rounded-full glass"
         >
           <CloseIcon size={18} />
         </button>
@@ -195,7 +195,7 @@ function SourceEditor({
                 onClick={() => pickKind(k)}
                 className={cn(
                   'flex h-16 flex-col items-center justify-center gap-0.5 rounded-[18px] border-2 text-sm font-semibold',
-                  kind === k ? 'border-brand-accent bg-canvas-soft' : 'border-surface bg-surface',
+                  kind === k ? 'border-brand-accent bg-canvas-soft' : 'border-surface glass',
                 )}
               >
                 {t(`sources.kind.${k}`)}
@@ -230,7 +230,7 @@ function SourceEditor({
                 min={1}
                 max={600}
                 aria-invalid={Boolean(errors.minutesPerItem)}
-                className={cn(fieldInput, 'bg-surface')}
+                className={cn(fieldInput, 'glass')}
                 {...form.register('minutesPerItem', {
                   setValueAs: (v: string) => (v === '' ? null : Number(v)),
                 })}
@@ -249,7 +249,7 @@ function SourceEditor({
           maxLength={120}
           placeholder={t('sources.editor.titlePlaceholder')}
           aria-invalid={Boolean(errors.title)}
-          className={cn(fieldInput, 'h-[52px] bg-surface')}
+          className={cn(fieldInput, 'h-[52px] glass')}
           {...form.register('title')}
         />
         {errors.title && (
@@ -269,7 +269,7 @@ function SourceEditor({
         }}
       />
 
-      <Button type="submit" size="pill" className="mt-2 bg-brand text-white hover:bg-brand-strong">
+      <Button type="submit" size="pill" className="mt-2 btn-primary">
         {t('sources.editor.review')}
       </Button>
       {source && <DeleteSource subjectId={subject.id} sourceId={source.id} />}
@@ -302,7 +302,7 @@ function OutlineInput({
             onClick={() => setMode(m)}
             className={cn(
               'h-10 flex-1 rounded-[18px] text-sm font-semibold',
-              mode === m && 'bg-surface',
+              mode === m && 'glass',
             )}
           >
             {t(`sources.editor.mode.${m}`)}
@@ -311,7 +311,7 @@ function OutlineInput({
       </div>
 
       {mode === 'photo' ? (
-        <div className="flex flex-col gap-3 rounded-card-lg bg-surface p-4">
+        <div className="flex flex-col gap-3 rounded-card-lg glass p-4">
           <div className="flex h-[200px] flex-col items-center justify-center gap-2.5 rounded-[20px] border-2 border-dashed border-line bg-canvas-soft px-6 text-center">
             <div className="flex size-[60px] items-center justify-center rounded-full bg-brand-soft text-brand">
               <CameraIcon size={26} />
@@ -321,7 +321,7 @@ function OutlineInput({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-2 rounded-card-lg bg-surface p-4">
+        <div className="flex flex-col gap-2 rounded-card-lg glass p-4">
           <textarea
             rows={9}
             value={text}
@@ -444,7 +444,7 @@ function Review({
           type="button"
           onClick={onBack}
           aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 items-center justify-center rounded-full glass"
         >
           <ChevronLeftIcon size={20} />
         </button>
@@ -452,13 +452,13 @@ function Review({
         <button
           type="button"
           onClick={() => setSheet({ open: true, label: null })}
-          className="flex h-11 items-center rounded-full bg-surface px-3.5 text-sm font-semibold text-brand"
+          className="flex h-11 items-center rounded-full glass px-3.5 text-sm font-semibold text-brand"
         >
           {t('sources.review.add')}
         </button>
       </div>
 
-      <div className="flex items-center gap-3.5 rounded-card bg-surface p-4">
+      <div className="flex items-center gap-3.5 rounded-card glass p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-brand-soft text-brand">
           <BookIcon />
         </div>
@@ -491,11 +491,9 @@ function Review({
       ))}
 
       {units.length === 0 ? (
-        <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
-          {t('sources.review.empty')}
-        </p>
+        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.review.empty')}</p>
       ) : (
-        <div className="flex flex-col rounded-card bg-surface p-1.5">
+        <div className="flex flex-col rounded-card glass p-1.5">
           {units.map((u) => {
             const status = existing ? statusOf.get(u.label) : undefined
             const guessed = u.amountGuessed && leafLabels.has(u.label)
@@ -579,7 +577,7 @@ function Review({
       )}
 
       {merge.archive.length > 0 && (
-        <div className="flex flex-col gap-1.5 rounded-card bg-surface p-4">
+        <div className="flex flex-col gap-1.5 rounded-card glass p-4">
           <span className="text-sm font-semibold">
             {t('sources.review.archiving', { count: merge.archive.length })}
           </span>
@@ -595,7 +593,7 @@ function Review({
         size="pill"
         disabled={units.length === 0}
         onClick={() => onSave(units)}
-        className="mt-2 bg-brand text-white hover:bg-brand-strong"
+        className="mt-2 btn-primary"
       >
         {saveLabel}
       </Button>

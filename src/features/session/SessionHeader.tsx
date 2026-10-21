@@ -19,12 +19,12 @@ export function SessionHeader({
   const { t } = useTranslation()
   const navigate = useNavigate()
   return (
-    <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 bg-canvas/90 px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 backdrop-blur-md">
+    <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 glass-bar px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 ">
       <button
         type="button"
         onClick={() => goBack(navigate, fallback)}
         aria-label={t('app.back')}
-        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface"
+        className="flex size-11 shrink-0 items-center justify-center rounded-full glass"
       >
         <ChevronLeftIcon size={20} />
       </button>

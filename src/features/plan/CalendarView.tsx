@@ -59,7 +59,7 @@ export function CalendarView() {
             onClick={() => setView(v)}
             className={cn(
               'h-9 rounded-full px-4 text-[13px] font-semibold',
-              view === v ? 'bg-ink text-white' : 'bg-surface text-ink',
+              view === v ? 'bg-ink text-white' : 'glass text-ink',
             )}
           >
             {t(`plan.view.${v}`)}
@@ -71,7 +71,7 @@ export function CalendarView() {
       {view === 'day' && (
         <div className="flex flex-col gap-3">
           <DayStrip selected={selected} today={today} onSelect={setSelected} />
-          <div className="rounded-card-lg bg-surface p-3 pr-2">
+          <div className="rounded-card-lg glass p-3 pr-2">
             {dayClasses.length === 0 && (
               <p className="px-1 pb-2 text-sm text-ink-muted">{t('plan.noClasses')}</p>
             )}
@@ -131,7 +131,7 @@ function MonthGrid({
   const weekdays = cells.slice(0, 7).map((c) => format(c.date, 'EEEEE', { locale: dfLocale }))
 
   return (
-    <div className="flex flex-col gap-3 rounded-card-lg bg-surface p-4">
+    <div className="flex flex-col gap-3 rounded-card-lg glass p-4">
       <div className="flex items-center justify-between">
         <h2 className="pl-1 text-lg font-semibold first-letter:uppercase" aria-live="polite">
           {format(month, 'LLLL yyyy', { locale: dfLocale })}
@@ -214,7 +214,7 @@ function MonthGrid({
           {t('plan.legendExam')}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full border-[1.5px] border-ink-muted bg-surface" />
+          <span className="size-2 rounded-full border-[1.5px] border-ink-muted glass" />
           {t('plan.legendPossibleExam')}
         </span>
         <span className="flex items-center gap-1.5">
@@ -265,7 +265,7 @@ function DayDetails({
       </div>
       <div className="flex flex-col gap-2">
         {empty && (
-          <p className="rounded-[20px] bg-surface px-4 py-3.5 text-sm text-ink-muted">
+          <p className="rounded-[20px] glass px-4 py-3.5 text-sm text-ink-muted">
             {t('plan.dayEmpty')}
           </p>
         )}
@@ -300,7 +300,7 @@ function DayDetails({
           return (
             <div
               key={exam.id}
-              className="flex items-center gap-3 rounded-[20px] border-[1.5px] border-dashed border-line bg-surface px-4 py-3.5"
+              className="flex items-center gap-3 rounded-[20px] border-[1.5px] border-dashed border-line glass px-4 py-3.5"
             >
               <span className={cn('size-2.5 shrink-0 rounded-full', palette.bar)} />
               <div className="flex flex-col gap-0.5">
@@ -321,7 +321,7 @@ function DayDetails({
               type="button"
               key={c.id}
               onClick={() => onPickClass(c)}
-              className="flex items-center gap-3 rounded-[20px] bg-surface px-4 py-3.5 text-left"
+              className="flex items-center gap-3 rounded-[20px] glass px-4 py-3.5 text-left"
             >
               <span className={cn('w-1 self-stretch rounded-full', palette.bar)} />
               <div className="flex min-w-0 flex-col gap-0.5">

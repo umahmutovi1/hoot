@@ -17,7 +17,7 @@ export function DayDots({ date, max = 3, light }: { date: Date; max?: number; li
             'size-[6px] rounded-full',
             m.kind === 'exam' && paletteOf(m.color).bar,
             m.kind === 'possible' && 'border-[1.5px]',
-            m.kind === 'possible' && (light ? 'bg-ink' : 'bg-surface'),
+            m.kind === 'possible' && (light ? 'bg-ink' : 'glass'),
             m.kind === 'possible' && paletteOf(m.color).border,
             m.kind === 'deadline' && 'bg-warning',
           )}

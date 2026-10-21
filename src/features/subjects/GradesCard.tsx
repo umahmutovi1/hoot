@@ -37,7 +37,7 @@ export function GradesCard({
   const target = projection.grades.find((g) => g.grade === subject.target_grade)
 
   return (
-    <div className="flex flex-col gap-3 rounded-card bg-surface p-4">
+    <div className="flex flex-col gap-3 rounded-card glass p-4">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold">{t('grades.card.title')}</h2>
         <button

@@ -35,7 +35,7 @@ export function DayStrip({
             type="button"
             aria-label={t('plan.prevWeek')}
             onClick={() => onSelect(addWeeks(selected, -1))}
-            className="flex size-10 items-center justify-center rounded-full border border-line bg-surface"
+            className="flex size-10 items-center justify-center rounded-full border border-line glass"
           >
             <ChevronLeftIcon size={16} />
           </button>
@@ -43,7 +43,7 @@ export function DayStrip({
             type="button"
             aria-label={t('plan.nextWeek')}
             onClick={() => onSelect(addWeeks(selected, 1))}
-            className="flex size-10 items-center justify-center rounded-full border border-line bg-surface"
+            className="flex size-10 items-center justify-center rounded-full border border-line glass"
           >
             <ChevronRightIcon size={16} />
           </button>
@@ -62,7 +62,7 @@ export function DayStrip({
               onClick={() => onSelect(d)}
               className={cn(
                 'flex h-[68px] flex-1 flex-col items-center justify-center gap-0.5 rounded-[22px]',
-                on ? 'bg-ink text-white' : isToday ? 'bg-brand-soft' : 'bg-surface',
+                on ? 'bg-ink text-white' : isToday ? 'bg-brand-soft' : 'glass',
               )}
             >
               <span className="text-lg font-bold">{format(d, 'd')}</span>

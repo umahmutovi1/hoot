@@ -24,7 +24,7 @@ export function Switch({ checked, label, onChange, disabled }: SwitchProps) {
           checked ? 'justify-end bg-brand' : 'justify-start bg-radio-ring',
         )}
       >
-        <span className="size-5 rounded-full bg-surface" />
+        <span className="size-5 rounded-full glass" />
       </span>
       {label}
     </button>

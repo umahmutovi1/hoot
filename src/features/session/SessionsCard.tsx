@@ -27,7 +27,7 @@ export function SessionsCard({ subjectId }: { subjectId?: string }) {
   return (
     <Link
       to={subjectId ? `/sessions?subject=${subjectId}` : '/sessions'}
-      className="flex items-center gap-3 rounded-card bg-surface p-4"
+      className="flex items-center gap-3 rounded-card glass p-4"
     >
       <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">
         <TimerIcon size={22} />

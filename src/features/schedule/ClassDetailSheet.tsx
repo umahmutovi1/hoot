@@ -137,7 +137,7 @@ export function ClassDetailSheet({
                 type="button"
                 size="pill"
                 onClick={() => setLectureOpen(true)}
-                className="bg-brand text-white hover:bg-brand-strong"
+                className="btn-primary"
               >
                 {reached ? t('classDetail.changeReached') : t('lectures.title')}
               </Button>
