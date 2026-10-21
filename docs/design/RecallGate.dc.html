@@ -9,45 +9,45 @@
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0}
-a{color:#4B3B8F}a:hover{color:#2F2363}
-textarea::placeholder{color:#8A84A0}
+a{color:#4C4892}a:hover{color:#36336E}
+textarea::placeholder{color:#6E6A80}
 </style>
 </helmet>
-<div style="width: 390px; height: 1060px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="width: 390px; height: 1060px; box-sizing: border-box; background: radial-gradient(120% 55% at 0% 0%, rgba(150,141,222,0.62), rgba(150,141,222,0) 62%), radial-gradient(90% 45% at 100% 22%, rgba(229,182,206,0.62), rgba(229,182,206,0) 62%), radial-gradient(110% 50% at 0% 68%, rgba(168,196,234,0.60), rgba(168,196,234,0) 62%), radial-gradient(95% 45% at 100% 100%, rgba(160,148,226,0.55), rgba(160,148,226,0) 62%), linear-gradient(180deg, #ECE9F4 0%, #E8E5F1 100%); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: #14121C; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px">
 
 <div style="display: flex; align-items: center; justify-content: space-between">
-<a href="KrajSesije.dc.html" aria-label="Nazad" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<a href="KrajSesije.dc.html" aria-label="Nazad" style="width: 44px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14121C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
 <span style="font-size: 16px; font-weight: 600">Provjeri se</span>
 <a href="Danas.dc.html" style="font-size: 14px; font-weight: 500; text-decoration: none; padding: 10px 4px">Preskoči</a>
 </div>
 
 <div style="display: flex; flex-direction: column; gap: 4px">
-<span style="font-size: 13px; color: #5B4FA0">Baze podataka · 5.1</span>
+<span style="font-size: 13px; color: #5853A0">Baze podataka · 5.1</span>
 <h1 style="margin: 0; font-size: 26px; font-weight: 700; line-height: 1.15">Funkcionalne zavisnosti</h1>
 </div>
 
-<div role="tablist" style="display: flex; background: #E3DFEF; border-radius: 22px; padding: 4px">
-<button role="tab" onClick="{{showBlurt}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{blurtBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Blurting</button>
-<button role="tab" onClick="{{showAi}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{aiBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">AI pitanja</button>
+<div role="tablist" style="display: flex; background: rgba(106,100,184,0.12); border-radius: 22px; padding: 4px">
+<button role="tab" onClick="{{showBlurt}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{blurtBg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 14px; font-weight: 600; color: #14121C">Blurting</button>
+<button role="tab" onClick="{{showAi}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{aiBg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 14px; font-weight: 600; color: #14121C">AI pitanja</button>
 </div>
 
 <sc-if value="{{isAi}}" hint-placeholder-val="{{ true }}">
-<div style="display: flex; gap: 6px"><span style="flex: 1; height: 6px; border-radius: 3px; background: #7C6BD6"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #DCD7EA"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #DCD7EA"></span></div>
-<div style="background: #FFFFFF; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; gap: 6px"><span style="flex: 1; height: 6px; border-radius: 3px; background: #6A64B8"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: rgba(58,51,96,0.16)"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: rgba(58,51,96,0.16)"></span></div>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; flex-direction: column; gap: 6px">
-<span style="font-size: 12px; font-weight: 600; color: #5B5670">PITAJ ME IZ</span>
+<span style="font-size: 12px; font-weight: 600; color: #3F3B4E">PITAJ ME IZ</span>
 <div style="display: flex; gap: 6px; flex-wrap: wrap" role="radiogroup" aria-label="Izvor pitanja">
 <sc-for list="{{sources}}" as="s" hint-placeholder-count="4">
-<button role="radio" onClick="{{s.pick}}" style="height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid {{s.border}}; background: {{s.bg}}; color: {{s.fg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600">{{s.label}}</button>
+<button role="radio" onClick="{{s.pick}}" style="height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid {{s.border}}; background: {{s.bg}}; color: {{s.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600">{{s.label}}</button>
 </sc-for>
 </div>
 </div>
-<span style="font-size: 12px; font-weight: 600; color: #5B4FA0">{{qLabel}}</span>
+<span style="font-size: 12px; font-weight: 600; color: #5853A0">{{qLabel}}</span>
 <p style="margin: 0; font-size: 19px; font-weight: 600; line-height: 1.35">{{qText}}</p>
-<textarea rows="3" aria-label="Tvoj odgovor" placeholder="Napiši odgovor iz glave…" style="border: none; border-radius: 18px; padding: 14px; font-family: Outfit, sans-serif; font-size: 15px; background: #F6F4FB; color: #1D1A2B; resize: none"></textarea>
+<textarea rows="3" aria-label="Tvoj odgovor" placeholder="Napiši odgovor iz glave…" style="border: none; border-radius: 18px; padding: 14px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 15px; background: rgba(255,255,255,0.40); color: #14121C; resize: none"></textarea>
 <sc-if value="{{revealed}}" hint-placeholder-val="{{ false }}">
 <div style="background: {{aBg}}; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
 <span style="font-size: 12px; font-weight: 600; color: {{aFg}}">{{aLabel}}</span>
@@ -55,16 +55,16 @@ textarea::placeholder{color:#8A84A0}
 </div>
 </sc-if>
 <sc-if value="{{hidden}}" hint-placeholder-val="{{ true }}">
-<button onClick="{{reveal}}" style="height: 48px; border-radius: 24px; border: 2px solid #4B3B8F; background: #FFFFFF; color: #4B3B8F; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600">Prikaži odgovor</button>
+<button onClick="{{reveal}}" style="height: 48px; border-radius: 24px; border: 2px solid #4C4892; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); color: #4C4892; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 15px; font-weight: 600">Prikaži odgovor</button>
 </sc-if>
 </div>
 </sc-if>
 
 <sc-if value="{{isBlurt}}" hint-placeholder-val="{{ false }}">
-<div style="background: #FFFFFF; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 12px; font-weight: 600; color: #5B4FA0">NAPIŠI SVE ČEGA SE SJEĆAŠ</span><span style="font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E9E4FB; color: #4B3B8F">3:42</span></div>
-<textarea rows="9" aria-label="Blurting" placeholder="Bez gledanja u knjigu ili bilješke…" style="border: none; border-radius: 18px; padding: 14px; font-family: Outfit, sans-serif; font-size: 15px; background: #F6F4FB; color: #1D1A2B; resize: none"></textarea>
-<span style="font-size: 13px; color: #5B5670">Kad istekne vrijeme, uporedi sa svojim bilješkama pa se ocijeni.</span>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 12px; font-weight: 600; color: #5853A0">NAPIŠI SVE ČEGA SE SJEĆAŠ</span><span style="font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(106,100,184,0.16); color: #4C4892">3:42</span></div>
+<textarea rows="9" aria-label="Blurting" placeholder="Bez gledanja u knjigu ili bilješke…" style="border: none; border-radius: 18px; padding: 14px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 15px; background: rgba(255,255,255,0.40); color: #14121C; resize: none"></textarea>
+<span style="font-size: 13px; color: #3F3B4E">Kad istekne vrijeme, uporedi sa svojim bilješkama pa se ocijeni.</span>
 </div>
 </sc-if>
 
@@ -72,17 +72,17 @@ textarea::placeholder{color:#8A84A0}
 <span style="font-size: 15px; font-weight: 600">Koliko si se sjetila?</span>
 <div style="display: flex; gap: 8px">
 <sc-for list="{{recall}}" as="r" hint-placeholder-count="3">
-<button onClick="{{r.pick}}" style="flex: 1; height: 52px; border-radius: 18px; border: none; background: {{r.bg}}; color: {{r.fg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600">{{r.label}}</button>
+<button onClick="{{r.pick}}" style="flex: 1; height: 52px; border-radius: 18px; border: none; background: {{r.bg}}; color: {{r.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 14px; font-weight: 600">{{r.label}}</button>
 </sc-for>
 </div>
 </div>
 
-<div style="background: #FDEBD3; border-radius: 20px; padding: 14px 16px; display: flex; gap: 10px; align-items: flex-start">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9A4B0B" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
-<span style="font-size: 13px; line-height: 1.4; color: #5C3208">Poglavlje prelazi na <b>Razumijem</b> uz „Sjećam se” na ispitnim pitanjima, bilješkama ili podnaslovima. Opće znanje se računa samo uz još jedan izvor.</span>
+<div style="background: rgba(195,141,82,0.18); border-radius: 20px; padding: 14px 16px; display: flex; gap: 10px; align-items: flex-start">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8F6136" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+<span style="font-size: 13px; line-height: 1.4; color: #6B4A2A">Poglavlje prelazi na <b>Razumijem</b> uz „Sjećam se” na ispitnim pitanjima, bilješkama ili podnaslovima. Opće znanje se računa samo uz još jedan izvor.</span>
 </div>
 
-<a href="Danas.dc.html" style="margin-top: auto; height: 56px; border-radius: 28px; background: #4B3B8F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">Sljedeće pitanje</a>
+<a href="Danas.dc.html" style="margin-top: auto; height: 56px; border-radius: 28px; background: linear-gradient(160deg, #6E67BE, #4C4892); color: #FFFFFF; box-shadow: inset 0 1px 1px rgba(255,255,255,0.40), 0 6px 16px rgba(76,72,146,0.22); text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">Sljedeće pitanje</a>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1060}}'>
@@ -91,10 +91,10 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state;
     const Q = {
-      exam: { label: 'ISPITNO PITANJE P8 · povezano preko teme', text: 'Objasni razliku između 3NF i BCNF na primjeru.', aLabel: 'NEMA UNESENOG ODGOVORA', aText: 'Uporedi sa svojim bilješkama i ocijeni se. Možeš jednom upisati odgovor — koristi se pri sljedećem ponavljanju.', aBg: '#FDEBD3', aFg: '#7A4210' },
-      notes: { label: 'IZ TVOJIH BILJEŠKI · 1 od 3', text: 'Kada je funkcionalna zavisnost X → Y trivijalna?', aLabel: 'IZ BILJEŠKI', aText: 'Kada je Y ⊆ X — vrijedi u svakoj relaciji, bez obzira na podatke.', aBg: '#DCEFEA', aFg: '#1F6B5A' },
-      outline: { label: 'PO STRUKTURI POGLAVLJA', text: 'Šta znaš o: 5.1.1 Armstrongovi aksiomi · 5.1.2 Zatvorenje skupa atributa · 5.1.3 Minimalni pokrivač?', aLabel: 'SAMOPROCJENA', aText: 'Za svaki podnaslov označi da li si ga mogla objasniti. Podnaslovi dolaze iz uslikanog sadržaja.', aBg: '#E9E4FB', aFg: '#3B2D82' },
-      general: { label: 'OPĆE ZNANJE · AI iz naslova poglavlja', text: 'Šta je zatvorenje skupa atributa X⁺ i čemu služi?', aLabel: 'AI ODGOVOR · provjeri sa predavanjem', aText: 'X⁺ je skup svih atributa koje X funkcionalno određuje; koristi se za provjeru ključa i izvođenje FZ.', aBg: '#E3EDFD', aFg: '#1D4E9E' }
+      exam: { label: 'ISPITNO PITANJE P8 · povezano preko teme', text: 'Objasni razliku između 3NF i BCNF na primjeru.', aLabel: 'NEMA UNESENOG ODGOVORA', aText: 'Uporedi sa svojim bilješkama i ocijeni se. Možeš jednom upisati odgovor — koristi se pri sljedećem ponavljanju.', aBg: 'rgba(195,141,82,0.18)', aFg: '#7E5A36' },
+      notes: { label: 'IZ TVOJIH BILJEŠKI · 1 od 3', text: 'Kada je funkcionalna zavisnost X → Y trivijalna?', aLabel: 'IZ BILJEŠKI', aText: 'Kada je Y ⊆ X — vrijedi u svakoj relaciji, bez obzira na podatke.', aBg: 'rgba(94,156,114,0.18)', aFg: '#4E7F5F' },
+      outline: { label: 'PO STRUKTURI POGLAVLJA', text: 'Šta znaš o: 5.1.1 Armstrongovi aksiomi · 5.1.2 Zatvorenje skupa atributa · 5.1.3 Minimalni pokrivač?', aLabel: 'SAMOPROCJENA', aText: 'Za svaki podnaslov označi da li si ga mogla objasniti. Podnaslovi dolaze iz uslikanog sadržaja.', aBg: 'rgba(106,100,184,0.16)', aFg: '#3F3B7E' },
+      general: { label: 'OPĆE ZNANJE · AI iz naslova poglavlja', text: 'Šta je zatvorenje skupa atributa X⁺ i čemu služi?', aLabel: 'AI ODGOVOR · provjeri sa predavanjem', aText: 'X⁺ je skup svih atributa koje X funkcionalno određuje; koristi se za provjeru ključa i izvođenje FZ.', aBg: 'rgba(95,134,181,0.16)', aFg: '#3F6590' }
     };
     const q = Q[s.src];
     const srcList = [['exam', 'Ispitna pitanja'], ['notes', 'Bilješke'], ['outline', 'Podnaslovi'], ['general', 'Opće znanje']];
@@ -107,14 +107,14 @@ class Component extends DCLogic {
       showBlurt: () => this.setState({ tab: 'blurt' }),
       sources: srcList.map(([id, label]) => {
         const on = s.src === id;
-        return { label, bg: on ? '#1D1A2B' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1D1A2B', border: on ? '#1D1A2B' : '#DCD7EA', pick: () => this.setState({ src: id, revealed: false }) };
+        return { label, bg: on ? '#14121C' : 'rgba(255,255,255,0.55)', fg: on ? '#FFFFFF' : '#14121C', border: on ? '#14121C' : 'rgba(58,51,96,0.16)', pick: () => this.setState({ src: id, revealed: false }) };
       }),
       qLabel: q.label, qText: q.text, aLabel: q.aLabel, aText: q.aText, aBg: q.aBg, aFg: q.aFg,
       revealed: s.revealed, hidden: !s.revealed,
       reveal: () => this.setState({ revealed: true }),
       recall: opts.map((o) => {
         const on = s.recall === o.n;
-        return { ...o, bg: on ? '#4B3B8F' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ recall: o.n }) };
+        return { ...o, bg: on ? '#4C4892' : 'rgba(255,255,255,0.55)', fg: on ? '#FFFFFF' : '#14121C', pick: () => this.setState({ recall: o.n }) };
       })
     };
   }

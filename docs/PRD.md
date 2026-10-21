@@ -565,7 +565,7 @@ Cilj: za ~3 minute od “Kako da te zovem?” do realne sedmice i, ako je unesen
 | 7 | Prvi predmet | Naziv, ispit i datum (ili rok iz kalendara), gruba veličina gradiva | predmet, ispit, privremeni izvor |
 | 8 | “Tvoja sedmica” | Pregled: slobodno X h sedmično, potrebno Y h do prvog ispita, “stižeš” ili “fali 6 h” + prvi blok za danas | — |
 
-Mockup `design/Onboarding.dc.html` (svi koraci kao stanja jedne komponente) prije implementacije. Maskota: jedna poza na koraku 1 i na koraku 8 (vidi MASCOT.md; nova mjesta se dodaju tamo).
+Mockupi `design/Onboarding.dc.html` … `design/OnboardingSedmica.dc.html` (svi koraci kao stanja jedne komponente), bez maskote.
 
 ## Povezani kalendari i integracije
 
@@ -692,6 +692,8 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 **Provajder.** Sve ide kroz LLM wrapper (`_shared/llm.ts`). Dok Anthropic nalog nema karticu, `LLM_PROVIDER=gemini` (Gemini 3.5 Flash-Lite free tier, uz `LLM_FALLBACK_MODEL` kad je prvi model zauzet ili bez kvote; structured output preko `responseJsonSchema` iz `z.toJSONSchema()`); prebacivanje na Haiku je promjena secrets, bez koda. Na free tieru Google može koristiti podatke za poboljšanje proizvoda, pa se šalju samo podaci koji su za to potrebni. Koraci za ključ su u [SETUP.md](SETUP.md).
 
 **Sova (agent) na Danas (Etapa 6).** Na dnu ekrana Danas, iznad tab bara, stoji traka sa sovom („Pitaj sovu…“ i dugme +). To je jedan ulaz za sve AI radnje: pitanje (odgovor iz dokumenata sa citatom ili iz sažetka stanja), dodavanje dokumenta (uslikaj, slika, PDF, zalijepi tekst) i prijedlozi izmjena kao kartice sa pregledom. Tap na traku otvara razgovor preko cijelog ekrana. Iznad trake je današnji savjet strategista (oblačić, × ga skloni do sutra) i prijedlozi pitanja. Offline ili bez ključa traka je onemogućena. Za sad je samo na Danas; kasnije najvjerovatnije plutajuća sova (krug dole desno) na ostalim tabovima, varijanta 7B u mockupu. Oblačić sa savjetom dolazi sa strategistom (Etapa 11); do tad iznad trake stoje samo prijedlozi. Mockup: `design/SovaAgent.html`.
+
+**Redizajn (Liquid Glass, nakon Etape 7).** Traka sa sovom na Danas je zamijenjena AI tabom u sredini navigacije (ekran Chat, mockup `design/Chat.dc.html`), a u tekstovima je „asistent“ umjesto „sova“; maskote više nema. Sve ostalo iz ovog pasusa (dokumenti, citati, prilog, prijedlozi kao kartice) vrijedi i dalje. Timer dugme je uklonjeno iz navigacije: sesija se pokreće iz kartice „Sljedeće“ na Danas (do schedulera nudi slobodnu sesiju) ili iz chata.
 
 **Uvoz sa pregledom (Etapa 6).** Kroz sovu (dugme +) ili ekran “Uvezi”: zalijepi se tekst ili doda slika/PDF i bira šta je unutra (ili sova pogodi).
 
@@ -1574,6 +1576,7 @@ Sve je u prvoj verziji; ovo je samo redoslijed gradnje, tako da poslije svakog k
 5. **Bodovi i ocjene.** Bodovi ispita i rokova, pragovi, popravni/integralni, skala ocjena, rezultat i poništavanje, projekcija ocjene.
 6. **AI temelj, uvoz i dokumenti.** LLM wrapper (Gemini za sad), `ai_runs`, uvoz akademskog kalendara i rasporeda ispita sa pregledom, dokumenti fakulteta i RAG.
 7. **Timer i sesije.** Timer dugme, segmenti, offline red, kraj sesije, kalibracija.
+   - **Redizajn (Liquid Glass) → v0.7.2.** Novi vizuelni sistem i navigacija sa AI tabom za sve postojeće ekrane (docs/design/README.md).
 8. **Onboarding i scheduler.** Onboarding, predlošci sesije, povezani kalendari (ICS uvoz), gruba veličina gradiva; `plan()`, automatski `placeTimes()` sa pauzama, faktor realizacije i rezerva, limit rasta, replan, deficit, prioritet, kampanja, meki rokovi predavanja, ručni blokovi, željena ocjena, brze akcije dana, “Danas” ekran.
 9. **Recall gate, provjera znanja i FSRS.** Plus osnovni Web Push (prvi blok, kraj pauze), R na dan ispita, kartice kao FSRS objekti.
 10. **AI sadržaj i asistent.** Uvoz sadržaja, pitanja i rasporeda nastave, merge pri ponovnom uvozu, recall pitanja, embeddings bilješki, chat asistent, Moodle rokovi, Web Share Target, CSV kartica.

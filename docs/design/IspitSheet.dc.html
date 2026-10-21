@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Ispit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4C4892}a:hover{color:#36336E}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 900px; box-sizing: border-box; background: radial-gradient(120% 55% at 0% 0%, rgba(150,141,222,0.62), rgba(150,141,222,0) 62%), radial-gradient(90% 45% at 100% 22%, rgba(229,182,206,0.62), rgba(229,182,206,0) 62%), radial-gradient(110% 50% at 0% 68%, rgba(168,196,234,0.60), rgba(168,196,234,0) 62%), radial-gradient(95% 45% at 100% 100%, rgba(160,148,226,0.55), rgba(160,148,226,0) 62%), linear-gradient(180deg, #ECE9F4 0%, #E8E5F1 100%); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: #14121C; position: relative; overflow: hidden; letter-spacing: -0.2px">
+<div style="position: relative; padding: 24px 20px 28px; display: flex; flex-direction: column; gap: 14px">
+<div style="opacity: 0.55; display: flex; flex-direction: column; gap: 14px"><div style="display: flex; align-items: center; justify-content: space-between; gap: 10px"><a href="Predmet.dc.html" aria-label="Nazad" style="width: 44px; height: 44px; border-radius: 22px; border: none; flex-shrink: 0; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14121C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a><span style="display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0"><span style="font-size: 16px; font-weight: 600">Signali i sistemi</span></span><span style="width: 44px"></span></div><div style="height: 140px; border-radius: 24px; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07)"></div></div>
+</div>
+
+<div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(40,34,80,0.20)"></div><div role="dialog" style="position: absolute; left: 0; right: 0; bottom: 0; background: rgba(250,249,253,0.80); backdrop-filter: blur(36px) saturate(180%); -webkit-backdrop-filter: blur(36px) saturate(180%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.9), 0 -10px 40px rgba(40,34,80,0.12); border-radius: 30px 30px 0 0; padding: 10px 20px 30px; display: flex; flex-direction: column; gap: 14px"><span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: rgba(58,51,96,0.20)"></span><div style="display: flex; justify-content: space-between; align-items: center"><a href="Predmet.dc.html" style="font-size: 15px; text-decoration: none; color: #3F3B4E">Otkaži</a><span style="font-size: 17px; font-weight: 700">II parcijala</span><a href="Predmet.dc.html" style="font-size: 15px; font-weight: 600; text-decoration: none">Spasi</a></div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{kinds}}" as="f" hint-placeholder-count="4"><button onClick="{{f.pick}}" style="height: 32px; padding: 0 14px; border-radius: 16px; border: none; background: {{f.bg}}; color: {{f.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; flex-shrink: 0; ">{{f.label}}</button></sc-for></div>
+<div style="background: rgba(255,255,255,0.6); border-radius: 20px; padding: 2px 16px; display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">Datum još nije objavljen</span><span style="font-size: 12px; color: #55516A; line-height: 1.35">Plan cilja prvi dan roka</span></span><button role="switch" onClick="{{nodateTg}}" aria-label="Datum još nije objavljen" style="position: relative; width: 50px; height: 30px; border-radius: 15px; border: none; flex-shrink: 0; background: {{nodateBg}}"><span style="position: absolute; top: 2px; left: {{nodateX}}; width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.18)"></span></button></div>
+<sc-if value="{{noDate}}" hint-placeholder-val="{{ true }}"><div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #55516A">Ispitni period</span><span style="font-size: 15px; font-weight: 600">Sedmica II parcijalnih</span><span style="font-size: 12px; color: #55516A">8. – 12. dec · okvirni raspon</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></div></sc-if>
+<sc-if value="{{hasDate}}" hint-placeholder-val="{{ false }}"><div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #55516A">Datum i vrijeme</span><span style="font-size: 15px; font-weight: 600">9. dec · 10:00</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></div></sc-if>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #55516A">Obim</span><span style="font-size: 15px; font-weight: 600">Pogl. 6–10 · pitanja 35–60</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: none"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">Samo ako zatreba</span><span style="font-size: 12px; color: #55516A; line-height: 1.35">Ulazi u plan tek kad je potreban (npr. popravni)</span></span><button role="switch" onClick="{{contTg}}" aria-label="Samo ako zatreba" style="position: relative; width: 50px; height: 30px; border-radius: 15px; border: none; flex-shrink: 0; background: {{contBg}}"><span style="position: absolute; top: 2px; left: {{contX}}; width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.18)"></span></button></div>
+</div>
+<div style="background: rgba(255,255,255,0.6); border-radius: 20px; padding: 2px 16px; display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #55516A">Bodovi</span><span style="font-size: 15px; font-weight: 600">40 bodova</span><span style="font-size: 12px; color: #55516A">ili % ukupne ocjene</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #55516A">Prag za prolaz</span><span style="font-size: 15px; font-weight: 600">50% · 20 bodova</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: none"><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #55516A">Uslov za izlazak</span><span style="font-size: 15px; font-weight: 600">bez uslova</span><span style="font-size: 12px; color: #55516A">npr. 20 bodova iz zadaća</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></div>
+</div>
+<button style="height: 44px; border-radius: 22px; border: none; background: rgba(106,100,184,0.10); color: #4C4892; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 14px; font-weight: 600">+ Dodaj popravni za ovaj ispit</button></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { kind: 'partial', nodate: true, cont: false }; }
+  renderVals() {
+    const segOf = (cur, items, set) => items.map(([id, label]) => { const on = cur === id; return { label, bg: on ? 'rgba(255,255,255,0.85)' : 'transparent', fg: on ? '#14121C' : '#3F3B4E', sh: on ? '0 2px 8px rgba(58,51,96,0.10)' : 'none', pick: () => set(id) }; });
+    const chipOf = (on) => ({ bg: on ? '#14121C' : 'rgba(255,255,255,0.50)', fg: on ? '#FFFFFF' : '#14121C' });
+    const s = this.state;
+    const tg = (k) => ({ [k + 'Bg']: s[k] ? '#6A64B8' : 'rgba(58,51,96,0.18)', [k + 'X']: s[k] ? '22px' : '2px', [k + 'Tg']: () => this.setState({ [k]: !s[k] }) });
+    return {
+      kinds: [['partial', 'Parcijala'], ['final', 'Završni'], ['integral', 'Integralni'], ['makeup', 'Popravni']].map(([id, label]) => ({ label, ...chipOf(s.kind === id), pick: () => this.setState({ kind: id }) })),
+      noDate: s.nodate, hasDate: !s.nodate, ...tg('nodate'), ...tg('cont')
+    };
+  }
+}
+</script>
+</body>
+</html>

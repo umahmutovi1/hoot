@@ -9,141 +9,169 @@
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0}
-a{color:#4B3B8F}a:hover{color:#2F2363}
+a{color:#4C4892}a:hover{color:#36336E}
+button{cursor:pointer}
 </style>
 </helmet>
-<div style="width: 390px; height: 1720px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; position: relative; overflow: hidden; padding: 24px 20px 0">
+<div style="width: 390px; height: 3150px; box-sizing: border-box; background: radial-gradient(120% 55% at 0% 0%, rgba(150,141,222,0.62), rgba(150,141,222,0) 62%), radial-gradient(90% 45% at 100% 22%, rgba(229,182,206,0.62), rgba(229,182,206,0) 62%), radial-gradient(110% 50% at 0% 68%, rgba(168,196,234,0.60), rgba(168,196,234,0) 62%), radial-gradient(95% 45% at 100% 100%, rgba(160,148,226,0.55), rgba(160,148,226,0) 62%), linear-gradient(180deg, #ECE9F4 0%, #E8E5F1 100%); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: #14121C; position: relative; overflow: hidden; letter-spacing: -0.2px">
+<div style="position: relative; padding: 24px 20px 120px; display: flex; flex-direction: column; gap: 14px">
 
 <div style="display: flex; align-items: center; justify-content: space-between">
-<h1 style="margin: 0; font-size: 30px; font-weight: 700">Napredak</h1>
-<a href="Postavke.dc.html" aria-label="Postavke" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1A2B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg></a>
+<h1 style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.6px">Napredak</h1>
+<a href="Postavke.dc.html" aria-label="Postavke" style="width: 44px; height: 44px; border-radius: 22px; border: none; flex-shrink: 0; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14121C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg></a>
+</div>
+<div role="tablist" style="display: flex; background: rgba(106,100,184,0.10); border-radius: 22px; padding: 4px"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button role="tab" onClick="{{t.pick}}" style="flex: 1; height: 36px; border-radius: 18px; border: none; background: {{t.bg}}; color: {{t.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; box-shadow: {{t.sh}}">{{t.label}}</button></sc-for></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="background: rgba(106,100,184,0.16); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #36336E">{{hours}}</span><span style="font-size: 12px; color: #4C4892">učenja</span></div>
+<div style="background: rgba(94,156,114,0.18); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #365C45">{{fulfil}}</span><span style="font-size: 12px; color: #4E7F5F">plana odrađeno</span></div>
+<a href="Sesije.dc.html" style="background: rgba(95,134,181,0.16); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px; text-decoration: none"><span style="font-size: 24px; font-weight: 700; color: #2E4A6E">{{sessions}}</span><span style="font-size: 12px; color: #3F6590">sesija · historija ›</span></a>
+<div style="background: rgba(195,141,82,0.18); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #6B4A2A">2,4 / 3</span><span style="font-size: 12px; color: #7E5A36">prosječan fokus</span></div>
 </div>
 
-<div role="tablist" style="display: flex; background: #E3DFEF; border-radius: 22px; padding: 4px; margin-top: 16px">
-<button role="tab" onClick="{{toWeek}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{weekBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Prošla sedmica</button>
-<button role="tab" onClick="{{toMonth}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{monthBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Mjesec</button>
-</div>
-
-<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px">
-<div style="background: #E9E4FB; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #2F2363">{{hours}}</span><span style="font-size: 12px; color: #4B3B8F">učenja</span></div>
-<div style="background: #DCEFEA; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #1F4D41">{{fulfil}}</span><span style="font-size: 12px; color: #1F6B5A">plana odrađeno</span></div>
-<div style="background: #E3EDFD; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #0F2B5C">{{sessions}}</span><span style="font-size: 12px; color: #2A5BB0">sesija</span></div>
-<div style="background: #FDEBD3; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 24px; font-weight: 700; color: #5C3208">2,4 / 3</span><span style="font-size: 12px; color: #7A4210">prosječan fokus</span></div>
-</div>
-
-<div style="background: #FFFFFF; border-radius: 28px; padding: 18px; margin-top: 12px; display: flex; flex-direction: column; gap: 10px">
-<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Sati po danu</span><span style="font-size: 12px; color: #5B5670">12.–18. okt</span></div>
-<svg width="350" height="168" viewBox="0 0 350 168" role="img" aria-label="Sati učenja po danu prošle sedmice u odnosu na plan; utorak i petak ispod plana, nedjelja bez učenja">
-<line x1="0" x2="350" y1="140" y2="140" stroke="#DCD7EA"></line>
-<line x1="0" x2="350" y1="80" y2="80" stroke="#F1EFF7"></line>
-<text x="350" y="76" text-anchor="end" font-size="10" fill="#6E6985" font-family="Outfit, sans-serif">1h</text>
-<text x="350" y="16" text-anchor="end" font-size="10" fill="#6E6985" font-family="Outfit, sans-serif">2h</text>
-<line x1="0" x2="330" y1="20" y2="20" stroke="#F1EFF7"></line>
-<rect x="11" y="38" width="28" height="102" rx="8" fill="#EEEBF5"></rect><rect x="17" y="32" width="16" height="108" rx="6" fill="#7C6BD6"></rect>
-<rect x="61" y="50" width="28" height="90" rx="8" fill="#EEEBF5"></rect><rect x="67" y="50" width="16" height="90" rx="6" fill="#7C6BD6"></rect>
-<rect x="111" y="38" width="28" height="102" rx="8" fill="#EEEBF5"></rect><rect x="117" y="68" width="16" height="72" rx="6" fill="#7C6BD6"></rect>
-<rect x="161" y="50" width="28" height="90" rx="8" fill="#EEEBF5"></rect><rect x="167" y="104" width="16" height="36" rx="6" fill="#7C6BD6"></rect>
-<rect x="211" y="50" width="28" height="90" rx="8" fill="#EEEBF5"></rect><rect x="217" y="80" width="16" height="60" rx="6" fill="#7C6BD6"></rect>
-<rect x="261" y="44" width="28" height="96" rx="8" fill="#EEEBF5"></rect><rect x="267" y="71" width="16" height="69" rx="6" fill="#7C6BD6"></rect>
-<rect x="311" y="110" width="28" height="30" rx="8" fill="#EEEBF5"></rect>
-<g font-size="11" fill="#5B5670" font-family="Outfit, sans-serif" text-anchor="middle"><text x="25" y="160">P</text><text x="75" y="160">U</text><text x="125" y="160">S</text><text x="175" y="160">Č</text><text x="225" y="160">P</text><text x="275" y="160">S</text><text x="325" y="160">N</text></g>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07);  border-radius: 24px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; "><div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Sati po danu</span><span style="font-size: 12px; color: #3F3B4E">12.–18. okt</span></div>
+<svg width="100%" height="164" viewBox="0 0 310 164" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sati učenja po danu prošle sedmice u odnosu na plan; četvrtak i petak ispod plana, nedjelja bez učenja" style="display: block">
+<g font-size="10" fill="#55516A" font-family="-apple-system, system-ui, sans-serif"><text x="0" y="144">0</text><text x="0" y="84">1h</text><text x="0" y="24">2h</text></g>
+<line x1="24" x2="310" y1="140" y2="140" stroke="rgba(58,51,96,0.16)"></line>
+<line x1="24" x2="310" y1="80" y2="80" stroke="rgba(106,100,184,0.12)" stroke-dasharray="3 4"></line>
+<line x1="24" x2="310" y1="20" y2="20" stroke="rgba(106,100,184,0.12)" stroke-dasharray="3 4"></line>
+<rect x="32.4" y="38" width="24" height="102" rx="8" fill="rgba(58,51,96,0.10)"></rect><rect x="37.4" y="32" width="14" height="108" rx="6" fill="#6A64B8"></rect><rect x="73.3" y="50" width="24" height="90" rx="8" fill="rgba(58,51,96,0.10)"></rect><rect x="78.3" y="50" width="14" height="90" rx="6" fill="#6A64B8"></rect><rect x="114.1" y="38" width="24" height="102" rx="8" fill="rgba(58,51,96,0.10)"></rect><rect x="119.1" y="68" width="14" height="72" rx="6" fill="#6A64B8"></rect><rect x="155.0" y="50" width="24" height="90" rx="8" fill="rgba(58,51,96,0.10)"></rect><rect x="160.0" y="104" width="14" height="36" rx="6" fill="#6A64B8"></rect><rect x="195.9" y="50" width="24" height="90" rx="8" fill="rgba(58,51,96,0.10)"></rect><rect x="200.9" y="80" width="14" height="60" rx="6" fill="#6A64B8"></rect><rect x="236.7" y="44" width="24" height="96" rx="8" fill="rgba(58,51,96,0.10)"></rect><rect x="241.7" y="71" width="14" height="69" rx="6" fill="#6A64B8"></rect><rect x="277.6" y="110" width="24" height="30" rx="8" fill="rgba(58,51,96,0.10)"></rect>
+<g font-size="11" fill="#3F3B4E" font-family="-apple-system, system-ui, sans-serif" text-anchor="middle"><text x="44.4" y="158">P</text><text x="85.3" y="158">U</text><text x="126.1" y="158">S</text><text x="167.0" y="158">Č</text><text x="207.9" y="158">P</text><text x="248.7" y="158">S</text><text x="289.6" y="158">N</text></g>
 </svg>
-<div style="display: flex; gap: 14px; font-size: 12px; color: #5B5670"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #7C6BD6"></span>Učila</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #EEEBF5"></span>Plan</span></div>
-</div>
+<div style="display: flex; gap: 14px; font-size: 12px; color: #3F3B4E"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #6A64B8"></span>Učila</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: rgba(58,51,96,0.10)"></span>Plan</span></div></div>
 
-<div style="background: #FFFFFF; border-radius: 28px; padding: 18px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px">
-<span style="font-size: 16px; font-weight: 600">Kad ti najbolje ide</span>
-<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
-<div style="background: #4B3B8F; border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 12px; color: #E9E4FB">9–12h</span><span style="font-size: 16px; font-weight: 700; color: #FFFFFF">2,4</span></div>
-<div style="background: #C3B9F0; border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 12px; color: #2F2363">12–16h</span><span style="font-size: 16px; font-weight: 700; color: #2F2363">3,6</span></div>
-<div style="background: #9C8DE2; border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 12px; color: #1D1A2B">16–20h</span><span style="font-size: 16px; font-weight: 700; color: #1D1A2B">3,1</span></div>
-<div style="background: #E9E4FB; border-radius: 16px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 12px; color: #2F2363">20h+</span><span style="font-size: 16px; font-weight: 700; color: #2F2363">4,2</span></div>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07);  border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px; "><div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Prognoza spremnosti</span><span style="font-size: 12px; color: #3F3B4E">1000 simulacija</span></div>
+<span style="font-size: 12px; color: #55516A; margin-top: -4px">Iz tvoje historije zadnjih 28 dana. Crta je cilj (70%).</span>
+<div style="display: flex; flex-direction: column">
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 15px; font-weight: 600">I parcijala · Signali</span><span style="font-size: 12px; color: #55516A">28. okt · za 7 dana</span></div>
+<div role="img" aria-label="Pokrivenost vjerovatno 75 do 90 posto" style="position: relative; height: 12px; border-radius: 6px; background: rgba(106,100,184,0.10)">
+<span style="position: absolute; left: 75%; width: 15%; top: 0; height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(106,100,184,0.45), #6A64B8)"></span>
+<span style="position: absolute; left: 70%; top: -3px; width: 2px; height: 18px; border-radius: 1px; background: #14121C"></span>
 </div>
-<span style="font-size: 12px; color: #5B5670">minuta po stranici · tamnije = brže · fokus pada nakon ~50 min</span>
+<span style="font-size: 13px; line-height: 1.4; color: #3F3B4E">Vjerovatno <b style="color: #14121C">75–90%</b> · <b style="color: #14121C">70% šanse</b> da stigneš obavezno</span>
+<span style="font-size: 12px; color: #55516A">Procjena ocjene: <b style="color: #4C4892">8</b> (raspon 7–9)</span>
 </div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 15px; font-weight: 600">I parcijala · Baze</span><span style="font-size: 12px; color: #55516A">4. nov · za 14 dana</span></div>
+<div role="img" aria-label="Pokrivenost vjerovatno 58 do 81 posto" style="position: relative; height: 12px; border-radius: 6px; background: rgba(106,100,184,0.10)">
+<span style="position: absolute; left: 58%; width: 23%; top: 0; height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(106,100,184,0.45), #6A64B8)"></span>
+<span style="position: absolute; left: 70%; top: -3px; width: 2px; height: 18px; border-radius: 1px; background: #14121C"></span>
+</div>
+<span style="font-size: 13px; line-height: 1.4; color: #3F3B4E">Vjerovatno <b style="color: #14121C">58–81%</b> · <b style="color: #14121C">46% šanse</b> da stigneš obavezno</span>
+<span style="font-size: 12px; color: #55516A">Procjena ocjene: <b style="color: #4C4892">7</b> (raspon 6–8)</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: none">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 15px; font-weight: 600">Završni · Vjerovatnoća</span><span style="font-size: 12px; color: #55516A">18. dec · kampanja</span></div>
+<div role="img" aria-label="Pokrivenost vjerovatno 62 do 94 posto" style="position: relative; height: 12px; border-radius: 6px; background: rgba(106,100,184,0.10)">
+<span style="position: absolute; left: 62%; width: 32%; top: 0; height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(106,100,184,0.45), #6A64B8)"></span>
+<span style="position: absolute; left: 70%; top: -3px; width: 2px; height: 18px; border-radius: 1px; background: #14121C"></span>
+</div>
+<span style="font-size: 13px; line-height: 1.4; color: #3F3B4E">Vjerovatno <b style="color: #14121C">62–94%</b> · <b style="color: #14121C">81% šanse</b> da stigneš obavezno</span>
+<span style="font-size: 12px; color: #55516A">Procjena ocjene: <b style="color: #4C4892">8</b> (raspon 6–9)</span>
+</div>
+</div>
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 18px; background: rgba(255,255,255,0.40)"><svg width="16" height="16" viewBox="0 0 24 24" fill="#6A64B8" aria-hidden="true"><path d="M11 2.5l2.1 6 6.4 2.1-6.4 2.1-2.1 6.3-2.1-6.3-6.4-2.1 6.4-2.1z"></path><path d="M19.2 15.2l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"></path></svg><span style="font-size: 13px; line-height: 1.4; color: #3F3B4E">Na zadnja 2 ispita procijenila si se za 1 ocjenu više nego što si dobila.</span></div></div>
 
-<div style="background: #FFFFFF; border-radius: 28px; padding: 18px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; align-items: center; gap: 10px">
-<img src="/mascot/reading-head@2x.webp" alt="" style="width: 52px; height: 52px; flex-shrink: 0">
-<div style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 600">Sedmični pregled</span><span style="font-size: 12px; color: #5B5670">Strategist · nedjelja 18. okt</span></div>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07);  border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 6px; "><div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Bodovi i ocjene</span><span style="font-size: 12px; color: #3F3B4E">imam / cilj</span></div>
+<div style="display: flex; flex-direction: column">
+<a href="BodoviOcjena.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12); text-decoration: none; color: #14121C">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 5px"><span style="display: flex; justify-content: space-between"><span style="font-size: 15px; font-weight: 500">Signali i sistemi</span><span style="font-size: 13px; font-weight: 600">32 <span style="font-weight: 400; color: #55516A">od 40</span></span></span>
+<span style="height: 6px; border-radius: 3px; background: rgba(106,100,184,0.10); display: block"><span style="display: block; width: 80%; height: 6px; border-radius: 3px; background: #6A64B8"></span></span>
+<span style="font-size: 12px; color: #55516A">Za 9: treba 53 od 60 (88%)</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+<a href="BodoviOcjena.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12); text-decoration: none; color: #14121C">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 5px"><span style="display: flex; justify-content: space-between"><span style="font-size: 15px; font-weight: 500">Baze podataka</span><span style="font-size: 13px; font-weight: 600">8 <span style="font-weight: 400; color: #55516A">od 20</span></span></span>
+<span style="height: 6px; border-radius: 3px; background: rgba(106,100,184,0.10); display: block"><span style="display: block; width: 40%; height: 6px; border-radius: 3px; background: #6A64B8"></span></span>
+<span style="font-size: 12px; color: #55516A">Za 8: treba 67 od 80 (84%)</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+<a href="BodoviOcjena.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: none; text-decoration: none; color: #14121C">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 5px"><span style="display: flex; justify-content: space-between"><span style="font-size: 15px; font-weight: 500">Vjerovatnoća</span><span style="font-size: 13px; font-weight: 600">0 <span style="font-weight: 400; color: #55516A">od 100</span></span></span>
+<span style="height: 6px; border-radius: 3px; background: rgba(106,100,184,0.10); display: block"><span style="display: block; width: 0%; height: 6px; border-radius: 3px; background: #6A64B8"></span></span>
+<span style="font-size: 12px; color: #55516A">Za 7: treba 65 od 100 (65%)</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+</div></div>
+
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07);  border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px; "><div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Kad ti učenje ide</span><span style="font-size: 12px; color: #3F3B4E">fokus 1–3</span></div>
+<div style="display: grid; grid-template-columns: 58px repeat(5, minmax(0, 1fr)); gap: 5px; align-items: center"><span></span><span style="font-size: 11px; color: #55516A; text-align: center">Jutro</span><span style="font-size: 11px; color: #55516A; text-align: center">Podne</span><span style="font-size: 11px; color: #55516A; text-align: center">Popodne</span><span style="font-size: 11px; color: #55516A; text-align: center">Veče</span><span style="font-size: 11px; color: #55516A; text-align: center">Noć</span><span style="font-size: 12px; color: #3F3B4E">Radni</span><span style="height: 40px; border-radius: 12px; background: rgba(76,72,146,0.30); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #36336E">2,1</span><span style="height: 40px; border-radius: 12px; background: rgba(76,72,146,0.80); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #FFFFFF">2,6</span><span style="height: 40px; border-radius: 12px; background: rgba(76,72,146,0.60); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #FFFFFF">2,4</span><span style="height: 40px; border-radius: 12px; background: rgba(76,72,146,0.90); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #FFFFFF">2,7</span><span title="još nema podataka" style="height: 40px; border-radius: 12px; background: repeating-linear-gradient(135deg, rgba(106,100,184,0.10) 0 4px, rgba(255,255,255,0.3) 4px 8px); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #55516A">…</span><span style="font-size: 12px; color: #3F3B4E">Vikend</span><span style="height: 40px; border-radius: 12px; background: rgba(76,72,146,0.70); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #FFFFFF">2,5</span><span style="height: 40px; border-radius: 12px; background: rgba(76,72,146,0.50); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #36336E">2,3</span><span style="height: 40px; border-radius: 12px; background: rgba(76,72,146,0.40); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #36336E">2,2</span><span style="height: 40px; border-radius: 12px; background: rgba(76,72,146,0.80); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #FFFFFF">2,6</span><span title="još nema podataka" style="height: 40px; border-radius: 12px; background: repeating-linear-gradient(135deg, rgba(106,100,184,0.10) 0 4px, rgba(255,255,255,0.3) 4px 8px); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #55516A">…</span></div>
+<span style="font-size: 12px; color: #55516A; line-height: 1.4">Tamnije = bolji fokus i brzina. Noć: uči se… (još 4 sesije). Ispitni rok se računa odvojeno.</span>
+<sc-if value="{{slotOpen}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.45)">
+<span style="font-size: 14px; line-height: 1.4">Utorkom ujutro ti propadne <b>4 od 5</b> blokova. Maknuti utorak 08–10 iz dostupnosti?</span>
+<div style="display: flex; gap: 8px"><button onClick="{{slotYes}}" style="height: 40px; padding: 0 18px; border-radius: 20px; border: none; background: linear-gradient(160deg, #6E67BE, #4C4892); color: #FFFFFF; box-shadow: inset 0 1px 1px rgba(255,255,255,0.40), 0 6px 16px rgba(76,72,146,0.22); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; ">Makni termin</button><button onClick="{{slotNo}}" style="height: 40px; padding: 0 18px; border-radius: 20px; border: none; background: rgba(106,100,184,0.10); color: #4C4892; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; ">Ne sad</button></div>
 </div>
-<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #4A4560">Utorkom i četvrtkom uveče redovno preskačeš blokove, a Signali kasne 3h za I parcijalu.</p>
+</sc-if>
+<sc-if value="{{slotDone}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #365C45; display: flex; gap: 6px; align-items: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E9C72" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>{{slotMsg}}</span></sc-if></div>
+
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07);  border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px; "><div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Predlošci sesije</span><span style="font-size: 12px; color: #3F3B4E">fokus · brzina</span></div>
+<div style="display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(106,100,184,0.12)"><span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 500">Standardno 50/15</span><span style="font-size: 12px; color: #55516A">22 sesije · default</span></span><span style="font-size: 14px; font-weight: 600">2,6</span><span style="width: 56px; text-align: right; font-size: 13px; color: #365C45">1,0×</span></div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(106,100,184,0.12)"><span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 500">Pomodoro 25/5</span><span style="font-size: 12px; color: #55516A">9 sesija</span></span><span style="font-size: 14px; font-weight: 600">2,2</span><span style="width: 56px; text-align: right; font-size: 13px; color: #6B4A2A">1,15×</span></div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 0"><span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 500">Flowtime</span><span style="font-size: 12px; color: #55516A">3 sesije · još 2 do poređenja</span></span><span style="font-size: 14px; color: #55516A">–</span><span style="width: 56px; text-align: right; font-size: 13px; color: #55516A">–</span></div>
+</div>
+<span style="font-size: 12px; color: #55516A">Brzina je normalizovana težinom gradiva; 1,15× = 15% sporije nego inače.</span></div>
+
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07);  border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px; "><div style="display: flex; align-items: center; gap: 10px">
+<span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 14px; flex-shrink: 0; background: linear-gradient(160deg, rgba(110,103,190,0.90), rgba(76,72,146,0.94)); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.30), inset 0 1px 1px rgba(255,255,255,0.45), 0 14px 34px rgba(76,72,146,0.24); display: flex; align-items: center; justify-content: center"><svg width="19" height="19" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M11 2.5l2.1 6 6.4 2.1-6.4 2.1-2.1 6.3-2.1-6.3-6.4-2.1 6.4-2.1z"></path><path d="M19.2 15.2l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"></path></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 600">Sedmični pregled</span><span style="font-size: 12px; color: #3F3B4E">Strategist · nedjelja 18. okt</span></div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #3F3B4E">Utorkom i četvrtkom uveče redovno preskačeš blokove, a Signali kasne 3h za I parcijalu.</p>
 <sc-for list="{{actions}}" as="a" hint-placeholder-count="3">
-<div style="display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 18px; background: #F6F4FB">
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 18px; background: rgba(255,255,255,0.40)">
 <span style="flex: 1; font-size: 14px; line-height: 1.35">{{a.text}}</span>
-<button onClick="{{a.pick}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: none; background: {{a.bg}}; color: {{a.fg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap">{{a.label}}</button>
+<button onClick="{{a.pick}}" style="height: 36px; padding: 0 14px; border-radius: 18px; border: none; background: {{a.bg}}; color: {{a.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap">{{a.label}}</button>
 </div>
 </sc-for>
-</div>
+<a href="Checkin.dc.html" style="height: 44px; padding: 0 18px; border-radius: 22px; border: none; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); color: #4C4892; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; ">Sedmični check-in · ~2 min</a></div>
 
-<div style="background: #FFFFFF; border-radius: 28px; padding: 18px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Jačina po temama</span><span style="font-size: 12px; color: #5B5670">najslabije prvo</span></div>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07);  border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px; "><div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 16px; font-weight: 600">Jačina po temama</span><span style="font-size: 12px; color: #3F3B4E">najslabije prvo</span></div>
 <div role="group" aria-label="Filter po predmetu" style="display: flex; gap: 6px; flex-wrap: wrap">
-<sc-for list="{{tsubs}}" as="f" hint-placeholder-count="4">
-<button onClick="{{f.pick}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: none; background: {{f.bg}}; color: {{f.fg}}; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600">{{f.label}}</button>
-</sc-for>
+<sc-for list="{{tsubs}}" as="f" hint-placeholder-count="4"><button onClick="{{f.pick}}" style="height: 32px; padding: 0 14px; border-radius: 16px; border: none; background: {{f.bg}}; color: {{f.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; flex-shrink: 0; ">{{f.label}}</button></sc-for>
 </div>
 <div style="display: flex; flex-direction: column; gap: 12px">
 <sc-for list="{{topics}}" as="t" hint-placeholder-count="6">
 <div style="display: flex; align-items: center; gap: 10px">
-<span style="width: 124px; flex-shrink: 0; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 13px; font-weight: 500">{{t.name}}</span><span style="font-size: 11px; color: #6E6985">{{t.subj}}</span></span>
-<span style="flex: 1; height: 12px; border-radius: 6px; background: #F1EFF7; display: block"><span style="display: block; width: {{t.w}}; height: 12px; border-radius: 6px; background: {{t.c}}"></span></span>
+<span style="width: 124px; flex-shrink: 0; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 13px; font-weight: 500">{{t.name}}</span><span style="font-size: 11px; color: #55516A">{{t.subj}}</span></span>
+<span style="flex: 1; height: 12px; border-radius: 6px; background: rgba(106,100,184,0.10); display: block"><span style="display: block; width: {{t.w}}; height: 12px; border-radius: 6px; background: {{t.c}}"></span></span>
 <span style="width: 38px; text-align: right; font-size: 13px; font-weight: 600">{{t.pct}}</span>
 </div>
 </sc-for>
 </div>
-<div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: #5B5670">
-<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #E08A2C"></span>ispod 60%</span>
-<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #E0B23A"></span>60–74%</span>
-<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #8DBF5A"></span>75–84%</span>
-<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #2E9E6A"></span>85%+</span>
+<div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #3F3B4E">
+<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #D19A5E"></span>Zaboravlja se</span>
+<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #D8BC7A"></span>Slabi</span>
+<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #9BBF7A"></span>Dobro</span>
+<span style="display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #5E9C72"></span>Jako</span>
 </div>
-<a href="ProvjeraZnanja.dc.html" style="height: 48px; border-radius: 24px; border: 2px solid #4B3B8F; box-sizing: border-box; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">Provjeri slabe teme</a>
-</div>
+<a href="ProvjeraZnanja.dc.html" style="height: 48px; padding: 0 18px; border-radius: 24px; border: none; background: linear-gradient(160deg, #6E67BE, #4C4892); color: #FFFFFF; box-shadow: inset 0 1px 1px rgba(255,255,255,0.40), 0 6px 16px rgba(76,72,146,0.22); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 15px; font-weight: 600; white-space: nowrap; ">Provjeri slabe teme</a></div>
 
-<nav aria-label="Glavna navigacija" style="position: absolute; left: 0; right: 0; bottom: 0; height: 104px">
-<svg width="390" height="104" viewBox="0 0 390 104" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 -4px 16px rgba(75,59,143,0.12))"><path d="M0 40 Q0 12 28 12 H124 C148 12 150 56 195 56 C240 56 242 12 266 12 H362 Q390 12 390 40 V104 H0 Z" fill="#FFFFFF"></path></svg>
-<a href="PokreniSesiju.dc.html" aria-label="Pokreni sesiju" style="position: absolute; left: 161px; top: -22px; width: 68px; height: 68px; border-radius: 34px; background: #7C6BD6; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="7"></circle><path d="M12 10v3l2 2M10 3h4"></path></svg></a>
-<div style="position: absolute; left: 8px; top: 30px; width: 144px; display: flex; justify-content: space-around">
-<a href="Danas.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg></span>Danas</a>
-<a href="Plan.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg></span>Plan</a>
 </div>
-<div style="position: absolute; right: 8px; top: 30px; width: 144px; display: flex; justify-content: space-around">
-<a href="Predmeti.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-decoration: none; color: #6E6985; min-width: 56px"><span style="width: 48px; height: 30px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E6985" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v14c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-14c-3-.5-6 0-8 1.5z"></path></svg></span>Predmeti</a>
-<a href="Napredak.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; text-decoration: none; color: #4B3B8F; min-width: 56px"><span style="width: 48px; height: 30px; border-radius: 15px; background: #E9E4FB; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4B3B8F" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"></path></svg></span>Napredak</a>
-</div>
-</nav>
+<div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 130px; background: linear-gradient(rgba(232,229,241,0), rgba(232,229,241,0.85))"></div>
+<nav aria-label="Glavna navigacija" style="position: absolute; left: 18px; right: 18px; bottom: 24px; height: 64px; border-radius: 32px; padding: 6px; box-sizing: border-box; display: flex; align-items: center; background: rgba(255,255,255,0.52); backdrop-filter: blur(32px) saturate(190%); -webkit-backdrop-filter: blur(32px) saturate(190%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 12px 36px rgba(58,51,96,0.12)"><a href="Danas.dc.html" style="flex: 1; height: 52px; border-radius: 26px;  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; font-weight: 500; text-decoration: none; color: #3F3B4E"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l8.5 7.3V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1v-9.5z"></path></svg>Danas</a><a href="Plan.dc.html" style="flex: 1; height: 52px; border-radius: 26px;  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; font-weight: 500; text-decoration: none; color: #3F3B4E"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"></rect><path d="M3.5 10h17M8.5 3v4M15.5 3v4"></path></svg>Plan</a><a href="Chat.dc.html" aria-label="AI asistent" style="flex: 1; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; font-weight: 600; text-decoration: none; color: #6A64B8"><svg width="23" height="23" viewBox="0 0 24 24" fill="#6A64B8" aria-hidden="true"><path d="M11 2.5l2.1 6 6.4 2.1-6.4 2.1-2.1 6.3-2.1-6.3-6.4-2.1 6.4-2.1z"></path><path d="M19.2 15.2l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"></path></svg>AI</a><a href="Predmeti.dc.html" style="flex: 1; height: 52px; border-radius: 26px;  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; font-weight: 500; text-decoration: none; color: #3F3B4E"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5c-2.2-1.6-5.2-2.1-8.5-1.6v14c3.3-.5 6.3 0 8.5 1.6 2.2-1.6 5.2-2.1 8.5-1.6v-14c-3.3-.5-6.3 0-8.5 1.6z"></path><path d="M12 6.5v14"></path></svg>Predmeti</a><a href="Napredak.dc.html" style="flex: 1; height: 52px; border-radius: 26px; background: rgba(255,255,255,0.72); box-shadow: inset 0 1px 1px rgba(255,255,255,0.95), inset 0 0 0 0.5px rgba(255,255,255,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; font-weight: 600; text-decoration: none; color: #4C4892"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4C4892" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M10 20V5M15 20v-6M20 20V9"></path></svg>Napredak</a></nav>
+
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1720}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":3150}}'>
 class Component extends DCLogic {
-  constructor(p) { super(p); this.state = { tab: 'week', ok: [], ts: 'all' }; }
+  constructor(p) { super(p); this.state = { tab: 'week', ok: [], ts: 'all', slot: 'open' }; }
   renderVals() {
-    const week = this.state.tab === 'week';
-    const acts = [
-      ['a', 'Ne planiraj utorak i četvrtak uveče'],
-      ['b', 'Dodaj 2h u subotu za Signale'],
-      ['c', 'Pogl. 4 prebaci na jutarnje termine']
-    ];
-    const col = (v) => (v >= 85 ? '#2E9E6A' : v >= 75 ? '#8DBF5A' : v >= 60 ? '#E0B23A' : '#E08A2C');
+    const segOf = (cur, items, set) => items.map(([id, label]) => { const on = cur === id; return { label, bg: on ? 'rgba(255,255,255,0.85)' : 'transparent', fg: on ? '#14121C' : '#3F3B4E', sh: on ? '0 2px 8px rgba(58,51,96,0.10)' : 'none', pick: () => set(id) }; });
+    const chipOf = (on) => ({ bg: on ? '#14121C' : 'rgba(255,255,255,0.50)', fg: on ? '#FFFFFF' : '#14121C' });
+    const s = this.state, week = s.tab === 'week';
+    const acts = [['a', 'Ne planiraj utorak i četvrtak uveče'], ['b', 'Dodaj 2h u subotu za Signale'], ['c', 'Pogl. 4 prebaci na jutarnje termine']];
+    const col = (v) => (v >= 85 ? '#5E9C72' : v >= 75 ? '#9BBF7A' : v >= 60 ? '#D8BC7A' : '#D19A5E');
     const TP = [['Konvolucija', 'sig', 52], ['Bayesova teorema', 'vjer', 57], ['Z-transformacija', 'sig', 61], ['Funkcionalne zavisnosti', 'baze', 64], ['Uslovna vjerovatnoća', 'vjer', 70], ['Fourierov red', 'sig', 74], ['Normalizacija', 'baze', 88], ['SQL upiti', 'baze', 91]];
     const SN = { sig: 'Signali', baze: 'Baze', vjer: 'Vjerovatnoća' };
-    const ts = this.state.ts;
     return {
-      tsubs: [['all', 'Svi'], ['sig', 'Signali'], ['baze', 'Baze'], ['vjer', 'Vjerovatnoća']].map(([id, label]) => {
-        const on = ts === id;
-        return { label, bg: on ? '#1D1A2B' : '#F1EFF7', fg: on ? '#FFFFFF' : '#1D1A2B', pick: () => this.setState({ ts: id }) };
-      }),
-      topics: TP.filter((x) => ts === 'all' || x[1] === ts).map(([name, sb, v]) => ({ name, subj: SN[sb], pct: v + '%', w: v + '%', c: col(v) })),
-      weekBg: week ? '#FFFFFF' : 'transparent', monthBg: week ? 'transparent' : '#FFFFFF',
-      toWeek: () => this.setState({ tab: 'week' }), toMonth: () => this.setState({ tab: 'month' }),
+      tabs: segOf(s.tab, [['week', 'Prošla sedmica'], ['month', 'Mjesec']], (id) => this.setState({ tab: id })),
+      tsubs: [['all', 'Svi'], ['sig', 'Signali'], ['baze', 'Baze'], ['vjer', 'Vjerovatnoća']].map(([id, label]) => ({ label, ...chipOf(s.ts === id), pick: () => this.setState({ ts: id }) })),
+      topics: TP.filter((x) => s.ts === 'all' || x[1] === s.ts).map(([name, sb, v]) => ({ name, subj: SN[sb], pct: v + '%', w: v + '%', c: col(v) })),
       hours: week ? '7h 15m' : '31h 40m', fulfil: week ? '73%' : '78%', sessions: week ? '9' : '38',
+      slotOpen: s.slot === 'open', slotDone: s.slot !== 'open',
+      slotMsg: s.slot === 'yes' ? 'Utorak 08–10 maknut iz dostupnosti · plan preračunat' : 'U redu, pitam opet za 2 sedmice',
+      slotYes: () => this.setState({ slot: 'yes' }), slotNo: () => this.setState({ slot: 'no' }),
       actions: acts.map(([id, text]) => {
-        const done = this.state.ok.includes(id);
-        return { text, label: done ? 'Primijenjeno' : 'Primijeni', bg: done ? '#DCEFEA' : '#4B3B8F', fg: done ? '#1F4D41' : '#FFFFFF', pick: () => { if (!done) this.setState({ ok: [...this.state.ok, id] }); } };
+        const done = s.ok.includes(id);
+        return { text, label: done ? 'Primijenjeno' : 'Primijeni', bg: done ? 'rgba(94,156,114,0.18)' : '#4C4892', fg: done ? '#365C45' : '#FFFFFF', pick: () => { if (!done) this.setState({ ok: [...s.ok, id] }); } };
       })
     };
   }
