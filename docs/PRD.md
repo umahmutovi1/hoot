@@ -352,6 +352,18 @@ Timer je zapis segmenata u bazi, a ne brojač u memoriji, pa preživi zaključan
 
 Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migraciji (sekcija Šema baze podataka).
 
+**Odluke (Etapa 7)**
+
+- **Režimi 25/5 i 50/10 su samo podsjetnik.** Značka odbrojava do pauze („pauza za 1:19“); kad istekne, piše „Vrijeme je za pauzu“ (uz vibraciju ako je ekran otvoren). Pauzu korisnik tapne sam; timer nikad sam ne zatvara ni ne otvara segment, jer browser u pozadini ne radi pouzdano. Tokom pauze značka odbrojava do kraja pauze. „Slobodno“ nema podsjetnik.
+- **Zaboravljen timer** se okida kad aktivni segment radi duže od 3 h (provjera pri otvaranju app-a i na ekranu sesije). Pitanje „Jesi li učila do sad?“ nudi „Da, nastavi“ (pitanje se zatvara) i „Ne, završila sam u HH:MM“ (default: početak segmenta + 25 min, između početka segmenta i sada): sesija se završi u to vrijeme i otvara se KrajSesije.
+- **Kraj sesije** ima samo dugme „Spasi“ dok recall gate ne dođe u Etapi 9; tad se vraća par „Spasi i testiraj se“ / „Samo spasi“ iz mockupa.
+- **Status jedinice na kraju sesije:** jedinica do čijeg je kraja korisnik stigao („do koje stranice“) dobije „Pročitano“ ako je bila nepočeta; čip uz jedinicu se tapom mijenja (Nije gotovo / Pročitano / Razumijem / Ponovljeno). Djelimično pređena jedinica zadržava status.
+- **„Do koje stranice“ se pita na kraju svake sesije** (prije i poslije 3. sesije), predloženo do kraja zadnje jedinice na kojoj se radilo; od 3. sesije prijedlog dolazi iz plana bloka (Etapa 8).
+- **Raspodjela minuta:** segment vezan za jedinicu pokriva tu jedinicu i pređene jedinice istog izvora iza nje do sljedeće jedinice koja ima svoj segment; minute se dijele srazmjerno procijenjenom vremenu pređenog dijela. Segmenti bez jedinice dijele se na sve pređene jedinice. Jedinica sa segmentom a bez pređenog obima zadrži minute, ali ne ulazi u kalibraciju.
+- **Brzina izmjerena po jedinici** = minute / (pređeni obim × množitelj težine), pa se razlika u težini ne prelije u brzinu izvora. Kalibracija izvora i para izvor × način je prosjek tih brzina (k = broj jedinica sa zabilježenim vremenom); par se koristi tek od 3 mjerenja.
+- **Slobodna sesija** do Etape 8: bira se predmet, opcionalno izvor i jedinica; preporučeni blok je prazan slot („Preporuka dolazi s planom“).
+
+
 **Kada se šta preračunava**
 
 | Događaj | Rekalibracija procjena | Replan |
