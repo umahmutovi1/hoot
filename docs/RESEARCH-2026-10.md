@@ -302,9 +302,11 @@ Princip: **jedan generički mehanizam pokriva najviše izvora.** ICS (iCalendar)
 7. **Prioritet i željena ocjena** se u UI pojednostavljuju (sekcija „Cilj“, PRD „Prioritet i režim učenja“ → Šta korisnik vidi), Etapa 8.
 8. **„Znaš li?“** je isključena na Danas (kod ostaje).
 
+9. **Testiranje:** svih 7 izvora ide u v1; kviz je `recall-questions` sa 5–10 pitanja, ne zaseban alat.
+
 ## Otvorena pitanja
 
-1. **Broj načina testiranja za v1** (prijedlog: ispitna pitanja, podnaslovi, kartice) i spajanje `quiz` sa recall pitanjima. Odluka prije Etape 9.
+Nema otvorenih pitanja iz ovog istraživanja.
 
 ## Izvori
 

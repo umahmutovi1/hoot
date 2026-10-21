@@ -208,7 +208,7 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 - [ ] Web Push temelj: service worker, pretplata, `notify` edge funkcija, `pg_cron`; prvi blok dana i kraj pauze (`break_ends_at`); ikone `celebrating-head` / `timer-head` ([SETUP.md](SETUP.md): VAPID ključevi)
 - [ ] Maskota: `celebrating-head` uz potvrdu „Sjećam se", `celebrating` 120 px na sažetku ProvjeraZnanja
 - [ ] Nakon čitanja/ponavljanja poglavlja u sesiji odmah ponuditi povezana ispitna pitanja; izvor „Pitanja“ se mjeri uspjehom, ne vremenom (PRD „Izvor Pitanja“)
-- [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2
+- [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2 (AI izvori dolaze u Etapi 10; svih 7 izvora je u v1)
 - [ ] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
 - [ ] Migracija `0017_fsrs.sql` (SM-2 kolone i `srs_multiplier` van, FSRS kolone i na `cards`, `review_logs.card_id`), regenerisan `database.ts`
 - [ ] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu (+0.03 za poglavlja), `next_review_on`, ograničenje na datum ispita, R na dan ispita ≥ cilj (ponavljanje u bufferu), level 3 nakon 4 uspjeha + testovi
@@ -231,7 +231,8 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - [ ] Ručni unos: dugme „Procijeni težinu AI-jem“ u pregledu
 - [ ] `parse-questions`, teme pri uvozu (postojeće teme u promptu, ručne se ne prepisuju)
 - [ ] ObimIspita: AI prijedlog, ručna izmjena zaključana
-- [ ] `parse-timetable` + „Uslikaj raspored“ i vrsta „Raspored nastave“ u „Daj sovi dokument“ (tekst ili slika sa „pon: od 9 do 10:30 (farma)“, napomene uz termin; uparivanje predmeta preko `fuse.js`), `recall-questions`, `propose-answer`, `quiz`
+- [ ] `parse-timetable` + „Uslikaj raspored“ i vrsta „Raspored nastave“ u „Daj sovi dokument“ (tekst ili slika sa „pon: od 9 do 10:30 (farma)“, napomene uz termin; uparivanje predmeta preko `fuse.js`), `propose-answer`
+- [ ] `recall-questions` (`count` 3 za recall gate, 5–10 za kviz): AI pitanja iz bilješki, slika stranice (slika se briše), opće znanje (oznaka „može se razlikovati od predavanja“, računa se samo uz još jedan izvor); kviz sa Jedinice i iz sesije, ocjene u `review_logs` + FSRS, „Spasi kao karticu“. Zaseban `quiz` alat ne postoji (PRD „Testiranje bez sadržaja literature“)
 - [ ] Sova dobija ostale alate: pretraga bilješki, recall, raspored nastave i sadržaj kroz isti razgovor (osnova je iz Etape 6); uvoz iz razgovora („ubaci mi ovo“ za već dat dokument) kao kartica za pregled. Do tad sova iz razgovora ništa ne mijenja i to kaže (odluka iz Etape 6)
 - [ ] Povezani kalendari, vrsta „Rokovi“ (Moodle): kartica „N novih rokova iz Moodlea“ → pregled novo / izmijenjeno / preskačem → `deadlines`, uparivanje predmeta (`fuse.js`)
 - [ ] Web Share Target u manifestu (Android): podijeljen PDF/slika otvara „Daj sovi dokument“ sa prilogom
@@ -291,19 +292,27 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - Linter je oxlint (Vite 8 default) umjesto ESLinta.
 - Font Outfit se servira lokalno (`@fontsource-variable/outfit`), radi offline.
 
-## Prompt za Etapu 7 (sljedeći chat)
+## Prompt za Etapu 8 (sljedeći chat)
 
-> Pročitaj CLAUDE.md, docs/PRD.md (sekcije „Timer, pauza i rekalibracija“, „Timer dugme u navigaciji“, „Procjena težine i vremena“ i „Podaci za strategista“), docs/ROADMAP.md (Etapa 7), docs/design/README.md, docs/design/MASCOT.md i mockupe PokreniSesiju.dc.html, Sesija.dc.html i KrajSesije.dc.html, pa uradi Etapu 7 — Timer i sesije.
-> Isti tok kao u Etapama 2–6: podijeli etapu na manje PR-ove u `dev` (prvo čista logika u `src/lib/` sa testovima: vrijeme iz segmenata, zaboravljen timer, raspodjela minuta po jedinicama i kalibracija procjena; pa `src/lib/sync/` (Dexie red, upsert, retry, last-write-wins) sa testovima; pa migracija ako treba; pa ekrani), svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.7.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Prije release-a označi DoD u ROADMAP-u. Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP. Ako treba nešto u dashboardu, napiši mi tačne korake i ažuriraj SETUP.md.
-> Napomene iz Etape 6:
-> - Timer je zapis segmenata u bazi, nikad `setInterval` brojač; jedna aktivna sesija po korisniku. DoD (zaključan telefon, zatvoren tab, offline) testiraj stvarno u browseru (ponovno otvaranje, `setOffline`), ne samo unit testovima.
-> - Offline red (Dexie) je za upise sesija i segmenata; AI pozivi (sova) ostaju samo online. Ostale upise (predmeti, ispiti) kroz isti red samo ako je jednostavno, kao zaseban PR.
-> - Ova etapa nema AI poziva: kalibracija je deterministička (shrinkage, izvor × način, fallback ispod 3 mjerenja). Ne troši Gemini kvotu (free tier: 3.5 Flash-Lite, oko 500 zahtjeva dnevno).
-> - Maskota: `timer` 84 px u sheetu „Šta učiš sad?“, `celebrating` 140 px na KrajSesije, `sleeping` 190 px u offline poruci; najviše jedna sova po ekranu, sova-traka na Danas se ne prikazuje dok je otvoren sheet ili ekran sesije.
-> - Dok sesija traje ima prednost nad sovom: timer dugme u navigaciji vodi u aktivnu sesiju (nastavak).
-> - Back dugmad samo preko `goBack()` iz `src/app/navigation.ts`; ekrani preko cijelog ekrana imaju ljepljivo zaglavlje sa `env(safe-area-inset-top)`. Svaki sheet ima × (`BottomSheet`, bez auto-fokusa prvog polja). Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki tekst u `bs.json` i `en.json`.
-> - Za end-to-end test koristi privremenog test korisnika (service key samo u varijabli shell-a) i obriši ga na kraju zajedno sa fajlovima u storageu.
-> - Dnevni plan (preporučeni blok) dolazi sa schedulerom u Etapi 8; do tad PokreniSesiju nudi ručni izbor predmeta, izvora i jedinice uz slobodnu sesiju, a preporuku samo pripremi kao prazan slot.
+> Pročitaj CLAUDE.md, docs/PRD.md (sekcije „Onboarding“, „Povezani kalendari i integracije“, „Scheduler, replan i AI strategist“, „Prioritet i režim učenja“ uključujući „Šta korisnik vidi“, „Praćenje predavanja“, „Timer, pauza i rekalibracija“ → „Predlošci sesije“, „Procjena težine i vremena“ → 5, „Termini učenja“ (samo prior iz onboardinga; ocjene termina su Etapa 11), „Raspored nastave“ → „Dostupnost“, „Akademski kalendar“, „Željena ocjena kao ulaz u plan“, „Šema baze podataka“ → migracije 0014–0016), docs/ROADMAP.md (Etapa 8), docs/RESEARCH-2026-10.md (obrazloženje), docs/design/README.md, docs/design/MASCOT.md i mockupe Danas, DanasSlobodno, Plan, Satnica, Replan, UrediBlokNovi/Uredi/Obrisi, Predmet, PredmetKampanja, NoviPredmetNapredno, Dostupnost, PokreniSesiju i Postavke, pa uradi Etapu 8 — Onboarding i scheduler.
+> Isti tok kao u Etapama 2–7: podijeli etapu na manje PR-ove u `dev`, svaki PR mergeaj sam (squash) kad CI prođe, a release `dev → main` + tag `v0.8.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Prije release-a označi DoD u ROADMAP-u. Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP. Ako treba nešto u dashboardu (npr. `pg_cron`), napiši mi tačne korake i ažuriraj SETUP.md.
+> Redoslijed:
+> 1. **8a mockupi:** `design/Onboarding.dc.html` (8 koraka kao stanja jedne komponente + checklist na DanasPrazno), `design/PovezaniKalendari.dc.html` i sekcija „Cilj“ na Predmetu; čekaj moje odobrenje prije ekrana.
+> 2. **8a logika i baza:** predlošci sesije u `src/lib/session/timer.ts` + Zod u `_shared/` + testovi; migracija `0014_onboarding_and_presets.sql`; neto dostupnost sa zauzetošću iz feedova u `src/lib/schedule/` + testovi; migracija `0015_calendar_feeds.sql`; `sync-calendar` edge funkcija sa fiksnim `.ics` primjerima (Google, Outlook, iCloud, Moodle; RRULE, EXDATE, RECURRENCE-ID, cjelodnevni, TRANSPARENT, CANCELLED) kao testovima.
+> 3. **8a ekrani:** predlošci u PokreniSesiju/Postavkama, čipovi razloga i „Ometena sam“, onboarding, gruba veličina gradiva, Povezani kalendari. Javi mi kad je 8a na previewu, da prođem onboarding na telefonu prije schedulera.
+> 4. **8b čista logika:** `plan()`, `placeTimes()`, `pickForTime()`, faktor realizacije, limit rasta i `input_hash` u `src/lib/scheduler/` sa unit testovima iz ROADMAP-a i property testovima (`fast-check`); tek onda migracija `0016_manual_blocks.sql`, upis planova, okidači replana i ekrani (Danas, Satnica, Replan, UrediBlok, kartice prijedloga, sekcija „Cilj“).
+> Napomene iz Etape 7:
+> - Scheduler je deterministički kod, nikad LLM; ova etapa nema novih AI poziva. Onboarding uvoz akademskog kalendara koristi postojeći `parse-document` (Gemini free tier, ~500 zahtjeva dnevno, ne troši ga u testovima). `sync-calendar` i `pickForTime()` nemaju LLM.
+> - Isti ulaz = isti plan i ista satnica: svaka nasumičnost ima seed iz `input_hash`, a u hash ide svaki ulaz (povezani kalendari, ρ, zadani predložak, prioriteti, ručni blokovi…).
+> - Replan nikad dok timer radi; današnja lista se ne mijenja ispod korisnika osim kad je dan postao nemoguć; ručni blokovi (`origin = 'user'`) se nikad ne brišu ni pomjeraju.
+> - Tajni iCal link je lozinka: nikad u logove, `ai_runs`, poruke grešaka ni klijentski keš osim maskiranog prikaza.
+> - Danas iznad liste blokova ima najviše jednu karticu akcije; „Znaš li?“ ostaje isključena (`SHOW_FACT_CARD`).
+> - Prioritet u UI je „Koliko ti je bitan“ sa imenima bez brojeva; ciljna pokrivenost, zadržavanje i buffer nikad nisu polja.
+> - Tekst prijedloga je neutralan (bez „zaostaješ“, bez streakova); „Danas ne mogu“ pravi blokove `skipped`, ne „propušteno“.
+> - Maskota: `sleeping` 190 px na DanasSlobodno, `sleeping-head` 76 px u Replan sheetu; poze za onboarding prvo upiši u MASCOT.md; najviše jedna sova po ekranu.
+> - Back dugmad samo preko `goBack()` iz `src/app/navigation.ts`; ekrani preko cijelog ekrana imaju ljepljivo zaglavlje sa `env(safe-area-inset-top)`; svaki sheet ima ×. Dugmad u bosanskom pišu „Spasi“ (nikad „Snimi“); svaki tekst u `bs.json` i `en.json`.
+> - Za end-to-end test koristi privremenog test korisnika (service key samo u varijabli shell-a), prođi onboarding od nule na 390 px i obriši korisnika na kraju zajedno sa fajlovima u storageu.
+> - Recall gate, FSRS i Web Push su Etapa 9: ovdje `review` blokovi i mikro-blokovi postoje u `plan()` (testovi sa ručno postavljenim `next_review_on`), ali bez ekrana provjere.
 
 ## Prompt za početak etape (primjer)
 

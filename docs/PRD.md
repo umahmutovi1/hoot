@@ -61,7 +61,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Učenje | Spaced repetition | FSRS po jedinici; ciljno zadržavanje po prioritetu predmeta |
 | Učenje | Jačina znanja | Procjena “koliko se sjećaš danas” po jedinici, temi, predmetu i ispitu; provjera kad padne ispod cilja |
 | Učenje | Notes i kartice | Markdown bilješke po jedinici; kartice pitanje–odgovor |
-| Učenje | Kvizovi | AI pitanja iz bilješki ili slike stranice |
+| Učenje | Kvizovi | Isti alat kao recall pitanja (`recall-questions`, način “kviz”: 5–10 pitanja iz bilješki ili slike stranice); odgovori idu u `review_logs`, pitanje se može spasiti kao kartica |
 | Napredak | Progres | Po izvoru, ispitu, predmetu i temi |
 | Napredak | Statistika | Sati vs plan, ispunjenost, fokus, efikasnost po dobu dana, poređenje predložaka sesije |
 | Napredak | Termini učenja | App uči kad ti učenje ide (fokus, brzina, odrađeni blokovi) i predlaže izmjene dostupnosti; teško gradivo ide u najbolje termine |
@@ -639,6 +639,8 @@ App neće imati tekst knjige, pa test pamćenja koristi ono što stvarno postoji
 | Ručne kartice | pitanje i odgovor koje korisnik napiše tokom sesije | korisnikov | da |
 | Slika 1–2 stranice (opcionalno) | npr. sažetak kraja poglavlja | AI pitanja iz te slike, slika se briše | da |
 | Opće znanje (AI) | naslov poglavlja + predmet | AI odgovor, uvijek označen “može se razlikovati od predavanja” | samo uz još jedan izvor |
+
+**Odluka nakon Etape 7:** svih sedam izvora testiranja iz tabele ulazi u v1 (ništa se ne izbacuje). Ispitna pitanja, bilješke bez AI-ja, podnaslovi, blurting i kartice dolaze u Etapi 9; AI pitanja iz bilješki, slika stranice i opće znanje u Etapi 10 kroz `recall-questions`. **Kviz nije zaseban alat:** to je `recall-questions` sa više pitanja (5–10) nad bilješkama ili slikom stranice, pokrenut sa Jedinice ili iz sesije; ocjena svakog odgovora ide u `review_logs` (`source` = `notes` ili `page_photo`) i FSRS kao kod recall gate-a, a pitanje se jednim tapom spašava kao kartica. AI zadatak `quiz` ostaje u enumu `ai_task` (vrijednost enuma se ne briše), ali se ne koristi.
 
 `review_logs.source`, `units.answer` i tabela `cards` su u konsolidovanoj migraciji.
 
@@ -1401,9 +1403,8 @@ Edge funkcije, sve sa strukturiranim JSON izlazom koji se validira Zod šemom pr
 | `documents` | odlomci dokumenta (najviše 16 po pozivu) | embedding (`gte-small`) i upis odlomaka, bez LLM poziva |
 | `answer` | pitanje + najrelevantniji odlomci + sažetak stanja | odgovor sa citatima (dokument, stranica) |
 | `ai-status` | — | da li je AI podešen i koliko je poziva ostalo (traka sove) |
-| `recall-questions` | bilješke ili slika stranice ili naslov + podnaslovi | 3 pitanja sa odgovorima i oznakom izvora |
+| `recall-questions` | bilješke ili slika stranice ili naslov + podnaslovi; `count` (3 za recall gate, 5–10 za kviz) | pitanja sa odgovorima i oznakom izvora |
 | `propose-answer` | ispitno pitanje + bilješke povezanih jedinica | prijedlog odgovora, označen “provjeri” |
-| `quiz` | bilješke jedinice | 5–10 pitanja za kviz ili kartice |
 | `strategist` | JSON sažetak stanja + kandidati akcija iz pravila | sažetak, rizici, najviše 3 izabrana kandidata sa obrazloženjem |
 | `sync-calendar` | `calendar_feeds` korisnika (ili jedan feed) | upsert `external_events`, `last_synced_at` / `last_error`; bez LLM-a |
 | `calendar-feed` | `ics_token` u URL-u | ICS sa ispitima, rokovima i (opcionalno) blokovima; bez LLM-a, bez JWT-a (token je ključ) |
@@ -1528,7 +1529,7 @@ study-planner/
 │  └─ functions/
 │     ├─ _shared/        # schemas.ts, llm.ts, prices.ts, cors.ts
 │     ├─ parse-toc/  parse-questions/  parse-timetable/
-│     ├─ recall-questions/  propose-answer/  quiz/
+│     ├─ recall-questions/  propose-answer/
 │     ├─ strategist/
 │     ├─ sync-calendar/  calendar-feed/
 │     └─ notify/         # web push, poziva ga pg_cron
