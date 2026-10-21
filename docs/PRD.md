@@ -27,6 +27,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 
 | Oblast | Feature | Kriterij prihvatanja |
 | --- | --- | --- |
+| Opće | Onboarding | Od imena do realne sedmice za ~3 min: uvoz (kalendar, raspored, povezani kalendari), ritam, dani i periodi, dnevni maksimum, predložak sesije, prvi predmet, pregled “stižeš li”; svaki korak preskočiv |
 | Predmeti | Predmet + ispiti | Predmet sa nazivom, bojom i 1..n ispita (preset: samo završni / parcijale + integralni / prilagođeno) za < 30 s |
 | Predmeti | Rokovi | Seminarski, zadaće, vlastiti rok; opcionalna procjena sati ulazi u plan |
 | Predmeti | Prioritet i režim | Prioritet 1–5 (5 = uslovni); režim redovno ili kampanja; start kampanje izračunat, ručno promjenjiv |
@@ -45,35 +46,51 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Uvoz | Teme | AI označi teme pri uvozu; ručno ispravljive; povezuju pitanja i poglavlja |
 | Raspored | Raspored nastave | Ručno ili slikom; predavanja, vježbe, labovi, parne/neparne sedmice; automatski zauzeto |
 | Raspored | Dostupnost | Sedmični slobodni termini + izuzeci za konkretne dane |
-| Plan | “Danas” ekran | Fokus bar dana, kartica “Sljedeći blok”, lista blokova, 3 najranija ispita, “zašto ovo danas” |
+| Raspored | Povezani kalendari | Google / Apple / Outlook iCal link → zauzeto u planu; Moodle iCal link → prijedlozi rokova sa pregledom |
+| Plan | “Danas” ekran | Fokus bar dana, kartica “Sljedeći blok”, lista blokova, 3 najranija ispita, “zašto ovo danas”; najviše jedna kartica akcije iznad liste |
+| Plan | Brze akcije dana | “Danas ne mogu” (dan zauzet + replan) i “Imam samo 30 min” (najvredniji komad za to vrijeme) |
 | Plan | Kalendar | Mjesec i dan: ispiti, rokovi, nastava i planirani dani |
-| Plan | Satnica | Na zahtjev raspoređuje blokove u termine; keš preko `input_hash` |
-| Plan | Replan | Propušteno se preraspodijeli od sutra; deficit sa 3 opcije |
+| Plan | Satnica | Svaki blok automatski dobije predloženo vrijeme i pauze po predlošku sesije; tab Satnica prikazuje i dozvoljava pomjeranje |
+| Plan | Replan | Propušteno se preraspodijeli od sutra uz limit dnevnog rasta; deficit sa 3 opcije; “novi početak” |
+| Plan | Izvoz u kalendar | ICS pretplata na ispite, rokove i blokove |
 | Plan | Ručni blokovi | Dodaj, izmijeni, obriši blok; ručni i izmijenjeni blokovi su zaključani od replana |
 | Učenje | Timer dugme | Izbor: sljedeći blok (preporučeno), drugi blok danas, slobodna sesija; nastavak aktivne sesije |
-| Učenje | Timer sesije | Segmenti u bazi, pauza, “Sad radim na”, režimi 25/5, 50/10, slobodno; radi offline |
-| Učenje | Kraj sesije | Težina 1–5 po jedinici, fokus 1–3, refleksija |
+| Učenje | Timer sesije | Segmenti u bazi, pauza, “Sad radim na”, predlošci sesije (Standardno 50/15 default, Pomodoro 25/5 + duga pauza, Flowtime, vlastiti niz, slobodno); radi offline |
+| Učenje | Kraj sesije | Težina 1–5 po jedinici, fokus 1–3 (uz opcionalne razloge kad je 1), refleksija |
 | Učenje | Recall gate | Test iz ispitnih pitanja, bilješki, podnaslova, blurtinga, kartica ili općeg znanja |
 | Učenje | Spaced repetition | FSRS po jedinici; ciljno zadržavanje po prioritetu predmeta |
 | Učenje | Jačina znanja | Procjena “koliko se sjećaš danas” po jedinici, temi, predmetu i ispitu; provjera kad padne ispod cilja |
 | Učenje | Notes i kartice | Markdown bilješke po jedinici; kartice pitanje–odgovor |
 | Učenje | Kvizovi | AI pitanja iz bilješki ili slike stranice |
 | Napredak | Progres | Po izvoru, ispitu, predmetu i temi |
-| Napredak | Statistika | Sati vs plan, ispunjenost, fokus, efikasnost po dobu dana |
-| Napredak | Prognoza spremnosti | “Ovim tempom pokrivaš X% do ispita”, svaki dan; procjena ocjene iz prognoze |
+| Napredak | Statistika | Sati vs plan, ispunjenost, fokus, efikasnost po dobu dana, poređenje predložaka sesije |
+| Napredak | Termini učenja | App uči kad ti učenje ide (fokus, brzina, odrađeni blokovi) i predlaže izmjene dostupnosti; teško gradivo ide u najbolje termine |
+| Napredak | Prognoza spremnosti | “Vjerovatno 75–90% · 70% šanse da stigneš obavezno”, svaki dan; procjena ocjene iz prognoze |
 | Napredak | AI strategist | Sedmični pregled i najviše 3 akcije koje korisnik odobri |
-| Opće | Notifikacije | Prvi blok dana, propušten blok, ponavljanje na redu |
+| Opće | Notifikacije | Prvi blok dana, kraj pauze, propušten blok, ponavljanje na redu |
+| Uvoz | Dijeljenje u Hoot | “Podijeli” PDF ili sliku iz druge aplikacije direktno sovi (PWA Web Share Target, Android) |
+| Opće | Izvoz | Kartice kao CSV (Anki), svi podaci kao JSON |
 | Opće | Jezik | Bosanski i engleski |
 | Opće | Rezultat ispita | Bodovi (Etapa 5) + spremnost dan prije (Napredak); zatvara krug za prognozu |
 
 ## Ključni tokovi
 
+**0. Onboarding** (detalji u sekciji Onboarding)
+
+1. Ime i jezik; vremenska zona iz browsera.
+2. Uvoz onoga što postoji: akademski kalendar, raspored nastave, povezani kalendari (iCal link). Prvo uvoz, pa dostupnost, da se zauzeto odmah vidi.
+3. Ritam: kad ustaješ i liježeš, kad ti je najlakše učiti.
+4. Dani i periodi učenja na vremenskoj osi (zauzeto šrafirano), pa dnevni maksimum.
+5. Predložak sesije (default Standardno 50/15).
+6. Prvi predmet sa ispitom i grubom veličinom gradiva (opcionalno), pa pregled “Tvoja sedmica”.
+
 **1. Novi predmet**
 
 1. Naziv, boja, preset ispita (samo završni / parcijale + integralni / prilagođeno), datum i format svakog ispita. Ispit može biti “samo ako zatreba” (integralni, popravni) i imati okvirni datum.
 2. Opcionalno, pod sklopljenim “Napredno”: prioritet (default 3) i režim (default redovno). Defaulti čuvaju kriterij < 30 s.
-3. App nudi “Dodaj izvor”; može se preskočiti.
-4. Bez izvora predmet ima samo rokove u kalendaru; satnica ga ignoriše.
+3. App nudi “Dodaj izvor” ili **grubu veličinu gradiva** (“~300 str. skripte”, “~40 slajdova”, “~20 h”); oboje se može preskočiti.
+4. Gruba veličina pravi privremeni izvor (`sources.is_rough = true`) sa N jednakih jedinica (oznake `~1`…`~N`, po ~10 str. ili ~1 h), pa predmet odmah ulazi u plan. Kad se doda pravi sadržaj, privremeni izvor se arhivira, a minute i sesije ostaju u historiji. Na predmetu stoji “Procjena je gruba · Dodaj sadržaj”.
+5. Bez izvora i bez grube veličine predmet ima samo rokove u kalendaru; plan ga ignoriše i to kaže na predmetu (“Nije u planu: dodaj gradivo”).
 
 **2. Dodavanje izvora**
 
@@ -199,6 +216,14 @@ baza_{izvor} = \frac{k}{k+5} \cdot baza_{izmjereno} + \frac{5}{k+5} \cdot baza_{
 
 k = broj jedinica sa zabilježenim vremenom. Nakon 5 jedinica izmjereno i heuristika vrijede pola-pola; nakon 20, mjerenje nosi 80%.
 
+**5. Lični faktor brzine (prior za nove izvore).** Novi izvor ne kreće od čiste heuristike tipa nego od heuristike × korisnikov faktor f, jer ko je sporiji na jednoj knjizi vjerovatno je sporiji i na sljedećoj. f je prosjek omjera `baza_izmjereno / baza_tip` po izvorima istog tipa (pa svih tipova kao fallback), ublažen brojem izvora j sa bar 3 mjerenja:
+
+```latex
+f = \frac{j}{j+2} \cdot \overline{\left(\frac{baza_{izmjereno}}{baza_{tip}}\right)} + \frac{2}{j+2} \cdot 1 \qquad baza_{tip}' = baza_{tip} \times f
+```
+
+`baza_{tip}'` zamjenjuje `baza_{tip}` u formuli iznad (i u priorima para izvor × način). f se računa iz istih podataka kao kalibracija (ne snima se zasebno) i ulazi u `input_hash` preko kalibrisanih brzina. Jezik izvora (`sources.language`, `bs` / `en` / ostalo) je opcionalni dodatni ključ grupisanja kad ima dovoljno izvora po jeziku (Kasnije).
+
 **Podjela uloga.** Timer određuje koliko vremena treba (satnica). Ocjena određuje koliko je bilo teško shvatiti (prioritet ponavljanja i korekcija težine). Ne spajaju se u jedan broj.
 
 **Način učenja.** Svaka sesija ima `mode` (čitanje, zadaci, ponavljanje, pitanja). Kalibracija se vodi po paru izvor × način: blok čitanja koristi izmjerenu brzinu čitanja, a blok ponavljanja onu iz ponavljanja. Dok par nema bar 3 mjerenja, koristi se vrijednost izvora za sve načine.
@@ -278,28 +303,51 @@ Satnicu pravi čista TypeScript funkcija `plan(state) → blocks`, bez AI-ja: br
 
 **Algoritam**
 
-1. **Kapacitet.** Slobodne minute po danu = dostupnost − termini nastave (tačno vrijeme termina, osim otkazanih) − izuzeci − ručni blokovi.
+1. **Kapacitet.** Slobodne minute po danu = dostupnost − termini nastave (tačno vrijeme termina, osim otkazanih) − zauzeto iz povezanih kalendara − izuzeci − ručni blokovi. Kapacitet za plan = min(slobodno, dnevni maksimum) × ρ × rezerva:
+   - **Faktor realizacije ρ** = odrađene / planirane minute AI blokova zadnjih 14 dana, ublažen prema 0.8: `ρ = (n·ρ_izmjereno + 7·0.8) / (n + 7)`, n = broj dana sa planom u tom prozoru; ograničen na [0.5, 1]. Dani “Danas ne mogu” i dani bez plana ne ulaze. Računa se u kodu (`src/lib/scheduler/`), ulazi u `input_hash`, a “zašto” ga imenuje (“planiram 80% jer zadnje 2 sedmice odradiš oko 80%”).
+   - **Rezerva** = 0.9 (konstanta): i uz ρ = 1 jedan loš dan ne prevrne plan.
+   - Kad ima dovoljno podataka (≥ 4 dana po danu u sedmici), ρ se računa i po danu u sedmici, uz shrinkage prema ukupnom ρ.
+   - Pauze iz predloška sesije ne troše dnevni maksimum (on broji minute učenja), ali moraju stati u slobodne termine (vidi Lista vs satnica).
 2. **Ponavljanja i provjere prvo.** Jedinice kojima je `next_review_on` danas ili ranije dobijaju blokove tipa `review` (vidi Spaced repetition), i za predmete u kampanji prije starta. Ponavljanja zauzimaju najviše `profiles.review_cap_pct` (default 40%) dnevnog kapaciteta; višak se slaže po bližem ispitu, pa po nižoj jačini, a ostatak prelazi na sljedeći dan. Uz uključen prekidač, dan sa predavanjem dobija blok `recap` od 15 min za taj predmet.
 3. **Start kampanje.** Za predmete u kampanji izračuna se dan starta (vidi Prioritet i režim); prije njega njihove jedinice nisu u bazenu.
 4. **Preostali rad po cilju.** Cilj je nepoložen, aktivan ispit (ne “samo ako zatreba” dok se ne aktivira) ili rok sa procjenom. Za jedinicu u obimu: level 0 → 100% minuta, level 1 → 40%, level 2+ → 0% (ide u ponavljanja). Pitanje: 0 → 100%, 1 → 50%. Jedinica pripada najranijem cilju koji je pokriva. Rad se dijeli na obavezan i opcionalan po ciljnoj pokrivenosti prioriteta. Planirane minute ručnih blokova za te jedinice oduzimaju se od preostalog rada.
 5. **Meki rokovi s predavanja.** U redovnom režimu pređene jedinice dobijaju meki rok (vidi Praćenje predavanja).
 6. **Buffer.** Zadnjih N dana prije ispita (postavke, +1 za prioritet 5) samo ponavljanje i pitanja iz obima.
-7. **Hitnost.** u = preostali rad / kapacitet do cilja × težina prioriteta. Dan se raspodijeli proporcionalno hitnosti; najviše N predmeta dnevno, blok najmanje N minuta (postavke). Opcionalan rad ide tek kad obavezan stane.
+7. **Hitnost.** u = preostali rad / kapacitet do cilja × težina prioriteta. Dan se raspodijeli proporcionalno hitnosti; najviše N predmeta dnevno, blok najmanje N minuta (postavke). Opcionalan rad ide tek kad obavezan stane. Dužina bloka teži višekratniku intervala učenja iz predloška sesije (50 + 50, ne 70), da se blok i podsjetnik na pauzu poklapaju.
+   - **Mikro-blokovi.** Slobodni termini kraći od `min_block_minutes` (rupe između predavanja, 10–20 min) primaju samo `review` blokove i kartice; prvo učenje nikad.
+   - **Limit rasta.** Planirane minute dana ne prelaze 1.25 × prosjek odrađenih minuta zadnjih 7 dana (najmanje 60 min, i nikad iznad kapaciteta). Ono što ne stane ide u deficit sa 3 opcije, a ne u sutrašnji dan. Ovo važi samo za AI blokove; ručni blokovi i buffer pred ispitom se ne režu.
 8. **Redoslijed.** Redoslijed iz sadržaja; prednost dobijaju jedinice sa niskom sigurnošću i teme sa mnogo ispitnih pitanja.
 9. **Tip bloka.** `learn` za prvo učenje, `questions` kad je cilj u buffer zoni ili su poglavlja pređena a pitanja nisu, `deadline` za rokove.
 10. **Punjenje.** Duga jedinica se dijeli po stranicama na više blokova.
 11. **Deficit.** Plan se napravi i kad ne stane, uz `deficit` po cilju (samo obavezan rad). Opcije smanjenja obima kreću od najnižeg prioriteta.
-12. **Prijedlozi.** Pravila zaostatka (`src/lib/pace/`) i deficit daju listu prijedloga (promjene ulaza), koje “Danas” i predmet prikazuju kao kartice.
+12. **Prijedlozi.** Pravila zaostatka (`src/lib/pace/`), deficit, ispitni rok, termini učenja i realizacija daju listu prijedloga (promjene ulaza), koje “Danas” i predmet prikazuju kao kartice. “Danas” iznad liste blokova prikazuje najviše jednu karticu akcije (najhitniju); ostale su pod “Još N prijedloga”.
+   - **Ispitni rok:** kad počinje ispitni period iz akademskog kalendara, kartica “Ulaziš u ispitni rok — povećati maksimum na 6 h do [kraj roka]?” (izuzeci dostupnosti, jedan tap).
+   - **San pred ispit:** dan prije ispita nema blokova poslije `profiles.exam_eve_end_min` (default 23:00, podesivo); `placeTimes()` to poštuje, a buffer ionako ima samo ponavljanje.
+   - **Novi početak:** kad ima ≥ 2 propuštena dana zaredom ili deficit naraste, umjesto liste propuštenog jedna kartica “Krenimo ispočetka” sa istim 3 opcije kao deficit (rasporedi / smanji obim / prihvati rizik). Tekst je neutralan (bez “zaostaješ”, bez streakova).
 13. **Zašto ovo danas.** Svaki blok dobije kratko objašnjenje iz pravila koje ga je stavilo (npr. “ispit za 9 dana, Signali kasne 3h”, “uslovni predmet”, “kampanja počinje danas”, “pređeno na predavanju 12. okt”, “jačina pala na 72%”). Ovo je kartica savjeta na “Danas” ekranu kad nema svježeg savjeta strategista.
 
 **Više ispita po predmetu.** Koraci 1–6 rade po ispitu, ne po predmetu: preostali rad i kapacitet računaju se do datuma svakog ispita nad njegovim obimom. Tako I parcijala dobije prioritet prije završnog, a gradivo II parcijale kreće tek kad je to potrebno.
 
 **Lista vs satnica.** Plan se pravi u dva sloja:
 
-1. `plan()` raspodijeli rad po danima → “Danas” lista (blokovi bez `start_min`). Ovo se računa automatski pri replanu.
-2. `placeTimes()` na zahtjev (tab “Satnica”) smjesti blokove u slobodne termine tog dana → popuni `start_min`. Ručni blokovi sa zadatim vremenom su fiksni; ostali se slažu oko njih.
+1. `plan()` raspodijeli rad po danima → “Danas” lista.
+2. `placeTimes()` odmah poslije `plan()` (odluka nakon Etape 7: automatski, ne na zahtjev) smjesti blokove svakog dana u slobodne termine → popuni `start_min` i `planned_start`. Ručni blokovi sa zadatim vremenom su fiksni; ostali se slažu oko njih. Tab “Satnica” samo prikazuje dan i dozvoljava pomjeranje bloka (pomjeren blok postaje ručni, kao u toku 7).
 
-Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash` (jedinice, nivoi, procjene, FSRS stanje, ispiti, obim, dostupnost, raspored, unosi predavanja, prioriteti, režimi, ručni start kampanje, ručni blokovi, postavke); ako je isti kao u zadnjem `plan_runs`, koristi se postojeći plan i ništa se ne računa. AI se zove samo za strategist, i to ručno ili sedmično.
+`placeTimes()` pravila:
+
+- **Pauze.** Između blokova i unutar dugog bloka ostavlja pauzu po zadanom predlošku sesije (Standardno: 15 min nakon 50 min učenja; Pomodoro: 5 min, duga pauza nakon 4 intervala). Blok + njegove pauze moraju stati u jedan slobodan termin; ako ne staju, blok se dijeli ili skraćuje na višekratnik intervala.
+- **Termini učenja.** Svaki termin dana ima ocjenu (vidi Termini učenja). Prvo učenje i jedinice sa višom težinom idu u bolje ocijenjene termine; `review`, `recap`, prezentacije i kartice u slabije. Dok nema podataka, ocjena je prior iz onboardinga (“kad ti je najlakše učiti”).
+- **San pred ispit** i granica dana se poštuju.
+- Isti ulaz daje isto vrijeme (determinizam); Thompson uzorkovanje u Terminima učenja koristi seed iz `input_hash`.
+
+Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash` (jedinice, nivoi, procjene, FSRS stanje, ispiti, obim, dostupnost, raspored, zauzeto iz povezanih kalendara, unosi predavanja, prioriteti, režimi, ručni start kampanje, ručni blokovi, faktor realizacije, ocjene termina, zadani predložak sesije, postavke); ako je isti kao u zadnjem `plan_runs`, koristi se postojeći plan i ništa se ne računa. AI se zove samo za strategist, i to ručno ili sedmično.
+
+**Ista jedinica u danu.** Dijelovi iste duge jedinice (podjela po stranicama) smiju biti isti dan samo u istom ili susjednom bloku; ponavljanje (`review`) iste jedinice je najviše jednom dnevno.
+
+**Brze akcije dana.**
+
+- **“Danas ne mogu”** (Danas, jedan tap + undo): napravi `availability_days` za danas sa `slots = []`, današnji AI blokovi postaju `skipped` (ne “propušteno”), replan od sutra. Ne ulazi u ρ.
+- **“Imam samo 30 min”** (Danas i PokreniSesiju; trajanje 15/30/45/60): čista funkcija `pickForTime(state, minutes)` izabere najvredniji komad (ponavljanje koje danas ističe sa najnižim R, pa najhitnija jedinica iz današnjeg plana, pa sljedeća po hitnosti), pa odmah ponudi start sesije. Ne mijenja plan; sesija se veže za blok ako ga pokrije.
 
 **Ručni blokovi.** Blok sa `plan_blocks.origin = 'user'` napravio je ili izmijenio korisnik (vidi tok 7). Nema `plan_run_id`, troši kapacitet svog dana i njegove jedinice se računaju kao planirane. Replan ga nikad ne briše ni pomjera; kad prođe, postaje odrađen ili propušten kao svaki drugi blok.
 
@@ -313,6 +361,8 @@ Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash
 - **Kada je provjera na redu.** `next_review_on` = dan kad R padne ispod ciljnog zadržavanja predmeta (0.80–0.90 po prioritetu).
 - **Rotacija.** Predmet u kampanji prije starta ima samo ponavljanja već naučenog, bez novog učenja; jedinica koju ne pokriva nijedan aktivan nadolazeći ispit ne dobija ponavljanja.
 - Datum ponavljanja nikad ne prelazi ispit: ako bi pao iza, zamijeni se ponavljanjem u buffer danu.
+- **Cilj je jačina na dan ispita.** Za svaku jedinicu u obimu ispita računa se predviđeni R(datum ispita) iz trenutnog FSRS stanja. Ako je ispod ciljnog zadržavanja, a sljedeće ponavljanje ne bi palo prije ispita, zakaže se ponavljanje u bufferu ili zadnjem danu prije buffera. Prognoza spremnosti i procjena ocjene koriste R na dan ispita, ne današnji.
+- **Poglavlje nije kartica.** FSRS default parametri su naučeni na kratkim karticama. Za poglavlja (`unit_kind = 'chapter'`) ocjena dolazi iz najpreciznijeg dostupnog testa (podnaslovi: % objašnjenih → 0/1/2; ostalo 0–2), a ciljno zadržavanje je za 0.03 više od tabele prioriteta (najviše 0.93). Pitanja (`unit_kind = 'question'`) i **kartice** su zasebni FSRS objekti: kartice dobijaju iste FSRS kolone kao jedinice (`0017_fsrs.sql`) i svoje ponavljanje u `review` blokovima, a jačina jedinice uključuje i njene kartice (ponderisano kao jedna jedinica).
 - Nakon 4 uspješna ponavljanja (`fsrs_reps`, bez lapsa u međuvremenu) jedinica prelazi na level 3 (“Ponovljeno”).
 - **Jačina na ekranima.** Jedinica: R. Tema, izvor, predmet, ispit: prosjek R ponderisan minutama jedinica (ista logika kao progres), samo nad jedinicama koje su ušle u ponavljanje. Prikazuje se uz progres, ne umjesto njega. Skala u UI: 85%+ Jako, 75–84% Dobro, 60–74% Slabi, ispod 60% Zaboravlja se.
 - **Provjera znanja.** `review` blok se radi kao niz recall gate-ova (ekran “Provjera znanja”), sa sažetkom promjene jačine na kraju.
@@ -320,12 +370,15 @@ Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash
 
 **AI strategist**
 
-- Pokreće se sedmično (nedjelja, pri prvom otvaranju) ili na dugme. Ulaz je kompaktan JSON sažetak (\~1–2k tokena): ciljevi, prioriteti i režimi, progres, jačina po temama, deficit, zaostatak po predavanjima, propušteni blokovi, efikasnost po dobu dana, slabe teme, refleksije zadnjih 7 dana.
-- Izlaz je strukturiran JSON: sažetak, rizici i najviše 3 prijedloga sa tipom akcije (`reprioritize_unit`, `add_hours`, `drop_unit`, `change_buffer`, `avoid_slot`, `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`).
+- Pokreće se sedmično (nedjelja, pri prvom otvaranju) ili na dugme. Ulaz je kompaktan JSON sažetak (\~1–2k tokena): ciljevi, prioriteti i režimi, progres, jačina po temama, deficit, zaostatak po predavanjima, propušteni blokovi, faktor realizacije, ocjene termina, slabe teme, refleksije zadnjih 7 dana.
+- **Pravila predlažu, LLM bira i objašnjava.** Kandidate akcija pravi kod (`src/lib/strategist/`: pravila zaostatka, deficita, gužve ispita, realizacije, termina, “čitanje bez testa”), svaki sa unaprijed izračunatim efektom (razlika plana). LLM dobija kandidate, bira najviše 3 i piše sažetak, rizike i obrazloženje na jeziku korisnika; ne može izmisliti akciju koje nema među kandidatima (Zod: `candidate_id` iz liste).
+- Izlaz je strukturiran JSON: sažetak, rizici i najviše 3 prijedloga sa tipom akcije (`reprioritize_unit`, `add_hours`, `drop_unit`, `change_buffer`, `avoid_slot`, `add_slot`, `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`).
+- **Privatnost.** Dok je provajder Gemini free tier (Google može koristiti podatke), refleksije i razlozi niskog fokusa ne idu u prompt; šalju se samo agregati. Sa plaćenim provajderom idu uz prekidač u Postavkama (default uključeno).
+- **Sedmični check-in** (nedjelja, isti ulaz kao strategist, ~2 min): potvrdi izuzetke za sljedeću sedmicu (put, rođendan, “ove sedmice radim više”), pogledaj prognozu, odobri do 3 akcije. Radi i bez AI-ja (samo kandidati iz pravila).
 - Korisnik odobri prijedlog jednim tapom; kod ga primijeni i pokrene replan. AI nikad direktno ne piše blokove.
 - Na “Danas” se prikazuje zadnji savjet strategista dok je svjež (do 3 dana), inače “zašto ovo danas” iz scheduler-a.
 
-**Testovi.** `plan()` je glavni kandidat za unit testove (Vitest): prazna dostupnost, dva ispita isti dan, deficit, propušten dan, start kampanje, ručni start, dvije kampanje u istoj sedmici, ručni blok preživi replan, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, limit ponavljanja. Invarijante (kapacitet se nikad ne prekorači, ručni blokovi se ne mijenjaju, isti ulaz = isti plan) provjeravaju se property testovima (`fast-check`). To je i dobar portfolio detalj.
+**Testovi.** `plan()` je glavni kandidat za unit testove (Vitest): prazna dostupnost, dva ispita isti dan, deficit, propušten dan, start kampanje, ručni start, dvije kampanje u istoj sedmici, ručni blok preživi replan, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, limit ponavljanja, faktor realizacije i rezerva, limit rasta nakon propuštenog, “Danas ne mogu”, mikro-blokovi, pauze u satnici, san pred ispit, zauzetost iz povezanih kalendara. Invarijante (kapacitet se nikad ne prekorači, učenje + pauze stanu u slobodne termine, ručni blokovi se ne mijenjaju, isti ulaz = isti plan i ista satnica) provjeravaju se property testovima (`fast-check`). To je i dobar portfolio detalj.
 
 ## Timer, pauza i rekalibracija
 
@@ -354,7 +407,23 @@ Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migrac
 
 **Odluke (Etapa 7)**
 
-- **Režimi 25/5 i 50/10 su samo podsjetnik.** Značka odbrojava do pauze („pauza za 1:19“); kad istekne, piše „Vrijeme je za pauzu“ (uz vibraciju ako je ekran otvoren). Pauzu korisnik tapne sam; timer nikad sam ne zatvara ni ne otvara segment, jer browser u pozadini ne radi pouzdano. Tokom pauze značka odbrojava do kraja pauze. „Slobodno“ nema podsjetnik.
+- **Režimi 25/5 i 50/10 su samo podsjetnik.** Značka odbrojava do pauze („pauza za 1:19“); kad istekne, piše „Vrijeme je za pauzu“ (uz vibraciju ako je ekran otvoren). Pauzu korisnik tapne sam; timer nikad sam ne zatvara ni ne otvara segment, jer browser u pozadini ne radi pouzdano. Tokom pauze značka odbrojava do kraja pauze. „Slobodno“ nema podsjetnik. (Etapa 8 zamjenjuje fiksne režime predlošcima, pravilo podsjetnika ostaje.)
+
+**Predlošci sesije (odluka nakon Etape 7).** Režim timera postaje predložak: niz intervala učenja i pauze koji se ponavlja, sa opcionalnom dugom pauzom. Istraživanja ne daju jednog pobjednika (Pomodoro je kod [Smits i sar. 2025](https://pmc.ncbi.nlm.nih.gov/articles/PMC12292963/) dao brži rast umora uz istu produktivnost kao pauze koje student bira sam), pa app nudi više predložaka i mjeri koji tebi daje bolji fokus i brzinu.
+
+| Predložak | Učenje / pauza | Duga pauza |
+| --- | --- | --- |
+| **Standardno** (default) | 50 / 15 | — |
+| Pomodoro | 25 / 5 | 20 min nakon 4 intervala |
+| Flowtime | učiš dok hoćeš; pauza = učenje / 5 (najmanje 5, najviše 20 min), predložena kad tapneš pauzu | — |
+| Vlastiti | niz koraka koji korisnik složi (npr. 45 → 10 → 45 → 20, ponovi), spašen pod imenom | opcionalno |
+| Slobodno | bez podsjetnika | — |
+
+- Model: `profiles.session_presets` (jsonb, vlastiti predlošci; ugrađeni su u kodu), `profiles.default_preset` (default `standard`), `study_sessions.timer_mode` = id predloška. Zod šema u `_shared/schemas.ts`; čista logika značke u `src/lib/session/timer.ts`.
+- Izbor po sesiji u PokreniSesiju (zadnji korišten je predložen), default u Postavkama i onboardingu.
+- **Kraj pauze sa zaključanim ekranom:** ulazak u pauzu upiše `break_ends_at` i zakaže Web Push za taj trenutak (edge funkcija `notify`); izlazak iz pauze ga otkaže. Do Web Push-a samo značka.
+- Plan zna za pauze: `placeTimes()` ih rezerviše po zadanom predlošku (vidi Scheduler → Lista vs satnica).
+- Statistika (Etapa 11) poredi predloške po fokusu i brzini (normalizovanoj težinom) i nakon bar 5 sesija po predlošku može predložiti promjenu defaulta.
 - **Zaboravljen timer** se okida kad aktivni segment radi duže od 3 h (provjera pri otvaranju app-a i na ekranu sesije). Pitanje „Jesi li učila do sad?“ nudi „Da, nastavi“ (pitanje se zatvara) i „Ne, završila sam u HH:MM“ (default: početak segmenta + 25 min, između početka segmenta i sada): sesija se završi u to vrijeme i otvara se KrajSesije.
 - **Kraj sesije** ima samo dugme „Spasi“ dok recall gate ne dođe u Etapi 9; tad se vraća par „Spasi i testiraj se“ / „Samo spasi“ iz mockupa.
 - **Status jedinice na kraju sesije:** jedinica do čijeg je kraja korisnik stigao („do koje stranice“) dobije „Pročitano“ ako je bila nepočeta; čip uz jedinicu se tapom mijenja (Nije gotovo / Pročitano / Razumijem / Ponovljeno). Djelimično pređena jedinica zadržava status.
@@ -397,7 +466,7 @@ Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migrac
 - AI pozivi traže mrežu; offline je dugme onemogućeno uz poruku.
 - Konflikt (isti zapis izmijenjen na dva uređaja): pobjeđuje noviji `updated_at`, osim segmenata timera, koji se samo dodaju.
 
-**Granica dana.** “Dan” počinje u 04:00 po korisnikovoj vremenskoj zoni (`profiles.day_start_min`, `profiles.timezone`). Učenje u 01:30 pripada prethodnom danu, a “prvo otvaranje novog dana” se računa od te granice. Sva polja `on_date` su lokalni datumi izračunati na ovaj način; timestampovi ostaju u UTC-u.
+**Granica dana.** “Dan” počinje u 04:00 po korisnikovoj vremenskoj zoni (`profiles.day_start_min`, `profiles.timezone`). Onboarding predlaže granicu iz uobičajenog vremena lijeganja (2 h poslije, najmanje 04:00), a zonu uzima iz browsera (`Intl.DateTimeFormat().resolvedOptions().timeZone`); kad se zona browsera razlikuje od spašene, Postavke pitaju da li je promijeniti. Učenje u 01:30 pripada prethodnom danu, a “prvo otvaranje novog dana” se računa od te granice. Sva polja `on_date` su lokalni datumi izračunati na ovaj način; timestampovi ostaju u UTC-u.
 
 ## Podaci za strategista
 
@@ -405,11 +474,13 @@ Strategist najviše dobija od podataka koje timer skuplja sam, plus dva tapa po 
 
 | Signal | Izvor | Unos | Šta strategist radi s tim |
 | --- | --- | --- | --- |
-| Efikasnost po dobu dana i danu u sedmici | segmenti (min po jedinici mjere) | pasivno | teške jedinice u najbolje termine u satnici |
-| Pad efikasnosti kroz sesiju | segmenti | pasivno | predlaže dužinu bloka i pauze |
+| Efikasnost po dobu dana i danu u sedmici | segmenti (min po jedinici mjere) | pasivno | ulaz u ocjene termina (kod, vidi Termini učenja); strategist samo objašnjava |
+| Pad efikasnosti kroz sesiju | segmenti | pasivno | predlaže predložak sesije |
 | Pauze (broj, trajanje) | segmenti | pasivno | signal fokusa |
-| Kašnjenje starta | `planned_start` bloka vs stvarni start | pasivno | prepoznaje termine koje redovno preskočiš i prestaje ih planirati |
-| Ispunjenost plana | blokovi done/missed po sedmici | pasivno | smanjuje kapacitet ako je plan stalno preoptimističan |
+| Kašnjenje starta | `planned_start` bloka (uvijek popunjen, `placeTimes()` je automatski) vs stvarni start | pasivno | ocjene termina; prijedlog `avoid_slot` |
+| Ispunjenost plana | blokovi done/missed | pasivno | faktor realizacije ρ u `plan()` (kod); strategist samo objašnjava |
+| Razlog niskog fokusa | čipovi na kraju sesije kad je fokus 1 (umorna, telefon, buka, teško gradivo, loše spavala) | opcionalno, 1 tap | razdvaja “loš termin” od “teško gradivo” u ocjenama termina |
+| Ometanja | dugme “Ometena sam” u sesiji (broj tapova) | 1 tap | signal fokusa po terminu |
 | Prebacivanja jedinica | broj segmenata po sesiji | pasivno | signal rascjepkanosti |
 | Način učenja | `mode`: čitanje, zadaci, ponavljanje, pitanja | 1 tap na startu | odvojena kalibracija po načinu |
 | Fokus 1–3 | kraj sesije | 1 tap | razdvaja “teško gradivo” od “loš dan” |
@@ -427,7 +498,100 @@ Strategist najviše dobija od podataka koje timer skuplja sam, plus dva tapa po 
 - “Zašto ovo danas”: jedna rečenica uz svaki blok, generisana iz pravila scheduler-a (bez AI-ja).
 - Sedmični retro: najviše 3 konkretne akcije.
 
-Polja `mode`, `focus`, `planned_start`, rezultat ispita i tabela `review_logs` su u konsolidovanoj migraciji.
+Polja `mode`, `focus`, `planned_start`, rezultat ispita i tabela `review_logs` su u konsolidovanoj migraciji; `focus_reasons` i `distractions` dolaze u `0014`.
+
+## Termini učenja (kad ti učenje ide)
+
+App uči u kojim terminima ti učenje stvarno ide i koristi to u satnici i u prijedlozima dostupnosti. Sve je kod u `src/lib/slots/` (čista funkcija, testovi); LLM samo formuliše prijedlog. Efekat je stvaran: poklapanje zahtjevnog, analitičkog rada sa vrhom budnosti daje bolji učinak, posebno kod izraženih jutarnjih i večernjih tipova ([pregled](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2022.851502/full)).
+
+**Termin** = dio dana × vrsta dana: jutro (do 12), podne (12–15), popodne (15–19), veče (19–23), noć (23–granica dana) × radni dan / vikend. Ispitni rok (iz akademskog kalendara) se računa odvojeno, jer mijenja ritam.
+
+**Signali po terminu** (iz sesija sa timerom i AI blokova sa vremenom):
+
+| Signal | Mjera | Napomena |
+| --- | --- | --- |
+| Fokus | prosjek 1–3 | sesije sa razlogom “teško gradivo” imaju pola težine |
+| Brzina | izmjerena / očekivana brzina za to gradivo (kalibracija, uz težinu) | > 1 = sporije nego inače |
+| Odrađenost | odrađen / planiran blok u tom terminu | Beta(α, β), prior Beta(4, 1) za termine iz onboardinga, Beta(2, 2) za ostale |
+| Kašnjenje starta | minute od `planned_start` do prvog segmenta | > 30 min = djelimičan neuspjeh |
+
+**Ocjena termina** = ponderisan zbir standardizovanih signala, svaki ublažen prema prioru brojem mjerenja (`k/(k+6)`, isti obrazac kao kalibracija). Prior dolazi iz onboardinga (“kad ti je najlakše učiti”). Za odrađenost se pri slaganju satnice uzorkuje iz Beta raspodjele (Thompson sampling sa seedom iz `input_hash`), da app povremeno isproba i termine koje ne bi izabrala, umjesto da zauvijek ostane u prvim izborima.
+
+**Upotreba.**
+
+- `placeTimes()`: teško gradivo i prvo učenje u bolje termine, ponavljanja i lakši sadržaj u slabije (vidi Lista vs satnica).
+- Kartice prijedloga (promjene ulaza, jedan tap → replan), tek kad termin ima ≥ 6 mjerenja i jasnu razliku:
+  - `avoid_slot`: “Utorkom ujutro ti propadne 4 od 5 blokova. Maknuti utorak 08–10 iz dostupnosti?”
+  - `add_slot`: “Navečer ti je fokus 2.7/3. Dodati srijedu 21–23?”
+- Napredak → Statistika: mapa termina (fokus i odrađenost), dok nema podataka “Uči se… (još N sesija)”.
+
+**Zamke.** Brzina je normalizovana težinom (teško gradivo navečer ne smije izgledati kao loš termin); stari podaci slabe (polu-život 6 sedmica), jer se ritam mijenja kroz semestar.
+
+## Prognoza spremnosti
+
+Prognoza je raspon i vjerovatnoća, ne jedan broj. Čista funkcija `forecast()` u `src/lib/progress/` radi Monte Carlo simulaciju (1000 prolaza, seed iz `input_hash`, u browseru):
+
+1. Za svaki preostali dan do ispita uzorkuje se odrađeni rad iz vlastite historije (bootstrap dnevnih odrađenih minuta zadnjih 28 dana, po radnom danu / vikendu; dok nema 7 dana historije, kapacitet × ρ uz ±30% šuma).
+2. Rad se troši redom iz plana (isti redoslijed kao `plan()`).
+3. Rezultat po ispitu: raspon pokrivenosti (10.–90. percentil) i P(obavezan rad pokriven do ispita).
+
+Prikaz: “Vjerovatno 75–90% · 70% šanse da stigneš obavezno”. Procjena ocjene (vidi Projekcija ocjene) koristi istu simulaciju × R na dan ispita i prikazuje se kao raspon ocjena; `readiness_before` i rezultati pokazuju da li se korisnik sistematski precjenjuje (“obično se procijeniš za 1 ocjenu više”).
+
+## Onboarding
+
+Cilj: za ~3 minute od “Kako da te zovem?” do realne sedmice i, ako je unesen predmet, prvog bloka za danas. Iskustvo konkurencije je da korisnik koji završi onboarding na praznom ekranu često ništa ne unese, pa onboarding završava pregledom sedmice, ne praznim Danas.
+
+- Svaki korak se može preskočiti; preskočeni ostaju kao checklist na DanasPrazno (“Još 2 koraka do tačnog plana”). Napredak se pamti (`profiles.onboarding_step`), pa se može nastaviti kasnije; `profiles.onboarded_at` se postavi na kraju ili na “Završi kasnije”.
+- Redoslijed: prvo uvoz, pa dostupnost, da su nastava i ostale obaveze već šrafirane kad korisnik bira slobodne periode.
+- Okidač `handle_new_user()` i dalje pravi default dostupnost (06–24) kao sigurnosnu mrežu; korak 4 je zamjenjuje.
+
+| # | Korak | Pita | Upisuje |
+| --- | --- | --- | --- |
+| 1 | Ime i jezik | postoji (“Kako da te zovem?”) + jezik | `display_name`, `locale`, `timezone` iz browsera |
+| 2 | “Šta već imaš?” | Kartice: akademski kalendar (PDF/slika/tekst kroz `parse-document`), raspored nastave (ručno; slikom od Etape 10), povezani kalendar (iCal link), “Nemam ništa sad” | `academic_periods`, `timetable_entries`, `calendar_feeds`. Raspored bez akademskog kalendara pita samo “Kad počinje i završava semestar?” i pravi period nastave |
+| 3 | Ritam | “Kad obično ustaješ i liježeš?” (radni dan / vikend), “Kad ti je najlakše učiti?” (jutro / podne / popodne / veče / noć, više izbora) | `profiles.wake_min`, `sleep_min` (po 2: radni, vikend), `preferred_slots` (prior termina), prijedlog `day_start_min` |
+| 4 | Dani i periodi | Sedmica sa vremenskom osom: zauzeto šrafirano, predloženi periodi (budan − zauzeto, naglašeni najlakši termini). Tap uključi ili isključi dan; čipovi jutro / popodne / veče ili prevlačenje | `availability_rules` (zamjenjuju default) |
+| 5 | Koliko najviše | Klizač po grupi dana (radni / vikend), uz sedmični zbir (“To je 17 h sedmično”) i tekst “Plan ostavlja rezervu, bolje realno nego idealno” | `daily_cap_min` |
+| 6 | Pauze | Predložak sesije (Standardno 50/15 označeno) | `default_preset` |
+| 7 | Prvi predmet | Naziv, ispit i datum (ili rok iz kalendara), gruba veličina gradiva | predmet, ispit, privremeni izvor |
+| 8 | “Tvoja sedmica” | Pregled: slobodno X h sedmično, potrebno Y h do prvog ispita, “stižeš” ili “fali 6 h” + prvi blok za danas | — |
+
+Mockup `design/Onboarding.dc.html` (svi koraci kao stanja jedne komponente) prije implementacije. Maskota: jedna poza na koraku 1 i na koraku 8 (vidi MASCOT.md; nova mjesta se dodaju tamo).
+
+## Povezani kalendari i integracije
+
+Google, Apple iCloud, Outlook i Moodle izvoze kalendar kao iCal (ICS) link, pa jedan mehanizam pokriva sva četiri izvora bez OAuth-a.
+
+**Uvoz (`calendar_feeds`).** Korisnik zalijepi tajni iCal link i izabere vrstu:
+
+- **Zauzetost** (`busy`): Google (Postavke kalendara → “Tajna adresa u iCal formatu”), Outlook (“Objavi kalendar” → ICS), iCloud (javni link). Događaji su zauzeto vrijeme u planu, kao nastava.
+- **Rokovi** (`deadlines`): Moodle (Kalendar → Izvoz → “Dobij URL kalendara”; link sadrži `authtoken` i radi bez prijave, [Moodle docs](https://docs.moodle.org/403/en/Calendar_export)). Događaji ne prave zauzetost nego karticu “3 nova roka iz Moodlea” sa pregledom novo / izmijenjeno / preskačem → `deadlines`; predmet se uparuje preko `fuse.js` kao kod uvoza rasporeda, jer Moodle URL ne može biti ograničen na jedan predmet.
+
+**Sinhronizacija.** Edge funkcija `sync-calendar` (browser ne može povući feed zbog CORS-a): povuče feed, parsira, raširi ponavljanja (RRULE, EXDATE, RECURRENCE-ID) za horizont od 120 dana i upsert po `uid` + početku u `external_events`; nestali događaji se brišu. Okidači: otvaranje app-a (najviše jednom u 30 min) i `pg_cron` svaka 3 h. Greška se upiše u `last_error` i prikaže na feedu; plan koristi zadnje uspješno stanje. Bez LLM poziva; ne broji se u AI limit.
+
+**Pravila.**
+
+- Cjelodnevni događaji (rođendani, praznici) po defaultu nisu zauzeti, samo se prikazuju; prekidač po feedu.
+- Događaji označeni kao slobodni (`TRANSP:TRANSPARENT`) i otkazani (`STATUS:CANCELLED`) ne blokiraju.
+- Pojedinačan događaj se može označiti “ignoriši” (`external_events.ignored`); ponovna sinhronizacija to čuva.
+- Prekidač “Spremaj samo zauzeto” po feedu: naslov i lokacija se ne spremaju (privatnost).
+- Tajni link je lozinka: čuva se samo u `calendar_feeds.url` (RLS), nikad u logovima, `ai_runs` ni klijentskom kešu osim maskiranog prikaza.
+
+**Plan.** Zauzetost iz feedova ulazi u neto dostupnost u `src/lib/schedule/` kao nastava (isto upozorenje kod preklapanja i “Učim umjesto ovoga”), pa i u `input_hash`; promjena nakon sinhronizacije pokreće replan (debounce 2 s). Na vremenskoj osi Dostupnosti i u kalendaru događaji su šrafirani sa oznakom izvora (“iz Google kalendara”).
+
+**UI.** Postavke → “Povezani kalendari” (lista, dodaj, vrsta, boja, zadnja sinhronizacija, prekidači, ukloni) i korak 2 onboardinga. Uz polje za link kratko uputstvo po servisu.
+
+**Izvoz plana (ICS pretplata).** Edge funkcija `calendar-feed` servira ICS sa tajnim tokenom (`profiles.ics_token`, može se obnoviti): ispiti, rokovi i (prekidač) blokovi plana. Google osvježava pretplaćene kalendare tek svakih ~8–24 h, pa blokovi tamo kasne; app to kaže uz prekidač. Upis blokova odmah (Google Calendar API, OAuth) je “Kasnije”: u Testing režimu Google refresh token ističe za 7 dana, a produkcija traži verifikaciju.
+
+**Ostale integracije.**
+
+| Integracija | Odluka |
+| --- | --- |
+| Web Share Target (PWA) | “Podijeli” PDF ili sliku iz Vibera, WhatsAppa, Moodle app-a ili Gmaila → “Daj sovi dokument” sa prilogom. Radi na Androidu (Chrome); iOS PWA ga ne podržava, tamo ostaje +. Etapa 10 |
+| Notion | Bez integracije u v1: stranica se kopira i zalijepi sovi (tekst kroz `parse-document`). Javna Notion integracija (baza rokova) Kasnije, samo ako zatreba |
+| Anki / Quizlet | Izvoz kartica kao CSV (Anki ga uvozi); uvoz teksta “pojam ⇥ definicija” kao kartice. Bez API-ja (Quizlet ga nema, AnkiConnect radi samo lokalno). Etapa 10 |
+| Microsoft Teams, Google Classroom | Ne: traže školski račun i često saglasnost admina. Rokovi iz Teamsa/Outlooka idu kroz Outlook ICS |
+| Zamger i drugi fakultetski sistemi | Ne: nema javnog API-ja. Rezultati se unose ručno ili kroz sovu (slika, paste) |
 
 ## Tehnike učenja ugrađene u app
 
@@ -438,8 +602,10 @@ Dvije tehnike sa najjačim dokazima su samotestiranje i raspoređeno učenje; ap
 | Samotestiranje (active recall) | Najviša ocjena u pregledu 10 tehnika ([Dunlosky et al. 2013](https://www.psychologicalscience.org/news/releases/which-study-strategies-make-the-grade.html)); u RCT-u sa specijalizantima ponovljeno testiranje dalo je bolje pamćenje nakon 6 mjeseci od ponovljenog čitanja ([Larsen et al. 2009](https://www.learningscientists.org/learning-scientists-podcast/2018/5/16/episode-19-bite-size-research-on-benefits-of-retrieval-with-medical-residents)) | Jedinica ne može na level 2 (“razumijem”) samo čitanjem: traži se kratki test (vidi “Recall gate”) |
 | Raspoređeno učenje + spaced repetition | Takođe najviša ocjena kod Dunloskog; kod studenata medicine dnevna upotreba Anki-ja povezana sa višim Step 1 rezultatima ([Wothe et al. 2023](https://doaj.org/article/7aaf357db5d54ad39fea3f672ad5aae4)), ali to su korelacijske studije | Scheduler ne stavlja istu jedinicu više od jednom dnevno; ponavljanja iz `review_logs` |
 | Feedback nakon testa | Testiranje sa korektivnim feedbackom daje najbolje učenje ([pregled](https://texasldcenter.org/?p=346)) | Nakon odgovora odmah se prikaže tačan odgovor ili notes, pa korisnik ocijeni recall 0–2 |
-| Sistemske pauze (Pomodoro) | Unaprijed zadane pauze dale su bolju koncentraciju i motivaciju i sličan učinak za kraće vrijeme ([Biwer et al. 2023](https://nufind.nu.edu.sa/EdsRecord/eric,EJ1386535)); novija studija našla je brži rast umora uz Pomodoro, bez razlike na kraju ([Behavioral Sciences 2025](https://www.mdpi.com/2076-328X/15/7/861)) | Opcionalni režimi timera: 25/5, 50/10, slobodno. App mjeri koji režim tebi daje bolju efikasnost i fokus |
-| Miješanje tema (interleaving) | Miješani dokazi u medicini: kod EKG-a je na odgođenom testu blokirana vježba bila bolja od miješane ([Monteiro et al. 2017](https://pmc.ncbi.nlm.nih.gov/articles/PMC5542896)) | Samo u blokovima ponavljanja i pitanja, nikad pri prvom učenju; isključivo u postavkama |
+| Sistemske pauze (Pomodoro) | Unaprijed zadane pauze dale su bolju koncentraciju i motivaciju i sličan učinak za kraće vrijeme ([Biwer et al. 2023](https://nufind.nu.edu.sa/EdsRecord/eric,EJ1386535)); novija studija našla je brži rast umora uz Pomodoro, bez razlike na kraju ([Behavioral Sciences 2025](https://www.mdpi.com/2076-328X/15/7/861)) | Predlošci sesije: Standardno 50/15 (default), Pomodoro, Flowtime, vlastiti, slobodno; pauze su u satnici. App mjeri koji predložak tebi daje bolju efikasnost i fokus |
+| Namjera “kad i gdje” (implementation intentions) | Plan sa konkretnim vremenom i mjestom povećava šansu da se namjera izvrši (Gollwitzer) | Svaki blok ima predloženo vrijeme; opcionalno mjesto (Kasnije) |
+| Novi početak (fresh start) | Početak sedmice ili nakon pauze je prirodan trenutak za novi pokušaj (Dai, Milkman, Riis 2014) | Kartica “Krenimo ispočetka” umjesto liste propuštenog; bez streakova i kazni |
+| Miješanje tema (interleaving) | Miješani dokazi u medicini: kod EKG-a je na odgođenom testu blokirana vježba bila bolja od miješane ([Monteiro et al. 2017](https://pmc.ncbi.nlm.nih.gov/articles/PMC5542896)) | Samo u blokovima ponavljanja i pitanja, nikad pri prvom učenju; default isključeno, uključuje se samo u Postavkama |
 | Čitanje, podvlačenje, sažimanje | Niska korisnost kod Dunloskog ([sažetak](https://www.mylifetime.com.hk/?p=2062)) | Strategist upozori kad jedinica ima više čitanja a level ostaje 1, i predloži test umjesto novog čitanja |
 
 **Recall gate (blurting).** Kad označiš poglavlje kao pročitano, app ponudi jedan od dva brza testa:
@@ -481,7 +647,7 @@ Korisnik unosi predavanja, vježbe i labove (ručno ili slikom rasporeda, isti A
 
 **Dostupnost.** Dvije stvari, obje sa sedmičnim šablonom i izmjenom za konkretan datum:
 
-- **Kad možeš učiti** (termini). Default je uvijek osim 00:00–06:00 (06–24 svaki dan); novi korisnik ga dobija automatski. Termini nastave (tačno vrijeme termina) se oduzimaju sami, pa šablon ne treba prilagođavati rasporedu.
+- **Kad možeš učiti** (termini). Default je uvijek osim 00:00–06:00 (06–24 svaki dan); novi korisnik ga dobija automatski kao sigurnosnu mrežu, a onboarding ga zamjenjuje stvarnim periodima (vidi Onboarding). Zauzetost iz povezanih kalendara se oduzima kao nastava. Termini nastave (tačno vrijeme termina) se oduzimaju sami, pa šablon ne treba prilagođavati rasporedu.
 - **Koliko najviše dnevno** (dnevni maksimum učenja, `profiles.daily_cap_min`, po danu u sedmici). Default 3 h radnim danima, 5 h vikendom. Plan nikad ne prelazi ni slobodne termine ni maksimum.
 - **Konkretan datum** (`availability_days`): termini i/ili maksimum samo za taj dan zamjenjuju šablon (npr. jedan ponedjeljak manje vremena, “zauzeta cijeli dan” = dan bez termina). Pri izmjeni app pita “Samo ovaj dan” ili “Svaki [ponedjeljak]”, kao kod ponavljajućih događaja u kalendaru.
 - **Preko nastave**: termin dostupnosti smije preklapati nastavu, uz upozorenje “U ovom terminu imaš Signali · predavanje 09:00–11:00” i prekidač “Učim umjesto nastave”. Bez prekidača nastava i dalje blokira taj dio; sa njim se taj dio računa kao slobodan.
@@ -566,7 +732,7 @@ Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih 
 - **Najviše moguće**: imam + bodovi preostalih stavki.
 - **Za ocjenu N treba**: max(prag N − imam, zbir pragova preostalih stavki) od preostalih bodova, i kao prosječan procenat na preostalim stavkama. Pragovi po stavci su donja granica (odluka, Etapa 5): uz II parcijalu od 40 sa pragom 50% treba najmanje 20, i kad je za 6 dovoljno 9 bodova (mockup prikazuje 9). Za svaku ocjenu 6–10: osigurano / treba X (Y%) / nedostižno.
 - **Željena ocjena** (`subjects.target_grade`, 6–10, opcionalno) je istaknut red projekcije.
-- **Procjena ocjene iz spremnosti** (Napredak, uz prognozu spremnosti): očekivani procenat na preostalom ispitu = prognozirana pokrivenost obima do datuma ispita × jačina znanja; daje vjerovatnu ocjenu i raspon. Rezultati i `readiness_before` je kalibrišu.
+- **Procjena ocjene iz spremnosti** (Napredak, uz prognozu spremnosti): očekivani procenat na preostalom ispitu = prognozirana pokrivenost obima do datuma ispita (Monte Carlo, vidi Prognoza spremnosti) × jačina znanja na dan ispita; daje vjerovatnu ocjenu i raspon (10.–90. percentil). Rezultati i `readiness_before` je kalibrišu.
 
 **Željena ocjena kao ulaz u plan** (scheduler, Etapa 8): iz potrebnog prosjeka r na preostalim ispitima predmeta ciljna pokrivenost postaje max(pokrivenost iz prioriteta, min(100%, r + 10 p.p.)). Prioritet ostaje ručan; kad je cilj nedostižan ili r > 90% uz prioritet < 4, kartica prijedloga nudi “Podigni prioritet”. `target_grade` i bodovi ulaze u `input_hash`.
 
@@ -611,6 +777,7 @@ React SPA kao PWA na Cloudflare Pages, Supabase za bazu, auth i storage, a AI po
 | Bilješke | `react-markdown` + `remark-math` + `rehype-katex` | Markdown i formule u bilješkama |
 | Grafikoni | `recharts` | Statistika i jačina po temama na Napretku |
 | Slike | `browser-image-compression` | Smanjenje na 1600 px u web workeru prije uploada |
+| Kalendari (ICS) | `ical.js` u edge funkciji `sync-calendar` (parsiranje, RRULE/EXDATE); izvoz ICS-a generiše se ručno (mali format) | Jedan uvoz za Google, Apple, Outlook i Moodle, bez OAuth-a |
 | Fuzzy uparivanje | `fuse.js` | Nazivi predmeta iz rasporeda ↔ postojeći predmeti |
 | Embeddings | pgvector + ugrađeni `gte-small` u Edge Functions (`Supabase.ai.Session`) | Povezivanje pitanja i poglavlja, dedupe tema, bez LLM poziva |
 | Testovi | Vitest + `fast-check` (+ Playwright kasnije) | Scheduler, formule progresa, property testovi invarijanti plana |
@@ -1123,7 +1290,59 @@ alter table sources add column measured_sessions int not null default 0;   -- "P
 alter table study_sessions
   add column origin text not null default 'timer' check (origin in ('timer','manual'));
 
--- 0014_manual_blocks.sql (Etapa 8)
+-- 0014_onboarding_and_presets.sql (Etapa 8)
+alter table profiles
+  add column onboarded_at timestamptz,                 -- null = onboarding nije završen
+  add column onboarding_step smallint not null default 0,
+  add column wake_min smallint[],                      -- {radni, vikend}, minute od ponoći
+  add column sleep_min smallint[],                     -- {radni, vikend}
+  add column preferred_slots text[] not null default '{}',   -- 'morning','midday','afternoon','evening','night'
+  add column session_presets jsonb not null default '[]',    -- vlastiti predlošci (Zod u _shared)
+  add column default_preset text not null default 'standard',
+  add column exam_eve_end_min smallint not null default 1380,  -- 23:00, san pred ispit
+  add column ics_token text;                           -- izvoz plana; null = isključeno
+alter table study_sessions
+  drop constraint study_sessions_timer_mode_check,     -- timer_mode = id predloška (ugrađen ili vlastiti)
+  add column break_ends_at timestamptz,                -- Web Push za kraj pauze
+  add column focus_reasons text[],                     -- uz fokus 1: 'tired','phone','noise','hard','sleep'
+  add column distractions smallint not null default 0;
+-- stare vrijednosti 'pomodoro25' / 'pomodoro50' / 'free' ostaju važeće za historiju (ugrađeni legacy predlošci)
+alter table sources
+  add column is_rough boolean not null default false;  -- privremeni izvor iz grube veličine gradiva
+
+-- 0015_calendar_feeds.sql (Etapa 8)
+create table calendar_feeds (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  title text not null,
+  url text not null,                                   -- tajna; nikad u logove
+  kind text not null check (kind in ('busy','deadlines')),
+  color text,
+  all_day_busy boolean not null default false,
+  busy_only boolean not null default false,            -- ne spremaj naslov i lokaciju
+  last_synced_at timestamptz,
+  last_error text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create table external_events (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  feed_id uuid not null references calendar_feeds on delete cascade,
+  uid text not null,
+  starts_at timestamptz not null,
+  ends_at timestamptz not null check (ends_at >= starts_at),
+  all_day boolean not null default false,
+  title text,
+  location text,
+  ignored boolean not null default false,
+  deadline_id uuid references deadlines on delete set null,   -- Moodle rok koji je uvezen
+  updated_at timestamptz not null default now(),
+  unique (feed_id, uid, starts_at)
+);
+-- + RLS owner_all, grant, set_updated_at triger, indeks (user_id, starts_at); ai_task se ne mijenja (bez LLM-a)
+
+-- 0016_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1131,7 +1350,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0015_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0017_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene; iste FSRS kolone dobijaju i cards
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,
@@ -1147,7 +1366,17 @@ alter table profiles
 alter table review_logs
   add column elapsed_days numeric,
   add column stability_before numeric,
-  add column stability_after numeric;
+  add column stability_after numeric,
+  add column card_id uuid references cards on delete cascade;   -- ponavljanje kartice (unit_id = njena jedinica)
+alter table cards
+  add column fsrs_stability numeric,
+  add column fsrs_difficulty numeric,
+  add column fsrs_state smallint,
+  add column fsrs_reps smallint not null default 0,
+  add column fsrs_lapses smallint not null default 0,
+  add column last_review_at timestamptz,
+  add column next_review_on date,
+  add column updated_at timestamptz not null default now();     -- + set_updated_at triger
 ```
 
 ## AI integracija
@@ -1166,7 +1395,10 @@ Edge funkcije, sve sa strukturiranim JSON izlazom koji se validira Zod šemom pr
 | `recall-questions` | bilješke ili slika stranice ili naslov + podnaslovi | 3 pitanja sa odgovorima i oznakom izvora |
 | `propose-answer` | ispitno pitanje + bilješke povezanih jedinica | prijedlog odgovora, označen “provjeri” |
 | `quiz` | bilješke jedinice | 5–10 pitanja za kviz ili kartice |
-| `strategist` | JSON sažetak stanja | sažetak, rizici, najviše 3 akcije |
+| `strategist` | JSON sažetak stanja + kandidati akcija iz pravila | sažetak, rizici, najviše 3 izabrana kandidata sa obrazloženjem |
+| `sync-calendar` | `calendar_feeds` korisnika (ili jedan feed) | upsert `external_events`, `last_synced_at` / `last_error`; bez LLM-a |
+| `calendar-feed` | `ics_token` u URL-u | ICS sa ispitima, rokovima i (opcionalno) blokovima; bez LLM-a, bez JWT-a (token je ključ) |
+| `notify` | `pg_cron` / zakazani push (prvi blok, kraj pauze, …) | Web Push |
 
 **Kako dobiti pouzdan JSON.** Koristi structured outputs (`output_config.format` sa `type: "json_schema"`, GA i podržano za `claude-haiku-5-5`): odgovor je garantovano po šemi. Šema se piše samo jednom, Zod-om u `supabase/functions/_shared/schemas.ts`; Anthropic adapter je pretvori helperom `zodOutputFormat()` (`@anthropic-ai/sdk/helpers/zod`) i zove `messages.parse()`, koji vraća validiran `parsed_output`. Gemini adapter koristi `z.toJSONSchema()`. Isti Zod validira i na klijentu.
 
@@ -1218,7 +1450,7 @@ Tokeni su gruba procjena; stvarni broj vidiš u `ai_runs` nakon prvih poziva.
 
 ```ts
 export interface LlmRequest<T> {
-  task: 'parse_toc' | 'parse_questions' | 'strategist' | 'quiz';
+  task: AiTask;              // enum ai_task iz baze (database.ts), npr. 'parse_document', 'answer', 'strategist'
   system: string;
   text?: string;
   images?: { mediaType: 'image/jpeg' | 'image/png'; base64: string }[];
@@ -1272,7 +1504,9 @@ study-planner/
 │  │  ├─ estimates/     # heuristika, shrinkage, kalibracija po načinu
 │  │  ├─ srs/           # FSRS (ts-fsrs), jačina znanja + testovi
 │  │  ├─ pace/          # praćenje predavanja, zaostatak, prijedlozi + testovi
-│  │  ├─ progress/      # formule progresa
+│  │  ├─ progress/      # formule progresa, forecast() (Monte Carlo)
+│  │  ├─ slots/         # termini učenja: signali, ocjene, Thompson + testovi
+│  │  ├─ strategist/    # kandidati akcija iz pravila + testovi
 │  │  ├─ day.ts         # granica dana, lokalni datumi
 │  │  ├─ sync/          # Dexie red, upsert, konflikti
 │  │  ├─ supabase.ts
@@ -1287,6 +1521,7 @@ study-planner/
 │     ├─ parse-toc/  parse-questions/  parse-timetable/
 │     ├─ recall-questions/  propose-answer/  quiz/
 │     ├─ strategist/
+│     ├─ sync-calendar/  calendar-feed/
 │     └─ notify/         # web push, poziva ga pg_cron
 ├─ .github/workflows/   # ci.yml, keepalive.yml, backup.yml
 ├─ public/
@@ -1316,58 +1551,7 @@ Cijeli setup radi na besplatnim planovima; jedini trošak je dopuna Anthropic AP
 | GitHub | Free | Actions za CI i keep-alive | $0 |
 | Domena | opcionalno | `*.pages.dev` je besplatna | $0 |
 
-**1. Supabase**
-
-1. Na supabase.com napravi projekat, regija Frankfurt (eu-central-1), najbliža Sarajevu.
-2. Lokalno: `npx supabase login`, pa `npx supabase link --project-ref <ref>`.
-3. `npx supabase db push` primijeni `0001_init.sql`.
-4. `npx supabase gen types typescript --linked > src/types/database.ts`.
-5. Authentication → URL Configuration: Site URL = tvoja `*.pages.dev` adresa; Redirect URLs dodaj i `http://localhost:5173`.
-6. Napravi svoj nalog (magic link), pa u Auth postavkama **isključi nove registracije**. Tako niko drugi ne troši tvoje AI kredite.
-7. Storage: privatni bucket `toc-uploads` + politika da svako vidi samo svoj folder:
-
-```sql
-create policy "own folder" on storage.objects for all
-using (bucket_id = 'toc-uploads' and (storage.foldername(name))[1] = auth.uid()::text)
-with check (bucket_id = 'toc-uploads' and (storage.foldername(name))[1] = auth.uid()::text);
-```
-
-**2. AI ključ i edge funkcije**
-
-1. Na console.anthropic.com dopuni kredit i odmah postavi mjesečni limit potrošnje.
-2. `npx supabase secrets set ANTHROPIC_API_KEY=sk-ant-...`
-3. `npx supabase functions deploy parse-toc` (i ostale). JWT provjera ostaje uključena, pa funkciju može pozvati samo prijavljen korisnik.
-
-**3. Cloudflare Pages**
-
-1. Push repo na GitHub.
-2. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git.
-3. Framework preset: Vite. Build command `npm run build`, output `dist`.
-4. Environment variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (anon ključ je javan po dizajnu; zaštitu daje RLS).
-5. Ne dodaji `404.html`: bez njega Pages tretira projekat kao SPA i sve rute vraćaju `index.html`.
-6. Svaki push na `main` = produkcijski deploy; svaka grana = preview URL.
-
-**4. Keep-alive protiv Supabase pauze** (`.github/workflows/keepalive.yml`; URL i anon ključ u GitHub Secrets):
-
-```yaml
-name: keepalive
-on:
-  schedule:
-    - cron: "0 6 */3 * *"
-  workflow_dispatch:
-jobs:
-  ping:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          curl -fsS "$SUPABASE_URL/rest/v1/subjects?select=id&limit=1" \
-            -H "apikey: $SUPABASE_ANON_KEY" -o /dev/null
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-```
-
-**5. Backup.** Free tier nema backup retenciju, a projekat koji predugo stoji pauziran može biti obrisan. Jednom sedmično pokreni `npx supabase db dump --linked -f backup.sql` (ručno ili kao drugi GitHub Action sa DB lozinkom u Secrets) i čuvaj fajl van repoa.
+Koraci podešavanja (Supabase, Cloudflare Pages, Resend, AI ključevi, keepalive, backup) su u [SETUP.md](SETUP.md), koji se ažurira sa svakom promjenom u dashboardu. Ovdje se ne ponavljaju, da ne zastare.
 
 ## Roadmap i odluke
 
@@ -1380,11 +1564,11 @@ Sve je u prvoj verziji; ovo je samo redoslijed gradnje, tako da poslije svakog k
 5. **Bodovi i ocjene.** Bodovi ispita i rokova, pragovi, popravni/integralni, skala ocjena, rezultat i poništavanje, projekcija ocjene.
 6. **AI temelj, uvoz i dokumenti.** LLM wrapper (Gemini za sad), `ai_runs`, uvoz akademskog kalendara i rasporeda ispita sa pregledom, dokumenti fakulteta i RAG.
 7. **Timer i sesije.** Timer dugme, segmenti, offline red, kraj sesije, kalibracija.
-8. **Scheduler.** `plan()`, `placeTimes()`, replan, deficit, prioritet, kampanja, meki rokovi predavanja, ručni blokovi, željena ocjena, “Danas” ekran.
-9. **Recall gate, provjera znanja i FSRS.**
-10. **AI sadržaj i asistent.** Uvoz sadržaja, pitanja i rasporeda nastave, merge pri ponovnom uvozu, recall pitanja, embeddings bilješki, chat asistent.
-11. **Napredak.** Statistika, prognoza spremnosti i procjena ocjene, spremnost dan prije ispita, strategist.
-12. **Notifikacije i dorada.** Web Push, pristupačnost, testovi end-to-end.
+8. **Onboarding i scheduler.** Onboarding, predlošci sesije, povezani kalendari (ICS uvoz), gruba veličina gradiva; `plan()`, automatski `placeTimes()` sa pauzama, faktor realizacije i rezerva, limit rasta, replan, deficit, prioritet, kampanja, meki rokovi predavanja, ručni blokovi, željena ocjena, brze akcije dana, “Danas” ekran.
+9. **Recall gate, provjera znanja i FSRS.** Plus osnovni Web Push (prvi blok, kraj pauze), R na dan ispita, kartice kao FSRS objekti.
+10. **AI sadržaj i asistent.** Uvoz sadržaja, pitanja i rasporeda nastave, merge pri ponovnom uvozu, recall pitanja, embeddings bilješki, chat asistent, Moodle rokovi, Web Share Target, CSV kartica.
+11. **Napredak.** Statistika, termini učenja, Monte Carlo prognoza spremnosti i procjena ocjene, spremnost dan prije ispita, strategist (pravila + LLM), sedmični check-in.
+12. **Notifikacije i dorada.** Ostale notifikacije, ICS izvoz plana, izvoz podataka, pristupačnost, testovi end-to-end.
 
 Kasnije: read-only demo nalog sa seed podacima za portfolio.
 
@@ -1427,3 +1611,11 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio.
 | AI provajder za sad | Gemini Flash free tier iza wrappera dok Anthropic nema karticu |
 | Uvoz i asistent | Sova na Danas kao jedan ulaz od Etape 6 (uvoz sa pregledom, pitanja o dokumentima); bilješke, recall i ostali alati u Etapi 10; AI nikad ne piše direktno |
 | RAG | Dokumenti fakulteta (čuvaju se) + bilješke i jedinice (embeddings `gte-small`) + sažetak stanja plana |
+| Onboarding | Prije schedulera (Etapa 8); prvo uvoz, pa dostupnost; svaki korak preskočiv uz checklist na DanasPrazno; završava pregledom “Tvoja sedmica” |
+| Predlošci sesije | Standardno 50/15 default; Pomodoro 25/5 + 20 nakon 4, Flowtime, vlastiti niz, slobodno; podsjetnik, ne automatski segment; kraj pauze kroz Web Push |
+| Satnica | `placeTimes()` automatski poslije `plan()`; svaki blok ima predloženo vrijeme i pauze; tab samo prikazuje i pomjera |
+| Realizacija | Faktor realizacije ρ i rezerva 0.9 u `plan()` (kod, `input_hash`), ne prijedlog strategista; limit dnevnog rasta 1.25× |
+| Termini učenja | Statistika po terminu (fokus, brzina, odrađenost, kašnjenje) sa shrinkage-om i Thompson uzorkovanjem; LLM samo formuliše prijedloge dostupnosti |
+| Prognoza | Monte Carlo iz vlastite historije: raspon + vjerovatnoća |
+| Strategist | Pravila prave kandidate akcija, LLM bira najviše 3 i objašnjava; privatni tekst ne ide na Gemini free tier |
+| Povezani kalendari | ICS uvoz u v1 (Google, Apple, Outlook = zauzetost; Moodle = rokovi), edge funkcija `sync-calendar`; ICS izvoz plana; Google Calendar API, Notion i Teams kasnije ili nikad |
