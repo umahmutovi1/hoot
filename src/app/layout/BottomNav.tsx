@@ -2,6 +2,8 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { ComponentType } from 'react'
 import { BookIcon, CalendarIcon, ChartIcon, HomeIcon, TimerIcon } from '@/components/icons'
+import { useActiveSession } from '@/features/session/api'
+import { useSessionUi } from '@/features/session/store'
 import { cn } from '@/lib/utils'
 
 type Tab = { to: string; label: string; Icon: ComponentType<{ size?: number }>; end?: boolean }
@@ -32,6 +34,8 @@ function TabLink({ to, label, Icon, end }: Tab) {
 export function BottomNav() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { data: active } = useActiveSession()
+  const openStart = useSessionUi((s) => s.openStart)
 
   const left: Tab[] = [
     { to: '/', label: t('nav.today'), Icon: HomeIcon, end: true },
@@ -53,12 +57,19 @@ export function BottomNav() {
         ))}
         <button
           type="button"
-          aria-label={t('nav.startSession')}
-          title={t('nav.startSession')}
-          onClick={() => navigate('/session/start')}
-          className="mx-1 flex size-[52px] shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-[0_4px_14px_rgba(75,59,143,0.35)]"
+          aria-label={active ? t('nav.resumeSession') : t('nav.startSession')}
+          title={active ? t('nav.resumeSession') : t('nav.startSession')}
+          // A running session always comes back; otherwise "Šta učiš sad?".
+          onClick={() => (active ? navigate('/session') : openStart())}
+          className="relative mx-1 flex size-[52px] shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-[0_4px_14px_rgba(75,59,143,0.35)]"
         >
           <TimerIcon size={24} />
+          {active && (
+            <span
+              aria-hidden="true"
+              className="absolute top-1 right-1 size-3 rounded-full border-2 border-brand bg-brand-hero"
+            />
+          )}
         </button>
         {right.map((tab) => (
           <TabLink key={tab.to} {...tab} />

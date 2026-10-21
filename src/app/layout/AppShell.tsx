@@ -1,4 +1,6 @@
 import { Outlet } from 'react-router-dom'
+import { ForgottenGuard } from '@/features/session/ForgottenGuard'
+import { SessionStartSheet } from '@/features/session/SessionStartSheet'
 import { LocaleSync } from '@/features/settings/LocaleSync'
 import { BottomNav } from './BottomNav'
 
@@ -8,6 +10,8 @@ export function AppShell() {
       <LocaleSync />
       <Outlet />
       <BottomNav />
+      <SessionStartSheet />
+      <ForgottenGuard />
     </div>
   )
 }

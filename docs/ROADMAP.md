@@ -153,16 +153,17 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 
 ## Etapa 7 — Timer i sesije
 
-- [ ] Maskota: `timer` 84 px u sheetu „Šta učiš sad?", `celebrating` 140 px na KrajSesije, `sleeping` 190 px u offline poruci
-- [ ] Timer dugme → PokreniSesiju (preporučeni blok / drugi blok / slobodna sesija; nastavak aktivne)
-- [ ] Sesija: segmenti u bazi, pauza/nastavak, „Sad radim na", režimi 25/5, 50/10, slobodno, način učenja
-- [ ] KrajSesije: težina 1–5 po jedinici, fokus 1–3, refleksija; raspodjela minuta u `session_units`
-- [ ] Zaboravljen timer (> 3 h) — ispravka kraja
-- [ ] Migracija `0012_sessions.sql` (`timer_mode`, `planned_minutes`, `sources.measured_sessions`), regenerisan `database.ts`
-- [ ] Offline: Dexie red u `src/lib/sync/`, klijentski UUID, upsert, retry, last-write-wins po `updated_at`
-- [ ] Kalibracija (shrinkage, izvor × način, fallback ispod 3 mjerenja) + testovi
-- [ ] Prije 3 sesije po izvoru: samo predloženo trajanje bloka/sesije, kraj sesije pita „do koje stranice“; prvi prolaz vs ponavljanje iz statusa jedinice (PRD „Prije mjerenja“)
+- [x] Maskota: `timer` 84 px u sheetu „Šta učiš sad?", `celebrating` 140 px na KrajSesije, `sleeping` 190 px u offline poruci
+- [x] Timer dugme → PokreniSesiju (preporučeni blok / drugi blok / slobodna sesija; nastavak aktivne)
+- [x] Sesija: segmenti u bazi, pauza/nastavak, „Sad radim na", režimi 25/5, 50/10, slobodno, način učenja
+- [x] KrajSesije: težina 1–5 po jedinici, fokus 1–3, refleksija; raspodjela minuta u `session_units`
+- [x] Zaboravljen timer (> 3 h) — ispravka kraja
+- [x] Migracija `0012_sessions.sql` (`timer_mode`, `planned_minutes`, `sources.measured_sessions`), regenerisan `database.ts`
+- [x] Offline: Dexie red u `src/lib/sync/`, klijentski UUID, upsert, retry, last-write-wins po `updated_at`
+- [x] Kalibracija (shrinkage, izvor × način, fallback ispod 3 mjerenja) + testovi
+- [x] Prije 3 sesije po izvoru: samo predloženo trajanje bloka/sesije, kraj sesije pita „do koje stranice“; prvi prolaz vs ponavljanje iz statusa jedinice (PRD „Prije mjerenja“)
 - Odluke (PRD „Timer, pauza i rekalibracija“ → Odluke): 25/5 i 50/10 samo podsjetnik; zaboravljen timer „Da, nastavi“ / „Završila sam u …“; KrajSesije samo „Spasi“ do Etape 9; status jedinice automatski „Pročitano“ uz izmjenu tapom
+- Ostali upisi (predmeti, ispiti) i dalje idu direktno u Supabase; kroz offline red idu sesije, segmenti, `session_units`, statusi jedinica i kalibracija (premještanje ostalih nije jednostavno jer svaki ekran čita svoj keš, pa ostaje za kasnije)
 - **DoD:** timer preživi zaključan telefon, zatvoren tab i offline → `v0.7.0`
 
 ## Etapa 8 — Scheduler
