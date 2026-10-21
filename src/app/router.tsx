@@ -16,7 +16,8 @@ import { ExamScopePage } from '@/features/sources/ExamScopePage'
 import { AcademicCalendarPage } from '@/features/schedule/AcademicCalendarPage'
 import { AvailabilityPage } from '@/features/schedule/AvailabilityPage'
 import { TimetablePage } from '@/features/schedule/TimetablePage'
-import { SessionStartPage } from '@/features/session/SessionStartPage'
+import { SessionEndPage } from '@/features/session/SessionEndPage'
+import { SessionPage } from '@/features/session/SessionPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { SubjectFormPage } from '@/features/subjects/SubjectFormPage'
 import { SubjectPage } from '@/features/subjects/SubjectPage'
@@ -67,7 +68,8 @@ export const router = createBrowserRouter([
               { path: 'subjects/:id/sources/:sourceId/edit', element: <SourceEditorPage /> },
               { path: 'subjects/:id/sources/:sourceId/units/:unitId', element: <UnitPage /> },
               { path: 'subjects/:id/scope', element: <ExamScopePage /> },
-              { path: 'session/start', element: <SessionStartPage /> },
+              { path: 'session', element: <SessionPage /> },
+              { path: 'session/:id/end', element: <SessionEndPage /> },
             ],
           },
         ],

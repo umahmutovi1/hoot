@@ -17,6 +17,9 @@ import { calendarStatus } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
 import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
 import { OwlBar } from '@/features/owl/OwlBar'
+import { useActiveSession } from '@/features/session/api'
+import { ActiveSessionBar } from '@/features/session/ActiveSessionBar'
+import { useSessionUi } from '@/features/session/store'
 import { FactCard } from './FactCard'
 
 // Without subjects "Today" is the first-run state (DanasPrazno); the real day plan comes with
@@ -34,6 +37,8 @@ export function TodayPage() {
   const status = calendarStatus(localDay(now, boundary), periods)
   const { data: subjects } = useSubjects()
   const hasSubjects = (subjects ?? []).some((x) => !x.archived)
+  const { data: activeSession } = useActiveSession()
+  const startOpen = useSessionUi((s) => s.startOpen)
 
   return (
     <div className="flex flex-col pb-28">
@@ -95,7 +100,12 @@ export function TodayPage() {
         <FactCard />
       </div>
 
-      <OwlBar empty={!hasSubjects} />
+      {/* A running session takes the owl's place; no owl while "Šta učiš sad?" is open. */}
+      {activeSession ? (
+        <ActiveSessionBar data={activeSession} />
+      ) : (
+        !startOpen && <OwlBar empty={!hasSubjects} />
+      )}
       <GiveDocumentSheet />
     </div>
   )

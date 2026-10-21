@@ -18,7 +18,8 @@
     "plan": "Plan",
     "subjects": "Predmeti",
     "progress": "Napredak",
-    "startSession": "Pokreni sesiju"
+    "startSession": "Pokreni sesiju",
+    "resumeSession": "Nastavi sesiju"
   },
   "auth": {
     "headline": "Uči pametnije,\nne duže.",
@@ -266,7 +267,133 @@
   },
   "session": {
     "title": "Sesija učenja",
-    "empty": "Timer i sesije dolaze uskoro."
+    "start": {
+      "title": "Šta učiš sad?",
+      "subtitle": "Izaberi predmet, a jedinicu po želji.",
+      "recommendedEmpty": "Preporučeni blok",
+      "recommendedSoon": "Dolazi s dnevnim planom",
+      "tagRecommended": "Preporučeno",
+      "free": "Slobodna sesija",
+      "freeSub": "Van plana · izaberi predmet",
+      "tagFree": "Bez plana",
+      "noSubjects": "Prvo dodaj predmet.",
+      "addSubject": "Dodaj predmet",
+      "subject": "Predmet",
+      "source": "Izvor",
+      "unit": "Jedinica",
+      "allUnits": "Prikaži sve ({{count}})",
+      "freeHint": "Jedinicu možeš promijeniti u sesiji („Sad radim na“). Vrijeme se računa u kalibraciju, ali ne skida blok iz plana.",
+      "go": "Počni"
+    },
+    "mode": {
+      "label": "Način učenja",
+      "reading": "Čitanje",
+      "problems": "Zadaci",
+      "review": "Ponavljanje",
+      "questions": "Pitanja"
+    },
+    "timerMode": {
+      "pomodoro25": "25/5",
+      "pomodoro50": "50/10",
+      "free": "Slobodno"
+    },
+    "timer": {
+      "running": "Sesija u toku",
+      "paused": "Pauzirano",
+      "settings": "Režim timera",
+      "studied": "Vrijeme učenja",
+      "ofPlanned": "od planiranih {{min}} min",
+      "free": "slobodna sesija",
+      "breakIn": "{{mode}} · pauza za {{time}}",
+      "breakDue": "Vrijeme je za pauzu",
+      "backIn": "Pauza · nastavak za {{time}}",
+      "backDue": "Vrijeme je za nastavak",
+      "pause": "Pauza",
+      "resume": "Nastavi",
+      "finish": "Završi",
+      "savedOffline": "Spašeno na telefonu · šalje se kad se veza vrati",
+      "segments_one": "{{count}} segment",
+      "segments_few": "{{count}} segmenta",
+      "segments_other": "{{count}} segmenata",
+      "pauseTotal_one": "{{count}} min pauze ukupno",
+      "pauseTotal_few": "{{count}} min pauze ukupno",
+      "pauseTotal_other": "{{count}} min pauze ukupno"
+    },
+    "units": {
+      "title": "Sad radim na",
+      "hint": "tap za promjenu",
+      "other": "Druga jedinica",
+      "pickTitle": "Na čemu radiš?",
+      "none": "Bez jedinice",
+      "note": "Bilješka za aktivnu jedinicu"
+    },
+    "timerSheet": {
+      "title": "Režim timera",
+      "subtitle": "25/5 i 50/10 samo podsjećaju na pauzu; timer ne staje sam.",
+      "discard": "Odbaci sesiju",
+      "discardConfirm": "Sesija se briše i vrijeme se ne računa u kalibraciju."
+    },
+    "forgotten": {
+      "title": "Jesi li učila do sad?",
+      "body": "Timer radi od {{time}} ({{duration}}).",
+      "yes": "Da, nastavi",
+      "stoppedAt": "Završila sam u",
+      "finishAt": "Završi u {{time}}"
+    },
+    "end": {
+      "title": "Sesija završena",
+      "minOf": "min od {{planned}}",
+      "min": "min učenja",
+      "noAmount": "pređeno",
+      "rate": {
+        "pages": "min / str.",
+        "slides": "min / slajd",
+        "questions": "min / pitanje",
+        "items": "min / jedinica"
+      },
+      "howFar": "Dokle si stigla?",
+      "from": "od",
+      "to": "do",
+      "unit": "Jedinica ({{label}})",
+      "page": "Stranica ({{label}})",
+      "slide": "Slajd ({{label}})",
+      "difficulty": "Koliko je bilo teško?",
+      "prior": "početna težina {{d}}",
+      "statusChange": "Promijeni status",
+      "difficultyScale": "Težina 1 do 5",
+      "difficultyN": "Težina {{n}}",
+      "easy": "lako",
+      "hard": "jako teško",
+      "focus": "Kakav je bio fokus?",
+      "focusLevel": {
+        "1": "Slab",
+        "2": "Ok",
+        "3": "Odličan"
+      },
+      "reflection": "Šta je bilo teško?",
+      "optional": "(opcionalno)",
+      "reflectionPlaceholder": "npr. nisam skontala razliku 3NF i BCNF",
+      "studied_one": "{{count}} min učenja",
+      "studied_few": "{{count}} min učenja",
+      "studied_other": "{{count}} min učenja",
+      "pauses_one": "{{count}} pauza",
+      "pauses_few": "{{count}} pauze",
+      "pauses_other": "{{count}} pauza",
+      "amount": {
+        "pages_one": "stranica",
+        "pages_few": "stranice",
+        "pages_other": "stranica",
+        "slides_one": "slajd",
+        "slides_few": "slajda",
+        "slides_other": "slajdova",
+        "questions_one": "pitanje",
+        "questions_few": "pitanja",
+        "questions_other": "pitanja",
+        "items_one": "jedinica",
+        "items_few": "jedinice",
+        "items_other": "jedinica"
+      }
+    }
   },
   "settings": {
     "title": "Postavke",
@@ -1092,5 +1219,9 @@
       "confirmDelete": "Obrisati ovaj razgovor?",
       "untitled": "Razgovor"
     }
+  },
+  "offline": {
+    "title": "Nisi na mreži",
+    "body": "Ovo se prvi put učitava s interneta. Timer i započeta sesija rade i bez mreže; promjene se šalju kad se veza vrati."
   }
 }

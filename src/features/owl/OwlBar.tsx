@@ -105,7 +105,7 @@ export function OwlBar({ empty }: { empty: boolean }) {
   )
 }
 
-function Dock({ children }: { children: React.ReactNode }) {
+export function Dock({ children }: { children: React.ReactNode }) {
   return (
     <>
       {/* Fades the scrolling list out behind the bar and the tab bar. */}
