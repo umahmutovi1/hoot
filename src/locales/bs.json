@@ -40,7 +40,8 @@
     "verifying": "Provjeravam…",
     "codeInvalid": "Kod nije ispravan ili je istekao.",
     "useOtherEmail": "Drugi email",
-    "sendFailed": "Slanje nije uspjelo. Pokušaj ponovo za minutu."
+    "sendFailed": "Slanje nije uspjelo. Pokušaj ponovo za minutu.",
+    "appIcon": "Ikona aplikacije"
   },
   "today": {
     "greeting": {

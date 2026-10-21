@@ -126,13 +126,24 @@ export function LoginPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col">
-      <div className="relative flex h-[420px] shrink-0 items-center justify-center rounded-b-[48px] bg-brand-hero">
+      <div className="relative flex h-[420px] shrink-0 items-center justify-center rounded-b-[48px] bg-white/20">
         <LocaleToggle
           value={locale}
           onChange={setLocale}
           variant="short"
           className="absolute top-6 right-5 bg-white/60"
         />
+        <div className="flex size-[260px] items-center justify-center rounded-full bg-white/38">
+          <span
+            role="img"
+            aria-label={t('auth.appIcon')}
+            className="icon-tile flex size-[132px] items-center justify-center rounded-[38px]"
+          >
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.5l2.1 6 6.4 2.1-6.4 2.1-2.1 6.3-2.1-6.3-6.4-2.1 6.4-2.1z" />
+            </svg>
+          </span>
+        </div>
       </div>
       <div className="flex flex-1 flex-col gap-3.5 px-6 py-7">
         <h1 className="text-[30px] leading-[1.15] font-bold whitespace-pre-line">
