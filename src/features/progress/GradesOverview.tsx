@@ -19,7 +19,7 @@ export function GradesOverview() {
   return (
     <section className="flex flex-col gap-2.5">
       <h2 className="text-lg font-semibold">{t('grades.overview.title')}</h2>
-      <div className="flex flex-col rounded-card bg-surface px-4 py-1.5">
+      <div className="flex flex-col rounded-card glass px-4 py-1.5">
         {active.map((s, i) => (
           <SubjectGrades
             key={s.id}

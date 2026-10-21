@@ -13,7 +13,7 @@ export function BackHeader({ title, fallback = '/' }: { title: string; fallback?
         type="button"
         onClick={() => goBack(navigate, fallback)}
         aria-label={t('app.back')}
-        className="flex size-11 items-center justify-center rounded-full bg-surface"
+        className="flex size-11 items-center justify-center rounded-full glass"
       >
         <ChevronLeftIcon size={20} />
       </button>

@@ -75,9 +75,9 @@ function SheetBody({ initialKind }: { initialKind: ImportKind }) {
   const send = () => {
     if (!picked) return
     closeSheet()
-    if (location.pathname !== '/owl') {
+    if (location.pathname !== '/chat') {
       newConversation()
-      navigate('/owl')
+      navigate('/chat')
     }
     void owl.giveDocument(picked, kind, note.trim() || null)
   }
@@ -154,7 +154,7 @@ function SheetBody({ initialKind }: { initialKind: ImportKind }) {
               }
               className="flex items-center gap-3 rounded-[18px] bg-canvas p-3 text-left"
             >
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-surface text-brand">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] glass text-brand">
                 <Icon size={20} />
               </span>
               <span className="text-sm font-semibold">{label}</span>
@@ -219,7 +219,7 @@ function SheetBody({ initialKind }: { initialKind: ImportKind }) {
               onClick={() => setKind(k)}
               className={cn(
                 'h-[38px] rounded-full px-3 text-xs font-semibold',
-                kind === k ? 'bg-brand text-white' : 'bg-canvas text-ink',
+                kind === k ? 'bg-ink text-white' : 'bg-white/50 text-ink',
               )}
             >
               {t(`owl.sheet.kind.${k}`)}
@@ -270,10 +270,10 @@ function AttachmentCard({
         <img
           src={preview}
           alt=""
-          className="size-14 shrink-0 rounded-[14px] bg-surface object-cover object-top"
+          className="size-14 shrink-0 rounded-[14px] glass object-cover object-top"
         />
       ) : (
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-[14px] bg-surface text-brand">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-[14px] glass text-brand">
           <Icon size={22} />
         </span>
       )}

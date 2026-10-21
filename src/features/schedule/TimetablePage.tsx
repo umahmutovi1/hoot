@@ -56,7 +56,7 @@ export function TimetablePage() {
           type="button"
           onClick={() => goBack(navigate, '/plan/availability')}
           aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 items-center justify-center rounded-full glass"
         >
           <ChevronLeftIcon size={20} />
         </button>
@@ -65,7 +65,7 @@ export function TimetablePage() {
           type="button"
           onClick={addClass}
           aria-label={t('timetable.add')}
-          className="flex size-11 items-center justify-center rounded-full bg-surface text-brand"
+          className="flex size-11 items-center justify-center rounded-full glass text-brand"
         >
           <PlusIcon size={18} strokeWidth={2.2} />
         </button>
@@ -87,10 +87,7 @@ export function TimetablePage() {
       </div>
 
       {!current && (
-        <Link
-          to="/settings/calendar"
-          className="flex items-center gap-3 rounded-card bg-surface p-3.5"
-        >
+        <Link to="/settings/calendar" className="flex items-center gap-3 rounded-card glass p-3.5">
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <span className="text-[15px] font-semibold">{t('timetable.noPeriodTitle')}</span>
             <span className="text-xs text-ink-muted">{t('timetable.noPeriodBody')}</span>
@@ -109,7 +106,7 @@ export function TimetablePage() {
             onClick={() => setDay(d)}
             className={cn(
               'h-11 flex-1 rounded-full text-sm font-semibold',
-              day === d ? 'bg-ink text-white' : 'bg-surface text-ink',
+              day === d ? 'bg-ink text-white' : 'glass text-ink',
             )}
           >
             {names[d]}
@@ -127,14 +124,14 @@ export function TimetablePage() {
           />
         ))}
         {list.length === 0 && (
-          <p className="rounded-[22px] bg-surface p-5 text-center text-sm text-ink-muted">
+          <p className="rounded-[22px] glass p-5 text-center text-sm text-ink-muted">
             {t('timetable.dayEmpty')}
           </p>
         )}
       </div>
 
       <h2 className="mt-2 text-lg font-semibold">{t('timetable.howTitle')}</h2>
-      <div className="flex flex-col rounded-card bg-surface px-4 py-1.5">
+      <div className="flex flex-col rounded-card glass px-4 py-1.5">
         <div className="flex items-center justify-between gap-3 border-b border-canvas py-3">
           <span className="flex flex-col gap-0.5">
             <span className="text-[15px]">{t('timetable.busyTitle')}</span>
@@ -158,7 +155,7 @@ export function TimetablePage() {
               recap ? 'justify-end bg-brand' : 'justify-start bg-radio-ring',
             )}
           >
-            <span className="size-[26px] rounded-full bg-surface" />
+            <span className="size-[26px] rounded-full glass" />
           </button>
         </div>
       </div>
@@ -196,7 +193,7 @@ function ClassCard({
     <button
       type="button"
       onClick={onOpen}
-      className="flex items-center gap-3.5 rounded-[22px] bg-surface px-4 py-3.5 text-left"
+      className="flex items-center gap-3.5 rounded-[22px] glass px-4 py-3.5 text-left"
     >
       <div className="flex w-[46px] flex-col items-end text-[13px]">
         <span className="font-bold">{formatClock(entry.start_min)}</span>

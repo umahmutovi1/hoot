@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
-import { Mascot } from '@/components/Mascot'
+import { TimerIcon } from '@/components/icons'
 import { OfflineNotice } from '@/components/OfflineNotice'
 import { useOnline } from '@/features/owl/api'
 import { useSources } from '@/features/sources/api'
@@ -34,7 +34,14 @@ export function SessionStartSheet() {
       onOpenChange={(o) => !o && close()}
       title={t('session.start.title')}
       subtitle={t('session.start.subtitle')}
-      leading={<Mascot pose="timer" size={84} />}
+      leading={
+        <span
+          aria-hidden="true"
+          className="icon-tile flex size-14 shrink-0 items-center justify-center rounded-[18px]"
+        >
+          <TimerIcon size={28} />
+        </span>
+      }
     >
       {open && <StartForm />}
     </BottomSheet>
@@ -195,7 +202,7 @@ function StartForm() {
         type="button"
         onClick={start}
         disabled={!subject || busy}
-        className="flex h-14 items-center justify-center gap-2 rounded-full bg-brand text-base font-semibold text-white disabled:opacity-50"
+        className="flex h-14 items-center justify-center gap-2 rounded-full btn-primary text-base font-semibold disabled:opacity-50"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M7 5v14l12-7z" />
@@ -228,7 +235,7 @@ function OptionCard({
       aria-disabled={disabled}
       className={cn(
         'flex items-center gap-3 rounded-[20px] border-2 p-3.5',
-        checked ? 'border-brand-accent bg-canvas-soft' : 'border-hairline bg-surface',
+        checked ? 'border-brand-accent bg-canvas-soft' : 'border-hairline glass',
         disabled && 'opacity-60',
       )}
     >

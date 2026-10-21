@@ -44,7 +44,7 @@ export function DisplayNameForm({
           placeholder={t('profile.namePlaceholder')}
           aria-invalid={Boolean(error)}
           className={cn(
-            'h-[54px] rounded-input border-none bg-surface px-4 text-base text-ink outline-none focus-visible:ring-2 focus-visible:ring-brand-accent',
+            'h-[54px] rounded-input border-none glass px-4 text-base text-ink outline-none focus-visible:ring-2 focus-visible:ring-brand-accent',
             inputClassName,
           )}
           {...form.register('displayName')}

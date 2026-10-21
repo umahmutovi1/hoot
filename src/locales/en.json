@@ -19,7 +19,9 @@
     "subjects": "Subjects",
     "progress": "Progress",
     "startSession": "Start session",
-    "resumeSession": "Resume session"
+    "resumeSession": "Resume session",
+    "ai": "AI",
+    "aiLabel": "AI assistant"
   },
   "auth": {
     "headline": "Study smarter,\nnot longer.",
@@ -39,7 +41,7 @@
     "codeInvalid": "The code is wrong or has expired.",
     "useOtherEmail": "Use another email",
     "sendFailed": "Couldn't send the email. Try again in a minute.",
-    "mascotAlt": "Owl mascot reading a book"
+    "appIcon": "App icon"
   },
   "today": {
     "greeting": {
@@ -48,7 +50,6 @@
       "evening": "Good evening, {{name}}"
     },
     "addSubject": "Add subject",
-    "firstRunMascotAlt": "Owl reading a book",
     "firstRunTitle": "Let's build your plan",
     "firstRunBody": "Add your first subject and exam date. You can photograph your reading list now or later.",
     "fact": {
@@ -63,8 +64,19 @@
       "holiday": "Holiday · {{title}}"
     },
     "planSoonTitle": "Your daily study plan is coming soon",
-    "planSoonBody": "Until the app computes it, today's classes and lectures show here. Edit exams, sources and the timetable on subjects and in the calendar.",
-    "todayInCalendar": "Today in the calendar"
+    "planSoonBody": "Until the app computes your plan, start sessions here and see classes and exams in the calendar.",
+    "todayInCalendar": "Today in the calendar",
+    "next": {
+      "label": "Next",
+      "freeTitle": "Free session",
+      "freeSub": "Pick a subject and how much time you have",
+      "start": "Start",
+      "running": "Running",
+      "paused": "Paused",
+      "resume": "Resume"
+    },
+    "exams": "Exams",
+    "examsAll": "All"
   },
   "plan": {
     "title": "Plan",
@@ -1094,14 +1106,14 @@
     }
   },
   "owl": {
-    "name": "Owl",
+    "name": "Assistant",
     "tagline": "knows your documents and plan",
-    "ask": "Ask the owl…",
+    "ask": "Ask the assistant…",
     "askEmpty": "Give me your exam schedule…",
-    "open": "Open the conversation with the owl",
-    "offline": "The owl is offline. Back when you reconnect.",
-    "disabled": "The owl is not set up yet (no AI key).",
-    "add": "Give the owl a document",
+    "open": "Open the conversation with the assistant",
+    "offline": "The assistant is offline. Back when you reconnect.",
+    "disabled": "The assistant is not set up yet (no AI key).",
+    "add": "Give a document",
     "send": "Send",
     "intro": "Ask me about exams, points and deadlines, or give me a document with +. I never change anything without your confirmation.",
     "suggest": {
@@ -1112,14 +1124,14 @@
       "importCalendar": "Import academic calendar"
     },
     "sheet": {
-      "title": "Give the owl a document",
+      "title": "Give a document",
       "subtitle": "It reads it and proposes what to add. Nothing changes without your confirmation.",
       "camera": "Take photo",
       "image": "Image",
       "pdf": "PDF",
       "text": "Paste text",
       "kindLabel": "What's inside?",
-      "kindHint": "(the owl can guess)",
+      "kindHint": "(the assistant can guess)",
       "kind": {
         "auto": "Guess",
         "academic_calendar": "Academic calendar",
@@ -1128,12 +1140,12 @@
       },
       "textLabel": "Text",
       "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
-      "textSend": "Give to the owl",
+      "textSend": "Give document",
       "back": "Back",
       "privacy": "On the free AI plan Google may use what you send. Don't send personal documents.",
       "next": "Next",
       "change": "Change",
-      "noteLabel": "Note to the owl",
+      "noteLabel": "Note to the assistant",
       "noteHint": "(optional)",
       "notePlaceholder": "e.g. only 2nd year, group B",
       "chars_one": "{{count}} character",
@@ -1203,12 +1215,12 @@
       "time": "Time",
       "from": "From",
       "to": "To",
-      "warnings": "Notes from the owl",
+      "warnings": "Notes from the assistant",
       "missing": "This proposal no longer exists."
     },
     "documents": {
       "title": "Documents",
-      "intro": "The owl answers from these and names the document and page. Give it new ones on Today (+).",
+      "intro": "The assistant answers from these and names the document and page. Give it new ones in the AI tab (+).",
       "empty": "No documents yet.",
       "pages_one": "{{count}} page",
       "pages_other": "{{count}} pages",
@@ -1221,7 +1233,7 @@
     },
     "history": {
       "title": "Conversation history",
-      "empty": "No conversations with the owl yet.",
+      "empty": "No conversations with the assistant yet.",
       "new": "New conversation",
       "delete": "Delete conversation",
       "confirmDelete": "Delete this conversation?",

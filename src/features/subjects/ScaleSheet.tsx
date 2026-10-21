@@ -222,12 +222,7 @@ function ScaleForm({ subject, onDone }: { subject?: SubjectWithAssessments; onDo
         </div>
       )}
 
-      <Button
-        type="button"
-        size="pill"
-        onClick={save}
-        className="bg-brand text-white hover:bg-brand-strong"
-      >
+      <Button type="button" size="pill" onClick={save} className="btn-primary">
         {t('common.save')}
       </Button>
     </div>

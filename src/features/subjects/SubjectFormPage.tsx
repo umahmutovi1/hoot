@@ -144,7 +144,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
           type="button"
           onClick={() => navigate(-1)}
           aria-label={t('common.close')}
-          className="flex size-11 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 items-center justify-center rounded-full glass"
         >
           <CloseIcon size={18} />
         </button>
@@ -161,7 +161,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
           maxLength={80}
           placeholder={t('subjects.form.namePlaceholder')}
           aria-invalid={Boolean(nameError)}
-          className="h-[54px] rounded-input border-2 border-transparent bg-surface px-4 text-base outline-none focus-visible:border-brand-accent aria-invalid:border-danger"
+          className="h-[54px] rounded-input border-2 border-transparent glass px-4 text-base outline-none focus-visible:border-brand-accent aria-invalid:border-danger"
           {...form.register('name')}
         />
         {nameError && (
@@ -258,7 +258,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
         <span className="px-1 text-xs text-ink-muted">{t('subjects.form.scopeLater')}</span>
       </div>
 
-      <div className="flex flex-col rounded-card bg-surface">
+      <div className="flex flex-col rounded-card glass">
         <button
           type="button"
           onClick={() => setAdvancedOpen((o) => !o)}
@@ -283,7 +283,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       </div>
 
       <div className="mt-auto flex flex-col gap-2.5">
-        <Button type="submit" size="pill" className="bg-brand text-white hover:bg-brand-strong">
+        <Button type="submit" size="pill" className="btn-primary">
           {t(isEdit ? 'common.save' : 'subjects.form.create')}
         </Button>
         {isEdit && (
@@ -348,7 +348,7 @@ function ExamEditor({
     .join(' · ')
 
   return (
-    <div className="flex flex-col gap-1 rounded-[20px] bg-surface px-4 pt-3.5 pb-1.5">
+    <div className="flex flex-col gap-1 rounded-[20px] glass px-4 pt-3.5 pb-1.5">
       <div className="flex items-center gap-2.5">
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <input
@@ -493,7 +493,7 @@ function AdvancedFields({
             onClick={() => setValue('priority', n, set)}
             className={cn(
               'h-11 flex-1 rounded-[14px] text-base font-semibold',
-              priority === n ? 'bg-brand text-white' : 'bg-canvas',
+              priority === n ? 'bg-ink text-white' : 'bg-white/50',
             )}
           >
             {n}

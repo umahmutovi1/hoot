@@ -1,94 +1,184 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
-@import '@fontsource-variable/outfit';
+@import '@fontsource-variable/geist';
 
-/* Design tokens from docs/design/README.md. Use these classes, never raw hex values. */
+/* Design tokens from docs/design/README.md (Liquid Glass). Use these classes, never raw hex values. */
 @theme {
-  --font-sans: 'Outfit Variable', 'Outfit', system-ui, sans-serif;
+  /* SF Pro on Apple devices, Geist (served locally, works offline) elsewhere. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Geist Variable', 'Geist', system-ui,
+    sans-serif;
 
-  /* Surfaces and text */
-  --color-canvas: #f1eff7;
-  --color-surface: #ffffff;
-  --color-ink: #1d1a2b;
-  --color-ink-muted: #5b5670;
-  --color-ink-subtle: #6e6985;
-  --color-ink-placeholder: #8a84a0;
-  --color-line: #dcd7ea;
-  --color-track: #e3dfef;
-  --color-hairline: #eeebf5;
-  --color-canvas-soft: #f6f4fb;
-  --color-radio-ring: #c9c3de;
+  /* Surfaces and text. `canvas` is a tinted fill for wells, segmented tracks and secondary
+     buttons on glass; the screen background is the gradient on body. */
+  --color-canvas: rgba(106, 100, 184, 0.1);
+  --color-mist: #e8e5f1;
+  --color-scrim: rgba(40, 34, 80, 0.2);
+  --color-surface: rgba(255, 255, 255, 0.36);
+  --color-ink: #14121c;
+  --color-ink-secondary: #3f3b4e;
+  --color-ink-muted: #55516a;
+  --color-ink-subtle: #6e6a80;
+  --color-ink-placeholder: #6e6a80;
+  --color-line: rgba(58, 51, 96, 0.16);
+  --color-track: rgba(255, 255, 255, 0.6);
+  --color-hairline: rgba(106, 100, 184, 0.12);
+  --color-canvas-soft: rgba(255, 255, 255, 0.32);
+  --color-radio-ring: #afaac4;
 
   /* Brand */
-  --color-brand: #4b3b8f;
-  --color-brand-strong: #2f2363;
-  --color-brand-accent: #7c6bd6;
-  --color-brand-soft: #e9e4fb;
-  --color-brand-hero: #dcd3f7;
-  --color-avatar: #cfc6f2;
-  --color-avatar-ink: #3b2d82;
-  --color-mascot-halo: #e3dcfa;
-  --color-mascot-halo-strong: #cbbff4;
+  --color-brand: #4c4892;
+  --color-brand-strong: #36336e;
+  --color-brand-accent: #6a64b8;
+  --color-brand-soft: rgba(106, 100, 184, 0.12);
+  --color-brand-hero: rgba(106, 100, 184, 0.16);
+  --color-avatar: rgba(255, 255, 255, 0.36);
+  --color-avatar-ink: #14121c;
 
   /* Subjects: strong (bar, dot), soft (tiles, hero), track (bar background),
-     deep (icons, "in 9 days"), ink (percent, hero title). Pink, lavender and blue
-     come from the mockups; green, orange and slate are derived from their picker colors. */
-  --color-subject-pink: #c026b0;
-  --color-subject-pink-soft: #fbe3f6;
-  --color-subject-pink-track: #f6e8f3;
-  --color-subject-pink-deep: #7a1f6f;
-  --color-subject-pink-ink: #5b1252;
-  --color-subject-lavender: #7c6bd6;
-  --color-subject-lavender-soft: #e9e4fb;
-  --color-subject-lavender-track: #eeebf5;
-  --color-subject-lavender-deep: #4b3b8f;
-  --color-subject-lavender-ink: #2f2363;
-  --color-subject-blue: #2563eb;
-  --color-subject-blue-soft: #e3edfd;
-  --color-subject-blue-track: #e9f0fc;
-  --color-subject-blue-deep: #2a5bb0;
-  --color-subject-blue-ink: #0f2b5c;
-  --color-subject-green: #1f8a70;
-  --color-subject-green-soft: #dcefea;
-  --color-subject-green-track: #e8f4f0;
-  --color-subject-green-deep: #1f6b5a;
-  --color-subject-green-ink: #12443a;
-  --color-subject-orange: #d97706;
-  --color-subject-orange-soft: #fdebd3;
-  --color-subject-orange-track: #fdf1e2;
-  --color-subject-orange-deep: #9a4b0b;
-  --color-subject-orange-ink: #5c3208;
-  --color-subject-slate: #475569;
-  --color-subject-slate-soft: #e5e8ee;
-  --color-subject-slate-track: #eef0f4;
-  --color-subject-slate-deep: #334155;
-  --color-subject-slate-ink: #1e293b;
+     deep (icons, "in 9 days"), ink (percent, hero title). Pink, indigo, blue and green come
+     from the mockups; orange and slate are toned to match. */
+  --color-subject-pink: #b66a8c;
+  --color-subject-pink-soft: rgba(182, 106, 140, 0.16);
+  --color-subject-pink-track: rgba(255, 255, 255, 0.6);
+  --color-subject-pink-deep: #8e4a69;
+  --color-subject-pink-ink: #5a2a40;
+  --color-subject-lavender: #6a64b8;
+  --color-subject-lavender-soft: rgba(106, 100, 184, 0.16);
+  --color-subject-lavender-track: rgba(255, 255, 255, 0.6);
+  --color-subject-lavender-deep: #4c4892;
+  --color-subject-lavender-ink: #36336e;
+  --color-subject-blue: #5f86b5;
+  --color-subject-blue-soft: rgba(95, 134, 181, 0.16);
+  --color-subject-blue-track: rgba(255, 255, 255, 0.6);
+  --color-subject-blue-deep: #3f6590;
+  --color-subject-blue-ink: #2e4a6e;
+  --color-subject-green: #5e9c72;
+  --color-subject-green-soft: rgba(94, 156, 114, 0.18);
+  --color-subject-green-track: rgba(255, 255, 255, 0.6);
+  --color-subject-green-deep: #4e7f5f;
+  --color-subject-green-ink: #365c45;
+  --color-subject-orange: #c38d52;
+  --color-subject-orange-soft: rgba(195, 141, 82, 0.18);
+  --color-subject-orange-track: rgba(255, 255, 255, 0.6);
+  --color-subject-orange-deep: #8f6136;
+  --color-subject-orange-ink: #6b4a2a;
+  --color-subject-slate: #6b7a90;
+  --color-subject-slate-soft: rgba(107, 122, 144, 0.16);
+  --color-subject-slate-track: rgba(255, 255, 255, 0.6);
+  --color-subject-slate-deep: #475569;
+  --color-subject-slate-ink: #2c3a4e;
 
-  /* Unit levels in progress bars (Izvor mockup): 3 brand, 2 brand-accent, 1 below, 0 hairline.
-     Question sources use the blue scale: 3 subject-blue, 1 below, 0 subject-blue-track. */
-  --color-level-1: #c3b9f0;
-  --color-question-1: #9dbdf5;
-  --color-brand-muted: #5b4fa0;
+  /* Unit levels in progress bars: 3 brand, 2 brand-accent, 1 below, 0 hairline.
+     Question sources use the blue scale: 3 subject-blue, 1 below, 0 track. */
+  --color-level-1: #bdb8e0;
+  --color-question-1: #a9c0db;
+  --color-brand-muted: #5853a0;
 
   /* Status */
-  --color-success: #1f6b5a;
-  --color-success-soft: #dcefea;
-  --color-score: #2e9e6a; /* earned points in the "Bodovi i ocjena" bar */
-  --color-warning: #9a4b0b;
-  --color-warning-soft: #fdebd3;
-  --color-warning-ink: #5c3208;
-  --color-warning-muted: #7a4210;
+  --color-success: #5e9c72;
+  --color-success-soft: rgba(94, 156, 114, 0.18);
+  --color-success-ink: #365c45;
+  --color-score: #5e9c72; /* earned points in the "Bodovi i ocjena" bar */
+  --color-warning: #8f6136;
+  --color-warning-soft: rgba(195, 141, 82, 0.18);
+  --color-warning-ink: #6b4a2a;
+  --color-warning-muted: #7e5a36;
   /* Lecture material not started yet (Predmet → Predavanja bar). */
   --color-behind: #f5c58a;
   --color-behind-soft: #fbddb5;
 
-  --color-danger: #b42318;
+  --color-danger: #b0413e;
 
-  /* Radii: inputs 18px, cards 24–28px, pills full */
+  /* Radii: inputs 18px, cards 24–28px, lists 26px, pills full */
   --radius-input: 18px;
   --radius-card: 24px;
   --radius-card-lg: 28px;
+}
+
+/* Glass (docs/design/README.md → Staklo). No borders: the edge is inset light only.
+   `glass` has no backdrop-filter on purpose: cards sit on the fixed, smooth background
+   gradient, where blur is invisible but costs a GPU layer per card. Surfaces that float over
+   content (nav, sheets, sticky headers) use the blurred variants. */
+@utility glass {
+  background-color: rgba(255, 255, 255, 0.36);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    inset 0 -1px 1px rgba(58, 51, 96, 0.05),
+    0 8px 28px rgba(58, 51, 96, 0.07);
+}
+@utility glass-strong {
+  background-color: rgba(255, 255, 255, 0.52);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    inset 0 -1px 1px rgba(58, 51, 96, 0.05),
+    0 12px 36px rgba(58, 51, 96, 0.12);
+}
+@utility glass-sheet {
+  background-color: rgba(250, 249, 253, 0.8);
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    0 -10px 40px rgba(40, 34, 80, 0.12);
+}
+@utility glass-bar {
+  /* Sticky headers and fades: content scrolls under them. */
+  background-color: rgba(236, 233, 244, 0.72);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+}
+@utility glass-tint {
+  color: #ffffff;
+  background: linear-gradient(160deg, rgba(110, 103, 190, 0.9), rgba(76, 72, 146, 0.94));
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.45),
+    0 14px 34px rgba(76, 72, 146, 0.24);
+}
+@utility btn-primary {
+  color: #ffffff;
+  background: linear-gradient(160deg, #6e67be, #4c4892);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 6px 16px rgba(76, 72, 146, 0.22);
+  &:disabled {
+    background: #afaac4;
+    box-shadow: none;
+  }
+}
+/* Indigo tile with a white line icon next to card titles (session end, strategist). */
+@utility icon-tile {
+  color: #ffffff;
+  background: linear-gradient(160deg, #7f78cc, #4c4892);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    0 10px 26px rgba(76, 72, 146, 0.22);
+}
+
+/* No backdrop-filter, or the user asked for less transparency: opaque surfaces, no blur. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-strong,
+  .glass-sheet,
+  .glass-bar {
+    background-color: rgba(255, 255, 255, 0.85);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-strong,
+  .glass-sheet,
+  .glass-bar {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 /* shadcn/ui semantic variables mapped onto the Hoot palette */
@@ -120,24 +210,24 @@
 }
 
 :root {
-  --background: #f1eff7;
-  --foreground: #1d1a2b;
-  --card: #ffffff;
-  --card-foreground: #1d1a2b;
-  --popover: #ffffff;
-  --popover-foreground: #1d1a2b;
-  --primary: #4b3b8f;
+  --background: #ece9f4;
+  --foreground: #14121c;
+  --card: rgba(255, 255, 255, 0.36);
+  --card-foreground: #14121c;
+  --popover: rgba(250, 249, 253, 0.95);
+  --popover-foreground: #14121c;
+  --primary: #4c4892;
   --primary-foreground: #ffffff;
-  --secondary: #e9e4fb;
-  --secondary-foreground: #4b3b8f;
-  --muted: #f1eff7;
-  --muted-foreground: #5b5670;
-  --accent: #e9e4fb;
-  --accent-foreground: #4b3b8f;
-  --destructive: #b42318;
-  --border: #dcd7ea;
-  --input: #dcd7ea;
-  --ring: #7c6bd6;
+  --secondary: rgba(106, 100, 184, 0.12);
+  --secondary-foreground: #4c4892;
+  --muted: rgba(106, 100, 184, 0.1);
+  --muted-foreground: #55516a;
+  --accent: rgba(106, 100, 184, 0.12);
+  --accent-foreground: #4c4892;
+  --destructive: #b0413e;
+  --border: rgba(58, 51, 96, 0.16);
+  --input: rgba(58, 51, 96, 0.16);
+  --ring: #6a64b8;
   --radius: 1rem;
 }
 
@@ -147,10 +237,26 @@
   }
   html {
     @apply font-sans antialiased;
+    letter-spacing: -0.2px;
     -webkit-tap-highlight-color: transparent;
+    background-color: #e8e5f1;
   }
   body {
-    @apply bg-canvas text-ink;
+    @apply text-ink;
+  }
+  /* Lavender mist: fixed layer behind everything (iOS ignores background-attachment: fixed). */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 55% at 0% 0%, rgba(150, 141, 222, 0.62), rgba(150, 141, 222, 0) 62%),
+      radial-gradient(90% 45% at 100% 22%, rgba(229, 182, 206, 0.62), rgba(229, 182, 206, 0) 62%),
+      radial-gradient(110% 50% at 0% 68%, rgba(168, 196, 234, 0.6), rgba(168, 196, 234, 0) 62%),
+      radial-gradient(95% 45% at 100% 100%, rgba(160, 148, 226, 0.55), rgba(160, 148, 226, 0) 62%),
+      linear-gradient(180deg, #ece9f4 0%, #e8e5f1 100%);
   }
   input::placeholder {
     @apply text-ink-placeholder;

@@ -44,31 +44,27 @@ export function LecturePrompts() {
         if (!subject) return null
         const palette = paletteOf(subject.color)
         return (
-          <div
-            key={entry.id}
-            className="flex items-center gap-3 rounded-card bg-surface p-3.5 pl-4"
-          >
+          <div key={entry.id} className="flex items-center gap-3 rounded-card glass p-3.5 pl-4">
             <div
               className={cn(
-                'flex size-11 shrink-0 items-center justify-center rounded-[14px]',
-                palette.soft,
-                palette.deepText,
+                'flex size-[38px] shrink-0 items-center justify-center rounded-[12px] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]',
+                palette.bar,
               )}
             >
-              <CapIcon size={20} />
+              <CapIcon size={17} />
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="text-sm font-semibold">
+              <span className="text-[15px] font-semibold">
                 {t('lectures.ended', { subject: subject.name })}
               </span>
-              <span className="text-[13px] text-ink-muted">
+              <span className="text-xs text-ink-muted">
                 {t('lectures.promptSub', { time: clockRange(entry.startMin, entry.endMin) })}
               </span>
             </div>
             <button
               type="button"
               onClick={() => setOpen(entry.id)}
-              className="flex h-10 items-center rounded-full bg-brand px-4 text-sm font-semibold text-white"
+              className="flex h-10 items-center rounded-full btn-primary px-4 text-sm font-semibold"
             >
               {t('lectures.enter')}
             </button>

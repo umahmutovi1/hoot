@@ -98,7 +98,7 @@ export function ImportCard({
     })
 
   return (
-    <div className="flex flex-col rounded-card bg-surface p-1.5">
+    <div className="flex flex-col rounded-card glass p-1.5">
       {rows.map(({ key, ...row }, i) => (
         <div key={key}>
           {i > 0 && <div className="mx-2.5 h-px bg-hairline" />}

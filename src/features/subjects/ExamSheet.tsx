@@ -364,7 +364,7 @@ function ExamForm({
                     onClick={() => applyPeriod(p)}
                     className={cn(
                       'flex min-h-12 items-center justify-between gap-3 rounded-[16px] px-4 py-2 text-left',
-                      examPeriodId === p.id ? 'bg-brand text-white' : 'bg-canvas',
+                      examPeriodId === p.id ? 'bg-ink text-white' : 'bg-white/50',
                     )}
                   >
                     <span className="text-sm font-semibold">{p.title}</span>
@@ -472,16 +472,11 @@ function ExamForm({
       )}
 
       {step === 1 && !exam ? (
-        <Button
-          type="button"
-          size="pill"
-          className="bg-brand text-white hover:bg-brand-strong"
-          onClick={next}
-        >
+        <Button type="button" size="pill" className="btn-primary" onClick={next}>
           {t('exams.steps.next')}
         </Button>
       ) : (
-        <Button type="submit" size="pill" className="bg-brand text-white hover:bg-brand-strong">
+        <Button type="submit" size="pill" className="btn-primary">
           {t('common.save')}
         </Button>
       )}

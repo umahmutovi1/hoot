@@ -13,7 +13,7 @@ export function FactCard() {
   // The local day (04:00 boundary), so the fact does not change at midnight.
   const fact = factOfDay(localDay(now, boundary))
   return (
-    <aside className="flex flex-col gap-2 rounded-card bg-surface p-4">
+    <aside className="flex flex-col gap-2 rounded-card glass p-4">
       <div className="flex items-center gap-2">
         <span className="flex size-7 items-center justify-center rounded-full bg-brand-soft text-brand">
           <SparkleIcon size={15} />

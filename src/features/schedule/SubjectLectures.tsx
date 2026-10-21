@@ -88,7 +88,7 @@ export function SubjectLectures({
 
   return (
     <>
-      <div className="flex flex-col gap-3 rounded-card bg-surface p-4">
+      <div className="flex flex-col gap-3 rounded-card glass p-4">
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold">{t('lectures.section')}</span>
           <Link to="/plan/timetable" className="py-2.5 text-[13px] font-medium text-brand">
@@ -279,7 +279,7 @@ function PaceWarning({
             className={
               i === 0
                 ? 'h-10 rounded-full bg-warning-ink px-3.5 text-[13px] font-semibold text-white'
-                : 'h-10 rounded-full bg-surface px-3.5 text-[13px] font-semibold text-warning-ink'
+                : 'h-10 rounded-full glass px-3.5 text-[13px] font-semibold text-warning-ink'
             }
           >
             {t(`lectures.action.${a}`, { n: Math.min(5, subject.priority + 1) })}

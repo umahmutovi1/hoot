@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Uvoz sa pregledom</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4C4892}a:hover{color:#36336E}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: radial-gradient(120% 55% at 0% 0%, rgba(150,141,222,0.62), rgba(150,141,222,0) 62%), radial-gradient(90% 45% at 100% 22%, rgba(229,182,206,0.62), rgba(229,182,206,0) 62%), radial-gradient(110% 50% at 0% 68%, rgba(168,196,234,0.60), rgba(168,196,234,0) 62%), radial-gradient(95% 45% at 100% 100%, rgba(160,148,226,0.55), rgba(160,148,226,0) 62%), linear-gradient(180deg, #ECE9F4 0%, #E8E5F1 100%); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: #14121C; position: relative; overflow: hidden; letter-spacing: -0.2px">
+<div style="position: relative; padding: 24px 20px 28px; display: flex; flex-direction: column; gap: 14px">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px"><a href="AkademskiKalendar.dc.html" aria-label="Zatvori" style="width: 44px; height: 44px; border-radius: 22px; border: none; flex-shrink: 0; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14121C" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a><span style="display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0"><span style="font-size: 16px; font-weight: 600">Uvoz</span><span style="font-size: 12px; color: #55516A">pregled prije primjene</span></span><span style="width: 44px"></span></div>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07);  border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px; "><div style="display: flex; align-items: center; gap: 12px"><span aria-hidden="true" style="width: 44px; height: 54px; border-radius: 8px; background: rgba(255,255,255,0.75); box-shadow: 0 2px 8px rgba(58,51,96,0.12); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; box-sizing: border-box; font-size: 10px; font-weight: 700; color: #B0413E">PDF</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">raspored-parcijala-ETF.pdf</span><span style="font-size: 12px; color: #55516A">2 str. · spašeno u Dokumente</span></span></div>
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,0.45)"><span style="font-size: 12px; color: #55516A">Tvoja poruka</span><span style="font-size: 13px; flex: 1">samo II godina, grupa B</span></div></div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 0 4px"><span style="font-size: 13px; color: #3F3B4E">Prepoznato: <b>Raspored ispita</b> · uparila sam 3 predmeta</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{kinds}}" as="f" hint-placeholder-count="3"><button onClick="{{f.pick}}" style="height: 32px; padding: 0 14px; border-radius: 16px; border: none; background: {{f.bg}}; color: {{f.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; flex-shrink: 0; ">{{f.label}}</button></sc-for></div></div>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); border-radius: 24px; padding: 2px 16px; display: flex; flex-direction: column"><sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(106,100,184,0.12)">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 3px; opacity: {{r.op}}"><span style="display: flex; gap: 6px; align-items: center"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.4px; color: {{r.tc}}">{{r.tag}}</span></span><span style="font-size: 15px; font-weight: 500">{{r.title}}</span><span style="font-size: 12px; color: #55516A">{{r.sub}}</span></span>
+<button onClick="{{r.pick}}" aria-label="{{r.aria}}" style="height: 34px; padding: 0 12px; border-radius: 17px; border: none; background: {{r.bg}}; color: {{r.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 12px; font-weight: 600; white-space: nowrap">{{r.btn}}</button>
+</div></sc-for></div>
+<span style="font-size: 12px; color: #55516A; padding: 0 4px; line-height: 1.45">Datumi dolaze iz dokumenta. Izmjena okvirnog ispita mijenja datum umjesto da pravi duplikat.</span>
+
+</div>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 26px"><a href="Plan.dc.html" style="height: 52px; padding: 0 18px; border-radius: 26px; border: none; background: linear-gradient(160deg, #6E67BE, #4C4892); color: #FFFFFF; box-shadow: inset 0 1px 1px rgba(255,255,255,0.40), 0 6px 16px rgba(76,72,146,0.22); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 15px; font-weight: 600; white-space: nowrap; ">{{applyLabel}}</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { kind: 'exam', skip: [] }; }
+  renderVals() {
+    const segOf = (cur, items, set) => items.map(([id, label]) => { const on = cur === id; return { label, bg: on ? 'rgba(255,255,255,0.85)' : 'transparent', fg: on ? '#14121C' : '#3F3B4E', sh: on ? '0 2px 8px rgba(58,51,96,0.10)' : 'none', pick: () => set(id) }; });
+    const chipOf = (on) => ({ bg: on ? '#14121C' : 'rgba(255,255,255,0.50)', fg: on ? '#FFFFFF' : '#14121C' });
+    const s = this.state;
+    const R = [
+      ['a', 'IZMIJENJENO', '#4C4892', 'I parcijala · Signali i sistemi', 'okvirno 27.–31. okt → 28. okt, 09:00 · S1'],
+      ['b', 'NOVO', '#365C45', 'I parcijala · Baze podataka', '30. okt, 12:00 · A2'],
+      ['c', 'IZMIJENJENO', '#4C4892', 'I parcijala · Vjerovatnoća', 'okvirno → 29. okt, 10:00'],
+      ['d', 'OSTAJE', '#6E6A80', 'Seminarski · Baze', '23. okt · nema u dokumentu']
+    ];
+    const n = R.filter(([id, t]) => t !== 'OSTAJE' && !s.skip.includes(id)).length;
+    return {
+      kinds: [['exam', 'Raspored ispita'], ['cal', 'Akademski kalendar'], ['auto', 'Pogodi sama']].map(([id, label]) => ({ label, ...chipOf(s.kind === id), pick: () => this.setState({ kind: id }) })),
+      rows: R.map(([id, tag, tc, title, sub]) => { const sk = s.skip.includes(id), keep = tag === 'OSTAJE'; return { tag: sk ? 'PRESKAČEM' : tag, tc: sk ? '#6E6A80' : tc, title, sub, op: sk || keep ? 0.55 : 1, btn: keep ? 'Bez promjene' : sk ? 'Vrati' : 'Preskoči', aria: 'Preskoči ' + title, bg: keep ? 'transparent' : 'rgba(106,100,184,0.10)', fg: '#4C4892', pick: () => { if (!keep) this.setState({ skip: sk ? s.skip.filter((x) => x !== id) : [...s.skip, id] }); } }; }),
+      applyLabel: 'Primijeni ' + n + (n === 1 ? ' izmjenu' : n < 5 ? ' izmjene' : ' izmjena')
+    };
+  }
+}
+</script>
+</body>
+</html>

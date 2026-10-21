@@ -22,7 +22,7 @@ export function UnitOption({
       onClick={onSelect}
       className={cn(
         'flex min-h-11 items-center gap-3 rounded-[18px] p-3 text-left',
-        checked ? 'bg-brand-soft' : 'bg-surface',
+        checked ? 'bg-brand-soft' : 'glass',
       )}
     >
       <span

@@ -9,18 +9,18 @@
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0}
-a{color:#4B3B8F}a:hover{color:#2F2363}
-textarea::placeholder,input::placeholder{color:#8A84A0}
+a{color:#4C4892}a:hover{color:#36336E}
+textarea::placeholder,input::placeholder{color:#6E6A80}
 </style>
 </helmet>
-<div style="width: 390px; height: 940px; box-sizing: border-box; background: #F1EFF7; font-family: Outfit, sans-serif; color: #1D1A2B; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="width: 390px; height: 940px; box-sizing: border-box; background: radial-gradient(120% 55% at 0% 0%, rgba(150,141,222,0.62), rgba(150,141,222,0) 62%), radial-gradient(90% 45% at 100% 22%, rgba(229,182,206,0.62), rgba(229,182,206,0) 62%), radial-gradient(110% 50% at 0% 68%, rgba(168,196,234,0.60), rgba(168,196,234,0) 62%), radial-gradient(95% 45% at 100% 100%, rgba(160,148,226,0.55), rgba(160,148,226,0) 62%), linear-gradient(180deg, #ECE9F4 0%, #E8E5F1 100%); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: #14121C; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px">
 
 <div style="display: flex; align-items: center; justify-content: space-between">
-<a href="Predmet.dc.html" aria-label="Zatvori" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D1A2B" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
-<div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Novi izvor</span><span style="font-size: 12px; color: #5B5670">Signali i sistemi</span></div>
+<a href="Predmet.dc.html" aria-label="Zatvori" style="width: 44px; height: 44px; border-radius: 22px; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14121C" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+<div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Novi izvor</span><span style="font-size: 12px; color: #3F3B4E">Signali i sistemi</span></div>
 <span style="width: 44px"></span>
 </div>
 
@@ -28,45 +28,45 @@ textarea::placeholder,input::placeholder{color:#8A84A0}
 <span style="font-size: 14px; font-weight: 600">Tip izvora</span>
 <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px" role="radiogroup">
 <sc-for list="{{types}}" as="t" hint-placeholder-count="5">
-<button role="radio" onClick="{{t.pick}}" style="height: 64px; border-radius: 18px; border: 2px solid {{t.border}}; background: {{t.bg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">{{t.label}}<span style="font-size: 11px; font-weight: 400; color: #5B5670">{{t.unit}}</span></button>
+<button role="radio" onClick="{{t.pick}}" style="height: 64px; border-radius: 18px; border: 2px solid {{t.border}}; background: {{t.bg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 14px; font-weight: 600; color: #14121C; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">{{t.label}}<span style="font-size: 11px; font-weight: 400; color: #3F3B4E">{{t.unit}}</span></button>
 </sc-for>
 </div>
 </div>
 
 <label style="display: flex; flex-direction: column; gap: 8px">
 <span style="font-size: 14px; font-weight: 600">Naziv</span>
-<input value="Oppenheim — Signals &amp; Systems" style="height: 52px; border: none; border-radius: 18px; padding: 0 16px; font-family: Outfit, sans-serif; font-size: 15px; background: #FFFFFF; color: #1D1A2B">
+<input value="Oppenheim — Signals &amp; Systems" style="height: 52px; border: none; border-radius: 18px; padding: 0 16px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 15px; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); color: #14121C">
 </label>
 
-<div role="tablist" style="display: flex; background: #E3DFEF; border-radius: 22px; padding: 4px">
-<button role="tab" onClick="{{toPhoto}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{photoBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Slikaj sadržaj</button>
-<button role="tab" onClick="{{toText}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{textBg}}; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #1D1A2B">Ukucaj</button>
+<div role="tablist" style="display: flex; background: rgba(106,100,184,0.12); border-radius: 22px; padding: 4px">
+<button role="tab" onClick="{{toPhoto}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{photoBg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 14px; font-weight: 600; color: #14121C">Slikaj sadržaj</button>
+<button role="tab" onClick="{{toText}}" style="flex: 1; height: 40px; border-radius: 18px; border: none; background: {{textBg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 14px; font-weight: 600; color: #14121C">Ukucaj</button>
 </div>
 
 <sc-if value="{{isPhoto}}" hint-placeholder-val="{{ true }}">
-<div style="background: #FFFFFF; border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
-<div style="height: 200px; border-radius: 20px; border: 2px dashed #B5ADD6; background: #F6F4FB; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px">
-<div style="width: 60px; height: 60px; border-radius: 30px; background: #4B3B8F; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></div>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="height: 200px; border-radius: 20px; border: 2px dashed rgba(76,72,146,0.40); background: rgba(255,255,255,0.40); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px">
+<div style="width: 60px; height: 60px; border-radius: 30px; background: #4C4892; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></div>
 <span style="font-size: 15px; font-weight: 600">Uslikaj stranicu sadržaja</span>
-<span style="font-size: 12px; color: #5B5670">ili odaberi iz galerije · više strana je ok</span>
+<span style="font-size: 12px; color: #3F3B4E">ili odaberi iz galerije · više strana je ok</span>
 </div>
 <div style="display: flex; gap: 10px; align-items: center">
-<div style="width: 64px; height: 84px; border-radius: 12px; background: repeating-linear-gradient(#FFFFFF 0 8px, #E3DFEF 8px 10px); border: 1px solid #DCD7EA; position: relative"><span style="position: absolute; left: 4px; bottom: 4px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; background: #1D1A2B; color: #FFFFFF">1</span></div>
-<div style="width: 64px; height: 84px; border-radius: 12px; background: repeating-linear-gradient(#FFFFFF 0 8px, #E3DFEF 8px 10px); border: 1px solid #DCD7EA; position: relative"><span style="position: absolute; left: 4px; bottom: 4px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; background: #1D1A2B; color: #FFFFFF">2</span></div>
-<span style="font-size: 13px; color: #5B5670">2 stranice sadržaja</span>
+<div style="width: 64px; height: 84px; border-radius: 12px; background: repeating-linear-gradient(#FFFFFF 0 8px, rgba(106,100,184,0.12) 8px 10px); border: 1px solid rgba(58,51,96,0.16); position: relative"><span style="position: absolute; left: 4px; bottom: 4px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; background: #14121C; color: #FFFFFF">1</span></div>
+<div style="width: 64px; height: 84px; border-radius: 12px; background: repeating-linear-gradient(#FFFFFF 0 8px, rgba(106,100,184,0.12) 8px 10px); border: 1px solid rgba(58,51,96,0.16); position: relative"><span style="position: absolute; left: 4px; bottom: 4px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 8px; background: #14121C; color: #FFFFFF">2</span></div>
+<span style="font-size: 13px; color: #3F3B4E">2 stranice sadržaja</span>
 </div>
 </div>
 </sc-if>
 
 <sc-if value="{{isText}}" hint-placeholder-val="{{ false }}">
-<div style="background: #FFFFFF; border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
-<textarea rows="9" aria-label="Sadržaj" placeholder="Jedno poglavlje po liniji, npr.&#10;1 Uvod 1&#10;2 LTI sistemi 74&#10;2.1 Konvolucija 75" style="border: none; border-radius: 18px; padding: 14px; font-family: Outfit, sans-serif; font-size: 15px; background: #F6F4FB; color: #1D1A2B; resize: none"></textarea>
-<span style="font-size: 12px; color: #5B5670">Može i zalijepljen tekst — AI ga pretvori u poglavlja.</span>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); border-radius: 28px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<textarea rows="9" aria-label="Sadržaj" placeholder="Jedno poglavlje po liniji, npr.&#10;1 Uvod 1&#10;2 LTI sistemi 74&#10;2.1 Konvolucija 75" style="border: none; border-radius: 18px; padding: 14px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 15px; background: rgba(255,255,255,0.40); color: #14121C; resize: none"></textarea>
+<span style="font-size: 12px; color: #3F3B4E">Može i zalijepljen tekst — AI ga pretvori u poglavlja.</span>
 </div>
 </sc-if>
 
-<span style="font-size: 12px; color: #5B5670; text-align: center">Slike se brišu odmah nakon obrade.</span>
-<a href="Parsiranje.dc.html" style="margin-top: auto; height: 56px; border-radius: 28px; background: #4B3B8F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg>Izvuci poglavlja</a>
+<span style="font-size: 12px; color: #3F3B4E; text-align: center">Slike se brišu odmah nakon obrade.</span>
+<a href="Parsiranje.dc.html" style="margin-top: auto; height: 56px; border-radius: 28px; background: linear-gradient(160deg, #6E67BE, #4C4892); color: #FFFFFF; box-shadow: inset 0 1px 1px rgba(255,255,255,0.40), 0 6px 16px rgba(76,72,146,0.22); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg>Izvuci poglavlja</a>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":940}}'>
@@ -78,7 +78,7 @@ class Component extends DCLogic {
     return {
       types: t.map(([id, label, unit]) => {
         const on = this.state.type === id;
-        return { label, unit, border: on ? '#7C6BD6' : '#FFFFFF', bg: on ? '#F6F4FB' : '#FFFFFF', pick: () => this.setState({ type: id }) };
+        return { label, unit, border: on ? '#6A64B8' : 'rgba(255,255,255,0.55)', bg: on ? 'rgba(255,255,255,0.40)' : 'rgba(255,255,255,0.55)', pick: () => this.setState({ type: id }) };
       }),
       isPhoto: m === 'photo', isText: m === 'text',
       photoBg: m === 'photo' ? '#FFFFFF' : 'transparent', textBg: m === 'text' ? '#FFFFFF' : 'transparent',

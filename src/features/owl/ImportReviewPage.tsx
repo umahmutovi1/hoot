@@ -28,7 +28,7 @@ export function ImportReviewPage() {
   if (!proposal || !id) {
     return (
       <div className="flex flex-col gap-4">
-        <BackHeader title={t('owl.reviewPage.title')} fallback="/owl" />
+        <BackHeader title={t('owl.reviewPage.title')} fallback="/chat" />
         <p className="text-sm text-ink-muted">{t('owl.reviewPage.missing')}</p>
       </div>
     )
@@ -52,13 +52,13 @@ export function ImportReviewPage() {
     save.mutate(proposal, {
       onSuccess: (n) => {
         updateProposal(id, (p) => ({ ...p, savedCount: n }))
-        navigate('/owl')
+        navigate('/chat')
       },
     })
 
   return (
     <div className="flex flex-col gap-4 pb-24">
-      <BackHeader title={t('owl.reviewPage.title')} fallback="/owl" />
+      <BackHeader title={t('owl.reviewPage.title')} fallback="/chat" />
       <p className="px-1 text-sm text-ink-muted">{proposal.documentTitle}</p>
 
       {proposal.warnings.length > 0 && (
@@ -79,7 +79,7 @@ export function ImportReviewPage() {
             const lines = periodLines(t, p, day)
             const editable = !saved && p.include && p.status !== 'unchanged'
             return (
-              <div key={p.key} className="flex flex-col gap-3 rounded-card bg-surface p-4">
+              <div key={p.key} className="flex flex-col gap-3 rounded-card glass p-4">
                 <ItemHeader
                   title={lines.title}
                   detail={lines.detail}
@@ -120,7 +120,7 @@ export function ImportReviewPage() {
             const lines = examLines(t, e, subject?.name, day)
             const editable = !saved && e.include && e.status !== 'unchanged'
             return (
-              <div key={e.key} className="flex flex-col gap-3 rounded-card bg-surface p-4">
+              <div key={e.key} className="flex flex-col gap-3 rounded-card glass p-4">
                 <ItemHeader
                   title={lines.title}
                   detail={lines.detail}

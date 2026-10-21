@@ -1,22 +1,19 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ClockIcon, CloseIcon, DocIcon, PencilIcon, PlusIcon, SendIcon } from '@/components/icons'
+import { AiSparkIcon, ClockIcon, DocIcon, PencilIcon, PlusIcon, SendIcon } from '@/components/icons'
 import { useSubjects } from '@/features/subjects/api'
 import { cn } from '@/lib/utils'
 import type { Citation } from '@shared/schemas.ts'
 import { useAiAvailability, useDocumentFileUrl, useDocuments } from './api'
 import { GiveDocumentSheet } from './GiveDocumentSheet'
 import { ImportCard } from './ImportCard'
-import { OwlHead } from './OwlBar'
 import { useOwlStore, type OwlMessage, type StateRef } from './store'
 import { useOwl } from './useOwl'
-import { goBack } from '@/app/navigation'
 
-/** Conversation with the owl over the whole screen (SovaAgent mockups 2 and 4). */
+/** The assistant in the AI tab (Chat.dc.html): conversation, suggestions and the document +. */
 export function OwlChatPage() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const messages = useOwlStore((s) => s.messages)
   const busy = useOwlStore((s) => s.busy)
   const openSheet = useOwlStore((s) => s.openSheet)
@@ -31,8 +28,6 @@ export function OwlChatPage() {
     end.current?.scrollIntoView({ block: 'end' })
   }, [messages])
 
-  const close = () => goBack(navigate, '/')
-
   const submit = (e: FormEvent) => {
     e.preventDefault()
     if (!question.trim() || busy || !enabled) return
@@ -40,45 +35,46 @@ export function OwlChatPage() {
     setQuestion('')
   }
 
+  const suggestions = [
+    { label: t('owl.suggest.important'), ask: t('owl.suggest.important') },
+    { label: t('owl.suggest.importExams'), kind: 'exam_schedule' as const },
+    { label: t('owl.suggest.makeup'), ask: t('owl.suggest.makeup') },
+  ]
+
   return (
-    <div className="flex min-h-[calc(100dvh-48px)] flex-col gap-3">
+    <div className="flex min-h-[calc(100dvh-24px-112px-env(safe-area-inset-bottom))] flex-col gap-3">
       {/* Sticky, so the header stays reachable and clear of the phone's status bar. */}
-      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 bg-canvas/90 px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 backdrop-blur-md">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <OwlHead pose={enabled ? 'reading-head' : 'sleeping-head'} size={40} />
-          <div className="flex min-w-0 flex-col">
-            <h1 className="text-lg font-bold">{t('owl.name')}</h1>
-            <span className="truncate text-xs text-ink-muted">{t('owl.tagline')}</span>
-          </div>
+      <div className="glass-bar sticky top-0 z-10 -mx-5 -mt-6 grid grid-cols-[44px_1fr_44px] items-center gap-2 px-5 pt-[calc(20px+env(safe-area-inset-top))] pb-2">
+        <Link
+          to="/chat/history"
+          aria-label={t('owl.history.title')}
+          className="glass flex size-11 items-center justify-center rounded-full text-ink"
+        >
+          <ClockIcon size={18} />
+        </Link>
+        <div className="flex min-w-0 flex-col items-center">
+          <h1 className="text-base font-semibold">{t('owl.name')}</h1>
+          <span className="truncate text-xs text-ink-secondary">
+            {state === 'ready'
+              ? t('owl.tagline')
+              : state === 'offline'
+                ? t('owl.offline')
+                : t('owl.disabled')}
+          </span>
         </div>
-        <div className="flex gap-1.5">
-          <Link
-            to="/owl/history"
-            aria-label={t('owl.history.title')}
-            className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted"
-          >
-            <ClockIcon size={18} />
-          </Link>
-          {messages.length > 0 && (
-            <button
-              type="button"
-              onClick={newConversation}
-              disabled={busy}
-              aria-label={t('owl.history.new')}
-              className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted disabled:opacity-60"
-            >
-              <PencilIcon size={18} />
-            </button>
-          )}
+        {messages.length > 0 ? (
           <button
             type="button"
-            onClick={close}
-            aria-label={t('common.close')}
-            className="flex size-11 items-center justify-center rounded-full bg-surface text-ink-muted"
+            onClick={newConversation}
+            disabled={busy}
+            aria-label={t('owl.history.new')}
+            className="glass flex size-11 items-center justify-center rounded-full text-ink disabled:opacity-60"
           >
-            <CloseIcon size={18} />
+            <PencilIcon size={18} />
           </button>
-        </div>
+        ) : (
+          <span />
+        )}
       </div>
 
       <div className="flex flex-1 flex-col justify-end gap-3 pb-2" aria-live="polite">
@@ -89,43 +85,60 @@ export function OwlChatPage() {
         <div ref={end} className="scroll-mb-24" />
       </div>
 
-      <form
-        onSubmit={submit}
-        className="sticky bottom-[calc(12px+env(safe-area-inset-bottom))] flex h-14 items-center gap-2 rounded-full bg-surface px-1.5 shadow-[0_6px_24px_rgba(47,35,99,0.10)]"
-      >
-        <button
-          type="button"
-          onClick={() => openSheet()}
-          disabled={!enabled || busy}
-          aria-label={t('owl.add')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-canvas text-brand disabled:opacity-60"
+      <div className="sticky bottom-[calc(96px+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2">
+        {enabled && messages.length === 0 && (
+          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none]">
+            {suggestions.map((sug) => (
+              <button
+                key={sug.label}
+                type="button"
+                disabled={busy}
+                onClick={() => (sug.kind ? openSheet(sug.kind) : void owl.ask(sug.ask))}
+                className="glass h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
+              >
+                {sug.label}
+              </button>
+            ))}
+          </div>
+        )}
+        <form
+          onSubmit={submit}
+          className="glass-strong flex h-14 items-center gap-2 rounded-full px-1.5"
         >
-          <PlusIcon size={20} />
-        </button>
-        <input
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          maxLength={1000}
-          disabled={!enabled}
-          placeholder={
-            state === 'offline'
-              ? t('owl.offline')
-              : state === 'disabled'
-                ? t('owl.disabled')
-                : t('owl.ask')
-          }
-          aria-label={t('owl.ask')}
-          className="h-11 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink-subtle"
-        />
-        <button
-          type="submit"
-          disabled={!enabled || busy || !question.trim()}
-          aria-label={t('owl.send')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white disabled:opacity-60"
-        >
-          <SendIcon size={20} />
-        </button>
-      </form>
+          <button
+            type="button"
+            onClick={() => openSheet()}
+            disabled={!enabled || busy}
+            aria-label={t('owl.add')}
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-canvas text-brand disabled:opacity-60"
+          >
+            <PlusIcon size={20} />
+          </button>
+          <input
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            maxLength={1000}
+            disabled={!enabled}
+            placeholder={
+              state === 'offline'
+                ? t('owl.offline')
+                : state === 'disabled'
+                  ? t('owl.disabled')
+                  : t('owl.ask')
+            }
+            aria-label={t('owl.ask')}
+            className="h-11 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink-subtle"
+          />
+          <button
+            type="submit"
+            disabled={!enabled || busy || !question.trim()}
+            aria-label={t('owl.send')}
+            className="flex size-11 shrink-0 items-center justify-center rounded-full btn-primary disabled:opacity-60"
+          >
+            <SendIcon size={20} />
+          </button>
+        </form>
+      </div>
       <GiveDocumentSheet />
     </div>
   )
@@ -133,8 +146,16 @@ export function OwlChatPage() {
 
 function OwlBubble({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex max-w-[88%] flex-col gap-2 self-start rounded-[20px_20px_20px_6px] bg-surface px-3.5 py-3 text-sm leading-[1.45]">
-      {children}
+    <div className="flex gap-2.5 self-stretch">
+      <span
+        aria-hidden="true"
+        className="icon-tile flex size-8 shrink-0 items-center justify-center rounded-full"
+      >
+        <AiSparkIcon size={15} />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-2 pt-1 text-[15px] leading-[1.45]">
+        {children}
+      </div>
     </div>
   )
 }
@@ -144,13 +165,13 @@ function Message({ message: m }: { message: OwlMessage }) {
   switch (m.type) {
     case 'text':
       return (
-        <div className="max-w-[80%] self-end rounded-[20px_20px_6px_20px] bg-brand px-3.5 py-2.5 text-sm leading-[1.4] whitespace-pre-wrap text-white">
+        <div className="max-w-[80%] self-end glass-tint rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-[15px] leading-[1.35] whitespace-pre-wrap">
           {m.text}
         </div>
       )
     case 'file':
       return (
-        <div className="flex max-w-[80%] flex-col gap-1.5 self-end rounded-[20px_20px_6px_20px] bg-brand px-3.5 py-2.5 text-sm text-white">
+        <div className="flex max-w-[80%] flex-col gap-1.5 self-end glass-tint rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-sm">
           <span className="flex min-w-0 items-center gap-2">
             <DocIcon size={18} className="shrink-0" />
             <span className="truncate">{m.name}</span>

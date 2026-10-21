@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Sesije</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4C4892}a:hover{color:#36336E}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: radial-gradient(120% 55% at 0% 0%, rgba(150,141,222,0.62), rgba(150,141,222,0) 62%), radial-gradient(90% 45% at 100% 22%, rgba(229,182,206,0.62), rgba(229,182,206,0) 62%), radial-gradient(110% 50% at 0% 68%, rgba(168,196,234,0.60), rgba(168,196,234,0) 62%), radial-gradient(95% 45% at 100% 100%, rgba(160,148,226,0.55), rgba(160,148,226,0) 62%), linear-gradient(180deg, #ECE9F4 0%, #E8E5F1 100%); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: #14121C; position: relative; overflow: hidden; letter-spacing: -0.2px">
+<div style="position: relative; padding: 24px 20px 28px; display: flex; flex-direction: column; gap: 14px">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px"><a href="Napredak.dc.html" aria-label="Nazad" style="width: 44px; height: 44px; border-radius: 22px; border: none; flex-shrink: 0; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14121C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a><span style="display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0"><span style="font-size: 16px; font-weight: 600">Sesije</span></span><button aria-label="Dodaj sesiju" style="width: 44px; height: 44px; border-radius: 22px; border: none; flex-shrink: 0; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14121C" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button></div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{subs}}" as="f" hint-placeholder-count="4"><button onClick="{{f.pick}}" style="height: 32px; padding: 0 14px; border-radius: 16px; border: none; background: {{f.bg}}; color: {{f.fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; flex-shrink: 0; ">{{f.label}}</button></sc-for></div>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="3">
+<div style="display: flex; justify-content: space-between; padding: 6px 4px 0"><span style="font-size: 13px; font-weight: 600; color: #3F3B4E">{{d.label}}</span><span style="font-size: 12px; color: #55516A">{{d.total}}</span></div>
+<div style="background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); border-radius: 24px; padding: 2px 16px; display: flex; flex-direction: column">
+<sc-for list="{{d.items}}" as="r" hint-placeholder-count="2">
+<button onClick="{{r.open}}" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border: none; border-bottom: 1px solid {{r.line}}; background: transparent; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: #14121C; text-align: left; width: 100%">
+<span style="width: 4px; height: 34px; border-radius: 2px; background: {{r.c}}"></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500">{{r.title}}</span><span style="font-size: 12px; color: #55516A">{{r.sub}}</span></span>
+<span style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px"><span style="font-size: 14px; font-weight: 600">{{r.min}}</span><span style="font-size: 11px; font-weight: 600; color: {{r.tagc}}">{{r.tag}}</span></span>
+</button></sc-for></div>
+</sc-for>
+
+</div>
+
+<sc-if value="{{isOpen}}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(40,34,80,0.20)"></div><div role="dialog" style="position: absolute; left: 0; right: 0; bottom: 0; background: rgba(250,249,253,0.80); backdrop-filter: blur(36px) saturate(180%); -webkit-backdrop-filter: blur(36px) saturate(180%); box-shadow: inset 0 1px 1px rgba(255,255,255,0.9), 0 -10px 40px rgba(40,34,80,0.12); border-radius: 30px 30px 0 0; padding: 10px 20px 30px; display: flex; flex-direction: column; gap: 14px"><span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: rgba(58,51,96,0.20)"></span><div style="display: flex; justify-content: space-between; align-items: center"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 19px; font-weight: 700">Baze podataka</span><span style="font-size: 13px; color: #55516A">Danas · 08:02 – 08:58 · čitanje</span></span><button onClick="{{close}}" style="border: none; background: transparent; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 15px; font-weight: 600; color: #4C4892">Gotovo</button></div>
+<span style="font-size: 13px; font-weight: 600; color: #3F3B4E">SEGMENTI</span>
+<div style="background: rgba(255,255,255,0.6); border-radius: 20px; padding: 2px 16px; display: flex; flex-direction: column">
+<button onClick="{{close}}" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border: none; border-bottom: 1px solid rgba(106,100,184,0.12); background: transparent; text-decoration: none; color: #14121C; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; text-align: left; width: 100%"><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">08:02 – 08:31</span><span style="font-size: 12px; color: #55516A">5.1 Funkcionalne zavisnosti</span></span><span style="font-size: 14px; color: #55516A; text-align: right">29 min</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border: none; border-bottom: 1px solid rgba(106,100,184,0.12); background: transparent; text-decoration: none; color: #14121C; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; text-align: left; width: 100%"><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">08:31 – 08:35</span></span><span style="font-size: 14px; color: #55516A; text-align: right">pauza</span></div>
+<button onClick="{{close}}" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border: none; border-bottom: none; background: transparent; text-decoration: none; color: #14121C; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; text-align: left; width: 100%"><span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">08:35 – 08:58</span><span style="font-size: 12px; color: #55516A">5.2 Normalne forme</span></span><span style="font-size: 14px; color: #55516A; text-align: right">23 min</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+</div>
+<button style="height: 40px; border-radius: 20px; border: none; background: rgba(106,100,184,0.10); color: #4C4892; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600">+ Dodaj segment</button>
+<div style="display: flex; gap: 8px"><a href="KrajSesije.dc.html" style="height: 46px; padding: 0 18px; border-radius: 23px; border: none; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); color: #4C4892; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; flex: 1">Uredi ocjene</a><button onClick="{{close}}" style="height: 46px; padding: 0 18px; border-radius: 23px; border: none; background: rgba(255,255,255,0.36); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.55), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(58,51,96,0.05), 0 8px 28px rgba(58,51,96,0.07); color: #B0413E; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; flex: 1">Obriši sesiju</button></div>
+<span style="font-size: 12px; color: #55516A; line-height: 1.4">Minute se ponovo raspodijele po jedinicama. Statusi jedinica se ne vraćaju sami.</span></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { sub: 'all', open: false }; }
+  renderVals() {
+    const segOf = (cur, items, set) => items.map(([id, label]) => { const on = cur === id; return { label, bg: on ? 'rgba(255,255,255,0.85)' : 'transparent', fg: on ? '#14121C' : '#3F3B4E', sh: on ? '0 2px 8px rgba(58,51,96,0.10)' : 'none', pick: () => set(id) }; });
+    const chipOf = (on) => ({ bg: on ? '#14121C' : 'rgba(255,255,255,0.50)', fg: on ? '#FFFFFF' : '#14121C' });
+    const s = this.state;
+    const C = { baze: '#5F86B5', sig: '#6A64B8', vjer: '#B66A8C' };
+    const D = [
+      ['Danas · sri 21. okt', [['baze', 'Baze podataka', '08:02 · čitanje · 5.1–5.2', '52 min', 'Standardno'], ['sig', 'Signali i sistemi', 'jutros · zadaci · pogl. 3', '–', '']]],
+      ['Utorak 20. okt', [['vjer', 'Vjerovatnoća', '17:10 · pitanja 1–12', '48 min', 'Pomodoro'], ['sig', 'Signali i sistemi', '20:00–21:00 · dodano naknadno', '60 min', 'ručno']]],
+      ['Ponedjeljak 19. okt', [['baze', 'Baze podataka', '09:00 · čitanje · 4.3–4.5', '1h 05m', 'Flowtime']]]
+    ];
+    const days = D.map(([label, items]) => { const its = items.filter((x) => (s.sub === 'all' || x[0] === s.sub) && x[3] !== '–'); return { label, total: its.length + (its.length === 1 ? ' sesija' : ' sesije'), items: its.map(([k, title, sub, min, tag], i) => ({ c: C[k], title, sub, min, tag, tagc: tag === 'ručno' ? '#7E5A36' : '#6E6A80', line: i === its.length - 1 ? 'transparent' : 'rgba(106,100,184,0.12)', open: () => this.setState({ open: true }) })) }; }).filter((d) => d.items.length);
+    return { subs: [['all', 'Svi'], ['sig', 'Signali'], ['baze', 'Baze'], ['vjer', 'Vjerovatnoća']].map(([id, label]) => ({ label, ...chipOf(s.sub === id), pick: () => this.setState({ sub: id }) })), days, isOpen: s.open, close: () => this.setState({ open: false }) };
+  }
+}
+</script>
+</body>
+</html>

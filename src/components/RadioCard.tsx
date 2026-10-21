@@ -17,7 +17,7 @@ export function RadioCard({ checked, title, subtitle, onSelect, className }: Rad
       aria-checked={checked}
       onClick={onSelect}
       className={cn(
-        'flex items-center gap-3 rounded-[20px] border-2 bg-surface p-3.5 text-left',
+        'flex items-center gap-3 rounded-[20px] border-2 glass p-3.5 text-left',
         checked ? 'border-brand-accent' : 'border-surface',
         className,
       )}

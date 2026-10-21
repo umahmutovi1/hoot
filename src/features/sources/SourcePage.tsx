@@ -62,13 +62,13 @@ function SourceDetail({
           type="button"
           onClick={() => goBack(navigate, `/subjects/${subject.id}`)}
           aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full bg-surface"
+          className="flex size-11 items-center justify-center rounded-full glass"
         >
           <ChevronLeftIcon size={20} />
         </button>
         <Link
           to={`${base}/edit`}
-          className="flex h-11 items-center rounded-full bg-surface px-4 text-sm font-semibold"
+          className="flex h-11 items-center rounded-full glass px-4 text-sm font-semibold"
         >
           {t('sources.detail.editContent')}
         </Link>
@@ -81,7 +81,7 @@ function SourceDetail({
         <h1 className="text-[26px] leading-[1.15] font-bold">{source.title}</h1>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-card bg-surface p-4">
+      <div className="flex flex-col gap-3 rounded-card glass p-4">
         <LevelBar
           minutes={levelMinutes(leaves)}
           questions={source.kind === 'questions'}
@@ -113,7 +113,7 @@ function SourceDetail({
               onClick={() => setFilter(f.id)}
               className={cn(
                 'h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
-                filter === f.id ? 'bg-ink text-white' : 'bg-surface',
+                filter === f.id ? 'bg-ink text-white' : 'glass',
               )}
             >
               {f.title}
@@ -123,9 +123,7 @@ function SourceDetail({
       )}
 
       {material.units.length === 0 ? (
-        <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
-          {t('sources.detail.empty')}
-        </p>
+        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.detail.empty')}</p>
       ) : (
         <UnitList material={material} base={base} visible={visible} />
       )}
@@ -169,13 +167,13 @@ function UnitList({
 
   if (units.length === 0) {
     return (
-      <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
+      <p className="rounded-card glass p-4 text-sm text-ink-muted">
         {t('sources.detail.noneInExam')}
       </p>
     )
   }
   return (
-    <div className="flex flex-col rounded-card bg-surface p-1.5">
+    <div className="flex flex-col rounded-card glass p-1.5">
       {units.map((u, i) => {
         const d = depth.get(u.id) ?? 0
         // A parent shows the lowest status of its sub-units ("whole chapter read").
@@ -242,7 +240,7 @@ function Archived({ subjectId, source }: { subjectId: string; source: SourceWith
         {t('sources.detail.archived', { count: archived.length })}
       </button>
       {open && (
-        <div className="flex flex-col rounded-card bg-surface p-1.5">
+        <div className="flex flex-col rounded-card glass p-1.5">
           {archived.map((u) => (
             <div key={u.id} className="flex items-center gap-3 py-1.5 pr-1 pl-2.5">
               <span className="w-[30px] shrink-0 text-[13px] font-semibold text-ink-muted">

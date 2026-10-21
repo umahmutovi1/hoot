@@ -219,12 +219,7 @@ function ResultForm({
         />
       )}
 
-      <Button
-        type="button"
-        size="pill"
-        onClick={save}
-        className="bg-brand text-white hover:bg-brand-strong"
-      >
+      <Button type="button" size="pill" onClick={save} className="btn-primary">
         {t('grades.result.save')}
       </Button>
 

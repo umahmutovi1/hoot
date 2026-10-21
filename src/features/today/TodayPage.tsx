@@ -2,12 +2,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { Mascot } from '@/components/Mascot'
-import { PageTitle } from '@/components/PageTitle'
-import { Button } from '@/components/ui/button'
 import { statusLabel } from '@/features/schedule/format'
 import { LecturePrompts } from '@/features/schedule/LecturePrompts'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
+import { ProfileButton } from '@/features/settings/ProfileButton'
 import { useSubjects } from '@/features/subjects/api'
 import { useDayBoundary, useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
@@ -15,21 +13,17 @@ import { localDay } from '@/lib/day'
 import { greetingPart } from '@/lib/greeting'
 import { calendarStatus } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
-import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
-import { OwlBar } from '@/features/owl/OwlBar'
-import { useActiveSession } from '@/features/session/api'
-import { ActiveSessionBar } from '@/features/session/ActiveSessionBar'
-import { useSessionUi } from '@/features/session/store'
+import { ExamTiles } from './ExamTiles'
 import { FactCard } from './FactCard'
+import { NextCard } from './NextCard'
 
 // "Znaš li?" is switched off for now: Today gets crowded once the plan and its cards arrive
 // (decision after Stage 7). The card and the facts stay; set to true to bring it back.
 const SHOW_FACT_CARD = false
 
-// Without subjects "Today" is the first-run state (DanasPrazno); the real day plan comes with
-// the scheduler (Stage 8), until then a short card links to subjects and the calendar.
-// The owl bar is docked at the bottom; on the empty state the big owl and the bar owl go
-// together (the one exception in MASCOT.md).
+// Without subjects "Today" is the first-run state (DanasPrazno). With subjects the "Sljedeće" card
+// leads (a free session until the scheduler in Stage 8b), then lecture prompts and the next exams.
+// The assistant lives in the AI tab, so there is no owl bar here any more.
 export function TodayPage() {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -41,62 +35,60 @@ export function TodayPage() {
   const status = calendarStatus(localDay(now, boundary), periods)
   const { data: subjects } = useSubjects()
   const hasSubjects = (subjects ?? []).some((x) => !x.archived)
-  const { data: activeSession } = useActiveSession()
-  const startOpen = useSessionUi((s) => s.startOpen)
 
   return (
-    <div className="flex flex-col pb-28">
-      <PageTitle>{t('nav.today')}</PageTitle>
-      <div className="mt-1.5 flex min-w-0 flex-col gap-0.5">
-        <span className="text-[17px] font-semibold">
-          {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}
-        </span>
-        <span className="text-[13px] text-ink-muted first-letter:uppercase">
-          {format(now, 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
+    <div className="flex flex-col pb-8">
+      <div className="flex items-center justify-between">
+        <ProfileButton />
+      </div>
+      <div className="mt-[18px] flex flex-col gap-0.5 px-1">
+        <span className="text-[13px] font-semibold tracking-[0.2px] text-ink-secondary">
+          <span className="uppercase">
+            {format(now, 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
+          </span>
           {status && (
             <>
               {' · '}
-              <Link to="/settings/calendar" className="underline-offset-2 hover:underline">
+              <Link to="/settings/calendar" className="text-brand">
                 {statusLabel(t, status)}
               </Link>
             </>
           )}
         </span>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-2.5 empty:hidden">
-        <LecturePrompts />
+        <h1 className="text-[36px] leading-[1.1] font-bold tracking-[-0.9px]">{t('nav.today')}</h1>
+        {!hasSubjects && (
+          <span className="mt-1 text-[17px] font-semibold">
+            {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}
+          </span>
+        )}
       </div>
 
       {hasSubjects ? (
-        <section className="mt-6 flex flex-col gap-2.5 rounded-card bg-surface p-4">
-          <span className="text-[15px] font-semibold">{t('today.planSoonTitle')}</span>
-          <span className="text-sm leading-[1.45] text-ink-muted">{t('today.planSoonBody')}</span>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              to="/subjects"
-              className="flex h-10 items-center rounded-full bg-brand-soft px-4 text-sm font-semibold text-brand"
-            >
-              {t('nav.subjects')}
-            </Link>
-            <Link
-              to="/plan?view=day"
-              className="flex h-10 items-center rounded-full bg-brand-soft px-4 text-sm font-semibold text-brand"
-            >
+        <>
+          <div className="mt-4">
+            <NextCard />
+          </div>
+          <div className="mt-3 flex flex-col gap-2.5 empty:hidden">
+            <LecturePrompts />
+          </div>
+          <p className="mt-3 rounded-[20px] bg-white/28 px-3.5 py-3 text-[13px] leading-[1.4] text-ink-secondary">
+            {t('today.planSoonBody')}{' '}
+            <Link to="/plan?view=day" className="font-semibold text-brand">
               {t('today.todayInCalendar')}
             </Link>
-          </div>
-        </section>
+          </p>
+          <ExamTiles now={now} />
+        </>
       ) : (
-        <section className="mt-14 flex flex-col items-center gap-3.5 px-3 text-center">
-          <div className="flex size-[220px] items-center justify-center rounded-full bg-mascot-halo">
-            <Mascot pose="reading" size={190} alt={t('today.firstRunMascotAlt')} />
-          </div>
-          <h1 className="mt-2 text-[26px] leading-tight font-bold">{t('today.firstRunTitle')}</h1>
-          <p className="text-[15px] leading-[1.45] text-ink-muted">{t('today.firstRunBody')}</p>
-          <Button asChild size="pill" className="mt-2 px-7">
-            <Link to="/subjects">{t('today.addSubject')}</Link>
-          </Button>
+        <section className="mt-16 flex flex-col items-center gap-3.5 px-3 text-center">
+          <h2 className="text-[26px] leading-tight font-bold">{t('today.firstRunTitle')}</h2>
+          <p className="text-[15px] leading-[1.45] text-ink-secondary">{t('today.firstRunBody')}</p>
+          <Link
+            to="/subjects/new"
+            className="btn-primary mt-2 flex h-14 items-center rounded-full px-7 text-base font-semibold"
+          >
+            {t('today.addSubject')}
+          </Link>
         </section>
       )}
 
@@ -105,14 +97,6 @@ export function TodayPage() {
           <FactCard />
         </div>
       )}
-
-      {/* A running session takes the owl's place; no owl while "Šta učiš sad?" is open. */}
-      {activeSession ? (
-        <ActiveSessionBar data={activeSession} />
-      ) : (
-        !startOpen && <OwlBar empty={!hasSubjects} />
-      )}
-      <GiveDocumentSheet />
     </div>
   )
 }
