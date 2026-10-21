@@ -87,14 +87,14 @@ export function OwlChatPage() {
 
       <div className="sticky bottom-[calc(96px+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2">
         {enabled && messages.length === 0 && (
-          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none]">
+          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 py-0.5 [scrollbar-width:none]">
             {suggestions.map((sug) => (
               <button
                 key={sug.label}
                 type="button"
                 disabled={busy}
                 onClick={() => (sug.kind ? openSheet(sug.kind) : void owl.ask(sug.ask))}
-                className="glass h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
+                className="glass-flat h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
               >
                 {sug.label}
               </button>

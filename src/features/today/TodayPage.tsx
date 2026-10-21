@@ -33,8 +33,10 @@ export function TodayPage() {
   const boundary = useDayBoundary()
   const { periods } = useScheduleData()
   const status = calendarStatus(localDay(now, boundary), periods)
-  const { data: subjects } = useSubjects()
+  const { data: subjects, isPending } = useSubjects()
   const hasSubjects = (subjects ?? []).some((x) => !x.archived)
+  // Without a cached copy the first load would flash the first-run state before the subjects come.
+  const firstRun = !isPending && !hasSubjects
 
   return (
     <div className="flex flex-col pb-8">
@@ -56,7 +58,7 @@ export function TodayPage() {
           )}
         </span>
         <h1 className="text-[36px] leading-[1.1] font-bold tracking-[-0.9px]">{t('nav.today')}</h1>
-        {!hasSubjects && (
+        {firstRun && (
           <span className="mt-1 text-[17px] font-semibold">
             {t(`today.greeting.${greetingPart(now.getHours())}`, { name })}
           </span>
@@ -79,7 +81,7 @@ export function TodayPage() {
           </p>
           <ExamTiles now={now} />
         </>
-      ) : (
+      ) : firstRun ? (
         <section className="mt-16 flex flex-col items-center gap-3.5 px-3 text-center">
           <h2 className="text-[26px] leading-tight font-bold">{t('today.firstRunTitle')}</h2>
           <p className="text-[15px] leading-[1.45] text-ink-secondary">{t('today.firstRunBody')}</p>
@@ -90,7 +92,7 @@ export function TodayPage() {
             {t('today.addSubject')}
           </Link>
         </section>
-      )}
+      ) : null}
 
       {SHOW_FACT_CARD && (
         <div className="mt-10">
