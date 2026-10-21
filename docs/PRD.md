@@ -257,6 +257,15 @@ Nisu svi predmeti jednako važni ni jednako teški. Prioritet kaže koliko je pr
 - Vrijednosti u tabeli su početne konstante u kodu (`src/lib/scheduler/`), ne korisničke postavke.
 - **Privremeno pojačanje** (`subjects.priority_boost_until`): dok traje, težina hitnosti predmeta se množi sa 1.3, i kad je prioritet već 5. Vrijeme se time prirodno uzima od predmeta nižeg prioriteta. Pojačanje ističe samo od sebe; koristi ga prijedlog “Uzmi vrijeme od [predmet]” (vidi Praćenje predavanja).
 
+**Šta korisnik vidi (odluka nakon Etape 7).** Prioritet, željena ocjena, pojačanje i ciljna pokrivenost se u modelu preklapaju, pa UI pokazuje samo dva pojma u jednoj sekciji “Cilj” (na Predmetu i pod “Napredno” na NoviPredmet):
+
+- **“Koliko ti je bitan”**: 5 imenovanih opcija bez brojeva (Lagano, Manje bitan, Standardno, Važan, Uslovni) sa opisom izabrane; čip na Predmetu prikazuje samo ime (“Važan”). Broj 1–5 ostaje samo u bazi i kodu.
+- **“Željena ocjena”** (opcionalno, 6–10), pomjerena iz kartice “Bodovi i ocjena” u “Cilj”; kartica bodova je i dalje prikazuje kao istaknut red projekcije.
+- **Usklađivanje na licu mjesta:** kad je željena ocjena ≥ 9, a bitnost ispod “Važan” (ili ocjena nedostižna), ispod polja stoji jedna rečenica sa dugmetom (“Za 9 obično treba ‘Važan’ · Promijeni”), umjesto zasebne kartice prijedloga. Kartica na Danas ostaje samo kad se stanje promijeni kasnije (rezultat ispita).
+- **Nikad kao postavka:** težina hitnosti, ciljna pokrivenost, ciljno zadržavanje i buffer su posljedice izbora, ne polja. Vide se samo u “zašto ovo danas” i na Predmetu u sitnom tekstu ispod “Cilj” (“Plan pokriva 95% gradiva i ponavlja češće”).
+- **Pojačanje** nije kontrola: nastaje samo iz prijedloga (“Uzmi vrijeme od …”) i na Predmetu se vidi kao privremeni čip (“+40 min dnevno do 28. okt”) sa ×.
+- **Režim** ostaje zasebno pitanje (“Kad kreće učenje?”: od danas / kampanja pred ispit), jer opisuje kada, a ne koliko.
+
 **Režim** (`subjects.study_mode`):
 
 - **Redovno** (default): predmet je u rotaciji od danas. Ako postoji praćenje predavanja, plan drži korak s nastavom (vidi Praćenje predavanja).
@@ -1585,7 +1594,7 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio.
 | Backend | Supabase (Postgres + RLS, Auth, Storage, Edge Functions) |
 | Teme | Uvijek: AI oznake pri uvozu, ručno ispravljive |
 | Spaced repetition | FSRS (`ts-fsrs`) umjesto SM-2; ciljno zadržavanje po prioritetu; provjera i pročitanih jedinica; lični parametri kasnije iz `review_logs` |
-| Prioritet i režim | Prioritet 1–5 mijenja udio vremena, rezanje kod deficita, buffer, ciljno zadržavanje i ciljnu pokrivenost; režim redovno / kampanja |
+| Prioritet i režim | Prioritet 1–5 mijenja udio vremena, rezanje kod deficita, buffer, ciljno zadržavanje i ciljnu pokrivenost; režim redovno / kampanja. UI: sekcija “Cilj” sa “Koliko ti je bitan” (imena, bez brojeva) i željenom ocjenom; ostalo nikad kao postavka |
 | Start kampanje | Računa ga `plan()` (ALAP unazad od ispita + margina), ručno promjenjiv i zaključan |
 | Ručni blokovi | Dodaj, izmijeni, obriši; `origin = 'user'` zaključan od replana; brisanje AI bloka pita “prebaci” ili “izbaci iz plana” |
 | Praćenje predavanja | “Dokle ste stigli?” nakon termina; meki rok u redovnom režimu; prijedlog po pravilu odmah, strategist sedmično |

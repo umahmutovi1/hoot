@@ -299,10 +299,12 @@ Princip: **jedan generički mehanizam pokriva najviše izvora.** ICS (iCalendar)
 5. **Onboarding** u Etapi 8 prije schedulera, svaki korak preskočiv uz checklist.
 6. Ostali prijedlozi iz sekcija 3, 6 i 9 (limit rasta, „Danas ne mogu“, „Imam samo 30 min“, mikro-blokovi, termini učenja, Monte Carlo prognoza, R na dan ispita, kartice kao FSRS objekti, strategist = pravila + LLM, sedmični check-in, Web Share Target, CSV kartica, izvoz podataka) su u PRD-u i ROADMAP-u.
 
+7. **Prioritet i željena ocjena** se u UI pojednostavljuju (sekcija „Cilj“, PRD „Prioritet i režim učenja“ → Šta korisnik vidi), Etapa 8.
+8. **„Znaš li?“** je isključena na Danas (kod ostaje).
+
 ## Otvorena pitanja
 
-1. **Pojednostaviti prioritet + željenu ocjenu u UI?** Ili ostaje kako je.
-2. **Šta izbaciti ili odgoditi** (sekcija 8): kartica „Znaš li?“ sa Danas, broj načina testiranja za v1 (prijedlog: ispitna pitanja, podnaslovi, kartice), spajanje `quiz` sa recall pitanjima.
+1. **Broj načina testiranja za v1** (prijedlog: ispitna pitanja, podnaslovi, kartice) i spajanje `quiz` sa recall pitanjima. Odluka prije Etape 9.
 
 ## Izvori
 
