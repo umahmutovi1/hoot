@@ -40,7 +40,8 @@
     "verifying": "Checking…",
     "codeInvalid": "The code is wrong or has expired.",
     "useOtherEmail": "Use another email",
-    "sendFailed": "Couldn't send the email. Try again in a minute."
+    "sendFailed": "Couldn't send the email. Try again in a minute.",
+    "appIcon": "App icon"
   },
   "today": {
     "greeting": {
