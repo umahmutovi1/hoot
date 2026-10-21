@@ -158,6 +158,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] Sesija: segmenti u bazi, pauza/nastavak, „Sad radim na", režimi 25/5, 50/10, slobodno, način učenja
 - [ ] KrajSesije: težina 1–5 po jedinici, fokus 1–3, refleksija; raspodjela minuta u `session_units`
 - [ ] Zaboravljen timer (> 3 h) — ispravka kraja
+- [ ] Migracija `0012_sessions.sql` (`timer_mode`, `planned_minutes`, `sources.measured_sessions`), regenerisan `database.ts`
 - [ ] Offline: Dexie red u `src/lib/sync/`, klijentski UUID, upsert, retry, last-write-wins po `updated_at`
 - [ ] Kalibracija (shrinkage, izvor × način, fallback ispod 3 mjerenja) + testovi
 - [ ] Prije 3 sesije po izvoru: samo predloženo trajanje bloka/sesije, kraj sesije pita „do koje stranice“; prvi prolaz vs ponavljanje iz statusa jedinice (PRD „Prije mjerenja“)
@@ -171,7 +172,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina, ručni override i „Počni odmah“, privremeno pojačanje prioriteta („Uzmi vrijeme od …“ sa izračunatom razlikom plana), meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, ciljna pokrivenost iz željene ocjene (PRD „Željena ocjena kao ulaz u plan“), novi razlozi „zašto ovo danas“
 - [ ] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan
 - [ ] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, ručni blokovi se ne mijenjaju, isti ulaz = isti plan
-- [ ] Migracija `0012_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
+- [ ] Migracija `0013_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
 - [ ] Kartice prijedloga (zaostatak sa „Uzmi vrijeme od“ / „Kreni ranije“ / „Dodaj X min dnevno“, deficit, željena ocjena nedostižna, najava kampanje 3 dana prije) na Danas i Predmetu; jedan tap mijenja ulaz → replan
 - [ ] `input_hash`, upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [ ] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno")
@@ -186,7 +187,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] Nakon čitanja/ponavljanja poglavlja u sesiji odmah ponuditi povezana ispitna pitanja; izvor „Pitanja“ se mjeri uspjehom, ne vremenom (PRD „Izvor Pitanja“)
 - [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2
 - [ ] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
-- [ ] Migracija `0013_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
+- [ ] Migracija `0014_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
 - [ ] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu, `next_review_on`, ograničenje na datum ispita, level 3 nakon 4 uspjeha + testovi
 - [ ] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
 - [ ] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje

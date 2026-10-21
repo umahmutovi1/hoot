@@ -1060,6 +1060,7 @@ export type Database = {
           learned_min_per_unit: number | null
           learned_samples: number
           measure: string
+          measured_sessions: number
           subject_id: string
           title: string
           updated_at: string
@@ -1075,6 +1076,7 @@ export type Database = {
           learned_min_per_unit?: number | null
           learned_samples?: number
           measure?: string
+          measured_sessions?: number
           subject_id: string
           title: string
           updated_at?: string
@@ -1090,6 +1092,7 @@ export type Database = {
           learned_min_per_unit?: number | null
           learned_samples?: number
           measure?: string
+          measured_sessions?: number
           subject_id?: string
           title?: string
           updated_at?: string
@@ -1151,37 +1154,46 @@ export type Database = {
       study_sessions: {
         Row: {
           block_id: string | null
+          created_at: string
           ended_at: string | null
           focus: number | null
           id: string
           mode: Database["public"]["Enums"]["study_mode"] | null
+          planned_minutes: number | null
           reflection: string | null
           started_at: string
           subject_id: string
+          timer_mode: string
           updated_at: string
           user_id: string
         }
         Insert: {
           block_id?: string | null
+          created_at?: string
           ended_at?: string | null
           focus?: number | null
           id?: string
           mode?: Database["public"]["Enums"]["study_mode"] | null
+          planned_minutes?: number | null
           reflection?: string | null
           started_at: string
           subject_id: string
+          timer_mode?: string
           updated_at?: string
           user_id?: string
         }
         Update: {
           block_id?: string | null
+          created_at?: string
           ended_at?: string | null
           focus?: number | null
           id?: string
           mode?: Database["public"]["Enums"]["study_mode"] | null
+          planned_minutes?: number | null
           reflection?: string | null
           started_at?: string
           subject_id?: string
+          timer_mode?: string
           updated_at?: string
           user_id?: string
         }
