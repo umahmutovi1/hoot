@@ -159,6 +159,27 @@ describe('merge', () => {
     expect(await db.rows.count()).toBe(0)
   })
 
+  it('filters after picking the newer copy', async () => {
+    server.offline = true
+    await queue.enqueue(session('a', { ended_at: '2026-10-21T09:00:00Z' }))
+    // The server still has the session as open; this device already ended it.
+    const open = await queue.merge('study_sessions', [{ id: 'a', ended_at: null }], {
+      ended_at: null,
+    })
+    expect(open).toEqual([])
+  })
+
+  it('remembers server rows for offline reads, never over unsent changes', async () => {
+    await queue.remember('study_sessions', [{ id: 'r', ended_at: null }])
+    expect((await queue.local('study_sessions')).map((r) => r.id)).toEqual(['r'])
+    server.offline = true
+    await queue.enqueue(session('a', { focus: 3 }))
+    await queue.remember('study_sessions', [{ id: 'a', focus: 1 }])
+    const a = (await queue.local('study_sessions')).find((r) => r.id === 'a')!
+    expect(a.row.focus).toBe(3)
+    expect(await queue.nextAttemptAt()).toBe(clock)
+  })
+
   it('filters by match', async () => {
     await queue.enqueue(session('a', { subject_id: 'x' }), session('b', { subject_id: 'y' }))
     const rows = await queue.merge('study_sessions', [], { subject_id: 'x' })

@@ -179,23 +179,47 @@ export class SyncQueue {
     return rows.filter((r) => !r.deleted && matches(r.row, match))
   }
 
-  /** Server rows merged with the local mirror (last-write-wins); local-only rows are added. */
+  /**
+   * Server rows merged with the local mirror (last-write-wins), then filtered by `match`: a row the
+   * server still has as open but this device already ended locally drops out of an "open" query.
+   * Local rows with unsent changes are added.
+   */
   async merge(table: string, remote: Row[], match: Record<string, unknown> = {}): Promise<Row[]> {
     const all = await this.db.rows.where('table').equals(table).toArray()
     const gone = new Set(all.filter((r) => r.deleted).map((r) => r.id))
-    const local = new Map(
-      all.filter((r) => !r.deleted && matches(r.row, match)).map((r) => [r.id, r]),
-    )
+    const local = new Map(all.filter((r) => !r.deleted).map((r) => [r.id, r]))
     const out: Row[] = []
     for (const r of remote) {
       const id = r.id as string
       if (gone.has(id)) continue
       const pick = pickNewer(local.get(id), r)
       local.delete(id)
-      if (pick) out.push(pick)
+      if (pick && matches(pick, match)) out.push(pick)
     }
-    for (const r of local.values()) if (r.pending) out.push(r.row)
+    for (const r of local.values()) if (r.pending && matches(r.row, match)) out.push(r.row)
     return out
+  }
+
+  /**
+   * Keeps server rows in the mirror, so a screen opened offline later (after a closed tab) still
+   * has them. Rows with unsent local changes are left alone.
+   */
+  async remember(table: string, rows: Row[]): Promise<void> {
+    await this.db.transaction('rw', this.db.rows, async () => {
+      for (const row of rows) {
+        if (typeof row.id !== 'string') continue
+        const key = `${table}:${row.id}`
+        const prev = await this.db.rows.get(key)
+        if (prev?.pending) continue
+        await this.db.rows.put({ key, table, id: row.id, row, pending: false })
+      }
+    })
+  }
+
+  /** When the next waiting op may be sent (null = nothing waits). */
+  async nextAttemptAt(): Promise<number | null> {
+    const next = (await this.db.queue.orderBy('seq').toArray()).find((q) => !q.failed)
+    return next ? next.nextAttemptAt : null
   }
 
   /** Ops waiting to be sent (not counting parked failures). */
