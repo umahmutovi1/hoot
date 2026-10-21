@@ -1104,7 +1104,18 @@ create table document_chunks (
 
 -- 0010_owl_chats.sql (Etapa 6): owl_conversations (naslov, zadnja poruka, cache_name/cache_key/cache_expires_at), owl_messages (role, type, payload jsonb), RLS; ai_runs.cached_tokens
 
--- 0012_manual_blocks.sql (Etapa 8)
+-- 0011_global_grade_scale.sql (Etapa 6, dorada): profiles.points_total, profiles.grade_scale; subjects.custom_scale
+
+-- 0012_sessions.sql (Etapa 7)
+alter table study_sessions
+  add column timer_mode text not null default 'pomodoro25'
+    check (timer_mode in ('pomodoro25','pomodoro50','free')),   -- 25/5, 50/10 su samo podsjetnik
+  add column planned_minutes smallint,                -- dužina bloka; null = slobodna sesija
+  add column created_at timestamptz not null default now();
+alter table study_segments add check (ended_at is null or ended_at >= started_at);
+alter table sources add column measured_sessions int not null default 0;   -- "Prije mjerenja": < 3
+
+-- 0013_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1112,7 +1123,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0013_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0014_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,
