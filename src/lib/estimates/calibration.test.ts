@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { addSamples, defaultMode, isMeasured, rateForMode, sampleRate } from './calibration'
+import {
+  addSamples,
+  calibrate,
+  defaultMode,
+  isMeasured,
+  rateForMode,
+  sampleRate,
+} from './calibration'
 
 describe('sampleRate', () => {
   it('is minutes per unit of measure at difficulty 3', () => {
@@ -65,5 +72,53 @@ describe('isMeasured', () => {
   it('needs 3 finished sessions', () => {
     expect(isMeasured(2)).toBe(false)
     expect(isMeasured(3)).toBe(true)
+  })
+})
+
+describe('calibrate', () => {
+  const s = (
+    sourceId: string,
+    sessionId: string,
+    mode: 'reading' | 'review' | null,
+    minutes: number,
+  ) => ({
+    sourceId,
+    sessionId,
+    mode,
+    minutes,
+    amountDone: 10,
+    difficulty: 3,
+  })
+
+  it('recomputes source, pair and session count from all samples', () => {
+    const out = calibrate([
+      s('a', '1', 'reading', 20),
+      s('a', '1', 'reading', 40),
+      s('a', '2', 'review', 60),
+      s('b', '3', null, 10),
+    ])
+    const a = out.get('a')!
+    expect(a.learned).toEqual({ rate: 4, samples: 3 })
+    expect(a.measuredSessions).toBe(2)
+    expect(a.pairs.get('reading')).toEqual({ rate: 3, samples: 2 })
+    expect(a.pairs.get('review')).toEqual({ rate: 6, samples: 1 })
+    expect(out.get('b')!.pairs.size).toBe(0)
+  })
+
+  it('equals adding the samples one by one', () => {
+    const list = [
+      s('a', '1', 'reading', 20),
+      s('a', '2', 'reading', 50),
+      s('a', '3', 'reading', 35),
+    ]
+    const step = list.reduce((acc, x) => addSamples(acc, [x]), {
+      rate: null as number | null,
+      samples: 0,
+    })
+    expect(calibrate(list).get('a')!.learned).toEqual(step)
+  })
+
+  it('skips samples without time or progress', () => {
+    expect(calibrate([{ ...s('a', '1', null, 0) }]).size).toBe(0)
   })
 })

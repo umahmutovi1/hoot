@@ -60,3 +60,39 @@ export function defaultMode(level: number, isQuestion: boolean): StudyMode {
 export function isMeasured(finishedSessions: number): boolean {
   return finishedSessions >= MEASURED_SESSIONS
 }
+
+export interface SessionSample extends RateSample {
+  sourceId: string
+  sessionId: string
+  mode: StudyMode | null
+}
+
+export interface SourceCalibration {
+  learned: LearnedRate
+  /** Finished sessions with progress in this source. */
+  measuredSessions: number
+  pairs: Map<StudyMode, LearnedRate>
+}
+
+/**
+ * Calibration recomputed from every saved timer sample (PRD decision after Stage 7): editing or
+ * deleting a session changes the estimates right away. The mean is order-free, so this equals
+ * adding the sessions one by one.
+ */
+export function calibrate(samples: SessionSample[]): Map<string, SourceCalibration> {
+  const out = new Map<string, SourceCalibration>()
+  const sessions = new Map<string, Set<string>>()
+  const empty: LearnedRate = { rate: null, samples: 0 }
+  for (const s of samples) {
+    if (sampleRate(s) === null) continue
+    const c = out.get(s.sourceId) ?? { learned: empty, measuredSessions: 0, pairs: new Map() }
+    c.learned = addSamples(c.learned, [s])
+    if (s.mode) c.pairs.set(s.mode, addSamples(c.pairs.get(s.mode) ?? empty, [s]))
+    const seen = sessions.get(s.sourceId) ?? new Set()
+    seen.add(s.sessionId)
+    sessions.set(s.sourceId, seen)
+    c.measuredSessions = seen.size
+    out.set(s.sourceId, c)
+  }
+  return out
+}
