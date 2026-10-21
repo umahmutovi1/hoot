@@ -109,6 +109,15 @@
     inset 0 -1px 1px rgba(58, 51, 96, 0.05),
     0 8px 28px rgba(58, 51, 96, 0.07);
 }
+/* Glass without the drop shadow, for chips inside horizontal scrollers: a scroller clips
+   overflow on both axes, so a drop shadow would end in a hard line under the row. */
+@utility glass-flat {
+  background-color: rgba(255, 255, 255, 0.42);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.6),
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    inset 0 -1px 1px rgba(58, 51, 96, 0.05);
+}
 @utility glass-strong {
   background-color: rgba(255, 255, 255, 0.52);
   backdrop-filter: blur(32px) saturate(190%);
@@ -128,10 +137,21 @@
     0 -10px 40px rgba(40, 34, 80, 0.12);
 }
 @utility glass-bar {
-  /* Sticky headers and fades: content scrolls under them. */
-  background-color: rgba(236, 233, 244, 0.72);
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  /* Sticky headers: content scrolls under them. The frosted layer is a pseudo-element whose
+     bottom fades out, so there is no hard edge where the header ends (the element must be
+     positioned, which sticky headers are). */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 -14px;
+    z-index: -1;
+    pointer-events: none;
+    background-color: rgba(236, 233, 244, 0.72);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent);
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent);
+  }
 }
 @utility glass-tint {
   color: #ffffff;
@@ -166,15 +186,16 @@
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-strong,
   .glass-sheet,
-  .glass-bar {
+  .glass-bar::before {
     background-color: rgba(255, 255, 255, 0.85);
   }
 }
 @media (prefers-reduced-transparency: reduce) {
   .glass,
+  .glass-flat,
   .glass-strong,
   .glass-sheet,
-  .glass-bar {
+  .glass-bar::before {
     background-color: rgba(255, 255, 255, 0.85);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -244,11 +265,17 @@
   body {
     @apply text-ink;
   }
-  /* Lavender mist: fixed layer behind everything (iOS ignores background-attachment: fixed). */
+  /* Lavender mist: fixed layer behind everything (iOS ignores background-attachment: fixed).
+     It overdraws the large viewport by 100 px at both ends, so Safari's translucent, collapsing
+     toolbars and the keyboard never uncover a band of plain background at the top or bottom. */
   body::before {
     content: '';
     position: fixed;
-    inset: 0;
+    top: -100px;
+    left: 0;
+    right: 0;
+    height: calc(100lvh + 200px);
+    min-height: calc(100% + 200px);
     z-index: -1;
     pointer-events: none;
     background:

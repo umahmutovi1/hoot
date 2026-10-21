@@ -51,11 +51,13 @@ export function BottomNav() {
     { to: '/progress', label: t('nav.progress'), Icon: ChartIcon },
   ]
 
+  // The fade reaches 96 px below the layout viewport, so Safari's floating toolbar and the
+  // keyboard never uncover a hard edge under it.
   return (
     <>
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-30 h-[calc(130px+env(safe-area-inset-bottom))] bg-gradient-to-b from-mist/0 to-mist/85"
+        className="pointer-events-none fixed inset-x-0 -bottom-24 z-30 h-[calc(226px+env(safe-area-inset-bottom))] bg-gradient-to-b from-mist/0 from-0% via-mist/85 via-[57%] to-mist/85"
       />
       <nav
         aria-label={t('nav.label')}
