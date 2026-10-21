@@ -14,24 +14,29 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <PageTitle>{t('plan.title')}</PageTitle>
-      <div className="-mt-2 flex gap-1.5">
-        <Link
-          to="/plan/timetable"
-          className="flex h-11 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold"
-        >
-          <CapIcon size={18} className="text-brand" />
-          {t('plan.timetableButton')}
-        </Link>
-        <Link
-          to="/plan/availability"
-          className="flex h-11 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold"
-        >
-          <ClockIcon size={18} className="text-brand" />
-          {t('availability.title')}
-        </Link>
-      </div>
-      <div role="tablist" className="flex rounded-[22px] bg-track p-1">
+      <PageTitle
+        actions={
+          <>
+            <Link
+              to="/plan/timetable"
+              className="flex h-11 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold"
+            >
+              <CapIcon size={18} className="text-brand" />
+              {t('plan.timetableButton')}
+            </Link>
+            <Link
+              to="/plan/availability"
+              className="flex h-11 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold"
+            >
+              <ClockIcon size={18} className="text-brand" />
+              {t('availability.title')}
+            </Link>
+          </>
+        }
+      >
+        {t('plan.title')}
+      </PageTitle>
+      <div role="tablist" className="flex rounded-[22px] bg-brand-soft p-1">
         {tabs.map((item) => (
           <NavLink
             key={item.id}
@@ -41,7 +46,9 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
             aria-selected={tab === item.id}
             className={cn(
               'flex h-10 flex-1 items-center justify-center rounded-[18px] text-sm font-semibold',
-              tab === item.id ? 'glass text-ink' : 'text-ink-muted',
+              tab === item.id
+                ? 'bg-white/85 text-ink shadow-[0_2px_8px_rgba(58,51,96,0.1)]'
+                : 'text-ink-secondary',
             )}
           >
             {item.label}
