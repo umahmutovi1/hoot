@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { SessionsCard } from '@/features/session/SessionsCard'
 import { useTranslation } from 'react-i18next'
 import { differenceInCalendarDays, format } from 'date-fns'
 import { ChevronLeftIcon, ChevronRightIcon, FlagIcon, PencilIcon } from '@/components/icons'
@@ -181,6 +182,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
       <GradesCard subject={subject} deadlines={deadlines} onScale={() => setScaleOpen(true)} />
 
       {hasMaterial && <SubjectLectures subject={subject} materials={materials} />}
+
+      <SessionsCard subjectId={subject.id} />
 
       <div className="mt-1.5 flex items-center justify-between">
         <h2 className="text-lg font-semibold">{t('subjects.form.exams')}</h2>

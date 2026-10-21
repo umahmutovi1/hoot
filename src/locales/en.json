@@ -18,7 +18,8 @@
     "plan": "Plan",
     "subjects": "Subjects",
     "progress": "Progress",
-    "startSession": "Start session"
+    "startSession": "Start session",
+    "resumeSession": "Resume session"
   },
   "auth": {
     "headline": "Study smarter,\nnot longer.",
@@ -261,7 +262,162 @@
   },
   "session": {
     "title": "Study session",
-    "empty": "Timer and sessions are coming soon."
+    "start": {
+      "title": "What are you studying?",
+      "subtitle": "Pick a subject, and a unit if you like.",
+      "recommendedEmpty": "Recommended block",
+      "recommendedSoon": "Comes with the daily plan",
+      "tagRecommended": "Recommended",
+      "free": "Free session",
+      "freeSub": "Outside the plan · pick a subject",
+      "tagFree": "No plan",
+      "noSubjects": "Add a subject first.",
+      "addSubject": "Add subject",
+      "subject": "Subject",
+      "source": "Source",
+      "unit": "Unit",
+      "allUnits": "Show all ({{count}})",
+      "freeHint": "You can change the unit during the session (\"Working on\"). The time counts for calibration but does not tick off a planned block.",
+      "go": "Start"
+    },
+    "mode": {
+      "label": "Study mode",
+      "reading": "Reading",
+      "problems": "Problems",
+      "review": "Review",
+      "questions": "Questions"
+    },
+    "timerMode": {
+      "pomodoro25": "25/5",
+      "pomodoro50": "50/10",
+      "free": "Free"
+    },
+    "timer": {
+      "running": "Session running",
+      "paused": "Paused",
+      "settings": "Timer mode",
+      "studied": "Study time",
+      "ofPlanned": "of {{min}} min planned",
+      "free": "free session",
+      "breakIn": "{{mode}} · break in {{time}}",
+      "breakDue": "Time for a break",
+      "backIn": "Break · back in {{time}}",
+      "backDue": "Time to get back",
+      "pause": "Pause",
+      "resume": "Resume",
+      "finish": "Finish",
+      "savedOffline": "Saved on this device · sent when you are back online",
+      "segments_one": "{{count}} segment",
+      "segments_other": "{{count}} segments",
+      "pauseTotal_one": "{{count}} min of breaks",
+      "pauseTotal_other": "{{count}} min of breaks"
+    },
+    "units": {
+      "title": "Working on",
+      "hint": "tap to change",
+      "other": "Another unit",
+      "pickTitle": "What are you working on?",
+      "none": "No unit",
+      "note": "Note for the active unit"
+    },
+    "timerSheet": {
+      "title": "Timer mode",
+      "subtitle": "25/5 and 50/10 only remind you to take a break; the timer never stops by itself.",
+      "discard": "Discard session",
+      "discardConfirm": "The session is deleted and its time does not count for calibration."
+    },
+    "forgotten": {
+      "title": "Have you been studying all this time?",
+      "body": "The timer has been running since {{time}} ({{duration}}).",
+      "yes": "Yes, keep going",
+      "stoppedAt": "I stopped at",
+      "finishAt": "Finish at {{time}}"
+    },
+    "end": {
+      "title": "Session finished",
+      "minOf": "min of {{planned}}",
+      "min": "min studied",
+      "noAmount": "covered",
+      "rate": {
+        "pages": "min / page",
+        "slides": "min / slide",
+        "questions": "min / question",
+        "items": "min / unit"
+      },
+      "howFar": "How far did you get?",
+      "from": "from",
+      "to": "to",
+      "unit": "Unit ({{label}})",
+      "page": "Page ({{label}})",
+      "slide": "Slide ({{label}})",
+      "difficulty": "How hard was it?",
+      "prior": "starting difficulty {{d}}",
+      "statusChange": "Change status",
+      "difficultyScale": "Difficulty 1 to 5",
+      "difficultyN": "Difficulty {{n}}",
+      "easy": "easy",
+      "hard": "very hard",
+      "focus": "How was your focus?",
+      "focusLevel": {
+        "1": "Poor",
+        "2": "Ok",
+        "3": "Great"
+      },
+      "reflection": "What was hard?",
+      "optional": "(optional)",
+      "reflectionPlaceholder": "e.g. I didn't get the difference between 3NF and BCNF",
+      "studied_one": "{{count}} min studied",
+      "studied_other": "{{count}} min studied",
+      "pauses_one": "{{count}} break",
+      "pauses_other": "{{count}} breaks",
+      "amount": {
+        "pages_one": "page",
+        "pages_other": "pages",
+        "slides_one": "slide",
+        "slides_other": "slides",
+        "questions_one": "question",
+        "questions_other": "questions",
+        "items_one": "unit",
+        "items_other": "units"
+      }
+    },
+    "history": {
+      "title": "Sessions",
+      "add": "Add session",
+      "all": "All",
+      "emptyTitle": "No sessions yet",
+      "empty": "Finished sessions show up here. Studied without the timer? Add a session with +.",
+      "manual": "manual",
+      "addTitle": "Add session",
+      "addSubtitle": "Studied without the timer? Enter when.",
+      "date": "Date",
+      "from": "From",
+      "to": "To",
+      "manualHint": "A session added afterwards counts for minutes, progress and unit status, but not for speed estimates.",
+      "next": "Next",
+      "editEnd": "Edit ratings",
+      "segments": "Time",
+      "addSegment": "Add segment",
+      "removeSegment": "Remove segment",
+      "segmentError": {
+        "empty": "A session needs at least one segment.",
+        "time": "Check the start and end times.",
+        "overlap": "Segments overlap."
+      },
+      "studied": "What you studied",
+      "noUnits": "No units. Add them with \"Edit ratings\".",
+      "deleteConfirm": "The session is deleted with all its segments. Unit statuses stay as they are.",
+      "delete": "Delete session",
+      "cardEmpty": "No sessions yet",
+      "pauses_one": "break",
+      "pauses_other": "breaks",
+      "units_one": "unit",
+      "units_other": "units",
+      "count_one": "{{count}} session",
+      "count_other": "{{count}} sessions",
+      "thisWeek_one": "{{count}} session this week",
+      "thisWeek_other": "{{count}} sessions this week"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -1071,5 +1227,9 @@
       "confirmDelete": "Delete this conversation?",
       "untitled": "Conversation"
     }
+  },
+  "offline": {
+    "title": "You're offline",
+    "body": "This loads from the internet the first time. The timer and a started session work offline; changes are sent when you are back online."
   }
 }

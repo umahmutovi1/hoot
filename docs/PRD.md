@@ -352,6 +352,22 @@ Timer je zapis segmenata u bazi, a ne brojač u memoriji, pa preživi zaključan
 
 Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migraciji (sekcija Šema baze podataka).
 
+**Odluke (Etapa 7)**
+
+- **Režimi 25/5 i 50/10 su samo podsjetnik.** Značka odbrojava do pauze („pauza za 1:19“); kad istekne, piše „Vrijeme je za pauzu“ (uz vibraciju ako je ekran otvoren). Pauzu korisnik tapne sam; timer nikad sam ne zatvara ni ne otvara segment, jer browser u pozadini ne radi pouzdano. Tokom pauze značka odbrojava do kraja pauze. „Slobodno“ nema podsjetnik.
+- **Zaboravljen timer** se okida kad aktivni segment radi duže od 3 h (provjera pri otvaranju app-a i na ekranu sesije). Pitanje „Jesi li učila do sad?“ nudi „Da, nastavi“ (pitanje se zatvara) i „Ne, završila sam u HH:MM“ (default: početak segmenta + 25 min, između početka segmenta i sada): sesija se završi u to vrijeme i otvara se KrajSesije.
+- **Kraj sesije** ima samo dugme „Spasi“ dok recall gate ne dođe u Etapi 9; tad se vraća par „Spasi i testiraj se“ / „Samo spasi“ iz mockupa.
+- **Status jedinice na kraju sesije:** jedinica do čijeg je kraja korisnik stigao („do koje stranice“) dobije „Pročitano“ ako je bila nepočeta; čip uz jedinicu se tapom mijenja (Nije gotovo / Pročitano / Razumijem / Ponovljeno). Djelimično pređena jedinica zadržava status.
+- **„Do koje stranice“ se pita na kraju svake sesije** (prije i poslije 3. sesije), predloženo do kraja zadnje jedinice na kojoj se radilo; od 3. sesije prijedlog dolazi iz plana bloka (Etapa 8).
+- **Raspodjela minuta:** segment vezan za jedinicu pokriva tu jedinicu i pređene jedinice istog izvora iza nje do sljedeće jedinice koja ima svoj segment; minute se dijele srazmjerno procijenjenom vremenu pređenog dijela. Segmenti bez jedinice dijele se na sve pređene jedinice. Jedinica sa segmentom a bez pređenog obima zadrži minute, ali ne ulazi u kalibraciju.
+- **Brzina izmjerena po jedinici** = minute / (pređeni obim × množitelj težine), pa se razlika u težini ne prelije u brzinu izvora. Kalibracija izvora i para izvor × način je prosjek tih brzina (k = broj jedinica sa zabilježenim vremenom); par se koristi tek od 3 mjerenja.
+- **Slobodna sesija** do Etape 8: bira se predmet, opcionalno izvor i jedinica; preporučeni blok je prazan slot („Preporuka dolazi s planom“).
+- **Historija sesija (odluka nakon Etape 7).** Ekran „Sesije“: lista po danima (granica dana), filter po predmetu, „+ Dodaj sesiju“. Ulazi: kartica „Sesije“ na Napretku (broj i minute ove sedmice) i red „Sesije“ na Predmetu (filtrirano na predmet).
+- **Detalj sesije:** segmenti (od–do, jedinica) se mijenjaju, brišu i dodaju; početak i kraj sesije prate prvi i zadnji segment, a minute po jedinici se ponovo raspodijele uz isti pređeni obim. „Uredi ocjene“ otvara obrazac KrajSesije popunjen spašenim podacima (dokle si stigla, težina, status, fokus, refleksija). „Obriši sesiju“ briše sesiju sa segmentima; statusi jedinica se ne vraćaju sami.
+- **Naknadno dodata sesija** (`study_sessions.origin = 'manual'`): predmet, datum, od–do, način; jedan segment, pa obrazac KrajSesije. Računa se u minute, napredak i status jedinica, ali ne u kalibraciju brzine (ručna vremena su gruba); u listi ima oznaku „ručno“.
+- **Kalibracija se preračunava iz svih sesija.** Brzina izvora, par izvor × način i broj završenih sesija (`measured_sessions`) računaju se iznova iz svih spašenih `session_units` sesija sa timerom, nakon svakog kraja, izmjene ili brisanja sesije (kad je red prazan i ima mreže). Spašene kolone su keš tog izračuna.
+
+
 **Kada se šta preračunava**
 
 | Događaj | Rekalibracija procjena | Replan |
@@ -1092,7 +1108,22 @@ create table document_chunks (
 
 -- 0010_owl_chats.sql (Etapa 6): owl_conversations (naslov, zadnja poruka, cache_name/cache_key/cache_expires_at), owl_messages (role, type, payload jsonb), RLS; ai_runs.cached_tokens
 
--- 0012_manual_blocks.sql (Etapa 8)
+-- 0011_global_grade_scale.sql (Etapa 6, dorada): profiles.points_total, profiles.grade_scale; subjects.custom_scale
+
+-- 0012_sessions.sql (Etapa 7)
+alter table study_sessions
+  add column timer_mode text not null default 'pomodoro25'
+    check (timer_mode in ('pomodoro25','pomodoro50','free')),   -- 25/5, 50/10 su samo podsjetnik
+  add column planned_minutes smallint,                -- dužina bloka; null = slobodna sesija
+  add column created_at timestamptz not null default now();
+alter table study_segments add check (ended_at is null or ended_at >= started_at);
+alter table sources add column measured_sessions int not null default 0;   -- "Prije mjerenja": < 3
+
+-- 0013_session_origin.sql (Etapa 7, dorada)
+alter table study_sessions
+  add column origin text not null default 'timer' check (origin in ('timer','manual'));
+
+-- 0014_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1100,7 +1131,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0013_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0015_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,
