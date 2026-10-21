@@ -1159,6 +1159,7 @@ export type Database = {
           focus: number | null
           id: string
           mode: Database["public"]["Enums"]["study_mode"] | null
+          origin: string
           planned_minutes: number | null
           reflection: string | null
           started_at: string
@@ -1174,6 +1175,7 @@ export type Database = {
           focus?: number | null
           id?: string
           mode?: Database["public"]["Enums"]["study_mode"] | null
+          origin?: string
           planned_minutes?: number | null
           reflection?: string | null
           started_at: string
@@ -1189,6 +1191,7 @@ export type Database = {
           focus?: number | null
           id?: string
           mode?: Database["public"]["Enums"]["study_mode"] | null
+          origin?: string
           planned_minutes?: number | null
           reflection?: string | null
           started_at?: string
