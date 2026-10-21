@@ -22,7 +22,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 ## Layout
 - `src/app/` router, layout, providers, i18n setup
 - `src/features/<feature>/` screens, components and query hooks per feature (today, plan, schedule, subjects, sources, session, progress, settings)
-- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `schedule/` (timetable occurrences, availability), `grades/` (points, grade scale, grade projection), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
+- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `schedule/` (timetable occurrences, availability), `grades/` (points, grade scale, grade projection), `session/` (timer from segments, coverage, minutes per unit), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
 - `src/types/database.ts` generated — never edit by hand
 - `supabase/migrations/` SQL migrations; `supabase/functions/_shared/` Zod schemas, `llm.ts`, prices, cors (imported by the frontend via `@shared/`)
 
