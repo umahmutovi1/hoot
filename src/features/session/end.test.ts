@@ -12,6 +12,7 @@ const session: SessionRow = {
   block_id: null,
   mode: 'reading',
   timer_mode: 'pomodoro25',
+  origin: 'timer',
   planned_minutes: null,
   started_at: iso(0),
   ended_at: iso(50),
