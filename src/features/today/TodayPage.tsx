@@ -22,6 +22,10 @@ import { ActiveSessionBar } from '@/features/session/ActiveSessionBar'
 import { useSessionUi } from '@/features/session/store'
 import { FactCard } from './FactCard'
 
+// "Znaš li?" is switched off for now: Today gets crowded once the plan and its cards arrive
+// (decision after Stage 7). The card and the facts stay; set to true to bring it back.
+const SHOW_FACT_CARD = false
+
 // Without subjects "Today" is the first-run state (DanasPrazno); the real day plan comes with
 // the scheduler (Stage 8), until then a short card links to subjects and the calendar.
 // The owl bar is docked at the bottom; on the empty state the big owl and the bar owl go
@@ -96,9 +100,11 @@ export function TodayPage() {
         </section>
       )}
 
-      <div className="mt-10">
-        <FactCard />
-      </div>
+      {SHOW_FACT_CARD && (
+        <div className="mt-10">
+          <FactCard />
+        </div>
+      )}
 
       {/* A running session takes the owl's place; no owl while "Šta učiš sad?" is open. */}
       {activeSession ? (
