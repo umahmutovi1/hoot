@@ -5,7 +5,7 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 
 ## Source of truth
 - Specification: `docs/PRD.md` (Bosnian). Read the relevant section before implementing a feature.
-- Screen designs: `docs/design/` — see `docs/design/README.md` for the visual system and screen flows, and `docs/design/MASCOT.md` for the owl mascot.
+- Screen designs: `docs/design/` — see `docs/design/README.md` for the visual system (Liquid Glass) and screen flows.
 - Build order and Definition of Done: `docs/ROADMAP.md`. Work on one stage at a time.
 - Manual service setup (Supabase, Cloudflare, Resend, Anthropic, opening to more users): `docs/SETUP.md`. Keep it updated when a dashboard setting changes.
 - The designs are mockups: port layout, colors and copy into React + Tailwind. Do NOT copy the HTML or the demo `<script>` logic.
@@ -50,10 +50,10 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - Regenerate `src/types/database.ts` after every migration.
 
 ## Design implementation
-- Tokens (colors, Outfit font, radii) live in `src/index.css` `@theme`; use token classes, not raw hex values.
+- Tokens (colors, font stack, radii) and the glass utilities (`glass`, `glass-strong`, `glass-sheet`, `glass-tint`, `btn-primary`) live in `src/index.css`; use token classes and utilities, not raw hex values or inline `backdrop-filter`.
 - Target 390 px width first; touch targets ≥ 44 px; stroke icons 1.8 px.
 - Prefer shadcn/ui primitives (Dialog, Sheet, Tabs) styled to match the mockups.
-- Owl mascot only via `<Mascot pose size />` (`src/components/Mascot.tsx`) at the places and sizes listed in `docs/design/MASCOT.md`. At most one per screen, never in lists or the tab bar; never edit files in `public/mascot/`.
+- No mascot or illustrations: empty states are text and a button. The assistant is called "AI" / "asistent" in the UI, never "sova".
 
 ## Git workflow
 - Branches: `main` = production, `dev` = integration (default). Never commit directly to either.
