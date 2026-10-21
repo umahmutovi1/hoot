@@ -362,6 +362,10 @@ Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migrac
 - **Raspodjela minuta:** segment vezan za jedinicu pokriva tu jedinicu i pređene jedinice istog izvora iza nje do sljedeće jedinice koja ima svoj segment; minute se dijele srazmjerno procijenjenom vremenu pređenog dijela. Segmenti bez jedinice dijele se na sve pređene jedinice. Jedinica sa segmentom a bez pređenog obima zadrži minute, ali ne ulazi u kalibraciju.
 - **Brzina izmjerena po jedinici** = minute / (pređeni obim × množitelj težine), pa se razlika u težini ne prelije u brzinu izvora. Kalibracija izvora i para izvor × način je prosjek tih brzina (k = broj jedinica sa zabilježenim vremenom); par se koristi tek od 3 mjerenja.
 - **Slobodna sesija** do Etape 8: bira se predmet, opcionalno izvor i jedinica; preporučeni blok je prazan slot („Preporuka dolazi s planom“).
+- **Historija sesija (odluka nakon Etape 7).** Ekran „Sesije“: lista po danima (granica dana), filter po predmetu, „+ Dodaj sesiju“. Ulazi: kartica „Sesije“ na Napretku (broj i minute ove sedmice) i red „Sesije“ na Predmetu (filtrirano na predmet).
+- **Detalj sesije:** segmenti (od–do, jedinica) se mijenjaju, brišu i dodaju; početak i kraj sesije prate prvi i zadnji segment, a minute po jedinici se ponovo raspodijele uz isti pređeni obim. „Uredi ocjene“ otvara obrazac KrajSesije popunjen spašenim podacima (dokle si stigla, težina, status, fokus, refleksija). „Obriši sesiju“ briše sesiju sa segmentima; statusi jedinica se ne vraćaju sami.
+- **Naknadno dodata sesija** (`study_sessions.origin = 'manual'`): predmet, datum, od–do, način; jedan segment, pa obrazac KrajSesije. Računa se u minute, napredak i status jedinica, ali ne u kalibraciju brzine (ručna vremena su gruba); u listi ima oznaku „ručno“.
+- **Kalibracija se preračunava iz svih sesija.** Brzina izvora, par izvor × način i broj završenih sesija (`measured_sessions`) računaju se iznova iz svih spašenih `session_units` sesija sa timerom, nakon svakog kraja, izmjene ili brisanja sesije (kad je red prazan i ima mreže). Spašene kolone su keš tog izračuna.
 
 
 **Kada se šta preračunava**
@@ -1115,7 +1119,11 @@ alter table study_sessions
 alter table study_segments add check (ended_at is null or ended_at >= started_at);
 alter table sources add column measured_sessions int not null default 0;   -- "Prije mjerenja": < 3
 
--- 0013_manual_blocks.sql (Etapa 8)
+-- 0013_session_origin.sql (Etapa 7, dorada)
+alter table study_sessions
+  add column origin text not null default 'timer' check (origin in ('timer','manual'));
+
+-- 0014_manual_blocks.sql (Etapa 8)
 alter table plan_blocks
   add column origin assigned_by not null default 'ai',   -- 'user' = zaključan od replana
   add column title text,
@@ -1123,7 +1131,7 @@ alter table plan_blocks
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
 
--- 0014_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
+-- 0015_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene
 alter table units
   drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,

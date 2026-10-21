@@ -164,6 +164,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [x] Prije 3 sesije po izvoru: samo predloženo trajanje bloka/sesije, kraj sesije pita „do koje stranice“; prvi prolaz vs ponavljanje iz statusa jedinice (PRD „Prije mjerenja“)
 - Odluke (PRD „Timer, pauza i rekalibracija“ → Odluke): 25/5 i 50/10 samo podsjetnik; zaboravljen timer „Da, nastavi“ / „Završila sam u …“; KrajSesije samo „Spasi“ do Etape 9; status jedinice automatski „Pročitano“ uz izmjenu tapom
 - Ostali upisi (predmeti, ispiti) i dalje idu direktno u Supabase; kroz offline red idu sesije, segmenti, `session_units`, statusi jedinica i kalibracija (premještanje ostalih nije jednostavno jer svaki ekran čita svoj keš, pa ostaje za kasnije)
+- [ ] Historija sesija: ekran „Sesije“ (Napredak, Predmet), detalj sa izmjenom segmenata, „Uredi ocjene“, brisanje, naknadni unos (`0013_session_origin.sql`, ne ulazi u kalibraciju); kalibracija se preračunava iz svih sesija
 - **DoD:** timer preživi zaključan telefon, zatvoren tab i offline → `v0.7.0`
 
 ## Etapa 8 — Scheduler
@@ -173,7 +174,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina, ručni override i „Počni odmah“, privremeno pojačanje prioriteta („Uzmi vrijeme od …“ sa izračunatom razlikom plana), meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, ciljna pokrivenost iz željene ocjene (PRD „Željena ocjena kao ulaz u plan“), novi razlozi „zašto ovo danas“
 - [ ] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan
 - [ ] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, ručni blokovi se ne mijenjaju, isti ulaz = isti plan
-- [ ] Migracija `0013_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
+- [ ] Migracija `0014_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
 - [ ] Kartice prijedloga (zaostatak sa „Uzmi vrijeme od“ / „Kreni ranije“ / „Dodaj X min dnevno“, deficit, željena ocjena nedostižna, najava kampanje 3 dana prije) na Danas i Predmetu; jedan tap mijenja ulaz → replan
 - [ ] `input_hash`, upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [ ] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno")
@@ -188,7 +189,7 @@ Specifikacija: PRD „AI uvoz, dokumenti i asistent“. Provajder za sad: Gemini
 - [ ] Nakon čitanja/ponavljanja poglavlja u sesiji odmah ponuditi povezana ispitna pitanja; izvor „Pitanja“ se mjeri uspjehom, ne vremenom (PRD „Izvor Pitanja“)
 - [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2
 - [ ] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
-- [ ] Migracija `0014_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
+- [ ] Migracija `0015_fsrs.sql` (SM-2 kolone i `srs_multiplier` van), regenerisan `database.ts`
 - [ ] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu, `next_review_on`, ograničenje na datum ispita, level 3 nakon 4 uspjeha + testovi
 - [ ] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
 - [ ] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje
