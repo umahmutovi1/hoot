@@ -63,8 +63,19 @@
       "holiday": "Holiday · {{title}}"
     },
     "planSoonTitle": "Your daily study plan is coming soon",
-    "planSoonBody": "Until the app computes it, today's classes and lectures show here. Edit exams, sources and the timetable on subjects and in the calendar.",
-    "todayInCalendar": "Today in the calendar"
+    "planSoonBody": "Until the app computes your plan, start sessions here and see classes and exams in the calendar.",
+    "todayInCalendar": "Today in the calendar",
+    "next": {
+      "label": "Next",
+      "freeTitle": "Free session",
+      "freeSub": "Pick a subject and how much time you have",
+      "start": "Start",
+      "running": "Running",
+      "paused": "Paused",
+      "resume": "Resume"
+    },
+    "exams": "Exams",
+    "examsAll": "All"
   },
   "plan": {
     "title": "Plan",

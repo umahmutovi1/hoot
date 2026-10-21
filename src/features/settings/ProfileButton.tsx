@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Avatar } from '@/components/Avatar'
 import { useProfile } from './profile'
 
-/** Small avatar in the top-right corner of every tab screen; opens Postavke. */
+/** Glass avatar in the top-left corner of Today; opens Postavke. */
 export function ProfileButton() {
   const { t } = useTranslation()
   const { data: profile } = useProfile()
@@ -11,9 +11,12 @@ export function ProfileButton() {
     <Link
       to="/settings"
       aria-label={t('settings.open')}
-      className="-mr-1 flex size-11 shrink-0 items-center justify-center rounded-full"
+      className="glass flex size-11 shrink-0 items-center justify-center rounded-full"
     >
-      <Avatar name={profile?.display_name ?? ''} className="size-9 text-sm" />
+      <Avatar
+        name={profile?.display_name ?? ''}
+        className="size-11 bg-transparent text-base font-semibold"
+      />
     </Link>
   )
 }
