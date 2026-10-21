@@ -1,6 +1,6 @@
 import type { Tables } from '@/types/database'
 import type { StudyMode } from '@/lib/estimates/calibration'
-import { TIMER_MODES, type Segment, type TimerMode } from '@/lib/session/timer'
+import { activeMs, MINUTE, TIMER_MODES, type Segment, type TimerMode } from '@/lib/session/timer'
 
 /** Session and segment rows as the queue and the mirror keep them (no `user_id`, RLS fills it). */
 export type SessionRow = Omit<Tables<'study_sessions'>, 'user_id' | 'created_at'>
@@ -57,4 +57,9 @@ export function endAt(start: Date, time: string, now: Date): Date | null {
   while (at.getTime() < start.getTime() - 59_999) at.setDate(at.getDate() + 1)
   if (at.getTime() > now.getTime()) return null
   return new Date(Math.max(at.getTime(), start.getTime()))
+}
+
+/** Studied minutes of a finished session. */
+export function sessionMinutes(s: SessionRow & { study_segments: SegmentRow[] }): number {
+  return activeMs(s.study_segments.map(toSegment), new Date(s.ended_at!)) / MINUTE
 }

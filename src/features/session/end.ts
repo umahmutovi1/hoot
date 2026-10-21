@@ -1,10 +1,4 @@
 import { difficultyMultiplier } from '@/lib/estimates'
-import {
-  addSamples,
-  type LearnedRate,
-  type RateSample,
-  type StudyMode,
-} from '@/lib/estimates/calibration'
 import { allocateMinutes, type AllocationUnit } from '@/lib/session/allocate'
 import { coverage, type Covered, type Point } from '@/lib/session/coverage'
 import { activeMs, MINUTE, msByUnit, pauseStats } from '@/lib/session/timer'
@@ -14,8 +8,8 @@ import { toSegment, type SegmentRow, type SessionRow } from './model'
 
 /**
  * End of a session (KrajSesije): "do koje stranice" → amount per unit, minutes split over units
- * (`session_units`), unit status and difficulty, and calibration of every source studied
- * (PRD "Procjena težine i vremena"). Returns the ops for the offline queue.
+ * (`session_units`), unit status and difficulty. Returns the ops for the offline queue. Speed
+ * calibration is recomputed afterwards from all sessions (`recalibrate.ts`).
  */
 
 export interface EndUnit {
@@ -31,12 +25,8 @@ export interface EndUnit {
 export interface EndSource {
   id: string
   measure: Measure
-  /** Heuristic minutes per unit of measure, for weights across sources. */
+  /** Minutes per unit of measure, for weights across sources. */
   rate: number
-  learned: LearnedRate
-  measuredSessions: number
-  /** Calibration of this source × the session's mode; null = not known (offline), left as is. */
-  pair: LearnedRate | null
   /** Leaves in source order. */
   units: EndUnit[]
 }
@@ -91,6 +81,16 @@ export function summarize(session: SessionRow, segments: SegmentRow[], now: Date
   }
 }
 
+/** A saved `session_units` row (editing a session from the history). */
+export interface SavedUnit {
+  unit_id: string
+  minutes: number
+  amount_done: number | null
+  level_before: number | null
+  level_after: number | null
+  difficulty: number | null
+}
+
 export interface EndPlan {
   ops: Op[]
   /** Minutes per unit, for the cards ("28 min"). */
@@ -105,6 +105,7 @@ export function planEnd(
   sources: EndSource[],
   answers: EndAnswers,
   now: Date = new Date(),
+  saved: SavedUnit[] = [],
 ): EndPlan {
   const end = session.ended_at ? new Date(session.ended_at) : now
   const byUnit = msByUnit(segments.map(toSegment), end)
@@ -135,10 +136,10 @@ export function planEnd(
   const t = now.toISOString()
   const sessionUnits: Row[] = []
   const unitOps: Op[] = []
-  const samples = new Map<string, RateSample[]>()
+  const savedBy = new Map(saved.map((r) => [r.unit_id, r]))
 
   for (const id of touched) {
-    const { unit, source } = unitInfo.get(id)!
+    const { unit } = unitInfo.get(id)!
     const amountDone = covered.get(id)?.amountDone ?? 0
     const min = minutes.get(id) ?? 0
     const levelAfter = answers.levels[id] ?? defaultLevel(unit, covered.get(id))
@@ -148,7 +149,8 @@ export function planEnd(
       unit_id: id,
       minutes: round2(min),
       amount_done: amountDone,
-      level_before: unit.level,
+      // Editing keeps the status the unit had before this session.
+      level_before: savedBy.get(id)?.level_before ?? unit.level,
       level_after: levelAfter,
       difficulty: rating,
     })
@@ -160,43 +162,6 @@ export function planEnd(
     if (rating !== null) patch.user_difficulty = rating
     if (Object.keys(patch).length > 0)
       unitOps.push({ kind: 'update', table: 'units', match: { id }, patch })
-    if (amountDone > 0 && min > 0)
-      samples.set(source.id, [
-        ...(samples.get(source.id) ?? []),
-        { minutes: min, amountDone, difficulty: difficultyOf(unit) },
-      ])
-  }
-
-  const calibrationOps: Op[] = []
-  for (const [sourceId, list] of samples) {
-    const source = sources.find((s) => s.id === sourceId)!
-    const learned = addSamples(source.learned, list)
-    calibrationOps.push({
-      kind: 'update',
-      table: 'sources',
-      match: { id: sourceId },
-      patch: {
-        learned_min_per_unit: learned.rate,
-        learned_samples: learned.samples,
-        measured_sessions: source.measuredSessions + 1,
-      },
-    })
-    if (session.mode && source.pair) {
-      const pair = addSamples(source.pair, list)
-      calibrationOps.push({
-        kind: 'upsert',
-        table: 'source_mode_rates',
-        onConflict: 'source_id,mode',
-        rows: [
-          {
-            source_id: sourceId,
-            mode: session.mode satisfies StudyMode,
-            min_per_unit: pair.rate,
-            samples: pair.samples,
-          },
-        ],
-      })
-    }
   }
 
   const ops: Op[] = [
@@ -213,6 +178,9 @@ export function planEnd(
       ],
     },
   ]
+  // Editing replaces the saved rows: units no longer covered drop out.
+  if (saved.length > 0)
+    ops.push({ kind: 'delete', table: 'session_units', match: { session_id: session.id } })
   if (sessionUnits.length > 0)
     ops.push({
       kind: 'upsert',
@@ -220,6 +188,57 @@ export function planEnd(
       onConflict: 'session_id,unit_id',
       rows: sessionUnits,
     })
-  ops.push(...unitOps, ...calibrationOps)
+  ops.push(...unitOps)
   return { ops, minutes }
+}
+
+/**
+ * Minutes per unit after the segments of a saved session were edited: the same covered amounts,
+ * split again over the new times.
+ */
+export function reallocate(
+  segments: SegmentRow[],
+  sources: EndSource[],
+  saved: SavedUnit[],
+  end: Date,
+): Map<string, number> {
+  const byUnit = msByUnit(segments.map(toSegment), end)
+  const minutesByUnit = new Map([...byUnit].map(([k, ms]) => [k, ms / MINUTE]))
+  const units: AllocationUnit[] = []
+  for (const row of saved) {
+    for (const source of sources) {
+      const position = source.units.findIndex((u) => u.id === row.unit_id)
+      if (position < 0) continue
+      const unit = source.units[position]!
+      const amountDone = Number(row.amount_done ?? 0)
+      units.push({
+        id: unit.id,
+        sourceId: source.id,
+        position,
+        amountDone,
+        weight: amountDone * source.rate * difficultyMultiplier(row.difficulty ?? unit.difficulty),
+      })
+    }
+  }
+  return allocateMinutes(minutesByUnit, units).minutes
+}
+
+/** Ranges back from saved amounts: per source from the first to the last covered unit. */
+export function savedRanges(sources: EndSource[], saved: SavedUnit[]): Range[] {
+  const done = new Map(saved.map((r) => [r.unit_id, Number(r.amount_done ?? 0)]))
+  const out: Range[] = []
+  for (const source of sources) {
+    const covered = source.units.filter((u) => (done.get(u.id) ?? 0) > 0)
+    if (covered.length === 0) continue
+    const first = covered[0]!
+    const last = covered.at(-1)!
+    const firstDone = done.get(first.id)!
+    out.push({
+      sourceId: source.id,
+      // Several units: the first was read to its end; one unit: read from its start.
+      from: { unitId: first.id, offset: covered.length > 1 ? first.amount - firstDone : 0 },
+      to: { unitId: last.id, offset: covered.length > 1 ? done.get(last.id)! : firstDone },
+    })
+  }
+  return out
 }

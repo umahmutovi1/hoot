@@ -380,6 +380,43 @@
         "items_one": "unit",
         "items_other": "units"
       }
+    },
+    "history": {
+      "title": "Sessions",
+      "add": "Add session",
+      "all": "All",
+      "emptyTitle": "No sessions yet",
+      "empty": "Finished sessions show up here. Studied without the timer? Add a session with +.",
+      "manual": "manual",
+      "addTitle": "Add session",
+      "addSubtitle": "Studied without the timer? Enter when.",
+      "date": "Date",
+      "from": "From",
+      "to": "To",
+      "manualHint": "A session added afterwards counts for minutes, progress and unit status, but not for speed estimates.",
+      "next": "Next",
+      "editEnd": "Edit ratings",
+      "segments": "Time",
+      "addSegment": "Add segment",
+      "removeSegment": "Remove segment",
+      "segmentError": {
+        "empty": "A session needs at least one segment.",
+        "time": "Check the start and end times.",
+        "overlap": "Segments overlap."
+      },
+      "studied": "What you studied",
+      "noUnits": "No units. Add them with \"Edit ratings\".",
+      "deleteConfirm": "The session is deleted with all its segments. Unit statuses stay as they are.",
+      "delete": "Delete session",
+      "cardEmpty": "No sessions yet",
+      "pauses_one": "break",
+      "pauses_other": "breaks",
+      "units_one": "unit",
+      "units_other": "units",
+      "count_one": "{{count}} session",
+      "count_other": "{{count}} sessions",
+      "thisWeek_one": "{{count}} session this week",
+      "thisWeek_other": "{{count}} sessions this week"
     }
   },
   "settings": {

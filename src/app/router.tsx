@@ -17,7 +17,9 @@ import { AcademicCalendarPage } from '@/features/schedule/AcademicCalendarPage'
 import { AvailabilityPage } from '@/features/schedule/AvailabilityPage'
 import { TimetablePage } from '@/features/schedule/TimetablePage'
 import { SessionEndPage } from '@/features/session/SessionEndPage'
+import { SessionDetailPage } from '@/features/session/SessionDetailPage'
 import { SessionPage } from '@/features/session/SessionPage'
+import { SessionsPage } from '@/features/session/SessionsPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { SubjectFormPage } from '@/features/subjects/SubjectFormPage'
 import { SubjectPage } from '@/features/subjects/SubjectPage'
@@ -70,6 +72,8 @@ export const router = createBrowserRouter([
               { path: 'subjects/:id/scope', element: <ExamScopePage /> },
               { path: 'session', element: <SessionPage /> },
               { path: 'session/:id/end', element: <SessionEndPage /> },
+              { path: 'sessions', element: <SessionsPage /> },
+              { path: 'sessions/:id', element: <SessionDetailPage /> },
             ],
           },
         ],

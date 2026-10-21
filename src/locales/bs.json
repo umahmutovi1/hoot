@@ -393,6 +393,47 @@
         "items_few": "jedinice",
         "items_other": "jedinica"
       }
+    },
+    "history": {
+      "title": "Sesije",
+      "add": "Dodaj sesiju",
+      "all": "Svi",
+      "emptyTitle": "Još nema sesija",
+      "empty": "Završene sesije se pojavljuju ovdje. Učila si bez timera? Dodaj sesiju sa +.",
+      "manual": "ručno",
+      "addTitle": "Dodaj sesiju",
+      "addSubtitle": "Učila si bez timera? Upiši kad.",
+      "date": "Datum",
+      "from": "Od",
+      "to": "Do",
+      "manualHint": "Naknadno dodata sesija ulazi u minute, napredak i status jedinica, ali ne u procjenu brzine.",
+      "next": "Dalje",
+      "editEnd": "Uredi ocjene",
+      "segments": "Vrijeme",
+      "addSegment": "Dodaj segment",
+      "removeSegment": "Ukloni segment",
+      "segmentError": {
+        "empty": "Sesija treba bar jedan segment.",
+        "time": "Provjeri vrijeme početka i kraja.",
+        "overlap": "Segmenti se preklapaju."
+      },
+      "studied": "Šta si učila",
+      "noUnits": "Bez jedinica. Dodaj ih kroz „Uredi ocjene“.",
+      "deleteConfirm": "Sesija se briše sa svim segmentima. Statusi jedinica ostaju kakvi jesu.",
+      "delete": "Obriši sesiju",
+      "cardEmpty": "Još nema sesija",
+      "pauses_one": "pauza",
+      "pauses_few": "pauze",
+      "pauses_other": "pauza",
+      "units_one": "jedinica",
+      "units_few": "jedinice",
+      "units_other": "jedinica",
+      "count_one": "{{count}} sesija",
+      "count_few": "{{count}} sesije",
+      "count_other": "{{count}} sesija",
+      "thisWeek_one": "{{count}} sesija ove sedmice",
+      "thisWeek_few": "{{count}} sesije ove sedmice",
+      "thisWeek_other": "{{count}} sesija ove sedmice"
     }
   },
   "settings": {

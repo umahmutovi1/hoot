@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Op } from '@/lib/sync'
-import { defaultLevel, planEnd, summarize, type EndSource } from './end'
+import { defaultLevel, planEnd, reallocate, savedRanges, summarize, type EndSource } from './end'
 import type { SegmentRow, SessionRow } from './model'
 
 const T0 = Date.parse('2026-10-21T08:00:00Z')
@@ -33,9 +33,6 @@ const source = (over: Partial<EndSource> = {}): EndSource => ({
   id: 'src',
   measure: 'pages',
   rate: 4,
-  learned: { rate: null, samples: 0 },
-  measuredSessions: 0,
-  pair: { rate: null, samples: 0 },
   units: [
     { id: 'a', kind: 'chapter', amount: 10, level: 0, difficulty: 3, completedAt: null },
     { id: 'b', kind: 'chapter', amount: 10, level: 0, difficulty: 3, completedAt: null },
@@ -78,22 +75,36 @@ describe('planEnd', () => {
     expect(updates[0]).toMatchObject({ match: { id: 'a' }, patch: { level: 1 } })
   })
 
-  it('calibrates the source and the source × mode pair', () => {
+  it('leaves speed calibration to the recompute from all sessions', () => {
     const { ops } = planEnd(session, segments, [source()], answers)
-    const [src] = opOf(ops, 'sources', 'update')
-    // a: 30 min / 10 pages = 3, b: 15 / 5 = 3
-    expect(src).toMatchObject({
-      patch: { learned_min_per_unit: 3, learned_samples: 2, measured_sessions: 1 },
-    })
-    const [pair] = opOf(ops, 'source_mode_rates')
-    expect(pair).toMatchObject({
-      rows: [{ source_id: 'src', mode: 'reading', min_per_unit: 3, samples: 2 }],
-    })
+    expect(ops.some((o) => o.table === 'sources' || o.table === 'source_mode_rates')).toBe(false)
   })
 
-  it('leaves the pair alone when it is not known (offline)', () => {
-    const { ops } = planEnd(session, segments, [source({ pair: null })], answers)
-    expect(opOf(ops, 'source_mode_rates')).toEqual([])
+  it('editing replaces the saved rows and keeps the status from before', () => {
+    const saved = [
+      {
+        unit_id: 'a',
+        minutes: 45,
+        amount_done: 10,
+        level_before: 0,
+        level_after: 1,
+        difficulty: null,
+      },
+    ]
+    const editedSource = source()
+    editedSource.units[0]!.level = 1
+    const { ops } = planEnd(session, segments, [editedSource], answers, new Date(), saved)
+    expect(ops[1]).toEqual({
+      kind: 'delete',
+      table: 'session_units',
+      match: { session_id: 'sess' },
+    })
+    expect(opOf(ops, 'session_units')[0]).toMatchObject({
+      rows: expect.arrayContaining([
+        expect.objectContaining({ unit_id: 'a', level_before: 0, level_after: 1 }),
+      ]),
+    })
+    expect(opOf(ops, 'units', 'update')).toEqual([])
   })
 
   it('uses the rating for difficulty and stores it on the unit', () => {
@@ -107,7 +118,6 @@ describe('planEnd', () => {
     const { ops } = planEnd(session, segments, [source()], { ...answers, ranges: [] })
     const [s] = opOf(ops, 'study_sessions')
     expect(s).toMatchObject({ rows: [{ focus: 2, reflection: null }] })
-    expect(opOf(ops, 'sources', 'update')).toEqual([])
     // a was studied without reported progress: it keeps its minutes
     expect(opOf(ops, 'session_units')[0]).toMatchObject({
       rows: [{ unit_id: 'a', minutes: 45, amount_done: 0 }],
@@ -138,5 +148,60 @@ describe('summarize', () => {
       pauses: 1,
       pauseMin: 5,
     })
+  })
+})
+
+describe('reallocate', () => {
+  it('splits new times over the same covered amounts', () => {
+    const saved = [
+      {
+        unit_id: 'a',
+        minutes: 30,
+        amount_done: 10,
+        level_before: 0,
+        level_after: 1,
+        difficulty: null,
+      },
+      {
+        unit_id: 'b',
+        minutes: 15,
+        amount_done: 10,
+        level_before: 0,
+        level_after: 1,
+        difficulty: null,
+      },
+    ]
+    const m = reallocate([seg('1', 'a', 0, 60)], [source()], saved, new Date(iso(60)))
+    expect(m.get('a')).toBeCloseTo(30)
+    expect(m.get('b')).toBeCloseTo(30)
+  })
+})
+
+describe('savedRanges', () => {
+  it('rebuilds from–to out of saved amounts', () => {
+    const saved = [
+      {
+        unit_id: 'a',
+        minutes: 1,
+        amount_done: 4,
+        level_before: 0,
+        level_after: 1,
+        difficulty: null,
+      },
+      {
+        unit_id: 'b',
+        minutes: 1,
+        amount_done: 5,
+        level_before: 0,
+        level_after: 0,
+        difficulty: null,
+      },
+    ]
+    expect(savedRanges([source()], saved)).toEqual([
+      { sourceId: 'src', from: { unitId: 'a', offset: 6 }, to: { unitId: 'b', offset: 5 } },
+    ])
+    expect(savedRanges([source()], [saved[1]!])).toEqual([
+      { sourceId: 'src', from: { unitId: 'b', offset: 0 }, to: { unitId: 'b', offset: 5 } },
+    ])
   })
 })
