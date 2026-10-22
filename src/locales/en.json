@@ -139,6 +139,16 @@
       "shifted": "{{min}} min late: the rest of the day moved",
       "shiftedOverflow_one": "{{min}} min late: the rest of the day moved, {{count}} block goes to the plan from tomorrow",
       "shiftedOverflow_other": "{{min}} min late: the rest of the day moved, {{count}} blocks go to the plan from tomorrow"
+    },
+    "extra": {
+      "button": "I have more time",
+      "title": "I have more time",
+      "sub": "One more block today, over the daily maximum if needed (today only). The other days rearrange around it.",
+      "whyReview": "A check that is due: memory strength is dropping.",
+      "whyNext": "The most urgent next material, {{minutes}} today instead of later.",
+      "addStart": "Add and start",
+      "add": "Only add to today's plan",
+      "added": "Added to today's plan: {{minutes}}"
     }
   },
   "plan": {

@@ -16,7 +16,7 @@ import { subjectsKey } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
 import { addDays, localDay, wallClock, zonedInstant, type LocalDate } from '@/lib/day'
 import { capFor, freeSlotsOn } from '@/lib/schedule'
-import { LATE_AFTER_MIN, shiftRestOfDay, type CutUnit } from '@/lib/scheduler'
+import { LATE_AFTER_MIN, shiftRestOfDay, spanOf, type CutUnit } from '@/lib/scheduler'
 import { supabase } from '@/lib/supabase'
 import type { Op, Row } from '@/lib/sync'
 import { planBlocksKey } from './api'
@@ -371,6 +371,86 @@ function useShiftLateDay() {
       )
     },
     [userId, queryClient, write, boundary, schedule, resolve, defaultId, show, t],
+  )
+}
+
+/**
+ * "Imam još vremena" (decision after 8b): today's plan is done and there is time left. The piece
+ * `pickForTime()` chose becomes a block today from now (a manual block: the user asked for the
+ * time, so replan keeps it, and it may go over the daily maximum), with a free-time exception for
+ * that span in Dostupnost; the replan then counts that work as done-to-be and rearranges the
+ * following days. Returns the block (to start it) and an undo.
+ */
+export function useAddExtraTime() {
+  const save = useSaveBlock()
+  const write = useQueueWrite()
+  const queryClient = useQueryClient()
+  const userId = useUserId()
+  const boundary = useDayBoundary()
+  const { resolve, defaultId } = usePresets()
+  return useCallback(
+    async (input: {
+      subjectId: string
+      kind: PlanBlockRow['kind']
+      minutes: number
+      unitIds: string[]
+      assessmentId: string | null
+      deadlineId: string | null
+      mode: string
+    }) => {
+      const now = new Date()
+      const today = localDay(now, boundary)
+      const wall = wallClock(now, boundary.timeZone).minutes
+      const startMin = Math.ceil((wall < boundary.dayStartMin ? wall + 1440 : wall) / 5) * 5
+      const draft: BlockDraft = {
+        id: crypto.randomUUID(),
+        subjectId: input.subjectId,
+        assessmentId: input.assessmentId,
+        deadlineId: input.deadlineId,
+        onDate: today,
+        startMin,
+        minutes: input.minutes,
+        kind: input.kind,
+        mode: input.mode,
+        unitIds: input.unitIds,
+        title: null,
+        edited: false,
+      }
+      const exceptionId = crypto.randomUUID()
+      const endMin = Math.min(1440, startMin + spanOf(resolve(defaultId), input.minutes))
+      await write([
+        {
+          kind: 'upsert',
+          table: 'availability_exceptions',
+          rows: [
+            {
+              id: exceptionId,
+              on_date: today,
+              start_min: startMin,
+              end_min: endMin,
+              is_busy: false,
+            },
+          ],
+        },
+      ])
+      void queryClient.invalidateQueries({
+        queryKey: scheduleKey('availability_exceptions', userId),
+      })
+      const undoBlock = await save(draft)
+      return {
+        draft,
+        undo: async () => {
+          await undoBlock()
+          await write([
+            { kind: 'delete', table: 'availability_exceptions', match: { id: exceptionId } },
+          ])
+          void queryClient.invalidateQueries({
+            queryKey: scheduleKey('availability_exceptions', userId),
+          })
+        },
+      }
+    },
+    [save, write, queryClient, userId, boundary, resolve, defaultId],
   )
 }
 
