@@ -14,6 +14,7 @@ import { ScaleSheet } from '@/features/subjects/ScaleSheet'
 import { localDay } from '@/lib/day'
 import { cn } from '@/lib/utils'
 import { DisplayNameForm } from './DisplayNameForm'
+import { NotifySettings } from '@/features/notify/NotifySettings'
 import { PresetSettings } from './PresetSettings'
 import { useDayBoundary, useProfile } from './profile'
 import { useLocale } from './useLocale'
@@ -112,6 +113,11 @@ export function SettingsPage() {
         {t('settings.session')}
       </h2>
       <PresetSettings />
+
+      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+        {t('notify.title')}
+      </h2>
+      <NotifySettings />
 
       <ScaleSheet open={scaleOpen} onOpenChange={setScaleOpen} />
 

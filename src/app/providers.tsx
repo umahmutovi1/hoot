@@ -6,6 +6,7 @@ import { Recalibrator } from '@/features/session/Recalibrator'
 import { queryPersister } from './queryPersister'
 import { CalendarSync } from '@/features/calendars/CalendarSync'
 import { ReplanRunner } from '@/features/plan/ReplanRunner'
+import { PushJobsRunner } from '@/features/notify/PushJobsRunner'
 import { SyncRunner } from './SyncRunner'
 import { ViewportInsets } from './ViewportInsets'
 
@@ -38,6 +39,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <CalendarSync />
         <Recalibrator />
         <ReplanRunner />
+        <PushJobsRunner />
         {children}
       </AuthProvider>
     </PersistQueryClientProvider>

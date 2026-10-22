@@ -5,6 +5,8 @@ import { goBack } from '@/app/navigation'
 import { ChevronLeftIcon, PencilIcon, PlusIcon } from '@/components/icons'
 import { OfflineNotice } from '@/components/OfflineNotice'
 import { useOnline } from '@/features/owl/api'
+import { useSubscriptions } from '@/features/notify/api'
+import { useProfile } from '@/features/settings/profile'
 import { useSources } from '@/features/sources/api'
 import { pagesLabel } from '@/features/sources/format'
 import { useSubject } from '@/features/subjects/api'
@@ -53,6 +55,9 @@ export function SessionPage() {
   const setNextUnit = useSessionUi((s) => s.setNextUnit)
   const keptSegmentId = useSessionUi((s) => s.keptSegmentId)
   const check = useSessionUi((s) => s.check)
+  const { data: profile } = useProfile()
+  const { data: pushSubs = [] } = useSubscriptions()
+  const notifyBreak = (profile?.notify_break_end ?? true) && pushSubs.length > 0
   const pending = usePendingSync()
   const [timerSheet, setTimerSheet] = useState(false)
   const [picker, setPicker] = useState(false)
@@ -100,7 +105,13 @@ export function SessionPage() {
     if (open) {
       // `now` is at most a second old: close enough for when the break ends.
       const closed = list.map((x) => (x.id === open.id ? { ...x, endedAt: now } : x))
-      void writer.pause(data, breakEndsAt(preset, closed, now))
+      void writer.pause(
+        data,
+        breakEndsAt(preset, closed, now),
+        notifyBreak
+          ? { title: t('notify.push.breakEndTitle'), body: t('notify.push.breakEndBody') }
+          : null,
+      )
     } else {
       void writer.resume(data, pickedId)
       setNextUnit(null)
