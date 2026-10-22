@@ -4,6 +4,7 @@ import { CapIcon, ClockIcon } from '@/components/icons'
 import { PageTitle } from '@/components/PageTitle'
 import { cn } from '@/lib/utils'
 import { CalendarView } from './CalendarView'
+import { ScheduleView } from './ScheduleView'
 
 export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
   const { t } = useTranslation()
@@ -55,13 +56,7 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
           </NavLink>
         ))}
       </div>
-      {tab === 'calendar' ? (
-        <CalendarView />
-      ) : (
-        <div className="flex flex-col items-center gap-3 rounded-card-lg glass p-6 text-center">
-          <p className="text-sm leading-snug text-ink-muted">{t('plan.scheduleEmpty')}</p>
-        </div>
-      )}
+      {tab === 'calendar' ? <CalendarView /> : <ScheduleView />}
     </div>
   )
 }

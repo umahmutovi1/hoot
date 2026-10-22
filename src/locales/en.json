@@ -166,7 +166,16 @@
     "nextWeek": "Next week",
     "cancelled": "cancelled",
     "noClasses": "No classes this day.",
-    "timetableButton": "Timetable"
+    "timetableButton": "Timetable",
+    "legendPlanned": "Planned study",
+    "schedule": {
+      "note": "The plan suggests the times, with breaks",
+      "moved": "A moved block becomes manual",
+      "revert": "Restore the plan",
+      "reverted": "The plan's suggestion is back",
+      "empty": "No blocks on this day. Add one or look at another day.",
+      "noTime": "No time"
+    }
   },
   "subjects": {
     "title": "Subjects",
@@ -1553,7 +1562,8 @@
       "questions": "Questions",
       "recap": "Quick recap",
       "deadline": "Deadline",
-      "learn": "Study"
+      "learn": "Study",
+      "problems": "Problems"
     },
     "reviewUnits_one": "Check · {{count}} unit",
     "reviewUnits_other": "Check · {{count}} units",
@@ -1655,5 +1665,40 @@
     "choose": "For {{subject}} you choose: longer days, a smaller scope or accept the risk.",
     "showToday": "Show today's plan",
     "solve": "Fix the shortfall in {{subject}}"
+  },
+  "blockSheet": {
+    "new": "New block",
+    "edit": "Edit block",
+    "deleteTitle": "Delete block?",
+    "manualEdited": "edited by you",
+    "subject": "Subject",
+    "type": "Type",
+    "units": "Units",
+    "optional": "(optional)",
+    "allUnits": "All ({{count}})",
+    "day": "Day",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "duration": "Duration",
+    "durationMin": "at least 15 min",
+    "shorter": "Shorter",
+    "longer": "Longer",
+    "time": "Time",
+    "timeFixed": "Fixed time in the schedule",
+    "timeFree": "No time, the plan fits it into the day",
+    "setTime": "Set a time",
+    "lockNote": "Once you change it, the plan won't move it any more.",
+    "save": "Save",
+    "deleteBlock": "Delete block",
+    "move": "Move the material to other days",
+    "moveSub": "The plan spreads it from tomorrow",
+    "drop": "Remove from the plan",
+    "dropSub": "{{exam}}: {{title}} is no longer in scope",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "savedToast": "Block saved",
+    "lockedToast": "The block is manual now, the plan won't move it",
+    "deletedToast": "Block deleted",
+    "add": "Add block"
   }
 }
