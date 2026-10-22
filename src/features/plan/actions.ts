@@ -365,6 +365,7 @@ export function useSkipBlock() {
               code: 'manual',
               mode: blockMode(block, units),
               carried: true,
+              from: block.on_date,
             }),
           }
         : { ...block, start_min: skippedAt, planned_start: at(today, skippedAt) }

@@ -157,6 +157,17 @@ function presetsOf(profile: Profile): CustomPresetRow[] {
   return parseCustomPresets(profile.session_presets) as CustomPresetRow[]
 }
 
+/** The day a carried block ("Preskoči") was skipped on, from its `reason`. */
+function carriedFrom(b: Pick<PlanBlockRow, 'reason'>): string | null {
+  if (!b.reason || !b.reason.includes('"carried"')) return null
+  try {
+    const r = JSON.parse(b.reason) as { carried?: boolean; from?: string }
+    return r.carried && typeof r.from === 'string' ? r.from : null
+  } catch {
+    return null
+  }
+}
+
 /** History for ρ and the growth limit: planned AI minutes and studied minutes per day. */
 export function historyOf(
   blocks: PlanBlockRow[],
@@ -373,7 +384,10 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
     0,
   )
   const impossible = open.length > 0 && open.reduce((s, b) => s + b.planned_minutes, 0) > freeLeft
-  const keepToday = todayAi.length > 0 && !impossible
+  // A block skipped away from today ("Preskoči") still keeps today's list: skipping is "not now",
+  // not "plan me something else today".
+  const skippedToday = input.blocks.some((b) => carriedFrom(b) === today)
+  const keepToday = (todayAi.length > 0 || skippedToday) && !impossible
   const from = keepToday ? addDays(today, 1) : today
 
   const fixed: FixedBlock[] = input.blocks

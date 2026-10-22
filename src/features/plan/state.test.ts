@@ -176,6 +176,26 @@ describe('buildPlanState', () => {
     expect(again).toEqual([])
   })
 
+  it('keeps today after its only block was skipped to tomorrow ("Preskoči")', () => {
+    const first = buildPlanState(inputs(), { now: NOW, boundary })
+    const blocks = applyReplace([], replaceArgs(first, plan(first.state), 'h', 'r', TZ), 'u')
+    const tomorrow = addDays(TODAY, 1)
+    const moved = blocks.map((b) =>
+      b.on_date === TODAY
+        ? {
+            ...b,
+            on_date: tomorrow,
+            origin: 'user' as const,
+            reason: JSON.stringify({ code: 'manual', mode: 'reading', carried: true, from: TODAY }),
+          }
+        : b,
+    )
+    expect(moved.some((b) => b.on_date === TODAY && b.origin === 'ai')).toBe(false)
+    const built = buildPlanState(inputs({ blocks: moved }), { now: NOW, boundary })
+    expect(built.keepToday).toBe(true)
+    expect(built.state.from).toBe(tomorrow)
+  })
+
   it('replans today when its blocks no longer fit (busy day added)', () => {
     const first = buildPlanState(inputs(), { now: NOW, boundary })
     const blocks = applyReplace([], replaceArgs(first, plan(first.state), 'h', 'r', TZ), 'u')
