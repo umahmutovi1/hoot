@@ -1,20 +1,26 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { differenceInCalendarDays, format } from 'date-fns'
+import { format } from 'date-fns'
 import { useSources } from '@/features/sources/api'
 import { materialOf, subjectMaterialProgress } from '@/features/sources/model'
 import { useLocale } from '@/features/settings/useLocale'
 import { useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
 import { nextAssessment, type SubjectWithAssessments } from '@/features/subjects/model'
+import { diffDays, localDay, type LocalDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
+import { useDayBoundary } from '@/features/settings/profile'
 import { cn } from '@/lib/utils'
 
 /**
  * "Ispiti" on Today: the next exam of up to three subjects, soonest first, with how many days are
  * left and the material progress.
  */
-export function ExamTiles({ now }: { now: Date }) {
+/**
+ * Days are counted from `today`, the local day at the day boundary (04:00), like the focus bar:
+ * at 01:30 it is still yesterday.
+ */
+export function ExamTiles({ now, today }: { now: Date; today: LocalDate }) {
   const { t } = useTranslation()
   const { data: subjects = [] } = useSubjects()
   const upcoming = subjects
@@ -35,7 +41,7 @@ export function ExamTiles({ now }: { now: Date }) {
       </div>
       <div className="flex gap-2.5">
         {upcoming.map(({ subject, exam }) => (
-          <ExamTile key={subject.id} subject={subject} at={exam!.at} now={now} />
+          <ExamTile key={subject.id} subject={subject} at={exam!.at} today={today} />
         ))}
       </div>
     </>
@@ -45,15 +51,16 @@ export function ExamTiles({ now }: { now: Date }) {
 function ExamTile({
   subject,
   at,
-  now,
+  today,
 }: {
   subject: SubjectWithAssessments
   at: string
-  now: Date
+  today: LocalDate
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
-  const days = differenceInCalendarDays(new Date(at), now)
+  const boundary = useDayBoundary()
+  const days = diffDays(today, localDay(new Date(at), { ...boundary, dayStartMin: 0 }))
   const { data: sources = [] } = useSources(subject.id)
   const palette = paletteOf(subject.color)
   const materials = sources.map(materialOf)
