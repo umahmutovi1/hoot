@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useAllSources } from '@/features/plan/api'
 import { createRoughSource } from '@/features/sources/api'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useDayBoundary } from '@/features/settings/profile'
 import { useSaveSubject, useSubjects } from '@/features/subjects/api'
+import { subjectToForm } from '@/features/subjects/mappers'
 import { RoughSizeField } from '@/features/subjects/RoughSizeField'
 import { useRoughTexts } from '@/features/subjects/roughTexts'
 import { EXAM_GRADE_DEFAULTS, type SubjectForm } from '@/features/subjects/schemas'
@@ -19,7 +21,8 @@ import { StepTitle, type StepProps } from './OnboardingPage'
 /**
  * Step 7 "Prvi predmet": a name, one exam (a date, or a period from the academic calendar) and
  * the rough size of the material. The exam covers the whole rough source; real content and the
- * exact scope come later. Empty name = the step is skipped.
+ * exact scope come later. Empty name = the step is skipped. A subject made in step 2 (timetable)
+ * is offered by name and gets the exam and material it is missing.
  */
 export function StepSubject({ setSave }: StepProps) {
   const { t } = useTranslation()
@@ -27,12 +30,15 @@ export function StepSubject({ setSave }: StepProps) {
   const boundary = useDayBoundary()
   const save = useSaveSubject()
   const existing = useSubjects().data ?? []
+  const { data: sources = [] } = useAllSources()
   const roughTexts = useRoughTexts()
   const { periods } = useScheduleData()
   const [today] = useState(() => localDay(new Date(), boundary))
   const period =
     suggestExamPeriod('partial', periods, today) ?? suggestExamPeriod('final', periods, today)
-  const [name, setName] = useState('')
+  const [name, setName] = useState(
+    () => existing.find((x) => !x.archived && x.assessments.length === 0)?.name ?? '',
+  )
   const [exam, setExam] = useState(() => t('onboarding.subject.examDefault'))
   const [date, setDate] = useState('')
   const [usePeriod, setUsePeriod] = useState(Boolean(period))
@@ -41,40 +47,45 @@ export function StepSubject({ setSave }: StepProps) {
   useEffect(() => {
     setSave(async () => {
       if (!name.trim()) return
-      // Back to this step after saving: the subject is there already.
-      if (existing.some((x) => x.name.trim().toLowerCase() === name.trim().toLowerCase())) return
+      const match = existing.find(
+        (x) => !x.archived && x.name.trim().toLowerCase() === name.trim().toLowerCase(),
+      )
       const tentative = usePeriod && period
       const examDate = tentative ? period.startsOn : date
-      const form: SubjectForm = {
+      const assessment = {
         id: crypto.randomUUID(),
-        name: name.trim(),
-        color: 'pink',
-        priority: 3,
-        studyMode: 'regular',
-        campaignStartOn: null,
-        targetGrade: null,
-        assessments: examDate
-          ? [
-              {
-                id: crypto.randomUUID(),
-                kind: 'partial',
-                title: exam.trim() || t('onboarding.subject.examDefault'),
-                date: examDate,
-                format: 'written',
-                scopeAll: true,
-                contingent: false,
-                dateTentative: Boolean(tentative),
-                dateLatest: tentative ? period.endsOn : null,
-                examPeriodId: tentative ? period.id : null,
-                ...EXAM_GRADE_DEFAULTS,
-              },
-            ]
-          : [],
+        kind: 'partial' as const,
+        title: exam.trim() || t('onboarding.subject.examDefault'),
+        date: examDate,
+        format: 'written' as const,
+        scopeAll: true,
+        contingent: false,
+        dateTentative: Boolean(tentative),
+        dateLatest: tentative ? period.endsOn : null,
+        examPeriodId: tentative ? period.id : null,
+        ...EXAM_GRADE_DEFAULTS,
       }
-      await save.mutateAsync(form)
-      if (size) await createRoughSource({ subjectId: form.id, size, ...roughTexts(size) })
+      // A subject from the timetable (or this step, on the way back) keeps what it has.
+      const form: SubjectForm = match
+        ? subjectToForm(match)
+        : {
+            id: crypto.randomUUID(),
+            name: name.trim(),
+            color: 'pink',
+            priority: 3,
+            studyMode: 'regular',
+            campaignStartOn: null,
+            targetGrade: null,
+            assessments: [],
+          }
+      if (examDate && form.assessments.length === 0) form.assessments = [assessment]
+      if (!match || form.assessments.length !== match.assessments.length)
+        await save.mutateAsync(form)
+      const hasMaterial = sources.some((x) => x.subject_id === form.id)
+      if (size && !hasMaterial)
+        await createRoughSource({ subjectId: form.id, size, ...roughTexts(size) })
     })
-  }, [name, exam, date, usePeriod, size, period, existing]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name, exam, date, usePeriod, size, period, existing, sources]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const field = 'h-12 rounded-input glass px-4 text-[15px] outline-none'
   return (
