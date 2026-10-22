@@ -29,7 +29,7 @@ su jedna komponenta sa stanjem.
 avatar (Postavke) → AI iskra odmah desno (otvara Chat) → ☰ u desnom uglu; AI i ☰ su samo ikone, a red nema pozadinu. **Odluka nakon 8b:** umjesto avatara je logo sove (`owl-pwa-icons/logo.svg`, prozirna pozadina, boja teksta) koji vodi na Danas; Postavke su u meniju. „✦ AI“ ima vrlo prozirnu staklenu pilulu da se vidi da je dugme; zatvaranje chata preko AI zatvara i meni. Sekcije menija se otvaraju nezavisno (otvaranje jedne ne zatvara drugu). Ispod su zaglavlje taba
 i sadržaj do dna ekrana. ☰ otvara panel u staklu sheetova preko ekrana (isti prvi red, ☰ postaje ×): Danas, Plan, Predmeti, Napredak, Postavke;
 stavke sa podstranicama su harmonika (otvorena je sekcija trenutne stranice), a na dnu je samo „Odjavi se“. Podstranice: Plan → Kalendar,
-Satnica, Dostupnost, Raspored nastave; Predmeti → aktivni predmeti, Svi predmeti; Napredak → Pregled, Sesije; Postavke → Sve postavke,
+Dostupnost, Raspored nastave; Predmeti → aktivni predmeti, Svi predmeti; Napredak → Pregled, Sesije; Postavke → Sve postavke,
 Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stignu). Historija razgovora je u chatu. **Mrvice (odluka nakon 8b):** svaki ekran osim onboardinga, sesije u toku i forme kraja sesije ima isti prvi red (logo, AI, ☰). Ispod glavnih ekrana (Danas, Plan, Predmeti, Napredak, Chat) je drugi red: ‹ (nazad odakle si došla, bez historije jedan nivo gore) i putanja po mjestu u appu, npr. „Predmeti › Signali › Knjiga“; svaka mrvica iznad ekrana je link. Ekrani više nemaju svoje ‹ dugme. Sesija se pokreće iz kartice
 "Sljedeće" (dugme Počni) ili iz chata.
 
@@ -45,7 +45,7 @@ Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stig
 - Sesija: PokreniSesiju (koliko vremena imaš, predložak) → Sesija ("Ometena sam", + Kartica) → KrajSesije
   ("Do koje stranice", status jedinice se tapom mijenja) / KrajSesijeFokus (razlozi kad je fokus Slab) → RecallGate;
   ProvjeraZnanja → ProvjeraSazetak; Sesije (historija po danima, "ručno") → SesijaDetalj (segmenti, uredi ocjene, obriši)
-- Plan: Plan (Mjesec), PlanDan (Dan: pilule dana, vremenska osa, nastava i Google zauzetost šrafirano),
+- Plan (**odluka nakon 8b:** Kalendar i Satnica su jedan kalendar sa pogledima Dan, default i lijevo, i Mjesec; Dan je vremenska osa Satnice sa nastavom, zauzetošću i blokovima, „Vrati predloženo“ i „Dodaj blok“): Plan (Mjesec), PlanDan (Dan: pilule dana, vremenska osa, nastava i Google zauzetost šrafirano),
   PlanDanTermin (detalji termina nastave), Satnica (vremena automatski, pomjeren blok = ručni), Replan, Dostupnost, Raspored,
   UrediBlokNovi / Uredi / Obrisi. Zaglavlje Plana ima Dostupnost i Raspored.
 - Predmeti: Predmeti, Predmet (Cilj: koliko ti je bitan, željena ocjena, kad kreće učenje, pojačanje ×; zaostatak u jedinici

@@ -138,8 +138,6 @@
   },
   "plan": {
     "title": "Plan",
-    "tabCalendar": "Calendar",
-    "tabSchedule": "Schedule",
     "scheduleEmpty": "The schedule places today's blocks into your free time slots.",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
@@ -176,9 +174,7 @@
       "note": "The plan suggests the times, with breaks",
       "moved": "A moved block becomes manual",
       "revert": "Restore the plan",
-      "reverted": "The plan's suggestion is back",
-      "empty": "No blocks on this day. Add one or look at another day.",
-      "noTime": "No time"
+      "reverted": "The plan's suggestion is back"
     }
   },
   "subjects": {

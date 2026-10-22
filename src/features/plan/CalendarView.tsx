@@ -21,21 +21,28 @@ import { useAgenda, type DayBusy, type DayClass } from './agenda'
 import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
 import { DayDots } from './DayDots'
 import { DayStrip } from './DayStrip'
+import { useToast } from '@/components/toast-store'
+import { useDeleteBlock } from './actions'
 import { BlockSheet } from './BlockSheet'
 import { DayTimeline } from './DayTimeline'
 import type { PlanBlockRow } from './state'
 import { toTimeline, useDayBlocks, type DayBlockView } from './useDayBlocks'
 
-const VIEWS = ['month', 'day'] as const
+// Day first and default (decision after 8b: Kalendar and Satnica are one calendar).
+const VIEWS = ['day', 'month'] as const
 type CalendarMode = (typeof VIEWS)[number]
 
-/** Plan → Kalendar: month grid or day timeline, and the selected day's list. */
+/**
+ * Plan: one calendar. Dan (default) is the day's timeline with blocks at the times `placeTimes()`
+ * gave them, around classes and calendar busy time (a changed block becomes manual; "Vrati
+ * predloženo" drops the day's changed AI blocks so the plan places that material again). Mjesec
+ * is the month grid. Below both, the selected day's exams, deadlines and blocks without a time.
+ */
 export function CalendarView() {
   const { t } = useTranslation()
   const [params, setParams] = useSearchParams()
-  const view: CalendarMode = VIEWS.find((v) => v === params.get('view')) ?? 'month'
-  const setView = (v: CalendarMode) =>
-    setParams(v === 'month' ? {} : { view: v }, { replace: true })
+  const view: CalendarMode = VIEWS.find((v) => v === params.get('view')) ?? 'day'
+  const setView = (v: CalendarMode) => setParams(v === 'day' ? {} : { view: v }, { replace: true })
   const [today] = useState(() => new Date())
   const now = useNow()
   // `?date=yyyy-MM-dd` opens a day directly (e.g. "Prikaži u kalendaru" on an exam).
@@ -58,6 +65,17 @@ export function CalendarView() {
     block: null,
   })
   const openBlock = (block: PlanBlockRow | null) => setSheet({ open: true, block })
+  const remove = useDeleteBlock()
+  const show = useToast((s) => s.show)
+  const edited = blocks.filter((b) => b.edited && b.block.status === 'planned')
+  const revert = async () => {
+    const undos: (() => Promise<void>)[] = []
+    for (const b of edited) undos.push(await remove(b.block, false))
+    show(t('plan.schedule.reverted'), {
+      label: t('today.cant.undo'),
+      run: () => void Promise.all(undos.map((u) => u())),
+    })
+  }
 
   return (
     <div className="flex flex-col">
@@ -83,6 +101,20 @@ export function CalendarView() {
       {view === 'day' && (
         <div className="flex flex-col gap-3">
           <DayStrip selected={selected} today={today} onSelect={setSelected} />
+          <div className="flex items-center justify-between gap-3 px-1">
+            <span className="text-xs leading-[1.4] text-ink-muted">
+              {t('plan.schedule.note')} · {t('plan.schedule.moved')}
+            </span>
+            {edited.length > 0 && (
+              <button
+                type="button"
+                onClick={() => void revert()}
+                className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
+              >
+                {t('plan.schedule.revert')}
+              </button>
+            )}
+          </div>
           <div className="rounded-card-lg glass p-3 pr-2">
             {dayClasses.length === 0 &&
               agenda.busyFor(selectedDate).length === 0 &&

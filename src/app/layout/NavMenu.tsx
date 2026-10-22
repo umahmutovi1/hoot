@@ -76,7 +76,6 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
       match: (p) => p.startsWith('/plan'),
       subs: [
         { to: '/plan', label: t('menu.calendar') },
-        { to: '/plan/schedule', label: t('plan.tabSchedule') },
         { to: '/plan/availability', label: t('availability.title') },
         { to: '/plan/timetable', label: t('menu.timetable') },
       ],
