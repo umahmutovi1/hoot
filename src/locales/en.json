@@ -322,7 +322,8 @@
       "computedLater": "Start is computed from the plan",
       "body": "Until then the subject is not planned, except reviews of what you already learned. The start is computed from the remaining material and your availability, with a 20% reserve.",
       "move": "Move",
-      "startNow": "Start now"
+      "startNow": "Start now",
+      "computedBody": "Until then the subject isn't planned, except reviews of what you already know. The start is computed from ~{{hours}}h of material and your availability, with 20% slack."
     },
     "quick": {
       "open": "New subject",
@@ -347,6 +348,56 @@
         "large": "Rough estimate · ~45 h"
       },
       "part": "Part {{n}}"
+    },
+    "goal": {
+      "title": "Goal",
+      "edit": "Edit",
+      "howImportant": "How important is it?",
+      "importantRow": "How important",
+      "targetRow": "Target grade",
+      "whenRow": "Studying starts",
+      "target": "Target grade",
+      "optional": "(optional)",
+      "noTarget": "—",
+      "targetChip": "target {{grade}}",
+      "nudge": "A {{grade}} usually needs “{{level}}”",
+      "change": "Change",
+      "when": "When does studying start?",
+      "computedOn": "Computed · ~{{date}}",
+      "fromToday": "From today",
+      "campaignFrom": "Campaign · {{date}}",
+      "campaignLater": "Campaign before the exam",
+      "modeShort": {
+        "regular": "from today",
+        "campaign": "campaign"
+      },
+      "mode": {
+        "regular": {
+          "title": "From today",
+          "sub": "Regular, in step with lectures"
+        },
+        "campaign": {
+          "title": "Campaign before the exam",
+          "sub": "The app computes when to start and tells you 3 days before"
+        }
+      },
+      "priorityDescription": {
+        "1": "Easy, passing is enough",
+        "2": "Less important, no big ambitions",
+        "3": "The usual share of time and slack",
+        "4": "Important, I want a good grade",
+        "5": "Must pass"
+      },
+      "effect": "The plan covers {{coverage}}% of the material and reviews {{often}}.",
+      "often": {
+        "low": "less often",
+        "mid": "as usual",
+        "high": "more often"
+      },
+      "boost": "+{{minutes}} min a day until {{date}}",
+      "boostSimple": "More time until {{date}}",
+      "endBoost": "Remove the boost",
+      "unreachable": "The target grade is out of reach with the points left."
     }
   },
   "progress": {

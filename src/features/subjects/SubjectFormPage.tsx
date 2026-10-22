@@ -6,7 +6,7 @@ import { useRoughTexts } from './roughTexts'
 import { useState, type ReactNode } from 'react'
 import { useFieldArray, useForm, useWatch, type Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { CalendarIcon, ChevronDownIcon, CloseIcon, PlusIcon } from '@/components/icons'
@@ -18,6 +18,8 @@ import { usePeriods } from '@/features/schedule/api'
 import { toPeriod } from '@/features/schedule/model'
 import { useDayBoundary } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
+import { usePlanStore } from '@/features/plan/store'
+import { GRADES } from '@/lib/grades'
 import { localDay } from '@/lib/day'
 import { assignExamPeriods, type Period } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
@@ -56,7 +58,9 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
   const archive = useArchiveSubject()
   const isEdit = Boolean(initial)
   const [preset, setPreset] = useState<ExamPreset>('partials')
-  const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [params] = useSearchParams()
+  // "Uredi" on the subject's Cilj card opens the form with Napredno open.
+  const [advancedOpen, setAdvancedOpen] = useState(params.get('goal') === '1')
   const [roughSize, setRoughSize] = useState<RoughSize | null>('medium')
   const createRough = useCreateRoughSource()
   const roughTexts = useRoughTexts()
@@ -85,13 +89,14 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       priority: 3,
       studyMode: 'regular',
       campaignStartOn: null,
+      targetGrade: null,
       assessments: newExams('partials'),
     },
   })
   const exams = useFieldArray({ control: form.control, name: 'assessments', keyName: 'key' })
-  const [color, priority, studyMode] = useWatch({
+  const [color, priority, studyMode, targetGrade] = useWatch({
     control: form.control,
-    name: ['color', 'priority', 'studyMode'],
+    name: ['color', 'priority', 'studyMode', 'targetGrade'],
   })
   const nameError = form.formState.errors.name?.message
   const boundary = useDayBoundary()
@@ -282,10 +287,13 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
           <span className="flex flex-1 flex-col gap-0.5">
             <span className="text-[15px] font-semibold">{t('subjects.form.advanced')}</span>
             <span className="text-[13px] text-ink-muted">
-              {t('subjects.form.advancedSummary', {
-                priority,
-                mode: t(`subjects.mode.${studyMode}.title`),
-              })}
+              {[
+                t(`subjects.priority.${asPriority(priority)}.name`),
+                targetGrade ? t('subjects.goal.targetChip', { grade: targetGrade }) : null,
+                t(`subjects.goal.modeShort.${studyMode}`),
+              ]
+                .filter(Boolean)
+                .join(' · ')}
             </span>
           </span>
           <ChevronDownIcon
@@ -293,7 +301,13 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
             className={cn('text-ink-muted transition-transform', advancedOpen && 'rotate-180')}
           />
         </button>
-        {advancedOpen && <AdvancedFields control={form.control} setValue={form.setValue} />}
+        {advancedOpen && (
+          <AdvancedFields
+            control={form.control}
+            setValue={form.setValue}
+            subjectId={isEdit ? form.getValues('id') : null}
+          />
+        )}
       </div>
 
       <div className="mt-auto flex flex-col gap-2.5">
@@ -482,22 +496,37 @@ function DateChip({ label, children }: { label: string; children: ReactNode }) {
 function AdvancedFields({
   control,
   setValue,
+  subjectId,
 }: {
   control: Control<SubjectForm>
   setValue: ReturnType<typeof useForm<SubjectForm>>['setValue']
+  /** Saved subject (edit): its computed campaign start comes from the plan. */
+  subjectId: string | null
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
-  const [priority, studyMode, campaignStartOn] = useWatch({
+  const [priority, studyMode, campaignStartOn, targetGrade] = useWatch({
     control,
-    name: ['priority', 'studyMode', 'campaignStartOn'],
+    name: ['priority', 'studyMode', 'campaignStartOn', 'targetGrade'],
   })
+  const computed = usePlanStore((s) =>
+    subjectId ? s.model?.result.computedStarts[subjectId] : undefined,
+  )
   const set = { shouldDirty: true } as const
+  const date = (d: string) =>
+    format(new Date(`${d}T12:00`), 'd. MMM', { locale: dateFnsLocales[locale] })
+  // Usklađivanje na licu mjesta: a high target usually needs "Važan".
+  const nudge = targetGrade !== null && targetGrade >= 9 && priority < 4
 
   return (
     <div className="flex flex-col gap-3 border-t border-canvas px-4 pt-3.5 pb-[18px]">
-      <span className={sectionLabel}>{t('subjects.form.priority')}</span>
-      <div role="radiogroup" aria-label={t('subjects.form.priority')} className="flex gap-1.5">
+      <span className={sectionLabel}>{t('subjects.goal.title')}</span>
+      <span className="text-[15px] font-semibold">{t('subjects.goal.howImportant')}</span>
+      <div
+        role="radiogroup"
+        aria-label={t('subjects.goal.howImportant')}
+        className="flex flex-wrap gap-1.5"
+      >
         {PRIORITIES.map((n) => (
           <button
             key={n}
@@ -506,30 +535,62 @@ function AdvancedFields({
             aria-checked={priority === n}
             onClick={() => setValue('priority', n, set)}
             className={cn(
-              'h-11 flex-1 rounded-[14px] text-base font-semibold',
-              priority === n ? 'bg-ink text-white' : 'bg-white/50',
+              'flex h-10 items-center rounded-full px-3.5 text-[13px] font-semibold',
+              priority === n ? 'bg-brand text-white' : 'bg-canvas',
             )}
           >
-            {n}
+            {t(`subjects.priority.${n}.name`)}
           </button>
         ))}
       </div>
       <span className="text-[13px] text-ink-muted">
-        {t('subjects.form.priorityDescription', {
-          n: priority,
-          name: t(`subjects.priority.${asPriority(priority)}.name`),
-          description: t(`subjects.priority.${asPriority(priority)}.description`),
-        })}
+        {t(`subjects.goal.priorityDescription.${asPriority(priority)}`)}
       </span>
 
-      <span className={cn(sectionLabel, 'mt-1.5')}>{t('subjects.form.howStudied')}</span>
+      <span className="mt-1.5 text-[15px] font-semibold">
+        {t('subjects.goal.target')}{' '}
+        <span className="text-xs font-normal text-ink-muted">{t('subjects.goal.optional')}</span>
+      </span>
+      <div role="radiogroup" aria-label={t('subjects.goal.target')} className="flex gap-1.5">
+        {GRADES.map((g) => (
+          <button
+            key={g}
+            type="button"
+            role="radio"
+            aria-checked={targetGrade === g}
+            onClick={() => setValue('targetGrade', targetGrade === g ? null : g, set)}
+            className={cn(
+              'h-11 flex-1 rounded-[14px] text-base font-semibold',
+              targetGrade === g ? 'bg-brand text-white' : 'bg-canvas',
+            )}
+          >
+            {g}
+          </button>
+        ))}
+      </div>
+      {nudge && (
+        <div className="flex items-center justify-between gap-2 rounded-[16px] bg-warning-soft py-1.5 pr-1.5 pl-3.5">
+          <span className="text-[13px] text-warning-ink">
+            {t('subjects.goal.nudge', { grade: targetGrade, level: t('subjects.priority.4.name') })}
+          </span>
+          <button
+            type="button"
+            onClick={() => setValue('priority', 4, set)}
+            className="flex min-h-10 items-center rounded-full px-3 text-[13px] font-semibold text-brand"
+          >
+            {t('subjects.goal.change')}
+          </button>
+        </div>
+      )}
+
+      <span className="mt-1.5 text-[15px] font-semibold">{t('subjects.goal.when')}</span>
       <div role="radiogroup" className="flex flex-col gap-2">
         {(['regular', 'campaign'] as const).map((m) => (
           <RadioCard
             key={m}
             checked={studyMode === m}
-            title={t(`subjects.mode.${m}.title`)}
-            subtitle={t(`subjects.mode.${m}.sub`)}
+            title={t(`subjects.goal.mode.${m}.title`)}
+            subtitle={t(`subjects.goal.mode.${m}.sub`)}
             onSelect={() => {
               setValue('studyMode', m, set)
               if (m === 'regular') setValue('campaignStartOn', null, set)
@@ -546,12 +607,10 @@ function AdvancedFields({
               <span className="text-xs text-ink-muted">{t('subjects.form.campaignStart')}</span>
               <span className="text-[15px] font-semibold">
                 {campaignStartOn
-                  ? t('subjects.form.campaignStartManual', {
-                      date: format(new Date(`${campaignStartOn}T12:00`), 'd. MMM', {
-                        locale: dateFnsLocales[locale],
-                      }),
-                    })
-                  : t('subjects.form.campaignStartComputed')}
+                  ? t('subjects.form.campaignStartManual', { date: date(campaignStartOn) })
+                  : computed
+                    ? t('subjects.goal.computedOn', { date: date(computed) })
+                    : t('subjects.form.campaignStartComputed')}
               </span>
             </span>
             {campaignStartOn ? (

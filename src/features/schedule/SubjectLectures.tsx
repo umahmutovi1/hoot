@@ -2,22 +2,13 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { CheckIcon, WarningIcon } from '@/components/icons'
 import { amountLabel, formatDuration } from '@/features/sources/format'
 import { measureOf, type SourceMaterial } from '@/features/sources/model'
 import { useLocale } from '@/features/settings/useLocale'
-import { useUpdateSubject } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
 import { toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
-import {
-  NEEDS_PLAN,
-  paceActions,
-  sourcePace,
-  subjectBehind,
-  type PaceAction,
-  type SourcePace,
-} from '@/lib/pace'
+import { sourcePace, subjectBehind, type SourcePace } from '@/lib/pace'
 import { useLectureLogs } from './api'
 import { clockRange } from './format'
 import { useScheduleData } from './useScheduleData'
@@ -26,28 +17,6 @@ import { LectureSheet } from './LectureSheet'
 import { toPaceLog } from './model'
 
 type LecturePace = SourcePace<SourceMaterial['units'][number] & { parentId: string | null }>
-
-const LATER_KEY = 'hoot.pace.later'
-const LATER_DAYS = 3
-
-function hiddenUntil(subjectId: string): number {
-  try {
-    const all = JSON.parse(localStorage.getItem(LATER_KEY) ?? '{}') as Record<string, number>
-    return all[subjectId] ?? 0
-  } catch {
-    return 0
-  }
-}
-
-function hideFor3Days(subjectId: string) {
-  try {
-    const all = JSON.parse(localStorage.getItem(LATER_KEY) ?? '{}') as Record<string, number>
-    all[subjectId] = Date.now() + LATER_DAYS * 86_400_000
-    localStorage.setItem(LATER_KEY, JSON.stringify(all))
-  } catch {
-    // Storage blocked: the card shows again next time.
-  }
-}
 
 /** Predavanja on Predmet: where the lectures are, where you are, how far behind. */
 export function SubjectLectures({
@@ -147,7 +116,6 @@ export function SubjectLectures({
           {t('lectures.add')}
         </button>
       </div>
-      <PaceWarning subject={subject} behind={behind} behindText={behindText} />
       <LectureSheet
         subjectId={subject.id}
         subjectName={subject.name}
@@ -208,93 +176,6 @@ function PaceRow({ title, pace }: { title?: string; pace: LecturePace }) {
           {t('lectures.lectureShort', { n: pace.lectureIndex })}
         </span>
         <span className="absolute right-0">{pace.topCount}</span>
-      </div>
-    </div>
-  )
-}
-
-/** "Zaostaješ 3 predavanja" with the actions that work before the scheduler exists. */
-function PaceWarning({
-  subject,
-  behind,
-  behindText,
-}: {
-  subject: SubjectWithAssessments
-  behind: ReturnType<typeof subjectBehind>
-  behindText: string
-}) {
-  const { t } = useTranslation()
-  const update = useUpdateSubject()
-  const [hidden, setHidden] = useState(() => hiddenUntil(subject.id) > Date.now())
-  const [done, setDone] = useState<string | null>(null)
-  const actions = paceActions(behind, {
-    priority: subject.priority,
-    studyMode: subject.study_mode === 'campaign' ? 'campaign' : 'regular',
-  }).filter((a) => !NEEDS_PLAN.has(a))
-
-  if (done)
-    return (
-      <div className="flex items-center gap-2.5 rounded-[20px] bg-success-soft px-4 py-3.5">
-        <CheckIcon size={20} strokeWidth={2.2} className="text-success" />
-        <span className="text-sm text-subject-green-ink">{done}</span>
-      </div>
-    )
-  if (hidden || actions.length === 0) return null
-
-  const apply = (a: PaceAction) => {
-    if (a === 'raise_priority') {
-      const priority = Math.min(5, subject.priority + 1)
-      update.mutate({ id: subject.id, patch: { priority } })
-      setDone(t('lectures.done.raise_priority', { n: priority }))
-    } else if (a === 'switch_to_regular') {
-      update.mutate({ id: subject.id, patch: { study_mode: 'regular', campaign_start_on: null } })
-      setDone(t('lectures.done.switch_to_regular'))
-    }
-  }
-
-  return (
-    <div className="flex flex-col gap-3 rounded-card bg-warning-soft p-4">
-      <div className="flex items-start gap-3">
-        <WarningIcon size={22} className="mt-px shrink-0 text-warning" />
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[15px] font-semibold text-warning-ink">
-            {behind.behindLectures > 0
-              ? t('lectures.warnLectures', { count: behind.behindLectures })
-              : t('lectures.behind', { amount: behindText })}
-          </span>
-          <span className="text-[13px] leading-[1.4] text-warning-muted">
-            {t('lectures.warnBody', {
-              amount: behindText,
-              time: formatDuration(t, behind.behindMinutes),
-            })}
-          </span>
-        </div>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {actions.map((a, i) => (
-          <button
-            key={a}
-            type="button"
-            onClick={() => apply(a)}
-            className={
-              i === 0
-                ? 'h-10 rounded-full bg-warning-ink px-3.5 text-[13px] font-semibold text-white'
-                : 'h-10 rounded-full glass px-3.5 text-[13px] font-semibold text-warning-ink'
-            }
-          >
-            {t(`lectures.action.${a}`, { n: Math.min(5, subject.priority + 1) })}
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={() => {
-            hideFor3Days(subject.id)
-            setHidden(true)
-          }}
-          className="h-10 rounded-full px-3.5 text-[13px] font-semibold text-warning-ink"
-        >
-          {t('lectures.later')}
-        </button>
       </div>
     </div>
   )

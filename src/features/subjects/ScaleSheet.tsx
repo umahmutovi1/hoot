@@ -7,12 +7,10 @@ import { useLocale } from '@/features/settings/useLocale'
 import { DEFAULT_SCALE, GRADES } from '@/lib/grades'
 import { validationKey } from '@/lib/validation'
 import { useUpdateSubject } from './api'
-import { ChipGroup, fieldLabel, NumberField, Segmented } from './fields'
+import { fieldLabel, NumberField, Segmented } from './fields'
 import { formatPoints, gradeSubjectOf, scaleOf } from './grades'
 import type { SubjectWithAssessments } from './model'
 import { gradeScaleFormSchema } from './schemas'
-
-const NO_TARGET = 'none'
 
 type Applies = 'all' | 'subject'
 
@@ -66,7 +64,8 @@ function ScaleForm({ subject, onDone }: { subject?: SubjectWithAssessments; onDo
   const [scale, setScale] = useState<(number | null)[]>(() => [
     ...(valuesFor(applies).scale ?? DEFAULT_SCALE),
   ])
-  const [target, setTarget] = useState<number | null>(subject?.target_grade ?? null)
+  // The target grade is edited in the subject's Cilj section; saving the scale keeps it.
+  const target = subject?.target_grade ?? null
   // Remount the inputs after "Vrati bosansku skalu".
   const [resetKey, setResetKey] = useState(0)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -202,25 +201,6 @@ function ScaleForm({ subject, onDone }: { subject?: SubjectWithAssessments; onDo
       >
         {t('grades.scale.reset')}
       </button>
-
-      {subject && (
-        <div className="flex flex-col gap-2">
-          <span className={fieldLabel}>{t('grades.scale.target')}</span>
-          <ChipGroup
-            options={[
-              ...GRADES.map((g) => ({ value: String(g), label: String(g) })),
-              { value: NO_TARGET, label: t('grades.scale.noTarget') },
-            ]}
-            value={target === null ? NO_TARGET : String(target)}
-            onChange={(v) => setTarget(v === NO_TARGET ? null : Number(v))}
-          />
-          <span className="text-xs leading-[1.4] text-ink-muted">
-            {target === null
-              ? t('grades.scale.noTargetHint')
-              : t('grades.scale.targetHint', { grade: target })}
-          </span>
-        </div>
-      )}
 
       <Button type="button" size="pill" onClick={save} className="btn-primary">
         {t('common.save')}
