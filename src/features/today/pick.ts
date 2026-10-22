@@ -116,6 +116,7 @@ export function useStartPick(plan: PlanToday) {
   const writer = useSessionWriter()
   const { suggestedId } = usePresets()
   const setTimerMode = useSessionUi((s) => s.setTimerMode)
+  const setCheck = useSessionUi((s) => s.setCheck)
   return async (pick: Pick, timerMode = suggestedId) => {
     const block = plan.blocks.find((b) => b.id === pick.blockId)
     const later =
@@ -125,11 +126,13 @@ export function useStartPick(plan: PlanToday) {
           )
         : undefined
     const unitId = pick.units[0]?.unitId ?? null
-    if (block) await startBlock(block, plan.units, { minutes: pick.minutes, unitId, timerMode })
+    const checkUnits = pick.from === 'review' ? pick.units.map((u) => u.unitId) : undefined
+    if (block)
+      await startBlock(block, plan.units, { minutes: pick.minutes, unitId, timerMode, checkUnits })
     else if (later)
       await startBlock(later, plan.units, { minutes: pick.minutes, tied: false, unitId, timerMode })
     else {
-      await writer.start({
+      const sessionId = await writer.start({
         subjectId: pick.subjectId,
         unitId,
         mode: 'review',
@@ -137,7 +140,11 @@ export function useStartPick(plan: PlanToday) {
         plannedMinutes: pick.minutes,
       })
       setTimerMode(timerMode)
-      navigate('/session')
+      // A due check without a block: Provjera znanja over the picked units.
+      if (pick.from === 'review' && sessionId) {
+        setCheck({ sessionId, unitIds: pick.units.map((u) => u.unitId) })
+        navigate('/session/review')
+      } else navigate('/session')
     }
   }
 }
