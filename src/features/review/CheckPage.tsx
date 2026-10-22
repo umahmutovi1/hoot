@@ -318,7 +318,6 @@ function Summary({ summary }: { summary: CheckSummary & { minutes: number } }) {
     const s = sources.find((x) => x.units.some((u) => u.id === unitId))
     return subjects.find((x) => x.id === s?.subject_id)?.name ?? ''
   }
-  const pct = (x: number) => `${Math.round(x * 100)}%`
   return (
     <div className="flex min-h-[calc(100dvh-48px)] flex-col gap-4 pt-[env(safe-area-inset-top)]">
       <div className="flex flex-col items-center gap-2.5 pt-4">
@@ -343,6 +342,8 @@ function Summary({ summary }: { summary: CheckSummary & { minutes: number } }) {
       </div>
       <div className="flex flex-col rounded-card glass px-4">
         {summary.changes.map((c) => {
+          // A band and when the next check comes read clearer than two percentages (a test
+          // repeated the same day would even show a "drop" from 100% to tomorrow's value).
           const band = strengthBand(c.after)
           return (
             <div
@@ -353,21 +354,20 @@ function Summary({ summary }: { summary: CheckSummary & { minutes: number } }) {
                 <span className="truncate text-sm font-semibold">
                   {[c.unit.label, c.unit.title].filter(Boolean).join(' ')}
                 </span>
-                <span className="truncate text-xs text-ink-muted">{subjectName(c.unit.id)}</span>
+                <span className="truncate text-xs text-ink-muted">
+                  {[
+                    subjectName(c.unit.id),
+                    c.nextInDays !== null
+                      ? t('review.nextFor', { count: c.nextInDays })
+                      : t('review.relearnSub'),
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
               </span>
-              {/* The arrow only when strength rose (or the unit goes back to learning): a first test,
-                  or a second one the same day, has nothing lower to compare with. */}
-              {c.before !== null && (c.relearn || c.before < c.after) && (
-                <>
-                  <span className="text-xs text-ink-muted tabular-nums">{pct(c.before)}</span>
-                  <span aria-hidden="true" className="text-ink-muted">
-                    →
-                  </span>
-                </>
-              )}
               <span
                 className={cn(
-                  'rounded-full px-2 py-1 text-xs font-semibold',
+                  'shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold',
                   c.relearn
                     ? 'bg-warning-soft text-warning-muted'
                     : band === 'strong'
@@ -377,22 +377,15 @@ function Summary({ summary }: { summary: CheckSummary & { minutes: number } }) {
                         : 'bg-warning-soft text-warning-muted',
                 )}
               >
-                {c.relearn ? t('review.relearn') : pct(c.after)}
+                {c.relearn ? t('review.relearn') : t(`strength.band.${band}`)}
               </span>
             </div>
           )
         })}
       </div>
-      {(summary.relearn.length > 0 || summary.nextInDays !== null) && (
+      {summary.relearn.length > 0 && (
         <span className="text-center text-sm text-ink-secondary">
-          {[
-            summary.relearn.length > 0
-              ? t('review.relearnNote', { units: summary.relearn.map((u) => u.title).join(', ') })
-              : null,
-            summary.nextInDays !== null ? t('review.nextIn', { count: summary.nextInDays }) : null,
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          {t('review.relearnNote', { units: summary.relearn.map((u) => u.title).join(', ') })}
         </span>
       )}
       <button

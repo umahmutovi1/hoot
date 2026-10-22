@@ -112,6 +112,8 @@ export interface CheckChange {
   before: number | null
   after: number
   relearn: boolean
+  /** Days until this unit's next check; null when it goes back to learning. */
+  nextInDays: number | null
 }
 
 export interface CheckSummary {
@@ -122,8 +124,6 @@ export interface CheckSummary {
   /** One row per unit (its own outcome, or its cards'). */
   changes: CheckChange[]
   relearn: Unit[]
-  /** Days until the nearest next check; null when nothing is scheduled. */
-  nextInDays: number | null
 }
 
 export function checkSummary(
@@ -149,12 +149,15 @@ export function checkSummary(
       before: befores.length ? befores.reduce((s, x) => s + x, 0) / befores.length : null,
       after: mine.reduce((s, o) => s + o.strengthAfter, 0) / mine.length,
       relearn: mine.some((o) => o.relearn),
+      nextInDays: (() => {
+        const on = mine
+          .map((o) => o.nextReviewOn)
+          .filter((d): d is string => d !== null)
+          .sort()[0]
+        return on ? diffDays(today, on) : null
+      })(),
     })
   }
-  const next = outcomes
-    .map((o) => o.nextReviewOn)
-    .filter((d): d is string => d !== null)
-    .sort()[0]
   return {
     count: rated.length,
     remembered: rated.filter((i) => ratings[i.key] === 2).length,
@@ -162,6 +165,5 @@ export function checkSummary(
     forgot: rated.filter((i) => ratings[i.key] === 0).length,
     changes,
     relearn: changes.filter((c) => c.relearn).map((c) => c.unit),
-    nextInDays: next ? diffDays(today, next) : null,
   }
 }
