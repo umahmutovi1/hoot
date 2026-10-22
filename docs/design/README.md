@@ -26,7 +26,7 @@ su jedna komponenta sa stanjem.
 
 ## Navigacija
 **Odluka nakon v0.7.2 (mockup `NavMeni.html`):** donje kapsule više nema (u Safariju je bila nepouzdana i sporija). Prvi red svakog taba:
-avatar (Postavke) → AI iskra odmah desno (otvara Chat) → ☰ u desnom uglu; AI i ☰ su samo ikone, a red nema pozadinu. Ispod su zaglavlje taba
+avatar (Postavke) → AI iskra odmah desno (otvara Chat) → ☰ u desnom uglu; AI i ☰ su samo ikone, a red nema pozadinu. **Odluka nakon 8b:** umjesto avatara je logo sove (`owl-pwa-icons/logo.svg`, prozirna pozadina, boja teksta) koji vodi na Danas; Postavke su u meniju. „✦ AI“ ima vrlo prozirnu staklenu pilulu da se vidi da je dugme; zatvaranje chata preko AI zatvara i meni. Sekcije menija se otvaraju nezavisno (otvaranje jedne ne zatvara drugu). Ispod su zaglavlje taba
 i sadržaj do dna ekrana. ☰ otvara panel u staklu sheetova preko ekrana (isti prvi red, ☰ postaje ×): Danas, Plan, Predmeti, Napredak, Postavke;
 stavke sa podstranicama su harmonika (otvorena je sekcija trenutne stranice), a na dnu je samo „Odjavi se“. Podstranice: Plan → Kalendar,
 Satnica, Dostupnost, Raspored nastave; Predmeti → aktivni predmeti, Svi predmeti; Napredak → Pregled, Sesije; Postavke → Sve postavke,

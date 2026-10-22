@@ -20,7 +20,8 @@
     "progress": "Napredak",
     "aiLabel": "AI asistent",
     "ai": "AI",
-    "aiClose": "Zatvori asistenta"
+    "aiClose": "Zatvori asistenta",
+    "home": "Hoot, idi na Danas"
   },
   "auth": {
     "headline": "Uči pametnije,\nne duže.",
@@ -616,7 +617,6 @@
   },
   "settings": {
     "title": "Postavke",
-    "open": "Profil i postavke",
     "signedInWith": "Prijava putem magic linka",
     "general": "Opće",
     "language": "Jezik",

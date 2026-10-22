@@ -28,7 +28,7 @@ interface Section {
 /**
  * The menu (docs/design/NavMeni.html): the first row grows into a glass panel over the screen.
  * Main pages are plain text; pages with subpages open as an accordion (the section of the current
- * page starts open). At the bottom only "Odjavi se". Closes on ×, a tap outside, Escape and on
+ * page starts open; opening another keeps it open). At the bottom only "Odjavi se". Closes on ×, a tap outside, Escape and on
  * every navigation.
  */
 export function NavMenu({
@@ -49,7 +49,11 @@ export function NavMenu({
         >
           <Dialog.Title className="sr-only">{t('menu.title')}</Dialog.Title>
           <div className="px-2 pt-2">
-            <TopBar menuOpen onMenu={() => onOpenChange(false)} />
+            <TopBar
+              menuOpen
+              onMenu={() => onOpenChange(false)}
+              onLeave={() => onOpenChange(false)}
+            />
           </div>
           <MenuBody onNavigate={() => onOpenChange(false)} />
         </Dialog.Content>
@@ -112,7 +116,8 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
     },
   ]
   const current = sections.find((s) => s.match(pathname))
-  const [expanded, setExpanded] = useState<string | null>(current?.subs ? current.id : null)
+  // Sections open independently; the current page's section starts open.
+  const [expanded, setExpanded] = useState<string[]>(current?.subs ? [current.id] : [])
 
   return (
     <>
@@ -138,13 +143,15 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
                 {s.label}
               </Link>
             )
-          const isOpen = expanded === s.id
+          const isOpen = expanded.includes(s.id)
           return (
             <div key={s.id} className="flex flex-col">
               <button
                 type="button"
                 aria-expanded={isOpen}
-                onClick={() => setExpanded(isOpen ? null : s.id)}
+                onClick={() =>
+                  setExpanded(isOpen ? expanded.filter((id) => id !== s.id) : [...expanded, s.id])
+                }
                 className={rowClass}
               >
                 {s.label}
