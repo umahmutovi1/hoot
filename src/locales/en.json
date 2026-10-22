@@ -299,11 +299,6 @@
       "review": "Review",
       "questions": "Questions"
     },
-    "timerMode": {
-      "pomodoro25": "25/5",
-      "pomodoro50": "50/10",
-      "free": "Free"
-    },
     "timer": {
       "running": "Session running",
       "paused": "Paused",
@@ -429,6 +424,14 @@
       "count_other": "{{count}} sessions",
       "thisWeek_one": "{{count}} session this week",
       "thisWeek_other": "{{count}} sessions this week"
+    },
+    "preset": {
+      "standard": "Standard",
+      "pomodoro": "Pomodoro",
+      "flow": "Flowtime",
+      "free": "Free",
+      "pomodoro25": "25/5",
+      "pomodoro50": "50/10"
     }
   },
   "settings": {

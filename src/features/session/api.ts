@@ -5,7 +5,7 @@ import { useAuth } from '@/features/auth/auth-context'
 import { supabase } from '@/lib/supabase'
 import type { Op, Row, SyncQueue } from '@/lib/sync'
 import type { StudyMode } from '@/lib/estimates/calibration'
-import { closeAt, openSegment, type TimerMode } from '@/lib/session/timer'
+import { closeAt, openSegment } from '@/lib/session/timer'
 import type { Tables } from '@/types/database'
 import { toSegment, type ActiveSession, type SegmentRow, type SessionRow } from './model'
 
@@ -170,7 +170,8 @@ export interface StartInput {
   subjectId: string
   unitId: string | null
   mode: StudyMode | null
-  timerMode: TimerMode
+  /** Preset id (`study_sessions.timer_mode`). */
+  timerMode: string
 }
 
 /** Writes through the offline queue: mirror first, then send when there is a network. */

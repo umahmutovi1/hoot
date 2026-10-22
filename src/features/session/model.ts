@@ -1,6 +1,7 @@
 import type { Tables } from '@/types/database'
 import type { StudyMode } from '@/lib/estimates/calibration'
-import { activeMs, MINUTE, TIMER_MODES, type Segment, type TimerMode } from '@/lib/session/timer'
+import type { TFunction } from 'i18next'
+import { activeMs, MINUTE, type Preset, type Segment } from '@/lib/session/timer'
 
 /** Session and segment rows as the queue and the mirror keep them (no `user_id`, RLS fills it). */
 export type SessionRow = Omit<Tables<'study_sessions'>, 'user_id' | 'created_at'>
@@ -13,9 +14,16 @@ export interface ActiveSession {
 
 export const STUDY_MODES: StudyMode[] = ['reading', 'problems', 'review', 'questions']
 
-export function asTimerMode(value: string): TimerMode {
-  return (TIMER_MODES as string[]).includes(value) ? (value as TimerMode) : 'pomodoro25'
+/** The fixed modes the session timer sheet offers until preset pickers arrive with 0014. */
+export const STAGE7_MODES = ['pomodoro25', 'pomodoro50', 'free'] as const
+
+/** Display name of a preset: its own for custom ones, the i18n name for built-ins. */
+export function presetName(t: TFunction, preset: Preset): string {
+  if (preset.kind === 'cycle' && preset.name) return preset.name
+  return t(`session.preset.${preset.id as BuiltInPresetId}`)
 }
+
+type BuiltInPresetId = 'standard' | 'pomodoro' | 'flow' | 'free' | 'pomodoro25' | 'pomodoro50'
 
 export function toSegment(row: SegmentRow): Segment {
   return {

@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
-import { TIMER_MODES } from '@/lib/session/timer'
+import { resolvePreset } from '@/lib/session/timer'
 import { useSessionWriter } from './api'
 import { Chip } from './Chip'
-import type { ActiveSession } from './model'
+import { presetName, STAGE7_MODES, type ActiveSession } from './model'
 import { useSessionUi } from './store'
 
 /** Timer mode (25/5, 50/10, free; reminders only) and "Odbaci sesiju". */
@@ -35,7 +35,7 @@ export function TimerSheet({
       subtitle={t('session.timerSheet.subtitle')}
     >
       <div role="group" aria-label={t('session.timerSheet.title')} className="flex flex-wrap gap-2">
-        {TIMER_MODES.map((m) => (
+        {STAGE7_MODES.map((m) => (
           <Chip
             key={m}
             tone="brand"
@@ -45,7 +45,7 @@ export function TimerSheet({
               void writer.update(data, { timer_mode: m })
             }}
           >
-            {t(`session.timerMode.${m}`)}
+            {presetName(t, resolvePreset(m))}
           </Chip>
         ))}
       </div>

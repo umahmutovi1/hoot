@@ -242,3 +242,35 @@ export const AI_ERRORS = [
   'failed',
 ] as const
 export type AiErrorCode = (typeof AI_ERRORS)[number]
+
+// ---------------------------------------------------------------------------
+// Session presets (`profiles.session_presets`; not an AI schema, shared for the notify function)
+// ---------------------------------------------------------------------------
+
+/** One step of a custom preset: minutes of study or of a break. */
+export const presetStepSchema = z.object({
+  kind: z.enum(['work', 'break']),
+  min: z.int().min(1).max(180),
+})
+export type PresetStep = z.infer<typeof presetStepSchema>
+
+/**
+ * A custom preset ("Vlastiti"): steps that repeat, starting with study and alternating with
+ * breaks (45 → 10 → 45 → 20), plus an optional long break after every N study intervals.
+ */
+export const sessionPresetSchema = z
+  .object({
+    id: z.string().regex(/^custom:[0-9a-f-]{36}$/),
+    name: z.string().trim().min(1).max(40),
+    steps: z.array(presetStepSchema).min(2).max(12),
+    long_break: z.object({ every: z.int().min(2).max(12), min: z.int().min(5).max(60) }).nullable(),
+  })
+  .refine(
+    (p) =>
+      p.steps.length % 2 === 0 && p.steps.every((s, i) => s.kind === (i % 2 ? 'break' : 'work')),
+    { message: 'steps alternate study and break, starting with study', path: ['steps'] },
+  )
+export type SessionPreset = z.infer<typeof sessionPresetSchema>
+
+export const MAX_CUSTOM_PRESETS = 8
+export const sessionPresetsSchema = z.array(sessionPresetSchema).max(MAX_CUSTOM_PRESETS)

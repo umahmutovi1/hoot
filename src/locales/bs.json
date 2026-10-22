@@ -304,11 +304,6 @@
       "review": "Ponavljanje",
       "questions": "Pitanja"
     },
-    "timerMode": {
-      "pomodoro25": "25/5",
-      "pomodoro50": "50/10",
-      "free": "Slobodno"
-    },
     "timer": {
       "running": "Sesija u toku",
       "paused": "Pauzirano",
@@ -446,6 +441,14 @@
       "thisWeek_one": "{{count}} sesija ove sedmice",
       "thisWeek_few": "{{count}} sesije ove sedmice",
       "thisWeek_other": "{{count}} sesija ove sedmice"
+    },
+    "preset": {
+      "standard": "Standardno",
+      "pomodoro": "Pomodoro",
+      "flow": "Flowtime",
+      "free": "Slobodno",
+      "pomodoro25": "25/5",
+      "pomodoro50": "50/10"
     }
   },
   "settings": {

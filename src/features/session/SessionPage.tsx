@@ -11,20 +11,21 @@ import { useSubject } from '@/features/subjects/api'
 import {
   activeMs,
   forgottenSegment,
-  intervalReminder,
+  presetReminder,
+  resolvePreset,
   MINUTE,
   msByUnit,
   openSegment,
   pauseStats,
   type IntervalReminder,
-  type TimerMode,
+  type Preset,
 } from '@/lib/session/timer'
 import { cn } from '@/lib/utils'
 import { useActiveSession, useSessionWriter } from './api'
 import { Chip } from './Chip'
 import { ForgottenSheet } from './ForgottenSheet'
 import { findUnit, nextLeaves, sessionSources, unitTitle, type SessionSource } from './material'
-import { asTimerMode, bySegmentStart, formatClock, STUDY_MODES, toSegment } from './model'
+import { bySegmentStart, presetName, formatClock, STUDY_MODES, toSegment } from './model'
 import { useSessionUi } from './store'
 import { usePendingSync } from './usePendingSync'
 import { TimerSheet } from './TimerSheet'
@@ -57,12 +58,12 @@ export function SessionPage() {
   const segments = data ? [...data.segments].sort(bySegmentStart) : []
   const list = segments.map(toSegment)
   const open = openSegment(list)
-  const timerMode = asTimerMode(data?.session.timer_mode ?? '')
-  const reminder = data ? intervalReminder(timerMode, list, now) : null
+  const preset = resolvePreset(data?.session.timer_mode)
+  const reminder = data ? presetReminder(preset, list, now) : null
   const reminderKey =
     reminder && reminder.remainingMs <= 0 ? `${reminder.phase}-${segments.at(-1)?.id}` : null
 
-  // A short buzz when a 25/5 phase is over while the screen is open; nothing else happens.
+  // A short buzz when a preset's phase is over while the screen is open; nothing else happens.
   useEffect(() => {
     if (!reminderKey || vibrated.current === reminderKey) return
     vibrated.current = reminderKey
@@ -198,7 +199,7 @@ export function SessionPage() {
                 ? t('session.timer.ofPlanned', { min: session.planned_minutes })
                 : t('session.timer.free')}
             </span>
-            {reminder && <ReminderBadge reminder={reminder} timerMode={timerMode} />}
+            {reminder && <ReminderBadge reminder={reminder} preset={preset} />}
           </div>
         </div>
         <div className="flex items-center gap-3.5">
@@ -293,13 +294,7 @@ export function SessionPage() {
   )
 }
 
-function ReminderBadge({
-  reminder,
-  timerMode,
-}: {
-  reminder: IntervalReminder
-  timerMode: TimerMode
-}) {
+function ReminderBadge({ reminder, preset }: { reminder: IntervalReminder; preset: Preset }) {
   const { t } = useTranslation()
   const due = reminder.remainingMs <= 0
   const label =
@@ -307,7 +302,7 @@ function ReminderBadge({
       ? due
         ? t('session.timer.breakDue')
         : t('session.timer.breakIn', {
-            mode: t(`session.timerMode.${timerMode}`),
+            mode: presetName(t, preset),
             time: formatClock(reminder.remainingMs),
           })
       : due
