@@ -363,6 +363,54 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_feeds: {
+        Row: {
+          all_day_busy: boolean
+          busy_only: boolean
+          color: string | null
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          last_synced_at: string | null
+          title: string
+          updated_at: string
+          url: string
+          url_hint: string | null
+          user_id: string
+        }
+        Insert: {
+          all_day_busy?: boolean
+          busy_only?: boolean
+          color?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          title: string
+          updated_at?: string
+          url: string
+          url_hint?: string | null
+          user_id?: string
+        }
+        Update: {
+          all_day_busy?: boolean
+          busy_only?: boolean
+          color?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          title?: string
+          updated_at?: string
+          url?: string
+          url_hint?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       cards: {
         Row: {
           back: string
@@ -556,6 +604,66 @@ export type Database = {
             columns: ["subject_id"]
             isOneToOne: false
             referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      external_events: {
+        Row: {
+          all_day: boolean
+          deadline_id: string | null
+          ends_at: string
+          feed_id: string
+          id: string
+          ignored: boolean
+          location: string | null
+          starts_at: string
+          title: string | null
+          uid: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          all_day?: boolean
+          deadline_id?: string | null
+          ends_at: string
+          feed_id: string
+          id?: string
+          ignored?: boolean
+          location?: string | null
+          starts_at: string
+          title?: string | null
+          uid: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          all_day?: boolean
+          deadline_id?: string | null
+          ends_at?: string
+          feed_id?: string
+          id?: string
+          ignored?: boolean
+          location?: string | null
+          starts_at?: string
+          title?: string | null
+          uid?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_events_deadline_id_fkey"
+            columns: ["deadline_id"]
+            isOneToOne: false
+            referencedRelation: "deadlines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_events_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_feeds"
             referencedColumns: ["id"]
           },
         ]
@@ -866,60 +974,87 @@ export type Database = {
           created_at: string
           daily_cap_min: number[]
           day_start_min: number
+          default_preset: string
           display_name: string | null
+          exam_eve_end_min: number
           grade_scale: Json | null
+          ics_token: string | null
           id: string
           lecture_pace_days: number
           locale: string
           max_subjects_per_day: number
           min_block_minutes: number
           name_confirmed_at: string | null
+          onboarded_at: string | null
+          onboarding_step: number
           points_total: number
+          preferred_slots: string[]
           recap_after_lecture: boolean
+          session_presets: Json
+          sleep_min: number[] | null
           srs_multiplier: number
           timer_mode: string
           timezone: string
           updated_at: string
+          wake_min: number[] | null
         }
         Insert: {
           buffer_days?: number
           created_at?: string
           daily_cap_min?: number[]
           day_start_min?: number
+          default_preset?: string
           display_name?: string | null
+          exam_eve_end_min?: number
           grade_scale?: Json | null
+          ics_token?: string | null
           id: string
           lecture_pace_days?: number
           locale?: string
           max_subjects_per_day?: number
           min_block_minutes?: number
           name_confirmed_at?: string | null
+          onboarded_at?: string | null
+          onboarding_step?: number
           points_total?: number
+          preferred_slots?: string[]
           recap_after_lecture?: boolean
+          session_presets?: Json
+          sleep_min?: number[] | null
           srs_multiplier?: number
           timer_mode?: string
           timezone?: string
           updated_at?: string
+          wake_min?: number[] | null
         }
         Update: {
           buffer_days?: number
           created_at?: string
           daily_cap_min?: number[]
           day_start_min?: number
+          default_preset?: string
           display_name?: string | null
+          exam_eve_end_min?: number
           grade_scale?: Json | null
+          ics_token?: string | null
           id?: string
           lecture_pace_days?: number
           locale?: string
           max_subjects_per_day?: number
           min_block_minutes?: number
           name_confirmed_at?: string | null
+          onboarded_at?: string | null
+          onboarding_step?: number
           points_total?: number
+          preferred_slots?: string[]
           recap_after_lecture?: boolean
+          session_presets?: Json
+          sleep_min?: number[] | null
           srs_multiplier?: number
           timer_mode?: string
           timezone?: string
           updated_at?: string
+          wake_min?: number[] | null
         }
         Relationships: []
       }
@@ -1056,6 +1191,7 @@ export type Database = {
           base_min_per_unit: number
           created_at: string
           id: string
+          is_rough: boolean
           kind: Database["public"]["Enums"]["source_kind"]
           learned_min_per_unit: number | null
           learned_samples: number
@@ -1072,6 +1208,7 @@ export type Database = {
           base_min_per_unit: number
           created_at?: string
           id?: string
+          is_rough?: boolean
           kind: Database["public"]["Enums"]["source_kind"]
           learned_min_per_unit?: number | null
           learned_samples?: number
@@ -1088,6 +1225,7 @@ export type Database = {
           base_min_per_unit?: number
           created_at?: string
           id?: string
+          is_rough?: boolean
           kind?: Database["public"]["Enums"]["source_kind"]
           learned_min_per_unit?: number | null
           learned_samples?: number
@@ -1154,9 +1292,12 @@ export type Database = {
       study_sessions: {
         Row: {
           block_id: string | null
+          break_ends_at: string | null
           created_at: string
+          distractions: number
           ended_at: string | null
           focus: number | null
+          focus_reasons: string[] | null
           id: string
           mode: Database["public"]["Enums"]["study_mode"] | null
           origin: string
@@ -1170,9 +1311,12 @@ export type Database = {
         }
         Insert: {
           block_id?: string | null
+          break_ends_at?: string | null
           created_at?: string
+          distractions?: number
           ended_at?: string | null
           focus?: number | null
+          focus_reasons?: string[] | null
           id?: string
           mode?: Database["public"]["Enums"]["study_mode"] | null
           origin?: string
@@ -1186,9 +1330,12 @@ export type Database = {
         }
         Update: {
           block_id?: string | null
+          break_ends_at?: string | null
           created_at?: string
+          distractions?: number
           ended_at?: string | null
           focus?: number | null
+          focus_reasons?: string[] | null
           id?: string
           mode?: Database["public"]["Enums"]["study_mode"] | null
           origin?: string

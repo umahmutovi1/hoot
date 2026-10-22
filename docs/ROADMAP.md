@@ -188,12 +188,12 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 **8a — Prije schedulera** (plan bez ovoga radi nad netačnom dostupnošću)
 
 - [x] Mockupi `design/Onboarding*.dc.html` (8 koraka kao stanja jedne komponente, checklist na DanasPrazno), `design/PovezaniKalendari.dc.html` i `design/DodajKalendar.dc.html`, sekcija „Cilj“ na `design/Predmet.dc.html` (dio Liquid Glass mockupa)
-- [ ] Migracija `0014_onboarding_and_presets.sql` (onboarding polja, ritam, `preferred_slots`, predlošci sesije, `exam_eve_end_min`, `ics_token`, `break_ends_at`, `focus_reasons`, `distractions`, `sources.is_rough`), regenerisan `database.ts`
+- [x] Migracija `0014_onboarding_and_presets.sql` (onboarding polja, ritam, `preferred_slots`, predlošci sesije, `exam_eve_end_min`, `ics_token`, `break_ends_at`, `focus_reasons`, `distractions`, `sources.is_rough`), regenerisan `database.ts`
 - [ ] Predlošci sesije: Zod šema u `_shared/`, logika značke za niz intervala, dugu pauzu i Flowtime u `src/lib/session/timer.ts` + testovi; izbor u PokreniSesiju, default u Postavkama; Standardno 50/15 default
 - [ ] KrajSesije: čipovi razloga kad je fokus 1; dugme „Ometena sam“ u sesiji
 - [ ] Onboarding: koraci 1–8, nastavak sa `onboarding_step`, „Završi kasnije“, checklist na DanasPrazno; zona iz browsera; prijedlog `day_start_min` iz vremena lijeganja; default dostupnost zamijenjena izborom
 - [ ] Gruba veličina gradiva na NoviPredmet i u onboardingu → privremeni izvor (`is_rough`), zamjena pravim sadržajem arhivira privremeni
-- [ ] Migracija `0015_calendar_feeds.sql` (`calendar_feeds`, `external_events`), regenerisan `database.ts`
+- [x] Migracija `0015_calendar_feeds.sql` (`calendar_feeds`, `external_events`), regenerisan `database.ts`
 - [ ] `sync-calendar` edge funkcija (`ical.js`, RRULE/EXDATE, horizont 120 dana, upsert po `uid`), okidač na otvaranje (≤ 1× u 30 min) i `pg_cron` svaka 3 h; fiksni `.ics` primjeri kao testovi (Google, Outlook, iCloud, Moodle)
 - [ ] Povezani kalendari: Postavke + korak 2 onboardinga; vrsta „Zauzetost“; cjelodnevni, slobodni i otkazani događaji ne blokiraju; „ignoriši“; „Spremaj samo zauzeto“
 - [ ] `src/lib/schedule/`: zauzetost iz feedova u neto dostupnosti (kao nastava, „Učim umjesto ovoga“) + testovi; šrafirano na Dostupnosti i u kalendaru sa oznakom izvora
