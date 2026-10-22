@@ -617,7 +617,30 @@
       "custom": "{{steps}}, ponovi",
       "customLong": "{{steps}}, ponovi · {{min}} min nakon {{every}}"
     },
-    "distracted": "Ometena sam"
+    "distracted": "Ometena sam",
+    "endActions": {
+      "hint": "Završeno prerano ili slučajno?",
+      "resume": "Nastavi ovu sesiju",
+      "restart": "Počni iznova",
+      "discard": "Odbaci",
+      "restartTitle": "Počni iznova",
+      "restartSub": "Nova sesija kreće od nule. Šta da bude sa ovih {{minutes}}?",
+      "keep": "Zadrži ovih {{minutes}}",
+      "keepSub": "Ostaju spašeni kao posebna sesija (bez ocjena) i računaju se u napredak.",
+      "delete": "Obriši ovih {{minutes}}",
+      "deleteSub": "Ova sesija se briše i ne računa se nigdje.",
+      "discardTitle": "Odbaciti sesiju?",
+      "discardSub": "Ovih {{minutes}} se briše i ne računa se ni u napredak ni u kalibraciju. Blok se vraća u plan."
+    },
+    "endEarly": {
+      "title": "Završavaš ranije?",
+      "body": "Ostalo je još {{left}} od planiranih {{planned}}. Ako završiš sad, sesija se spasi, a ostatak gradiva plan rasporedi od sutra.",
+      "accidentalTitle": "Sesija je tek počela",
+      "accidental": "Do sad je {{time}} učenja. Ako je timer pokrenut slučajno, odbaci sesiju i ništa se ne računa.",
+      "keepGoing": "Nastavi učiti",
+      "finish": "Završi sad",
+      "discard": "Odbaci sesiju (ništa se ne računa)"
+    }
   },
   "settings": {
     "title": "Postavke",

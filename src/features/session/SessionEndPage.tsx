@@ -26,6 +26,7 @@ import {
 } from './end'
 import { toEndSources, sessionSources, unitTitle, type SessionSource } from './material'
 import { useSessionUi } from './store'
+import { EndActions } from './EndActions'
 import { SessionHeader } from './SessionHeader'
 
 interface RangeDraft {
@@ -237,6 +238,9 @@ function EndForm({
               .join(' · ')}
           </p>
         </div>
+      )}
+      {!fromHistory && session.origin === 'timer' && (
+        <EndActions data={data} studiedMin={Math.round(summary.activeMin)} />
       )}
 
       <div className="grid grid-cols-3 gap-2">

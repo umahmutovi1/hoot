@@ -596,7 +596,30 @@
       "custom": "{{steps}}, repeat",
       "customLong": "{{steps}}, repeat · {{min}} min after {{every}}"
     },
-    "distracted": "I got distracted"
+    "distracted": "I got distracted",
+    "endActions": {
+      "hint": "Ended too early or by accident?",
+      "resume": "Continue this session",
+      "restart": "Start over",
+      "discard": "Discard",
+      "restartTitle": "Start over",
+      "restartSub": "A new session starts from zero. What happens to these {{minutes}}?",
+      "keep": "Keep these {{minutes}}",
+      "keepSub": "They stay saved as a separate session (without ratings) and count towards progress.",
+      "delete": "Delete these {{minutes}}",
+      "deleteSub": "This session is deleted and counts nowhere.",
+      "discardTitle": "Discard the session?",
+      "discardSub": "These {{minutes}} are deleted and count neither for progress nor calibration. The block goes back into the plan."
+    },
+    "endEarly": {
+      "title": "Ending early?",
+      "body": "{{left}} of the planned {{planned}} are left. If you end now, the session is saved and the plan spreads the rest from tomorrow.",
+      "accidentalTitle": "The session has just started",
+      "accidental": "{{time}} studied so far. If the timer was started by accident, discard the session and nothing counts.",
+      "keepGoing": "Keep studying",
+      "finish": "End now",
+      "discard": "Discard the session (nothing counts)"
+    }
   },
   "settings": {
     "title": "Settings",

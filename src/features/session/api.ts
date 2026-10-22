@@ -427,6 +427,38 @@ export function useSessionWriter() {
         return session.id
       },
 
+      /**
+       * "Nastavi ovu sesiju" right after the end: the session is open again with a new segment on
+       * the last unit, and its block is back in progress.
+       */
+      reopen: async ({ session, segments }: ActiveSession) => {
+        const t = nowIso()
+        const last = [...segments].sort((a, b) => a.started_at.localeCompare(b.started_at)).at(-1)
+        const segment: SegmentRow = {
+          id: crypto.randomUUID(),
+          session_id: session.id,
+          unit_id: last?.unit_id ?? null,
+          started_at: t,
+          ended_at: null,
+        }
+        const row = { ...session, ended_at: null, break_ends_at: null, updated_at: t }
+        await write(
+          [
+            sessionOp(row),
+            segmentOp([segment]),
+            ...(session.block_id ? [blockStatusOp(session.block_id, 'in_progress')] : []),
+          ],
+          () => ({ session: row, segments: [...segments, segment] }),
+        )
+        queryClient.setQueryData(sessionKey(userId, session.id), {
+          session: row,
+          segments: [...segments, segment],
+        })
+        void queryClient.invalidateQueries({ queryKey: ['session', 'list', userId] })
+        if (session.block_id)
+          void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'blocks'] })
+      },
+
       /** Deletes a saved session with its segments and units (cascade). */
       remove: async (session: SessionRow) => {
         await write([{ kind: 'delete', table: 'study_sessions', match: { id: session.id } }])
