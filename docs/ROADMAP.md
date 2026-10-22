@@ -207,12 +207,12 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 - [x] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan, faktor realizacije, limit rasta, „Danas ne mogu“, mikro-blokovi, pauze, san pred ispit, zauzetost iz kalendara
 - [x] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, učenje + pauze stanu u slobodne termine, ručni blokovi se ne mijenjaju, isti ulaz = isti plan i ista satnica
 - [x] Migracija `0016_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
-- [ ] Kartice prijedloga (zaostatak sa „Uzmi vrijeme od“ / „Kreni ranije“ / „Dodaj X min dnevno“, deficit, željena ocjena nedostižna, najava kampanje 3 dana prije, ispitni rok → veći maksimum, „Krenimo ispočetka“) na Danas i Predmetu; najviše jedna iznad liste, ostale pod „Još N prijedloga“; jedan tap mijenja ulaz → replan
+- [x] Kartice prijedloga (zaostatak sa „Uzmi vrijeme od“ / „Kreni ranije“ / „Dodaj X min dnevno“, deficit, željena ocjena nedostižna, najava kampanje 3 dana prije, ispitni rok → veći maksimum, „Krenimo ispočetka“) na Danas i Predmetu; najviše jedna iznad liste, ostale pod „Još N prijedloga“; jedan tap mijenja ulaz → replan
 - [x] Brze akcije: „Danas ne mogu“ (dan zauzet, blokovi `skipped`, undo) i „Imam samo 30 min“ (`pickForTime()` + testovi) na Danas i u PokreniSesiju
 - [x] `input_hash` (uz povezane kalendare, ρ i zadani predložak), upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [x] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno“, sinhronizacija kalendara)
 - [x] Replan sheet: deficit + 3 opcije
-- [ ] Sekcija „Cilj“ na Predmetu i NoviPredmet → Napredno (PRD „Prioritet i režim učenja“ → Šta korisnik vidi): „Koliko ti je bitan“ sa imenima bez brojeva, željena ocjena premještena iz kartice bodova, usklađivanje na licu mjesta, sitan opis posljedica, čip pojačanja sa ×; „Kad kreće učenje?“ za režim
+- [x] Sekcija „Cilj“ na Predmetu i NoviPredmet → Napredno (PRD „Prioritet i režim učenja“ → Šta korisnik vidi): „Koliko ti je bitan“ sa imenima bez brojeva, željena ocjena premještena iz kartice bodova, usklađivanje na licu mjesta, sitan opis posljedica, čip pojačanja sa ×; „Kad kreće učenje?“ za režim
 - [x] Danas ekran (fokus bar, Sljedeći blok, lista, 3 ispita, savjet) i Satnica tab
 - **DoD** (uz opći DoD): novi korisnik prođe onboarding na telefonu za ~3 min i dobije plan koji poštuje nastavu, povezani Google kalendar i izabrane periode → `v0.8.0`
 

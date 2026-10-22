@@ -27,6 +27,7 @@ describe('subject mapping', () => {
       priority: 4,
       studyMode: 'regular',
       campaignStartOn: '2026-12-02',
+      targetGrade: 9,
       assessments: [],
     })
     expect(row.campaign_start_on).toBeNull()

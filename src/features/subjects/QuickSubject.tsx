@@ -39,6 +39,7 @@ export function QuickSubject({
       priority: DEFAULT_PRIORITY,
       studyMode: 'regular',
       campaignStartOn: null,
+      targetGrade: null,
       assessments: [],
     })
     onCreated(id)

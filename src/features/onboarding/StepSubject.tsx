@@ -52,6 +52,7 @@ export function StepSubject({ setSave }: StepProps) {
         priority: 3,
         studyMode: 'regular',
         campaignStartOn: null,
+        targetGrade: null,
         assessments: examDate
           ? [
               {

@@ -27,6 +27,11 @@ import { useGlobalScale } from '@/features/settings/profile'
 import { gradeItemsOf, gradeSubjectOf, pointsDetails, pointsLabel, worthOf } from './grades'
 import { ResultChip } from './ResultChip'
 import { GradesCard } from './GradesCard'
+import { GoalCard } from './GoalCard'
+import { SuggestionCard } from '@/features/plan/SuggestionCard'
+import { useSuggestions } from '@/features/plan/useSuggestions'
+import { usePlanStore } from '@/features/plan/store'
+import { useSpeeds } from '@/features/plan/api'
 import { ResultSheet } from './ResultSheet'
 import { ScaleSheet } from './ScaleSheet'
 import { retakeStatus, type GradeItem } from '@/lib/grades'
@@ -67,7 +72,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   // Sheets keep only the id, so they always render the latest cached row.
   const [examSheet, setExamSheet] = useState<{ open: boolean; id?: string }>({ open: false })
   const { data: sources = [] } = useSources(subject.id)
-  const materials = sources.map(materialOf)
+  const speeds = useSpeeds()
+  const materials = sources.map((s) => materialOf(s, speeds.get(s.id)))
   const hasMaterial = materials.some((m) => m.units.length > 0)
   const { data: scope = [] } = useScope(subject.id)
   const scopeRows = toScopeRows(scope)
@@ -85,6 +91,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const itemOf = (id: string) => items.find((i) => i.id === id)!
   const worth = (id: string) => worthOf(id, items, pointsTotal)
   const todayDate = localDateOf(now.toISOString())
+  const suggestions = useSuggestions(subject.id).filter((s) => s.kind !== 'campaign_soon')
   const isDue = (iso: string) => localDateOf(iso) <= todayDate
   // Makeups are listed under the exam they repeat.
   const isNested = (a: Assessment) => a.kind === 'makeup' && exams.some((e) => e.id === a.retake_of)
@@ -149,10 +156,14 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
                 palette.inkText,
               )}
             >
-              {t('subjects.detail.priorityChip', {
-                n: subject.priority,
-                name: t(`subjects.priority.${asPriority(subject.priority)}.name`).toLowerCase(),
-              })}
+              {[
+                t(`subjects.priority.${asPriority(subject.priority)}.name`),
+                subject.target_grade
+                  ? t('subjects.goal.targetChip', { grade: subject.target_grade })
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
             </Link>
             <Link
               to={editPath}
@@ -178,6 +189,12 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
       </div>
 
       {subject.study_mode === 'campaign' && <CampaignCard subject={subject} now={now} />}
+
+      {suggestions.map((s) => (
+        <SuggestionCard key={s.key} suggestion={s} />
+      ))}
+
+      <GoalCard subject={subject} today={todayDate} />
 
       <GradesCard subject={subject} deadlines={deadlines} onScale={() => setScaleOpen(true)} />
 
@@ -419,7 +436,18 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
   const { t } = useTranslation()
   const { locale } = useLocale()
   const update = useUpdateSubject()
-  const start = subject.campaign_start_on
+  const model = usePlanStore((s) => s.model)
+  const start = model?.result.campaignStarts[subject.id] ?? subject.campaign_start_on
+  const work = model
+    ? model.built.state.goals
+        .filter((g) => g.subjectId === subject.id && g.kind === 'exam')
+        .flatMap((g) => g.unitIds)
+    : []
+  const hours = Math.round(
+    (model?.built.state.units ?? [])
+      .filter((u) => work.includes(u.id) && u.level === 0)
+      .reduce((sum, u) => sum + u.minutes, 0) / 60,
+  )
   const startDate = start ? new Date(`${start}T12:00`) : null
   const startedAlready = startDate !== null && differenceInCalendarDays(startDate, now) <= 0
 
@@ -442,7 +470,9 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
         </div>
       </div>
       <span className="text-[13px] leading-[1.45] text-avatar-ink">
-        {t('subjects.campaign.body')}
+        {start && !subject.campaign_start_on && hours > 0
+          ? t('subjects.campaign.computedBody', { hours })
+          : t('subjects.campaign.body')}
       </span>
       <div className="flex gap-2">
         <Link

@@ -19,6 +19,7 @@ const subject = (patch: Partial<SubjectForm> = {}): SubjectForm => ({
   priority: 3,
   studyMode: 'regular',
   campaignStartOn: null,
+  targetGrade: null,
   assessments: [
     {
       id: id(),

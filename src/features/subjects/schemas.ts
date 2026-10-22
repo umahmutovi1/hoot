@@ -91,6 +91,8 @@ export const subjectFormSchema = z
     priority: z.number().int().min(1).max(5),
     studyMode: z.enum(STUDY_MODES),
     campaignStartOn: isoDate.nullable(),
+    /** "Željena ocjena" in the Cilj section (6–10, optional). */
+    targetGrade: z.number().int().min(6).max(10).nullable(),
     assessments: z.array(assessmentFormSchema),
   })
   .refine((s) => s.studyMode === 'campaign' || s.campaignStartOn === null, {

@@ -330,7 +330,8 @@
       "computedLater": "Početak se računa iz plana",
       "body": "Do tada se predmet ne planira, osim ponavljanja već naučenog. Početak se računa iz preostalog gradiva i tvoje dostupnosti, uz 20% rezerve.",
       "move": "Pomjeri",
-      "startNow": "Počni odmah"
+      "startNow": "Počni odmah",
+      "computedBody": "Do tada se predmet ne planira, osim ponavljanja već naučenog. Početak je izračunat iz ~{{hours}}h gradiva i tvoje dostupnosti, uz 20% rezerve."
     },
     "quick": {
       "open": "Novi predmet",
@@ -355,6 +356,56 @@
         "large": "Gruba procjena · ~45 h"
       },
       "part": "Dio {{n}}"
+    },
+    "goal": {
+      "title": "Cilj",
+      "edit": "Uredi",
+      "howImportant": "Koliko ti je bitan?",
+      "importantRow": "Koliko ti je bitan",
+      "targetRow": "Željena ocjena",
+      "whenRow": "Kad kreće učenje",
+      "target": "Željena ocjena",
+      "optional": "(opcionalno)",
+      "noTarget": "—",
+      "targetChip": "cilj {{grade}}",
+      "nudge": "Za {{grade}} obično treba „{{level}}“",
+      "change": "Promijeni",
+      "when": "Kad kreće učenje?",
+      "computedOn": "Izračunat · ~{{date}}",
+      "fromToday": "Od danas",
+      "campaignFrom": "Kampanja · {{date}}",
+      "campaignLater": "Kampanja pred ispit",
+      "modeShort": {
+        "regular": "od danas",
+        "campaign": "kampanja"
+      },
+      "mode": {
+        "regular": {
+          "title": "Od danas",
+          "sub": "Redovno, u korak s predavanjima"
+        },
+        "campaign": {
+          "title": "Kampanja pred ispit",
+          "sub": "App izračuna kad krenuti i najavi 3 dana prije"
+        }
+      },
+      "priorityDescription": {
+        "1": "Lagano, dovoljno je proći",
+        "2": "Manje bitan, bez velikih ambicija",
+        "3": "Uobičajen udio vremena i rezerve",
+        "4": "Važan, želim dobru ocjenu",
+        "5": "Uslovni, mora se položiti"
+      },
+      "effect": "Plan pokriva {{coverage}}% gradiva i ponavlja {{often}}.",
+      "often": {
+        "low": "rjeđe",
+        "mid": "uobičajeno",
+        "high": "češće"
+      },
+      "boost": "+{{minutes}} min dnevno do {{date}}",
+      "boostSimple": "Više vremena do {{date}}",
+      "endBoost": "Ukloni pojačanje",
+      "unreachable": "Željena ocjena više nije dostižna sa preostalim bodovima."
     }
   },
   "progress": {
