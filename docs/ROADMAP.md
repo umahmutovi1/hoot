@@ -221,8 +221,8 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 
 ## Etapa 9 — Recall gate, provjera znanja, FSRS i osnovni push
 
-- [ ] Web Push temelj: service worker, pretplata, `notify` edge funkcija, `pg_cron`; prvi blok dana i kraj pauze (`break_ends_at`) ([SETUP.md](SETUP.md): VAPID ključevi)
-- [ ] Nakon čitanja/ponavljanja poglavlja u sesiji odmah ponuditi povezana ispitna pitanja; izvor „Pitanja“ se mjeri uspjehom, ne vremenom (PRD „Izvor Pitanja“)
+- [x] Web Push temelj: service worker, pretplata, `notify` edge funkcija, `pg_cron`; prvi blok dana i kraj pauze (`break_ends_at`) ([SETUP.md](SETUP.md): VAPID ključevi)
+- [x] Nakon čitanja/ponavljanja poglavlja u sesiji odmah ponuditi povezana ispitna pitanja; izvor „Pitanja“ se mjeri uspjehom, ne vremenom (PRD „Izvor Pitanja“)
 - [x] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2 (AI izvori dolaze u Etapi 10; svih 7 izvora je u v1)
 - [x] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
 - [x] Migracija `0017_fsrs.sql` (samo aditivno: FSRS kolone na `units` i `cards`, `review_streak`, `review_logs.card_id` + proteklo dana i stabilnost, `review_cap_pct`, `session_units.recall_skipped`) i `0018_push.sql` (`push_subscriptions`, `push_jobs`, prekidači notifikacija), regenerisan `database.ts`
@@ -231,9 +231,10 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 - [x] Kartice kao zasebni FSRS objekti u `review` blokovima; jačina jedinice uključuje kartice
 - [x] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
 - [x] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje
-- [ ] `review_logs` (proteklo dana, stabilnost prije/poslije), prelaz na level 2/3, review i recap blokovi u scheduleru, dnevni limit ponavljanja (`review_cap_pct`), prije starta kampanje samo ponavljanja već naučenog
+- [x] `review_logs` (proteklo dana, stabilnost prije/poslije), prelaz na level 2/3, review i recap blokovi u scheduleru, dnevni limit ponavljanja (`review_cap_pct`), prije starta kampanje samo ponavljanja već naučenog
 - [x] ProvjeraZnanja: review blok kao niz recall gate-ova + sažetak promjene jačine; kartica „Znanje slabi“ na Danas; kartica „Jačina znanja“ na Predmetu
-- **DoD** → `v0.9.0`
+- [x] Dorada poslije e2e: „Dalje“ zaključan kad se onboarding otvori na kasnijem koraku (#146); sažetak provjere sa oznakom jačine i „provjera za N dana“ umjesto procenata (#147, #149); datum i dani do ispita na Danas po granici dana (#148); povezana ispitna pitanja nude se i tokom sesije (#150)
+- [ ] **DoD** (uz opći DoD): poglavlje pročitano u sesiji prolazi recall gate i dobija level 2, FSRS stanje i `next_review_on`, review blok se pojavi u planu i radi se kao Provjera znanja, push stiže na telefon → `v0.9.0` (browser e2e na previewu sa privremenim korisnikom, 390 px: onboarding sa grubom veličinom + ručni sadržaj sa ispitnim pitanjima, temom i karticom → sesija → „Spasi i testiraj se“ → gate (ispitno pitanje, bilješke, kartica) → u bazi level 2 / „Znam“, FSRS kolone, `review_logs` sa proteklim danima i stabilnošću; provjera na redu → review blok u planu i kartica „Provjera znanja“ na Danas → Provjera znanja → sažetak, sesija u modu `review`; push pretplata i probno obavještenje poslano kroz `notify` + `pg_cron`. Popravke iz testa: #146, #147, #148, #149, #150; uz to `CRON_SECRET` i vault tajna su usklađeni, pa i `sync-calendar` cron sad prolazi)
 
 ## Etapa 10 — AI sadržaj i asistent
 
