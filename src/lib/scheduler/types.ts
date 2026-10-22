@@ -159,6 +159,8 @@ export interface Reason {
   edited?: boolean
   /** A skipped block moved to the next study day ("Preskoči"). */
   carried?: boolean
+  /** The day it was skipped on: that day keeps its list (no refill by replan). */
+  from?: string
   days?: number
   date?: LocalDate
   /** Priority 5 ("uslovni predmet"). */
