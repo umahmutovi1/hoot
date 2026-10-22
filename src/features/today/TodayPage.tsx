@@ -3,14 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { SparkleIcon } from '@/components/icons'
-import {
-  blockTitle,
-  isOpen,
-  movedBlocks,
-  nextBlock,
-  reasonText,
-  useGoalTitle,
-} from '@/features/plan/model'
+import { blockTitle, movedBlocks, nextBlock, reasonText, useGoalTitle } from '@/features/plan/model'
 import { ReplanSheet } from '@/features/plan/ReplanSheet'
 import type { PlanBlockRow } from '@/features/plan/state'
 import { SuggestionCard } from '@/features/plan/SuggestionCard'
@@ -20,8 +13,6 @@ import { statusLabel } from '@/features/schedule/format'
 import { LecturePromptCard } from '@/features/schedule/LecturePrompts'
 import { usePendingLectures } from '@/features/schedule/usePendingLectures'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
-import { useActiveSession } from '@/features/session/api'
-import { useSessionUi } from '@/features/session/store'
 import { useSubjects } from '@/features/subjects/api'
 import { useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
@@ -45,8 +36,9 @@ const SHOW_FACT_CARD = false
 /**
  * Danas: the focus bar, the next block ("Sljedeće", Počni starts its session), quick actions,
  * at most one action card (the rest under "Još N prijedloga"), why the day looks like this,
- * today's schedule and the next exams. Without subjects it is the first-run state; a day without
- * blocks is DanasSlobodno; after "Danas ne mogu" it shows what moved.
+ * today's schedule and the next exams. Without subjects it is the first-run state. A day without
+ * blocks keeps the same layout ("Sljedeće" shows the next planned block and a free session);
+ * after "Danas ne mogu" it shows what moved.
  */
 export function TodayPage() {
   const { t } = useTranslation()
@@ -57,14 +49,12 @@ export function TodayPage() {
   const { periods, dayRows } = useScheduleData()
   const status = calendarStatus(plan.today, periods)
   const { data: subjects, isPending } = useSubjects()
-  const { data: active } = useActiveSession()
   const hasSubjects = (subjects ?? []).some((x) => !x.archived)
   // Without a cached copy the first load would flash the first-run state before the subjects come.
   const firstRun = !isPending && !hasSubjects
   const dayOff =
     plan.todayBlocks.some((b) => b.status === 'skipped') &&
     dayRows.some((d) => d.on_date === plan.today && Array.isArray(d.slots) && d.slots.length === 0)
-  const emptyDay = plan.loaded && plan.model !== null && plan.todayBlocks.length === 0 && !active
 
   return (
     <div className="flex flex-col pb-8">
@@ -83,7 +73,7 @@ export function TodayPage() {
           )}
         </span>
         <h1 className="text-[36px] leading-[1.1] font-bold tracking-[-0.9px]">{t('nav.today')}</h1>
-        {(firstRun || emptyDay) && (
+        {firstRun && (
           <span className="mt-1 text-[17px] font-semibold">
             {t(`today.greeting.${greetingPart(plan.now.getHours())}`, { name })}
           </span>
@@ -91,34 +81,26 @@ export function TodayPage() {
       </div>
 
       {hasSubjects ? (
-        emptyDay && !dayOff ? (
-          <>
-            <EmptyDay plan={plan} />
-            <ActionCards />
-            <ExamTiles now={plan.now} />
-          </>
-        ) : (
-          <>
-            <div className="mt-4">
-              <FocusBar plan={plan} />
-            </div>
-            <div className="mt-3.5">
-              {dayOff ? (
-                <DayOffCard moved={plan.todayBlocks.filter((b) => b.status === 'skipped').length} />
-              ) : (
-                <NextCard plan={plan} />
-              )}
-            </div>
-            {dayOff && <MovedCard plan={plan} />}
-            <div className="mt-3 empty:hidden">
-              <QuickActions plan={plan} dayOff={dayOff} />
-            </div>
-            <ActionCards />
-            {!dayOff && <WhyToday plan={plan} />}
-            <TodaySchedule plan={plan} />
-            <ExamTiles now={plan.now} />
-          </>
-        )
+        <>
+          <div className="mt-4">
+            <FocusBar plan={plan} />
+          </div>
+          <div className="mt-3.5">
+            {dayOff ? (
+              <DayOffCard moved={plan.todayBlocks.filter((b) => b.status === 'skipped').length} />
+            ) : (
+              <NextCard plan={plan} />
+            )}
+          </div>
+          {dayOff && <MovedCard plan={plan} />}
+          <div className="mt-3 empty:hidden">
+            <QuickActions plan={plan} dayOff={dayOff} />
+          </div>
+          <ActionCards />
+          {!dayOff && <WhyToday plan={plan} />}
+          <TodaySchedule plan={plan} />
+          <ExamTiles now={plan.now} />
+        </>
       ) : firstRun ? (
         <section className="mt-16 flex flex-col items-center gap-3.5 px-3 text-center">
           <h2 className="text-[26px] leading-tight font-bold">{t('today.firstRunTitle')}</h2>
@@ -144,60 +126,6 @@ export function TodayPage() {
         </div>
       )}
     </div>
-  )
-}
-
-/** DanasSlobodno: no blocks today (all on track), or no material to plan yet. */
-function EmptyDay({ plan }: { plan: PlanToday }) {
-  const { t } = useTranslation()
-  const { locale } = useLocale()
-  const { data: subjects = [] } = useSubjects()
-  const openStart = useSessionUi((s) => s.openStart)
-  const noMaterial = (plan.model?.built.state.units.length ?? 0) === 0
-  const next = plan.blocks
-    .filter((b) => b.on_date > plan.today && isOpen(b))
-    .sort(
-      (a, b) => a.on_date.localeCompare(b.on_date) || (a.start_min ?? 0) - (b.start_min ?? 0),
-    )[0]
-  const when = next
-    ? next.on_date === addDays(plan.today, 1)
-      ? t('today.free.tomorrow')
-      : format(toDisplayDate(next.on_date), 'EEEE', { locale: dateFnsLocales[locale] })
-    : null
-  return (
-    <section className="mt-14 flex flex-col items-center gap-3.5 px-3 text-center">
-      <h2 className="mt-2 text-[26px] leading-[1.2] font-bold">
-        {noMaterial ? t('today.free.noMaterialTitle') : t('today.free.title')}
-      </h2>
-      <p className="text-[15px] leading-[1.45] text-ink-secondary">
-        {noMaterial ? t('today.free.noMaterialBody') : t('today.free.body')}
-      </p>
-      {noMaterial ? (
-        <Link
-          to="/subjects"
-          className="btn-primary mt-2 flex h-14 items-center rounded-full px-7 text-base font-semibold"
-        >
-          {t('today.free.addMaterial')}
-        </Link>
-      ) : (
-        <button
-          type="button"
-          onClick={openStart}
-          className="btn-primary mt-2 flex h-14 items-center rounded-full px-7 text-base font-semibold"
-        >
-          {t('today.next.freeTitle')}
-        </button>
-      )}
-      {next && when && (
-        <span className="text-[13px] text-ink-secondary">
-          {t('today.free.next', {
-            when,
-            time: next.start_min === null ? '' : formatClock(next.start_min),
-            subject: subjects.find((s) => s.id === next.subject_id)?.name ?? '',
-          })}
-        </span>
-      )}
-    </section>
   )
 }
 

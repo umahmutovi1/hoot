@@ -69,4 +69,5 @@ Male staklene indigo pločice sa bijelom linijskom ikonom ostaju samo kao ikone 
   plan i satnica u chatu, „Zašto ovako danas", prognoza, mapa termina, check-in…) dolaze u etapi kojoj pripadaju; pretraga nije u PRD-u.
 - Do schedulera (Etapa 8b) kartica „Sljedeće" na Danas nudi slobodnu sesiju (Počni → PokreniSesiju); dok sesija traje, ista kartica
   pokazuje sesiju u toku i vraća u nju.
+- **Nakon 8b:** dan bez bloka više nije poseban prazan ekran (DanasSlobodno): Danas zadržava fokus traku, a kartica „Sljedeće“ kaže „Danas nema plana“, sljedeći blok (sutra ili kasnije) i nudi slobodnu sesiju (uz „Predmeti“ kad plan nema gradiva). Tako se ekran ne mijenja dok se plan učitava. Kartice ispita imaju „za X dana“ ispod datuma; PokreniSesiju uz čipove nudi „+ Predmet“ i „+ Izvor“.
 - Ekrani preko cijelog ekrana i dalje imaju ljepljivo zaglavlje sa `env(safe-area-inset-top)`, a svaki sheet ima ×.
