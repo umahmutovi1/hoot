@@ -26,6 +26,7 @@ import { examDateLabel, relativeDays } from './format'
 import { useGlobalScale } from '@/features/settings/profile'
 import { gradeItemsOf, gradeSubjectOf, pointsDetails, pointsLabel, worthOf } from './grades'
 import { ResultChip } from './ResultChip'
+import { StrengthCard } from '@/features/review/StrengthCard'
 import { GradesCard } from './GradesCard'
 import { GoalCard } from './GoalCard'
 import { SuggestionCard } from '@/features/plan/SuggestionCard'
@@ -188,6 +189,10 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
       <GradesCard subject={subject} deadlines={deadlines} onScale={() => setScaleOpen(true)} />
 
       {hasMaterial && <SubjectLectures subject={subject} materials={materials} />}
+
+      {hasMaterial && (
+        <StrengthCard subjectId={subject.id} materials={materials} today={todayDate} />
+      )}
 
       <SessionsCard subjectId={subject.id} />
 
