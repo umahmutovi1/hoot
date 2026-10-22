@@ -214,7 +214,9 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 - [x] Replan sheet: deficit + 3 opcije
 - [x] Sekcija „Cilj“ na Predmetu i NoviPredmet → Napredno (PRD „Prioritet i režim učenja“ → Šta korisnik vidi): „Koliko ti je bitan“ sa imenima bez brojeva, željena ocjena premještena iz kartice bodova, usklađivanje na licu mjesta, sitan opis posljedica, čip pojačanja sa ×; „Kad kreće učenje?“ za režim
 - [x] Danas ekran (fokus bar, Sljedeći blok, lista, 3 ispita, savjet) i Satnica tab
-- **DoD** (uz opći DoD): novi korisnik prođe onboarding na telefonu za ~3 min i dobije plan koji poštuje nastavu, povezani Google kalendar i izabrane periode → `v0.8.0`
+- [x] Plan u chatu (`design/Chat.dc.html`): pozdrav sa današnjim vremenom, kartice „Danas“ (Počni na sljedećem bloku) i „Uskoro“ iz spašenih blokova, bez AI poziva
+- [x] Korak 8 onboardinga: prvi blok za danas iz plana („Pokreni prvi blok“), bez bloka ostaje slobodna sesija
+- [x] **DoD** (uz opći DoD): novi korisnik prođe onboarding na telefonu za ~3 min i dobije plan koji poštuje nastavu, povezani Google kalendar i izabrane periode → `v0.8.0` (browser e2e na previewu sa privremenim korisnikom, 390 px: raspored nastave, iCal feed sa zauzetošću (ponavljanje, cjelodnevni i slobodni događaj, prelaz na zimsko vrijeme), periodi jutro + veče bez nedjelje, predmet sa grubom veličinom → plan bez preklapanja sa nastavom i zauzetošću, u periodima i ispod maksimuma; „Danas ne mogu“ + Poništi, „Imam samo“, UrediBlok (izmjena zaključava, novi ručni blok, Prebaci), Replan sheet „Smanji obim“ i plan u chatu na pravoj bazi. Popravke iz testa: #114, #115, #116, #117)
 
 ## Etapa 9 — Recall gate, provjera znanja, FSRS i osnovni push
 
