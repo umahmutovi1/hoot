@@ -1,6 +1,15 @@
 import { addDays, localDay, wallClock, type DayBoundary, type LocalDate } from '@/lib/day'
 import { project, retakeStatus } from '@/lib/grades'
-import { coveredLeaves, reachedLogs, type PaceUnit } from '@/lib/pace'
+import {
+  coveredLeaves,
+  paceActions,
+  reachedLogs,
+  sourcePace,
+  subjectBehind,
+  type PaceLog,
+  type PaceUnit,
+  type SourcePace,
+} from '@/lib/pace'
 import { leavesOf } from '@/lib/progress'
 import { scopeOf, type ScopeRow } from '@/lib/progress/scope'
 import { capFor, classesOn, freeSlotsOn, type DayInput } from '@/lib/schedule'
@@ -8,6 +17,7 @@ import { SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
 import {
   growthBase,
   realization,
+  type SubjectBehindInput,
   type DayHistory,
   type FixedBlock,
   type PlanDay,
@@ -29,6 +39,7 @@ import {
 import { gradeItemsOf, gradeSubjectOf } from '@/features/subjects/grades'
 import type { Assessment, Deadline, SubjectWithAssessments } from '@/features/subjects/model'
 import type { LectureLogRow } from '@/features/schedule/model'
+import { parseCustomPresets } from '@/features/session/presets'
 
 /**
  * Database rows → `PlanState` (PRD "Scheduler"). Everything the plan depends on passes through
@@ -75,6 +86,8 @@ export interface BuiltState {
   realization: ReturnType<typeof realization>
   /** Today's blocks stay as they are (replan starts tomorrow). */
   keepToday: boolean
+  /** Subjects behind their lectures, with the actions `paceActions()` suggests. */
+  behind: SubjectBehindInput[]
 }
 
 /** A contingent exam enters the plan once it is needed (PRD "samo ako zatreba"). */
@@ -141,9 +154,7 @@ export function requiredShareOf(
 }
 
 function presetsOf(profile: Profile): CustomPresetRow[] {
-  return Array.isArray(profile.session_presets)
-    ? (profile.session_presets as unknown as CustomPresetRow[])
-    : []
+  return parseCustomPresets(profile.session_presets) as CustomPresetRow[]
 }
 
 /** History for ρ and the growth limit: planned AI minutes and studied minutes per day. */
@@ -206,6 +217,7 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
     topicsOf.set(l.unit_id, [...(topicsOf.get(l.unit_id) ?? []), l.topic_id])
 
   const units: PlanUnit[] = []
+  const paces = new Map<string, (SourcePace | null)[]>()
   const leafIdsBySource = new Map<string, string[]>()
   const allUnitsForScope: { id: string; parentId: string | null }[] = []
   for (const source of allSources) {
@@ -213,16 +225,15 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
     const leaves = leavesOf(asProgress(material.units))
     const leafIds = new Set(leaves.map((l) => l.id))
     const logs = input.logs.filter((l) => l.source_id === source.id)
-    const reached = reachedLogs(
-      logs.map((l) => ({
-        id: l.id,
-        onDate: l.on_date,
-        createdAt: l.created_at,
-        sourceId: l.source_id,
-        upToUnitId: l.up_to_unit_id,
-        cancelled: l.cancelled,
-      })),
-    )
+    const paceLogs: PaceLog[] = logs.map((l) => ({
+      id: l.id,
+      onDate: l.on_date,
+      createdAt: l.created_at,
+      sourceId: l.source_id,
+      upToUnitId: l.up_to_unit_id,
+      cancelled: l.cancelled,
+    }))
+    const reached = reachedLogs(paceLogs)
     const paceUnits: PaceUnit[] = material.units.map((u) => ({
       id: u.id,
       parentId: u.parent_id,
@@ -235,6 +246,17 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
       for (const leaf of coveredLeaves(paceUnits, log.upToUnitId!))
         if (!coveredOn.has(leaf.id)) coveredOn.set(leaf.id, log.onDate)
     const tracked = reached.length > 0
+    if (tracked)
+      paces.set(source.subject_id, [
+        ...(paces.get(source.subject_id) ?? []),
+        sourcePace(
+          paceUnits.map((u) => ({
+            ...u,
+            amount: Number(material.units.find((m) => m.id === u.id)!.amount),
+          })),
+          paceLogs,
+        ),
+      ])
     for (const u of material.units) allUnitsForScope.push({ id: u.id, parentId: u.parent_id })
     leafIdsBySource.set(
       source.id,
@@ -420,7 +442,19 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
     growthBase: growthBase(history, today),
     preferredParts: [...parts].sort(),
   }
-  return { state, today, targetGrade, realization: rho, keepToday }
+  const behind: SubjectBehindInput[] = []
+  for (const subject of subjects) {
+    const list = paces.get(subject.id)
+    if (!list) continue
+    const b = subjectBehind(list)
+    const actions = paceActions(b, {
+      priority: subject.priority,
+      studyMode: subject.study_mode === 'campaign' ? 'campaign' : 'regular',
+    })
+    if (actions.length > 0)
+      behind.push({ subjectId: subject.id, behindMinutes: Math.round(b.behindMinutes), actions })
+  }
+  return { state, today, targetGrade, realization: rho, keepToday, behind }
 }
 
 /** Wall-clock minutes on today's date; before the day boundary that is past midnight (+24 h). */

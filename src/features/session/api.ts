@@ -172,7 +172,19 @@ export interface StartInput {
   mode: StudyMode | null
   /** Preset id (`study_sessions.timer_mode`). */
   timerMode: string
+  /** The plan block this session works on (null = free session). */
+  blockId?: string | null
+  /** Planned length: the block, or "Imam samo X min". */
+  plannedMinutes?: number | null
 }
+
+/** A block's status follows its session: started, done, or back to planned when discarded. */
+const blockStatusOp = (id: string, status: 'planned' | 'in_progress' | 'done'): Op => ({
+  kind: 'update',
+  table: 'plan_blocks',
+  match: { id },
+  patch: { status },
+})
 
 /** Writes through the offline queue: mirror first, then send when there is a network. */
 export function useSessionWriter() {
@@ -209,16 +221,23 @@ export function useSessionWriter() {
     return {
       write,
 
-      start: async ({ subjectId, unitId, mode, timerMode }: StartInput) => {
+      start: async ({
+        subjectId,
+        unitId,
+        mode,
+        timerMode,
+        blockId = null,
+        plannedMinutes = null,
+      }: StartInput) => {
         const t = nowIso()
         const session: SessionRow = {
           id: crypto.randomUUID(),
           subject_id: subjectId,
-          block_id: null,
+          block_id: blockId,
           mode,
           timer_mode: timerMode,
           origin: 'timer',
-          planned_minutes: null,
+          planned_minutes: plannedMinutes,
           started_at: t,
           ended_at: null,
           focus: null,
@@ -235,10 +254,15 @@ export function useSessionWriter() {
           started_at: t,
           ended_at: null,
         }
-        await write([sessionOp(session), segmentOp([segment])], () => ({
-          session,
-          segments: [segment],
-        }))
+        await write(
+          [
+            sessionOp(session),
+            segmentOp([segment]),
+            ...(blockId ? [blockStatusOp(blockId, 'in_progress')] : []),
+          ],
+          () => ({ session, segments: [segment] }),
+        )
+        if (blockId) void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'blocks'] })
         return session.id
       },
 
@@ -320,8 +344,11 @@ export function useSessionWriter() {
           ...(kept.length > 0 ? [segmentOp(kept)] : []),
           ...drop.map((id): Op => ({ kind: 'delete', table: 'study_segments', match: { id } })),
           sessionOp({ ...session, ended_at: end, updated_at: nowIso() }),
+          ...(session.block_id ? [blockStatusOp(session.block_id, 'done')] : []),
         ]
         await write(ops, () => null)
+        if (session.block_id)
+          void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'blocks'] })
         queryClient.setQueryData(sessionKey(userId, session.id), {
           session: { ...session, ended_at: end },
           segments: kept,
@@ -408,9 +435,14 @@ export function useSessionWriter() {
       /** "Odbaci": the session is deleted and nothing is calibrated. */
       discard: async ({ session }: ActiveSession) => {
         await write(
-          [{ kind: 'delete', table: 'study_sessions', match: { id: session.id } }],
+          [
+            { kind: 'delete', table: 'study_sessions', match: { id: session.id } },
+            ...(session.block_id ? [blockStatusOp(session.block_id, 'planned')] : []),
+          ],
           () => null,
         )
+        if (session.block_id)
+          void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'blocks'] })
       },
     }
   }, [write, queryClient, userId])

@@ -175,6 +175,13 @@
     box-shadow: none;
   }
 }
+/* Dark floating toast (undo after "Danas ne mogu", block changes). */
+@utility glass-toast {
+  background-color: rgba(28, 25, 44, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 12px 30px rgba(28, 25, 44, 0.25);
+}
 /* Indigo tile with a white line icon next to card titles (session end, strategist). */
 @utility icon-tile {
   color: #ffffff;

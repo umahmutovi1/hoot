@@ -72,10 +72,65 @@
       "start": "Start",
       "running": "Running",
       "paused": "Paused",
-      "resume": "Resume"
+      "resume": "Resume",
+      "labelAt": "Next · {{time}}",
+      "allDone": "Today's plan is done",
+      "allDoneSub": "If you still have time, a free session counts towards calibration."
     },
     "exams": "Exams",
-    "examsAll": "All"
+    "examsAll": "All",
+    "focus": {
+      "today": "Today's plan",
+      "week": "Week",
+      "nextExam": "Next exam",
+      "readiness": "Readiness",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days"
+    },
+    "cant": {
+      "button": "Can't today",
+      "label": "Can't today",
+      "title": "Today is free",
+      "moved_one": "{{count}} block moved to tomorrow on",
+      "moved_other": "{{count}} blocks moved to tomorrow on",
+      "toast": "Today is a free day",
+      "undo": "Undo",
+      "whatMoved": "What moved",
+      "growth": "The plan grows at most 1.25× a day, so some of it may go to later days.",
+      "onTrack": "Nothing is late for exams."
+    },
+    "only": {
+      "button": "Only 30 min",
+      "title": "I only have…",
+      "best": "Most valuable now",
+      "start": "Start · {{minutes}} min",
+      "rest": "The rest of the block goes back into the plan from tomorrow.",
+      "whyReview": "Check due today · {{minutes}}",
+      "whyPart": "First part of today's block",
+      "whyWhole": "The whole next block",
+      "whyNext": "From the plan for {{day}}",
+      "nothing": "The plan is empty today and tomorrow. Start a free session from the “Next” card."
+    },
+    "free": {
+      "title": "No plan today",
+      "body": "Everything is on track — a free day. If you have time anyway, you can go over what's next tomorrow.",
+      "noMaterialTitle": "The plan needs material",
+      "noMaterialBody": "Add a source or a rough size of the material to a subject, and the plan spreads the studying until the exam.",
+      "addMaterial": "Subjects",
+      "tomorrow": "tomorrow",
+      "next": "Next block: {{when}} {{time}} · {{subject}}"
+    },
+    "more_one": "{{count}} more suggestion",
+    "more_other": "{{count}} more suggestions",
+    "moreHide": "Hide",
+    "why": {
+      "title": "Why today looks like this:",
+      "rho": "I plan {{pct}}% of your free time because that's about what you did in the last 2 weeks."
+    },
+    "schedule": {
+      "title": "Schedule",
+      "classUntil": "until {{time}}"
+    }
   },
   "plan": {
     "title": "Plan",
@@ -309,7 +364,14 @@
       "freeHint": "You can change the unit during the session (\"Working on\"). The time counts for calibration but does not tick off a planned block.",
       "go": "Start",
       "breaks": "Breaks",
-      "breaksHint": "Your last preset is suggested. Change the default in Settings."
+      "breaksHint": "Your last preset is suggested. Change the default in Settings.",
+      "nextBlock": "Next block",
+      "laterToday": "Later today",
+      "tagPlan": "Plan",
+      "howLong": "How much time do you have?",
+      "wholeBlock": "Whole block",
+      "onlyHint": "Only {{minutes}} min → {{title}}. The rest of the block goes into the plan from tomorrow.",
+      "subtitlePlan": "The next block of today's plan is suggested."
     },
     "mode": {
       "label": "Study mode",
@@ -1476,5 +1538,122 @@
       "days": "Study days and periods",
       "timetable": "Timetable or calendar"
     }
+  },
+  "planBlocks": {
+    "kind": {
+      "learn": "Study",
+      "review": "Knowledge check",
+      "questions": "Questions",
+      "recap": "Quick recap",
+      "deadline": "Deadline"
+    },
+    "mode": {
+      "reading": "Reading",
+      "review": "Review",
+      "questions": "Questions",
+      "recap": "Quick recap",
+      "deadline": "Deadline",
+      "learn": "Study"
+    },
+    "reviewUnits_one": "Check · {{count}} unit",
+    "reviewUnits_other": "Check · {{count}} units",
+    "unitsMore_one": "{{title}} and {{count}} more",
+    "unitsMore_other": "{{title}} and {{count}} more",
+    "manual": "manual",
+    "done": "done",
+    "missed": "missed",
+    "skipped": "skipped",
+    "why": {
+      "review": "a check is due today",
+      "recap": "quick recap after the lecture",
+      "buffer_one": "{{goal}} in {{count}} day, review only now",
+      "buffer_other": "{{goal}} in {{count}} days, review only now",
+      "exam_one": "{{goal}} in {{count}} day",
+      "exam_other": "{{goal}} in {{count}} days",
+      "deadline_one": "{{goal}} due in {{count}} day",
+      "deadline_other": "{{goal}} due in {{count}} days",
+      "lecture": "covered in class on {{date}}",
+      "campaignStart": "the campaign starts today",
+      "optional": "there is time for extra material ({{goal}})",
+      "conditional": "must-pass subject",
+      "boost": "temporarily more time"
+    }
+  },
+  "suggestions": {
+    "later": "Later",
+    "change": "Change",
+    "ok": "OK",
+    "fresh": {
+      "title": "Let's start over",
+      "sub": "The plan is recomputed from today, at a more realistic pace.",
+      "open": "Show"
+    },
+    "deficit": {
+      "title": "{{goal}} in {{subject}} is {{time}} short",
+      "sub": "The remaining material doesn't fit your free time until {{date}}.",
+      "solve": "Fix"
+    },
+    "behind": {
+      "title": "{{subject}}: {{time}} of lecture material is waiting",
+      "sub": "One tap changes the plan from tomorrow.",
+      "raise": "Raise to “{{level}}”",
+      "regular": "Switch to regular",
+      "take": "Take {{minutes}} min a day from {{subject}}",
+      "earlier": "Start earlier: {{date}}",
+      "add": "Add {{minutes}} min a day",
+      "doneRaise": "The subject is now “{{level}}”. The plan is recomputed.",
+      "doneRegular": "The subject is in regular mode. The plan is recomputed.",
+      "doneTake": "{{subject}} gets {{minutes}} min a day from {{donor}} until {{date}}.",
+      "doneEarlier": "The campaign starts {{date}}. The plan is recomputed.",
+      "doneAdd": "Until {{date}} you have {{minutes}} more min a day."
+    },
+    "grade": {
+      "title": "Your target grade in {{subject}} needs more",
+      "sub": "A grade like that usually needs “{{level}}”.",
+      "done": "The subject is now “{{level}}”. The plan is recomputed."
+    },
+    "period": {
+      "title": "Exam period ahead — raise the maximum to {{hours}} h until {{date}}?",
+      "raise": "Raise",
+      "done": "The maximum is {{hours}} h a day until the end of the period."
+    },
+    "campaign": {
+      "title": "The {{subject}} campaign starts {{date}}",
+      "sub_one": "In {{count}} day",
+      "sub_other": "In {{count}} days",
+      "now": "Start now",
+      "done": "The campaign starts today. The plan is recomputed."
+    }
+  },
+  "replan": {
+    "updated": "The plan is updated",
+    "deficitTitle": "Plan shortfall",
+    "missed_one": "Yesterday {{count}} block was missed ({{subject}}, {{time}}). Today stays as it is, and the material moved to tomorrow on:",
+    "missed_other": "Yesterday {{count}} blocks were missed ({{subject}} and others, {{time}}). Today stays as it is, and the material moved to tomorrow on:",
+    "deficitSub": "The remaining material doesn't fit your free time until {{date}}. What would you like?",
+    "choose": "What would you like?",
+    "hours": "Add {{minutes}} min a day",
+    "hoursSub": "Until {{date}}, if you have free slots",
+    "scope": "Reduce the scope",
+    "scopeSub": "Skip {{units}} ({{subject}}, least important for the exam)",
+    "risk": "Accept the risk",
+    "riskSub": "The plan stays, {{time}} short",
+    "availability": "Availability",
+    "apply": "Apply",
+    "ok": "OK",
+    "notPlanned": "didn't fit"
+  },
+  "fresh": {
+    "title": "Let's start over",
+    "body": "The last days didn't go to plan, and that's fine. The plan is recomputed from today, at a more realistic pace.",
+    "thisWeek": "This week",
+    "lessThanBefore": "Less than before ({{time}}), so you get done what you plan. It grows as you study.",
+    "grows": "The plan grows as you study.",
+    "untilExams": "Until the exams",
+    "short": "{{time}} short",
+    "onTrack": "on track",
+    "choose": "For {{subject}} you choose: longer days, a smaller scope or accept the risk.",
+    "showToday": "Show today's plan",
+    "solve": "Fix the shortfall in {{subject}}"
   }
 }
