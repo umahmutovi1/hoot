@@ -12,8 +12,8 @@ Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Gemini, Anthropic
 | Resend | SMTP za auth emailove (kod za prijavu), šablon u stilu appa | ✅ |
 | Gemini | API ključ (free tier) za AI dok nema Anthropic kartice | ⏳ treba za Etapu 6 |
 | Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (opcionalno, Etapa 10) |
-| `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`; funkcija i `CRON_SECRET` postavljeni) | ⏳ koraci 3–5 u dashboardu |
-| Web Push | VAPID ključevi (secrets + Cloudflare), `notify` funkcija, `pg_cron` svake minute | ⏳ koraci u 5b |
+| `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`), Web Push svake minute (`notify`) | ✅ |
+| Web Push | VAPID ključevi (secrets + Cloudflare Production i Preview), `notify` deployana, `pg_cron` svake minute | ✅ |
 | Domena | za emailove drugim korisnicima i vlastiti URL | kasnije |
 
 ---
