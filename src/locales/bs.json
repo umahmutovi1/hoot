@@ -116,7 +116,6 @@
     },
     "free": {
       "title": "Danas nema plana",
-      "body": "Sve je po rasporedu — slobodan dan. Ako ipak imaš vremena, možeš ponoviti ono što je na redu sutra.",
       "noMaterialTitle": "Plan čeka gradivo",
       "noMaterialBody": "Dodaj predmetu izvor ili grubu veličinu gradiva, pa plan rasporedi učenje do ispita.",
       "addMaterial": "Predmeti",
@@ -134,7 +133,12 @@
     "schedule": {
       "title": "Raspored",
       "classUntil": "do {{time}}"
-    }
+    },
+    "examIn_one": "za {{count}} dan",
+    "examIn_few": "za {{count}} dana",
+    "examIn_other": "za {{count}} dana",
+    "examToday": "danas",
+    "examTomorrow": "sutra"
   },
   "plan": {
     "title": "Plan",
@@ -440,7 +444,10 @@
       "howLong": "Koliko vremena imaš?",
       "wholeBlock": "Cijeli blok",
       "onlyHint": "Imam samo {{minutes}} min → {{title}}. Ostatak bloka ide u plan od sutra.",
-      "subtitlePlan": "Predložen je sljedeći blok iz današnjeg plana."
+      "subtitlePlan": "Predložen je sljedeći blok iz današnjeg plana.",
+      "newSubject": "+ Predmet",
+      "newSource": "+ Izvor",
+      "addFirstSource": "+ Dodaj izvor (knjiga, skripta…)"
     },
     "mode": {
       "label": "Način učenja",

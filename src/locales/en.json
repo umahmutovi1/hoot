@@ -114,7 +114,6 @@
     },
     "free": {
       "title": "No plan today",
-      "body": "Everything is on track — a free day. If you have time anyway, you can go over what's next tomorrow.",
       "noMaterialTitle": "The plan needs material",
       "noMaterialBody": "Add a source or a rough size of the material to a subject, and the plan spreads the studying until the exam.",
       "addMaterial": "Subjects",
@@ -131,7 +130,11 @@
     "schedule": {
       "title": "Schedule",
       "classUntil": "until {{time}}"
-    }
+    },
+    "examIn_one": "in {{count}} day",
+    "examIn_other": "in {{count}} days",
+    "examToday": "today",
+    "examTomorrow": "tomorrow"
   },
   "plan": {
     "title": "Plan",
@@ -432,7 +435,10 @@
       "howLong": "How much time do you have?",
       "wholeBlock": "Whole block",
       "onlyHint": "Only {{minutes}} min → {{title}}. The rest of the block goes into the plan from tomorrow.",
-      "subtitlePlan": "The next block of today's plan is suggested."
+      "subtitlePlan": "The next block of today's plan is suggested.",
+      "newSubject": "+ Subject",
+      "newSource": "+ Source",
+      "addFirstSource": "+ Add a source (book, notes…)"
     },
     "mode": {
       "label": "Study mode",

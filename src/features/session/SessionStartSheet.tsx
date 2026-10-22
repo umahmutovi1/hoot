@@ -22,6 +22,9 @@ import { blockSub, blockTitle, isOpen, nextBlock, useGoalTitle } from '@/feature
 import { ONLY_MINUTES, pickFor, pickTitle, useStartPick } from '@/features/today/pick'
 import { usePlanToday } from '@/features/today/usePlanToday'
 
+/** "+ Predmet" / "+ Izvor" next to the chips: leaves the sheet for the form. */
+const addChip =
+  'flex h-11 items-center rounded-full border border-dashed border-line px-4 text-[13px] font-semibold text-brand'
 const NEXT_COUNT = 4
 
 /**
@@ -224,9 +227,12 @@ function StartForm() {
                 {s.name}
               </Chip>
             ))}
+            <Link to="/subjects/new" onClick={close} className={addChip}>
+              {t('session.start.newSubject')}
+            </Link>
           </div>
 
-          {subject && material.length > 1 && (
+          {subject && (
             <div className="flex flex-wrap gap-1.5" aria-label={t('session.start.source')}>
               {material.map((m) => (
                 <Chip
@@ -242,6 +248,11 @@ function StartForm() {
                   {m.source.title}
                 </Chip>
               ))}
+              <Link to={`/subjects/${subject.id}/sources/new`} onClick={close} className={addChip}>
+                {material.length === 0
+                  ? t('session.start.addFirstSource')
+                  : t('session.start.newSource')}
+              </Link>
             </div>
           )}
 
