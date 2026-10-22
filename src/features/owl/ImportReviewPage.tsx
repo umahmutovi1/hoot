@@ -183,7 +183,7 @@ export function ImportReviewPage() {
       )}
 
       {!saved && (
-        <div className="fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom))] z-30 flex justify-center px-5">
+        <div className="fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-30 flex justify-center px-5">
           <Button
             type="button"
             size="pill"

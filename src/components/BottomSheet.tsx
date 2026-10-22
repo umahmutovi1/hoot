@@ -36,7 +36,7 @@ export function BottomSheet({
           const content = e.currentTarget as HTMLElement | null
           content?.focus()
         }}
-        className="mx-auto max-h-[92dvh] w-full max-w-[430px] gap-4 overflow-y-auto rounded-t-[32px] border-none px-5 pt-3 pb-[calc(24px+env(safe-area-inset-bottom))] text-ink"
+        className="mx-auto max-h-[92dvh] w-full max-w-[430px] gap-4 overflow-y-auto rounded-t-[32px] border-none px-5 pt-3 pb-[calc(24px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] text-ink"
       >
         <span aria-hidden="true" className="h-[5px] w-10 self-center rounded-full bg-line" />
         <div className={cn('flex gap-3', leading ? 'items-center' : 'items-start')}>

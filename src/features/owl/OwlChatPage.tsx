@@ -42,7 +42,7 @@ export function OwlChatPage() {
   ]
 
   return (
-    <div className="flex min-h-[calc(100dvh-24px-112px-env(safe-area-inset-bottom))] flex-col gap-3">
+    <div className="flex min-h-[calc(100dvh-24px-112px-env(safe-area-inset-bottom))] flex-col gap-3 keyboard:min-h-[calc(100dvh-32px-var(--vv-bottom,0px))]">
       {/* Sticky, so the header stays reachable and clear of the phone's status bar. */}
       <div className="glass-bar sticky top-0 z-10 -mx-5 -mt-6 grid grid-cols-[44px_1fr_44px] items-center gap-2 px-5 pt-[calc(20px+env(safe-area-inset-top))] pb-2">
         <Link
@@ -85,7 +85,7 @@ export function OwlChatPage() {
         <div ref={end} className="scroll-mb-24" />
       </div>
 
-      <div className="sticky bottom-[calc(96px+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2">
+      <div className="sticky bottom-[calc(96px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-10 keyboard:bottom-[calc(8px+var(--vv-bottom,0px))] flex flex-col gap-2">
         {enabled && messages.length === 0 && (
           <div className="-mx-5 flex gap-2 overflow-x-auto px-5 py-0.5 [scrollbar-width:none]">
             {suggestions.map((sug) => (
