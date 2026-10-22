@@ -57,11 +57,11 @@ export function BottomNav() {
     <>
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-x-0 -bottom-24 z-30 h-[calc(226px+env(safe-area-inset-bottom))] bg-gradient-to-b from-mist/0 from-0% via-mist/85 via-[57%] to-mist/85"
+        className="pointer-events-none fixed inset-x-0 -bottom-24 z-30 keyboard:hidden h-[calc(226px+env(safe-area-inset-bottom))] bg-gradient-to-b from-mist/0 from-0% via-mist/85 via-[57%] to-mist/85"
       />
       <nav
         aria-label={t('nav.label')}
-        className="pointer-events-none fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom))] z-40 flex justify-center px-[18px]"
+        className="pointer-events-none fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-40 flex keyboard:hidden justify-center px-[18px]"
       >
         <div className="glass-strong pointer-events-auto flex h-16 w-full max-w-[394px] items-center rounded-[32px] p-1.5">
           {tabs.map((tab) => (

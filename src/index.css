@@ -4,6 +4,9 @@
 @import '@fontsource-variable/geist';
 
 /* Design tokens from docs/design/README.md (Liquid Glass). Use these classes, never raw hex values. */
+/* While the on-screen keyboard is open (set by src/app/ViewportInsets.tsx). */
+@custom-variant keyboard (html[data-keyboard] &);
+
 @theme {
   /* SF Pro on Apple devices, Geist (served locally, works offline) elsewhere. */
   --font-sans:
@@ -260,7 +263,9 @@
     @apply font-sans antialiased;
     letter-spacing: -0.2px;
     -webkit-tap-highlight-color: transparent;
-    background-color: #e8e5f1;
+    /* Safari paints its status bar and toolbar areas with this color, so it is the lavender
+       the page edges fade into (see body::before), not the paler base of the gradient. */
+    background-color: #dcd8ee;
   }
   body {
     @apply text-ink;
@@ -278,7 +283,11 @@
     min-height: calc(100% + 200px);
     z-index: -1;
     pointer-events: none;
+    /* The top and bottom edges fade into the <html> color that Safari uses for its bars, so
+       the page runs under them without a seam (the layer starts 100 px above the viewport). */
     background:
+      linear-gradient(180deg, #dcd8ee 100px, rgba(220, 216, 238, 0) 220px),
+      linear-gradient(0deg, #dcd8ee 100px, rgba(220, 216, 238, 0) 200px),
       radial-gradient(120% 55% at 0% 0%, rgba(150, 141, 222, 0.62), rgba(150, 141, 222, 0) 62%),
       radial-gradient(90% 45% at 100% 22%, rgba(229, 182, 206, 0.62), rgba(229, 182, 206, 0) 62%),
       radial-gradient(110% 50% at 0% 68%, rgba(168, 196, 234, 0.6), rgba(168, 196, 234, 0) 62%),
