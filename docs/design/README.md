@@ -25,9 +25,13 @@ su jedna komponenta sa stanjem.
   ili je uključeno "smanji prozirnost", padaj na rgba(255,255,255,0.85) bez blura.
 
 ## Navigacija
-Plutajuća staklena kapsula, 5 mjesta: Danas · Plan · **AI** · Predmeti · Napredak. AI u sredini je ista ikona kao ostale,
-bez pozadine, samo obojena akcentom #6A64B8 (iskra); otvara Chat.dc.html. Aktivni tab ima svjetliju staklenu pilulu. Sesija se pokreće iz kartice "Sljedeće"
-(dugme Počni) ili iz chata, ne iz nava.
+**Odluka nakon v0.7.2 (mockup `NavMeni.html`):** donje kapsule više nema (u Safariju je bila nepouzdana i sporija). Prvi red svakog taba:
+avatar (Postavke) → AI iskra odmah desno (otvara Chat) → ☰ u desnom uglu; AI i ☰ su samo ikone, a red nema pozadinu. Ispod su zaglavlje taba
+i sadržaj do dna ekrana. ☰ otvara panel u staklu sheetova preko ekrana (isti prvi red, ☰ postaje ×): Danas, Plan, Predmeti, Napredak, Postavke;
+stavke sa podstranicama su harmonika (otvorena je sekcija trenutne stranice), a na dnu je samo „Odjavi se“. Podstranice: Plan → Kalendar,
+Satnica, Dostupnost, Raspored nastave; Predmeti → aktivni predmeti, Svi predmeti; Napredak → Pregled, Sesije; Postavke → Sve postavke,
+Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stignu). Historija razgovora je u chatu. Sesija se pokreće iz kartice
+"Sljedeće" (dugme Počni) ili iz chata.
 
 ## Ekrani po toku
 - Onboarding (8 koraka, jedna komponenta sa stanjem `step`; svaki fajl je isti ekran na drugom koraku):

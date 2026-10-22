@@ -5,7 +5,6 @@ import { format } from 'date-fns'
 import { statusLabel } from '@/features/schedule/format'
 import { LecturePrompts } from '@/features/schedule/LecturePrompts'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
-import { ProfileButton } from '@/features/settings/ProfileButton'
 import { useSubjects } from '@/features/subjects/api'
 import { useDayBoundary, useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
@@ -40,10 +39,7 @@ export function TodayPage() {
 
   return (
     <div className="flex flex-col pb-8">
-      <div className="flex items-center justify-between">
-        <ProfileButton />
-      </div>
-      <div className="mt-[18px] flex flex-col gap-0.5 px-1">
+      <div className="mt-1.5 flex flex-col gap-0.5 px-1">
         <span className="text-[13px] font-semibold tracking-[0.2px] text-ink-secondary">
           <span className="uppercase">
             {format(now, 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
