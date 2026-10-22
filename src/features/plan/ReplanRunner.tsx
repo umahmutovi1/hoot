@@ -25,7 +25,8 @@ const DEBOUNCE_MS = 2000
  * Replan triggers (PRD "Kada se šta preračunava"): any change of a plan input — a saved edit
  * anywhere, a finished session, a calendar sync, the first opening of a new day — rebuilds the
  * state; when its hash differs from the latest plan run, the plan is computed in the browser and
- * saved through the offline queue (`replace_plan`). Never while the timer runs.
+ * saved through the offline queue (`replace_plan`). `replanNow()` saves even with the same hash
+ * (a deleted AI block is not an input). Never while the timer runs.
  */
 export function ReplanRunner() {
   const userId = useAuth().session?.user.id
@@ -37,6 +38,8 @@ export function ReplanRunner() {
   const nudge = usePlanStore((s) => s.nudge)
   const setModel = usePlanStore((s) => s.setModel)
   const saving = useRef<string | null>(null)
+  // The last nudge that was saved: a newer one replans even when the inputs did not change.
+  const forced = useRef(0)
   const day = useLocalDay(boundary)
 
   // Any successful mutation can change a plan input that the plan's own queries do not watch.
@@ -61,7 +64,10 @@ export function ReplanRunner() {
         const result = plan(built.state)
         setModel({ built, hash, result })
         if (active.data) return
-        if (run.data?.input_hash === hash || saving.current === hash) return
+        // A deleted AI block ("Prebaci") is not an input: same hash, but its work needs a place.
+        const force = nudge !== forced.current
+        if (saving.current === hash || (!force && run.data?.input_hash === hash)) return
+        forced.current = nudge
         saving.current = hash
         const runId = crypto.randomUUID()
         const args = replaceArgs(built, result, hash, runId, boundary.timeZone)
