@@ -525,6 +525,80 @@ describe('plan: reviews', () => {
     expect(plan(s).blocks).toEqual([])
   })
 
+  it('a check due after the exam moves to the last day before the buffer', () => {
+    const u = units('a', 3, 60, { level: 2 }).map((x, i) =>
+      i === 0
+        ? { ...x, nextReviewOn: day(30), memory: { stability: 40, lastReviewOn: day(-5) } }
+        : x,
+    )
+    const s = state({
+      subjects: [subject('a')],
+      units: u,
+      goals: [
+        exam(
+          'ea',
+          'a',
+          day(10),
+          u.map((x) => x.id),
+        ),
+      ],
+    })
+    const review = plan(s).blocks.find(
+      (b) => b.kind === 'review' && b.units.some((x) => x.unitId === u[0]!.id),
+    )
+    // exam on day 10, one buffer day → the check falls on day 9
+    expect(review?.onDate).toBe(day(9))
+  })
+
+  it('without a buffer the clamped check falls the day before the exam', () => {
+    const u = units('a', 2, 60, { level: 2, nextReviewOn: day(40) })
+    const s = state({
+      subjects: [subject('a')],
+      units: u,
+      goals: [
+        exam(
+          'ea',
+          'a',
+          day(6),
+          u.map((x) => x.id),
+        ),
+      ],
+      settings: { ...state().settings, bufferDays: 0 },
+    })
+    const days = plan(s)
+      .blocks.filter((b) => b.kind === 'review')
+      .map((b) => b.onDate)
+    expect(days).toEqual([day(5)])
+  })
+
+  it('over the cap the weaker unit goes first', () => {
+    const memory = (stability: number) => ({ stability, lastReviewOn: day(-10) })
+    const u = [
+      ...units('a', 1, 60, { level: 2, nextReviewOn: day(0), memory: memory(60) }),
+      ...units('b', 1, 60, { level: 2, nextReviewOn: day(0), memory: memory(3) }).map((x) => ({
+        ...x,
+        subjectId: 'a',
+      })),
+    ]
+    const s = state({
+      subjects: [subject('a')],
+      units: u,
+      goals: [
+        exam(
+          'ea',
+          'a',
+          day(20),
+          u.map((x) => x.id),
+        ),
+      ],
+      // one 9 min check fits a day's review share (10% of the capacity)
+      settings: { ...state().settings, reviewCapPct: 5 },
+      days: days(28, [{ startMin: 9 * 60, endMin: 12 * 60 + 20 }]),
+    })
+    const first = plan(s).blocks.find((b) => b.kind === 'review' && b.onDate === day(0))
+    expect(first?.units.map((x) => x.unitId)).toEqual(['b-u01'])
+  })
+
   it('micro-slots (shorter than the minimum block) take reviews only', () => {
     const u = units('a', 6, 60).map((x, i) =>
       i === 0 ? { ...x, level: 2, nextReviewOn: day(0) } : x,

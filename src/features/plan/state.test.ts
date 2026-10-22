@@ -144,6 +144,7 @@ function inputs(patch: Partial<PlanInputs> = {}): PlanInputs {
     sources: [roughSource(10)],
     scope: [],
     unitTopics: [],
+    cards: [],
     logs: [],
     blocks: [],
     sessions: [],
@@ -154,6 +155,45 @@ function inputs(patch: Partial<PlanInputs> = {}): PlanInputs {
 }
 
 describe('buildPlanState', () => {
+  it('a unit is due with its earliest card, and carries its memory and the review cap', () => {
+    const src = roughSource(10)
+    src.units[0] = {
+      ...src.units[0]!,
+      level: 2,
+      next_review_on: '2026-11-01',
+      fsrs_stability: 12.34567,
+      fsrs_difficulty: 5,
+      fsrs_state: 2,
+      fsrs_reps: 2,
+      last_review_at: zonedInstant('2026-10-20', 22 * 60, TZ).toISOString(),
+    }
+    const card = (id: string, on: string | null) => ({
+      id,
+      unit_id: 'p0',
+      next_review_on: on,
+      fsrs_stability: null,
+      fsrs_difficulty: null,
+      fsrs_state: null,
+      fsrs_reps: 0,
+      fsrs_lapses: 0,
+      review_streak: 0,
+      last_review_at: null,
+    })
+    const { state } = buildPlanState(
+      inputs({
+        sources: [src],
+        cards: [card('c1', '2026-10-28'), card('c2', null), card('c3', '2026-10-25')],
+        profile: profile({ review_cap_pct: 25 }),
+      }),
+      { now: NOW, boundary },
+    )
+    const u = state.units.find((x) => x.id === 'p0')!
+    expect(u.nextReviewOn).toBe('2026-10-25')
+    expect(u.memory).toEqual({ stability: 12.346, lastReviewOn: '2026-10-20' })
+    expect(state.units.find((x) => x.id === 'p1')!.memory).toBeNull()
+    expect(state.settings.reviewCapPct).toBe(25)
+  })
+
   it('splits a rough source over the partial exams in order', () => {
     const { state } = buildPlanState(inputs(), { now: NOW, boundary })
     expect(state.goals.map((g) => [g.id, g.on, g.unitIds.length])).toEqual([

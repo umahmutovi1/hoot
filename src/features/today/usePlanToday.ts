@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAllSources, usePlanBlocks } from '@/features/plan/api'
+import { useAllSources, useCardReviews, usePlanBlocks } from '@/features/plan/api'
 import { blocksOn, useUnitIndex } from '@/features/plan/model'
 import { usePlanStore } from '@/features/plan/store'
 import { useActiveSession, useSessions } from '@/features/session/api'
@@ -26,6 +26,7 @@ export function usePlanToday() {
   const { data: sessions = [] } = useSessions()
   const { data: active } = useActiveSession()
   const { data: sources = [] } = useAllSources()
+  const { data: cards = [] } = useCardReviews()
 
   return useMemo(() => {
     const todayBlocks = blocksOn(blocks, today)
@@ -80,6 +81,7 @@ export function usePlanToday() {
       blocks,
       todayBlocks,
       units,
+      cards,
       model,
       loaded: blocksQuery.data !== undefined,
       plannedToday,
@@ -94,6 +96,7 @@ export function usePlanToday() {
     today,
     nowMin,
     units,
+    cards,
     model,
     subjects,
     sessions,
