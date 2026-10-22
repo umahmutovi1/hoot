@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { syncQueueFor } from '@/app/sync'
 import { useAuth } from '@/features/auth/auth-context'
 import { scheduleKey } from '@/features/schedule/api'
-import type { DayRow } from '@/features/schedule/model'
+import type { DayRow, ExceptionRow } from '@/features/schedule/model'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useSessionWriter } from '@/features/session/api'
 import { usePresets } from '@/features/session/presets'
@@ -410,10 +410,48 @@ export function useDeleteBlock() {
   return useCallback(
     async (block: PlanBlockRow, drop: boolean) => {
       const key = planBlocksKey(userId)
+      const exceptionsKey = scheduleKey('availability_exceptions', userId)
+      // "Prebaci" (decision, Stage 8b): the AI block's time becomes busy that day, so the replan
+      // places its units elsewhere instead of in the same slot again.
+      const busy: ExceptionRow | null =
+        !drop && block.origin === 'ai' && block.start_min !== null
+          ? {
+              id: crypto.randomUUID(),
+              user_id: userId!,
+              on_date: block.on_date,
+              start_min: block.start_min,
+              end_min: block.start_min + block.planned_minutes,
+              is_busy: true,
+              lecture_log_id: null,
+              updated_at: new Date().toISOString(),
+            }
+          : null
       queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) =>
         list.filter((b) => b.id !== block.id),
       )
-      await write([{ kind: 'delete', table: 'plan_blocks', match: { id: block.id } }])
+      if (busy)
+        queryClient.setQueryData<ExceptionRow[]>(exceptionsKey, (list = []) => [...list, busy])
+      await write([
+        { kind: 'delete', table: 'plan_blocks', match: { id: block.id } },
+        ...(busy
+          ? [
+              {
+                kind: 'upsert' as const,
+                table: 'availability_exceptions',
+                rows: [
+                  {
+                    id: busy.id,
+                    on_date: busy.on_date,
+                    start_min: busy.start_min,
+                    end_min: busy.end_min,
+                    is_busy: true,
+                  },
+                ],
+              },
+            ]
+          : []),
+      ])
+      if (busy) void queryClient.invalidateQueries({ queryKey: exceptionsKey })
       if (drop && block.assessment_id)
         cut.mutate(
           block.plan_block_units.map((u) => ({ unitId: u.unit_id, goalId: block.assessment_id! })),
@@ -421,12 +459,26 @@ export function useDeleteBlock() {
       replanNow()
       return async () => {
         queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) => [...list, block])
-        await write(
-          writeBlockOps(
+        if (busy)
+          queryClient.setQueryData<ExceptionRow[]>(exceptionsKey, (list = []) =>
+            list.filter((e) => e.id !== busy.id),
+          )
+        await write([
+          ...writeBlockOps(
             rowOfBlock(block) as ReturnType<typeof blockRow>,
             block.plan_block_units.map(({ user_id: _u, ...u }) => u),
           ),
-        )
+          ...(busy
+            ? [
+                {
+                  kind: 'delete' as const,
+                  table: 'availability_exceptions',
+                  match: { id: busy.id },
+                },
+              ]
+            : []),
+        ])
+        if (busy) void queryClient.invalidateQueries({ queryKey: exceptionsKey })
         replanNow()
       }
     },

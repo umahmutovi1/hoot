@@ -133,7 +133,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 
 1. “+ Dodaj blok” na danu u Planu: predmet, tip, opcionalno jedinice, dan, trajanje, opcionalno vrijeme. Blok je ručni (`origin = 'user'`).
 2. Izmjena bloka koji je napravila app (dan, vrijeme, trajanje, jedinice) ga pretvara u ručni i zaključava; app to kaže jednom rečenicom.
-3. Brisanje bloka koji je napravila app otvara izbor: “Prebaci gradivo na druge dane” (jedinice se vraćaju u bazen, replan ih rasporedi od sutra) ili “Izbaci iz plana” (jedinice dobiju ručno “ne ulazi” za taj ispit). Brisanje ručnog bloka samo vraća njegovo gradivo u bazen.
+3. Brisanje bloka koji je napravila app otvara izbor: “Prebaci gradivo na druge dane” (jedinice se vraćaju u bazen, a vrijeme bloka tog dana postaje zauzeto kao izuzetak dostupnosti, pa ih replan rasporedi drugdje; odluka, Etapa 8b: plan je deterministički i bez toga bi budući blok vratio na isto mjesto; Poništi briše i izuzetak) ili “Izbaci iz plana” (jedinice dobiju ručno “ne ulazi” za taj ispit). Brisanje ručnog bloka samo vraća njegovo gradivo u bazen.
 4. Poslije svake izmjene: undo toast i replan (debounce 2 s). Replan nikad ne briše ni pomjera ručne blokove.
 5. (Odluka, Etapa 8b.) Tip „Zadaci“ nema svoj `block_kind`: ručni blok je `learn`, a izabrani način (čitanje, zadaci, ponavljanje, pitanja) čuva se u `plan_blocks.reason` (`{"code":"manual","mode":…}`), pa sesija kreće u tom načinu. Izmijenjen AI blok nosi `edited`, pa Satnica nudi „Vrati predloženo“ (briše izmijenjene blokove dana, plan ponovo rasporedi to gradivo). Satnica pomjera blok kroz UrediBlok (vrijeme, dan, trajanje), bez prevlačenja.
 

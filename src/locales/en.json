@@ -1761,7 +1761,7 @@
     "save": "Save",
     "deleteBlock": "Delete block",
     "move": "Move the material to other days",
-    "moveSub": "The plan spreads it from tomorrow",
+    "moveSub": "This time becomes busy; the plan puts it elsewhere",
     "drop": "Remove from the plan",
     "dropSub": "{{exam}}: {{title}} is no longer in scope",
     "delete": "Delete",
