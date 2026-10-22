@@ -378,9 +378,11 @@ Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash
 - Datum ponavljanja nikad ne prelazi ispit: ako bi pao iza, zamijeni se ponavljanjem u buffer danu.
 - **Cilj je jačina na dan ispita.** Za svaku jedinicu u obimu ispita računa se predviđeni R(datum ispita) iz trenutnog FSRS stanja. Ako je ispod ciljnog zadržavanja, a sljedeće ponavljanje ne bi palo prije ispita, zakaže se ponavljanje u bufferu ili zadnjem danu prije buffera. Prognoza spremnosti i procjena ocjene koriste R na dan ispita, ne današnji.
 - **Poglavlje nije kartica.** FSRS default parametri su naučeni na kratkim karticama. Za poglavlja (`unit_kind = 'chapter'`) ocjena dolazi iz najpreciznijeg dostupnog testa (podnaslovi: % objašnjenih → 0/1/2; ostalo 0–2), a ciljno zadržavanje je za 0.03 više od tabele prioriteta (najviše 0.93). Pitanja (`unit_kind = 'question'`) i **kartice** su zasebni FSRS objekti: kartice dobijaju iste FSRS kolone kao jedinice (`0017_fsrs.sql`) i svoje ponavljanje u `review` blokovima, a jačina jedinice uključuje i njene kartice (ponderisano kao jedna jedinica).
-- Nakon 4 uspješna ponavljanja (`fsrs_reps`, bez lapsa u međuvremenu) jedinica prelazi na level 3 (“Ponovljeno”).
+- Nakon 4 uspješna ponavljanja zaredom jedinica prelazi na level 3 (“Ponovljeno”). **Odluka, Etapa 9:** uspjeh je samo “Sjećam se” (2); “Djelimično” ili “Ne” vraća brojač (`review_streak`) na 0.
+- **Odluka, Etapa 9 (ishod provjere):** ocjena poglavlja iz više stavki gate-a (ispitna pitanja, kartice) je prosjek zaokružen na 0/1/2 (≥ 1.5 → 2, ≥ 0.5 → 1); podnaslovi: ≥ 80% objašnjenih → 2, ≥ 40% → 1. Pitanje i kartica u gate-u dobijaju i svoje FSRS stanje. Neuspjeh koji vraća jedinicu u učenje briše `next_review_on`: jedinica dobija `learn` blok, a kad se ponovo pročita, opet se nudi gate (ili provjera za 2 dana). Ponavljanje nikad ne pada poslije prvog dana buffera (ili dana prije ispita kad buffera nema); `plan()` to ponovo primijeni kad se ispit pomjeri.
 - **Jačina na ekranima.** Jedinica: R. Tema, izvor, predmet, ispit: prosjek R ponderisan minutama jedinica (ista logika kao progres), samo nad jedinicama koje su ušle u ponavljanje. Prikazuje se uz progres, ne umjesto njega. Skala u UI: 85%+ Jako, 75–84% Dobro, 60–74% Slabi, ispod 60% Zaboravlja se.
 - **Provjera znanja.** `review` blok se radi kao niz recall gate-ova (ekran “Provjera znanja”), sa sažetkom promjene jačine na kraju.
+- **Kartica “Znanje slabi” (odluka, Etapa 9).** Na Danas, kao obična kartica prijedloga (pravilo jedne kartice iznad liste važi): provjere koje su danas na redu (`next_review_on` ≤ danas), a nisu u današnjem planu (nisu stale u `review_cap_pct` ili su nastale poslije planiranja). Tekst iz mockupa: “Provjera znanja · N poglavlja · ~X min · Počni” → Provjera znanja nad tim jedinicama.
 - Svako ponavljanje se bilježi u `review_logs` (izvor pitanja, ishod, proteklo dana, stabilnost prije i poslije). Iz toga se kasnije mogu optimizovati lični FSRS parametri (`profiles.fsrs_params`, optimizer `@open-spaced-repetition/binding`), bez gubitka historije. Dok toga nema, koriste se default parametri.
 
 **AI strategist**
@@ -437,7 +439,7 @@ Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migrac
 
 - Model: `profiles.session_presets` (jsonb, vlastiti predlošci; ugrađeni su u kodu), `profiles.default_preset` (default `standard`), `study_sessions.timer_mode` = id predloška. Zod šema u `_shared/schemas.ts`; čista logika značke u `src/lib/session/timer.ts`.
 - Izbor po sesiji u PokreniSesiju (zadnji korišten je predložen), default u Postavkama i onboardingu.
-- **Kraj pauze sa zaključanim ekranom:** ulazak u pauzu upiše `break_ends_at` i zakaže Web Push za taj trenutak (edge funkcija `notify`); izlazak iz pauze ga otkaže. Do Web Push-a samo značka.
+- **Kraj pauze sa zaključanim ekranom:** ulazak u planiranu pauzu upiše `break_ends_at` i zakaže Web Push za taj trenutak (edge funkcija `notify`); izlazak iz pauze ga otkaže. Slobodna pauza nema push. **Odluka, Etapa 9:** app upisuje posao u `push_jobs` (vrijeme i tekst na jeziku korisnika), a `notify` svake minute (`pg_cron`) šalje dospjele; isto za “prvi blok dana” (10 min prije, za narednih 7 dana iz spašenog plana, preračuna se sa planom). Na iOS-u push radi samo za PWA dodanu na početni ekran (iOS 16.4+).
 - Plan zna za pauze: `placeTimes()` ih rezerviše po zadanom predlošku (vidi Scheduler → Lista vs satnica).
 - Statistika (Etapa 11) poredi predloške po fokusu i brzini (normalizovanoj težinom) i nakon bar 5 sesija po predlošku može predložiti promjenu defaulta.
 - **Zaboravljen timer** se okida kad aktivni segment radi duže od 3 h (provjera pri otvaranju app-a i na ekranu sesije). Pitanje „Jesi li učila do sad?“ nudi „Da, nastavi“ (pitanje se zatvara) i „Ne, završila sam u HH:MM“ (default: početak segmenta + 25 min, između početka segmenta i sada): sesija se završi u to vrijeme i otvara se KrajSesije.
@@ -1376,33 +1378,43 @@ create index plan_blocks_replan_idx on plan_blocks (user_id, on_date) where orig
 -- RLS) koji prošle 'planned' blokove označi 'missed', obriše buduće nezapočete AI blokove drugih runova od `from`
 -- i upiše run sa blokovima; isti run poslan dvaput ne mijenja ništa. Klijent ga šalje kroz offline red (op 'rpc').
 
--- 0017_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene; iste FSRS kolone dobijaju i cards
+-- 0017_fsrs.sql (Etapa 9, samo aditivno: v0.8.0 još čita SM-2 kolone na dijeljenoj bazi;
+-- srs_ease, srs_interval_days, srs_success_count i profiles.srs_multiplier se brišu u posebnoj
+-- migraciji poslije release-a v0.9.0)
 alter table units
-  drop column srs_ease, drop column srs_interval_days, drop column srs_success_count,
   add column fsrs_stability numeric,
   add column fsrs_difficulty numeric,
   add column fsrs_state smallint,                     -- ts-fsrs State: 0 new, 1 learning, 2 review, 3 relearning
   add column fsrs_reps smallint not null default 0,
   add column fsrs_lapses smallint not null default 0,
+  add column review_streak smallint not null default 0, -- "Sjećam se" zaredom (level 3 nakon 4)
   add column last_review_at timestamptz;             -- next_review_on ostaje
+alter table cards                                     -- iste FSRS kolone + next_review_on
+  add column fsrs_stability numeric, add column fsrs_difficulty numeric, add column fsrs_state smallint,
+  add column fsrs_reps smallint not null default 0, add column fsrs_lapses smallint not null default 0,
+  add column review_streak smallint not null default 0,
+  add column last_review_at timestamptz,
+  add column next_review_on date;
 alter table profiles
-  drop column srs_multiplier,
   add column review_cap_pct smallint not null default 40 check (review_cap_pct between 10 and 100),
   add column fsrs_params jsonb;                       -- null = default parametri
 alter table review_logs
+  add column card_id uuid references cards on delete cascade,   -- ponavljanje kartice (unit_id = njena jedinica)
   add column elapsed_days numeric,
   add column stability_before numeric,
-  add column stability_after numeric,
-  add column card_id uuid references cards on delete cascade;   -- ponavljanje kartice (unit_id = njena jedinica)
-alter table cards
-  add column fsrs_stability numeric,
-  add column fsrs_difficulty numeric,
-  add column fsrs_state smallint,
-  add column fsrs_reps smallint not null default 0,
-  add column fsrs_lapses smallint not null default 0,
-  add column last_review_at timestamptz,
-  add column next_review_on date,
-  add column updated_at timestamptz not null default now();     -- + set_updated_at triger
+  add column stability_after numeric;
+alter table session_units
+  add column recall_skipped boolean not null default false;     -- preskočen recall gate se bilježi
+
+-- 0018_push.sql (Etapa 9): Web Push. App računa kad je obavještenje na redu i upiše ga u push_jobs
+-- sa tekstom na jeziku korisnika; notify (pg_cron svake minute, service role samo na ove dvije
+-- tabele) šalje dospjele na sve pretplate korisnika. Izlazak iz pauze briše njen posao.
+create table push_subscriptions (id, user_id, endpoint unique, p256dh, auth, user_agent, created_at, updated_at);
+create table push_jobs (id, user_id, kind ('first_block','break_end','test'), ref, send_at, title, body, url,
+  sent_at, created_at, updated_at, unique (user_id, kind, ref));
+alter table profiles
+  add column notify_first_block boolean not null default true,
+  add column notify_break_end boolean not null default true;
 ```
 
 ## AI integracija
