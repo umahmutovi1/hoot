@@ -22,10 +22,13 @@ export interface SessionSource {
   measured: boolean
 }
 
-export function sessionSources(sources: SourceWithUnits[]): SessionSource[] {
+export function sessionSources(
+  sources: SourceWithUnits[],
+  speeds: ReadonlyMap<string, number> = new Map(),
+): SessionSource[] {
   return sources
     .map((source) => {
-      const material = materialOf(source)
+      const material = materialOf(source, speeds.get(source.id))
       const leafIds = new Set(leavesOf(asProgress(material.units)).map((u) => u.id))
       return {
         source,

@@ -1,3 +1,4 @@
+import { useSpeeds } from '@/features/plan/api'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -43,7 +44,8 @@ function SourceDetail({
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const material = materialOf(source)
+  const speeds = useSpeeds()
+  const material = materialOf(source, speeds.get(source.id))
   const measure = measureOf(source)
   const leaves = leavesOf(asProgress(material.units))
   const base = `/subjects/${subject.id}/sources/${source.id}`

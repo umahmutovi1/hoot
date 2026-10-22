@@ -1,5 +1,5 @@
 import type { Tables } from '@/types/database'
-import { blendedRate, DEFAULT_MEASURE, estimateUnits } from '@/lib/estimates'
+import { blendedRate, DEFAULT_MEASURE, estimateUnits, speedFactor } from '@/lib/estimates'
 import { MEASURES, type Measure } from '@/lib/outline/parse'
 import {
   EMPTY_PROGRESS,
@@ -71,11 +71,14 @@ export interface SourceMaterial {
   progress: Progress
 }
 
-/** Estimates and progress of one source; computed, never stored. */
-export function materialOf(source: SourceWithUnits): SourceMaterial {
+/**
+ * Estimates and progress of one source; computed, never stored. `speed` is the personal speed
+ * factor (PRD "Procjena" → 5) that scales the heuristic before measurements take over.
+ */
+export function materialOf(source: SourceWithUnits, speed = 1): SourceMaterial {
   const units = visibleUnits(source)
   const rate = blendedRate(
-    source.base_min_per_unit,
+    source.base_min_per_unit * speed,
     source.learned_min_per_unit,
     source.learned_samples,
   )
@@ -90,6 +93,21 @@ export function materialOf(source: SourceWithUnits): SourceMaterial {
   )
   const withMinutes = units.map((u) => ({ ...u, ...estimates.get(u.id)! }))
   return { source, units: withMinutes, progress: progressOf(leavesOf(asProgress(withMinutes))) }
+}
+
+/** The speed factor of one source among all the user's sources. */
+export function speedOf(source: Source, all: Source[]): number {
+  return speedFactor(
+    all.map((s) => ({
+      id: s.id,
+      kind: s.kind,
+      base: s.base_min_per_unit,
+      learned: s.learned_min_per_unit === null ? null : Number(s.learned_min_per_unit),
+      samples: s.learned_samples,
+    })),
+    source.kind,
+    source.id,
+  )
 }
 
 export function asProgress(units: (Unit & { minutes: number })[]): ProgressUnit[] {

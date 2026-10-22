@@ -349,6 +349,8 @@ Satnicu pravi čista TypeScript funkcija `plan(state) → blocks`, bez AI-ja: br
 - **San pred ispit** i granica dana se poštuju.
 - Isti ulaz daje isto vrijeme (determinizam); Thompson uzorkovanje u Terminima učenja koristi seed iz `input_hash`.
 
+**Upis i okidači (odluka, Etapa 8b).** Plan se računa u browseru (`src/features/plan/ReplanRunner.tsx`) iz istih podataka koje ekrani već imaju i upisuje kroz offline red jednim pozivom `replace_plan()`. Svaka uspješna izmjena bilo gdje (i kraj sesije, sinhronizacija kalendara, novi dan) ponovo slaže stanje; ako se `input_hash` razlikuje od zadnjeg `plan_runs`, plan se preračuna (debounce 2 s), nikad dok timer radi. Trenutna minuta ulazi u satnicu samo za današnji prvi plan i nije u hashu, da prazan dan ne pravi novi run svakih nekoliko minuta. Integralni ispit „samo ako zatreba“ ulazi u plan kad neki redovni ispit predmeta ima rezultat a nije položen; popravni kad njegov ispit nije položen (kao na predmetu).
+
 Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash` (jedinice, nivoi, procjene, FSRS stanje, ispiti, obim, dostupnost, raspored, zauzeto iz povezanih kalendara, unosi predavanja, prioriteti, režimi, ručni start kampanje, ručni blokovi, faktor realizacije, ocjene termina, zadani predložak sesije, postavke); ako je isti kao u zadnjem `plan_runs`, koristi se postojeći plan i ništa se ne računa. AI se zove samo za strategist, i to ručno ili sedmično.
 
 **Ista jedinica u danu.** Dijelovi iste duge jedinice (podjela po stranicama) smiju biti isti dan samo u istom ili susjednom bloku; ponavljanje (`review`) iste jedinice je najviše jednom dnevno.
@@ -1364,6 +1366,10 @@ alter table plan_blocks
   alter column plan_run_id drop not null;
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
+create index plan_blocks_replan_idx on plan_blocks (user_id, on_date) where origin = 'ai' and status = 'planned';
+-- replace_plan(run_id, input_hash, deficit, today, from, blocks jsonb, units jsonb): jedan poziv (security invoker,
+-- RLS) koji prošle 'planned' blokove označi 'missed', obriše buduće nezapočete AI blokove drugih runova od `from`
+-- i upiše run sa blokovima; isti run poslan dvaput ne mijenja ništa. Klijent ga šalje kroz offline red (op 'rpc').
 
 -- 0017_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene; iste FSRS kolone dobijaju i cards
 alter table units
