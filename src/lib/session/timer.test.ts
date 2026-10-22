@@ -162,6 +162,31 @@ describe('presetReminder', () => {
     expect(presetReminder(own, third, at(120))!.totalMs).toBe(45 * MINUTE)
   })
 
+  it('an early pause is free: it counts up and the interval goes on where it stopped', () => {
+    const paused = presetReminder(standard, [seg('a', 0, 20)], at(23))!
+    expect(paused).toEqual({
+      phase: 'free',
+      totalMs: 0,
+      remainingMs: 30 * MINUTE,
+      elapsedMs: 3 * MINUTE,
+    })
+    const resumed = presetReminder(standard, [seg('a', 0, 20), seg('b', 25, null)], at(35))!
+    expect(resumed).toMatchObject({ phase: 'work', remainingMs: 20 * MINUTE })
+  })
+
+  it('a pause in the last 5 minutes of the interval is the planned break', () => {
+    const r = presetReminder(standard, [seg('a', 0, 46)], at(48))!
+    expect(r).toEqual({ phase: 'break', totalMs: 15 * MINUTE, remainingMs: 13 * MINUTE })
+    const next = presetReminder(standard, [seg('a', 0, 46), seg('b', 61, null)], at(71))!
+    expect(next).toMatchObject({ phase: 'work', remainingMs: 40 * MINUTE })
+  })
+
+  it('free pauses add up: the interval ends on the study time, not the stretch', () => {
+    const segments = [seg('a', 0, 20), seg('b', 25, 50)]
+    expect(presetReminder(standard, segments, at(51))!.phase).toBe('break')
+    expect(breakEndsAt(standard, [seg('a', 0, 20)], at(20))).toBeNull()
+  })
+
   it('Flowtime has no study countdown and a break of a fifth of the stretch', () => {
     expect(presetReminder(flow, [seg('a', 0, null)], at(70))).toBeNull()
     expect(presetReminder(flow, [seg('a', 0, 60)], at(60))!.totalMs).toBe(12 * MINUTE)

@@ -461,7 +461,8 @@
       "segments_one": "{{count}} segment",
       "segments_other": "{{count}} segments",
       "pauseTotal_one": "{{count}} min of breaks",
-      "pauseTotal_other": "{{count}} min of breaks"
+      "pauseTotal_other": "{{count}} min of breaks",
+      "freePause": "Free pause · {{time}}"
     },
     "units": {
       "title": "Working on",
