@@ -282,6 +282,13 @@ function useShiftLateDay() {
   const { resolve, defaultId } = usePresets()
   const show = useToast((s) => s.show)
   const { t } = useTranslation()
+  // "San pred ispit": the day before an exam nothing is moved past `exam_eve_end_min`.
+  const examEveEnd = (today: LocalDate) => {
+    const state = usePlanStore.getState().model?.built.state
+    if (!state) return null
+    const eve = state.goals.some((g) => g.kind === 'exam' && g.on === addDays(today, 1))
+    return eve ? state.settings.examEveEndMin : null
+  }
   return useCallback(
     async (blockId: string, minutes: number) => {
       const key = planBlocksKey(userId)
@@ -306,7 +313,7 @@ function useShiftLateDay() {
         { minutes },
         later.map((b) => ({ id: b.id, startMin: b.start_min!, minutes: b.planned_minutes })),
         freeSlotsOn(today, schedule.dayInput(today)),
-        { nowMin, preset: resolve(defaultId) },
+        { nowMin, preset: resolve(defaultId), endBy: examEveEnd(today) },
       )
       const at = (min: number | null) =>
         min === null ? null : zonedInstant(today, min, boundary.timeZone).toISOString()
