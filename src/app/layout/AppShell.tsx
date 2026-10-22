@@ -1,16 +1,18 @@
 import { useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom'
 import { Toast } from '@/components/Toast'
 import { ContinueOnboarding } from '@/features/onboarding/ContinueOnboarding'
 import { ForgottenGuard } from '@/features/session/ForgottenGuard'
 import { SessionStartSheet } from '@/features/session/SessionStartSheet'
 import { LocaleSync } from '@/features/settings/LocaleSync'
+import { Crumbs } from './Crumbs'
 import { NavMenu } from './NavMenu'
 import { TopBar } from './TopBar'
 
 /**
- * Tab screens: the first row (avatar, AI, menu) and the screen below it. There is no bottom tab
- * bar (decision after v0.7.2, docs/design/NavMeni.html), so content runs to the bottom edge.
+ * Every screen except onboarding and the session flow: the first row (logo, AI, menu), the
+ * breadcrumbs with ‹ below the main screens, and the screen. There is no bottom tab bar
+ * (decision after v0.7.2, docs/design/NavMeni.html), so content runs to the bottom edge.
  */
 export function AppShell() {
   const { pathname } = useLocation()
@@ -24,12 +26,15 @@ export function AppShell() {
     <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col gap-3 px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-[calc(24px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] keyboard:pb-[calc(8px+var(--vv-bottom,0px))]">
       <LocaleSync />
       <TopBar menuOpen={menuOpen} onMenu={() => setMenuOpen(true)} />
+      <Crumbs />
       <ContinueOnboarding />
       <Outlet />
       <NavMenu open={menuOpen} onOpenChange={setMenuOpen} />
       <SessionStartSheet />
       <ForgottenGuard />
       <Toast />
+      {/* A new screen starts at the top; back restores where you were. */}
+      <ScrollRestoration />
     </div>
   )
 }

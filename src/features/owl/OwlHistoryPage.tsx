@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { TrashIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { useLocale } from '@/features/settings/useLocale'
@@ -37,7 +37,7 @@ export function OwlHistoryPage() {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <BackHeader title={t('owl.history.title')} fallback="/chat" />
+      <ScreenTitle title={t('owl.history.title')} />
       {conversations && conversations.length === 0 && (
         <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('owl.history.empty')}</p>
       )}

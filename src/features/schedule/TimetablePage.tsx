@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@/components/icons'
+import { ChevronRightIcon, PlusIcon } from '@/components/icons'
 import { useDayBoundary, useProfile, useUpdateProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { useSubjects } from '@/features/subjects/api'
@@ -16,7 +16,6 @@ import { ClassSheet } from './ClassSheet'
 import { CLASS_KIND_STYLE } from './format'
 import { toClass, toPeriod, type TimetableRow } from './model'
 import { useWeekdayNames } from './weekdays'
-import { goBack } from '@/app/navigation'
 
 /** Raspored nastave: classes of the current teaching period, one weekday at a time. */
 export function TimetablePage() {
@@ -52,14 +51,6 @@ export function TimetablePage() {
   return (
     <div className="flex flex-col gap-3.5">
       <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => goBack(navigate, '/plan/availability')}
-          aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full glass"
-        >
-          <ChevronLeftIcon size={20} />
-        </button>
         <span className="text-base font-semibold">{t('timetable.title')}</span>
         <button
           type="button"

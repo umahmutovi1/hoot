@@ -1,4 +1,3 @@
-import { goBack } from '@/app/navigation'
 import { useCreateRoughSource } from '@/features/sources/api'
 import type { RoughSize } from '@/lib/estimates/rough'
 import { RoughSizeField } from './RoughSizeField'
@@ -155,20 +154,11 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
   }
 
   return (
-    <form onSubmit={submit} noValidate className="flex min-h-[calc(100dvh-48px)] flex-col gap-4">
+    <form onSubmit={submit} noValidate className="flex flex-1 flex-col gap-4">
       <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => goBack(navigate, '/subjects')}
-          aria-label={t('common.close')}
-          className="flex size-11 items-center justify-center rounded-full glass"
-        >
-          <CloseIcon size={18} />
-        </button>
-        <h1 className="text-base font-semibold">
+        <h1 className="text-[26px] leading-tight font-bold tracking-[-0.4px]">
           {t(isEdit ? 'subjects.form.editTitle' : 'subjects.form.newTitle')}
         </h1>
-        <span className="w-11" />
       </div>
 
       <label className="flex flex-col gap-2">

@@ -30,7 +30,7 @@ avatar (Postavke) → AI iskra odmah desno (otvara Chat) → ☰ u desnom uglu; 
 i sadržaj do dna ekrana. ☰ otvara panel u staklu sheetova preko ekrana (isti prvi red, ☰ postaje ×): Danas, Plan, Predmeti, Napredak, Postavke;
 stavke sa podstranicama su harmonika (otvorena je sekcija trenutne stranice), a na dnu je samo „Odjavi se“. Podstranice: Plan → Kalendar,
 Satnica, Dostupnost, Raspored nastave; Predmeti → aktivni predmeti, Svi predmeti; Napredak → Pregled, Sesije; Postavke → Sve postavke,
-Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stignu). Historija razgovora je u chatu. Sesija se pokreće iz kartice
+Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stignu). Historija razgovora je u chatu. **Mrvice (odluka nakon 8b):** svaki ekran osim onboardinga, sesije u toku i forme kraja sesije ima isti prvi red (logo, AI, ☰). Ispod glavnih ekrana (Danas, Plan, Predmeti, Napredak, Chat) je drugi red: ‹ (nazad odakle si došla, bez historije jedan nivo gore) i putanja po mjestu u appu, npr. „Predmeti › Signali › Knjiga“; svaka mrvica iznad ekrana je link. Ekrani više nemaju svoje ‹ dugme. Sesija se pokreće iz kartice
 "Sljedeće" (dugme Počni) ili iz chata.
 
 ## Ekrani po toku

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
-import { SessionHeader } from '@/features/session/SessionHeader'
 import { formatDuration } from '@/features/sources/format'
 import { useDayBoundary } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
@@ -56,7 +55,6 @@ export function FreshStartPage() {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <SessionHeader title="" fallback="/" />
       <div className="flex flex-col gap-1">
         <span className="text-sm text-ink-secondary first-letter:uppercase">
           {format(toDisplayDate(today), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}

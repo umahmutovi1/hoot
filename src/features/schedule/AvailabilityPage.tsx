@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { PencilIcon } from '@/components/icons'
 import { useAgenda } from '@/features/plan/agenda'
 import { DayStrip } from '@/features/plan/DayStrip'
@@ -43,7 +43,7 @@ export function AvailabilityPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <BackHeader title={t('availability.title')} fallback="/plan" />
+      <ScreenTitle title={t('availability.title')} />
       <div className="flex flex-col gap-1">
         <h1 className="text-[26px] leading-tight font-bold">{t('availability.heading')}</h1>
         <p className="text-sm leading-[1.45] text-ink-muted">

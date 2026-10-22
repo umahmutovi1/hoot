@@ -1,10 +1,10 @@
 import { useSpeeds } from '@/features/plan/api'
 import type { TFunction } from 'i18next'
 import { useState } from 'react'
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
-import { ChevronLeftIcon, MoreIcon, PlusIcon } from '@/components/icons'
+import { MoreIcon, PlusIcon } from '@/components/icons'
 import { LazyMarkdown } from '@/components/LazyMarkdown'
 import { SplashScreen } from '@/components/SplashScreen'
 import { Button } from '@/components/ui/button'
@@ -31,7 +31,6 @@ import {
 import { NOTES_MAX_LENGTH } from './schemas'
 import { TopicsSheet } from './TopicsSheet'
 import { UnitSheet } from './UnitSheet'
-import { goBack } from '@/app/navigation'
 
 /** Jedinica: status, difficulty, estimate, topics, related units, notes / answer and cards. */
 export function UnitPage() {
@@ -55,7 +54,6 @@ function UnitDetail({
   unit: Unit
 }) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const update = useUpdateUnit(subject.id)
   const patch = (p: UnitPatch) => update.mutate({ id: unit.id, patch: p })
   const speeds = useSpeeds()
@@ -89,14 +87,6 @@ function UnitDetail({
   return (
     <div className="flex flex-col gap-3.5">
       <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => goBack(navigate, `/subjects/${subject.id}/sources/${source.id}`)}
-          aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full glass"
-        >
-          <ChevronLeftIcon size={20} />
-        </button>
         <span className="text-[13px] text-ink-muted">{positionLabel(t, material, unit)}</span>
         <button
           type="button"
