@@ -223,14 +223,14 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 
 - [ ] Web Push temelj: service worker, pretplata, `notify` edge funkcija, `pg_cron`; prvi blok dana i kraj pauze (`break_ends_at`) ([SETUP.md](SETUP.md): VAPID ključevi)
 - [ ] Nakon čitanja/ponavljanja poglavlja u sesiji odmah ponuditi povezana ispitna pitanja; izvor „Pitanja“ se mjeri uspjehom, ne vremenom (PRD „Izvor Pitanja“)
-- [ ] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2 (AI izvori dolaze u Etapi 10; svih 7 izvora je u v1)
-- [ ] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
+- [x] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2 (AI izvori dolaze u Etapi 10; svih 7 izvora je u v1)
+- [x] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
 - [x] Migracija `0017_fsrs.sql` (samo aditivno: FSRS kolone na `units` i `cards`, `review_streak`, `review_logs.card_id` + proteklo dana i stabilnost, `review_cap_pct`, `session_units.recall_skipped`) i `0018_push.sql` (`push_subscriptions`, `push_jobs`, prekidači notifikacija), regenerisan `database.ts`
 - [ ] Poslije release-a `v0.9.0`: posebna migracija briše SM-2 kolone (`units.srs_ease`, `srs_interval_days`, `srs_success_count`, `profiles.srs_multiplier`); v0.8.0 ih još čita na dijeljenoj bazi, kod ih od Etape 9 ne koristi
 - [x] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu (+0.03 za poglavlja), `next_review_on`, ograničenje na datum ispita, R na dan ispita ≥ cilj (ponavljanje u bufferu), level 3 nakon 4 uspjeha + testovi
 - [ ] Kartice kao zasebni FSRS objekti u `review` blokovima; jačina jedinice uključuje kartice
 - [ ] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi (logika u `src/lib/srs/` ✓, ekrani)
-- [ ] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje
+- [x] Provjera pročitanog: preskočen gate → provjera za 2 dana; neuspjeh vraća jedinicu u učenje
 - [ ] `review_logs` (proteklo dana, stabilnost prije/poslije), prelaz na level 2/3, review i recap blokovi u scheduleru, dnevni limit ponavljanja (`review_cap_pct`), prije starta kampanje samo ponavljanja već naučenog
 - [ ] ProvjeraZnanja: review blok kao niz recall gate-ova + sažetak promjene jačine; kartica „Znanje slabi“ na Danas; kartica „Jačina znanja“ na Predmetu
 - **DoD** → `v0.9.0`

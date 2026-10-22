@@ -1881,5 +1881,175 @@
     "newSource": "Novi izvor",
     "source": "Izvor",
     "unit": "Jedinica"
+  },
+  "recall": {
+    "title": "Provjeri se",
+    "skip": "Preskoči",
+    "back": "Nazad",
+    "tabs": {
+      "blurt": "Blurting",
+      "questions": "Pitanja"
+    },
+    "askFrom": "PITAJ ME IZ",
+    "askFromLabel": "Izvor pitanja",
+    "sources": {
+      "exam_question": "Ispitna pitanja",
+      "notes": "Bilješke",
+      "outline": "Podnaslovi",
+      "card": "Kartice"
+    },
+    "label": {
+      "exam_question": "ISPITNO PITANJE {{label}} · povezano preko teme",
+      "notes": "IZ TVOJIH BILJEŠKI · {{n}} od {{total}}",
+      "card": "KARTICA · {{n}} od {{total}}"
+    },
+    "notesPrompt": "Šta znaš o: {{title}}?",
+    "answerPlaceholder": "Napiši odgovor iz glave…",
+    "answerAria": "Tvoj odgovor",
+    "reveal": "Prikaži odgovor",
+    "answerLabel": {
+      "exam_question": "ODGOVOR",
+      "notes": "IZ BILJEŠKI",
+      "card": "ODGOVOR"
+    },
+    "noAnswer": "NEMA UNESENOG ODGOVORA",
+    "noAnswerBody": "Uporedi sa svojim bilješkama i ocijeni se. Možeš jednom upisati odgovor — koristi se pri sljedećem ponavljanju.",
+    "saveAnswer": "Spasi kao odgovor",
+    "answerSaved": "Odgovor je spašen",
+    "outlineLabel": "PO STRUKTURI POGLAVLJA",
+    "outlineHint": "Za svaki podnaslov označi da li si ga mogla objasniti bez gledanja.",
+    "outlineYes": "Da",
+    "outlineNo": "Ne",
+    "outlineAria": "Da li si mogla objasniti: {{title}}",
+    "blurtLabel": "NAPIŠI SVE ČEGA SE SJEĆAŠ",
+    "blurtPlaceholder": "Bez gledanja u knjigu ili bilješke…",
+    "blurtHint": "Kad istekne vrijeme, uporedi sa svojim bilješkama pa se ocijeni.",
+    "blurtCompare": "Uporedi",
+    "blurtCompareLabel": "BILJEŠKE I PODNASLOVI",
+    "blurtNothing": "Za ovo poglavlje nema bilješki ni podnaslova — uporedi sa knjigom.",
+    "howMuch": "Koliko si se sjetila?",
+    "recall": {
+      "0": "Ne",
+      "1": "Djelimično",
+      "2": "Sjećam se"
+    },
+    "revealFirst": "Prvo pogledaj odgovor, pa se ocijeni.",
+    "note": "Poglavlje prelazi na „Razumijem” uz „Sjećam se” na ispitnim pitanjima, bilješkama, podnaslovima, blurtingu ili karticama.",
+    "noteQuestion": "Pitanje prelazi na „Znam” uz „Sjećam se”.",
+    "nextQuestion": "Sljedeće pitanje",
+    "nextTest": "Sljedeće poglavlje",
+    "finish": "Spasi",
+    "progress": "Poglavlje {{n}} od {{total}}",
+    "emptyQuestions": "Za ovo poglavlje još nema ispitnih pitanja, bilješki ni kartica. Probaj blurting.",
+    "saved": "Provjera je spašena",
+    "skipped": "Provjera pročitanog dolazi za 2 dana",
+    "nothing": "Nema ničega za provjeru.",
+    "offerQuestions_one": "{{count}} povezano ispitno pitanje",
+    "offerQuestions_few": "{{count}} povezana ispitna pitanja",
+    "offerQuestions_other": "{{count}} povezanih ispitnih pitanja"
+  },
+  "review": {
+    "title": "Provjera znanja",
+    "progress": "Provjera znanja · {{n}} od {{total}}",
+    "close": "Zatvori",
+    "strength": "jačina {{pct}} · zadnji put {{last}}",
+    "firstCheck": "provjera pročitanog · još nije testirano",
+    "last": {
+      "today": "danas",
+      "yesterday": "juče",
+      "ago_one": "prije {{count}} dan",
+      "ago_few": "prije {{count}} dana",
+      "ago_other": "prije {{count}} dana"
+    },
+    "src": {
+      "notes": "IZ TVOJIH BILJEŠKI",
+      "exam_question": "ISPITNO PITANJE {{label}}",
+      "card": "KARTICA",
+      "recall": "PRISJETI SE",
+      "question": "ISPITNO PITANJE"
+    },
+    "recallPrompt": "Šta znaš o: {{title}}?",
+    "answer": "ODGOVOR",
+    "noAnswer": "Uporedi sa knjigom ili bilješkama i ocijeni se.",
+    "rate": {
+      "0": "Ne sjećam se",
+      "1": "Djelimično",
+      "2": "Sjećam se"
+    },
+    "summaryTitle_one": "{{count}} provjereno",
+    "summaryTitle_few": "{{count}} provjerena",
+    "summaryTitle_other": "{{count}} provjereno",
+    "summaryLine": "{{yes}} sjećam se · {{part}} djelimično · {{no}} ne sjećam se · {{min}} min",
+    "relearn": "vraća se u učenje",
+    "relearnNote": "{{units}}: vraćeno u plan učenja.",
+    "nextIn_one": "Sljedeća provjera za ~{{count}} dan.",
+    "nextIn_few": "Sljedeća provjera za ~{{count}} dana.",
+    "nextIn_other": "Sljedeća provjera za ~{{count}} dana.",
+    "done": "Gotovo",
+    "empty": "Nema provjera na redu.",
+    "toToday": "Na Danas",
+    "card": {
+      "title": "Provjera znanja",
+      "sub_one": "{{count}} poglavlje · ~{{min}} min",
+      "sub_few": "{{count}} poglavlja · ~{{min}} min",
+      "sub_other": "{{count}} poglavlja · ~{{min}} min",
+      "start": "Počni"
+    },
+    "finishedAria": "Provjera završena"
+  },
+  "strength": {
+    "title": "Jačina znanja",
+    "scope": "pređene jedinice",
+    "avg": "prosjek · pada bez ponavljanja",
+    "aria": "Jačina po jedinicama: {{strong}} jakih, {{check}} treba provjeru",
+    "band": {
+      "strong": "Jako",
+      "good": "Dobro",
+      "weak": "Slabi",
+      "fading": "Zaboravlja se"
+    },
+    "needCheck_one": "{{count}} poglavlje treba provjeru",
+    "needCheck_few": "{{count}} poglavlja trebaju provjeru",
+    "needCheck_other": "{{count}} poglavlja treba provjeru",
+    "allGood": "Sve pređeno je još jako",
+    "check": "Provjeri se · ~{{min}} min",
+    "empty": "Jačina se računa kad poglavlje prođe prvi test (recall gate ili provjeru pročitanog).",
+    "nextReview": "Sljedeće ponavljanje",
+    "step": "korak {{n}} od 4",
+    "unitStrength": "jačina {{pct}} · {{band}}",
+    "notInReview": "još nije u ponavljanju",
+    "unlock": "„Razumijem” se otključava kroz",
+    "unlockLink": "test pamćenja",
+    "unlockQuestion": "„Znam” se otključava kroz",
+    "test": "Testiraj se iz ovog poglavlja",
+    "testQuestion": "Testiraj se"
+  },
+  "notify": {
+    "title": "Notifikacije",
+    "firstBlock": "Prvi blok dana",
+    "firstBlockSub": "10 min prije",
+    "breakEnd": "Kraj pauze",
+    "breakEndSub": "i kad je ekran zaključan",
+    "enable": "Uključi obavještenja na ovom uređaju",
+    "enabled": "Obavještenja stižu na ovaj uređaj",
+    "disable": "Isključi na ovom uređaju",
+    "ios": "Na iPhoneu i iPadu obavještenja rade samo kad je Hoot dodan na početni ekran (Dijeli → Dodaj na početni ekran) i otvoren odatle.",
+    "denied": "Obavještenja su blokirana u postavkama browsera ili telefona.",
+    "unsupported": "Ovaj browser ne podržava obavještenja.",
+    "test": "Pošalji probno obavještenje",
+    "testSent": "Probno obavještenje stiže za najviše minut",
+    "failed": "Uključivanje nije uspjelo. Pokušaj ponovo.",
+    "push": {
+      "firstBlockTitle": "Za 10 min: {{subject}}",
+      "firstBlockBody": "{{title}} · {{time}}",
+      "breakEndTitle": "Pauza je gotova",
+      "breakEndBody": "Vrijeme je za sljedeći interval.",
+      "testTitle": "Hoot",
+      "testBody": "Obavještenja rade."
+    }
+  },
+  "sessionEnd": {
+    "saveAndTest": "Spasi i testiraj se",
+    "saveOnly": "Samo spasi"
   }
 }

@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import type { Op } from '@/lib/sync'
-import { defaultLevel, planEnd, reallocate, savedRanges, summarize, type EndSource } from './end'
+import {
+  defaultLevel,
+  endLevels,
+  planEnd,
+  reallocate,
+  savedRanges,
+  summarize,
+  type EndSource,
+} from './end'
 import type { SegmentRow, SessionRow } from './model'
 
 const T0 = Date.parse('2026-10-21T08:00:00Z')
@@ -37,9 +45,36 @@ const source = (over: Partial<EndSource> = {}): EndSource => ({
   measure: 'pages',
   rate: 4,
   units: [
-    { id: 'a', kind: 'chapter', amount: 10, level: 0, difficulty: 3, completedAt: null },
-    { id: 'b', kind: 'chapter', amount: 10, level: 0, difficulty: 3, completedAt: null },
-    { id: 'c', kind: 'chapter', amount: 10, level: 1, difficulty: 3, completedAt: iso(-999) },
+    {
+      id: 'a',
+      kind: 'chapter',
+      amount: 10,
+      level: 0,
+      difficulty: 3,
+      completedAt: null,
+      nextReviewOn: null,
+      lastReviewAt: null,
+    },
+    {
+      id: 'b',
+      kind: 'chapter',
+      amount: 10,
+      level: 0,
+      difficulty: 3,
+      completedAt: null,
+      nextReviewOn: null,
+      lastReviewAt: null,
+    },
+    {
+      id: 'c',
+      kind: 'chapter',
+      amount: 10,
+      level: 1,
+      difficulty: 3,
+      completedAt: iso(-999),
+      nextReviewOn: null,
+      lastReviewAt: null,
+    },
   ],
   ...over,
 })
@@ -139,6 +174,69 @@ describe('planEnd', () => {
     const { ops } = planEnd(session, segments, [source()], { ...answers, levels: { a: 2, b: 1 } })
     const updates = opOf(ops, 'units', 'update')
     expect(updates.map((u) => u.kind === 'update' && u.patch.level)).toEqual([2, 1])
+  })
+})
+
+describe('planEnd: recall gate', () => {
+  const whole = [seg('1', 'a', 0, 50)]
+  const readAll = {
+    ...answers,
+    ranges: [
+      { sourceId: 'src', from: { unitId: 'a', offset: 0 }, to: { unitId: 'c', offset: 10 } },
+    ],
+  }
+
+  it('offers the gate for units read to their end and schedules their check in 2 days', () => {
+    const plan = planEnd(session, whole, [source()], readAll, new Date(), [], '2026-10-21')
+    expect(plan.gate).toEqual(['a', 'b', 'c'])
+    const patches = Object.fromEntries(
+      opOf(plan.ops, 'units', 'update').map((u) => [
+        u.kind === 'update' && u.match.id,
+        u.kind === 'update' && u.patch,
+      ]),
+    )
+    expect(patches.a).toMatchObject({ level: 1, next_review_on: '2026-10-23' })
+    expect(patches.c).toMatchObject({ next_review_on: '2026-10-23' })
+  })
+
+  it('half-read units, units tested during the session and edits get no gate or check', () => {
+    const tested = source({
+      units: source().units.map((u) => (u.id === 'b' ? { ...u, lastReviewAt: iso(30) } : u)),
+    })
+    const plan = planEnd(session, whole, [tested], answers, new Date(), [], '2026-10-21')
+    expect(plan.gate).toEqual(['a'])
+    const edit = planEnd(session, whole, [source()], readAll, new Date(), [], null)
+    expect(
+      opOf(edit.ops, 'units', 'update').some(
+        (u) => u.kind === 'update' && 'next_review_on' in u.patch,
+      ),
+    ).toBe(false)
+  })
+
+  it('"Samo spasi" records the skipped gate', () => {
+    const plan = planEnd(
+      session,
+      whole,
+      [source()],
+      { ...readAll, skipGate: true },
+      new Date(),
+      [],
+      '2026-10-21',
+    )
+    const rows = opOf(plan.ops, 'session_units')[0]!
+    expect(rows.kind === 'upsert' && rows.rows.map((r) => r.recall_skipped)).toEqual([
+      true,
+      true,
+      true,
+    ])
+  })
+})
+
+describe('endLevels', () => {
+  it('offers "Razumijem"/"Ponovljeno" only to keep them', () => {
+    expect(endLevels(1)).toEqual([0, 1])
+    expect(endLevels(2)).toEqual([0, 1, 2])
+    expect(endLevels(3)).toEqual([0, 1, 3])
   })
 })
 

@@ -16,7 +16,7 @@ export type MemoryRow = Pick<
 
 /** The memory state of a unit or card; null before its first test. */
 export function memoryOf(row: MemoryRow, boundary: DayBoundary): Memory | null {
-  if (row.fsrs_stability === null || row.last_review_at === null) return null
+  if (row.fsrs_stability == null || row.last_review_at == null) return null
   return {
     stability: Number(row.fsrs_stability),
     difficulty: Number(row.fsrs_difficulty ?? 5),

@@ -49,4 +49,10 @@ describe('crumbsFor', () => {
     ])
     expect(path('/subjects/s1/edit').at(-1)).toBe('crumbs.edit@/subjects/s1/edit')
   })
+
+  it('the session flow (recall gate, knowledge check) has no crumbs, like the timer', () => {
+    expect(path('/session')).toEqual([])
+    expect(path('/session/recall')).toEqual([])
+    expect(path('/session/review')).toEqual([])
+  })
 })
