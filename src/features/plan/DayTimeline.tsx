@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { paletteOf } from '@/features/subjects/colors'
 import { formatClock } from '@/lib/schedule'
@@ -32,6 +33,7 @@ export function DayTimeline({
   busy = [],
   blocks = [],
   nowMin,
+  scrollKey,
   onPick,
   onPickBusy,
   onPickBlock,
@@ -42,6 +44,11 @@ export function DayTimeline({
   /** Busy time from connected calendars: hatched, with the calendar's name. */
   busy?: DayBusy[]
   nowMin?: number
+  /**
+   * The day shown: when it changes, the page scrolls to the "now" line (today) or the first
+   * block, if that is off screen, so evening blocks are not hidden below a morning axis.
+   */
+  scrollKey?: string
   onPick?: (item: DayClass) => void
   onPickBusy?: (item: DayBusy) => void
 }) {
@@ -49,9 +56,43 @@ export function DayTimeline({
   const [from, to] = hourRange([...items, ...busy, ...blocks])
   const top = (min: number) => ((min - from * 60) / 60) * HOUR_PX
   const hours = Array.from({ length: to - from + 1 }, (_, i) => from + i)
+  const firstBlock = blocks.reduce<number | null>(
+    (m, b) => (m === null || b.startMin < m ? b.startMin : m),
+    null,
+  )
+  const inRange = nowMin !== undefined && nowMin >= from * 60 && nowMin <= to * 60
+  const target = inRange ? nowMin : firstBlock
+  const anchor = useRef<HTMLDivElement>(null)
+  const scrolledFor = useRef<string | null>(null)
+  const targetTop = target === null ? null : Math.max(0, top(target) - 30)
+
+  useEffect(() => {
+    const el = anchor.current
+    if (!el || scrollKey === undefined || targetTop === null) return
+    // Once per day shown (as soon as its blocks are there), not on every refresh of the plan.
+    if (scrolledFor.current === scrollKey) return
+    scrolledFor.current = scrollKey
+    // Inside a scrolling card (Plan → Dan) only the axis scrolls; otherwise the page does.
+    const box = el.closest<HTMLElement>('[data-timeline-scroll]')
+    if (box) {
+      box.scrollTo({ top: Math.max(0, el.offsetTop - 8), behavior: 'smooth' })
+      return
+    }
+    const r = el.getBoundingClientRect()
+    if (r.top < 0 || r.top > window.innerHeight * 0.6)
+      el.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }, [scrollKey, targetTop])
 
   return (
     <div className="relative" style={{ height: (to - from) * HOUR_PX + 12 }}>
+      {targetTop !== null && (
+        <div
+          ref={anchor}
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 h-0 scroll-mt-4"
+          style={{ top: targetTop }}
+        />
+      )}
       {hours.map((h) => (
         <div
           key={h}
