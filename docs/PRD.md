@@ -567,6 +567,8 @@ Cilj: za ~3 minute od “Kako da te zovem?” do realne sedmice i, ako je unesen
 
 Mockupi `design/Onboarding.dc.html` … `design/OnboardingSedmica.dc.html` (svi koraci kao stanja jedne komponente), bez maskote.
 
+**Gruba veličina gradiva (odluke, Etapa 8a).** Malo / Srednje / Puno = ~10 / 25 / 45 h, kao privremeni izvor (`sources.is_rough`, vrsta „Ostalo“) od dijelova od po 1 h. Dodavanje pravog izvora arhivira njegove dijelove. **Obim po ispitima (odluka za 8b):** dijelovi privremenog izvora se dijele redom po parcijalama predmeta koje nisu „samo ako zatreba“ (sa dvije parcijale: prva polovina I parcijali, druga II), a završni i integralni obuhvataju sve; ručna izmjena obima i dalje ima prednost. Postojeći korisnici (sa potvrđenim imenom) se pri migraciji `0014` računaju kao da su prošli onboarding.
+
 ## Povezani kalendari i integracije
 
 Google, Apple iCloud, Outlook i Moodle izvoze kalendar kao iCal (ICS) link, pa jedan mehanizam pokriva sva četiri izvora bez OAuth-a.
