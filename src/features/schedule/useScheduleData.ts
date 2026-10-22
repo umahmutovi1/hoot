@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { LocalDate } from '@/lib/day'
+import { toEvent, toFeed, useCalendarFeeds, useExternalEvents } from '@/features/calendars/api'
 import { useProfile } from '@/features/settings/profile'
 import { DEFAULT_CAPS, weekStudyMinutes, type DayInput } from '@/lib/schedule'
 import {
@@ -20,7 +21,11 @@ export function useScheduleData() {
   const exceptionRows = useAvailabilityExceptions().data
   const logRows = useLectureLogs().data
   const dayRows = useAvailabilityDays().data
-  const capsRow = useProfile().data?.daily_cap_min
+  const profile = useProfile().data
+  const capsRow = profile?.daily_cap_min
+  const timeZone = profile?.timezone ?? 'Europe/Sarajevo'
+  const feedRows = useCalendarFeeds().data
+  const eventRows = useExternalEvents().data
 
   return useMemo(() => {
     const periods = (periodRows ?? []).map(toPeriod)
@@ -30,6 +35,8 @@ export function useScheduleData() {
     const logs = logRows ?? []
     const days = (dayRows ?? []).map(toDay)
     const caps = capsRow?.length === 7 ? capsRow : DEFAULT_CAPS
+    const feeds = (feedRows ?? []).map(toFeed)
+    const events = (eventRows ?? []).map(toEvent)
     /** Everything `freeSlotsOn()` needs for one date. */
     const dayInput = (date: LocalDate): DayInput => ({
       rules,
@@ -39,6 +46,9 @@ export function useScheduleData() {
       days,
       caps,
       cancelledEntryIds: cancelledOn(date, logs),
+      feeds,
+      events,
+      timeZone,
     })
     return {
       periodRows: periodRows ?? [],
@@ -53,9 +63,24 @@ export function useScheduleData() {
       classes,
       rules,
       exceptions,
+      feeds,
+      feedRows: feedRows ?? [],
+      events,
+      timeZone,
       dayInput,
       /** Study minutes of the week that contains `date` (free time, capped per day). */
       weekMinutes: (date: LocalDate) => weekStudyMinutes(date, dayInput(date)),
     }
-  }, [periodRows, timetableRows, ruleRows, exceptionRows, logRows, dayRows, capsRow])
+  }, [
+    periodRows,
+    timetableRows,
+    ruleRows,
+    exceptionRows,
+    logRows,
+    dayRows,
+    capsRow,
+    timeZone,
+    feedRows,
+    eventRows,
+  ])
 }

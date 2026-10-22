@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { Recalibrator } from '@/features/session/Recalibrator'
 import { queryPersister } from './queryPersister'
+import { CalendarSync } from '@/features/calendars/CalendarSync'
 import { SyncRunner } from './SyncRunner'
 import { ViewportInsets } from './ViewportInsets'
 
@@ -33,6 +34,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <AuthProvider>
         <ViewportInsets />
         <SyncRunner />
+        <CalendarSync />
         <Recalibrator />
         {children}
       </AuthProvider>

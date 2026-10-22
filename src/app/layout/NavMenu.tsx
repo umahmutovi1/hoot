@@ -106,6 +106,7 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
       subs: [
         { to: '/settings', label: t('menu.allSettings') },
         { to: '/settings/calendar', label: t('menu.academicCalendar') },
+        { to: '/settings/feeds', label: t('feeds.title') },
         { to: '/settings/documents', label: t('menu.documents') },
       ],
     },

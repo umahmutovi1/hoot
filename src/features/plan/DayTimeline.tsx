@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { paletteOf } from '@/features/subjects/colors'
 import { formatClock } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
-import type { DayClass } from './agenda'
+import type { DayBusy, DayClass } from './agenda'
 import { hourRange, layoutLanes } from './calendar'
 
 const HOUR_PX = 52
@@ -14,15 +14,20 @@ const AXIS_PX = 50
  */
 export function DayTimeline({
   items,
+  busy = [],
   nowMin,
   onPick,
+  onPickBusy,
 }: {
   items: DayClass[]
+  /** Busy time from connected calendars: hatched, with the calendar's name. */
+  busy?: DayBusy[]
   nowMin?: number
   onPick?: (item: DayClass) => void
+  onPickBusy?: (item: DayBusy) => void
 }) {
   const { t } = useTranslation()
-  const [from, to] = hourRange(items)
+  const [from, to] = hourRange([...items, ...busy])
   const top = (min: number) => ((min - from * 60) / 60) * HOUR_PX
   const hours = Array.from({ length: to - from + 1 }, (_, i) => from + i)
 
@@ -41,7 +46,45 @@ export function DayTimeline({
         </div>
       ))}
 
-      {layoutLanes(items).map(({ item, lane, lanes }) => {
+      {layoutLanes<DayClass | DayBusy>([...items, ...busy]).map(({ item, lane, lanes }) => {
+        const position = {
+          top: top(item.startMin) + 2,
+          left: `calc(${AXIS_PX + 6}px + (100% - ${AXIS_PX + 6}px) * ${lane / lanes})`,
+          width: `calc((100% - ${AXIS_PX + 6}px) / ${lanes} - 4px)`,
+        }
+        if ('eventId' in item)
+          return (
+            <button
+              type="button"
+              key={item.id}
+              onClick={() => onPickBusy?.(item)}
+              className={cn(
+                'absolute flex overflow-hidden rounded-2xl bg-[repeating-linear-gradient(135deg,var(--color-track)_0_8px,var(--color-canvas-soft)_8px_16px)] px-3 py-2 text-left',
+                item.ignored && 'opacity-40',
+              )}
+              style={{
+                ...position,
+                height: Math.max(36, top(item.endMin) - top(item.startMin) - 4),
+              }}
+            >
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="text-[11px] text-ink-muted">
+                  {formatClock(item.startMin)} – {formatClock(item.endMin)}
+                </span>
+                <span
+                  className={cn(
+                    'truncate text-sm font-semibold text-ink-secondary',
+                    item.ignored && 'line-through',
+                  )}
+                >
+                  {item.title ?? t('feeds.busy')}
+                </span>
+                <span className="truncate text-[11px] text-ink-muted">
+                  {t('feeds.fromSource', { source: item.source })}
+                </span>
+              </div>
+            </button>
+          )
         const palette = paletteOf(item.subject?.color ?? null)
         const height = Math.max(36, top(item.endMin) - top(item.startMin) - 4)
         const compact = height < 64
@@ -56,12 +99,7 @@ export function DayTimeline({
               palette.border,
               item.cancelled && 'opacity-60',
             )}
-            style={{
-              top: top(item.startMin) + 2,
-              height,
-              left: `calc(${AXIS_PX + 6}px + (100% - ${AXIS_PX + 6}px) * ${lane / lanes})`,
-              width: `calc((100% - ${AXIS_PX + 6}px) / ${lanes} - 4px)`,
-            }}
+            style={{ ...position, height }}
           >
             <div className={cn('flex min-w-0 flex-col', compact ? 'gap-0' : 'gap-0.5')}>
               <span className={cn('text-[11px]', palette.deepText)}>

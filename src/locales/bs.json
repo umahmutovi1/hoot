@@ -1014,7 +1014,7 @@
     "everyWeekday": "Svaki {{day}}",
     "resetDay": "Vrati na šablon ({{day}})",
     "deleteSlot": "Ukloni termin",
-    "breakdown": "{{slots}} termina − {{busy}} nastava"
+    "breakdown": "{{slots}} termina − {{busy}} zauzeto"
   },
   "lectures": {
     "title": "Dokle ste stigli?",
@@ -1339,5 +1339,57 @@
     "allSettings": "Sve postavke",
     "academicCalendar": "Akademski kalendar",
     "documents": "Dokumenti"
+  },
+  "feeds": {
+    "title": "Povezani kalendari",
+    "intro": "Zalijepi tajni iCal link. Zauzetost iz kalendara ulazi u plan kao nastava.",
+    "add": "Dodaj kalendar",
+    "newTitle": "Novi kalendar",
+    "newSub": "Google, Apple ili Outlook (iCal link)",
+    "serviceLabel": "Servis",
+    "service": {
+      "google": "Google",
+      "apple": "Apple",
+      "outlook": "Outlook"
+    },
+    "link": "iCal link",
+    "howto": {
+      "google": "Google Kalendar → Postavke kalendara → „Tajna adresa u iCal formatu“.",
+      "apple": "iCloud → Kalendar → Dijeli → Javni kalendar → kopiraj link.",
+      "outlook": "Outlook → Postavke → Kalendar → Dijeljeni kalendari → Objavi kalendar → ICS."
+    },
+    "busyOnly": "Spremaj samo zauzeto",
+    "busyOnlySub": "Naslov i lokacija se ne spremaju",
+    "busyOnlyShort": "samo zauzeto",
+    "allDay": "Cjelodnevni događaji su zauzeti",
+    "allDaySub": "Rođendani i praznici se po defaultu samo prikazuju",
+    "secret": "Link je kao lozinka: čuva se samo za sinhronizaciju i više se ne prikazuje.",
+    "addButton": "Dodaj",
+    "adding": "Dodajem…",
+    "name": "Naziv",
+    "newLink": "Novi link (opcionalno)",
+    "newLinkPlaceholder": "zalijepi samo ako si ga obnovila",
+    "remove": "Ukloni kalendar",
+    "removeConfirm": "Ukloniti ovaj kalendar? Njegovi događaji nestaju iz plana.",
+    "synced": "sinhronizovano {{when}}",
+    "notSynced": "još nije sinhronizovano",
+    "kind": {
+      "busy": "Zauzetost",
+      "deadlines": "Rokovi"
+    },
+    "error": {
+      "fetch_failed": "Link se ne može otvoriti. Provjeri ga ili obnovi.",
+      "http_error": "Link više ne radi. Obnovi ga u kalendaru.",
+      "too_large": "Kalendar je prevelik za uvoz.",
+      "not_ics": "Ovo nije iCal link.",
+      "parse_failed": "Kalendar se ne može pročitati.",
+      "save_failed": "Spašavanje nije uspjelo. Pokušaj ponovo."
+    },
+    "fromSource": "iz kalendara {{source}}",
+    "busy": "Zauzeto",
+    "busyHint": "Ovo vrijeme se ne planira za učenje. Ako ti ne smeta, ignoriši ga.",
+    "ignoredHint": "Ignorisano: plan ovo vrijeme računa kao slobodno.",
+    "ignore": "Ignoriši",
+    "unignore": "Vrati kao zauzeto"
   }
 }

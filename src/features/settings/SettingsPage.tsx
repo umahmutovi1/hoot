@@ -5,6 +5,7 @@ import { Avatar } from '@/components/Avatar'
 import { BackHeader } from '@/components/BackHeader'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { signOut } from '@/features/auth/api'
+import { useCalendarFeeds } from '@/features/calendars/api'
 import { useDocuments } from '@/features/owl/api'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { formatDuration } from '@/features/sources/format'
@@ -28,6 +29,7 @@ export function SettingsPage() {
   const [today] = useState(() => localDay(new Date(), boundary))
   const schedule = useScheduleData()
   const documents = useDocuments().data
+  const feeds = useCalendarFeeds().data
   const row = 'flex items-center justify-between border-b border-canvas py-3.5'
 
   return (
@@ -81,6 +83,10 @@ export function SettingsPage() {
           <span className="text-sm text-ink-muted">
             {t('settings.periodsCount', { count: schedule.periodRows.length })} ›
           </span>
+        </Link>
+        <Link to="/settings/feeds" className={row}>
+          <span className="text-[15px]">{t('feeds.title')}</span>
+          <span className="text-sm text-ink-muted">{feeds?.length ?? 0} ›</span>
         </Link>
         <button type="button" onClick={() => setScaleOpen(true)} className={cn(row, 'text-left')}>
           <span className="text-[15px]">{t('settings.grades')}</span>
