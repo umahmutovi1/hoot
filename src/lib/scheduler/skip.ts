@@ -14,8 +14,8 @@ export interface SkipResult {
  * "Preskoči" (decision after 8b): the skipped block's material must not get lost. With
  * `startNext` the next block starts now and the rest of the day is pulled earlier behind it, in
  * order, with the preset's breaks, only into free time. Then the skipped block takes the earliest
- * gap left today (also between two blocks) that holds it and its breaks; without one it is null
- * and the caller moves it to the next study day.
+ * gap left today (also between two blocks) that holds it and its breaks, never before the end of
+ * its own slot; without one it is null and the caller moves it to the next study day.
  */
 export function skipBlock(
   skipped: ShiftBlock,
@@ -57,7 +57,9 @@ export function skipBlock(
       endMin: start + span(b.minutes) + after(b.minutes),
     }
   })
-  const gaps = subtractSlots(slots, [{ startMin: 0, endMin: input.nowMin }, ...busy])
+  // Skipped means "not now and not in its own slot": it goes after both.
+  const notBefore = Math.max(input.nowMin, skipped.startMin + span(skipped.minutes))
+  const gaps = subtractSlots(slots, [{ startMin: 0, endMin: notBefore }, ...busy])
   const need = span(skipped.minutes)
   const gap = gaps.find(
     (g) =>
