@@ -2,7 +2,8 @@ import type { TFunction } from 'i18next'
 import { useMemo } from 'react'
 import { formatDuration, pagesLabel } from '@/features/sources/format'
 import { measureOf, type Source, type Unit } from '@/features/sources/model'
-import { isMeasured } from '@/lib/estimates/calibration'
+import { isMeasured, type StudyMode } from '@/lib/estimates/calibration'
+import { STUDY_MODES } from '@/features/session/model'
 import type { Measure } from '@/lib/outline/parse'
 import { formatClock } from '@/lib/schedule'
 import type { Reason } from '@/lib/scheduler'
@@ -112,9 +113,12 @@ export function blockTitle(
 
 /** Study mode of a block, as the session will start it. */
 export function blockMode(
-  block: Pick<PlanBlockRow, 'kind' | 'plan_block_units'>,
+  block: Pick<PlanBlockRow, 'kind' | 'plan_block_units'> & { reason?: string | null },
   units: Map<string, UnitInfo>,
 ) {
+  const manual = block.reason ? reasonOf({ reason: block.reason }) : null
+  if (manual?.code === 'manual' && manual.mode && STUDY_MODES.includes(manual.mode as StudyMode))
+    return manual.mode as StudyMode
   if (block.kind === 'questions') return 'questions' as const
   if (block.kind === 'review' || block.kind === 'recap') return 'review' as const
   const first = units.get(block.plan_block_units[0]?.unit_id ?? '')?.unit
@@ -125,7 +129,9 @@ export function blockMode(
 /** "Čitanje · 60 min" (+ "str. 142–168" once the source is measured). */
 export function blockSub(
   t: TFunction,
-  block: Pick<PlanBlockRow, 'kind' | 'planned_minutes' | 'plan_block_units'>,
+  block: Pick<PlanBlockRow, 'kind' | 'planned_minutes' | 'plan_block_units'> & {
+    reason?: string | null
+  },
   units: Map<string, UnitInfo>,
 ): string {
   const mode = t(`planBlocks.mode.${block.kind === 'learn' ? blockMode(block, units) : block.kind}`)
@@ -188,6 +194,8 @@ export function reasonText(
     case 'optional':
       parts.push(t('planBlocks.why.optional', { goal }))
       break
+    case 'manual':
+      return null
   }
   if (reason.conditional) parts.push(t('planBlocks.why.conditional'))
   if (reason.boost) parts.push(t('planBlocks.why.boost'))

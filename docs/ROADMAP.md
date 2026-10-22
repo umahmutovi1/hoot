@@ -202,18 +202,18 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 **8b — Scheduler**
 
 - [x] `plan(state)` u `src/lib/scheduler/`: kapacitet (minus nastava, povezani kalendari, izuzeci, ručni blokovi), faktor realizacije ρ i rezerva 0.9, ponavljanja, preostali rad po cilju, buffer, hitnost, limit rasta 1.25×, redoslijed, tipovi blokova, mikro-blokovi za `review`, dijeljenje dugih jedinica, deficit, „zašto ovo danas“
-- [ ] `placeTimes()` automatski poslije `plan()`: pauze po zadanom predlošku, dužina bloka kao višekratnik intervala, san pred ispit, prior termina iz onboardinga (ocjene termina dolaze u Etapi 11), uvijek popunjen `planned_start`; Satnica samo prikazuje i pomjera (pomjeren blok postaje ručni)
+- [x] `placeTimes()` automatski poslije `plan()`: pauze po zadanom predlošku, dužina bloka kao višekratnik intervala, san pred ispit, prior termina iz onboardinga (ocjene termina dolaze u Etapi 11), uvijek popunjen `planned_start`; Satnica samo prikazuje i pomjera (pomjeren blok postaje ručni)
 - [x] `plan()` dopune: težina prioriteta, ciljna pokrivenost (obavezno / opcionalno), ALAP start kampanje + margina (uz ρ), ručni override i „Počni odmah“, privremeno pojačanje prioriteta („Uzmi vrijeme od …“ sa izračunatom razlikom plana), meki rokovi predavanja (redovni režim), „samo ako zatreba“ ispiti, rezanje deficita od najnižeg prioriteta, kapacitet minus ručni blokovi, ciljna pokrivenost iz željene ocjene (PRD „Željena ocjena kao ulaz u plan“), lični faktor brzine u procjenama (PRD „Procjena težine i vremena“ → 5), novi razlozi „zašto ovo danas“
 - [x] Testovi: prazna dostupnost, dva ispita isti dan, deficit, propušten dan, buffer, više ispita po predmetu, idempotentnost, start kampanje, ručni start, dvije kampanje u istoj sedmici, rezanje po prioritetu, ciljna pokrivenost, meki rok predavanja, ručni blok preživi replan, faktor realizacije, limit rasta, „Danas ne mogu“, mikro-blokovi, pauze, san pred ispit, zauzetost iz kalendara
 - [x] Property testovi (`fast-check`): kapacitet dana se nikad ne prekorači, učenje + pauze stanu u slobodne termine, ručni blokovi se ne mijenjaju, isti ulaz = isti plan i ista satnica
-- [ ] Migracija `0016_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
+- [x] Migracija `0016_manual_blocks.sql`; ručni blokovi: UrediBlok (dodaj / izmijeni / obriši), izmjena AI bloka ga zaključava, brisanje AI bloka pita „Prebaci“ / „Izbaci iz plana“ (`assessment_units.included = false`), undo toast, katanac u listi
 - [ ] Kartice prijedloga (zaostatak sa „Uzmi vrijeme od“ / „Kreni ranije“ / „Dodaj X min dnevno“, deficit, željena ocjena nedostižna, najava kampanje 3 dana prije, ispitni rok → veći maksimum, „Krenimo ispočetka“) na Danas i Predmetu; najviše jedna iznad liste, ostale pod „Još N prijedloga“; jedan tap mijenja ulaz → replan
 - [x] Brze akcije: „Danas ne mogu“ (dan zauzet, blokovi `skipped`, undo) i „Imam samo 30 min“ (`pickForTime()` + testovi) na Danas i u PokreniSesiju
 - [x] `input_hash` (uz povezane kalendare, ρ i zadani predložak), upis u `plan_runs` / `plan_blocks` / `plan_block_units`
 - [x] Okidači replana (debounce 2 s, nikad dok timer radi, prvo otvaranje u danu → „propušteno“, sinhronizacija kalendara)
 - [x] Replan sheet: deficit + 3 opcije
 - [ ] Sekcija „Cilj“ na Predmetu i NoviPredmet → Napredno (PRD „Prioritet i režim učenja“ → Šta korisnik vidi): „Koliko ti je bitan“ sa imenima bez brojeva, željena ocjena premještena iz kartice bodova, usklađivanje na licu mjesta, sitan opis posljedica, čip pojačanja sa ×; „Kad kreće učenje?“ za režim
-- [ ] Danas ekran (fokus bar, Sljedeći blok, lista, 3 ispita, savjet) i Satnica tab
+- [x] Danas ekran (fokus bar, Sljedeći blok, lista, 3 ispita, savjet) i Satnica tab
 - **DoD** (uz opći DoD): novi korisnik prođe onboarding na telefonu za ~3 min i dobije plan koji poštuje nastavu, povezani Google kalendar i izabrane periode → `v0.8.0`
 
 ## Etapa 9 — Recall gate, provjera znanja, FSRS i osnovni push

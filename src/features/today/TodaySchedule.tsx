@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckIcon, ChevronRightIcon } from '@/components/icons'
+import { CheckIcon, ChevronRightIcon, LockIcon } from '@/components/icons'
 import { useStartBlock } from '@/features/plan/actions'
 import { blockSub, blockTitle, isOpen, nextBlock, useGoalTitle } from '@/features/plan/model'
 import type { PlanBlockRow } from '@/features/plan/state'
@@ -121,6 +121,9 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
                     done && 'line-through',
                   )}
                 >
+                  {b.origin === 'user' && (
+                    <LockIcon size={13} className="mr-1 inline align-[-1px] text-ink-muted" />
+                  )}
                   {shortName(name(b.subject_id))} —{' '}
                   {blockTitle(t, b, plan.units, goalTitle(b.deadline_id ?? ''))}
                 </span>

@@ -8,14 +8,15 @@ import type { DayRow } from '@/features/schedule/model'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useSessionWriter } from '@/features/session/api'
 import { usePresets } from '@/features/session/presets'
+import { useDayBoundary } from '@/features/settings/profile'
 import { useSessionUi } from '@/features/session/store'
 import { subjectsKey } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
-import { addDays, type LocalDate } from '@/lib/day'
+import { addDays, zonedInstant, type LocalDate } from '@/lib/day'
 import { capFor } from '@/lib/schedule'
 import type { CutUnit } from '@/lib/scheduler'
 import { supabase } from '@/lib/supabase'
-import type { Op } from '@/lib/sync'
+import type { Op, Row } from '@/lib/sync'
 import { planBlocksKey } from './api'
 import { blockMode, type UnitInfo } from './model'
 import type { PlanBlockRow } from './state'
@@ -259,4 +260,181 @@ export function useStartBlock() {
     },
     [writer, suggestedId, setTimerMode, navigate],
   )
+}
+
+/** A manual block as the UrediBlok sheet edits it. */
+export interface BlockDraft {
+  id: string
+  subjectId: string
+  /** Exam the units count for (the earliest one that covers them), or the deadline. */
+  assessmentId: string | null
+  deadlineId: string | null
+  onDate: LocalDate
+  startMin: number | null
+  minutes: number
+  kind: PlanBlockRow['kind']
+  /** Study mode chosen in the sheet (Čitanje, Zadaci…); kept in `reason`. */
+  mode: string
+  unitIds: string[]
+  title: string | null
+  /** An AI block the user changed (Satnica "Vrati predloženo" brings the plan back). */
+  edited: boolean
+}
+
+function blockRow(d: BlockDraft, timeZone: string) {
+  return {
+    id: d.id,
+    subject_id: d.subjectId,
+    assessment_id: d.assessmentId,
+    deadline_id: d.deadlineId,
+    on_date: d.onDate,
+    start_min: d.startMin,
+    planned_start:
+      d.startMin === null ? null : zonedInstant(d.onDate, d.startMin, timeZone).toISOString(),
+    planned_minutes: d.minutes,
+    kind: d.kind,
+    status: 'planned' as const,
+    origin: 'user' as const,
+    plan_run_id: null,
+    title: d.title,
+    reason: JSON.stringify({ code: 'manual', mode: d.mode, ...(d.edited ? { edited: true } : {}) }),
+  }
+}
+
+interface UnitRow {
+  block_id: string
+  unit_id: string
+  page_from: number | null
+  page_to: number | null
+  planned_minutes: number
+}
+
+function unitRows(d: BlockDraft): UnitRow[] {
+  const each = d.unitIds.length > 0 ? Math.max(1, Math.round(d.minutes / d.unitIds.length)) : 0
+  return d.unitIds.map((unit_id) => ({
+    block_id: d.id,
+    unit_id,
+    page_from: null,
+    page_to: null,
+    planned_minutes: each,
+  }))
+}
+
+/** The ops that write a block as it was (for undo) or as the sheet left it. */
+function writeBlockOps(row: ReturnType<typeof blockRow>, units: UnitRow[]): Op[] {
+  return [
+    { kind: 'upsert', table: 'plan_blocks', rows: [row as unknown as Row] },
+    { kind: 'delete', table: 'plan_block_units', match: { block_id: row.id } },
+    ...(units.length > 0
+      ? [
+          {
+            kind: 'upsert' as const,
+            table: 'plan_block_units',
+            rows: units as unknown as Row[],
+            onConflict: 'block_id,unit_id',
+          },
+        ]
+      : []),
+  ]
+}
+
+function rowOfBlock(b: PlanBlockRow) {
+  const { plan_block_units: _units, user_id: _u, created_at: _c, updated_at: _up, ...row } = b
+  return row
+}
+
+/**
+ * Adding or changing a block (PRD flow 7): the block becomes manual and replan never moves or
+ * deletes it; undo restores what was there. Returns an undo.
+ */
+export function useSaveBlock() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  const write = useQueueWrite()
+  const replanNow = usePlanStore((s) => s.replanNow)
+  const { timezone } = useProfileZone()
+  return useCallback(
+    async (draft: BlockDraft) => {
+      const key = planBlocksKey(userId)
+      const previous = queryClient.getQueryData<PlanBlockRow[]>(key)?.find((b) => b.id === draft.id)
+      const row = blockRow(draft, timezone)
+      const units = unitRows(draft)
+      const now = new Date().toISOString()
+      queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) => [
+        ...list.filter((b) => b.id !== draft.id),
+        {
+          ...row,
+          user_id: userId!,
+          created_at: previous?.created_at ?? now,
+          updated_at: now,
+          plan_block_units: units.map((u) => ({ ...u, user_id: userId! })),
+        },
+      ])
+      await write(writeBlockOps(row, units))
+      replanNow()
+      return async () => {
+        if (previous) {
+          queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) => [
+            ...list.filter((b) => b.id !== draft.id),
+            previous,
+          ])
+          await write(
+            writeBlockOps(
+              rowOfBlock(previous) as ReturnType<typeof blockRow>,
+              previous.plan_block_units.map(({ user_id: _u, ...u }) => u),
+            ),
+          )
+        } else {
+          queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) =>
+            list.filter((b) => b.id !== draft.id),
+          )
+          await write([{ kind: 'delete', table: 'plan_blocks', match: { id: draft.id } }])
+        }
+        replanNow()
+      }
+    },
+    [userId, queryClient, write, replanNow, timezone],
+  )
+}
+
+/**
+ * Deleting a block: its material goes back into the pool (replan places it from tomorrow), or,
+ * for "Izbaci iz plana", its units stop counting for its exam. Returns an undo.
+ */
+export function useDeleteBlock() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  const write = useQueueWrite()
+  const cut = useCutScope()
+  const replanNow = usePlanStore((s) => s.replanNow)
+  return useCallback(
+    async (block: PlanBlockRow, drop: boolean) => {
+      const key = planBlocksKey(userId)
+      queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) =>
+        list.filter((b) => b.id !== block.id),
+      )
+      await write([{ kind: 'delete', table: 'plan_blocks', match: { id: block.id } }])
+      if (drop && block.assessment_id)
+        cut.mutate(
+          block.plan_block_units.map((u) => ({ unitId: u.unit_id, goalId: block.assessment_id! })),
+        )
+      replanNow()
+      return async () => {
+        queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) => [...list, block])
+        await write(
+          writeBlockOps(
+            rowOfBlock(block) as ReturnType<typeof blockRow>,
+            block.plan_block_units.map(({ user_id: _u, ...u }) => u),
+          ),
+        )
+        replanNow()
+      }
+    },
+    [userId, queryClient, write, cut, replanNow],
+  )
+}
+
+function useProfileZone() {
+  const { timeZone } = useDayBoundary()
+  return { timezone: timeZone }
 }

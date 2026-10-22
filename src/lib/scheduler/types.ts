@@ -144,8 +144,19 @@ export interface PlanState {
  */
 export interface Reason {
   code:
-    'review' | 'recap' | 'buffer' | 'exam' | 'deadline' | 'lecture' | 'campaign_start' | 'optional'
+    | 'review'
+    | 'recap'
+    | 'buffer'
+    | 'exam'
+    | 'deadline'
+    | 'lecture'
+    | 'campaign_start'
+    | 'optional'
+    /** A manual block (UrediBlok): its study mode and whether it was an AI block. */
+    | 'manual'
   goalId?: string
+  mode?: string
+  edited?: boolean
   days?: number
   date?: LocalDate
   /** Priority 5 ("uslovni predmet"). */
