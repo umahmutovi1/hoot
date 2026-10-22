@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import type { TFunction } from 'i18next'
 import { useQuery } from '@tanstack/react-query'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { DocIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { useLocale } from '@/features/settings/useLocale'
@@ -20,7 +20,7 @@ export function DocumentsPage() {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <BackHeader title={t('owl.documents.title')} fallback="/settings" />
+      <ScreenTitle title={t('owl.documents.title')} />
       <p className="px-1 text-sm leading-[1.45] text-ink-muted">{t('owl.documents.intro')}</p>
       {documents && documents.length === 0 && (
         <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('owl.documents.empty')}</p>
@@ -86,11 +86,11 @@ export function DocumentPage() {
     },
   })
 
-  if (!doc) return <BackHeader title={t('owl.documents.title')} fallback="/settings/documents" />
+  if (!doc) return <ScreenTitle title={t('owl.documents.title')} />
 
   return (
     <div className="flex flex-col gap-3.5">
-      <BackHeader title={t('owl.documents.title')} fallback="/settings/documents" />
+      <ScreenTitle title={t('owl.documents.title')} />
       <div className="flex flex-col gap-1 px-1">
         <h2 className="text-[22px] leading-tight font-bold">{doc.title}</h2>
         <span className="text-[13px] text-ink-muted">{documentMeta(t, doc, locale)}</span>

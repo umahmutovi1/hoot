@@ -1776,5 +1776,14 @@
     "lockedToast": "The block is manual now, the plan won't move it",
     "deletedToast": "Block deleted",
     "add": "Add block"
+  },
+  "crumbs": {
+    "label": "Breadcrumb",
+    "fresh": "Fresh start",
+    "newSubject": "New subject",
+    "edit": "Edit",
+    "newSource": "New source",
+    "source": "Source",
+    "unit": "Unit"
   }
 }

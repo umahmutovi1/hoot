@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { SplashScreen } from '@/components/SplashScreen'
 import { Button } from '@/components/ui/button'
 import { useLocale } from '@/features/settings/useLocale'
@@ -137,7 +137,7 @@ function ScopeEditor({
 
   return (
     <div className="flex flex-col gap-3.5">
-      <BackHeader title={t('scope.title')} fallback={`/subjects/${subject.id}`} />
+      <ScreenTitle title={t('scope.title')} />
 
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl leading-[1.2] font-bold">{t('scope.heading')}</h1>

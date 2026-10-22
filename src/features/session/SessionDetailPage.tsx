@@ -89,7 +89,6 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
       <SessionHeader
         title={subject?.name ?? t('session.title')}
         subtitle={format(toDisplayDate(day), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
-        fallback="/sessions"
       />
 
       <div className="grid grid-cols-3 gap-2">

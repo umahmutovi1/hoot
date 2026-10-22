@@ -45,7 +45,6 @@ export function SessionsPage() {
     <div className="flex flex-col gap-4">
       <SessionHeader
         title={t('session.history.title')}
-        fallback="/progress"
         action={
           <button
             type="button"

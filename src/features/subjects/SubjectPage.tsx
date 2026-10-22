@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { SessionsCard } from '@/features/session/SessionsCard'
 import { useTranslation } from 'react-i18next'
 import { differenceInCalendarDays, format } from 'date-fns'
-import { ChevronLeftIcon, ChevronRightIcon, FlagIcon, PencilIcon } from '@/components/icons'
+import { ChevronRightIcon, FlagIcon, PencilIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
@@ -42,7 +42,6 @@ import {
   type Assessment,
   type SubjectWithAssessments,
 } from './model'
-import { goBack } from '@/app/navigation'
 
 /**
  * Predmet / PredmetKampanja: header with progress, priority and mode chips, the campaign card,
@@ -61,7 +60,6 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const { t } = useTranslation()
   const globalScale = useGlobalScale()
   const { locale } = useLocale()
-  const navigate = useNavigate()
   const [now] = useState(() => new Date())
   const palette = paletteOf(subject.color)
   const next = nextAssessment(subject.assessments, now)
@@ -118,25 +116,16 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => goBack(navigate, '/subjects')}
-          aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full glass"
-        >
-          <ChevronLeftIcon size={20} />
-        </button>
+      <div
+        className={cn('relative flex items-center gap-4 rounded-[32px] p-5 pr-16', palette.soft)}
+      >
         <Link
           to={editPath}
           aria-label={t('subjects.detail.edit')}
-          className="flex size-11 items-center justify-center rounded-full glass"
+          className="absolute top-3 right-3 flex size-11 items-center justify-center rounded-full glass"
         >
           <PencilIcon size={18} />
         </Link>
-      </div>
-
-      <div className={cn('flex items-center gap-4 rounded-[32px] p-5', palette.soft)}>
         {hasMaterial && (
           <ProgressRing
             fraction={subjectMaterialProgress(materials)}

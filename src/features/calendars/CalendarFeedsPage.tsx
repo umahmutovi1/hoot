@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatDistanceToNowStrict } from 'date-fns'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { ChevronRightIcon, PlusIcon } from '@/components/icons'
 import { OfflineNotice } from '@/components/OfflineNotice'
 import { useOnline } from '@/features/owl/api'
@@ -20,7 +20,7 @@ export function CalendarFeedsPage() {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <BackHeader title={t('feeds.title')} fallback="/settings" />
+      <ScreenTitle title={t('feeds.title')} />
       <p className="px-1 text-sm leading-[1.45] text-ink-secondary">{t('feeds.intro')}</p>
       {!online && <OfflineNotice />}
 

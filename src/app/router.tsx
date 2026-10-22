@@ -53,11 +53,6 @@ export const router = createBrowserRouter([
               { path: 'chat', element: <OwlChatPage /> },
               { path: 'owl', element: <Navigate to="/chat" replace /> },
               { path: 'welcome', element: <Navigate to="/onboarding" replace /> },
-            ],
-          },
-          {
-            element: <PlainLayout />,
-            children: [
               { path: 'settings', element: <SettingsPage /> },
               { path: 'today/fresh', element: <FreshStartPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
@@ -76,10 +71,16 @@ export const router = createBrowserRouter([
               { path: 'subjects/:id/sources/:sourceId/edit', element: <SourceEditorPage /> },
               { path: 'subjects/:id/sources/:sourceId/units/:unitId', element: <UnitPage /> },
               { path: 'subjects/:id/scope', element: <ExamScopePage /> },
-              { path: 'session', element: <SessionPage /> },
-              { path: 'session/:id/end', element: <SessionEndPage /> },
               { path: 'sessions', element: <SessionsPage /> },
               { path: 'sessions/:id', element: <SessionDetailPage /> },
+            ],
+          },
+          {
+            // The running session and its end form are full-screen flows without the top bar.
+            element: <PlainLayout />,
+            children: [
+              { path: 'session', element: <SessionPage /> },
+              { path: 'session/:id/end', element: <SessionEndPage /> },
             ],
           },
         ],

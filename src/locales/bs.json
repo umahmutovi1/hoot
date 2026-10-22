@@ -1823,5 +1823,14 @@
     "lockedToast": "Blok je sad ručni, plan ga ne pomjera",
     "deletedToast": "Blok je obrisan",
     "add": "Dodaj blok"
+  },
+  "crumbs": {
+    "label": "Putanja",
+    "fresh": "Krenimo ispočetka",
+    "newSubject": "Novi predmet",
+    "edit": "Uredi",
+    "newSource": "Novi izvor",
+    "source": "Izvor",
+    "unit": "Jedinica"
   }
 }

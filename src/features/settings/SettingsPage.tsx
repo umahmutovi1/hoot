@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Avatar } from '@/components/Avatar'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { signOut } from '@/features/auth/api'
 import { useCalendarFeeds } from '@/features/calendars/api'
@@ -33,8 +33,8 @@ export function SettingsPage() {
   const row = 'flex items-center justify-between border-b border-canvas py-3.5'
 
   return (
-    <div className="flex min-h-[calc(100dvh-48px)] flex-col gap-3.5">
-      <BackHeader title={t('settings.title')} fallback="/progress" />
+    <div className="flex flex-1 flex-col gap-3.5">
+      <ScreenTitle title={t('settings.title')} />
 
       {editingName ? (
         <div className="rounded-card glass p-4">
