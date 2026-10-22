@@ -9,6 +9,7 @@ import { usePresets } from '@/features/session/presets'
 import { useSessionUi } from '@/features/session/store'
 import { pickForTime, reviewMinutes, type Pick, type PickBlock } from '@/lib/scheduler'
 import { dueUnits } from '@/features/review/due'
+import { useStartCheck } from '@/features/review/useStartCheck'
 import type { PlanToday } from './usePlanToday'
 
 // "Imam samo X min" (PRD "Brze akcije dana"): `pickForTime()` over the saved plan, and starting
@@ -116,7 +117,7 @@ export function useStartPick(plan: PlanToday) {
   const writer = useSessionWriter()
   const { suggestedId } = usePresets()
   const setTimerMode = useSessionUi((s) => s.setTimerMode)
-  const setCheck = useSessionUi((s) => s.setCheck)
+  const startCheck = useStartCheck()
   return async (pick: Pick, timerMode = suggestedId) => {
     const block = plan.blocks.find((b) => b.id === pick.blockId)
     const later =
@@ -131,8 +132,10 @@ export function useStartPick(plan: PlanToday) {
       await startBlock(block, plan.units, { minutes: pick.minutes, unitId, timerMode, checkUnits })
     else if (later)
       await startBlock(later, plan.units, { minutes: pick.minutes, tied: false, unitId, timerMode })
+    else if (pick.from === 'review')
+      await startCheck(pick.subjectId, checkUnits!, pick.minutes, timerMode)
     else {
-      const sessionId = await writer.start({
+      await writer.start({
         subjectId: pick.subjectId,
         unitId,
         mode: 'review',
@@ -140,11 +143,7 @@ export function useStartPick(plan: PlanToday) {
         plannedMinutes: pick.minutes,
       })
       setTimerMode(timerMode)
-      // A due check without a block: Provjera znanja over the picked units.
-      if (pick.from === 'review' && sessionId) {
-        setCheck({ sessionId, unitIds: pick.units.map((u) => u.unitId) })
-        navigate('/session/review')
-      } else navigate('/session')
+      navigate('/session')
     }
   }
 }

@@ -11,6 +11,7 @@ import { addDays, toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import type { BehindAction, Suggestion } from '@/lib/scheduler'
 import { cn } from '@/lib/utils'
+import { useStartCheck } from '@/features/review/useStartCheck'
 import { usePatchSubject, useRaiseCaps } from './actions'
 import { useGoalTitle } from './model'
 import { ReplanSheet } from './ReplanSheet'
@@ -86,6 +87,7 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
   const snooze = usePlanUi((s) => s.snooze)
   const patch = usePatchSubject()
   const caps = useRaiseCaps()
+  const startCheck = useStartCheck()
   const [replanOpen, setReplanOpen] = useState(false)
   const [done, setDone] = useState<string | null>(null)
   const today = model?.built.today ?? ''
@@ -215,6 +217,41 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
           {laterButton}
         </Card>
       )
+    case 'check': {
+      // One subject per check session: the one with the most checks waiting.
+      const subjectOf = new Map(model?.built.state.units.map((u) => [u.id, u.subjectId]) ?? [])
+      const counts = new Map<string, number>()
+      for (const id of suggestion.unitIds) {
+        const sid = subjectOf.get(id)
+        if (sid) counts.set(sid, (counts.get(sid) ?? 0) + 1)
+      }
+      const subjectId = [...counts].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0]?.[0]
+      return (
+        <Card
+          icon={<ChartIcon size={18} />}
+          title={t('review.card.title')}
+          sub={t('review.card.sub', {
+            count: suggestion.unitIds.length,
+            min: Math.round(suggestion.minutes),
+          })}
+        >
+          {subjectId && (
+            <button
+              type="button"
+              className={primary}
+              onClick={() => {
+                const ids = suggestion.unitIds.filter((id) => subjectOf.get(id) === subjectId)
+                const share = suggestion.minutes * (ids.length / suggestion.unitIds.length)
+                void startCheck(subjectId, ids, share)
+              }}
+            >
+              {t('review.card.start')}
+            </button>
+          )}
+          {laterButton}
+        </Card>
+      )
+    }
     case 'campaign_soon':
       return (
         <Card

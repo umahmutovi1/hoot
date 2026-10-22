@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { addDays } from '@/lib/day'
 import { addPerDay, boostEffect, cutCandidates, plan, suggestions, type SuggestionInput } from '.'
-import { exam, FROM, state, subject, units } from './fixtures'
+import { days, exam, FROM, state, subject, units } from './fixtures'
 
 const day = (n: number) => addDays(FROM, n)
 
@@ -168,5 +168,46 @@ describe('suggestion helpers', () => {
       ],
     })
     expect(boostEffect(s, 'a', day(10))).toBeNull()
+  })
+})
+
+describe('suggestions: knowledge check', () => {
+  it('lists checks due today that are not in today’s blocks, last', () => {
+    const u = units('k', 3, 40, { level: 2, nextReviewOn: FROM })
+    const s = state({
+      subjects: [subject('k')],
+      units: u,
+      goals: [
+        exam(
+          'ek',
+          'k',
+          addDays(FROM, 10),
+          u.map((x) => x.id),
+        ),
+      ],
+      // no free time today: nothing is planned, so every due check is left over
+      days: days(28).map((d, i) => (i === 0 ? { ...d, slots: [] } : d)),
+    })
+    const list = suggestions(input({ state: s }))
+    const check = list.find((x) => x.kind === 'check')
+    expect(check).toMatchObject({ key: `check:${FROM}`, unitIds: u.map((x) => x.id), minutes: 18 })
+    expect(list.at(-1)!.kind).toBe('check')
+  })
+
+  it('no card when the checks are in today’s plan', () => {
+    const u = units('k', 1, 40, { level: 2, nextReviewOn: FROM })
+    const s = state({
+      subjects: [subject('k')],
+      units: u,
+      goals: [
+        exam(
+          'ek',
+          'k',
+          addDays(FROM, 10),
+          u.map((x) => x.id),
+        ),
+      ],
+    })
+    expect(suggestions(input({ state: s })).some((x) => x.kind === 'check')).toBe(false)
   })
 })
