@@ -416,8 +416,16 @@ export type Database = {
           back: string
           created_at: string
           front: string
+          fsrs_difficulty: number | null
+          fsrs_lapses: number
+          fsrs_reps: number
+          fsrs_stability: number | null
+          fsrs_state: number | null
           id: string
+          last_review_at: string | null
+          next_review_on: string | null
           origin: Database["public"]["Enums"]["assigned_by"]
+          review_streak: number
           unit_id: string
           updated_at: string
           user_id: string
@@ -426,8 +434,16 @@ export type Database = {
           back: string
           created_at?: string
           front: string
+          fsrs_difficulty?: number | null
+          fsrs_lapses?: number
+          fsrs_reps?: number
+          fsrs_stability?: number | null
+          fsrs_state?: number | null
           id?: string
+          last_review_at?: string | null
+          next_review_on?: string | null
           origin?: Database["public"]["Enums"]["assigned_by"]
+          review_streak?: number
           unit_id: string
           updated_at?: string
           user_id?: string
@@ -436,8 +452,16 @@ export type Database = {
           back?: string
           created_at?: string
           front?: string
+          fsrs_difficulty?: number | null
+          fsrs_lapses?: number
+          fsrs_reps?: number
+          fsrs_stability?: number | null
+          fsrs_state?: number | null
           id?: string
+          last_review_at?: string | null
+          next_review_on?: string | null
           origin?: Database["public"]["Enums"]["assigned_by"]
+          review_streak?: number
           unit_id?: string
           updated_at?: string
           user_id?: string
@@ -983,6 +1007,7 @@ export type Database = {
           default_preset: string
           display_name: string | null
           exam_eve_end_min: number
+          fsrs_params: Json | null
           grade_scale: Json | null
           ics_token: string | null
           id: string
@@ -991,11 +1016,14 @@ export type Database = {
           max_subjects_per_day: number
           min_block_minutes: number
           name_confirmed_at: string | null
+          notify_break_end: boolean
+          notify_first_block: boolean
           onboarded_at: string | null
           onboarding_step: number
           points_total: number
           preferred_slots: string[]
           recap_after_lecture: boolean
+          review_cap_pct: number
           session_presets: Json
           sleep_min: number[] | null
           srs_multiplier: number
@@ -1012,6 +1040,7 @@ export type Database = {
           default_preset?: string
           display_name?: string | null
           exam_eve_end_min?: number
+          fsrs_params?: Json | null
           grade_scale?: Json | null
           ics_token?: string | null
           id: string
@@ -1020,11 +1049,14 @@ export type Database = {
           max_subjects_per_day?: number
           min_block_minutes?: number
           name_confirmed_at?: string | null
+          notify_break_end?: boolean
+          notify_first_block?: boolean
           onboarded_at?: string | null
           onboarding_step?: number
           points_total?: number
           preferred_slots?: string[]
           recap_after_lecture?: boolean
+          review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
           srs_multiplier?: number
@@ -1041,6 +1073,7 @@ export type Database = {
           default_preset?: string
           display_name?: string | null
           exam_eve_end_min?: number
+          fsrs_params?: Json | null
           grade_scale?: Json | null
           ics_token?: string | null
           id?: string
@@ -1049,11 +1082,14 @@ export type Database = {
           max_subjects_per_day?: number
           min_block_minutes?: number
           name_confirmed_at?: string | null
+          notify_break_end?: boolean
+          notify_first_block?: boolean
           onboarded_at?: string | null
           onboarding_step?: number
           points_total?: number
           preferred_slots?: string[]
           recap_after_lecture?: boolean
+          review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
           srs_multiplier?: number
@@ -1064,41 +1100,135 @@ export type Database = {
         }
         Relationships: []
       }
+      push_jobs: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          ref: string
+          send_at: string
+          sent_at: string | null
+          title: string
+          updated_at: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          kind: string
+          ref: string
+          send_at: string
+          sent_at?: string | null
+          title: string
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          ref?: string
+          send_at?: string
+          sent_at?: string | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       review_logs: {
         Row: {
+          card_id: string | null
+          elapsed_days: number | null
           id: string
           interval_after: number | null
           interval_before: number | null
           recall: number
           reviewed_at: string
           source: Database["public"]["Enums"]["recall_source"]
+          stability_after: number | null
+          stability_before: number | null
           unit_id: string
           user_id: string
           was_scheduled: boolean
         }
         Insert: {
+          card_id?: string | null
+          elapsed_days?: number | null
           id?: string
           interval_after?: number | null
           interval_before?: number | null
           recall: number
           reviewed_at?: string
           source: Database["public"]["Enums"]["recall_source"]
+          stability_after?: number | null
+          stability_before?: number | null
           unit_id: string
           user_id?: string
           was_scheduled?: boolean
         }
         Update: {
+          card_id?: string | null
+          elapsed_days?: number | null
           id?: string
           interval_after?: number | null
           interval_before?: number | null
           recall?: number
           reviewed_at?: string
           source?: Database["public"]["Enums"]["recall_source"]
+          stability_after?: number | null
+          stability_before?: number | null
           unit_id?: string
           user_id?: string
           was_scheduled?: boolean
         }
         Relationships: [
+          {
+            foreignKeyName: "review_logs_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "review_logs_unit_id_fkey"
             columns: ["unit_id"]
@@ -1115,6 +1245,7 @@ export type Database = {
           level_after: number | null
           level_before: number | null
           minutes: number
+          recall_skipped: boolean
           session_id: string
           unit_id: string
           user_id: string
@@ -1125,6 +1256,7 @@ export type Database = {
           level_after?: number | null
           level_before?: number | null
           minutes: number
+          recall_skipped?: boolean
           session_id: string
           unit_id: string
           user_id?: string
@@ -1135,6 +1267,7 @@ export type Database = {
           level_after?: number | null
           level_before?: number | null
           minutes?: number
+          recall_skipped?: boolean
           session_id?: string
           unit_id?: string
           user_id?: string
@@ -1563,9 +1696,15 @@ export type Database = {
           confidence: number | null
           created_at: string
           est_minutes: number | null
+          fsrs_difficulty: number | null
+          fsrs_lapses: number
+          fsrs_reps: number
+          fsrs_stability: number | null
+          fsrs_state: number | null
           id: string
           kind: Database["public"]["Enums"]["unit_kind"]
           label: string | null
+          last_review_at: string | null
           level: number
           next_review_on: string | null
           notes: string | null
@@ -1573,6 +1712,7 @@ export type Database = {
           page_start: number | null
           parent_id: string | null
           position: number
+          review_streak: number
           source_id: string
           srs_ease: number
           srs_interval_days: number | null
@@ -1592,9 +1732,15 @@ export type Database = {
           confidence?: number | null
           created_at?: string
           est_minutes?: number | null
+          fsrs_difficulty?: number | null
+          fsrs_lapses?: number
+          fsrs_reps?: number
+          fsrs_stability?: number | null
+          fsrs_state?: number | null
           id?: string
           kind?: Database["public"]["Enums"]["unit_kind"]
           label?: string | null
+          last_review_at?: string | null
           level?: number
           next_review_on?: string | null
           notes?: string | null
@@ -1602,6 +1748,7 @@ export type Database = {
           page_start?: number | null
           parent_id?: string | null
           position: number
+          review_streak?: number
           source_id: string
           srs_ease?: number
           srs_interval_days?: number | null
@@ -1621,9 +1768,15 @@ export type Database = {
           confidence?: number | null
           created_at?: string
           est_minutes?: number | null
+          fsrs_difficulty?: number | null
+          fsrs_lapses?: number
+          fsrs_reps?: number
+          fsrs_stability?: number | null
+          fsrs_state?: number | null
           id?: string
           kind?: Database["public"]["Enums"]["unit_kind"]
           label?: string | null
+          last_review_at?: string | null
           level?: number
           next_review_on?: string | null
           notes?: string | null
@@ -1631,6 +1784,7 @@ export type Database = {
           page_start?: number | null
           parent_id?: string | null
           position?: number
+          review_streak?: number
           source_id?: string
           srs_ease?: number
           srs_interval_days?: number | null

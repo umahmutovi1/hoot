@@ -136,7 +136,9 @@ export function useSessionUnits(sessionId: string | undefined) {
     queryFn: async (): Promise<SessionUnitRow[]> => {
       const { data, error } = await supabase
         .from('session_units')
-        .select('session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty')
+        .select(
+          'session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty, recall_skipped',
+        )
         .eq('session_id', sessionId!)
       if (error) throw error
       return data
