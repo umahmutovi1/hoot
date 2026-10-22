@@ -292,7 +292,9 @@
       "unit": "Jedinica",
       "allUnits": "Prikaži sve ({{count}})",
       "freeHint": "Jedinicu možeš promijeniti u sesiji („Sad radim na“). Vrijeme se računa u kalibraciju, ali ne skida blok iz plana.",
-      "go": "Počni"
+      "go": "Počni",
+      "breaks": "Pauze",
+      "breaksHint": "Zadnji korišten predložak je predložen. Default mijenjaš u Postavkama."
     },
     "mode": {
       "label": "Način učenja",
@@ -396,6 +398,14 @@
         "items_one": "jedinica",
         "items_few": "jedinice",
         "items_other": "jedinica"
+      },
+      "whyLow": "Šta je smetalo?",
+      "reason": {
+        "tired": "Umorna",
+        "phone": "Telefon",
+        "noise": "Buka",
+        "hard": "Teško gradivo",
+        "sleep": "Loše spavala"
       }
     },
     "history": {
@@ -446,7 +456,18 @@
       "free": "Slobodno",
       "pomodoro25": "25/5",
       "pomodoro50": "50/10"
-    }
+    },
+    "presetSub": {
+      "standard": "50 min učenja / 15 pauze",
+      "pomodoro": "25 / 5 · duga pauza 20 min nakon 4",
+      "flow": "učiš dok hoćeš · pauza = učenje / 5",
+      "free": "bez podsjetnika",
+      "pomodoro25": "25 / 5",
+      "pomodoro50": "50 / 10",
+      "custom": "{{steps}}, ponovi",
+      "customLong": "{{steps}}, ponovi · {{min}} min nakon {{every}}"
+    },
+    "distracted": "Ometena sam"
   },
   "settings": {
     "title": "Postavke",
@@ -460,7 +481,35 @@
     "periodsCount_few": "{{count}} perioda",
     "periodsCount_other": "{{count}} perioda",
     "grades": "Bodovi i ocjene",
-    "gradesValue": "{{total}} bodova · skala ›"
+    "gradesValue": "{{total}} bodova · skala ›",
+    "session": "Sesija",
+    "presets": {
+      "title": "Predložak sesije",
+      "edit": "Uredi {{name}}",
+      "new": "Novi vlastiti predložak",
+      "hint": "Podsjetnik na pauzu, timer se nikad ne zaustavlja sam. Nakon 5 sesija po predlošku app uporedi fokus i brzinu.",
+      "newTitle": "Novi predložak",
+      "editTitle": "Uredi predložak",
+      "editorSub": "Niz učenja i pauza koji se ponavlja.",
+      "name": "Naziv",
+      "namePlaceholder": "npr. Moj ritam",
+      "steps": "Koraci",
+      "work": "Učenje",
+      "break": "Pauza",
+      "workMin": "{{min}} min učenja",
+      "breakMin": "{{min}} min pauze",
+      "removeStep": "Ukloni korak",
+      "addStep": "Dodaj korak",
+      "repeats": "Kad dođeš do kraja, niz kreće ispočetka.",
+      "longBreak": "Duga pauza",
+      "longMin": "Trajanje duge pauze",
+      "after": "nakon",
+      "every": "Nakon koliko intervala",
+      "intervals_one": "{{count}} intervala",
+      "intervals_few": "{{count}} intervala",
+      "intervals_other": "{{count}} intervala",
+      "delete": "Obriši predložak"
+    }
   },
   "validation": {
     "required": "Obavezno polje",

@@ -49,6 +49,7 @@ const answers = {
   ratings: {},
   levels: {},
   focus: 2,
+  focusReasons: ['tired'],
   reflection: '  ',
 }
 
@@ -117,10 +118,17 @@ describe('planEnd', () => {
     })
   })
 
+  it('keeps reasons for low focus only with focus 1', () => {
+    const low = planEnd(session, segments, [source()], { ...answers, focus: 1 })
+    expect(opOf(low.ops, 'study_sessions')[0]).toMatchObject({
+      rows: [{ focus: 1, focus_reasons: ['tired'] }],
+    })
+  })
+
   it('keeps focus, drops an empty reflection, never calibrates without progress', () => {
     const { ops } = planEnd(session, segments, [source()], { ...answers, ranges: [] })
     const [s] = opOf(ops, 'study_sessions')
-    expect(s).toMatchObject({ rows: [{ focus: 2, reflection: null }] })
+    expect(s).toMatchObject({ rows: [{ focus: 2, focus_reasons: null, reflection: null }] })
     // a was studied without reported progress: it keeps its minutes
     expect(opOf(ops, 'session_units')[0]).toMatchObject({
       rows: [{ unit_id: 'a', minutes: 45, amount_done: 0 }],

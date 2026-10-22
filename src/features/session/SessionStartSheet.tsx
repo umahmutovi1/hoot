@@ -12,6 +12,8 @@ import { defaultMode } from '@/lib/estimates/calibration'
 import { cn } from '@/lib/utils'
 import { useSessionWriter } from './api'
 import { Chip } from './Chip'
+import { PresetChips } from './PresetChips'
+import { usePresets } from './presets'
 import { nextLeaves, sessionSources, unitTitle } from './material'
 import { useSessionUi } from './store'
 import { UnitOption } from './UnitOption'
@@ -53,7 +55,10 @@ function StartForm() {
   const navigate = useNavigate()
   const online = useOnline()
   const close = useSessionUi((s) => s.closeStart)
-  const timerMode = useSessionUi((s) => s.timerMode)
+  const setTimerMode = useSessionUi((s) => s.setTimerMode)
+  const { suggestedId } = usePresets()
+  const [presetId, setPresetId] = useState<string | null>(null)
+  const timerMode = presetId ?? suggestedId
   const writer = useSessionWriter()
   const { data: subjects, isPending } = useSubjects()
   const active = (subjects ?? []).filter((s) => !s.archived)
@@ -88,6 +93,7 @@ function StartForm() {
           : null,
       timerMode,
     })
+    setTimerMode(timerMode)
     close()
     navigate('/session')
   }
@@ -194,6 +200,13 @@ function StartForm() {
           )}
           <span className="text-xs leading-[1.45] text-ink-muted">
             {t('session.start.freeHint')}
+          </span>
+          <h3 className="pt-1 text-[13px] font-semibold tracking-[0.3px] text-ink-secondary uppercase">
+            {t('session.start.breaks')}
+          </h3>
+          <PresetChips label={t('session.start.breaks')} value={timerMode} onChange={setPresetId} />
+          <span className="-mt-1 text-xs leading-[1.45] text-ink-muted">
+            {t('session.start.breaksHint')}
           </span>
         </>
       )}

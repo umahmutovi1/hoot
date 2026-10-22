@@ -44,6 +44,8 @@ export interface EndAnswers {
   /** Status per unit after the session (chip on the card). */
   levels: Record<string, number>
   focus: number | null
+  /** Why focus was low (only kept with focus 1). */
+  focusReasons: string[]
   reflection: string
 }
 
@@ -172,6 +174,8 @@ export function planEnd(
         {
           ...session,
           focus: answers.focus,
+          focus_reasons:
+            answers.focus === 1 && answers.focusReasons.length > 0 ? answers.focusReasons : null,
           reflection: answers.reflection.trim() || null,
           updated_at: t,
         } as unknown as Row,

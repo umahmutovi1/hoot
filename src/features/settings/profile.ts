@@ -113,7 +113,24 @@ export function useUpdateProfile() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (
-      patch: Partial<Pick<Profile, 'recap_after_lecture' | 'lecture_pace_days' | 'daily_cap_min'>>,
+      patch: Partial<
+        Pick<
+          Profile,
+          | 'recap_after_lecture'
+          | 'lecture_pace_days'
+          | 'daily_cap_min'
+          | 'default_preset'
+          | 'session_presets'
+          | 'onboarding_step'
+          | 'onboarded_at'
+          | 'wake_min'
+          | 'sleep_min'
+          | 'preferred_slots'
+          | 'day_start_min'
+          | 'timezone'
+          | 'exam_eve_end_min'
+        >
+      >,
     ) => {
       const { error } = await supabase.from('profiles').update(patch).eq('id', userId!)
       if (error) throw error
