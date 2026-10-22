@@ -1599,10 +1599,14 @@
       "fits": "You make it, with {{time}} to spare",
       "short": "{{time}} short before the exam",
       "firstSession": "First session",
-      "planSoon": "the schedule comes with the plan",
       "rough": "The estimate is rough until you add content. After 3 sessions the app knows your pace.",
       "start": "Start the first session",
-      "today": "Go to Today"
+      "today": "Go to Today",
+      "firstBlock": "First block · today",
+      "firstBlockAt": "First block · today {{time}}",
+      "planning": "Building your plan…",
+      "noBlockToday": "no block planned today",
+      "startBlock": "Start the first block"
     },
     "checklist": {
       "title_one": "{{count}} more step to an accurate plan",

@@ -1637,10 +1637,14 @@
       "fits": "Stižeš, uz {{time}} rezerve",
       "short": "Fali {{time}} do ispita",
       "firstSession": "Prva sesija",
-      "planSoon": "satnica dolazi s planom",
       "rough": "Procjena je gruba dok ne dodaš sadržaj. Nakon 3 sesije app zna tvoju brzinu.",
       "start": "Počni prvu sesiju",
-      "today": "Idi na Danas"
+      "today": "Idi na Danas",
+      "firstBlock": "Prvi blok · danas",
+      "firstBlockAt": "Prvi blok · danas {{time}}",
+      "planning": "Slažem plan…",
+      "noBlockToday": "danas nema bloka u planu",
+      "startBlock": "Pokreni prvi blok"
     },
     "checklist": {
       "title_one": "Još {{count}} korak do tačnog plana",

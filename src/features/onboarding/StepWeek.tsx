@@ -1,6 +1,8 @@
-import { useSpeeds } from '@/features/plan/api'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useStartBlock } from '@/features/plan/actions'
+import { useSpeeds } from '@/features/plan/api'
+import { blockTitle } from '@/features/plan/model'
 import { usePresets, presetName } from '@/features/session/presets'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useDayBoundary } from '@/features/settings/profile'
@@ -9,19 +11,30 @@ import { materialOf } from '@/features/sources/model'
 import { formatDuration } from '@/features/sources/format'
 import { useSubjects } from '@/features/subjects/api'
 import { localDay } from '@/lib/day'
-import { studyMinutesBetween } from '@/lib/schedule'
+import { formatClock, studyMinutesBetween } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
 import { StepTitle } from './OnboardingPage'
+import { useFirstBlock } from './useFirstBlock'
 
 /** Plan uses this share of free time until real data exists: ρ prior 0.8 × reserve 0.9. */
 const PLANNED_SHARE = 0.8 * 0.9
 
 /**
  * Step 8 "Tvoja sedmica": free hours a week, hours needed until the first exam and whether that
- * fits (with the plan's reserve). The first block comes with the scheduler (Stage 8b); until
- * then "Počni" opens a session for the subject.
+ * fits (with the plan's reserve), then today's first block from the plan that ReplanRunner
+ * computes after step 7 ("Pokreni prvi blok" starts its session). Without a block today it
+ * offers a free session for the subject.
  */
-export function StepWeek({ onStart, onToday }: { onStart: () => void; onToday: () => void }) {
+export function StepWeek({
+  onStart,
+  onToday,
+  onBlockStart,
+}: {
+  onStart: () => void
+  onToday: () => void
+  /** Ends onboarding without leaving; the block's session navigates on. */
+  onBlockStart: () => void
+}) {
   const { t } = useTranslation()
   const boundary = useDayBoundary()
   const [today] = useState(() => localDay(new Date(), boundary))
@@ -46,6 +59,23 @@ export function StepWeek({ onStart, onToday }: { onStart: () => void; onToday: (
   const weekly = schedule.weekMinutes(today)
   const until = next ? studyMinutesBetween(today, next.on, schedule.dayInput) * PLANNED_SHARE : 0
   const diff = Math.round(until - needed)
+  const first = useFirstBlock(
+    next
+      ? {
+          id: next.exam.id,
+          subjectId: next.subject.id,
+          hasMaterial: sources.some((src) => src.units.some((u) => u.archived_at === null)),
+        }
+      : null,
+  )
+  const startBlock = useStartBlock()
+  const [starting, setStarting] = useState(false)
+  const begin = () => {
+    if (first.status !== 'block') return onStart()
+    setStarting(true)
+    onBlockStart()
+    void startBlock(first.block, first.units).catch(() => setStarting(false))
+  }
 
   return (
     <>
@@ -73,14 +103,48 @@ export function StepWeek({ onStart, onToday }: { onStart: () => void; onToday: (
             : t('onboarding.week.short', { time: formatDuration(t, -diff) })}
         </div>
       )}
-      {next && (
+      {next && first.status !== 'none' && (
+        <section className="glass-tint flex flex-col gap-3 rounded-card-lg p-5">
+          {first.status === 'block' ? (
+            <>
+              <span className="text-xs font-semibold tracking-[0.6px] text-white/88 uppercase">
+                {first.block.start_min === null
+                  ? t('onboarding.week.firstBlock')
+                  : t('onboarding.week.firstBlockAt', {
+                      time: formatClock(first.block.start_min),
+                    })}
+              </span>
+              <span className="text-[20px] leading-tight font-semibold">
+                {subjects.find((x) => x.id === first.block.subject_id)?.name ?? next.subject.name}
+              </span>
+              <span className="text-[13px] text-white/84">
+                {[
+                  blockTitle(t, first.block, first.units, null),
+                  formatDuration(t, first.block.planned_minutes),
+                  presetName(t, resolve(defaultId)),
+                ].join(' · ')}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="text-xs font-semibold tracking-[0.6px] text-white/88 uppercase">
+                {t('onboarding.week.firstBlock')}
+              </span>
+              <span className="animate-pulse text-[15px] text-white/84">
+                {t('onboarding.week.planning')}
+              </span>
+            </>
+          )}
+        </section>
+      )}
+      {next && first.status === 'none' && (
         <section className="glass-tint flex flex-col gap-3 rounded-card-lg p-5">
           <span className="text-xs font-semibold tracking-[0.6px] text-white/88 uppercase">
             {t('onboarding.week.firstSession')}
           </span>
           <span className="text-[20px] leading-tight font-semibold">{next.subject.name}</span>
           <span className="text-[13px] text-white/84">
-            {presetName(t, resolve(defaultId))} · {t('onboarding.week.planSoon')}
+            {presetName(t, resolve(defaultId))} · {t('onboarding.week.noBlockToday')}
           </span>
         </section>
       )}
@@ -90,10 +154,15 @@ export function StepWeek({ onStart, onToday }: { onStart: () => void; onToday: (
       <div className="mt-auto flex flex-col items-center gap-1 pt-2">
         <button
           type="button"
-          onClick={next ? onStart : onToday}
-          className="btn-primary h-14 w-full rounded-full text-base font-semibold"
+          onClick={next ? begin : onToday}
+          disabled={Boolean(next) && (first.status === 'pending' || starting)}
+          className="btn-primary h-14 w-full rounded-full text-base font-semibold disabled:opacity-60"
         >
-          {next ? t('onboarding.week.start') : t('onboarding.week.today')}
+          {!next
+            ? t('onboarding.week.today')
+            : first.status === 'none'
+              ? t('onboarding.week.start')
+              : t('onboarding.week.startBlock')}
         </button>
         {next && (
           <button
