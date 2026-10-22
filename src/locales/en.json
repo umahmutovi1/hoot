@@ -987,7 +987,7 @@
     "everyWeekday": "Every {{day}}",
     "resetDay": "Back to the template ({{day}})",
     "deleteSlot": "Remove slot",
-    "breakdown": "{{slots}} of slots − {{busy}} of classes"
+    "breakdown": "{{slots}} of slots − {{busy}} busy"
   },
   "lectures": {
     "title": "How far did you get?",
@@ -1305,5 +1305,57 @@
     "allSettings": "All settings",
     "academicCalendar": "Academic calendar",
     "documents": "Documents"
+  },
+  "feeds": {
+    "title": "Connected calendars",
+    "intro": "Paste a secret iCal link. Busy time from the calendar counts like classes in the plan.",
+    "add": "Add calendar",
+    "newTitle": "New calendar",
+    "newSub": "Google, Apple or Outlook (iCal link)",
+    "serviceLabel": "Service",
+    "service": {
+      "google": "Google",
+      "apple": "Apple",
+      "outlook": "Outlook"
+    },
+    "link": "iCal link",
+    "howto": {
+      "google": "Google Calendar → Calendar settings → “Secret address in iCal format”.",
+      "apple": "iCloud → Calendar → Share → Public calendar → copy the link.",
+      "outlook": "Outlook → Settings → Calendar → Shared calendars → Publish a calendar → ICS."
+    },
+    "busyOnly": "Keep busy time only",
+    "busyOnlySub": "Titles and locations are not stored",
+    "busyOnlyShort": "busy only",
+    "allDay": "All-day events are busy",
+    "allDaySub": "Birthdays and holidays only show by default",
+    "secret": "The link works like a password: it is kept only for syncing and never shown again.",
+    "addButton": "Add",
+    "adding": "Adding…",
+    "name": "Name",
+    "newLink": "New link (optional)",
+    "newLinkPlaceholder": "paste only if you renewed it",
+    "remove": "Remove calendar",
+    "removeConfirm": "Remove this calendar? Its events leave the plan.",
+    "synced": "synced {{when}}",
+    "notSynced": "not synced yet",
+    "kind": {
+      "busy": "Busy",
+      "deadlines": "Deadlines"
+    },
+    "error": {
+      "fetch_failed": "The link cannot be opened. Check or renew it.",
+      "http_error": "The link no longer works. Renew it in the calendar.",
+      "too_large": "The calendar is too large to import.",
+      "not_ics": "This is not an iCal link.",
+      "parse_failed": "The calendar cannot be read.",
+      "save_failed": "Saving failed. Try again."
+    },
+    "fromSource": "from {{source}} calendar",
+    "busy": "Busy",
+    "busyHint": "This time is not planned for study. If it does not matter, ignore it.",
+    "ignoredHint": "Ignored: the plan counts this time as free.",
+    "ignore": "Ignore",
+    "unignore": "Count as busy again"
   }
 }

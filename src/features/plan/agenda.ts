@@ -4,7 +4,7 @@ import { cancelledOn, type ClassWithRow } from '@/features/schedule/model'
 import { useSubjects } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
 import type { LocalDate } from '@/lib/day'
-import { calendarStatus, classesOn, type CalendarStatus } from '@/lib/schedule'
+import { busyEventsOn, calendarStatus, classesOn, type CalendarStatus } from '@/lib/schedule'
 
 export interface DayClass {
   id: string
@@ -13,6 +13,18 @@ export interface DayClass {
   entry: ClassWithRow
   subject?: SubjectWithAssessments
   cancelled: boolean
+}
+
+/** Busy time from a connected calendar on one day (hatched, "iz kalendara …"). */
+export interface DayBusy {
+  id: string
+  eventId: string
+  startMin: number
+  endMin: number
+  title: string | null
+  /** The feed's name, for "iz kalendara Google". */
+  source: string
+  ignored: boolean
 }
 
 /** Classes and academic-calendar status of any day, for the calendar views. */
@@ -32,6 +44,19 @@ export function useAgenda() {
       }))
     }
     const statusOf = (date: LocalDate): CalendarStatus | null => calendarStatus(date, data.periods)
-    return { classesFor, statusOf }
+    /** Busy events of a date; ignored ones too (shown faded, tap brings them back). */
+    const busyFor = (date: LocalDate): DayBusy[] => {
+      const all = data.events.map((e) => ({ ...e, ignored: false }))
+      return busyEventsOn(date, all, data.feeds, data.timeZone).map((e) => ({
+        id: `${e.id}-${date}`,
+        eventId: e.id,
+        startMin: e.startMin,
+        endMin: e.endMin,
+        title: e.title ?? null,
+        source: data.feedRows.find((f) => f.id === e.feedId)?.title ?? '',
+        ignored: data.events.find((x) => x.id === e.id)?.ignored ?? false,
+      }))
+    }
+    return { classesFor, statusOf, busyFor }
   }, [data, subjects])
 }

@@ -1,3 +1,4 @@
+import { CalendarFeedsPage } from '@/features/calendars/CalendarFeedsPage'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
               { path: 'settings', element: <SettingsPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
               { path: 'settings/documents', element: <DocumentsPage /> },
+              { path: 'settings/feeds', element: <CalendarFeedsPage /> },
               { path: 'settings/documents/:id', element: <DocumentPage /> },
               { path: 'chat/history', element: <OwlHistoryPage /> },
               { path: 'chat/import/:id', element: <ImportReviewPage /> },

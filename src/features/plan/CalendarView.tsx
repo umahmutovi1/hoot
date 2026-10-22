@@ -1,3 +1,4 @@
+import { BusySheet } from '@/features/calendars/BusySheet'
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +17,7 @@ import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { ClassDetailSheet } from '@/features/schedule/ClassDetailSheet'
 import { statusLabel } from '@/features/schedule/format'
-import { useAgenda, type DayClass } from './agenda'
+import { useAgenda, type DayBusy, type DayClass } from './agenda'
 import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
 import { DayDots } from './DayDots'
 import { DayStrip } from './DayStrip'
@@ -43,6 +44,7 @@ export function CalendarView() {
   const openClass = (item: DayClass, date: Date) =>
     setDetail({ item, date: localDateOf(date.toISOString()) })
   const agenda = useAgenda()
+  const [busy, setBusy] = useState<DayBusy | null>(null)
   const boundary = useDayBoundary()
   const selectedDate = localDateOf(selected.toISOString())
   const dayClasses = agenda.classesFor(selectedDate)
@@ -72,11 +74,13 @@ export function CalendarView() {
         <div className="flex flex-col gap-3">
           <DayStrip selected={selected} today={today} onSelect={setSelected} />
           <div className="rounded-card-lg glass p-3 pr-2">
-            {dayClasses.length === 0 && (
+            {dayClasses.length === 0 && agenda.busyFor(selectedDate).length === 0 && (
               <p className="px-1 pb-2 text-sm text-ink-muted">{t('plan.noClasses')}</p>
             )}
             <DayTimeline
               items={dayClasses}
+              busy={agenda.busyFor(selectedDate)}
+              onPickBusy={setBusy}
               onPick={(item) => openClass(item, selected)}
               nowMin={
                 isSameDay(selected, today) ? wallClock(now, boundary.timeZone).minutes : undefined
@@ -93,6 +97,7 @@ export function CalendarView() {
         status={agenda.statusOf(selectedDate)}
         onPickClass={(item) => openClass(item, selected)}
       />
+      <BusySheet item={busy} onClose={() => setBusy(null)} />
       <ClassDetailSheet
         item={detail?.item ?? null}
         date={detail?.date ?? selectedDate}
