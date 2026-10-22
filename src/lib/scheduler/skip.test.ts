@@ -33,7 +33,8 @@ describe('skipBlock', () => {
       { nowMin: h(19, 28), preset: standard, startNext: false },
     )
     expect(r.moved.size).toBe(0)
-    expect(r.skippedAt).toBe(h(19, 28))
+    // Not now and not in its own slot (19:00–19:50): the gap after it, before 21:30.
+    expect(r.skippedAt).toBe(h(19, 50))
   })
 
   it('is null when nothing holds the skipped block today', () => {
@@ -56,6 +57,16 @@ describe('skipBlock', () => {
       startNext: false,
     })
     expect(r.skippedAt).toBe(h(21, 30))
+  })
+
+  it('never lands back in its own slot when only skipping', () => {
+    const r = skipBlock(
+      { id: 's', startMin: h(22, 5), minutes: 100 },
+      [],
+      [{ startMin: h(19), endMin: h(24) }],
+      { nowMin: h(22, 6), preset: standard, startNext: false },
+    )
+    expect(r.skippedAt).toBeNull()
   })
 
   it('respects the end of the day before an exam', () => {
