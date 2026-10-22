@@ -8,8 +8,11 @@ import {
   calendarParseSchema,
   documentParseSchema,
   examScheduleParseSchema,
+  MAX_CUSTOM_PRESETS,
   MAX_DOCUMENT_CHARS,
   parseDocumentRequestSchema,
+  sessionPresetSchema,
+  sessionPresetsSchema,
 } from './schemas.ts'
 
 const outputSchemas = {
@@ -142,5 +145,55 @@ describe('costUsd', () => {
     expect(costUsd('claude-haiku-5-5', 1_000_000, 1_000_000)).toBeCloseTo(0.6, 6)
     expect(costUsd('gemini-2.5-flash', 3000, 1500)).toBeCloseTo(0.00465, 6)
     expect(costUsd('mystery', 1, 1)).toBeNull()
+  })
+})
+
+describe('sessionPresetSchema', () => {
+  const base = {
+    id: 'custom:00000000-0000-4000-8000-000000000001',
+    name: 'Moj niz',
+    steps: [
+      { kind: 'work', min: 45 },
+      { kind: 'break', min: 10 },
+    ],
+    long_break: null,
+  }
+
+  it('accepts alternating study and break steps', () => {
+    expect(sessionPresetSchema.safeParse(base).success).toBe(true)
+    expect(
+      sessionPresetSchema.safeParse({ ...base, long_break: { every: 4, min: 20 } }).success,
+    ).toBe(true)
+  })
+
+  it('rejects a sequence that starts with a break, ends without one or repeats a kind', () => {
+    const bad = (steps: { kind: string; min: number }[]) =>
+      sessionPresetSchema.safeParse({ ...base, steps }).success
+    expect(
+      bad([
+        { kind: 'break', min: 5 },
+        { kind: 'work', min: 25 },
+      ]),
+    ).toBe(false)
+    expect(
+      bad([
+        { kind: 'work', min: 25 },
+        { kind: 'break', min: 5 },
+        { kind: 'work', min: 25 },
+      ]),
+    ).toBe(false)
+    expect(
+      bad([
+        { kind: 'work', min: 25 },
+        { kind: 'work', min: 25 },
+      ]),
+    ).toBe(false)
+  })
+
+  it('rejects ids that are not custom ones, and too many presets', () => {
+    expect(sessionPresetSchema.safeParse({ ...base, id: 'standard' }).success).toBe(false)
+    expect(sessionPresetsSchema.safeParse(Array(MAX_CUSTOM_PRESETS + 1).fill(base)).success).toBe(
+      false,
+    )
   })
 })

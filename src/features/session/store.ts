@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import type { TimerMode } from '@/lib/session/timer'
 
 // UI state of the session flow. The timer itself is never here: it is in the database (segments).
 
@@ -10,8 +9,9 @@ interface SessionUiState {
   openStart: () => void
   closeStart: () => void
   /** Last timer mode picked; a new session starts with it. */
-  timerMode: TimerMode
-  setTimerMode: (mode: TimerMode) => void
+  /** Preset id. */
+  timerMode: string
+  setTimerMode: (mode: string) => void
   /** Unit picked in "Sad radim na" while paused; the next segment starts on it. */
   nextUnit: { sessionId: string; unitId: string | null } | null
   setNextUnit: (next: { sessionId: string; unitId: string | null } | null) => void
