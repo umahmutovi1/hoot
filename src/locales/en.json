@@ -287,7 +287,9 @@
       "unit": "Unit",
       "allUnits": "Show all ({{count}})",
       "freeHint": "You can change the unit during the session (\"Working on\"). The time counts for calibration but does not tick off a planned block.",
-      "go": "Start"
+      "go": "Start",
+      "breaks": "Breaks",
+      "breaksHint": "Your last preset is suggested. Change the default in Settings."
     },
     "mode": {
       "label": "Study mode",
@@ -383,6 +385,14 @@
         "questions_other": "questions",
         "items_one": "unit",
         "items_other": "units"
+      },
+      "whyLow": "What got in the way?",
+      "reason": {
+        "tired": "Tired",
+        "phone": "Phone",
+        "noise": "Noise",
+        "hard": "Hard material",
+        "sleep": "Slept badly"
       }
     },
     "history": {
@@ -429,7 +439,18 @@
       "free": "Free",
       "pomodoro25": "25/5",
       "pomodoro50": "50/10"
-    }
+    },
+    "presetSub": {
+      "standard": "50 min study / 15 break",
+      "pomodoro": "25 / 5 · 20 min long break after 4",
+      "flow": "study as long as you like · break = study / 5",
+      "free": "no reminders",
+      "pomodoro25": "25 / 5",
+      "pomodoro50": "50 / 10",
+      "custom": "{{steps}}, repeat",
+      "customLong": "{{steps}}, repeat · {{min}} min after {{every}}"
+    },
+    "distracted": "I got distracted"
   },
   "settings": {
     "title": "Settings",
@@ -442,7 +463,34 @@
     "periodsCount_one": "{{count}} period",
     "periodsCount_other": "{{count}} periods",
     "grades": "Points and grades",
-    "gradesValue": "{{total}} points · scale ›"
+    "gradesValue": "{{total}} points · scale ›",
+    "session": "Session",
+    "presets": {
+      "title": "Session preset",
+      "edit": "Edit {{name}}",
+      "new": "New custom preset",
+      "hint": "A reminder to take a break; the timer never stops by itself. After 5 sessions per preset the app compares focus and speed.",
+      "newTitle": "New preset",
+      "editTitle": "Edit preset",
+      "editorSub": "A sequence of study and breaks that repeats.",
+      "name": "Name",
+      "namePlaceholder": "e.g. My rhythm",
+      "steps": "Steps",
+      "work": "Study",
+      "break": "Break",
+      "workMin": "{{min}} min study",
+      "breakMin": "{{min}} min break",
+      "removeStep": "Remove step",
+      "addStep": "Add step",
+      "repeats": "At the end the sequence starts over.",
+      "longBreak": "Long break",
+      "longMin": "Long break length",
+      "after": "after",
+      "every": "After how many intervals",
+      "intervals_one": "{{count}} interval",
+      "intervals_other": "{{count}} intervals",
+      "delete": "Delete preset"
+    }
   },
   "validation": {
     "required": "Required",

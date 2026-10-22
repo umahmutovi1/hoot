@@ -242,26 +242,41 @@ export function useSessionWriter() {
         return session.id
       },
 
-      pause: async ({ session, segments }: ActiveSession) => {
+      /** Closes the running segment; `breakEndsAt` is when the preset's break ends (Web Push, Stage 9). */
+      pause: async ({ session, segments }: ActiveSession, breakEndsAt: Date | null = null) => {
         const open = segments.find((s) => s.ended_at === null)
         if (!open) return
-        const closed = { ...open, ended_at: nowIso() }
-        await write([segmentOp([closed])], () => ({
-          session,
+        const t = nowIso()
+        const closed = { ...open, ended_at: t }
+        const row = { ...session, break_ends_at: breakEndsAt?.toISOString() ?? null, updated_at: t }
+        await write([segmentOp([closed]), sessionOp(row)], () => ({
+          session: row,
           segments: segments.map((s) => (s.id === open.id ? closed : s)),
         }))
       },
 
       resume: async ({ session, segments }: ActiveSession, unitId: string | null) => {
         if (openSegment(segments.map(toSegment))) return
+        const t = nowIso()
         const segment: SegmentRow = {
           id: crypto.randomUUID(),
           session_id: session.id,
           unit_id: unitId,
-          started_at: nowIso(),
+          started_at: t,
           ended_at: null,
         }
-        await write([segmentOp([segment])], () => ({ session, segments: [...segments, segment] }))
+        const ops = [segmentOp([segment])]
+        const row = session.break_ends_at
+          ? { ...session, break_ends_at: null, updated_at: t }
+          : session
+        if (row !== session) ops.push(sessionOp(row))
+        await write(ops, () => ({ session: row, segments: [...segments, segment] }))
+      },
+
+      /** "Ometena sam": one more distraction in this session. */
+      distracted: async ({ session, segments }: ActiveSession) => {
+        const row = { ...session, distractions: session.distractions + 1, updated_at: nowIso() }
+        await write([sessionOp(row)], () => ({ session: row, segments }))
       },
 
       /** "Sad radim na X": the running segment closes and a new one starts at the same instant. */

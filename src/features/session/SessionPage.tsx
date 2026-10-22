@@ -11,8 +11,8 @@ import { useSubject } from '@/features/subjects/api'
 import {
   activeMs,
   forgottenSegment,
+  breakEndsAt,
   presetReminder,
-  resolvePreset,
   MINUTE,
   msByUnit,
   openSegment,
@@ -25,7 +25,8 @@ import { useActiveSession, useSessionWriter } from './api'
 import { Chip } from './Chip'
 import { ForgottenSheet } from './ForgottenSheet'
 import { findUnit, nextLeaves, sessionSources, unitTitle, type SessionSource } from './material'
-import { bySegmentStart, presetName, formatClock, STUDY_MODES, toSegment } from './model'
+import { bySegmentStart, formatClock, STUDY_MODES, toSegment } from './model'
+import { presetName, usePresets } from './presets'
 import { useSessionUi } from './store'
 import { usePendingSync } from './usePendingSync'
 import { TimerSheet } from './TimerSheet'
@@ -58,7 +59,8 @@ export function SessionPage() {
   const segments = data ? [...data.segments].sort(bySegmentStart) : []
   const list = segments.map(toSegment)
   const open = openSegment(list)
-  const preset = resolvePreset(data?.session.timer_mode)
+  const { resolve } = usePresets()
+  const preset = resolve(data?.session.timer_mode)
   const reminder = data ? presetReminder(preset, list, now) : null
   const reminderKey =
     reminder && reminder.remainingMs <= 0 ? `${reminder.phase}-${segments.at(-1)?.id}` : null
@@ -90,8 +92,11 @@ export function SessionPage() {
     else setNextUnit({ sessionId: session.id, unitId })
   }
   const toggle = () => {
-    if (open) void writer.pause(data)
-    else {
+    if (open) {
+      // `now` is at most a second old: close enough for when the break ends.
+      const closed = list.map((x) => (x.id === open.id ? { ...x, endedAt: now } : x))
+      void writer.pause(data, breakEndsAt(preset, closed, now))
+    } else {
       void writer.resume(data, pickedId)
       setNextUnit(null)
     }
@@ -265,6 +270,37 @@ export function SessionPage() {
           {t('session.units.other')}
         </button>
       </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          void writer.distracted(data)
+          navigator.vibrate?.(30)
+        }}
+        className="flex h-[52px] items-center justify-center gap-2 rounded-full glass text-[15px] font-semibold"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="text-brand"
+        >
+          <rect x="7" y="3" width="10" height="18" rx="2.5" />
+          <path d="M11 18h2" />
+        </svg>
+        {t('session.distracted')}
+        {session.distractions > 0 && (
+          <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand tabular-nums">
+            {session.distractions}
+          </span>
+        )}
+      </button>
 
       {picked && (
         <Link

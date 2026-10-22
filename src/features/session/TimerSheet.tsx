@@ -2,13 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
-import { resolvePreset } from '@/lib/session/timer'
 import { useSessionWriter } from './api'
-import { Chip } from './Chip'
-import { presetName, STAGE7_MODES, type ActiveSession } from './model'
+import type { ActiveSession } from './model'
+import { PresetChips } from './PresetChips'
 import { useSessionUi } from './store'
 
-/** Timer mode (25/5, 50/10, free; reminders only) and "Odbaci sesiju". */
+/** The session's preset (reminders only) and "Odbaci sesiju". */
 export function TimerSheet({
   open,
   onOpenChange,
@@ -34,21 +33,14 @@ export function TimerSheet({
       title={t('session.timerSheet.title')}
       subtitle={t('session.timerSheet.subtitle')}
     >
-      <div role="group" aria-label={t('session.timerSheet.title')} className="flex flex-wrap gap-2">
-        {STAGE7_MODES.map((m) => (
-          <Chip
-            key={m}
-            tone="brand"
-            selected={data.session.timer_mode === m}
-            onClick={() => {
-              setTimerMode(m)
-              void writer.update(data, { timer_mode: m })
-            }}
-          >
-            {presetName(t, resolvePreset(m))}
-          </Chip>
-        ))}
-      </div>
+      <PresetChips
+        label={t('session.timerSheet.title')}
+        value={data.session.timer_mode}
+        onChange={(id) => {
+          setTimerMode(id)
+          void writer.update(data, { timer_mode: id })
+        }}
+      />
       {confirm ? (
         <div className="flex flex-col gap-2 rounded-[20px] bg-warning-soft p-4">
           <span className="text-sm text-warning-ink">{t('session.timerSheet.discardConfirm')}</span>
