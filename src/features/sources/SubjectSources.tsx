@@ -29,7 +29,10 @@ export function SubjectSources({
       {materials.length === 0 ? (
         <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.none')}</p>
       ) : (
-        materials.map((m) => <SourceCard key={m.source.id} subjectId={subjectId} material={m} />)
+        materials
+          // A rough source whose parts were archived (real content arrived) is gone.
+          .filter((m) => !m.source.is_rough || m.units.some((u) => !u.archived_at))
+          .map((m) => <SourceCard key={m.source.id} subjectId={subjectId} material={m} />)
       )}
     </>
   )
@@ -60,10 +63,13 @@ function SourceCard({ subjectId, material }: { subjectId: string; material: Sour
               questions ? 'text-subject-blue-deep' : 'text-brand-muted',
             )}
           >
-            {t(`sources.kind.${source.kind}`)}
+            {source.is_rough ? t('sources.rough.label') : t(`sources.kind.${source.kind}`)}
             {leaves.length > 0 && ` · ${amountLabel(t, measure, amount)}`}
           </span>
           <span className="text-[15px] font-semibold">{source.title}</span>
+          {source.is_rough && (
+            <span className="text-xs text-ink-muted">{t('sources.rough.hint')}</span>
+          )}
         </div>
         <span className="shrink-0 text-[15px] font-bold">
           {questions

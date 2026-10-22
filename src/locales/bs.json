@@ -268,6 +268,24 @@
       "title": "Naziv novog predmeta",
       "hint": "Ispite i ostalo dodaješ kasnije na predmetu.",
       "create": "Dodaj predmet"
+    },
+    "rough": {
+      "title": "Koliko je gradiva?",
+      "small": "Malo",
+      "medium": "Srednje",
+      "large": "Puno",
+      "hint": {
+        "small": "~10 h · npr. skripta · procjena je gruba dok ne dodaš sadržaj",
+        "medium": "~25 h · knjiga do 250 str. · procjena je gruba dok ne dodaš sadržaj",
+        "large": "~45 h · velika knjiga + pitanja · procjena je gruba dok ne dodaš sadržaj"
+      },
+      "none": "Bez procjene: plan ovaj predmet uzima tek kad dodaš izvor.",
+      "sourceTitle": {
+        "small": "Gruba procjena · ~10 h",
+        "medium": "Gruba procjena · ~25 h",
+        "large": "Gruba procjena · ~45 h"
+      },
+      "part": "Dio {{n}}"
     }
   },
   "progress": {
@@ -736,6 +754,10 @@
       "filter": "Filter po ispitu",
       "all": "Sve",
       "noneInExam": "Nijedna jedinica ovog izvora još nije u ovom ispitu. Rasporedi ih u „Obim ispita”."
+    },
+    "rough": {
+      "label": "Gruba procjena",
+      "hint": "Zamijeni ga pravim sadržajem: kad dodaš izvor, ovaj nestaje."
     }
   },
   "time": {
