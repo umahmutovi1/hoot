@@ -6,6 +6,7 @@ import { useSubjects } from '@/features/subjects/api'
 import { cn } from '@/lib/utils'
 import type { Citation } from '@shared/schemas.ts'
 import { useAiAvailability, useDocumentFileUrl, useDocuments } from './api'
+import { ChatPlan } from './ChatPlan'
 import { GiveDocumentSheet } from './GiveDocumentSheet'
 import { ImportCard } from './ImportCard'
 import { useOwlStore, type OwlMessage, type StateRef } from './store'
@@ -76,6 +77,7 @@ export function OwlChatPage() {
         </div>
       </div>
 
+      <ChatPlan />
       <div className="flex flex-1 flex-col justify-end gap-3 pb-2" aria-live="polite">
         {messages.length === 0 && <OwlBubble>{t('owl.intro')}</OwlBubble>}
         {messages.map((m) => (

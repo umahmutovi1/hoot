@@ -1430,6 +1430,21 @@
       "delete": "Delete conversation",
       "confirmDelete": "Delete this conversation?",
       "untitled": "Conversation"
+    },
+    "plan": {
+      "today": "{{time}} planned today.",
+      "free": "Nothing planned for today.",
+      "dayOff": "Today is free; the plan continues tomorrow.",
+      "todayTitle": "Today",
+      "doneOf": "{{done}} of {{total}} done",
+      "soonTitle": "Coming up",
+      "inDays_one": "in {{count}} day",
+      "inDays_other": "in {{count}} days",
+      "dueToday": "today",
+      "dueTomorrow": "tomorrow",
+      "onTrack": "on track",
+      "short": "{{time}} short",
+      "left": "~{{time}} left"
     }
   },
   "offline": {
