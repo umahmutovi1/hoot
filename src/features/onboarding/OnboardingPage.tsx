@@ -49,9 +49,9 @@ export function OnboardingPage() {
     if (next > (profile?.onboarding_step ?? 0)) update.mutate({ onboarding_step: next })
     window.scrollTo({ top: 0 })
   }
-  const finish = (to: string) => {
+  const finish = (to?: string) => {
     update.mutate({ onboarded_at: new Date().toISOString(), onboarding_step: ONBOARDING_STEPS })
-    navigate(to, { replace: true })
+    if (to) navigate(to, { replace: true })
   }
   const next = async () => {
     if (busy || !ready) return
@@ -80,6 +80,7 @@ export function OnboardingPage() {
           finish('/')
         }}
         onToday={() => finish('/')}
+        onBlockStart={() => finish()}
       />
     ),
   }
