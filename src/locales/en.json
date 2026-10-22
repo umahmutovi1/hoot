@@ -20,7 +20,8 @@
     "progress": "Progress",
     "aiLabel": "AI assistant",
     "ai": "AI",
-    "aiClose": "Close the assistant"
+    "aiClose": "Close the assistant",
+    "home": "Hoot, go to Today"
   },
   "auth": {
     "headline": "Study smarter,\nnot longer.",
@@ -596,7 +597,6 @@
   },
   "settings": {
     "title": "Settings",
-    "open": "Profile and settings",
     "signedInWith": "Signed in with a magic link",
     "general": "General",
     "language": "Language",
