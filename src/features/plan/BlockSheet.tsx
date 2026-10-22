@@ -152,9 +152,13 @@ function BlockForm({
       )
   }, [units, subjectId])
   const open = subjectUnits.filter((i) => i.unit.level < 2 || unitIds.includes(i.unit.id))
+  // The chips start at the block's own units, else at the first unit not read yet.
+  const firstSelected = open.findIndex((i) =>
+    block?.plan_block_units.some((u) => u.unit_id === i.unit.id),
+  )
   const firstOpen = Math.max(
     0,
-    open.findIndex((i) => i.unit.level === 0),
+    firstSelected >= 0 ? firstSelected : open.findIndex((i) => i.unit.level === 0),
   )
   const shown = showAll ? open : open.slice(firstOpen, firstOpen + SHOWN_UNITS)
   const unitLabel = (i: (typeof open)[number]) =>
