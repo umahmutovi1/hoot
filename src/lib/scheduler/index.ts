@@ -17,6 +17,7 @@ export {
   type DayHistory,
   type Realization,
 } from './realization'
+export { skipBlock, type SkipResult } from './skip'
 export { LATE_AFTER_MIN, shiftRestOfDay, type ShiftBlock, type ShiftResult } from './shift'
 export { canonicalJson, hashString, inputHash, seededRandom, seedOf } from './hash'
 export { remainingWork, type RemainingWork } from './plan'
