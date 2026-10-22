@@ -472,7 +472,8 @@
       "segments_other": "{{count}} segmenata",
       "pauseTotal_one": "{{count}} min pauze ukupno",
       "pauseTotal_few": "{{count}} min pauze ukupno",
-      "pauseTotal_other": "{{count}} min pauze ukupno"
+      "pauseTotal_other": "{{count}} min pauze ukupno",
+      "freePause": "Slobodna pauza · {{time}}"
     },
     "units": {
       "title": "Sad radim na",

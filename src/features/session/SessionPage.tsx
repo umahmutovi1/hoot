@@ -332,18 +332,21 @@ export function SessionPage() {
 
 function ReminderBadge({ reminder, preset }: { reminder: IntervalReminder; preset: Preset }) {
   const { t } = useTranslation()
-  const due = reminder.remainingMs <= 0
+  // A free pause counts up and never shows as due (the interval waits where it stopped).
+  const due = reminder.phase !== 'free' && reminder.remainingMs <= 0
   const label =
-    reminder.phase === 'work'
-      ? due
-        ? t('session.timer.breakDue')
-        : t('session.timer.breakIn', {
-            mode: presetName(t, preset),
-            time: formatClock(reminder.remainingMs),
-          })
-      : due
-        ? t('session.timer.backDue')
-        : t('session.timer.backIn', { time: formatClock(reminder.remainingMs) })
+    reminder.phase === 'free'
+      ? t('session.timer.freePause', { time: formatClock(reminder.elapsedMs ?? 0) })
+      : reminder.phase === 'work'
+        ? due
+          ? t('session.timer.breakDue')
+          : t('session.timer.breakIn', {
+              mode: presetName(t, preset),
+              time: formatClock(reminder.remainingMs),
+            })
+        : due
+          ? t('session.timer.backDue')
+          : t('session.timer.backIn', { time: formatClock(reminder.remainingMs) })
   return (
     <span
       className={cn(

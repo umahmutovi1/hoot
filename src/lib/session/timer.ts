@@ -194,20 +194,34 @@ export function breakMinAfter(p: Extract<Preset, { kind: 'cycle' }>, n: number):
 }
 
 export interface IntervalReminder {
-  /** `work`: counting down to a break; `break`: counting down to getting back to work. */
-  phase: 'work' | 'break'
+  /**
+   * `work`: counting down to a break; `break`: a planned break counting down to getting back to
+   * work; `free`: a pause taken before the interval was over, counting up (the interval goes on
+   * where it stopped).
+   */
+  phase: 'work' | 'break' | 'free'
   /** ms left in the phase; ≤ 0 = the phase is over ("Vrijeme je za pauzu" / "Vrijeme je za nastavak"). */
   remainingMs: number
-  /** Length of the phase, for a progress ring. */
+  /** Length of the phase, for a progress ring (0 for a free pause). */
   totalMs: number
+  /** How long a free pause has lasted. */
+  elapsedMs?: number
   /** The long break of a cycle preset. */
   long?: boolean
 }
 
 /**
- * The badge in a session. A cycle preset counts the current study interval from the start of
- * the stretch and the break from the last segment end; the n-th stretch is the n-th interval of
- * the cycle. Flowtime only counts breaks (a fifth of the stretch before it); free has none.
+ * A pause this close to the end of the study interval (or after it) is the preset's break;
+ * earlier it is a free pause (decision after 8b).
+ */
+export const BREAK_GRACE_MS = 5 * MINUTE
+
+/**
+ * The badge in a session. A cycle preset counts the study interval over the stretches since the
+ * last planned break: a pause in the interval's last 5 minutes (or later) is the preset's break
+ * and the next stretch starts the next interval; an earlier pause is a free pause that counts up
+ * and leaves the interval running where it stopped. Flowtime only counts breaks (a fifth of the
+ * stretch before it); free has none.
  */
 export function presetReminder(
   preset: Preset,
@@ -217,16 +231,33 @@ export function presetReminder(
   if (preset.kind === 'free' || segments.length === 0) return null
   const list = stretches(sorted(segments))
   const last = list[list.length - 1]!
-  if (last.end === null) {
-    if (preset.kind === 'flow') return null
-    const totalMs = workMinAt(preset, list.length - 1) * MINUTE
-    return { phase: 'work', totalMs, remainingMs: totalMs - (now.getTime() - last.start.getTime()) }
+  if (preset.kind === 'flow') {
+    if (last.end === null) return null
+    const totalMs = flowBreakMin(last.ms) * MINUTE
+    return { phase: 'break', totalMs, remainingMs: totalMs - (now.getTime() - last.end.getTime()) }
   }
-  const n = list.length - 1
-  const min = preset.kind === 'flow' ? flowBreakMin(last.ms) : breakMinAfter(preset, n)
-  const totalMs = min * MINUTE
-  const long =
-    preset.kind === 'cycle' && Boolean(preset.longBreak) && (n + 1) % preset.longBreak!.every === 0
+  // Interval n and the study time in it so far, over the stretches before the last one.
+  let n = 0
+  let done = 0
+  for (const stretch of list.slice(0, -1)) {
+    done += stretch.ms
+    if (done >= workMinAt(preset, n) * MINUTE - BREAK_GRACE_MS) {
+      n++
+      done = 0
+    }
+  }
+  const workMs = workMinAt(preset, n) * MINUTE
+  if (last.end === null) {
+    const studied = done + (now.getTime() - last.start.getTime())
+    return { phase: 'work', totalMs: workMs, remainingMs: workMs - studied }
+  }
+  const studied = done + last.ms
+  if (studied < workMs - BREAK_GRACE_MS) {
+    const elapsedMs = now.getTime() - last.end.getTime()
+    return { phase: 'free', totalMs: 0, remainingMs: workMs - studied, elapsedMs }
+  }
+  const totalMs = breakMinAfter(preset, n) * MINUTE
+  const long = Boolean(preset.longBreak) && (n + 1) % preset.longBreak!.every === 0
   return {
     phase: 'break',
     totalMs,
