@@ -9,14 +9,9 @@ export function ContinueOnboarding() {
   const { t } = useTranslation()
   const { data: profile } = useProfile()
   const { pathname } = useLocation()
-  if (
-    !profile ||
-    profile.onboarded_at ||
-    profile.onboarding_step === 0 ||
-    pathname === '/onboarding'
-  )
-    return null
-  const step = Math.min(Math.max(profile.onboarding_step, 1), ONBOARDING_STEPS)
+  const stored = profile?.onboarding_step ?? 0
+  if (!profile || profile.onboarded_at || !stored || pathname === '/onboarding') return null
+  const step = Math.min(Math.max(stored, 1), ONBOARDING_STEPS)
   return (
     <Link
       to={`/onboarding?step=${step}`}

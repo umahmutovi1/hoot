@@ -18,7 +18,9 @@
     "plan": "Plan",
     "subjects": "Subjects",
     "progress": "Progress",
-    "aiLabel": "AI assistant"
+    "aiLabel": "AI assistant",
+    "ai": "AI",
+    "aiClose": "Close the assistant"
   },
   "auth": {
     "headline": "Study smarter,\nnot longer.",
