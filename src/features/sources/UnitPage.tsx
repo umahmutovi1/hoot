@@ -1,3 +1,4 @@
+import { useSpeeds } from '@/features/plan/api'
 import type { TFunction } from 'i18next'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
@@ -57,7 +58,8 @@ function UnitDetail({
   const navigate = useNavigate()
   const update = useUpdateUnit(subject.id)
   const patch = (p: UnitPatch) => update.mutate({ id: unit.id, patch: p })
-  const material = materialOf(source)
+  const speeds = useSpeeds()
+  const material = materialOf(source, speeds.get(source.id))
   const measure = measureOf(source)
   const estimate = material.units.find((u) => u.id === unit.id)
   const children = material.units.filter((u) => u.parent_id === unit.id)

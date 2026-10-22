@@ -866,13 +866,15 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["block_kind"]
           on_date: string
-          plan_run_id: string
+          origin: Database["public"]["Enums"]["assigned_by"]
+          plan_run_id: string | null
           planned_minutes: number
           planned_start: string | null
           reason: string | null
           start_min: number | null
           status: Database["public"]["Enums"]["block_status"]
           subject_id: string
+          title: string | null
           updated_at: string
           user_id: string
         }
@@ -883,13 +885,15 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["block_kind"]
           on_date: string
-          plan_run_id: string
+          origin?: Database["public"]["Enums"]["assigned_by"]
+          plan_run_id?: string | null
           planned_minutes: number
           planned_start?: string | null
           reason?: string | null
           start_min?: number | null
           status?: Database["public"]["Enums"]["block_status"]
           subject_id: string
+          title?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -900,13 +904,15 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["block_kind"]
           on_date?: string
-          plan_run_id?: string
+          origin?: Database["public"]["Enums"]["assigned_by"]
+          plan_run_id?: string | null
           planned_minutes?: number
           planned_start?: string | null
           reason?: string | null
           start_min?: number | null
           status?: Database["public"]["Enums"]["block_status"]
           subject_id?: string
+          title?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1376,6 +1382,7 @@ export type Database = {
           name: string
           points_total: number
           priority: number
+          priority_boost_until: string | null
           study_mode: string
           target_grade: number | null
           updated_at: string
@@ -1392,6 +1399,7 @@ export type Database = {
           name: string
           points_total?: number
           priority?: number
+          priority_boost_until?: string | null
           study_mode?: string
           target_grade?: number | null
           updated_at?: string
@@ -1408,6 +1416,7 @@ export type Database = {
           name?: string
           points_total?: number
           priority?: number
+          priority_boost_until?: string | null
           study_mode?: string
           target_grade?: number | null
           updated_at?: string
@@ -1664,6 +1673,18 @@ export type Database = {
           similarity: number
           title: string
         }[]
+      }
+      replace_plan: {
+        Args: {
+          p_blocks: Json
+          p_deficit: Json
+          p_from: string
+          p_input_hash: string
+          p_run_id: string
+          p_today: string
+          p_units: Json
+        }
+        Returns: undefined
       }
     }
     Enums: {

@@ -70,6 +70,7 @@ export const subjectRow = (patch: Partial<Subject> = {}): Subject => ({
   grade_scale: null,
   custom_scale: false,
   target_grade: null,
+  priority_boost_until: null,
   created_at: '',
   updated_at: '',
   ...patch,

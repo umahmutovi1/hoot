@@ -1,3 +1,4 @@
+import { useSpeeds } from '@/features/plan/api'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePresets, presetName } from '@/features/session/presets'
@@ -37,7 +38,11 @@ export function StepWeek({ onStart, onToday }: { onStart: () => void; onToday: (
     .filter((x) => x.on >= today)
     .sort((a, b) => a.on.localeCompare(b.on))[0]
   const { data: sources = [] } = useSources(next?.subject.id)
-  const needed = sources.reduce((sum, s) => sum + materialOf(s).progress.remainingMinutes, 0)
+  const speeds = useSpeeds()
+  const needed = sources.reduce(
+    (sum, s) => sum + materialOf(s, speeds.get(s.id)).progress.remainingMinutes,
+    0,
+  )
   const weekly = schedule.weekMinutes(today)
   const until = next ? studyMinutesBetween(today, next.on, schedule.dayInput) * PLANNED_SHARE : 0
   const diff = Math.round(until - needed)

@@ -5,6 +5,7 @@ import { AuthProvider } from '@/features/auth/AuthProvider'
 import { Recalibrator } from '@/features/session/Recalibrator'
 import { queryPersister } from './queryPersister'
 import { CalendarSync } from '@/features/calendars/CalendarSync'
+import { ReplanRunner } from '@/features/plan/ReplanRunner'
 import { SyncRunner } from './SyncRunner'
 import { ViewportInsets } from './ViewportInsets'
 
@@ -36,6 +37,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <SyncRunner />
         <CalendarSync />
         <Recalibrator />
+        <ReplanRunner />
         {children}
       </AuthProvider>
     </PersistQueryClientProvider>
