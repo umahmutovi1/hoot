@@ -17,6 +17,9 @@ const session: SessionRow = {
   started_at: iso(0),
   ended_at: iso(50),
   focus: null,
+  focus_reasons: null,
+  distractions: 0,
+  break_ends_at: null,
   reflection: null,
   updated_at: iso(50),
 }

@@ -15,7 +15,7 @@ import { toSegment, type ActiveSession, type SegmentRow, type SessionRow } from 
 // networkMode 'always' because offline they still have the mirror to read.
 
 const SESSION_COLUMNS =
-  'id, subject_id, block_id, mode, timer_mode, origin, planned_minutes, started_at, ended_at, focus, reflection, updated_at'
+  'id, subject_id, block_id, mode, timer_mode, origin, planned_minutes, started_at, ended_at, focus, focus_reasons, distractions, break_ends_at, reflection, updated_at'
 const SEGMENT_COLUMNS = 'id, session_id, unit_id, started_at, ended_at'
 
 export const activeSessionKey = (userId: string | undefined) =>
@@ -222,6 +222,9 @@ export function useSessionWriter() {
           started_at: t,
           ended_at: null,
           focus: null,
+          focus_reasons: null,
+          distractions: 0,
+          break_ends_at: null,
           reflection: null,
           updated_at: t,
         }
@@ -364,6 +367,9 @@ export function useSessionWriter() {
           started_at: input.start.toISOString(),
           ended_at: input.end.toISOString(),
           focus: null,
+          focus_reasons: null,
+          distractions: 0,
+          break_ends_at: null,
           reflection: null,
           updated_at: nowIso(),
         }
