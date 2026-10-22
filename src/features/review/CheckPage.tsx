@@ -355,12 +355,16 @@ function Summary({ summary }: { summary: CheckSummary & { minutes: number } }) {
                 </span>
                 <span className="truncate text-xs text-ink-muted">{subjectName(c.unit.id)}</span>
               </span>
-              <span className="text-xs text-ink-muted tabular-nums">
-                {c.before === null ? '–' : pct(c.before)}
-              </span>
-              <span aria-hidden="true" className="text-ink-muted">
-                →
-              </span>
+              {/* The arrow only when strength rose (or the unit goes back to learning): a first test,
+                  or a second one the same day, has nothing lower to compare with. */}
+              {c.before !== null && (c.relearn || c.before < c.after) && (
+                <>
+                  <span className="text-xs text-ink-muted tabular-nums">{pct(c.before)}</span>
+                  <span aria-hidden="true" className="text-ink-muted">
+                    →
+                  </span>
+                </>
+              )}
               <span
                 className={cn(
                   'rounded-full px-2 py-1 text-xs font-semibold',
