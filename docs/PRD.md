@@ -359,9 +359,10 @@ Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash
 **Brze akcije dana.**
 
 - **“Danas ne mogu”** (Danas, jedan tap + undo): napravi `availability_days` za danas sa `slots = []`, današnji AI blokovi postaju `skipped` (ne “propušteno”), replan od sutra. Ne ulazi u ρ.
+- **Kašnjenje (odluka nakon 8b).** Počni na današnji blok više od 5 min poslije njegovog vremena pomjera taj blok na sada, a ostatak dana iza njega, i AI i ručne blokove (izuzetak od pravila da ručni blok ne pomjera niko osim korisnika, jer je korisnik pokrenuo pomjeranje), istim redom, sa pauzama predloška i samo u slobodno vrijeme (nastava i zauzetost se preskaču), nikad ranije nego što su bili (`shiftRestOfDay()` u `src/lib/scheduler/`). AI blok koji više ne stane danas vraća se planu (rasporedi ga replan od sutra), a ručni ostaje na danu bez vremena. Toast „Kasniš X min, ostatak dana je pomjeren“ sa Poništi.
 - **“Imam samo 30 min”** (Danas i PokreniSesiju; trajanje 15/30/45/60): čista funkcija `pickForTime(state, minutes)` izabere najvredniji komad (ponavljanje koje danas ističe sa najnižim R, pa najhitnija jedinica iz današnjeg plana, pa sljedeća po hitnosti), pa odmah ponudi start sesije. Ne mijenja plan; sesija se veže za blok ako ga pokrije.
 
-**Ručni blokovi.** Blok sa `plan_blocks.origin = 'user'` napravio je ili izmijenio korisnik (vidi tok 7). Nema `plan_run_id`, troši kapacitet svog dana i njegove jedinice se računaju kao planirane. Replan ga nikad ne briše ni pomjera; kad prođe, postaje odrađen ili propušten kao svaki drugi blok.
+**Ručni blokovi.** Blok sa `plan_blocks.origin = 'user'` napravio je ili izmijenio korisnik (vidi tok 7). Nema `plan_run_id`, troši kapacitet svog dana i njegove jedinice se računaju kao planirane. Replan ga nikad ne briše ni pomjera (pomjera ga samo kašnjenje na Počni, vidi Brze akcije dana); kad prođe, postaje odrađen ili propušten kao svaki drugi blok.
 
 **Replan je idempotentan.** Brišu se samo budući nezapočeti blokovi sa `origin = 'ai'`; odrađeni, propušteni i ručni ostaju. Isti ulaz uvijek daje isti plan, pa se može pokretati koliko god puta.
 

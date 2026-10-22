@@ -134,7 +134,12 @@
     "examIn_one": "in {{count}} day",
     "examIn_other": "in {{count}} days",
     "examToday": "today",
-    "examTomorrow": "tomorrow"
+    "examTomorrow": "tomorrow",
+    "late": {
+      "shifted": "{{min}} min late: the rest of the day moved",
+      "shiftedOverflow_one": "{{min}} min late: the rest of the day moved, {{count}} block goes to the plan from tomorrow",
+      "shiftedOverflow_other": "{{min}} min late: the rest of the day moved, {{count}} blocks go to the plan from tomorrow"
+    }
   },
   "plan": {
     "title": "Plan",

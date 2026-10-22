@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { syncQueueFor } from '@/app/sync'
+import { useToast } from '@/components/toast-store'
 import { useAuth } from '@/features/auth/auth-context'
 import { scheduleKey } from '@/features/schedule/api'
 import type { DayRow, ExceptionRow } from '@/features/schedule/model'
@@ -12,9 +14,9 @@ import { useDayBoundary } from '@/features/settings/profile'
 import { useSessionUi } from '@/features/session/store'
 import { subjectsKey } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
-import { addDays, zonedInstant, type LocalDate } from '@/lib/day'
-import { capFor } from '@/lib/schedule'
-import type { CutUnit } from '@/lib/scheduler'
+import { addDays, localDay, wallClock, zonedInstant, type LocalDate } from '@/lib/day'
+import { capFor, freeSlotsOn } from '@/lib/schedule'
+import { LATE_AFTER_MIN, shiftRestOfDay, type CutUnit } from '@/lib/scheduler'
 import { supabase } from '@/lib/supabase'
 import type { Op, Row } from '@/lib/sync'
 import { planBlocksKey } from './api'
@@ -236,6 +238,7 @@ export function useStartBlock() {
   const writer = useSessionWriter()
   const { suggestedId } = usePresets()
   const setTimerMode = useSessionUi((s) => s.setTimerMode)
+  const shiftLate = useShiftLateDay()
   return useCallback(
     async (
       block: Pick<
@@ -246,6 +249,8 @@ export function useStartBlock() {
       opts: { minutes?: number; unitId?: string | null; tied?: boolean; timerMode?: string } = {},
     ) => {
       const timerMode = opts.timerMode ?? suggestedId
+      const minutes = opts.minutes ?? block.planned_minutes
+      if (opts.tied !== false) await shiftLate(block.id, minutes)
       await writer.start({
         subjectId: block.subject_id,
         unitId:
@@ -253,12 +258,119 @@ export function useStartBlock() {
         mode: blockMode(block, units),
         timerMode,
         blockId: opts.tied === false ? null : block.id,
-        plannedMinutes: opts.minutes ?? block.planned_minutes,
+        plannedMinutes: minutes,
       })
       setTimerMode(timerMode)
       navigate('/session')
     },
-    [writer, suggestedId, setTimerMode, navigate],
+    [writer, suggestedId, setTimerMode, navigate, shiftLate],
+  )
+}
+
+/**
+ * Late start (decision after 8b): starting today's block more than 5 min after its time moves the
+ * started block to now and the rest of the day after it, manual blocks too, in order and only into
+ * free time (`shiftRestOfDay()`). AI blocks that no longer fit today go back to the plan (from
+ * tomorrow, at the next replan); manual ones stay on the day without a time. Toast with undo.
+ */
+function useShiftLateDay() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  const write = useQueueWrite()
+  const boundary = useDayBoundary()
+  const schedule = useScheduleData()
+  const { resolve, defaultId } = usePresets()
+  const show = useToast((s) => s.show)
+  const { t } = useTranslation()
+  return useCallback(
+    async (blockId: string, minutes: number) => {
+      const key = planBlocksKey(userId)
+      const blocks = queryClient.getQueryData<PlanBlockRow[]>(key) ?? []
+      const block = blocks.find((b) => b.id === blockId)
+      const now = new Date()
+      const today = localDay(now, boundary)
+      const wall = wallClock(now, boundary.timeZone).minutes
+      const nowMin = wall < boundary.dayStartMin ? wall + 1440 : wall
+      if (!block || block.on_date !== today || block.start_min === null) return
+      if (nowMin <= block.start_min + LATE_AFTER_MIN) return
+
+      const later = blocks.filter(
+        (b) =>
+          b.id !== block.id &&
+          b.on_date === today &&
+          b.status === 'planned' &&
+          b.start_min !== null &&
+          b.start_min > block.start_min!,
+      )
+      const { moved, overflow } = shiftRestOfDay(
+        { minutes },
+        later.map((b) => ({ id: b.id, startMin: b.start_min!, minutes: b.planned_minutes })),
+        freeSlotsOn(today, schedule.dayInput(today)),
+        { nowMin, preset: resolve(defaultId) },
+      )
+      const at = (min: number | null) =>
+        min === null ? null : zonedInstant(today, min, boundary.timeZone).toISOString()
+      const timeOps = (b: PlanBlockRow, min: number | null): Op => ({
+        kind: 'update',
+        table: 'plan_blocks',
+        match: { id: b.id },
+        patch: { start_min: min, planned_start: at(min) },
+      })
+      const dropped = later.filter((b) => overflow.includes(b.id) && b.origin === 'ai')
+      const untimed = later.filter((b) => overflow.includes(b.id) && b.origin === 'user')
+      const shifted = later.filter((b) => moved.has(b.id))
+      const ops: Op[] = [
+        timeOps(block, nowMin),
+        ...shifted.map((b) => timeOps(b, moved.get(b.id)!)),
+        ...untimed.map((b) => timeOps(b, null)),
+        ...dropped.map((b): Op => ({ kind: 'delete', table: 'plan_blocks', match: { id: b.id } })),
+      ]
+      queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) =>
+        list
+          .filter((b) => !dropped.some((d) => d.id === b.id))
+          .map((b) =>
+            b.id === block.id
+              ? { ...b, start_min: nowMin, planned_start: at(nowMin) }
+              : moved.has(b.id)
+                ? { ...b, start_min: moved.get(b.id)!, planned_start: at(moved.get(b.id)!) }
+                : untimed.some((u) => u.id === b.id)
+                  ? { ...b, start_min: null, planned_start: null }
+                  : b,
+          ),
+      )
+      await write(ops)
+
+      const changed = [block, ...shifted, ...untimed]
+      show(
+        overflow.length > 0
+          ? t('today.late.shiftedOverflow', {
+              min: nowMin - block.start_min,
+              count: overflow.length,
+            })
+          : t('today.late.shifted', { min: nowMin - block.start_min }),
+        {
+          label: t('today.cant.undo'),
+          run: () => {
+            queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) => [
+              ...list
+                .filter((b) => !dropped.some((d) => d.id === b.id))
+                .map((b) => changed.find((c) => c.id === b.id) ?? b),
+              ...dropped,
+            ])
+            void write([
+              ...changed.map((b) => timeOps(b, b.start_min)),
+              ...dropped.flatMap((b) =>
+                writeBlockOps(
+                  rowOfBlock(b) as ReturnType<typeof blockRow>,
+                  b.plan_block_units.map(({ user_id: _u, ...u }) => u),
+                ),
+              ),
+            ])
+          },
+        },
+      )
+    },
+    [userId, queryClient, write, boundary, schedule, resolve, defaultId, show, t],
   )
 }
 
