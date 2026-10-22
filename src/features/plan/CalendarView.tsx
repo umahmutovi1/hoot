@@ -115,7 +115,10 @@ export function CalendarView() {
               </button>
             )}
           </div>
-          <div className="rounded-card-lg glass p-3 pr-2">
+          <div
+            data-timeline-scroll
+            className="max-h-[52dvh] overflow-y-auto overscroll-contain rounded-card-lg glass p-3 pr-2"
+          >
             {dayClasses.length === 0 &&
               agenda.busyFor(selectedDate).length === 0 &&
               blocks.length === 0 && (
@@ -128,6 +131,7 @@ export function CalendarView() {
               onPickBlock={(b) => openBlock(b.block)}
               onPickBusy={setBusy}
               onPick={(item) => openClass(item, selected)}
+              scrollKey={selectedDate}
               nowMin={
                 isSameDay(selected, today) ? wallClock(now, boundary.timeZone).minutes : undefined
               }
