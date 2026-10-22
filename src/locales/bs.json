@@ -72,10 +72,68 @@
       "start": "Počni",
       "running": "U toku",
       "paused": "Pauza",
-      "resume": "Nastavi"
+      "resume": "Nastavi",
+      "labelAt": "Sljedeće · {{time}}",
+      "allDone": "Današnji plan je odrađen",
+      "allDoneSub": "Ako ipak imaš vremena, slobodna sesija ulazi u kalibraciju."
     },
     "exams": "Ispiti",
-    "examsAll": "Sve"
+    "examsAll": "Sve",
+    "focus": {
+      "today": "Plan danas",
+      "week": "Sedmica",
+      "nextExam": "Sljedeći ispit",
+      "readiness": "Spremnost",
+      "days_one": "{{count}} dan",
+      "days_few": "{{count}} dana",
+      "days_other": "{{count}} dana"
+    },
+    "cant": {
+      "button": "Danas ne mogu",
+      "label": "Danas ne mogu",
+      "title": "Danas je slobodno",
+      "moved_one": "{{count}} blok je prebačen od sutra",
+      "moved_few": "{{count}} bloka su prebačena od sutra",
+      "moved_other": "{{count}} blokova je prebačeno od sutra",
+      "toast": "Danas je slobodan dan",
+      "undo": "Poništi",
+      "whatMoved": "Šta se pomjerilo",
+      "growth": "Plan raste najviše 1,25× po danu, pa dio može otići na kasnije dane.",
+      "onTrack": "Ništa ne kasni za ispite."
+    },
+    "only": {
+      "button": "Imam samo 30 min",
+      "title": "Imam samo…",
+      "best": "Najviše ti donosi sad",
+      "start": "Počni · {{minutes}} min",
+      "rest": "Ostatak bloka se vraća u plan od sutra.",
+      "whyReview": "Provjera dospjela danas · {{minutes}}",
+      "whyPart": "Prvi dio današnjeg bloka",
+      "whyWhole": "Cijeli sljedeći blok",
+      "whyNext": "Iz plana za {{day}}",
+      "nothing": "Plan za danas i sutra je prazan. Slobodnu sesiju pokreni iz kartice „Sljedeće“."
+    },
+    "free": {
+      "title": "Danas nema plana",
+      "body": "Sve je po rasporedu — slobodan dan. Ako ipak imaš vremena, možeš ponoviti ono što je na redu sutra.",
+      "noMaterialTitle": "Plan čeka gradivo",
+      "noMaterialBody": "Dodaj predmetu izvor ili grubu veličinu gradiva, pa plan rasporedi učenje do ispita.",
+      "addMaterial": "Predmeti",
+      "tomorrow": "sutra",
+      "next": "Sljedeći blok: {{when}} {{time}} · {{subject}}"
+    },
+    "more_one": "Još {{count}} prijedlog",
+    "more_few": "Još {{count}} prijedloga",
+    "more_other": "Još {{count}} prijedloga",
+    "moreHide": "Sakrij",
+    "why": {
+      "title": "Zašto ovako danas:",
+      "rho": "Planiram {{pct}}% slobodnog vremena jer zadnje 2 sedmice odradiš oko toliko."
+    },
+    "schedule": {
+      "title": "Raspored",
+      "classUntil": "do {{time}}"
+    }
   },
   "plan": {
     "title": "Plan",
@@ -314,7 +372,14 @@
       "freeHint": "Jedinicu možeš promijeniti u sesiji („Sad radim na“). Vrijeme se računa u kalibraciju, ali ne skida blok iz plana.",
       "go": "Počni",
       "breaks": "Pauze",
-      "breaksHint": "Zadnji korišten predložak je predložen. Default mijenjaš u Postavkama."
+      "breaksHint": "Zadnji korišten predložak je predložen. Default mijenjaš u Postavkama.",
+      "nextBlock": "Sljedeći blok",
+      "laterToday": "Kasnije danas",
+      "tagPlan": "Plan",
+      "howLong": "Koliko vremena imaš?",
+      "wholeBlock": "Cijeli blok",
+      "onlyHint": "Imam samo {{minutes}} min → {{title}}. Ostatak bloka ide u plan od sutra.",
+      "subtitlePlan": "Predložen je sljedeći blok iz današnjeg plana."
     },
     "mode": {
       "label": "Način učenja",
@@ -1511,5 +1576,129 @@
       "days": "Dani i periodi za učenje",
       "timetable": "Raspored nastave ili kalendar"
     }
+  },
+  "planBlocks": {
+    "kind": {
+      "learn": "Učenje",
+      "review": "Provjera znanja",
+      "questions": "Pitanja",
+      "recap": "Kratko ponavljanje",
+      "deadline": "Rok"
+    },
+    "mode": {
+      "reading": "Čitanje",
+      "review": "Ponavljanje",
+      "questions": "Pitanja",
+      "recap": "Kratko ponavljanje",
+      "deadline": "Rok",
+      "learn": "Učenje"
+    },
+    "reviewUnits_one": "Provjera · {{count}} jedinica",
+    "reviewUnits_few": "Provjera · {{count}} jedinice",
+    "reviewUnits_other": "Provjera · {{count}} jedinica",
+    "unitsMore_one": "{{title}} i još {{count}}",
+    "unitsMore_few": "{{title}} i još {{count}}",
+    "unitsMore_other": "{{title}} i još {{count}}",
+    "manual": "ručno",
+    "done": "odrađeno",
+    "missed": "propušteno",
+    "skipped": "preskočeno",
+    "why": {
+      "review": "provjera je na redu danas",
+      "recap": "kratko ponavljanje nakon predavanja",
+      "buffer_one": "{{goal}} za {{count}} dan, sad samo ponavljanje",
+      "buffer_few": "{{goal}} za {{count}} dana, sad samo ponavljanje",
+      "buffer_other": "{{goal}} za {{count}} dana, sad samo ponavljanje",
+      "exam_one": "{{goal}} za {{count}} dan",
+      "exam_few": "{{goal}} za {{count}} dana",
+      "exam_other": "{{goal}} za {{count}} dana",
+      "deadline_one": "rok {{goal}} za {{count}} dan",
+      "deadline_few": "rok {{goal}} za {{count}} dana",
+      "deadline_other": "rok {{goal}} za {{count}} dana",
+      "lecture": "pređeno na predavanju {{date}}",
+      "campaignStart": "kampanja počinje danas",
+      "optional": "ima vremena i za dodatno gradivo ({{goal}})",
+      "conditional": "uslovni predmet",
+      "boost": "privremeno više vremena"
+    }
+  },
+  "suggestions": {
+    "later": "Kasnije",
+    "change": "Promijeni",
+    "ok": "U redu",
+    "fresh": {
+      "title": "Krenimo ispočetka",
+      "sub": "Plan je preračunat od danas, sa realnijim tempom.",
+      "open": "Pogledaj"
+    },
+    "deficit": {
+      "title": "Za {{goal}} iz {{subject}} fali {{time}}",
+      "sub": "Preostalo gradivo ne stane u slobodne sate do {{date}}.",
+      "solve": "Riješi"
+    },
+    "behind": {
+      "title": "{{subject}}: s predavanja čeka {{time}} gradiva",
+      "sub": "Jedan tap mijenja plan od sutra.",
+      "raise": "Podigni na „{{level}}“",
+      "regular": "Prebaci na redovno",
+      "take": "Uzmi {{minutes}} min dnevno od {{subject}}",
+      "earlier": "Kreni ranije: {{date}}",
+      "add": "Dodaj {{minutes}} min dnevno",
+      "doneRaise": "Predmet je sad „{{level}}“. Plan je preračunat.",
+      "doneRegular": "Predmet je u redovnom režimu. Plan je preračunat.",
+      "doneTake": "{{subject}} dobija {{minutes}} min dnevno od {{donor}} do {{date}}.",
+      "doneEarlier": "Kampanja kreće {{date}}. Plan je preračunat.",
+      "doneAdd": "Do {{date}} imaš {{minutes}} min dnevno više."
+    },
+    "grade": {
+      "title": "Željena ocjena iz {{subject}} traži više",
+      "sub": "Za takvu ocjenu obično treba „{{level}}“.",
+      "done": "Predmet je sad „{{level}}“. Plan je preračunat."
+    },
+    "period": {
+      "title": "Ulaziš u ispitni rok — povećati maksimum na {{hours}} h do {{date}}?",
+      "raise": "Povećaj",
+      "done": "Maksimum je {{hours}} h dnevno do kraja roka."
+    },
+    "campaign": {
+      "title": "Kampanja za {{subject}} kreće {{date}}",
+      "sub_one": "Za {{count}} dan",
+      "sub_few": "Za {{count}} dana",
+      "sub_other": "Za {{count}} dana",
+      "now": "Počni odmah",
+      "done": "Kampanja kreće danas. Plan je preračunat."
+    }
+  },
+  "replan": {
+    "updated": "Plan je ažuriran",
+    "deficitTitle": "Manjak u planu",
+    "missed_one": "Jučer je propušten {{count}} blok ({{subject}}, {{time}}). Danas ostaje kako jeste, a gradivo je prebačeno od sutra:",
+    "missed_few": "Jučer su propuštena {{count}} bloka ({{subject}} i drugi, {{time}}). Danas ostaje kako jeste, a gradivo je prebačeno od sutra:",
+    "missed_other": "Jučer je propušteno {{count}} blokova ({{subject}} i drugi, {{time}}). Danas ostaje kako jeste, a gradivo je prebačeno od sutra:",
+    "deficitSub": "Preostalo gradivo ne stane u slobodne sate do {{date}}. Šta želiš?",
+    "choose": "Šta želiš?",
+    "hours": "Dodaj {{minutes}} min dnevno",
+    "hoursSub": "Do {{date}}, ako imaš slobodnih termina",
+    "scope": "Smanji obim",
+    "scopeSub": "Preskoči {{units}} ({{subject}}, najmanje bitno za ispit)",
+    "risk": "Prihvati rizik",
+    "riskSub": "Plan ostaje, fali {{time}}",
+    "availability": "Dostupnost",
+    "apply": "Primijeni",
+    "ok": "U redu",
+    "notPlanned": "nije stalo"
+  },
+  "fresh": {
+    "title": "Krenimo ispočetka",
+    "body": "Prošli dani nisu išli po planu, i to je u redu. Plan je preračunat od danas, sa realnijim tempom.",
+    "thisWeek": "Ove sedmice",
+    "lessThanBefore": "Manje nego prije ({{time}}), da stigneš ono što planiraš. Raste kako odrađuješ.",
+    "grows": "Plan raste kako odrađuješ.",
+    "untilExams": "Do ispita",
+    "short": "fali {{time}}",
+    "onTrack": "stižeš",
+    "choose": "Za {{subject}} biraš: duži dani, manji obim ili prihvatiš rizik.",
+    "showToday": "Pokaži današnji plan",
+    "solve": "Riješi manjak za {{subject}}"
   }
 }

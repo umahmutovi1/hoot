@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { Toast } from '@/components/Toast'
 import { ContinueOnboarding } from '@/features/onboarding/ContinueOnboarding'
 import { ForgottenGuard } from '@/features/session/ForgottenGuard'
 import { SessionStartSheet } from '@/features/session/SessionStartSheet'
@@ -28,6 +29,7 @@ export function AppShell() {
       <NavMenu open={menuOpen} onOpenChange={setMenuOpen} />
       <SessionStartSheet />
       <ForgottenGuard />
+      <Toast />
     </div>
   )
 }

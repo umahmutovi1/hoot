@@ -134,7 +134,17 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
   const unitTopics = useTopicLinks().data
   const blocks = usePlanBlocks(boundary).data
   const sessionList = useSessions().data
-  const globalScale = useGlobalScale()
+  const scale = useGlobalScale()
+  // A new object on every render would restart the replan debounce forever.
+  const pointsTotal = scale?.points_total
+  const gradeScale = scale?.grade_scale
+  const globalScale = useMemo(
+    () =>
+      pointsTotal === undefined
+        ? undefined
+        : { points_total: pointsTotal, grade_scale: gradeScale },
+    [pointsTotal, gradeScale],
+  )
   const schedule = useScheduleData()
 
   return useMemo(() => {

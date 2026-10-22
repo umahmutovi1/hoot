@@ -1,0 +1,119 @@
+import { useNavigate } from 'react-router-dom'
+import type { useTranslation } from 'react-i18next'
+import { useStartBlock } from '@/features/plan/actions'
+import { blockTitle, isOpen, type UnitInfo } from '@/features/plan/model'
+import { reasonOf } from '@/features/plan/save'
+import type { PlanBlockRow } from '@/features/plan/state'
+import { useSessionWriter } from '@/features/session/api'
+import { usePresets } from '@/features/session/presets'
+import { useSessionUi } from '@/features/session/store'
+import { pickForTime, reviewMinutes, type Pick, type PickBlock } from '@/lib/scheduler'
+import type { PlanToday } from './usePlanToday'
+
+// "Imam samo X min" (PRD "Brze akcije dana"): `pickForTime()` over the saved plan, and starting
+// the picked piece. Used by the Today sheet and by PokreniSesiju.
+
+export const ONLY_MINUTES = [15, 30, 45, 60] as const
+
+export function toPickBlock(b: PlanBlockRow): PickBlock {
+  return {
+    id: b.id,
+    subjectId: b.subject_id,
+    kind: b.kind,
+    onDate: b.on_date,
+    startMin: b.start_min,
+    minutes: b.planned_minutes,
+    daysToGoal: reasonOf(b)?.days ?? null,
+    units: b.plan_block_units.map((u) => ({ unitId: u.unit_id, minutes: u.planned_minutes })),
+  }
+}
+
+/** `pickForTime()` over today's plan, the checks due and the next blocks. */
+export function pickFor(plan: PlanToday, minutes: number): Pick | null {
+  const dueReviews = [...plan.units.values()]
+    .filter(
+      (i) =>
+        i.unit.archived_at === null &&
+        i.unit.next_review_on !== null &&
+        i.unit.next_review_on <= plan.today &&
+        i.unit.level >= 1,
+    )
+    .map((i) => ({
+      unitId: i.unit.id,
+      subjectId: i.source.subject_id,
+      minutes: reviewMinutes(i.unit.kind === 'question' ? 'question' : 'chapter', 20),
+      retrievability: null,
+      nextReviewOn: i.unit.next_review_on!,
+    }))
+  return pickForTime({
+    minutes,
+    today: plan.today,
+    todayBlocks: plan.todayBlocks.filter(isOpen).map(toPickBlock),
+    dueReviews,
+    laterBlocks: plan.blocks.filter((b) => b.on_date > plan.today && isOpen(b)).map(toPickBlock),
+  })
+}
+
+/** Title of a picked piece: subject and the units it covers. */
+export function pickTitle(
+  t: ReturnType<typeof useTranslation>['t'],
+  pick: Pick,
+  units: Map<string, UnitInfo>,
+  subjectName: string,
+  goalTitle?: string | null,
+) {
+  const title = blockTitle(
+    t,
+    {
+      kind: pick.kind,
+      title: null,
+      plan_block_units: pick.units.map((u) => ({
+        unit_id: u.unitId,
+        block_id: '',
+        page_from: null,
+        page_to: null,
+        planned_minutes: u.minutes,
+        user_id: '',
+      })),
+    },
+    units,
+    goalTitle,
+  )
+  return `${subjectName} · ${title}`
+}
+
+/**
+ * Starts the session of a picked piece: tied to today's block it comes from, a later block's
+ * subject and units without tying it, or a loose check.
+ */
+export function useStartPick(plan: PlanToday) {
+  const navigate = useNavigate()
+  const startBlock = useStartBlock()
+  const writer = useSessionWriter()
+  const { suggestedId } = usePresets()
+  const setTimerMode = useSessionUi((s) => s.setTimerMode)
+  return async (pick: Pick, timerMode = suggestedId) => {
+    const block = plan.blocks.find((b) => b.id === pick.blockId)
+    const later =
+      pick.from === 'next'
+        ? plan.blocks.find(
+            (b) => isOpen(b) && b.on_date > plan.today && b.subject_id === pick.subjectId,
+          )
+        : undefined
+    const unitId = pick.units[0]?.unitId ?? null
+    if (block) await startBlock(block, plan.units, { minutes: pick.minutes, unitId, timerMode })
+    else if (later)
+      await startBlock(later, plan.units, { minutes: pick.minutes, tied: false, unitId, timerMode })
+    else {
+      await writer.start({
+        subjectId: pick.subjectId,
+        unitId,
+        mode: 'review',
+        timerMode,
+        plannedMinutes: pick.minutes,
+      })
+      setTimerMode(timerMode)
+      navigate('/session')
+    }
+  }
+}

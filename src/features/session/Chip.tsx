@@ -7,11 +7,13 @@ export function Chip({
   onClick,
   tone = 'dark',
   children,
+  className,
 }: {
   selected: boolean
   onClick: () => void
   tone?: 'dark' | 'brand'
   children: ReactNode
+  className?: string
 }) {
   return (
     <button
@@ -27,6 +29,7 @@ export function Chip({
           : tone === 'dark'
             ? 'bg-canvas text-ink'
             : 'border border-line glass font-normal text-ink',
+        className,
       )}
     >
       {children}

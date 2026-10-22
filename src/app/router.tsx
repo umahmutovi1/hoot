@@ -27,6 +27,7 @@ import { SubjectPage } from '@/features/subjects/SubjectPage'
 import { SubjectsPage } from '@/features/subjects/SubjectsPage'
 import { TodayPage } from '@/features/today/TodayPage'
 import { AppShell } from './layout/AppShell'
+import { FreshStartPage } from '@/features/plan/FreshStartPage'
 import { PlainLayout } from './layout/PlainLayout'
 
 export const router = createBrowserRouter([
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
             element: <PlainLayout />,
             children: [
               { path: 'settings', element: <SettingsPage /> },
+              { path: 'today/fresh', element: <FreshStartPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
               { path: 'settings/documents', element: <DocumentsPage /> },
               { path: 'settings/feeds', element: <CalendarFeedsPage /> },
