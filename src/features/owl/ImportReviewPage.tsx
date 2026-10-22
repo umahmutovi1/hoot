@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { Switch } from '@/components/Switch'
 import { Button } from '@/components/ui/button'
 import { useSubjects } from '@/features/subjects/api'
@@ -28,7 +28,7 @@ export function ImportReviewPage() {
   if (!proposal || !id) {
     return (
       <div className="flex flex-col gap-4">
-        <BackHeader title={t('owl.reviewPage.title')} fallback="/chat" />
+        <ScreenTitle title={t('owl.reviewPage.title')} />
         <p className="text-sm text-ink-muted">{t('owl.reviewPage.missing')}</p>
       </div>
     )
@@ -58,7 +58,7 @@ export function ImportReviewPage() {
 
   return (
     <div className="flex flex-col gap-4 pb-24">
-      <BackHeader title={t('owl.reviewPage.title')} fallback="/chat" />
+      <ScreenTitle title={t('owl.reviewPage.title')} />
       <p className="px-1 text-sm text-ink-muted">{proposal.documentTitle}</p>
 
       {proposal.warnings.length > 0 && (
@@ -183,7 +183,7 @@ export function ImportReviewPage() {
       )}
 
       {!saved && (
-        <div className="fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom))] z-30 flex justify-center px-5">
+        <div className="fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-30 flex justify-center px-5">
           <Button
             type="button"
             size="pill"

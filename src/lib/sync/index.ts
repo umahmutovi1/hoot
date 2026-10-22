@@ -15,6 +15,8 @@ export type Op =
   | { kind: 'upsert'; table: string; rows: Row[]; onConflict?: string }
   | { kind: 'update'; table: string; match: Record<string, unknown>; patch: Row }
   | { kind: 'delete'; table: string; match: Record<string, unknown> }
+  /** A database function (e.g. `replace_plan`); `table` names what it writes, for the mirror. */
+  | { kind: 'rpc'; table: string; fn: string; args: Record<string, unknown> }
 
 export interface QueuedOp {
   seq?: number
@@ -152,6 +154,7 @@ export class SyncQueue {
       }
       return
     }
+    if (op.kind === 'rpc') return
     const rows = (await this.db.rows.where('table').equals(op.table).toArray()).filter((r) =>
       matches(r.row, op.match),
     )
@@ -280,6 +283,7 @@ export class SyncQueue {
 }
 
 function rowIds(op: Op): string[] {
+  if (op.kind === 'rpc') return []
   if (op.kind === 'upsert') return op.rows.map((r) => r.id).filter((id) => typeof id === 'string')
   const id = op.match.id
   return typeof id === 'string' ? [id] : []

@@ -20,6 +20,7 @@ export function toSubjectRow(form: SubjectForm): TablesInsert<'subjects'> {
     priority: form.priority,
     study_mode: form.studyMode,
     campaign_start_on: form.studyMode === 'campaign' ? form.campaignStartOn : null,
+    target_grade: form.targetGrade,
   }
 }
 
@@ -92,6 +93,7 @@ export function subjectToForm(s: SubjectWithAssessments): SubjectForm {
     priority: s.priority,
     studyMode: s.study_mode as StudyMode,
     campaignStartOn: s.campaign_start_on,
+    targetGrade: s.target_grade,
     assessments: [...s.assessments].sort((a, b) => a.at.localeCompare(b.at)).map(assessmentToForm),
   }
 }

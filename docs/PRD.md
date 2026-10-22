@@ -50,7 +50,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Plan | “Danas” ekran | Fokus bar dana, kartica “Sljedeći blok”, lista blokova, 3 najranija ispita, “zašto ovo danas”; najviše jedna kartica akcije iznad liste |
 | Plan | Brze akcije dana | “Danas ne mogu” (dan zauzet + replan) i “Imam samo 30 min” (najvredniji komad za to vrijeme) |
 | Plan | Kalendar | Mjesec i dan: ispiti, rokovi, nastava i planirani dani |
-| Plan | Satnica | Svaki blok automatski dobije predloženo vrijeme i pauze po predlošku sesije; tab Satnica prikazuje i dozvoljava pomjeranje |
+| Plan | Satnica | Svaki blok automatski dobije predloženo vrijeme i pauze po predlošku sesije; dnevni pogled kalendara (Plan → Dan, ranije tab Satnica) prikazuje i dozvoljava pomjeranje |
 | Plan | Replan | Propušteno se preraspodijeli od sutra uz limit dnevnog rasta; deficit sa 3 opcije; “novi početak” |
 | Plan | Izvoz u kalendar | ICS pretplata na ispite, rokove i blokove |
 | Plan | Ručni blokovi | Dodaj, izmijeni, obriši blok; ručni i izmijenjeni blokovi su zaključani od replana |
@@ -133,8 +133,9 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 
 1. “+ Dodaj blok” na danu u Planu: predmet, tip, opcionalno jedinice, dan, trajanje, opcionalno vrijeme. Blok je ručni (`origin = 'user'`).
 2. Izmjena bloka koji je napravila app (dan, vrijeme, trajanje, jedinice) ga pretvara u ručni i zaključava; app to kaže jednom rečenicom.
-3. Brisanje bloka koji je napravila app otvara izbor: “Prebaci gradivo na druge dane” (jedinice se vraćaju u bazen, replan ih rasporedi od sutra) ili “Izbaci iz plana” (jedinice dobiju ručno “ne ulazi” za taj ispit). Brisanje ručnog bloka samo vraća njegovo gradivo u bazen.
+3. Brisanje bloka koji je napravila app otvara izbor: “Prebaci gradivo na druge dane” (jedinice se vraćaju u bazen, a vrijeme bloka tog dana postaje zauzeto kao izuzetak dostupnosti, pa ih replan rasporedi drugdje; odluka, Etapa 8b: plan je deterministički i bez toga bi budući blok vratio na isto mjesto; Poništi briše i izuzetak) ili “Izbaci iz plana” (jedinice dobiju ručno “ne ulazi” za taj ispit). Brisanje ručnog bloka samo vraća njegovo gradivo u bazen.
 4. Poslije svake izmjene: undo toast i replan (debounce 2 s). Replan nikad ne briše ni pomjera ručne blokove.
+5. (Odluka, Etapa 8b.) Tip „Zadaci“ nema svoj `block_kind`: ručni blok je `learn`, a izabrani način (čitanje, zadaci, ponavljanje, pitanja) čuva se u `plan_blocks.reason` (`{"code":"manual","mode":…}`), pa sesija kreće u tom načinu. Izmijenjen AI blok nosi `edited`, pa Satnica nudi „Vrati predloženo“ (briše izmijenjene blokove dana, plan ponovo rasporedi to gradivo). Satnica pomjera blok kroz UrediBlok (vrijeme, dan, trajanje), bez prevlačenja.
 
 ## Model izvora, jedinica i progresa
 
@@ -290,14 +291,14 @@ Korisnik bilježi dokle se stiglo na nastavi, pa app zna koliko zaostaje i može
 - “Ti” = zadnja vršna jedinica čiji su svi listovi `level` ≥ 1, gledano redom od početka bez praznina.
 - Broj predavanja u zaostatku = unosi (nisu otkazani) iza kojih je u pređenom dijelu ostala bar jedna jedinica sa `level` 0.
 
-**Meki rok (samo redovni režim).** Jedinica pređena na predavanju dobija meki rok `on_date + profiles.lecture_pace_days` (default 7) i ulazi u plan kao pseudo-cilj ispred ispita. Meki rok nikad ne pravi deficit: ako ne stane, ostaje vezan za ispit. Jedinice koje još nisu pređene na predavanju ne guraju se unaprijed, osim ako ispit to traži. U kampanji se predavanja samo bilježe i prikazuju.
+**Meki rok (samo redovni režim).** Jedinica pređena na predavanju dobija meki rok `on_date + profiles.lecture_pace_days` (default 7) i ulazi u plan kao pseudo-cilj ispred ispita. Meki rok nikad ne pravi deficit: ako ne stane, ostaje vezan za ispit. Jedinice koje još nisu pređene na predavanju ne guraju se unaprijed, osim ako ispit to traži. (Odluka, Etapa 8b: nepređeno gradivo predmeta sa unosima predavanja ulazi u plan od ALAP starta, istog kao kampanja, izračunatog za taj dio obima.) U kampanji se predavanja samo bilježe i prikazuju.
 
 **Recap nakon predavanja.** Ako je unos napravljen istog dana, recap blok od 15 min cilja upravo pređene jedinice; inače je opći recap predmeta.
 
 **Prijedlozi kod zaostatka.** Kad zaostatak pređe prag (više od 2 predavanja sa nepređenim gradivom ili više od 4 h), pravilo u kodu (bez AI-ja) pokaže karticu na “Danas” i na predmetu sa najviše 3 akcije, redom koji ima smisla za taj predmet:
 
 - “Podigni prioritet na N+1” (ako je prioritet < 5)
-- “Uzmi vrijeme od [predmet]”: privremeno pojačanje do sljedećeg ispita predmeta. Naziv predmeta i minute u potvrdi (“Signali dobijaju 40 min dnevno od Vjerovatnoće do 28. okt.”) dolaze iz razlike plana sa i bez pojačanja, koju `plan()` izračuna unaprijed.
+- “Uzmi vrijeme od [predmet]”: privremeno pojačanje do sljedećeg ispita predmeta. Naziv predmeta i minute u potvrdi (“Signali dobijaju 40 min dnevno od Vjerovatnoće do 28. okt.”) dolaze iz razlike plana sa i bez pojačanja, koju `plan()` izračuna unaprijed (odluka, Etapa 8b: razlika se mjeri na narednih 7 dana, ili do kraja pojačanja ako je ranije, jer kad sve stane ukupna razlika do ispita je 0).
 - “Prebaci na redovno” (ako je predmet u kampanji, a zaostatak raste)
 - “Kreni ranije” (kampanja: start na izračunat raniji dan)
 - “Dodaj X min dnevno” (izuzeci dostupnosti do sljedećeg ispita predmeta)
@@ -315,16 +316,16 @@ Satnicu pravi čista TypeScript funkcija `plan(state) → blocks`, bez AI-ja: br
 1. **Kapacitet.** Slobodne minute po danu = dostupnost − termini nastave (tačno vrijeme termina, osim otkazanih) − zauzeto iz povezanih kalendara − izuzeci − ručni blokovi. Kapacitet za plan = min(slobodno, dnevni maksimum) × ρ × rezerva:
    - **Faktor realizacije ρ** = odrađene / planirane minute AI blokova zadnjih 14 dana, ublažen prema 0.8: `ρ = (n·ρ_izmjereno + 7·0.8) / (n + 7)`, n = broj dana sa planom u tom prozoru; ograničen na [0.5, 1]. Dani “Danas ne mogu” i dani bez plana ne ulaze. Računa se u kodu (`src/lib/scheduler/`), ulazi u `input_hash`, a “zašto” ga imenuje (“planiram 80% jer zadnje 2 sedmice odradiš oko 80%”).
    - **Rezerva** = 0.9 (konstanta): i uz ρ = 1 jedan loš dan ne prevrne plan.
-   - Kad ima dovoljno podataka (≥ 4 dana po danu u sedmici), ρ se računa i po danu u sedmici, uz shrinkage prema ukupnom ρ.
+   - Kad ima dovoljno podataka (≥ 4 dana po danu u sedmici), ρ se računa i po danu u sedmici, uz shrinkage prema ukupnom ρ. (Odluka, Etapa 8b: u prozoru od 14 dana svaki dan u sedmici ima najviše 2 dana, pa ovo čeka dužu historiju u Etapi 11.)
    - Pauze iz predloška sesije ne troše dnevni maksimum (on broji minute učenja), ali moraju stati u slobodne termine (vidi Lista vs satnica).
-2. **Ponavljanja i provjere prvo.** Jedinice kojima je `next_review_on` danas ili ranije dobijaju blokove tipa `review` (vidi Spaced repetition), i za predmete u kampanji prije starta. Ponavljanja zauzimaju najviše `profiles.review_cap_pct` (default 40%) dnevnog kapaciteta; višak se slaže po bližem ispitu, pa po nižoj jačini, a ostatak prelazi na sljedeći dan. Uz uključen prekidač, dan sa predavanjem dobija blok `recap` od 15 min za taj predmet.
+2. **Ponavljanja i provjere prvo.** Jedinice kojima je `next_review_on` danas ili ranije dobijaju blokove tipa `review` (vidi Spaced repetition), i za predmete u kampanji prije starta. Ponavljanja zauzimaju najviše `profiles.review_cap_pct` (default 40%) dnevnog kapaciteta; višak se slaže po bližem ispitu, pa po nižoj jačini, a ostatak prelazi na sljedeći dan. Uz uključen prekidač, dan sa predavanjem dobija blok `recap` od 15 min za taj predmet. Provjera jedne jedinice u `review` bloku traje 15% njenih minuta (5–20 min), pitanje 3 min (konstante u `src/lib/scheduler/constants.ts`, odluka Etapa 8b).
 3. **Start kampanje.** Za predmete u kampanji izračuna se dan starta (vidi Prioritet i režim); prije njega njihove jedinice nisu u bazenu.
 4. **Preostali rad po cilju.** Cilj je nepoložen, aktivan ispit (ne “samo ako zatreba” dok se ne aktivira) ili rok sa procjenom. Za jedinicu u obimu: level 0 → 100% minuta, level 1 → 40%, level 2+ → 0% (ide u ponavljanja). Pitanje: 0 → 100%, 1 → 50%. Jedinica pripada najranijem cilju koji je pokriva. Rad se dijeli na obavezan i opcionalan po ciljnoj pokrivenosti prioriteta. Planirane minute ručnih blokova za te jedinice oduzimaju se od preostalog rada.
 5. **Meki rokovi s predavanja.** U redovnom režimu pređene jedinice dobijaju meki rok (vidi Praćenje predavanja).
 6. **Buffer.** Zadnjih N dana prije ispita (postavke, +1 za prioritet 5) samo ponavljanje i pitanja iz obima.
 7. **Hitnost.** u = preostali rad / kapacitet do cilja × težina prioriteta. Dan se raspodijeli proporcionalno hitnosti; najviše N predmeta dnevno, blok najmanje N minuta (postavke). Opcionalan rad ide tek kad obavezan stane. Dužina bloka teži višekratniku intervala učenja iz predloška sesije (50 + 50, ne 70), da se blok i podsjetnik na pauzu poklapaju.
    - **Mikro-blokovi.** Slobodni termini kraći od `min_block_minutes` (rupe između predavanja, 10–20 min) primaju samo `review` blokove i kartice; prvo učenje nikad.
-   - **Limit rasta.** Planirane minute dana ne prelaze 1.25 × prosjek odrađenih minuta zadnjih 7 dana (najmanje 60 min, i nikad iznad kapaciteta). Ono što ne stane ide u deficit sa 3 opcije, a ne u sutrašnji dan. Ovo važi samo za AI blokove; ručni blokovi i buffer pred ispitom se ne režu.
+   - **Limit rasta** (odluka, Etapa 8b: rampa). Prvi planirani dan ima najviše 1.25 × prosjek odrađenih minuta zadnjih 7 dana (najmanje 60 min), a svaki sljedeći dan još 1.25× (×1.25, ×1.56, …), nikad iznad kapaciteta; računa se iznova pri svakom replanu, pa plan “raste kako odrađuješ”. Ono što ne stane klizi na kasnije dane; deficit (sa 3 opcije) nastaje tek kad ne stane do ispita. Korisnik bez ijednog dana sa planom u zadnjih 7 dana (novi korisnik) nema limit. Ovo važi samo za AI blokove; ručni blokovi i buffer pred ispitom se ne režu.
 8. **Redoslijed.** Redoslijed iz sadržaja; prednost dobijaju jedinice sa niskom sigurnošću i teme sa mnogo ispitnih pitanja.
 9. **Tip bloka.** `learn` za prvo učenje, `questions` kad je cilj u buffer zoni ili su poglavlja pređena a pitanja nisu, `deadline` za rokove.
 10. **Punjenje.** Duga jedinica se dijeli po stranicama na više blokova.
@@ -340,14 +341,16 @@ Satnicu pravi čista TypeScript funkcija `plan(state) → blocks`, bez AI-ja: br
 **Lista vs satnica.** Plan se pravi u dva sloja:
 
 1. `plan()` raspodijeli rad po danima → “Danas” lista.
-2. `placeTimes()` odmah poslije `plan()` (odluka nakon Etape 7: automatski, ne na zahtjev) smjesti blokove svakog dana u slobodne termine → popuni `start_min` i `planned_start`. Ručni blokovi sa zadatim vremenom su fiksni; ostali se slažu oko njih. Tab “Satnica” samo prikazuje dan i dozvoljava pomjeranje bloka (pomjeren blok postaje ručni, kao u toku 7).
+2. `placeTimes()` odmah poslije `plan()` (odluka nakon Etape 7: automatski, ne na zahtjev) smjesti blokove svakog dana u slobodne termine → popuni `start_min` i `planned_start`. Ručni blokovi sa zadatim vremenom su fiksni; ostali se slažu oko njih. Dnevni pogled kalendara (Plan → Dan; odluka nakon 8b: Kalendar i Satnica su spojeni u jedan kalendar sa pogledima Dan, default, i Mjesec) samo prikazuje dan i dozvoljava pomjeranje bloka (pomjeren blok postaje ručni, kao u toku 7).
 
 `placeTimes()` pravila:
 
-- **Pauze.** Između blokova i unutar dugog bloka ostavlja pauzu po zadanom predlošku sesije (Standardno: 15 min nakon 50 min učenja; Pomodoro: 5 min, duga pauza nakon 4 intervala). Blok + njegove pauze moraju stati u jedan slobodan termin; ako ne staju, blok se dijeli ili skraćuje na višekratnik intervala.
+- **Pauze.** Između blokova i unutar dugog bloka ostavlja pauzu po zadanom predlošku sesije (Standardno: 15 min nakon 50 min učenja; Pomodoro: 5 min, duga pauza nakon 4 intervala). Blok + njegove pauze moraju stati u jedan slobodan termin; ako ne staju, blok se dijeli ili skraćuje na višekratnik intervala. Najduži blok je ~100 min (2 × 50, 4 × 25); duže vrijeme istog predmeta u danu su blokovi zaredom (odluka, Etapa 8b). Prije svakog smještenog bloka ostaje i najduža pauza predloška, da blok prije njega ima mjesta za svoju pauzu.
 - **Termini učenja.** Svaki termin dana ima ocjenu (vidi Termini učenja). Prvo učenje i jedinice sa višom težinom idu u bolje ocijenjene termine; `review`, `recap`, prezentacije i kartice u slabije. Dok nema podataka, ocjena je prior iz onboardinga (“kad ti je najlakše učiti”).
 - **San pred ispit** i granica dana se poštuju.
 - Isti ulaz daje isto vrijeme (determinizam); Thompson uzorkovanje u Terminima učenja koristi seed iz `input_hash`.
+
+**Upis i okidači (odluka, Etapa 8b).** Plan se računa u browseru (`src/features/plan/ReplanRunner.tsx`) iz istih podataka koje ekrani već imaju i upisuje kroz offline red jednim pozivom `replace_plan()`. Svaka uspješna izmjena bilo gdje (i kraj sesije, sinhronizacija kalendara, novi dan) ponovo slaže stanje; ako se `input_hash` razlikuje od zadnjeg `plan_runs`, plan se preračuna (debounce 2 s), nikad dok timer radi. Trenutna minuta ulazi u satnicu samo za današnji prvi plan i nije u hashu, da prazan dan ne pravi novi run svakih nekoliko minuta. Integralni ispit „samo ako zatreba“ ulazi u plan kad neki redovni ispit predmeta ima rezultat a nije položen; popravni kad njegov ispit nije položen (kao na predmetu).
 
 Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash` (jedinice, nivoi, procjene, FSRS stanje, ispiti, obim, dostupnost, raspored, zauzeto iz povezanih kalendara, unosi predavanja, prioriteti, režimi, ručni start kampanje, ručni blokovi, faktor realizacije, ocjene termina, zadani predložak sesije, postavke); ako je isti kao u zadnjem `plan_runs`, koristi se postojeći plan i ništa se ne računa. AI se zove samo za strategist, i to ručno ili sedmično.
 
@@ -356,9 +359,12 @@ Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash
 **Brze akcije dana.**
 
 - **“Danas ne mogu”** (Danas, jedan tap + undo): napravi `availability_days` za danas sa `slots = []`, današnji AI blokovi postaju `skipped` (ne “propušteno”), replan od sutra. Ne ulazi u ρ.
+- **“Imam još vremena” (odluka nakon 8b).** Kad je današnji plan odrađen (ili danas nema bloka), kartica „Sljedeće“ nudi 30 / 60 / 90 min. Kod (`pickForTime()`, ne LLM) bira najvrjednije: provjeru koja je na redu, inače najhitnije sljedeće gradivo, dopunjeno idućim jedinicama istog predmeta do izabranog vremena. To postaje blok danas od sada (ručni blok: korisnik je tražio vrijeme, pa ga replan ne briše; smije preći dnevni maksimum, samo taj dan) uz izuzetak dostupnosti „slobodno“ za taj termin. Replan taj posao računa kao planiran i preslaže sljedeće dane po hitnosti (ne samo sutra). „Dodaj i počni“ ili „Samo dodaj u današnji plan“, uz Poništi.
+- **„Preskoči“ (odluka nakon 8b).** Kartica „Sljedeće“ uvijek ima „Preskoči“ (i UrediBlok za današnji blok); kad kasniš više od 5 min, kartica piše „Kasniš X min“ uz „Počni sad“ (vidi Kašnjenje) i „Preskoči“. Preskoči nudi „Preskoči i kreni odmah: [sljedeći blok]“ (sljedeći blok kreće sada, a ostatak dana se povuče ranije iza njega, istim redom, sa pauzama, samo u slobodno vrijeme) ili „Samo preskoči“ (ostali blokovi ostaju gdje su). Gradivo preskočenog bloka ne propada i ima prednost: ide u prvu rupu danas (i između dva bloka) u koju stane sa pauzama; ako danas nema mjesta, postaje prvi blok sljedećeg dana učenja (fiksiran kao ručni blok, oznaka „prebačeno“, pa replan složi taj dan oko njega), uz poštovanje sna pred ispit (`skipBlock()` u `src/lib/scheduler/`). Premješten blok nije propušten, pa ne ulazi u ρ. Toast kaže kuda je otišao, uz Poništi. Blok koji samo prođe bez akcije i dalje sutra postaje „propušteno“.
+- **Kašnjenje (odluka nakon 8b).** Počni na današnji blok više od 5 min poslije njegovog vremena pomjera taj blok na sada, a ostatak dana iza njega, i AI i ručne blokove (izuzetak od pravila da ručni blok ne pomjera niko osim korisnika, jer je korisnik pokrenuo pomjeranje), istim redom, sa pauzama predloška i samo u slobodno vrijeme (nastava i zauzetost se preskaču; dan prije ispita ne poslije `exam_eve_end_min`), nikad ranije nego što su bili (`shiftRestOfDay()` u `src/lib/scheduler/`). AI blok koji više ne stane danas vraća se planu (rasporedi ga replan od sutra), a ručni ostaje na danu bez vremena. Toast „Kasniš X min, ostatak dana je pomjeren“ sa Poništi.
 - **“Imam samo 30 min”** (Danas i PokreniSesiju; trajanje 15/30/45/60): čista funkcija `pickForTime(state, minutes)` izabere najvredniji komad (ponavljanje koje danas ističe sa najnižim R, pa najhitnija jedinica iz današnjeg plana, pa sljedeća po hitnosti), pa odmah ponudi start sesije. Ne mijenja plan; sesija se veže za blok ako ga pokrije.
 
-**Ručni blokovi.** Blok sa `plan_blocks.origin = 'user'` napravio je ili izmijenio korisnik (vidi tok 7). Nema `plan_run_id`, troši kapacitet svog dana i njegove jedinice se računaju kao planirane. Replan ga nikad ne briše ni pomjera; kad prođe, postaje odrađen ili propušten kao svaki drugi blok.
+**Ručni blokovi.** Blok sa `plan_blocks.origin = 'user'` napravio je ili izmijenio korisnik (vidi tok 7). Nema `plan_run_id`, troši kapacitet svog dana i njegove jedinice se računaju kao planirane. Replan ga nikad ne briše ni pomjera (pomjera ga samo kašnjenje na Počni, vidi Brze akcije dana); kad prođe, postaje odrađen ili propušten kao svaki drugi blok.
 
 **Replan je idempotentan.** Brišu se samo budući nezapočeti blokovi sa `origin = 'ai'`; odrađeni, propušteni i ručni ostaju. Isti ulaz uvijek daje isti plan, pa se može pokretati koliko god puta.
 
@@ -416,7 +422,8 @@ Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migrac
 
 **Odluke (Etapa 7)**
 
-- **Režimi 25/5 i 50/10 su samo podsjetnik.** Značka odbrojava do pauze („pauza za 1:19“); kad istekne, piše „Vrijeme je za pauzu“ (uz vibraciju ako je ekran otvoren). Pauzu korisnik tapne sam; timer nikad sam ne zatvara ni ne otvara segment, jer browser u pozadini ne radi pouzdano. Tokom pauze značka odbrojava do kraja pauze. „Slobodno“ nema podsjetnik. (Etapa 8 zamjenjuje fiksne režime predlošcima, pravilo podsjetnika ostaje.)
+- **Režimi 25/5 i 50/10 su samo podsjetnik.** Značka odbrojava do pauze („pauza za 1:19“); kad istekne, piše „Vrijeme je za pauzu“ (uz vibraciju ako je ekran otvoren). Pauzu korisnik tapne sam; timer nikad sam ne zatvara ni ne otvara segment, jer browser u pozadini ne radi pouzdano. Tokom pauze značka odbrojava do kraja pauze. **Dvije vrste pauze (odluka nakon 8b):** pauza u zadnjih 5 min intervala ili poslije njega je planirana pauza predloška (odbrojava, sljedeći interval kreće ispočetka, `break_ends_at`); ranija pauza je slobodna: značka broji naprijed („Slobodna pauza · 3:12“), nema `break_ends_at` ni podsjetnika, a interval se nastavlja gdje je stao (učenje se sabira preko slobodnih pauza). Obje se računaju kao pauza, ne kao učenje. Flowtime ostaje kakav jeste. „Slobodno“ nema podsjetnik. (Etapa 8 zamjenjuje fiksne režime predlošcima, pravilo podsjetnika ostaje.)
+- **Kraj sesije (odluka nakon 8b).** „Završi“ prije planiranog vremena (više od 1 min ranije) ili u prve 2 min otvara potvrdu: koliko je ostalo i da ostatak plan rasporedi od sutra (ili da je timer možda pokrenut slučajno), uz „Nastavi učiti“, „Završi sad“ i „Odbaci sesiju (ništa se ne računa)“. Na ekranu „Sesija završena“ je odmah traka „Završeno prerano ili slučajno?“: „Nastavi ovu sesiju“ (sesija se ponovo otvara, vrijeme se nastavlja, blok je opet u toku), „Počni iznova“ (nova sesija istog bloka od nule, uz jasan izbor „Zadrži ovih X min“ kao posebnu sesiju bez ocjena ili „Obriši ovih X min“) i „Odbaci“ (briše sesiju, blok se vraća u plan).
 
 **Predlošci sesije (odluka nakon Etape 7).** Režim timera postaje predložak: niz intervala učenja i pauze koji se ponavlja, sa opcionalnom dugom pauzom. Istraživanja ne daju jednog pobjednika (Pomodoro je kod [Smits i sar. 2025](https://pmc.ncbi.nlm.nih.gov/articles/PMC12292963/) dao brži rast umora uz istu produktivnost kao pauze koje student bira sam), pa app nudi više predložaka i mjeri koji tebi daje bolji fokus i brzinu.
 
@@ -465,7 +472,7 @@ Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migrac
 
 **Stabilnost plana.** Današnja lista se ne mijenja ispod tebe: replan tokom dana kreće od sutra, osim ako je današnji plan postao nemoguć (npr. dodala si izuzetak “zauzeta danas”). Djelimično odrađen blok vraća preostale minute u bazen za sljedeće dane.
 
-**Satnica** (tab) se računa samo kad otvoriš tab i kažeš “Generiši”; kešira se dok se `plan_run` ili današnja dostupnost ne promijene.
+**Satnica** (dnevni pogled kalendara, Plan → Dan) samo prikazuje vremena koja `placeTimes()` popuni odmah poslije `plan()` (odluka nakon Etape 7, vidi Lista vs satnica); nema dugmeta “Generiši”.
 
 **Offline.** Timer nikad ne zavisi od mreže. Sesije, segmenti, ocjene i ponavljanja prvo se snimaju u lokalni red u IndexedDB (Dexie), a zatim sinhronizuju sa Supabase-om kad je mreža dostupna.
 
@@ -566,6 +573,8 @@ Cilj: za ~3 minute od “Kako da te zovem?” do realne sedmice i, ako je unesen
 | 8 | “Tvoja sedmica” | Pregled: slobodno X h sedmično, potrebno Y h do prvog ispita, “stižeš” ili “fali 6 h” + prvi blok za danas | — |
 
 Mockupi `design/Onboarding.dc.html` … `design/OnboardingSedmica.dc.html` (svi koraci kao stanja jedne komponente), bez maskote.
+
+**Gruba veličina gradiva (odluke, Etapa 8a).** Malo / Srednje / Puno = ~10 / 25 / 45 h, kao privremeni izvor (`sources.is_rough`, vrsta „Ostalo“) od dijelova od po 1 h. Dodavanje pravog izvora arhivira njegove dijelove. **Obim po ispitima (odluka za 8b):** dijelovi privremenog izvora se dijele redom po parcijalama predmeta koje nisu „samo ako zatreba“ (sa dvije parcijale: prva polovina I parcijali, druga II), a završni i integralni obuhvataju sve; ručna izmjena obima i dalje ima prednost. Postojeći korisnici (sa potvrđenim imenom) se pri migraciji `0014` računaju kao da su prošli onboarding.
 
 ## Povezani kalendari i integracije
 
@@ -693,7 +702,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 
 **Sova (agent) na Danas (Etapa 6).** Na dnu ekrana Danas, iznad tab bara, stoji traka sa sovom („Pitaj sovu…“ i dugme +). To je jedan ulaz za sve AI radnje: pitanje (odgovor iz dokumenata sa citatom ili iz sažetka stanja), dodavanje dokumenta (uslikaj, slika, PDF, zalijepi tekst) i prijedlozi izmjena kao kartice sa pregledom. Tap na traku otvara razgovor preko cijelog ekrana. Iznad trake je današnji savjet strategista (oblačić, × ga skloni do sutra) i prijedlozi pitanja. Offline ili bez ključa traka je onemogućena. Za sad je samo na Danas; kasnije najvjerovatnije plutajuća sova (krug dole desno) na ostalim tabovima, varijanta 7B u mockupu. Oblačić sa savjetom dolazi sa strategistom (Etapa 11); do tad iznad trake stoje samo prijedlozi. Mockup: `design/SovaAgent.html`.
 
-**Redizajn (Liquid Glass, nakon Etape 7).** Traka sa sovom na Danas je zamijenjena AI tabom u sredini navigacije (ekran Chat, mockup `design/Chat.dc.html`), a u tekstovima je „asistent“ umjesto „sova“; maskote više nema. Sve ostalo iz ovog pasusa (dokumenti, citati, prilog, prijedlozi kao kartice) vrijedi i dalje. Timer dugme je uklonjeno iz navigacije: sesija se pokreće iz kartice „Sljedeće“ na Danas (do schedulera nudi slobodnu sesiju) ili iz chata.
+**Redizajn (Liquid Glass, nakon Etape 7).** Traka sa sovom na Danas je zamijenjena AI tabom u sredini navigacije (ekran Chat, mockup `design/Chat.dc.html`), a u tekstovima je „asistent“ umjesto „sova“; maskote više nema. Sve ostalo iz ovog pasusa (dokumenti, citati, prilog, prijedlozi kao kartice) vrijedi i dalje. Timer dugme je uklonjeno iz navigacije: sesija se pokreće iz kartice „Sljedeće“ na Danas (do schedulera nudi slobodnu sesiju) ili iz chata. **Odluka nakon v0.7.2:** donja navigacija je zamijenjena prvim redom na vrhu (avatar, AI, ☰) i menijem koji se otvara odozgo (`design/NavMeni.html`, design README → Navigacija).
 
 **Uvoz sa pregledom (Etapa 6).** Kroz sovu (dugme +) ili ekran “Uvezi”: zalijepi se tekst ili doda slika/PDF i bira šta je unutra (ili sova pogodi).
 
@@ -1362,6 +1371,10 @@ alter table plan_blocks
   alter column plan_run_id drop not null;
 alter table subjects
   add column priority_boost_until date;                -- privremeno pojačanje prioriteta
+create index plan_blocks_replan_idx on plan_blocks (user_id, on_date) where origin = 'ai' and status = 'planned';
+-- replace_plan(run_id, input_hash, deficit, today, from, blocks jsonb, units jsonb): jedan poziv (security invoker,
+-- RLS) koji prošle 'planned' blokove označi 'missed', obriše buduće nezapočete AI blokove drugih runova od `from`
+-- i upiše run sa blokovima; isti run poslan dvaput ne mijenja ništa. Klijent ga šalje kroz offline red (op 'rpc').
 
 -- 0017_fsrs.sql (Etapa 9); SM-2 kolone još nisu korištene; iste FSRS kolone dobijaju i cards
 alter table units

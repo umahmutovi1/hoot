@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import type { DayClass } from '@/features/plan/agenda'
+import type { DayBusy, DayClass } from '@/features/plan/agenda'
 import { hourRange } from '@/features/plan/calendar'
 import { formatClock, type FreeSlot } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
@@ -15,12 +15,21 @@ const HOUR_PX = 30
 export function AvailabilityTimeline({
   slots,
   classes,
+  busy = [],
+  onPickBusy,
 }: {
   slots: FreeSlot[]
   classes: DayClass[]
+  /** Busy time from connected calendars, hatched like classes. */
+  busy?: DayBusy[]
+  onPickBusy?: (item: DayBusy) => void
 }) {
   const { t } = useTranslation()
-  const [from, to] = hourRange([...slots.map((s, i) => ({ id: `s${i}`, ...s })), ...classes], 6, 22)
+  const [from, to] = hourRange(
+    [...slots.map((s, i) => ({ id: `s${i}`, ...s })), ...classes, ...busy],
+    6,
+    22,
+  )
   const top = (min: number) => ((min - from * 60) / 60) * HOUR_PX
   const hours = Array.from({ length: to - from + 1 }, (_, i) => from + i)
 
@@ -77,6 +86,31 @@ export function AvailabilityTimeline({
             {t(`timetable.kind.${c.entry.kind}`).toLowerCase()}
           </span>
         </div>
+      ))}
+      {busy.map((b) => (
+        <button
+          type="button"
+          key={b.id}
+          onClick={() => onPickBusy?.(b)}
+          className={cn(
+            'absolute right-4 left-20 overflow-hidden rounded-xl bg-[repeating-linear-gradient(135deg,var(--color-track)_0_8px,var(--color-canvas-soft)_8px_16px)] px-2.5 py-1 text-left shadow-sm',
+            b.ignored && 'opacity-40',
+          )}
+          style={{
+            top: top(b.startMin) + 1,
+            height: Math.max(18, top(b.endMin) - top(b.startMin) - 2),
+          }}
+        >
+          <span
+            className={cn(
+              'block truncate text-[11px] font-semibold text-ink-muted',
+              b.ignored && 'line-through',
+            )}
+          >
+            {b.title ? `${b.title} · ` : ''}
+            {t('feeds.fromSource', { source: b.source })}
+          </span>
+        </button>
       ))}
     </div>
   )

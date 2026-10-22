@@ -1,16 +1,12 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CapIcon, ClockIcon } from '@/components/icons'
 import { PageTitle } from '@/components/PageTitle'
-import { cn } from '@/lib/utils'
 import { CalendarView } from './CalendarView'
 
-export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
+/** Plan: Raspored and Dostupnost in the header, and one calendar (Dan / Mjesec). */
+export function PlanPage() {
   const { t } = useTranslation()
-  const tabs = [
-    { to: '/plan', label: t('plan.tabCalendar'), id: 'calendar' },
-    { to: '/plan/schedule', label: t('plan.tabSchedule'), id: 'schedule' },
-  ] as const
 
   return (
     <div className="flex flex-col gap-4">
@@ -36,32 +32,7 @@ export function PlanPage({ tab }: { tab: 'calendar' | 'schedule' }) {
       >
         {t('plan.title')}
       </PageTitle>
-      <div role="tablist" className="flex rounded-[22px] bg-brand-soft p-1">
-        {tabs.map((item) => (
-          <NavLink
-            key={item.id}
-            to={item.to}
-            end
-            role="tab"
-            aria-selected={tab === item.id}
-            className={cn(
-              'flex h-10 flex-1 items-center justify-center rounded-[18px] text-sm font-semibold',
-              tab === item.id
-                ? 'bg-white/85 text-ink shadow-[0_2px_8px_rgba(58,51,96,0.1)]'
-                : 'text-ink-secondary',
-            )}
-          >
-            {item.label}
-          </NavLink>
-        ))}
-      </div>
-      {tab === 'calendar' ? (
-        <CalendarView />
-      ) : (
-        <div className="flex flex-col items-center gap-3 rounded-card-lg glass p-6 text-center">
-          <p className="text-sm leading-snug text-ink-muted">{t('plan.scheduleEmpty')}</p>
-        </div>
-      )}
+      <CalendarView />
     </div>
   )
 }

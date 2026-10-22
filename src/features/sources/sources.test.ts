@@ -61,6 +61,7 @@ const source = (units: Unit[], extra: Partial<SourceWithUnits> = {}): SourceWith
   learned_min_per_unit: null,
   learned_samples: 0,
   measured_sessions: 0,
+  is_rough: false,
   created_at: '',
   updated_at: '',
   units,

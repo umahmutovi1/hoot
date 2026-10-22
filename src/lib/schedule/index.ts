@@ -1,4 +1,12 @@
-import { addDays, diffDays, startOfWeek, weekdayOf, type LocalDate } from '@/lib/day'
+import {
+  addDays,
+  diffDays,
+  startOfWeek,
+  wallClock,
+  weekdayOf,
+  zonedInstant,
+  type LocalDate,
+} from '@/lib/day'
 
 /**
  * Academic calendar, timetable and availability (PRD "Akademski kalendar", "Raspored nastave").
@@ -194,6 +202,74 @@ const exceptionSlot = (e: AvailabilityException): Slot =>
     ? { startMin: 0, endMin: DAY_MINUTES }
     : { startMin: e.startMin, endMin: e.endMin }
 
+/** A connected calendar (`calendar_feeds`): what its events mean for the plan. */
+export interface CalendarFeed {
+  id: string
+  kind: 'busy' | 'deadlines'
+  /** All-day events block the day (default off: birthdays, holidays only show). */
+  allDayBusy: boolean
+}
+
+/**
+ * An event from a connected calendar (`external_events`). Timed events are UTC instants;
+ * all-day events are stored as UTC midnights of their dates, end exclusive (a zone-free date).
+ * Free (TRANSPARENT) and cancelled events are never stored by `sync-calendar`.
+ */
+export interface CalendarEvent {
+  id: string
+  feedId: string
+  startsAt: Date
+  endsAt: Date
+  allDay: boolean
+  ignored: boolean
+  title?: string | null
+}
+
+const utcDate = (d: Date): LocalDate => d.toISOString().slice(0, 10)
+
+/** Does an event block study time? Busy feeds only, not ignored, all-day only when the feed says so. */
+export function eventBlocks(event: CalendarEvent, feeds: CalendarFeed[]): boolean {
+  const feed = feeds.find((f) => f.id === event.feedId)
+  if (!feed || feed.kind !== 'busy' || event.ignored) return false
+  return !event.allDay || feed.allDayBusy
+}
+
+/**
+ * The part of an event on a calendar date, as wall-clock minutes in the zone (a night event is
+ * split at midnight); null when it does not touch the date.
+ */
+export function eventSlotOn(date: LocalDate, event: CalendarEvent, timeZone: string): Slot | null {
+  if (event.allDay) {
+    return date >= utcDate(event.startsAt) && date < utcDate(event.endsAt)
+      ? { startMin: 0, endMin: DAY_MINUTES }
+      : null
+  }
+  const dayStart = zonedInstant(date, 0, timeZone).getTime()
+  const dayEnd = zonedInstant(date, DAY_MINUTES, timeZone).getTime()
+  const from = Math.max(dayStart, event.startsAt.getTime())
+  const to = Math.min(dayEnd, event.endsAt.getTime())
+  if (to <= from) return null
+  const startMin = from === dayStart ? 0 : wallClock(new Date(from), timeZone).minutes
+  const endMin = to === dayEnd ? DAY_MINUTES : wallClock(new Date(to), timeZone).minutes
+  return endMin > startMin ? { startMin, endMin } : null
+}
+
+/** Events of a date that block study time, with their slot, by start. */
+export function busyEventsOn<T extends CalendarEvent>(
+  date: LocalDate,
+  events: T[],
+  feeds: CalendarFeed[],
+  timeZone: string,
+): (T & Slot)[] {
+  return events
+    .filter((e) => eventBlocks(e, feeds))
+    .flatMap((e) => {
+      const slot = eventSlotOn(date, e, timeZone)
+      return slot ? [{ ...e, ...slot }] : []
+    })
+    .sort((a, b) => a.startMin - b.startMin || a.endMin - b.endMin)
+}
+
 export interface DayInput {
   rules: AvailabilityRule[]
   exceptions: AvailabilityException[]
@@ -205,6 +281,11 @@ export interface DayInput {
   caps?: readonly number[]
   /** Timetable entries cancelled on this date ("Nastava otkazana"). */
   cancelledEntryIds?: ReadonlySet<string>
+  /** Connected calendars and their events; busy events block time like classes. */
+  feeds?: CalendarFeed[]
+  events?: CalendarEvent[]
+  /** Zone of the events' wall clock (`profiles.timezone`). */
+  timeZone?: string
 }
 
 /** The free slots planned for a date: its own (per-date change) or the weekday template. */
@@ -224,7 +305,8 @@ export function capFor(date: LocalDate, input: Pick<DayInput, 'days' | 'caps'>):
 /**
  * Free study time on a date (PRD "Scheduler" step 1): the day's slots plus extra free time,
  * minus busy exceptions (a whole-day one leaves nothing), minus classes that are not
- * cancelled, except inside slots marked "Učim umjesto nastave".
+ * cancelled and busy time from connected calendars, except inside slots marked "Učim umjesto
+ * nastave" (which covers calendar events too).
  */
 export function freeSlotsOn(date: LocalDate, input: DayInput): Slot[] {
   const exceptions = input.exceptions.filter((e) => e.onDate === date)
@@ -238,8 +320,14 @@ export function freeSlotsOn(date: LocalDate, input: DayInput): Slot[] {
   const classes = classesOn(date, input.entries, input.periods)
     .filter((e) => !input.cancelledEntryIds?.has(e.id))
     .map(busySlotOf)
+  const events = busyEventsOn(
+    date,
+    input.events ?? [],
+    input.feeds ?? [],
+    input.timeZone ?? 'Europe/Sarajevo',
+  ).map(busySlotOf)
   return mergeSlots([
-    ...subtractSlots(normal, [...busy, ...classes]),
+    ...subtractSlots(normal, [...busy, ...classes, ...events]),
     ...subtractSlots(forced, busy),
   ])
 }
@@ -383,4 +471,15 @@ export function lecturesToLog<T extends ClassEntry>(
       !logged.has(`${e.id}:${date}`) &&
       !skipped.has(`${e.id}:${date}`),
   )
+}
+
+/** Study minutes from `from` up to the day before `until` (free time capped per day). */
+export function studyMinutesBetween(
+  from: LocalDate,
+  until: LocalDate,
+  inputFor: (date: LocalDate) => DayInput,
+): number {
+  let total = 0
+  for (let d = from; d < until; d = addDays(d, 1)) total += studyMinutesOn(d, inputFor(d))
+  return total
 }

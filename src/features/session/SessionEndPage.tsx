@@ -26,6 +26,7 @@ import {
 } from './end'
 import { toEndSources, sessionSources, unitTitle, type SessionSource } from './material'
 import { useSessionUi } from './store'
+import { EndActions } from './EndActions'
 import { SessionHeader } from './SessionHeader'
 
 interface RangeDraft {
@@ -55,6 +56,9 @@ function toRange(s: SessionSource, d: RangeDraft): Range {
     to: { unitId: d.toUnit, offset: toOffset },
   }
 }
+
+/** Reasons for low focus (`study_sessions.focus_reasons`); they separate a bad slot from hard material. */
+const FOCUS_REASONS = ['tired', 'phone', 'noise', 'hard', 'sleep'] as const
 
 /** Studied units per source, from the first to the last one in source order. */
 function initialRanges(sources: SessionSource[], unitIds: (string | null)[]): RangeDraft[] {
@@ -148,6 +152,7 @@ function EndForm({
     ),
   )
   const [focus, setFocus] = useState<number | null>(session.focus)
+  const [reasons, setReasons] = useState<string[]>(session.focus_reasons ?? [])
   const [reflection, setReflection] = useState(session.reflection ?? '')
   const [busy, setBusy] = useState(false)
 
@@ -159,6 +164,7 @@ function EndForm({
     ratings,
     levels,
     focus,
+    focusReasons: reasons,
     reflection,
   }
   const plan = planEnd(session, segments, endSources, answers, new Date(session.ended_at!), saved)
@@ -232,6 +238,9 @@ function EndForm({
               .join(' · ')}
           </p>
         </div>
+      )}
+      {!fromHistory && session.origin === 'timer' && (
+        <EndActions data={data} studiedMin={Math.round(summary.activeMin)} />
       )}
 
       <div className="grid grid-cols-3 gap-2">
@@ -396,6 +405,33 @@ function EndForm({
           </button>
         ))}
       </div>
+      {focus === 1 && (
+        <>
+          <span className="text-[15px] font-semibold">
+            {t('session.end.whyLow')}{' '}
+            <span className="font-normal text-ink-muted">{t('session.end.optional')}</span>
+          </span>
+          <div role="group" aria-label={t('session.end.whyLow')} className="flex flex-wrap gap-2">
+            {FOCUS_REASONS.map((r) => {
+              const on = reasons.includes(r)
+              return (
+                <button
+                  key={r}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => setReasons((rs) => (on ? rs.filter((x) => x !== r) : [...rs, r]))}
+                  className={cn(
+                    'h-11 rounded-full px-4 text-sm font-semibold',
+                    on ? 'bg-ink text-white' : 'bg-white/50 text-ink',
+                  )}
+                >
+                  {t(`session.end.reason.${r}`)}
+                </button>
+              )
+            })}
+          </div>
+        </>
+      )}
 
       <label className="flex flex-col gap-2">
         <span className="text-[15px] font-semibold">

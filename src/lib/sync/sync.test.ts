@@ -20,6 +20,7 @@ class FakeServer {
     if (this.reject?.(op)) throw new SyncError('violates check constraint', false)
     this.sent.push(op)
     const t = this.table(op.table)
+    if (op.kind === 'rpc') return
     if (op.kind === 'upsert') for (const r of op.rows) t.set(r.id!, { ...t.get(r.id!), ...r })
     else
       for (const [id, r] of t)
@@ -217,5 +218,18 @@ describe('backoffMs', () => {
   it('doubles from 1 s and caps at 5 min', () => {
     expect([1, 2, 3].map(backoffMs)).toEqual([1000, 2000, 4000])
     expect(backoffMs(30)).toBe(300_000)
+  })
+})
+
+describe('rpc ops', () => {
+  it('are sent in order and leave the mirror alone', async () => {
+    await queue.enqueue(
+      { kind: 'rpc', table: 'plan_blocks', fn: 'replace_plan', args: { p_run_id: 'r1' } },
+      { kind: 'upsert', table: 'plan_blocks', rows: [{ id: 'b1', status: 'planned' }] },
+    )
+    expect((await queue.local('plan_blocks')).map((r) => r.id)).toEqual(['b1'])
+    await queue.flush()
+    expect(server.sent.map((o) => o.kind)).toEqual(['rpc', 'upsert'])
+    expect(await queue.pendingCount()).toBe(0)
   })
 })

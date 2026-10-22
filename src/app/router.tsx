@@ -1,8 +1,9 @@
+import { CalendarFeedsPage } from '@/features/calendars/CalendarFeedsPage'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
-import { RequireName } from '@/features/onboarding/RequireName'
-import { WelcomePage } from '@/features/onboarding/WelcomePage'
+import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding'
+import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { DocumentPage, DocumentsPage } from '@/features/owl/DocumentsPage'
 import { ImportReviewPage } from '@/features/owl/ImportReviewPage'
 import { OwlChatPage } from '@/features/owl/OwlChatPage'
@@ -26,6 +27,7 @@ import { SubjectPage } from '@/features/subjects/SubjectPage'
 import { SubjectsPage } from '@/features/subjects/SubjectsPage'
 import { TodayPage } from '@/features/today/TodayPage'
 import { AppShell } from './layout/AppShell'
+import { FreshStartPage } from '@/features/plan/FreshStartPage'
 import { PlainLayout } from './layout/PlainLayout'
 
 export const router = createBrowserRouter([
@@ -35,29 +37,27 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <PlainLayout />,
-        children: [{ path: 'welcome', element: <WelcomePage /> }],
+        children: [{ path: 'onboarding', element: <OnboardingPage /> }],
       },
       {
-        element: <RequireName />,
+        element: <RequireOnboarding />,
         children: [
           {
             element: <AppShell />,
             children: [
               { index: true, element: <TodayPage /> },
-              { path: 'plan', element: <PlanPage tab="calendar" /> },
-              { path: 'plan/schedule', element: <PlanPage tab="schedule" /> },
+              { path: 'plan', element: <PlanPage /> },
+              { path: 'plan/schedule', element: <Navigate to="/plan" replace /> },
               { path: 'subjects', element: <SubjectsPage /> },
               { path: 'progress', element: <ProgressPage /> },
               { path: 'chat', element: <OwlChatPage /> },
               { path: 'owl', element: <Navigate to="/chat" replace /> },
-            ],
-          },
-          {
-            element: <PlainLayout />,
-            children: [
+              { path: 'welcome', element: <Navigate to="/onboarding" replace /> },
               { path: 'settings', element: <SettingsPage /> },
+              { path: 'today/fresh', element: <FreshStartPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
               { path: 'settings/documents', element: <DocumentsPage /> },
+              { path: 'settings/feeds', element: <CalendarFeedsPage /> },
               { path: 'settings/documents/:id', element: <DocumentPage /> },
               { path: 'chat/history', element: <OwlHistoryPage /> },
               { path: 'chat/import/:id', element: <ImportReviewPage /> },
@@ -71,10 +71,16 @@ export const router = createBrowserRouter([
               { path: 'subjects/:id/sources/:sourceId/edit', element: <SourceEditorPage /> },
               { path: 'subjects/:id/sources/:sourceId/units/:unitId', element: <UnitPage /> },
               { path: 'subjects/:id/scope', element: <ExamScopePage /> },
-              { path: 'session', element: <SessionPage /> },
-              { path: 'session/:id/end', element: <SessionEndPage /> },
               { path: 'sessions', element: <SessionsPage /> },
               { path: 'sessions/:id', element: <SessionDetailPage /> },
+            ],
+          },
+          {
+            // The running session and its end form are full-screen flows without the top bar.
+            element: <PlainLayout />,
+            children: [
+              { path: 'session', element: <SessionPage /> },
+              { path: 'session/:id/end', element: <SessionEndPage /> },
             ],
           },
         ],

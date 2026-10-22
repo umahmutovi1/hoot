@@ -1,7 +1,7 @@
+import { useSpeeds } from '@/features/plan/api'
 import { useState } from 'react'
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeftIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useSubject } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
@@ -21,7 +21,6 @@ import {
   type SourceMaterial,
   type SourceWithUnits,
 } from './model'
-import { goBack } from '@/app/navigation'
 
 /** Izvor: progress of one source and its units; archived units can be restored. */
 export function SourcePage() {
@@ -42,8 +41,8 @@ function SourceDetail({
   source: SourceWithUnits
 }) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const material = materialOf(source)
+  const speeds = useSpeeds()
+  const material = materialOf(source, speeds.get(source.id))
   const measure = measureOf(source)
   const leaves = leavesOf(asProgress(material.units))
   const base = `/subjects/${subject.id}/sources/${source.id}`
@@ -57,15 +56,7 @@ function SourceDetail({
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => goBack(navigate, `/subjects/${subject.id}`)}
-          aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full glass"
-        >
-          <ChevronLeftIcon size={20} />
-        </button>
+      <div className="flex items-center justify-end">
         <Link
           to={`${base}/edit`}
           className="flex h-11 items-center rounded-full glass px-4 text-sm font-semibold"

@@ -1,6 +1,6 @@
 import type { Tables } from '@/types/database'
 import type { StudyMode } from '@/lib/estimates/calibration'
-import { activeMs, MINUTE, TIMER_MODES, type Segment, type TimerMode } from '@/lib/session/timer'
+import { activeMs, MINUTE, type Segment } from '@/lib/session/timer'
 
 /** Session and segment rows as the queue and the mirror keep them (no `user_id`, RLS fills it). */
 export type SessionRow = Omit<Tables<'study_sessions'>, 'user_id' | 'created_at'>
@@ -12,10 +12,6 @@ export interface ActiveSession {
 }
 
 export const STUDY_MODES: StudyMode[] = ['reading', 'problems', 'review', 'questions']
-
-export function asTimerMode(value: string): TimerMode {
-  return (TIMER_MODES as string[]).includes(value) ? (value as TimerMode) : 'pomodoro25'
-}
 
 export function toSegment(row: SegmentRow): Segment {
   return {

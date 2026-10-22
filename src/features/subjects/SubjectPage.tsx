@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { SessionsCard } from '@/features/session/SessionsCard'
 import { useTranslation } from 'react-i18next'
 import { differenceInCalendarDays, format } from 'date-fns'
-import { ChevronLeftIcon, ChevronRightIcon, FlagIcon, PencilIcon } from '@/components/icons'
+import { ChevronRightIcon, FlagIcon, PencilIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
@@ -27,6 +27,11 @@ import { useGlobalScale } from '@/features/settings/profile'
 import { gradeItemsOf, gradeSubjectOf, pointsDetails, pointsLabel, worthOf } from './grades'
 import { ResultChip } from './ResultChip'
 import { GradesCard } from './GradesCard'
+import { GoalCard } from './GoalCard'
+import { SuggestionCard } from '@/features/plan/SuggestionCard'
+import { useSuggestions } from '@/features/plan/useSuggestions'
+import { usePlanStore } from '@/features/plan/store'
+import { useSpeeds } from '@/features/plan/api'
 import { ResultSheet } from './ResultSheet'
 import { ScaleSheet } from './ScaleSheet'
 import { retakeStatus, type GradeItem } from '@/lib/grades'
@@ -37,7 +42,6 @@ import {
   type Assessment,
   type SubjectWithAssessments,
 } from './model'
-import { goBack } from '@/app/navigation'
 
 /**
  * Predmet / PredmetKampanja: header with progress, priority and mode chips, the campaign card,
@@ -56,7 +60,6 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const { t } = useTranslation()
   const globalScale = useGlobalScale()
   const { locale } = useLocale()
-  const navigate = useNavigate()
   const [now] = useState(() => new Date())
   const palette = paletteOf(subject.color)
   const next = nextAssessment(subject.assessments, now)
@@ -67,7 +70,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   // Sheets keep only the id, so they always render the latest cached row.
   const [examSheet, setExamSheet] = useState<{ open: boolean; id?: string }>({ open: false })
   const { data: sources = [] } = useSources(subject.id)
-  const materials = sources.map(materialOf)
+  const speeds = useSpeeds()
+  const materials = sources.map((s) => materialOf(s, speeds.get(s.id)))
   const hasMaterial = materials.some((m) => m.units.length > 0)
   const { data: scope = [] } = useScope(subject.id)
   const scopeRows = toScopeRows(scope)
@@ -85,6 +89,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const itemOf = (id: string) => items.find((i) => i.id === id)!
   const worth = (id: string) => worthOf(id, items, pointsTotal)
   const todayDate = localDateOf(now.toISOString())
+  const suggestions = useSuggestions(subject.id).filter((s) => s.kind !== 'campaign_soon')
   const isDue = (iso: string) => localDateOf(iso) <= todayDate
   // Makeups are listed under the exam they repeat.
   const isNested = (a: Assessment) => a.kind === 'makeup' && exams.some((e) => e.id === a.retake_of)
@@ -111,25 +116,16 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => goBack(navigate, '/subjects')}
-          aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full glass"
-        >
-          <ChevronLeftIcon size={20} />
-        </button>
+      <div
+        className={cn('relative flex items-center gap-4 rounded-[32px] p-5 pr-16', palette.soft)}
+      >
         <Link
           to={editPath}
           aria-label={t('subjects.detail.edit')}
-          className="flex size-11 items-center justify-center rounded-full glass"
+          className="absolute top-3 right-3 flex size-11 items-center justify-center rounded-full glass"
         >
           <PencilIcon size={18} />
         </Link>
-      </div>
-
-      <div className={cn('flex items-center gap-4 rounded-[32px] p-5', palette.soft)}>
         {hasMaterial && (
           <ProgressRing
             fraction={subjectMaterialProgress(materials)}
@@ -149,10 +145,14 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
                 palette.inkText,
               )}
             >
-              {t('subjects.detail.priorityChip', {
-                n: subject.priority,
-                name: t(`subjects.priority.${asPriority(subject.priority)}.name`).toLowerCase(),
-              })}
+              {[
+                t(`subjects.priority.${asPriority(subject.priority)}.name`),
+                subject.target_grade
+                  ? t('subjects.goal.targetChip', { grade: subject.target_grade })
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
             </Link>
             <Link
               to={editPath}
@@ -178,6 +178,12 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
       </div>
 
       {subject.study_mode === 'campaign' && <CampaignCard subject={subject} now={now} />}
+
+      {suggestions.map((s) => (
+        <SuggestionCard key={s.key} suggestion={s} />
+      ))}
+
+      <GoalCard subject={subject} today={todayDate} />
 
       <GradesCard subject={subject} deadlines={deadlines} onScale={() => setScaleOpen(true)} />
 
@@ -419,7 +425,18 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
   const { t } = useTranslation()
   const { locale } = useLocale()
   const update = useUpdateSubject()
-  const start = subject.campaign_start_on
+  const model = usePlanStore((s) => s.model)
+  const start = model?.result.campaignStarts[subject.id] ?? subject.campaign_start_on
+  const work = model
+    ? model.built.state.goals
+        .filter((g) => g.subjectId === subject.id && g.kind === 'exam')
+        .flatMap((g) => g.unitIds)
+    : []
+  const hours = Math.round(
+    (model?.built.state.units ?? [])
+      .filter((u) => work.includes(u.id) && u.level === 0)
+      .reduce((sum, u) => sum + u.minutes, 0) / 60,
+  )
   const startDate = start ? new Date(`${start}T12:00`) : null
   const startedAlready = startDate !== null && differenceInCalendarDays(startDate, now) <= 0
 
@@ -442,7 +459,9 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
         </div>
       </div>
       <span className="text-[13px] leading-[1.45] text-avatar-ink">
-        {t('subjects.campaign.body')}
+        {start && !subject.campaign_start_on && hours > 0
+          ? t('subjects.campaign.computedBody', { hours })
+          : t('subjects.campaign.body')}
       </span>
       <div className="flex gap-2">
         <Link

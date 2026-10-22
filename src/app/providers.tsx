@@ -4,7 +4,10 @@ import type { ReactNode } from 'react'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { Recalibrator } from '@/features/session/Recalibrator'
 import { queryPersister } from './queryPersister'
+import { CalendarSync } from '@/features/calendars/CalendarSync'
+import { ReplanRunner } from '@/features/plan/ReplanRunner'
 import { SyncRunner } from './SyncRunner'
+import { ViewportInsets } from './ViewportInsets'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,8 +33,11 @@ export function Providers({ children }: { children: ReactNode }) {
       }}
     >
       <AuthProvider>
+        <ViewportInsets />
         <SyncRunner />
+        <CalendarSync />
         <Recalibrator />
+        <ReplanRunner />
         {children}
       </AuthProvider>
     </PersistQueryClientProvider>

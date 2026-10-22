@@ -1,8 +1,9 @@
+import { BusySheet } from '@/features/calendars/BusySheet'
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { addMonths, differenceInCalendarDays, format, isSameDay, startOfMonth } from 'date-fns'
-import { ChevronLeftIcon, ChevronRightIcon, FlagIcon, PlusIcon } from '@/components/icons'
+import { ChevronLeftIcon, ChevronRightIcon, FlagIcon, LockIcon, PlusIcon } from '@/components/icons'
 import { formatClock } from '@/lib/schedule'
 import { useDayBoundary } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
@@ -11,27 +12,37 @@ import { paletteOf } from '@/features/subjects/colors'
 import { DeadlineSheet } from '@/features/subjects/DeadlineSheet'
 import { examDateLabel, relativeDays } from '@/features/subjects/format'
 import { localDateOf } from '@/features/subjects/model'
-import { toDisplayDate, wallClock } from '@/lib/day'
+import { localDay, toDisplayDate, wallClock } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { ClassDetailSheet } from '@/features/schedule/ClassDetailSheet'
 import { statusLabel } from '@/features/schedule/format'
-import { useAgenda, type DayClass } from './agenda'
+import { useAgenda, type DayBusy, type DayClass } from './agenda'
 import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
 import { DayDots } from './DayDots'
 import { DayStrip } from './DayStrip'
+import { useToast } from '@/components/toast-store'
+import { useDeleteBlock } from './actions'
+import { BlockSheet } from './BlockSheet'
 import { DayTimeline } from './DayTimeline'
+import type { PlanBlockRow } from './state'
+import { toTimeline, useDayBlocks, type DayBlockView } from './useDayBlocks'
 
-const VIEWS = ['month', 'day'] as const
+// Day first and default (decision after 8b: Kalendar and Satnica are one calendar).
+const VIEWS = ['day', 'month'] as const
 type CalendarMode = (typeof VIEWS)[number]
 
-/** Plan → Kalendar: month grid or day timeline, and the selected day's list. */
+/**
+ * Plan: one calendar. Dan (default) is the day's timeline with blocks at the times `placeTimes()`
+ * gave them, around classes and calendar busy time (a changed block becomes manual; "Vrati
+ * predloženo" drops the day's changed AI blocks so the plan places that material again). Mjesec
+ * is the month grid. Below both, the selected day's exams, deadlines and blocks without a time.
+ */
 export function CalendarView() {
   const { t } = useTranslation()
   const [params, setParams] = useSearchParams()
-  const view: CalendarMode = VIEWS.find((v) => v === params.get('view')) ?? 'month'
-  const setView = (v: CalendarMode) =>
-    setParams(v === 'month' ? {} : { view: v }, { replace: true })
+  const view: CalendarMode = VIEWS.find((v) => v === params.get('view')) ?? 'day'
+  const setView = (v: CalendarMode) => setParams(v === 'day' ? {} : { view: v }, { replace: true })
   const [today] = useState(() => new Date())
   const now = useNow()
   // `?date=yyyy-MM-dd` opens a day directly (e.g. "Prikaži u kalendaru" on an exam).
@@ -43,9 +54,28 @@ export function CalendarView() {
   const openClass = (item: DayClass, date: Date) =>
     setDetail({ item, date: localDateOf(date.toISOString()) })
   const agenda = useAgenda()
+  const [busy, setBusy] = useState<DayBusy | null>(null)
   const boundary = useDayBoundary()
   const selectedDate = localDateOf(selected.toISOString())
   const dayClasses = agenda.classesFor(selectedDate)
+  const dayBlocks = useDayBlocks()
+  const blocks = dayBlocks.blocksFor(selectedDate)
+  const [sheet, setSheet] = useState<{ open: boolean; block: PlanBlockRow | null }>({
+    open: false,
+    block: null,
+  })
+  const openBlock = (block: PlanBlockRow | null) => setSheet({ open: true, block })
+  const remove = useDeleteBlock()
+  const show = useToast((s) => s.show)
+  const edited = blocks.filter((b) => b.edited && b.block.status === 'planned')
+  const revert = async () => {
+    const undos: (() => Promise<void>)[] = []
+    for (const b of edited) undos.push(await remove(b.block, false))
+    show(t('plan.schedule.reverted'), {
+      label: t('today.cant.undo'),
+      run: () => void Promise.all(undos.map((u) => u())),
+    })
+  }
 
   return (
     <div className="flex flex-col">
@@ -71,13 +101,37 @@ export function CalendarView() {
       {view === 'day' && (
         <div className="flex flex-col gap-3">
           <DayStrip selected={selected} today={today} onSelect={setSelected} />
-          <div className="rounded-card-lg glass p-3 pr-2">
-            {dayClasses.length === 0 && (
-              <p className="px-1 pb-2 text-sm text-ink-muted">{t('plan.noClasses')}</p>
+          <div className="flex items-center justify-between gap-3 px-1">
+            <span className="text-xs leading-[1.4] text-ink-muted">
+              {t('plan.schedule.note')} · {t('plan.schedule.moved')}
+            </span>
+            {edited.length > 0 && (
+              <button
+                type="button"
+                onClick={() => void revert()}
+                className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
+              >
+                {t('plan.schedule.revert')}
+              </button>
             )}
+          </div>
+          <div
+            data-timeline-scroll
+            className="max-h-[52dvh] overflow-y-auto overscroll-contain rounded-card-lg glass p-3 pr-2"
+          >
+            {dayClasses.length === 0 &&
+              agenda.busyFor(selectedDate).length === 0 &&
+              blocks.length === 0 && (
+                <p className="px-1 pb-2 text-sm text-ink-muted">{t('plan.noClasses')}</p>
+              )}
             <DayTimeline
               items={dayClasses}
+              busy={agenda.busyFor(selectedDate)}
+              blocks={toTimeline(blocks)}
+              onPickBlock={(b) => openBlock(b.block)}
+              onPickBusy={setBusy}
               onPick={(item) => openClass(item, selected)}
+              scrollKey={selectedDate}
               nowMin={
                 isSameDay(selected, today) ? wallClock(now, boundary.timeZone).minutes : undefined
               }
@@ -90,8 +144,18 @@ export function CalendarView() {
         selected={selected}
         today={today}
         classes={view === 'day' ? [] : dayClasses}
+        blocks={view === 'day' ? blocks.filter((b) => b.startMin === null) : blocks}
+        onPickBlock={openBlock}
         status={agenda.statusOf(selectedDate)}
         onPickClass={(item) => openClass(item, selected)}
+      />
+      <BusySheet item={busy} onClose={() => setBusy(null)} />
+      <BlockSheet
+        open={sheet.open}
+        onOpenChange={(open) => setSheet((s) => ({ ...s, open }))}
+        block={sheet.block}
+        date={selectedDate}
+        today={localDay(today, boundary)}
       />
       <ClassDetailSheet
         item={detail?.item ?? null}
@@ -127,6 +191,7 @@ function MonthGrid({
   const { data: subjects = [] } = useSubjects()
   const { data: deadlines = [] } = useDeadlines()
   const [month, setMonth] = useState(() => startOfMonth(selected))
+  const dayBlocks = useDayBlocks()
   const cells = monthGrid(month)
   const weekdays = cells.slice(0, 7).map((c) => format(c.date, 'EEEEE', { locale: dfLocale }))
 
@@ -203,7 +268,14 @@ function MonthGrid({
               >
                 {format(date, 'd')}
               </span>
-              {inMonth ? <DayDots date={date} /> : <span className="h-[7px]" />}
+              {inMonth ? (
+                <DayDots
+                  date={date}
+                  planned={dayBlocks.hasBlocks(localDateOf(date.toISOString()))}
+                />
+              ) : (
+                <span className="h-[7px]" />
+              )}
             </button>
           )
         })}
@@ -221,6 +293,10 @@ function MonthGrid({
           <span className="size-2 rounded-full bg-warning" />
           {t('plan.legendDeadline')}
         </span>
+        <span className="flex items-center gap-1.5">
+          <span className="size-2 rounded-full bg-brand-accent" />
+          {t('plan.legendPlanned')}
+        </span>
       </div>
     </div>
   )
@@ -231,12 +307,16 @@ function DayDetails({
   selected,
   today,
   classes,
+  blocks,
+  onPickBlock,
   status,
   onPickClass,
 }: {
   selected: Date
   today: Date
   classes: DayClass[]
+  blocks: DayBlockView[]
+  onPickBlock: (block: PlanBlockRow | null) => void
   onPickClass: (item: DayClass) => void
   status: ReturnType<ReturnType<typeof useAgenda>['statusOf']>
 }) {
@@ -253,7 +333,8 @@ function DayDetails({
     dayExams.length === 0 &&
     dayPossible.length === 0 &&
     dayDeadlines.length === 0 &&
-    classes.length === 0
+    classes.length === 0 &&
+    blocks.length === 0
 
   return (
     <>
@@ -342,6 +423,35 @@ function DayDetails({
             </button>
           )
         })}
+        {blocks.map((b) => {
+          const palette = paletteOf(b.color)
+          return (
+            <button
+              type="button"
+              key={b.block.id}
+              onClick={() => onPickBlock(b.block)}
+              className="flex items-center gap-3 rounded-[20px] glass px-4 py-3.5 text-left"
+            >
+              <span className={cn('w-1 self-stretch rounded-full', palette.bar)} />
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span
+                  className={cn(
+                    'truncate text-[15px] font-semibold',
+                    b.done && 'line-through opacity-60',
+                  )}
+                >
+                  {b.title}
+                </span>
+                <span className="truncate text-xs text-ink-muted">
+                  {[b.sub, b.startMin === null ? null : formatClock(b.startMin)]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
+              </div>
+              {b.manual && <LockIcon size={16} className="shrink-0 text-ink-muted" />}
+            </button>
+          )
+        })}
         {dayDeadlines.map((d) => {
           const due = new Date(d.due_at)
           const subject = subjects.find((s) => s.id === d.subject_id)
@@ -374,14 +484,24 @@ function DayDetails({
         })}
       </div>
 
-      <button
-        type="button"
-        onClick={() => setSheet({ open: true })}
-        className="mt-2.5 flex h-[52px] items-center justify-center gap-2 rounded-[20px] border-[1.5px] border-dashed border-line text-[15px] font-semibold"
-      >
-        <PlusIcon size={16} className="text-brand" />
-        {t('plan.addDeadline')}
-      </button>
+      <div className="mt-2.5 flex gap-2">
+        <button
+          type="button"
+          onClick={() => onPickBlock(null)}
+          className="flex h-[52px] flex-1 items-center justify-center gap-2 rounded-[20px] border-[1.5px] border-dashed border-line text-[15px] font-semibold"
+        >
+          <PlusIcon size={16} className="text-brand" />
+          {t('blockSheet.add')}
+        </button>
+        <button
+          type="button"
+          onClick={() => setSheet({ open: true })}
+          className="flex h-[52px] flex-1 items-center justify-center gap-2 rounded-[20px] border-[1.5px] border-dashed border-line text-[15px] font-semibold"
+        >
+          <PlusIcon size={16} className="text-brand" />
+          {t('plan.addDeadline')}
+        </button>
+      </div>
 
       <DeadlineSheet
         deadline={deadlines.find((d) => d.id === sheet.id)}

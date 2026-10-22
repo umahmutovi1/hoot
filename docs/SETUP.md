@@ -12,6 +12,7 @@ Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Gemini, Anthropic
 | Resend | SMTP za auth emailove (kod za prijavu), šablon u stilu appa | ✅ |
 | Gemini | API ključ (free tier) za AI dok nema Anthropic kartice | ⏳ treba za Etapu 6 |
 | Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (opcionalno, Etapa 10) |
+| `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`; funkcija i `CRON_SECRET` postavljeni) | ⏳ koraci 3–5 u dashboardu |
 | Domena | za emailove drugim korisnicima i vlastiti URL | kasnije |
 
 ---
@@ -189,6 +190,42 @@ unset GEMINI_API_KEY
 2. Settings → Limits → mjesečni spend limit (npr. $5).
 3. **Workspace** ključ: Settings → Workspaces → Default → API keys → Create → `sk-ant-api03-…`. Ne `sk-ant-usr-…` (korisnički ključ traži `anthropic-workspace-id` header).
 4. Ključ se unosi samo u terminal: `npx supabase secrets set ANTHROPIC_API_KEY=… LLM_PROVIDER=anthropic LLM_MODEL=claude-haiku-5-5`.
+
+## 5a. Povezani kalendari: `sync-calendar` i `pg_cron` (Etapa 8)
+
+`sync-calendar` povlači iCal linkove (Google, Outlook, iCloud) u `external_events`. App je zove pri otvaranju (najviše jednom u 30 min); `pg_cron` je zove svaka 3 h da plan ima svježu zauzetost i kad app nije otvoren. Bez LLM-a, ne troši AI limit. Tajni iCal link se nikad ne loguje; u `calendar_feeds.last_error` ide samo kod greške.
+
+1. **Tajna za cron** (terminal, vrijednost ne ide u repo ni chat):
+   ```sh
+   CRON_SECRET=$(openssl rand -hex 32)
+   npx supabase secrets set CRON_SECRET=$CRON_SECRET
+   echo $CRON_SECRET   # kopiraj za korak 4, pa zatvori terminal
+   ```
+2. **Deploy:** `npx supabase functions deploy sync-calendar` (u `config.toml` ima `verify_jwt = false`; funkcija sama provjerava korisnika ili `x-cron-secret`).
+3. **Ekstenzije:** Supabase dashboard → Database → Extensions → uključi `pg_cron` i `pg_net` (schema `extensions` / default).
+4. **Vault + raspored:** SQL Editor → New query → zalijepi, zamijeni `<CRON_SECRET>` vrijednošću iz koraka 1 i pokreni:
+   ```sql
+   select vault.create_secret('<CRON_SECRET>', 'sync_calendar_cron_secret');
+
+   select cron.schedule(
+     'sync-calendar',
+     '17 */3 * * *',
+     $$
+     select net.http_post(
+       url := 'https://lpyyatqzvrvqgcmwiqfr.supabase.co/functions/v1/sync-calendar',
+       headers := jsonb_build_object(
+         'Content-Type', 'application/json',
+         'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets
+                           where name = 'sync_calendar_cron_secret')
+       ),
+       body := '{}'::jsonb,
+       timeout_milliseconds := 60000
+     );
+     $$
+   );
+   ```
+5. **Provjera:** Integrations → Cron → posao `sync-calendar` → History poslije prvog pokretanja (svaka 3 h u :17); odgovor funkcije je `{"synced": N, "failed": M}`. Edge Functions → `sync-calendar` → Logs ne smiju sadržavati link.
+6. **Promjena tajne:** novi `secrets set`, pa `select vault.update_secret((select id from vault.secrets where name = 'sync_calendar_cron_secret'), '<novi>');`. **Gašenje:** `select cron.unschedule('sync-calendar');`.
 
 ## 6. Otvaranje aplikacije za više korisnika
 

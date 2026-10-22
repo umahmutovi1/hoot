@@ -3,12 +3,14 @@ import { cn } from '@/lib/utils'
 interface SwitchProps {
   checked: boolean
   label: string
+  /** The label is only for screen readers (the row shows its own text). */
+  hideLabel?: boolean
   onChange: (checked: boolean) => void
   disabled?: boolean
 }
 
 /** Labeled toggle with a 44 px touch target. */
-export function Switch({ checked, label, onChange, disabled }: SwitchProps) {
+export function Switch({ checked, label, onChange, disabled, hideLabel }: SwitchProps) {
   return (
     <button
       type="button"
@@ -26,7 +28,7 @@ export function Switch({ checked, label, onChange, disabled }: SwitchProps) {
       >
         <span className="size-5 rounded-full glass" />
       </span>
-      {label}
+      {hideLabel ? <span className="sr-only">{label}</span> : label}
     </button>
   )
 }

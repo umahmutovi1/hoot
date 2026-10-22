@@ -9,6 +9,12 @@ type Table = Parameters<typeof supabase.from>[0]
 /** Sends queued ops to Supabase. RLS and `user_id default auth.uid()` fill in the owner. */
 export const supabaseTransport: Transport = {
   async send(op: Op) {
+    if (op.kind === 'rpc') {
+      const res = await supabase.rpc(op.fn as never, op.args as never)
+      if (res.error)
+        throw new SyncError(res.error.message, res.status >= 500 || RETRY_STATUS.has(res.status))
+      return
+    }
     const table = supabase.from(op.table as Table)
     const res =
       op.kind === 'upsert'

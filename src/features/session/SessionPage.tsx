@@ -11,20 +11,23 @@ import { useSubject } from '@/features/subjects/api'
 import {
   activeMs,
   forgottenSegment,
-  intervalReminder,
+  breakEndsAt,
+  presetReminder,
   MINUTE,
   msByUnit,
   openSegment,
   pauseStats,
   type IntervalReminder,
-  type TimerMode,
+  type Preset,
 } from '@/lib/session/timer'
 import { cn } from '@/lib/utils'
 import { useActiveSession, useSessionWriter } from './api'
 import { Chip } from './Chip'
+import { ACCIDENTAL_MS, EndEarlySheet } from './EndEarlySheet'
 import { ForgottenSheet } from './ForgottenSheet'
 import { findUnit, nextLeaves, sessionSources, unitTitle, type SessionSource } from './material'
-import { asTimerMode, bySegmentStart, formatClock, STUDY_MODES, toSegment } from './model'
+import { bySegmentStart, formatClock, STUDY_MODES, toSegment } from './model'
+import { presetName, usePresets } from './presets'
 import { useSessionUi } from './store'
 import { usePendingSync } from './usePendingSync'
 import { TimerSheet } from './TimerSheet'
@@ -52,17 +55,19 @@ export function SessionPage() {
   const pending = usePendingSync()
   const [timerSheet, setTimerSheet] = useState(false)
   const [picker, setPicker] = useState(false)
+  const [endSheet, setEndSheet] = useState(false)
   const vibrated = useRef<string | null>(null)
 
   const segments = data ? [...data.segments].sort(bySegmentStart) : []
   const list = segments.map(toSegment)
   const open = openSegment(list)
-  const timerMode = asTimerMode(data?.session.timer_mode ?? '')
-  const reminder = data ? intervalReminder(timerMode, list, now) : null
+  const { resolve } = usePresets()
+  const preset = resolve(data?.session.timer_mode)
+  const reminder = data ? presetReminder(preset, list, now) : null
   const reminderKey =
     reminder && reminder.remainingMs <= 0 ? `${reminder.phase}-${segments.at(-1)?.id}` : null
 
-  // A short buzz when a 25/5 phase is over while the screen is open; nothing else happens.
+  // A short buzz when a preset's phase is over while the screen is open; nothing else happens.
   useEffect(() => {
     if (!reminderKey || vibrated.current === reminderKey) return
     vibrated.current = reminderKey
@@ -89,8 +94,11 @@ export function SessionPage() {
     else setNextUnit({ sessionId: session.id, unitId })
   }
   const toggle = () => {
-    if (open) void writer.pause(data)
-    else {
+    if (open) {
+      // `now` is at most a second old: close enough for when the break ends.
+      const closed = list.map((x) => (x.id === open.id ? { ...x, endedAt: now } : x))
+      void writer.pause(data, breakEndsAt(preset, closed, now))
+    } else {
       void writer.resume(data, pickedId)
       setNextUnit(null)
     }
@@ -101,6 +109,10 @@ export function SessionPage() {
     navigate(`/session/${session.id}/end`, { replace: true })
   }
 
+  // Ending before the planned time (or right after starting) asks first.
+  const endsEarly =
+    active < ACCIDENTAL_MS ||
+    (session.planned_minutes !== null && active < (session.planned_minutes - 1) * MINUTE)
   const progress = session.planned_minutes
     ? active / (session.planned_minutes * MINUTE)
     : reminder?.phase === 'work'
@@ -198,7 +210,7 @@ export function SessionPage() {
                 ? t('session.timer.ofPlanned', { min: session.planned_minutes })
                 : t('session.timer.free')}
             </span>
-            {reminder && <ReminderBadge reminder={reminder} timerMode={timerMode} />}
+            {reminder && <ReminderBadge reminder={reminder} preset={preset} />}
           </div>
         </div>
         <div className="flex items-center gap-3.5">
@@ -211,7 +223,7 @@ export function SessionPage() {
           </button>
           <button
             type="button"
-            onClick={() => void finish()}
+            onClick={() => (endsEarly ? setEndSheet(true) : void finish())}
             className="flex h-14 items-center gap-2 rounded-full btn-primary px-[26px] text-base font-semibold"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -265,6 +277,37 @@ export function SessionPage() {
         </button>
       </div>
 
+      <button
+        type="button"
+        onClick={() => {
+          void writer.distracted(data)
+          navigator.vibrate?.(30)
+        }}
+        className="flex h-[52px] items-center justify-center gap-2 rounded-full glass text-[15px] font-semibold"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="text-brand"
+        >
+          <rect x="7" y="3" width="10" height="18" rx="2.5" />
+          <path d="M11 18h2" />
+        </svg>
+        {t('session.distracted')}
+        {session.distractions > 0 && (
+          <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand tabular-nums">
+            {session.distractions}
+          </span>
+        )}
+      </button>
+
       {picked && (
         <Link
           to={`/subjects/${session.subject_id}/sources/${picked.source.source.id}/units/${picked.unit.id}`}
@@ -286,6 +329,13 @@ export function SessionPage() {
           setPicker(false)
         }}
       />
+      <EndEarlySheet
+        data={data}
+        activeMs={active}
+        open={endSheet}
+        onOpenChange={setEndSheet}
+        onFinish={() => void finish()}
+      />
       {forgotten && forgotten.id !== keptSegmentId && (
         <ForgottenSheet segment={forgotten} now={now} onFinish={(at) => void finish(at)} />
       )}
@@ -293,26 +343,23 @@ export function SessionPage() {
   )
 }
 
-function ReminderBadge({
-  reminder,
-  timerMode,
-}: {
-  reminder: IntervalReminder
-  timerMode: TimerMode
-}) {
+function ReminderBadge({ reminder, preset }: { reminder: IntervalReminder; preset: Preset }) {
   const { t } = useTranslation()
-  const due = reminder.remainingMs <= 0
+  // A free pause counts up and never shows as due (the interval waits where it stopped).
+  const due = reminder.phase !== 'free' && reminder.remainingMs <= 0
   const label =
-    reminder.phase === 'work'
-      ? due
-        ? t('session.timer.breakDue')
-        : t('session.timer.breakIn', {
-            mode: t(`session.timerMode.${timerMode}`),
-            time: formatClock(reminder.remainingMs),
-          })
-      : due
-        ? t('session.timer.backDue')
-        : t('session.timer.backIn', { time: formatClock(reminder.remainingMs) })
+    reminder.phase === 'free'
+      ? t('session.timer.freePause', { time: formatClock(reminder.elapsedMs ?? 0) })
+      : reminder.phase === 'work'
+        ? due
+          ? t('session.timer.breakDue')
+          : t('session.timer.breakIn', {
+              mode: presetName(t, preset),
+              time: formatClock(reminder.remainingMs),
+            })
+        : due
+          ? t('session.timer.backDue')
+          : t('session.timer.backIn', { time: formatClock(reminder.remainingMs) })
   return (
     <span
       className={cn(

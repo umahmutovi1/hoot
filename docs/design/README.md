@@ -25,9 +25,13 @@ su jedna komponenta sa stanjem.
   ili je uključeno "smanji prozirnost", padaj na rgba(255,255,255,0.85) bez blura.
 
 ## Navigacija
-Plutajuća staklena kapsula, 5 mjesta: Danas · Plan · **AI** · Predmeti · Napredak. AI u sredini je ista ikona kao ostale,
-bez pozadine, samo obojena akcentom #6A64B8 (iskra); otvara Chat.dc.html. Aktivni tab ima svjetliju staklenu pilulu. Sesija se pokreće iz kartice "Sljedeće"
-(dugme Počni) ili iz chata, ne iz nava.
+**Odluka nakon v0.7.2 (mockup `NavMeni.html`):** donje kapsule više nema (u Safariju je bila nepouzdana i sporija). Prvi red svakog taba:
+avatar (Postavke) → AI iskra odmah desno (otvara Chat) → ☰ u desnom uglu; AI i ☰ su samo ikone, a red nema pozadinu. **Odluka nakon 8b:** umjesto avatara je logo sove (`owl-pwa-icons/logo.svg`, prozirna pozadina, boja teksta) koji vodi na Danas; Postavke su u meniju. „✦ AI“ ima vrlo prozirnu staklenu pilulu da se vidi da je dugme; zatvaranje chata preko AI zatvara i meni. Sekcije menija se otvaraju nezavisno (otvaranje jedne ne zatvara drugu). Ispod su zaglavlje taba
+i sadržaj do dna ekrana. ☰ otvara panel u staklu sheetova preko ekrana (isti prvi red, ☰ postaje ×): Danas, Plan, Predmeti, Napredak, Postavke;
+stavke sa podstranicama su harmonika (otvorena je sekcija trenutne stranice), a na dnu je samo „Odjavi se“. Podstranice: Plan → Kalendar,
+Dostupnost, Raspored nastave; Predmeti → aktivni predmeti, Svi predmeti; Napredak → Pregled, Sesije; Postavke → Sve postavke,
+Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stignu). Historija razgovora je u chatu. **Mrvice (odluka nakon 8b):** svaki ekran osim onboardinga, sesije u toku i forme kraja sesije ima isti prvi red (logo, AI, ☰). Ispod glavnih ekrana (Danas, Plan, Predmeti, Napredak, Chat) je drugi red: ‹ (nazad odakle si došla, bez historije jedan nivo gore) i putanja po mjestu u appu, npr. „Predmeti › Signali › Knjiga“; svaka mrvica iznad ekrana je link. Ekrani više nemaju svoje ‹ dugme. Sesija se pokreće iz kartice
+"Sljedeće" (dugme Počni) ili iz chata.
 
 ## Ekrani po toku
 - Onboarding (8 koraka, jedna komponenta sa stanjem `step`; svaki fajl je isti ekran na drugom koraku):
@@ -41,7 +45,7 @@ bez pozadine, samo obojena akcentom #6A64B8 (iskra); otvara Chat.dc.html. Aktivn
 - Sesija: PokreniSesiju (koliko vremena imaš, predložak) → Sesija ("Ometena sam", + Kartica) → KrajSesije
   ("Do koje stranice", status jedinice se tapom mijenja) / KrajSesijeFokus (razlozi kad je fokus Slab) → RecallGate;
   ProvjeraZnanja → ProvjeraSazetak; Sesije (historija po danima, "ručno") → SesijaDetalj (segmenti, uredi ocjene, obriši)
-- Plan: Plan (Mjesec), PlanDan (Dan: pilule dana, vremenska osa, nastava i Google zauzetost šrafirano),
+- Plan (**odluka nakon 8b:** Kalendar i Satnica su jedan kalendar sa pogledima Dan, default i lijevo, i Mjesec; Dan je vremenska osa Satnice sa nastavom, zauzetošću i blokovima, „Vrati predloženo“ i „Dodaj blok“): Plan (Mjesec), PlanDan (Dan: pilule dana, vremenska osa, nastava i Google zauzetost šrafirano),
   PlanDanTermin (detalji termina nastave), Satnica (vremena automatski, pomjeren blok = ručni), Replan, Dostupnost, Raspored,
   UrediBlokNovi / Uredi / Obrisi. Zaglavlje Plana ima Dostupnost i Raspored.
 - Predmeti: Predmeti, Predmet (Cilj: koliko ti je bitan, željena ocjena, kad kreće učenje, pojačanje ×; zaostatak u jedinici
@@ -65,4 +69,5 @@ Male staklene indigo pločice sa bijelom linijskom ikonom ostaju samo kao ikone 
   plan i satnica u chatu, „Zašto ovako danas", prognoza, mapa termina, check-in…) dolaze u etapi kojoj pripadaju; pretraga nije u PRD-u.
 - Do schedulera (Etapa 8b) kartica „Sljedeće" na Danas nudi slobodnu sesiju (Počni → PokreniSesiju); dok sesija traje, ista kartica
   pokazuje sesiju u toku i vraća u nju.
+- **Nakon 8b:** dan bez bloka više nije poseban prazan ekran (DanasSlobodno): Danas zadržava fokus traku, a kartica „Sljedeće“ kaže „Danas nema plana“, sljedeći blok (sutra ili kasnije) i nudi slobodnu sesiju (uz „Predmeti“ kad plan nema gradiva). Tako se ekran ne mijenja dok se plan učitava. Kartice ispita imaju „za X dana“ ispod datuma; PokreniSesiju uz čipove nudi „+ Predmet“ i „+ Izvor“.
 - Ekrani preko cijelog ekrana i dalje imaju ljepljivo zaglavlje sa `env(safe-area-inset-top)`, a svaki sheet ima ×.

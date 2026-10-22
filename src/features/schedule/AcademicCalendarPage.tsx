@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import type { ExamSession, PeriodKind } from '@/lib/schedule'
@@ -22,7 +22,7 @@ export function AcademicCalendarPage() {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <BackHeader title={t('calendar.title')} fallback="/settings" />
+      <ScreenTitle title={t('calendar.title')} />
       <div className="flex flex-col gap-1">
         <h1 className="text-[26px] leading-tight font-bold">{t('calendar.heading')}</h1>
         <p className="text-sm leading-[1.45] text-ink-muted">{t('calendar.intro')}</p>

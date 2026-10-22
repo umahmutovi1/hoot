@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Navigacija · meni (prijedlog 2)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --ink: #14121c; --ink2: #3f3b4e; --ink3: #55516a; --muted: #6e6a80;
+    --accent: #6a64b8; --brand: #4c4892; --pink: #b66a8c; --blue: #5f86b5;
+    --line: rgba(58,51,96,.12);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 32px; background: #d9d6e4; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: var(--ink); letter-spacing: -0.2px; }
+  h2.note { font-size: 15px; font-weight: 600; margin: 0 0 6px; }
+  p.note { margin: 0 0 24px; max-width: 980px; font-size: 14px; line-height: 1.5; color: var(--ink2); }
+  .row { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+  .cap { font-size: 13px; font-weight: 600; color: var(--ink3); margin: 0 0 8px 4px; }
+  .phone { width: 390px; height: 844px; position: relative; overflow: hidden; border-radius: 44px;
+    box-shadow: 0 20px 60px rgba(40,34,80,.25);
+    background:
+      radial-gradient(120% 55% at 0% 0%, rgba(150,141,222,.62), rgba(150,141,222,0) 62%),
+      radial-gradient(90% 45% at 100% 22%, rgba(229,182,206,.62), rgba(229,182,206,0) 62%),
+      radial-gradient(110% 50% at 0% 68%, rgba(168,196,234,.6), rgba(168,196,234,0) 62%),
+      radial-gradient(95% 45% at 100% 100%, rgba(160,148,226,.55), rgba(160,148,226,0) 62%),
+      linear-gradient(180deg, #ece9f4, #e8e5f1); }
+  .status { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; font-size: 16px; font-weight: 600; }
+  .screen { padding: 0 12px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .pad { padding: 0 8px; display: flex; flex-direction: column; gap: 14px; }
+  .glass { background: rgba(255,255,255,.36); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.55), inset 0 1px 1px rgba(255,255,255,.85), inset 0 -1px 1px rgba(58,51,96,.05), 0 8px 28px rgba(58,51,96,.07); }
+  .tint { color: #fff; background: linear-gradient(160deg, rgba(110,103,190,.9), rgba(76,72,146,.94)); box-shadow: inset 0 1px 1px rgba(255,255,255,.45), 0 14px 34px rgba(76,72,146,.24); }
+  .btn-primary { color: #fff; background: linear-gradient(160deg, #6e67be, #4c4892); box-shadow: inset 0 1px 1px rgba(255,255,255,.4), 0 6px 16px rgba(76,72,146,.22); }
+
+  /* First row: no background of its own; avatar, AI and ☰ sit on the page. Open, the row grows
+     into a translucent liquid-glass panel. Only the avatar has a fill; AI, ☰ and × are bare. */
+  .bar { border-radius: 30px; }
+  .bar-row { height: 60px; display: flex; align-items: center; gap: 6px; padding: 0 8px 0 8px; }
+  .avatar { width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 17px; background: rgba(106,100,184,.14); color: var(--brand); }
+  .icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ai { color: var(--accent); }
+  .spacer { flex: 1; }
+
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .2px; color: var(--ink2); text-transform: uppercase; }
+  .eyebrow a { color: var(--brand); text-transform: none; }
+  .h-big { font-size: 36px; line-height: 1.1; font-weight: 700; letter-spacing: -.9px; margin: 0; }
+  .h-tab { font-size: 30px; font-weight: 700; letter-spacing: -.6px; margin: 0; }
+  .title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .pill { height: 40px; padding: 0 16px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--brand); }
+  .card { border-radius: 24px; padding: 16px; }
+  .sub { font-size: 13px; color: var(--ink3); }
+  .seg { display: flex; padding: 4px; border-radius: 22px; background: rgba(106,100,184,.1); }
+  .seg span { flex: 1; text-align: center; height: 36px; line-height: 36px; border-radius: 18px; font-size: 14px; font-weight: 600; color: var(--ink2); }
+  .seg span.on { background: rgba(255,255,255,.8); color: var(--ink); }
+  .bars { height: 6px; border-radius: 3px; background: rgba(58,51,96,.08); overflow: hidden; }
+  .bars i { display: block; height: 100%; border-radius: 3px; }
+
+  /* Open menu */
+  .panel { position: absolute; left: 12px; right: 12px; top: 54px; bottom: 12px; display: flex; flex-direction: column;
+    background: rgba(250,249,253,.88);
+    backdrop-filter: blur(36px) saturate(180%); -webkit-backdrop-filter: blur(36px) saturate(180%);
+    box-shadow: inset 0 0 0 .5px rgba(255,255,255,.6), inset 0 1px 1px rgba(255,255,255,.9), 0 24px 60px rgba(40,34,80,.18); }
+  .under { position: absolute; inset: 54px 0 0; }
+  .nav { display: flex; flex-direction: column; padding: 14px 12px 0; }
+  .item { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; font-size: 17px; font-weight: 500; color: var(--ink2); border-radius: 14px; }
+  .item.on { color: var(--brand); font-weight: 600; }
+  .item svg { color: var(--muted); }
+  .subs { display: flex; flex-direction: column; padding: 0 0 6px 20px; }
+  .subs span { height: 40px; display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--ink3); padding: 0 8px; border-left: 1px solid var(--line); }
+  .subs span.on { color: var(--brand); font-weight: 600; border-left: 2px solid var(--accent); }
+  .dot { width: 8px; height: 8px; border-radius: 4px; display: inline-block; }
+  .foot { margin-top: auto; padding: 12px 20px 16px; }
+  .links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; font-size: 15px; color: var(--ink2); }
+  .btn { height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 600; }
+  .btn.ghost { color: #8a3f3c; background: rgba(255,255,255,.35); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.7), inset 0 1px 1px rgba(255,255,255,.9); }
+</style>
+</head>
+<body>
+
+<h2 class="note">Prijedlog 2: traka sa menijem (po inspiraciji)</h2>
+<p class="note">Izmjena 4: prvi red (avatar, AI, ☰) nema pozadinu. Otvoren meni je staklo kao sheetovi (neprozirnije). Stavke: Danas, Plan, Predmeti, Napredak, Postavke; AI je samo ikona u prvom redu (historija je u chatu). Na dnu je samo „Odjavi se“. Podstranice: Plan → Kalendar, Satnica, Dostupnost, Raspored nastave; Predmeti → predmeti, Svi predmeti; Napredak → Sesije, Bodovi i ocjene; Postavke → Akademski kalendar, Povezani kalendari, Dokumenti, Predlošci sesije.<br><br>Ranije: na vrhu svakog taba je jedna staklena traka: avatar, AI odmah desno (samo ikona, bez pozadine), ☰ u desnom uglu (bez pozadine). Traka je ljepljiva, pa je meni uvijek dostupan. Ispod nje su zaglavlje taba i sadržaj. Donje trake nema. Tap na ☰ proširi istu traku naniže u panel preko ekrana: ☰ postaje × (bez pozadine), glavne stranice su tekst, a one sa podstranicama se otvaraju strelicom (harmonika). Ispod linije su manje stranice u dvije kolone, a na dnu dva dugmeta.</p>
+
+<div class="row">
+
+<!-- 1 · Danas -->
+<div>
+<div class="cap">1 · Danas (meni zatvoren)</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="screen">
+    <div class="bar"><div class="bar-row">
+      <span class="avatar">U</span>
+      <span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span>
+      <span class="spacer"></span>
+      <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
+    </div></div>
+    <div class="pad">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-top:6px">
+        <span class="eyebrow">Četvrtak, 22. oktobar · <a>4. sedmica nastave</a></span>
+        <h1 class="h-big">Danas</h1>
+      </div>
+      <section class="tint card" style="border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:16px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.6px;opacity:.88">SLJEDEĆE</span>
+        <div><div style="font-size:22px;font-weight:600;letter-spacing:-.5px">Slobodna sesija</div>
+        <div style="font-size:13px;opacity:.84;margin-top:4px">Izaberi predmet i koliko vremena imaš</div></div>
+        <span style="align-self:flex-end;height:48px;padding:0 24px;border-radius:24px;background:rgba(255,255,255,.94);color:#36336e;font-weight:600;display:flex;align-items:center;gap:8px">▶ Počni</span>
+      </section>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px"><span style="font-size:22px;font-weight:700">Ispiti</span><span style="color:var(--brand);font-size:15px">Sve</span></div>
+      <div style="display:flex;gap:10px">
+        <div class="glass card" style="flex:1;padding:14px"><div style="font-size:12px;font-weight:600;color:var(--pink)">28 OKT</div><div style="font-weight:600;margin-top:6px">Signali i…</div><div style="font-size:22px;font-weight:600;margin-top:8px">39%</div><div class="bars" style="margin-top:8px"><i style="width:39%;background:var(--pink)"></i></div></div>
+        <div class="glass card" style="flex:1;padding:14px"><div style="font-size:12px;font-weight:600;color:var(--accent)">28 OKT</div><div style="font-weight:600;margin-top:6px">Baze pod…</div></div>
+        <div class="glass card" style="flex:1;padding:14px"><div style="font-size:12px;font-weight:600;color:var(--blue)">18 DEC</div><div style="font-weight:600;margin-top:6px">Vjerovat…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 2 · Plan -->
+<div>
+<div class="cap">2 · Plan</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="screen">
+    <div class="bar"><div class="bar-row">
+      <span class="avatar">U</span>
+      <span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span>
+      <span class="spacer"></span>
+      <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
+    </div></div>
+    <div class="pad">
+      <div class="title-row" style="margin-top:6px">
+        <h1 class="h-tab">Plan</h1>
+        <div style="display:flex;gap:8px"><span class="pill glass">◷ Dostupnost</span><span class="pill glass">Raspored</span></div>
+      </div>
+      <div class="seg"><span class="on">Mjesec</span><span>Dan</span><span>Satnica</span></div>
+      <div class="glass card" style="padding:18px 20px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:20px;font-weight:600">Oktobar 2026</span><span style="display:flex;gap:16px;color:var(--ink2)">‹ &nbsp; ›</span></div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px 0;margin-top:16px;text-align:center;font-size:13px;color:var(--ink3)">
+          <span>P</span><span>U</span><span>S</span><span>Č</span><span>P</span><span>S</span><span>N</span>
+          <span></span><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+          <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+          <span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span>
+          <span>20</span><span>21</span><span style="background:var(--ink);color:#fff;border-radius:14px">22</span><span>23</span><span>24</span><span>25</span><span>26</span>
+          <span>27</span><span style="color:var(--pink);font-weight:700">28</span><span>29</span><span>30</span><span>31</span>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between"><span style="font-size:17px;font-weight:600">Četvrtak, 22. okt</span><span class="sub">2h 40min</span></div>
+      <div class="glass card" style="padding:14px 16px"><div style="font-weight:600">Signali · predavanje</div><div class="sub">11:00–13:00 · S1 · iz rasporeda nastave</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 3 · Predmeti -->
+<div>
+<div class="cap">3 · Predmeti</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="screen">
+    <div class="bar"><div class="bar-row">
+      <span class="avatar">U</span>
+      <span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span>
+      <span class="spacer"></span>
+      <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
+    </div></div>
+    <div class="pad">
+      <div class="title-row" style="margin-top:6px">
+        <h1 class="h-tab">Predmeti</h1>
+        <span class="pill btn-primary" style="color:#fff">+ Novi</span>
+      </div>
+      <span class="sub" style="margin-top:-8px">3 aktivna · zimski semestar</span>
+      <div class="glass card" style="padding:18px"><div style="display:flex;justify-content:space-between"><div><div style="font-size:17px;font-weight:600">Signali i sistemi</div><div class="sub">Knjiga · Pitanja · Prezentacije</div></div><span style="font-size:22px;font-weight:700;color:var(--pink)">47%</span></div><div class="bars" style="margin:14px 0 10px"><i style="width:47%;background:var(--pink)"></i></div><div class="sub" style="display:flex;justify-content:space-between"><span>I parcijala · 28. okt</span><b style="color:var(--pink)">za 6 dana</b></div></div>
+      <div class="glass card" style="padding:18px"><div style="display:flex;justify-content:space-between"><div><div style="font-size:17px;font-weight:600">Baze podataka</div><div class="sub">Skripta</div></div><span style="font-size:22px;font-weight:700;color:var(--accent)">31%</span></div><div class="bars" style="margin:14px 0 10px"><i style="width:31%;background:var(--accent)"></i></div><div class="sub" style="display:flex;justify-content:space-between"><span>I parcijala · 28. okt</span><b style="color:var(--accent)">za 6 dana</b></div></div>
+      <div class="glass card" style="padding:18px"><div style="display:flex;justify-content:space-between"><div><div style="font-size:17px;font-weight:600">Vjerovatnoća i statistika</div><div class="sub">Skripta · Pitanja</div></div><span style="font-size:22px;font-weight:700;color:var(--blue)">18%</span></div><div class="bars" style="margin:14px 0 10px"><i style="width:18%;background:var(--blue)"></i></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 4 · Napredak -->
+<div>
+<div class="cap">4 · Napredak (postavke su u meniju)</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="screen">
+    <div class="bar"><div class="bar-row">
+      <span class="avatar">U</span>
+      <span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span>
+      <span class="spacer"></span>
+      <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
+    </div></div>
+    <div class="pad">
+      <h1 class="h-tab" style="margin-top:6px">Napredak</h1>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="card" style="background:rgba(106,100,184,.14)"><div style="font-size:26px;font-weight:700;color:var(--brand)">6h 20m</div><div class="sub">učenja ove sedmice</div></div>
+        <div class="card" style="background:rgba(94,156,114,.16)"><div style="font-size:26px;font-weight:700;color:#3f7a54">5</div><div class="sub">sesija · historija ›</div></div>
+      </div>
+      <div class="glass card" style="height:230px"><div style="display:flex;justify-content:space-between"><span style="font-size:17px;font-weight:600">Sati po danu</span><span class="sub">19.–25. okt</span></div>
+        <div style="display:flex;align-items:flex-end;gap:14px;height:160px;padding:16px 8px 0">
+          <i style="flex:1;height:70%;background:var(--accent);border-radius:6px"></i><i style="flex:1;height:55%;background:var(--accent);border-radius:6px"></i><i style="flex:1;height:40%;background:var(--accent);border-radius:6px"></i><i style="flex:1;height:20%;background:var(--accent);border-radius:6px"></i><i style="flex:1;height:35%;background:rgba(106,100,184,.25);border-radius:6px"></i><i style="flex:1;height:10%;background:rgba(106,100,184,.25);border-radius:6px"></i><i style="flex:1;height:8%;background:rgba(106,100,184,.25);border-radius:6px"></i>
+        </div></div>
+      <div class="glass card"><div style="font-size:17px;font-weight:600">Bodovi i ocjene</div><div class="sub" style="margin-top:4px">Signali 32/40 · Baze —</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 5 · Meni otvoren -->
+<div>
+<div class="cap">5 · Meni otvoren (Plan proširen)</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="under"><div class="screen" style="padding-top:72px"><div class="pad">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-top:6px"><span class="eyebrow">Četvrtak, 22. oktobar · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+      <section class="tint card" style="border-radius:28px;padding:20px;height:190px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;opacity:.88">SLJEDEĆE</span><div style="font-size:22px;font-weight:600;margin-top:14px">Slobodna sesija</div></section>
+      <div style="display:flex;gap:10px"><div class="glass card" style="flex:1;height:120px"></div><div class="glass card" style="flex:1"></div><div class="glass card" style="flex:1"></div></div>
+      <div class="glass card" style="height:200px"></div></div></div></div>
+  <div class="bar panel">
+    <div class="bar-row">
+      <span class="avatar">U</span>
+      <span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span>
+      <span class="spacer"></span>
+      <span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+    </div>
+    <div class="nav">
+      <span class="item">Danas</span>
+      <span class="item on">Plan <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></span>
+      <div class="subs">
+        <span class="on">Kalendar</span><span>Satnica</span><span>Dostupnost</span><span>Raspored nastave</span>
+      </div>
+      <span class="item">Predmeti <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      <span class="item">Napredak <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      <span class="item">Postavke <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="foot"><span class="btn ghost"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 17l5-5-5-5M21 12H9"/></svg>Odjavi se</span></div>
+  </div>
+</div>
+</div>
+
+<!-- 6 · Meni sa sesijom u toku, Predmeti prošireni -->
+<div>
+<div class="cap">6 · Predmeti prošireni</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="under"><div class="screen" style="padding-top:72px"><div class="pad">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-top:6px"><span class="eyebrow">Četvrtak, 22. oktobar · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+      <section class="tint card" style="border-radius:28px;padding:20px;height:190px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;opacity:.88">SLJEDEĆE</span><div style="font-size:22px;font-weight:600;margin-top:14px">Slobodna sesija</div></section>
+      <div style="display:flex;gap:10px"><div class="glass card" style="flex:1;height:120px"></div><div class="glass card" style="flex:1"></div><div class="glass card" style="flex:1"></div></div>
+      <div class="glass card" style="height:200px"></div></div></div></div>
+  <div class="bar panel">
+    <div class="bar-row">
+      <span class="avatar">U</span>
+      <span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span>
+      <span class="spacer"></span>
+      <span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+    </div>
+    <div class="nav">
+      <span class="item on">Danas</span>
+      <span class="item">Plan <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      <span class="item">Predmeti <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></span>
+      <div class="subs">
+        <span><i class="dot" style="background:var(--pink)"></i>Signali i sistemi</span>
+        <span><i class="dot" style="background:var(--accent)"></i>Baze podataka</span>
+        <span><i class="dot" style="background:var(--blue)"></i>Vjerovatnoća i statistika</span>
+        <span>Svi predmeti</span>
+      </div>
+      <span class="item">Napredak <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      <span class="item">Postavke <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="foot"><span class="btn ghost"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 17l5-5-5-5M21 12H9"/></svg>Odjavi se</span></div>
+  </div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

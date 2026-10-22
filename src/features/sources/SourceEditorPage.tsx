@@ -165,21 +165,12 @@ function SourceEditor({
   return (
     <form onSubmit={toReview} noValidate className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label={t('common.close')}
-          className="flex size-11 items-center justify-center rounded-full glass"
-        >
-          <CloseIcon size={18} />
-        </button>
-        <div className="flex flex-col items-center">
-          <h1 className="text-base font-semibold">
+        <div className="flex flex-col">
+          <span className="text-[13px] text-brand-muted">{subject.name}</span>
+          <h1 className="text-[26px] leading-tight font-bold tracking-[-0.4px]">
             {t(isEdit ? 'sources.editor.editTitle' : 'sources.editor.newTitle')}
           </h1>
-          <span className="text-xs text-ink-muted">{subject.name}</span>
         </div>
-        <span className="w-11" />
       </div>
 
       {!isEdit && (

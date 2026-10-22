@@ -99,6 +99,7 @@ function optimisticSubject(
     grade_scale: null,
     custom_scale: false,
     target_grade: null,
+    priority_boost_until: null,
     ...existing,
     id: form.id,
     name: row.name,

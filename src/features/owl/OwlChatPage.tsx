@@ -6,6 +6,7 @@ import { useSubjects } from '@/features/subjects/api'
 import { cn } from '@/lib/utils'
 import type { Citation } from '@shared/schemas.ts'
 import { useAiAvailability, useDocumentFileUrl, useDocuments } from './api'
+import { ChatPlan } from './ChatPlan'
 import { GiveDocumentSheet } from './GiveDocumentSheet'
 import { ImportCard } from './ImportCard'
 import { useOwlStore, type OwlMessage, type StateRef } from './store'
@@ -42,19 +43,11 @@ export function OwlChatPage() {
   ]
 
   return (
-    <div className="flex min-h-[calc(100dvh-24px-112px-env(safe-area-inset-bottom))] flex-col gap-3">
-      {/* Sticky, so the header stays reachable and clear of the phone's status bar. */}
-      <div className="glass-bar sticky top-0 z-10 -mx-5 -mt-6 grid grid-cols-[44px_1fr_44px] items-center gap-2 px-5 pt-[calc(20px+env(safe-area-inset-top))] pb-2">
-        <Link
-          to="/chat/history"
-          aria-label={t('owl.history.title')}
-          className="glass flex size-11 items-center justify-center rounded-full text-ink"
-        >
-          <ClockIcon size={18} />
-        </Link>
-        <div className="flex min-w-0 flex-col items-center">
-          <h1 className="text-base font-semibold">{t('owl.name')}</h1>
-          <span className="truncate text-xs text-ink-secondary">
+    <div className="flex flex-1 flex-col gap-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 flex-col">
+          <h1 className="truncate text-[30px] font-bold tracking-[-0.6px]">{t('owl.name')}</h1>
+          <span className="truncate text-[13px] text-ink-secondary">
             {state === 'ready'
               ? t('owl.tagline')
               : state === 'offline'
@@ -62,21 +55,29 @@ export function OwlChatPage() {
                 : t('owl.disabled')}
           </span>
         </div>
-        {messages.length > 0 ? (
-          <button
-            type="button"
-            onClick={newConversation}
-            disabled={busy}
-            aria-label={t('owl.history.new')}
-            className="glass flex size-11 items-center justify-center rounded-full text-ink disabled:opacity-60"
+        <div className="flex shrink-0 gap-2">
+          <Link
+            to="/chat/history"
+            aria-label={t('owl.history.title')}
+            className="glass flex size-11 items-center justify-center rounded-full text-ink"
           >
-            <PencilIcon size={18} />
-          </button>
-        ) : (
-          <span />
-        )}
+            <ClockIcon size={18} />
+          </Link>
+          {messages.length > 0 && (
+            <button
+              type="button"
+              onClick={newConversation}
+              disabled={busy}
+              aria-label={t('owl.history.new')}
+              className="glass flex size-11 items-center justify-center rounded-full text-ink disabled:opacity-60"
+            >
+              <PencilIcon size={18} />
+            </button>
+          )}
+        </div>
       </div>
 
+      <ChatPlan />
       <div className="flex flex-1 flex-col justify-end gap-3 pb-2" aria-live="polite">
         {messages.length === 0 && <OwlBubble>{t('owl.intro')}</OwlBubble>}
         {messages.map((m) => (
@@ -85,16 +86,16 @@ export function OwlChatPage() {
         <div ref={end} className="scroll-mb-24" />
       </div>
 
-      <div className="sticky bottom-[calc(96px+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2">
+      <div className="sticky bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-10 keyboard:bottom-[calc(8px+var(--vv-bottom,0px))] flex flex-col gap-2">
         {enabled && messages.length === 0 && (
-          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none]">
+          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 py-0.5 [scrollbar-width:none]">
             {suggestions.map((sug) => (
               <button
                 key={sug.label}
                 type="button"
                 disabled={busy}
                 onClick={() => (sug.kind ? openSheet(sug.kind) : void owl.ask(sug.ask))}
-                className="glass h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
+                className="glass-flat h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
               >
                 {sug.label}
               </button>

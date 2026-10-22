@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { BackHeader } from '@/components/BackHeader'
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { PencilIcon } from '@/components/icons'
 import { useAgenda } from '@/features/plan/agenda'
 import { DayStrip } from '@/features/plan/DayStrip'
@@ -12,6 +12,8 @@ import { localDateOf } from '@/features/subjects/model'
 import { localDay, toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { capFor, freeMinutesOn, slotMinutes, slotsFor, studyMinutesOn } from '@/lib/schedule'
+import { BusySheet } from '@/features/calendars/BusySheet'
+import type { DayBusy } from '@/features/plan/agenda'
 import { AvailabilityTimeline } from './AvailabilityTimeline'
 import { DaySheet } from './DaySheet'
 import { useScheduleData } from './useScheduleData'
@@ -29,18 +31,19 @@ export function AvailabilityPage() {
   const date = localDateOf(selected.toISOString())
   const data = useScheduleData()
   const agenda = useAgenda()
+  const [busy, setBusy] = useState<DayBusy | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const input = data.dayInput(date)
   const day = data.dayRows.find((d) => d.on_date === date)
   const free = freeMinutesOn(date, input)
-  // Slots before classes are taken out, so "8h termina − 2h 15 nastava" explains the free time.
+  // Slots before classes and calendar busy time are taken out ("8h termina − 2h 15 zauzeto").
   const slotTotal = slotMinutes(slotsFor(date, input))
   const dfLocale = dateFnsLocales[locale]
 
   return (
     <div className="flex flex-col gap-4">
-      <BackHeader title={t('availability.title')} fallback="/plan" />
+      <ScreenTitle title={t('availability.title')} />
       <div className="flex flex-col gap-1">
         <h1 className="text-[26px] leading-tight font-bold">{t('availability.heading')}</h1>
         <p className="text-sm leading-[1.45] text-ink-muted">
@@ -87,7 +90,12 @@ export function AvailabilityPage() {
             {t('availability.editDay')}
           </button>
         </div>
-        <AvailabilityTimeline slots={slotsFor(date, input)} classes={agenda.classesFor(date)} />
+        <AvailabilityTimeline
+          slots={slotsFor(date, input)}
+          classes={agenda.classesFor(date)}
+          busy={agenda.busyFor(date)}
+          onPickBusy={setBusy}
+        />
         <span className="text-xs text-ink-muted">
           {t('availability.planUses', {
             time: formatDuration(t, studyMinutesOn(date, input)),
@@ -96,6 +104,7 @@ export function AvailabilityPage() {
       </div>
 
       <DaySheet date={date} open={sheetOpen} onOpenChange={setSheetOpen} />
+      <BusySheet item={busy} onClose={() => setBusy(null)} />
     </div>
   )
 }

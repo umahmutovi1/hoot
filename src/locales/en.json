@@ -18,10 +18,10 @@
     "plan": "Plan",
     "subjects": "Subjects",
     "progress": "Progress",
-    "startSession": "Start session",
-    "resumeSession": "Resume session",
+    "aiLabel": "AI assistant",
     "ai": "AI",
-    "aiLabel": "AI assistant"
+    "aiClose": "Close the assistant",
+    "home": "Hoot, go to Today"
   },
   "auth": {
     "headline": "Study smarter,\nnot longer.",
@@ -73,15 +73,99 @@
       "start": "Start",
       "running": "Running",
       "paused": "Paused",
-      "resume": "Resume"
+      "resume": "Resume",
+      "labelAt": "Next · {{time}}",
+      "allDone": "Today's plan is done",
+      "allDoneSub": "If you still have time, a free session counts towards calibration."
     },
     "exams": "Exams",
-    "examsAll": "All"
+    "examsAll": "All",
+    "focus": {
+      "today": "Today's plan",
+      "week": "Week",
+      "nextExam": "Next exam",
+      "readiness": "Readiness",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days"
+    },
+    "cant": {
+      "button": "Can't today",
+      "label": "Can't today",
+      "title": "Today is free",
+      "moved_one": "{{count}} block moved to tomorrow on",
+      "moved_other": "{{count}} blocks moved to tomorrow on",
+      "toast": "Today is a free day",
+      "undo": "Undo",
+      "whatMoved": "What moved",
+      "growth": "The plan grows at most 1.25× a day, so some of it may go to later days.",
+      "onTrack": "Nothing is late for exams."
+    },
+    "only": {
+      "button": "Only 30 min",
+      "title": "I only have…",
+      "best": "Most valuable now",
+      "start": "Start · {{minutes}} min",
+      "rest": "The rest of the block goes back into the plan from tomorrow.",
+      "whyReview": "Check due today · {{minutes}}",
+      "whyPart": "First part of today's block",
+      "whyWhole": "The whole next block",
+      "whyNext": "From the plan for {{day}}",
+      "nothing": "The plan is empty today and tomorrow. Start a free session from the “Next” card."
+    },
+    "free": {
+      "title": "No plan today",
+      "noMaterialTitle": "The plan needs material",
+      "noMaterialBody": "Add a source or a rough size of the material to a subject, and the plan spreads the studying until the exam.",
+      "addMaterial": "Subjects",
+      "tomorrow": "tomorrow",
+      "next": "Next block: {{when}} {{time}} · {{subject}}"
+    },
+    "more_one": "{{count}} more suggestion",
+    "more_other": "{{count}} more suggestions",
+    "moreHide": "Hide",
+    "why": {
+      "title": "Why today looks like this:",
+      "rho": "I plan {{pct}}% of your free time because that's about what you did in the last 2 weeks."
+    },
+    "schedule": {
+      "title": "Schedule",
+      "classUntil": "until {{time}}"
+    },
+    "examIn_one": "in {{count}} day",
+    "examIn_other": "in {{count}} days",
+    "examToday": "today",
+    "examTomorrow": "tomorrow",
+    "late": {
+      "shifted": "{{min}} min late: the rest of the day moved",
+      "shiftedOverflow_one": "{{min}} min late: the rest of the day moved, {{count}} block goes to the plan from tomorrow",
+      "shiftedOverflow_other": "{{min}} min late: the rest of the day moved, {{count}} blocks go to the plan from tomorrow"
+    },
+    "extra": {
+      "button": "I have more time",
+      "title": "I have more time",
+      "sub": "One more block today, over the daily maximum if needed (today only). The other days rearrange around it.",
+      "whyReview": "A check that is due: memory strength is dropping.",
+      "whyNext": "The most urgent next material, {{minutes}} today instead of later.",
+      "addStart": "Add and start",
+      "add": "Only add to today's plan",
+      "added": "Added to today's plan: {{minutes}}"
+    },
+    "skip": {
+      "button": "Skip",
+      "late": "{{min}} min late",
+      "startNow": "Start now",
+      "title": "Skip this block?",
+      "body": "The material is not lost: it goes into the first free time today, or else becomes the first block of the next study day. It does not count as missed.",
+      "andStart": "Skip and start now: {{title}}",
+      "only": "Only skip",
+      "toToday": "Moved to today at {{time}}",
+      "toTomorrow": "No room today: first block tomorrow at {{time}}",
+      "toLater": "Moved to the first free day at {{time}}",
+      "carried": "moved"
+    }
   },
   "plan": {
     "title": "Plan",
-    "tabCalendar": "Calendar",
-    "tabSchedule": "Schedule",
     "scheduleEmpty": "The schedule places today's blocks into your free time slots.",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
@@ -112,7 +196,14 @@
     "nextWeek": "Next week",
     "cancelled": "cancelled",
     "noClasses": "No classes this day.",
-    "timetableButton": "Timetable"
+    "timetableButton": "Timetable",
+    "legendPlanned": "Planned study",
+    "schedule": {
+      "note": "The plan suggests the times, with breaks",
+      "moved": "A moved block becomes manual",
+      "revert": "Restore the plan",
+      "reverted": "The plan's suggestion is back"
+    }
   },
   "subjects": {
     "title": "Subjects",
@@ -259,13 +350,82 @@
       "computedLater": "Start is computed from the plan",
       "body": "Until then the subject is not planned, except reviews of what you already learned. The start is computed from the remaining material and your availability, with a 20% reserve.",
       "move": "Move",
-      "startNow": "Start now"
+      "startNow": "Start now",
+      "computedBody": "Until then the subject isn't planned, except reviews of what you already know. The start is computed from ~{{hours}}h of material and your availability, with 20% slack."
     },
     "quick": {
       "open": "New subject",
       "title": "New subject name",
       "hint": "Add exams and the rest later on the subject.",
       "create": "Add subject"
+    },
+    "rough": {
+      "title": "How much material?",
+      "small": "Little",
+      "medium": "Medium",
+      "large": "A lot",
+      "hint": {
+        "small": "~10 h · e.g. lecture notes · a rough guess until you add content",
+        "medium": "~25 h · a book up to 250 pages · a rough guess until you add content",
+        "large": "~45 h · a big book + questions · a rough guess until you add content"
+      },
+      "none": "No estimate: the plan picks this subject up once you add a source.",
+      "sourceTitle": {
+        "small": "Rough estimate · ~10 h",
+        "medium": "Rough estimate · ~25 h",
+        "large": "Rough estimate · ~45 h"
+      },
+      "part": "Part {{n}}"
+    },
+    "goal": {
+      "title": "Goal",
+      "edit": "Edit",
+      "howImportant": "How important is it?",
+      "importantRow": "How important",
+      "targetRow": "Target grade",
+      "whenRow": "Studying starts",
+      "target": "Target grade",
+      "optional": "(optional)",
+      "noTarget": "—",
+      "targetChip": "target {{grade}}",
+      "nudge": "A {{grade}} usually needs “{{level}}”",
+      "change": "Change",
+      "when": "When does studying start?",
+      "computedOn": "Computed · ~{{date}}",
+      "fromToday": "From today",
+      "campaignFrom": "Campaign · {{date}}",
+      "campaignLater": "Campaign before the exam",
+      "modeShort": {
+        "regular": "from today",
+        "campaign": "campaign"
+      },
+      "mode": {
+        "regular": {
+          "title": "From today",
+          "sub": "Regular, in step with lectures"
+        },
+        "campaign": {
+          "title": "Campaign before the exam",
+          "sub": "The app computes when to start and tells you 3 days before"
+        }
+      },
+      "priorityDescription": {
+        "1": "Easy, passing is enough",
+        "2": "Less important, no big ambitions",
+        "3": "The usual share of time and slack",
+        "4": "Important, I want a good grade",
+        "5": "Must pass"
+      },
+      "effect": "The plan covers {{coverage}}% of the material and reviews {{often}}.",
+      "often": {
+        "low": "less often",
+        "mid": "as usual",
+        "high": "more often"
+      },
+      "boost": "+{{minutes}} min a day until {{date}}",
+      "boostSimple": "More time until {{date}}",
+      "endBoost": "Remove the boost",
+      "unreachable": "The target grade is out of reach with the points left."
     }
   },
   "progress": {
@@ -290,7 +450,19 @@
       "unit": "Unit",
       "allUnits": "Show all ({{count}})",
       "freeHint": "You can change the unit during the session (\"Working on\"). The time counts for calibration but does not tick off a planned block.",
-      "go": "Start"
+      "go": "Start",
+      "breaks": "Breaks",
+      "breaksHint": "Your last preset is suggested. Change the default in Settings.",
+      "nextBlock": "Next block",
+      "laterToday": "Later today",
+      "tagPlan": "Plan",
+      "howLong": "How much time do you have?",
+      "wholeBlock": "Whole block",
+      "onlyHint": "Only {{minutes}} min → {{title}}. The rest of the block goes into the plan from tomorrow.",
+      "subtitlePlan": "The next block of today's plan is suggested.",
+      "newSubject": "+ Subject",
+      "newSource": "+ Source",
+      "addFirstSource": "+ Add a source (book, notes…)"
     },
     "mode": {
       "label": "Study mode",
@@ -298,11 +470,6 @@
       "problems": "Problems",
       "review": "Review",
       "questions": "Questions"
-    },
-    "timerMode": {
-      "pomodoro25": "25/5",
-      "pomodoro50": "50/10",
-      "free": "Free"
     },
     "timer": {
       "running": "Session running",
@@ -322,7 +489,8 @@
       "segments_one": "{{count}} segment",
       "segments_other": "{{count}} segments",
       "pauseTotal_one": "{{count}} min of breaks",
-      "pauseTotal_other": "{{count}} min of breaks"
+      "pauseTotal_other": "{{count}} min of breaks",
+      "freePause": "Free pause · {{time}}"
     },
     "units": {
       "title": "Working on",
@@ -391,6 +559,14 @@
         "questions_other": "questions",
         "items_one": "unit",
         "items_other": "units"
+      },
+      "whyLow": "What got in the way?",
+      "reason": {
+        "tired": "Tired",
+        "phone": "Phone",
+        "noise": "Noise",
+        "hard": "Hard material",
+        "sleep": "Slept badly"
       }
     },
     "history": {
@@ -429,11 +605,52 @@
       "count_other": "{{count}} sessions",
       "thisWeek_one": "{{count}} session this week",
       "thisWeek_other": "{{count}} sessions this week"
+    },
+    "preset": {
+      "standard": "Standard",
+      "pomodoro": "Pomodoro",
+      "flow": "Flowtime",
+      "free": "Free",
+      "pomodoro25": "25/5",
+      "pomodoro50": "50/10"
+    },
+    "presetSub": {
+      "standard": "50 min study / 15 break",
+      "pomodoro": "25 / 5 · 20 min long break after 4",
+      "flow": "study as long as you like · break = study / 5",
+      "free": "no reminders",
+      "pomodoro25": "25 / 5",
+      "pomodoro50": "50 / 10",
+      "custom": "{{steps}}, repeat",
+      "customLong": "{{steps}}, repeat · {{min}} min after {{every}}"
+    },
+    "distracted": "I got distracted",
+    "endActions": {
+      "hint": "Ended too early or by accident?",
+      "resume": "Continue this session",
+      "restart": "Start over",
+      "discard": "Discard",
+      "restartTitle": "Start over",
+      "restartSub": "A new session starts from zero. What happens to these {{minutes}}?",
+      "keep": "Keep these {{minutes}}",
+      "keepSub": "They stay saved as a separate session (without ratings) and count towards progress.",
+      "delete": "Delete these {{minutes}}",
+      "deleteSub": "This session is deleted and counts nowhere.",
+      "discardTitle": "Discard the session?",
+      "discardSub": "These {{minutes}} are deleted and count neither for progress nor calibration. The block goes back into the plan."
+    },
+    "endEarly": {
+      "title": "Ending early?",
+      "body": "{{left}} of the planned {{planned}} are left. If you end now, the session is saved and the plan spreads the rest from tomorrow.",
+      "accidentalTitle": "The session has just started",
+      "accidental": "{{time}} studied so far. If the timer was started by accident, discard the session and nothing counts.",
+      "keepGoing": "Keep studying",
+      "finish": "End now",
+      "discard": "Discard the session (nothing counts)"
     }
   },
   "settings": {
     "title": "Settings",
-    "open": "Profile and settings",
     "signedInWith": "Signed in with a magic link",
     "general": "General",
     "language": "Language",
@@ -442,7 +659,34 @@
     "periodsCount_one": "{{count}} period",
     "periodsCount_other": "{{count}} periods",
     "grades": "Points and grades",
-    "gradesValue": "{{total}} points · scale ›"
+    "gradesValue": "{{total}} points · scale ›",
+    "session": "Session",
+    "presets": {
+      "title": "Session preset",
+      "edit": "Edit {{name}}",
+      "new": "New custom preset",
+      "hint": "A reminder to take a break; the timer never stops by itself. After 5 sessions per preset the app compares focus and speed.",
+      "newTitle": "New preset",
+      "editTitle": "Edit preset",
+      "editorSub": "A sequence of study and breaks that repeats.",
+      "name": "Name",
+      "namePlaceholder": "e.g. My rhythm",
+      "steps": "Steps",
+      "work": "Study",
+      "break": "Break",
+      "workMin": "{{min}} min study",
+      "breakMin": "{{min}} min break",
+      "removeStep": "Remove step",
+      "addStep": "Add step",
+      "repeats": "At the end the sequence starts over.",
+      "longBreak": "Long break",
+      "longMin": "Long break length",
+      "after": "after",
+      "every": "After how many intervals",
+      "intervals_one": "{{count}} interval",
+      "intervals_other": "{{count}} intervals",
+      "delete": "Delete preset"
+    }
   },
   "validation": {
     "required": "Required",
@@ -469,8 +713,6 @@
     "close": "Close"
   },
   "profile": {
-    "welcomeTitle": "What should I call you?",
-    "welcomeBody": "I use your name in the greeting at the start of the day. You can change it in Settings.",
     "nameLabel": "Name",
     "namePlaceholder": "e.g. Uma",
     "continue": "Continue",
@@ -663,6 +905,10 @@
       "filter": "Filter by exam",
       "all": "All",
       "noneInExam": "No unit of this source is in this exam yet. Assign them in “Exam scope”."
+    },
+    "rough": {
+      "label": "Rough estimate",
+      "hint": "Replace it with real content: adding a source removes this one."
     }
   },
   "time": {
@@ -939,7 +1185,7 @@
     "everyWeekday": "Every {{day}}",
     "resetDay": "Back to the template ({{day}})",
     "deleteSlot": "Remove slot",
-    "breakdown": "{{slots}} of slots − {{busy}} of classes"
+    "breakdown": "{{slots}} of slots − {{busy}} busy"
   },
   "lectures": {
     "title": "How far did you get?",
@@ -1238,10 +1484,354 @@
       "delete": "Delete conversation",
       "confirmDelete": "Delete this conversation?",
       "untitled": "Conversation"
+    },
+    "plan": {
+      "today": "{{time}} planned today.",
+      "free": "Nothing planned for today.",
+      "dayOff": "Today is free; the plan continues tomorrow.",
+      "todayTitle": "Today",
+      "doneOf": "{{done}} of {{total}} done",
+      "soonTitle": "Coming up",
+      "inDays_one": "in {{count}} day",
+      "inDays_other": "in {{count}} days",
+      "dueToday": "today",
+      "dueTomorrow": "tomorrow",
+      "onTrack": "on track",
+      "short": "{{time}} short",
+      "left": "~{{time}} left"
     }
   },
   "offline": {
     "title": "You're offline",
     "body": "This loads from the internet the first time. The timer and a started session work offline; changes are sent when you are back online."
+  },
+  "menu": {
+    "title": "Menu",
+    "open": "Open menu",
+    "close": "Close menu",
+    "calendar": "Calendar",
+    "timetable": "Class timetable",
+    "allSubjects": "All subjects",
+    "overview": "Overview",
+    "sessions": "Sessions",
+    "settings": "Settings",
+    "allSettings": "All settings",
+    "academicCalendar": "Academic calendar",
+    "documents": "Documents"
+  },
+  "feeds": {
+    "title": "Connected calendars",
+    "intro": "Paste a secret iCal link. Busy time from the calendar counts like classes in the plan.",
+    "add": "Add calendar",
+    "newTitle": "New calendar",
+    "newSub": "Google, Apple or Outlook (iCal link)",
+    "serviceLabel": "Service",
+    "service": {
+      "google": "Google",
+      "apple": "Apple",
+      "outlook": "Outlook"
+    },
+    "link": "iCal link",
+    "howto": {
+      "google": "Google Calendar → Calendar settings → “Secret address in iCal format”.",
+      "apple": "iCloud → Calendar → Share → Public calendar → copy the link.",
+      "outlook": "Outlook → Settings → Calendar → Shared calendars → Publish a calendar → ICS."
+    },
+    "busyOnly": "Keep busy time only",
+    "busyOnlySub": "Titles and locations are not stored",
+    "busyOnlyShort": "busy only",
+    "allDay": "All-day events are busy",
+    "allDaySub": "Birthdays and holidays only show by default",
+    "secret": "The link works like a password: it is kept only for syncing and never shown again.",
+    "addButton": "Add",
+    "adding": "Adding…",
+    "name": "Name",
+    "newLink": "New link (optional)",
+    "newLinkPlaceholder": "paste only if you renewed it",
+    "remove": "Remove calendar",
+    "removeConfirm": "Remove this calendar? Its events leave the plan.",
+    "synced": "synced {{when}}",
+    "notSynced": "not synced yet",
+    "kind": {
+      "busy": "Busy",
+      "deadlines": "Deadlines"
+    },
+    "error": {
+      "fetch_failed": "The link cannot be opened. Check or renew it.",
+      "http_error": "The link no longer works. Renew it in the calendar.",
+      "too_large": "The calendar is too large to import.",
+      "not_ics": "This is not an iCal link.",
+      "parse_failed": "The calendar cannot be read.",
+      "save_failed": "Saving failed. Try again."
+    },
+    "fromSource": "from {{source}} calendar",
+    "busy": "Busy",
+    "busyHint": "This time is not planned for study. If it does not matter, ignore it.",
+    "ignoredHint": "Ignored: the plan counts this time as free.",
+    "ignore": "Ignore",
+    "unignore": "Count as busy again"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "stepOf": "Step {{step}} of {{total}}",
+    "next": "Next",
+    "later": "Finish later",
+    "continue": "Continue setup · step {{step}} of {{total}}",
+    "name": {
+      "title": "What should I call you?",
+      "sub": "The plan and reminders will use your name.",
+      "zone": "Time zone: {{zone}} (from the browser)"
+    },
+    "import": {
+      "title": "What do you already have?",
+      "sub": "Import what exists, so classes and commitments are taken before you pick free time.",
+      "calendar": "Academic calendar",
+      "calendarSub": "PDF, photo or text · classes, exam periods, holidays",
+      "timetable": "Class timetable",
+      "timetableSub": "by hand, one class at a time",
+      "feed": "Connected calendar",
+      "feedSub": "Google, Apple or Outlook (iCal link)",
+      "none": "Nothing yet? Just continue; you can add all of this later in Settings.",
+      "added": "Added"
+    },
+    "rhythm": {
+      "title": "Your rhythm",
+      "sub": "When do you usually get up and go to bed?",
+      "weekday": "Weekday",
+      "weekend": "Weekend",
+      "wake": "Get up",
+      "sleep": "Go to bed",
+      "easiest": "When is studying easiest?",
+      "hint": "Pick several if you like. The app learns from your sessions later. Your day starts at {{time}}."
+    },
+    "part": {
+      "morning": "Morning",
+      "midday": "Midday",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "days": {
+      "title": "When can you study?",
+      "sub": "Hatched are classes and busy calendar time. Lavender are the proposed free periods. Tap a day to turn it off.",
+      "weekdays": "M,T,W,T,F,S,S",
+      "allAwake": "With no part of the day picked, all your awake time is proposed (from {{from}}).",
+      "hint": "Classes and busy time are taken out by themselves. Change single days later in Availability."
+    },
+    "max": {
+      "title": "At most per day?",
+      "sub": "The plan never goes beyond your free time or this cap.",
+      "weekday": "Weekdays",
+      "weekend": "Weekends",
+      "less": "Less: {{what}}",
+      "more": "More: {{what}}",
+      "weekly": "That is {{time}} a week",
+      "reserve": "The plan keeps a reserve, so realistic beats ideal."
+    },
+    "presets": {
+      "title": "How do you like breaks?",
+      "sub": "Only a reminder. You always tap the break yourself, and each session can use another one.",
+      "recommended": "recommended",
+      "own": "Build your own sequence (e.g. 45 → 10 → 45 → 20) in Settings."
+    },
+    "subject": {
+      "title": "First subject",
+      "sub": "Rough is fine. Add the material later.",
+      "namePlaceholder": "e.g. Signals and Systems",
+      "exam": "Exam",
+      "examDefault": "Midterm 1",
+      "when": "When?",
+      "fromCalendar": "From the calendar",
+      "exactDate": "Exact date"
+    },
+    "week": {
+      "title": "Your week",
+      "sub": "This is the plan with what you entered.",
+      "free": "free a week",
+      "needed": "needed until: {{exam}}",
+      "noExam": "no dated exam",
+      "fits": "You make it, with {{time}} to spare",
+      "short": "{{time}} short before the exam",
+      "firstSession": "First session",
+      "rough": "The estimate is rough until you add content. After 3 sessions the app knows your pace.",
+      "start": "Start the first session",
+      "today": "Go to Today",
+      "firstBlock": "First block · today",
+      "firstBlockAt": "First block · today {{time}}",
+      "planning": "Building your plan…",
+      "noBlockToday": "no block planned today",
+      "startBlock": "Start the first block"
+    },
+    "checklist": {
+      "title_one": "{{count}} more step to an accurate plan",
+      "title_other": "{{count}} more steps to an accurate plan",
+      "progress": "{{done}} of {{total}}",
+      "rhythm": "Name, language and rhythm",
+      "calendar": "Academic calendar",
+      "days": "Study days and periods",
+      "timetable": "Timetable or calendar"
+    }
+  },
+  "planBlocks": {
+    "kind": {
+      "learn": "Study",
+      "review": "Knowledge check",
+      "questions": "Questions",
+      "recap": "Quick recap",
+      "deadline": "Deadline"
+    },
+    "mode": {
+      "reading": "Reading",
+      "review": "Review",
+      "questions": "Questions",
+      "recap": "Quick recap",
+      "deadline": "Deadline",
+      "learn": "Study",
+      "problems": "Problems"
+    },
+    "reviewUnits_one": "Check · {{count}} unit",
+    "reviewUnits_other": "Check · {{count}} units",
+    "unitsMore_one": "{{title}} and {{count}} more",
+    "unitsMore_other": "{{title}} and {{count}} more",
+    "manual": "manual",
+    "done": "done",
+    "missed": "missed",
+    "skipped": "skipped",
+    "why": {
+      "review": "a check is due today",
+      "recap": "quick recap after the lecture",
+      "buffer_one": "{{goal}} in {{count}} day, review only now",
+      "buffer_other": "{{goal}} in {{count}} days, review only now",
+      "exam_one": "{{goal}} in {{count}} day",
+      "exam_other": "{{goal}} in {{count}} days",
+      "deadline_one": "{{goal}} due in {{count}} day",
+      "deadline_other": "{{goal}} due in {{count}} days",
+      "lecture": "covered in class on {{date}}",
+      "campaignStart": "the campaign starts today",
+      "optional": "there is time for extra material ({{goal}})",
+      "conditional": "must-pass subject",
+      "boost": "temporarily more time"
+    }
+  },
+  "suggestions": {
+    "later": "Later",
+    "change": "Change",
+    "ok": "OK",
+    "fresh": {
+      "title": "Let's start over",
+      "sub": "The plan is recomputed from today, at a more realistic pace.",
+      "open": "Show"
+    },
+    "deficit": {
+      "title": "{{goal}} in {{subject}} is {{time}} short",
+      "sub": "The remaining material doesn't fit your free time until {{date}}.",
+      "solve": "Fix"
+    },
+    "behind": {
+      "title": "{{subject}}: {{time}} of lecture material is waiting",
+      "sub": "One tap changes the plan from tomorrow.",
+      "raise": "Raise to “{{level}}”",
+      "regular": "Switch to regular",
+      "take": "Take {{minutes}} min a day from {{subject}}",
+      "earlier": "Start earlier: {{date}}",
+      "add": "Add {{minutes}} min a day",
+      "doneRaise": "The subject is now “{{level}}”. The plan is recomputed.",
+      "doneRegular": "The subject is in regular mode. The plan is recomputed.",
+      "doneTake": "{{subject}} gets {{minutes}} min a day from {{donor}} until {{date}}.",
+      "doneEarlier": "The campaign starts {{date}}. The plan is recomputed.",
+      "doneAdd": "Until {{date}} you have {{minutes}} more min a day."
+    },
+    "grade": {
+      "title": "Your target grade in {{subject}} needs more",
+      "sub": "A grade like that usually needs “{{level}}”.",
+      "done": "The subject is now “{{level}}”. The plan is recomputed."
+    },
+    "period": {
+      "title": "Exam period ahead — raise the maximum to {{hours}} h until {{date}}?",
+      "raise": "Raise",
+      "done": "The maximum is {{hours}} h a day until the end of the period."
+    },
+    "campaign": {
+      "title": "The {{subject}} campaign starts {{date}}",
+      "sub_one": "In {{count}} day",
+      "sub_other": "In {{count}} days",
+      "now": "Start now",
+      "done": "The campaign starts today. The plan is recomputed."
+    }
+  },
+  "replan": {
+    "updated": "The plan is updated",
+    "deficitTitle": "Plan shortfall",
+    "missed_one": "Yesterday {{count}} block was missed ({{subject}}, {{time}}). Today stays as it is, and the material moved to tomorrow on:",
+    "missed_other": "Yesterday {{count}} blocks were missed ({{subject}} and others, {{time}}). Today stays as it is, and the material moved to tomorrow on:",
+    "deficitSub": "The remaining material doesn't fit your free time until {{date}}. What would you like?",
+    "choose": "What would you like?",
+    "hours": "Add {{minutes}} min a day",
+    "hoursSub": "Until {{date}}, if you have free slots",
+    "scope": "Reduce the scope",
+    "scopeSub": "Skip {{units}} ({{subject}}, least important for the exam)",
+    "risk": "Accept the risk",
+    "riskSub": "The plan stays, {{time}} short",
+    "availability": "Availability",
+    "apply": "Apply",
+    "ok": "OK",
+    "notPlanned": "didn't fit"
+  },
+  "fresh": {
+    "title": "Let's start over",
+    "body": "The last days didn't go to plan, and that's fine. The plan is recomputed from today, at a more realistic pace.",
+    "thisWeek": "This week",
+    "lessThanBefore": "Less than before ({{time}}), so you get done what you plan. It grows as you study.",
+    "grows": "The plan grows as you study.",
+    "untilExams": "Until the exams",
+    "short": "{{time}} short",
+    "onTrack": "on track",
+    "choose": "For {{subject}} you choose: longer days, a smaller scope or accept the risk.",
+    "showToday": "Show today's plan",
+    "solve": "Fix the shortfall in {{subject}}"
+  },
+  "blockSheet": {
+    "new": "New block",
+    "edit": "Edit block",
+    "deleteTitle": "Delete block?",
+    "manualEdited": "edited by you",
+    "subject": "Subject",
+    "type": "Type",
+    "units": "Units",
+    "optional": "(optional)",
+    "allUnits": "All ({{count}})",
+    "day": "Day",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "duration": "Duration",
+    "durationMin": "at least 15 min",
+    "shorter": "Shorter",
+    "longer": "Longer",
+    "time": "Time",
+    "timeFixed": "Fixed time in the schedule",
+    "timeFree": "No time, the plan fits it into the day",
+    "setTime": "Set a time",
+    "lockNote": "Once you change it, the plan won't move it any more.",
+    "save": "Save",
+    "deleteBlock": "Delete block",
+    "move": "Move the material to other days",
+    "moveSub": "This time becomes busy; the plan puts it elsewhere",
+    "drop": "Remove from the plan",
+    "dropSub": "{{exam}}: {{title}} is no longer in scope",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "savedToast": "Block saved",
+    "lockedToast": "The block is manual now, the plan won't move it",
+    "deletedToast": "Block deleted",
+    "add": "Add block"
+  },
+  "crumbs": {
+    "label": "Breadcrumb",
+    "fresh": "Fresh start",
+    "newSubject": "New subject",
+    "edit": "Edit",
+    "newSource": "New source",
+    "source": "Source",
+    "unit": "Unit"
   }
 }
