@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { ContinueOnboarding } from '@/features/onboarding/ContinueOnboarding'
 import { ForgottenGuard } from '@/features/session/ForgottenGuard'
 import { SessionStartSheet } from '@/features/session/SessionStartSheet'
 import { LocaleSync } from '@/features/settings/LocaleSync'
@@ -22,6 +23,7 @@ export function AppShell() {
     <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col gap-3 px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-[calc(24px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] keyboard:pb-[calc(8px+var(--vv-bottom,0px))]">
       <LocaleSync />
       <TopBar menuOpen={menuOpen} onMenu={() => setMenuOpen(true)} />
+      <ContinueOnboarding />
       <Outlet />
       <NavMenu open={menuOpen} onOpenChange={setMenuOpen} />
       <SessionStartSheet />

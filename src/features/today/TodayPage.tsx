@@ -12,6 +12,7 @@ import { localDay } from '@/lib/day'
 import { greetingPart } from '@/lib/greeting'
 import { calendarStatus } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
+import { SetupChecklist } from '@/features/onboarding/SetupChecklist'
 import { ExamTiles } from './ExamTiles'
 import { FactCard } from './FactCard'
 import { NextCard } from './NextCard'
@@ -89,6 +90,11 @@ export function TodayPage() {
           </Link>
         </section>
       ) : null}
+      {firstRun && (
+        <div className="mt-8">
+          <SetupChecklist />
+        </div>
+      )}
 
       {SHOW_FACT_CARD && (
         <div className="mt-10">

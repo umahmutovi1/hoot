@@ -2,8 +2,8 @@ import { CalendarFeedsPage } from '@/features/calendars/CalendarFeedsPage'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
-import { RequireName } from '@/features/onboarding/RequireName'
-import { WelcomePage } from '@/features/onboarding/WelcomePage'
+import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding'
+import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { DocumentPage, DocumentsPage } from '@/features/owl/DocumentsPage'
 import { ImportReviewPage } from '@/features/owl/ImportReviewPage'
 import { OwlChatPage } from '@/features/owl/OwlChatPage'
@@ -36,10 +36,10 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <PlainLayout />,
-        children: [{ path: 'welcome', element: <WelcomePage /> }],
+        children: [{ path: 'onboarding', element: <OnboardingPage /> }],
       },
       {
-        element: <RequireName />,
+        element: <RequireOnboarding />,
         children: [
           {
             element: <AppShell />,
@@ -51,6 +51,7 @@ export const router = createBrowserRouter([
               { path: 'progress', element: <ProgressPage /> },
               { path: 'chat', element: <OwlChatPage /> },
               { path: 'owl', element: <Navigate to="/chat" replace /> },
+              { path: 'welcome', element: <Navigate to="/onboarding" replace /> },
             ],
           },
           {

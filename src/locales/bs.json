@@ -554,8 +554,6 @@
     "close": "Zatvori"
   },
   "profile": {
-    "welcomeTitle": "Kako da te zovem?",
-    "welcomeBody": "Ime koristim u pozdravu na početku dana. Možeš ga promijeniti u Postavkama.",
     "nameLabel": "Ime",
     "namePlaceholder": "npr. Uma",
     "continue": "Nastavi",
@@ -1413,5 +1411,103 @@
     "ignoredHint": "Ignorisano: plan ovo vrijeme računa kao slobodno.",
     "ignore": "Ignoriši",
     "unignore": "Vrati kao zauzeto"
+  },
+  "onboarding": {
+    "skip": "Preskoči",
+    "stepOf": "Korak {{step}} od {{total}}",
+    "next": "Dalje",
+    "later": "Završi kasnije",
+    "continue": "Nastavi uvod · korak {{step}} od {{total}}",
+    "name": {
+      "title": "Kako da te zovem?",
+      "sub": "Plan i podsjetnici će ti se obraćati imenom.",
+      "zone": "Vremenska zona: {{zone}} (iz browsera)"
+    },
+    "import": {
+      "title": "Šta već imaš?",
+      "sub": "Uvezi ono što postoji, da nastava i obaveze budu zauzete prije nego biraš slobodno vrijeme.",
+      "calendar": "Akademski kalendar",
+      "calendarSub": "PDF, slika ili tekst · nastava, rokovi, neradni dani",
+      "timetable": "Raspored nastave",
+      "timetableSub": "ručno, termin po termin",
+      "feed": "Povezani kalendar",
+      "feedSub": "Google, Apple ili Outlook (iCal link)",
+      "none": "Nemaš ništa sad? Samo nastavi; sve ovo možeš dodati kasnije u Postavkama.",
+      "added": "Dodano"
+    },
+    "rhythm": {
+      "title": "Tvoj ritam",
+      "sub": "Kad obično ustaješ i liježeš?",
+      "weekday": "Radni dan",
+      "weekend": "Vikend",
+      "wake": "Ustajem",
+      "sleep": "Liježem",
+      "easiest": "Kad ti je najlakše učiti?",
+      "hint": "Može više izbora. App kasnije uči iz tvojih sesija. Dan počinje u {{time}}."
+    },
+    "part": {
+      "morning": "Jutro",
+      "midday": "Podne",
+      "afternoon": "Popodne",
+      "evening": "Veče",
+      "night": "Noć"
+    },
+    "days": {
+      "title": "Kad možeš učiti?",
+      "sub": "Šrafirano je nastava i zauzeto iz kalendara. Ljubičasto su predloženi slobodni periodi. Tap na dan ga isključi.",
+      "weekdays": "P,U,S,Č,P,S,N",
+      "allAwake": "Bez izabranog dijela dana predlaže se cijelo budno vrijeme (od {{from}}).",
+      "hint": "Nastava i zauzeto se oduzimaju sami. Detalje po danu mijenjaš kasnije u Dostupnosti."
+    },
+    "max": {
+      "title": "Koliko najviše dnevno?",
+      "sub": "Plan nikad ne prelazi ni slobodne termine ni ovaj maksimum.",
+      "weekday": "Radnim danom",
+      "weekend": "Vikendom",
+      "less": "Manje: {{what}}",
+      "more": "Više: {{what}}",
+      "weekly": "To je {{time}} sedmično",
+      "reserve": "Plan ostavlja rezervu, bolje realno nego idealno."
+    },
+    "presets": {
+      "title": "Kako voliš pauze?",
+      "sub": "Ovo je samo podsjetnik. Pauzu uvijek tapneš sama, a za svaku sesiju možeš izabrati drugi.",
+      "recommended": "preporučeno",
+      "own": "Vlastiti niz (npr. 45 → 10 → 45 → 20) složiš u Postavkama."
+    },
+    "subject": {
+      "title": "Prvi predmet",
+      "sub": "Dovoljno je grubo. Literaturu dodaješ kasnije.",
+      "namePlaceholder": "npr. Signali i sistemi",
+      "exam": "Ispit",
+      "examDefault": "I parcijala",
+      "when": "Kada?",
+      "fromCalendar": "Iz kalendara",
+      "exactDate": "Tačan datum"
+    },
+    "week": {
+      "title": "Tvoja sedmica",
+      "sub": "Ovako izgleda plan s onim što si unijela.",
+      "free": "slobodno sedmično",
+      "needed": "potrebno do: {{exam}}",
+      "noExam": "nema ispita s datumom",
+      "fits": "Stižeš, uz {{time}} rezerve",
+      "short": "Fali {{time}} do ispita",
+      "firstSession": "Prva sesija",
+      "planSoon": "satnica dolazi s planom",
+      "rough": "Procjena je gruba dok ne dodaš sadržaj. Nakon 3 sesije app zna tvoju brzinu.",
+      "start": "Počni prvu sesiju",
+      "today": "Idi na Danas"
+    },
+    "checklist": {
+      "title_one": "Još {{count}} korak do tačnog plana",
+      "title_few": "Još {{count}} koraka do tačnog plana",
+      "title_other": "Još {{count}} koraka do tačnog plana",
+      "progress": "{{done}} od {{total}}",
+      "rhythm": "Ime, jezik i ritam",
+      "calendar": "Akademski kalendar",
+      "days": "Dani i periodi za učenje",
+      "timetable": "Raspored nastave ili kalendar"
+    }
   }
 }
