@@ -8,6 +8,7 @@ import { useSessionWriter } from '@/features/session/api'
 import { usePresets } from '@/features/session/presets'
 import { useSessionUi } from '@/features/session/store'
 import { pickForTime, reviewMinutes, type Pick, type PickBlock } from '@/lib/scheduler'
+import { dueUnits } from '@/features/review/due'
 import type { PlanToday } from './usePlanToday'
 
 // "Imam samo X min" (PRD "Brze akcije dana"): `pickForTime()` over the saved plan, and starting
@@ -30,21 +31,22 @@ export function toPickBlock(b: PlanBlockRow): PickBlock {
 
 /** `pickForTime()` over today's plan, the checks due and the next blocks. */
 export function pickFor(plan: PlanToday, minutes: number): Pick | null {
-  const dueReviews = [...plan.units.values()]
-    .filter(
-      (i) =>
-        i.unit.archived_at === null &&
-        i.unit.next_review_on !== null &&
-        i.unit.next_review_on <= plan.today &&
-        i.unit.level >= 1,
-    )
-    .map((i) => ({
-      unitId: i.unit.id,
-      subjectId: i.source.subject_id,
-      minutes: reviewMinutes(i.unit.kind === 'question' ? 'question' : 'chapter', 20),
-      retrievability: null,
-      nextReviewOn: i.unit.next_review_on!,
-    }))
+  const sourceOf = new Map([...plan.units.values()].map((i) => [i.unit.id, i.source]))
+  const dueReviews = dueUnits(
+    [...plan.units.values()].map((i) => i.unit),
+    plan.cards,
+    plan.today,
+    plan.boundary,
+  ).map((d) => ({
+    unitId: d.unit.id,
+    subjectId: sourceOf.get(d.unit.id)!.subject_id,
+    minutes: reviewMinutes(
+      d.unit.kind === 'question' ? 'question' : 'chapter',
+      Number(d.unit.est_minutes ?? 20),
+    ),
+    retrievability: d.strength,
+    nextReviewOn: d.unit.next_review_on ?? plan.today,
+  }))
   return pickForTime({
     minutes,
     today: plan.today,

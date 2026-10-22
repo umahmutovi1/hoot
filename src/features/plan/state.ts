@@ -40,6 +40,7 @@ import { gradeItemsOf, gradeSubjectOf } from '@/features/subjects/grades'
 import type { Assessment, Deadline, SubjectWithAssessments } from '@/features/subjects/model'
 import type { LectureLogRow } from '@/features/schedule/model'
 import { parseCustomPresets } from '@/features/session/presets'
+import { memoryOf, type MemoryRow } from '@/features/review/memory'
 
 /**
  * Database rows → `PlanState` (PRD "Scheduler"). Everything the plan depends on passes through
@@ -58,6 +59,9 @@ export interface SessionMinutes {
   minutes: number
 }
 
+/** A card's review columns (its due day joins its unit's review). */
+export type CardReview = Pick<Tables<'cards'>, 'id' | 'unit_id' | 'next_review_on'> & MemoryRow
+
 export interface PlanInputs {
   profile: Profile
   subjects: SubjectWithAssessments[]
@@ -66,6 +70,7 @@ export interface PlanInputs {
   scope: AssessmentUnit[]
   /** unit ↔ topic links of every subject. */
   unitTopics: { unit_id: string; topic_id: string }[]
+  cards: CardReview[]
   logs: LectureLogRow[]
   /** Blocks from 14 days ago on. */
   blocks: PlanBlockRow[]
@@ -227,6 +232,16 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
   for (const l of input.unitTopics)
     topicsOf.set(l.unit_id, [...(topicsOf.get(l.unit_id) ?? []), l.topic_id])
 
+  // A unit is due when it or one of its cards is due.
+  const cardDue = new Map<string, LocalDate>()
+  for (const c of input.cards) {
+    if (c.next_review_on === null) continue
+    const prev = cardDue.get(c.unit_id)
+    if (!prev || c.next_review_on < prev) cardDue.set(c.unit_id, c.next_review_on)
+  }
+  const earliest = (a: LocalDate | null, b: LocalDate | undefined) =>
+    b === undefined ? a : a === null || b < a ? b : a
+
   const units: PlanUnit[] = []
   const paces = new Map<string, (SourcePace | null)[]>()
   const leafIdsBySource = new Map<string, string[]>()
@@ -288,7 +303,8 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
         questionCount: 0,
         pageStart: u.page_start,
         pageEnd: u.page_end,
-        nextReviewOn: u.next_review_on,
+        nextReviewOn: earliest(u.next_review_on, cardDue.get(u.id)),
+        memory: memoryRef(memoryOf(u, boundary)),
         coveredOn: coveredOn.get(u.id) ?? null,
         tracked,
       })
@@ -447,7 +463,7 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
       maxSubjectsPerDay: profile.max_subjects_per_day,
       minBlockMinutes: profile.min_block_minutes,
       recapAfterLecture: profile.recap_after_lecture,
-      reviewCapPct: 40,
+      reviewCapPct: profile.review_cap_pct,
       examEveEndMin: profile.exam_eve_end_min,
       lecturePaceDays: profile.lecture_pace_days,
     },
@@ -469,6 +485,13 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
       behind.push({ subjectId: subject.id, behindMinutes: Math.round(b.behindMinutes), actions })
   }
   return { state, today, targetGrade, realization: rho, keepToday, behind }
+}
+
+/** Only what the plan uses (strength on a day), so other memory fields do not change the hash. */
+function memoryRef(m: ReturnType<typeof memoryOf>): PlanUnit['memory'] {
+  return m
+    ? { stability: Math.round(m.stability * 1000) / 1000, lastReviewOn: m.lastReviewOn }
+    : null
 }
 
 /** Wall-clock minutes on today's date; before the day boundary that is past midnight (+24 h). */

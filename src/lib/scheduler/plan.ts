@@ -1,4 +1,5 @@
 import { addDays, diffDays, type LocalDate } from '@/lib/day'
+import { retrievabilityOn } from '@/lib/srs'
 import { slotMinutes } from '@/lib/schedule'
 import { planIntervalMin } from '@/lib/session/timer'
 import {
@@ -115,6 +116,15 @@ export function aiCapacity(state: PlanState): number[] {
         (fixedOn.get(d.date) ?? 0),
     ),
   )
+}
+
+/**
+ * Last day a review may fall on before an exam: the first buffer day, or the day before the exam
+ * without a buffer; never before the first planned day.
+ */
+export function lastReviewDay(goal: PlanGoal, learnEnd: LocalDate, from: LocalDate): LocalDate {
+  const last = learnEnd < goal.on ? learnEnd : addDays(goal.on, -1)
+  return last < from ? from : last
 }
 
 /** Exam goals of each unit (the earliest one owns it). */
@@ -351,6 +361,18 @@ function run(
     return start !== null && date >= start && date < learnEnd.get(w.goal.id)!
   }
 
+  // When each unit is due: its FSRS day, but never after the last day before its nearest exam
+  // (first buffer day, or the day before the exam). FSRS puts the day where strength falls to the
+  // target, so a unit due after that day would reach the exam under it: it gets its check then
+  // (PRD "Cilj je jačina na dan ispita"). Applied here too because exams and buffers move.
+  const dueOn = new Map<string, LocalDate>()
+  for (const u of state.units) {
+    if (u.nextReviewOn === null) continue
+    const goal = (goalsOfUnit.get(u.id) ?? []).find((g) => g.on > state.from)
+    const last = goal ? lastReviewDay(goal, learnEnd.get(goal.id)!, state.from) : null
+    dueOn.set(u.id, last !== null && u.nextReviewOn > last ? last : u.nextReviewOn)
+  }
+
   const reviewed = new Set<string>()
   const blocks: PlannedBlock[] = []
   const used = new Map<LocalDate, number>()
@@ -368,28 +390,30 @@ function run(
       ...(s.boostUntil && d <= s.boostUntil ? { boost: true as const } : {}),
     })
 
-    // 2. Reviews due and recaps, within the review share of the day.
+    // 2. Reviews due and recaps, within the review share of the day. Over the cap, the closer
+    // exam and then the lower strength go first; the rest moves to the next day.
     let reviewBudget = Math.min(Math.floor((cap * settings.reviewCapPct) / 100), limit)
+    const strength = (u: PlanUnit) => (u.memory ? retrievabilityOn(u.memory, d) : 0)
     const due = state.units
-      .filter(
-        (u) =>
-          u.nextReviewOn !== null &&
-          u.nextReviewOn <= d &&
+      .filter((u) => {
+        const on = dueOn.get(u.id)
+        return (
+          on !== undefined &&
+          on <= d &&
           !reviewed.has(u.id) &&
-          (goalsOfUnit.get(u.id) ?? []).some((g) => g.on > d),
-      )
+          (goalsOfUnit.get(u.id) ?? []).some((g) => g.on > d)
+        )
+      })
       .sort((a, b) => {
         const ga = goalsOfUnit.get(a.id)!.find((g) => g.on > d)!.on
         const gb = goalsOfUnit.get(b.id)!.find((g) => g.on > d)!.on
-        return ga < gb
-          ? -1
-          : ga > gb
-            ? 1
-            : a.nextReviewOn! < b.nextReviewOn!
-              ? -1
-              : a.nextReviewOn! > b.nextReviewOn!
-                ? 1
-                : a.order - b.order || byId(a, b)
+        if (ga !== gb) return ga < gb ? -1 : 1
+        const ra = strength(a)
+        const rb = strength(b)
+        if (ra !== rb) return ra - rb
+        const da = dueOn.get(a.id)!
+        const db = dueOn.get(b.id)!
+        return da < db ? -1 : da > db ? 1 : a.order - b.order || byId(a, b)
       })
     const reviewDrafts = new Map<string, Draft>()
     for (const u of due) {
