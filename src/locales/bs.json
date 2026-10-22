@@ -138,7 +138,13 @@
     "examIn_few": "za {{count}} dana",
     "examIn_other": "za {{count}} dana",
     "examToday": "danas",
-    "examTomorrow": "sutra"
+    "examTomorrow": "sutra",
+    "late": {
+      "shifted": "Kasniš {{min}} min, ostatak dana je pomjeren",
+      "shiftedOverflow_one": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} blok ide u plan od sutra",
+      "shiftedOverflow_few": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} bloka idu u plan od sutra",
+      "shiftedOverflow_other": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} blokova ide u plan od sutra"
+    }
   },
   "plan": {
     "title": "Plan",
