@@ -46,8 +46,8 @@ export const router = createBrowserRouter([
             element: <AppShell />,
             children: [
               { index: true, element: <TodayPage /> },
-              { path: 'plan', element: <PlanPage tab="calendar" /> },
-              { path: 'plan/schedule', element: <PlanPage tab="schedule" /> },
+              { path: 'plan', element: <PlanPage /> },
+              { path: 'plan/schedule', element: <Navigate to="/plan" replace /> },
               { path: 'subjects', element: <SubjectsPage /> },
               { path: 'progress', element: <ProgressPage /> },
               { path: 'chat', element: <OwlChatPage /> },

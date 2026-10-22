@@ -142,8 +142,6 @@
   },
   "plan": {
     "title": "Plan",
-    "tabCalendar": "Kalendar",
-    "tabSchedule": "Satnica",
     "scheduleEmpty": "Satnica raspoređuje današnje blokove u slobodne termine.",
     "prevMonth": "Prethodni mjesec",
     "nextMonth": "Sljedeći mjesec",
@@ -183,9 +181,7 @@
       "note": "Vremena predlaže plan, uz pauze",
       "moved": "Pomjeren blok postaje ručni",
       "revert": "Vrati predloženo",
-      "reverted": "Vraćen je prijedlog plana",
-      "empty": "Ovaj dan nema blokova. Dodaj blok ili pogledaj drugi dan.",
-      "noTime": "Bez termina"
+      "reverted": "Vraćen je prijedlog plana"
     }
   },
   "subjects": {

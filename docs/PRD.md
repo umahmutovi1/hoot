@@ -50,7 +50,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju. Redoslijed gradnje je 
 | Plan | “Danas” ekran | Fokus bar dana, kartica “Sljedeći blok”, lista blokova, 3 najranija ispita, “zašto ovo danas”; najviše jedna kartica akcije iznad liste |
 | Plan | Brze akcije dana | “Danas ne mogu” (dan zauzet + replan) i “Imam samo 30 min” (najvredniji komad za to vrijeme) |
 | Plan | Kalendar | Mjesec i dan: ispiti, rokovi, nastava i planirani dani |
-| Plan | Satnica | Svaki blok automatski dobije predloženo vrijeme i pauze po predlošku sesije; tab Satnica prikazuje i dozvoljava pomjeranje |
+| Plan | Satnica | Svaki blok automatski dobije predloženo vrijeme i pauze po predlošku sesije; dnevni pogled kalendara (Plan → Dan, ranije tab Satnica) prikazuje i dozvoljava pomjeranje |
 | Plan | Replan | Propušteno se preraspodijeli od sutra uz limit dnevnog rasta; deficit sa 3 opcije; “novi početak” |
 | Plan | Izvoz u kalendar | ICS pretplata na ispite, rokove i blokove |
 | Plan | Ručni blokovi | Dodaj, izmijeni, obriši blok; ručni i izmijenjeni blokovi su zaključani od replana |
@@ -341,7 +341,7 @@ Satnicu pravi čista TypeScript funkcija `plan(state) → blocks`, bez AI-ja: br
 **Lista vs satnica.** Plan se pravi u dva sloja:
 
 1. `plan()` raspodijeli rad po danima → “Danas” lista.
-2. `placeTimes()` odmah poslije `plan()` (odluka nakon Etape 7: automatski, ne na zahtjev) smjesti blokove svakog dana u slobodne termine → popuni `start_min` i `planned_start`. Ručni blokovi sa zadatim vremenom su fiksni; ostali se slažu oko njih. Tab “Satnica” samo prikazuje dan i dozvoljava pomjeranje bloka (pomjeren blok postaje ručni, kao u toku 7).
+2. `placeTimes()` odmah poslije `plan()` (odluka nakon Etape 7: automatski, ne na zahtjev) smjesti blokove svakog dana u slobodne termine → popuni `start_min` i `planned_start`. Ručni blokovi sa zadatim vremenom su fiksni; ostali se slažu oko njih. Dnevni pogled kalendara (Plan → Dan; odluka nakon 8b: Kalendar i Satnica su spojeni u jedan kalendar sa pogledima Dan, default, i Mjesec) samo prikazuje dan i dozvoljava pomjeranje bloka (pomjeren blok postaje ručni, kao u toku 7).
 
 `placeTimes()` pravila:
 
@@ -468,7 +468,7 @@ Tabela `study_segments` i indeks jedne aktivne sesije su u konsolidovanoj migrac
 
 **Stabilnost plana.** Današnja lista se ne mijenja ispod tebe: replan tokom dana kreće od sutra, osim ako je današnji plan postao nemoguć (npr. dodala si izuzetak “zauzeta danas”). Djelimično odrađen blok vraća preostale minute u bazen za sljedeće dane.
 
-**Satnica** (tab) samo prikazuje vremena koja `placeTimes()` popuni odmah poslije `plan()` (odluka nakon Etape 7, vidi Lista vs satnica); nema dugmeta “Generiši”.
+**Satnica** (dnevni pogled kalendara, Plan → Dan) samo prikazuje vremena koja `placeTimes()` popuni odmah poslije `plan()` (odluka nakon Etape 7, vidi Lista vs satnica); nema dugmeta “Generiši”.
 
 **Offline.** Timer nikad ne zavisi od mreže. Sesije, segmenti, ocjene i ponavljanja prvo se snimaju u lokalni red u IndexedDB (Dexie), a zatim sinhronizuju sa Supabase-om kad je mreža dostupna.
 
