@@ -52,6 +52,7 @@ export function SessionPage() {
   const nextUnit = useSessionUi((s) => s.nextUnit)
   const setNextUnit = useSessionUi((s) => s.setNextUnit)
   const keptSegmentId = useSessionUi((s) => s.keptSegmentId)
+  const check = useSessionUi((s) => s.check)
   const pending = usePendingSync()
   const [timerSheet, setTimerSheet] = useState(false)
   const [picker, setPicker] = useState(false)
@@ -78,6 +79,8 @@ export function SessionPage() {
   if (!data) {
     return online ? <Navigate to="/" replace /> : <OfflineNotice />
   }
+  // A knowledge check runs on its own screen (a series of recall gates).
+  if (check?.sessionId === data.session.id) return <Navigate to="/session/review" replace />
 
   const { session } = data
   const active = activeMs(list, now)

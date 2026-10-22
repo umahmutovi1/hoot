@@ -22,6 +22,9 @@ interface SessionUiState {
   recalibrate: string[]
   needsRecalibration: (subjectId: string) => void
   recalibrated: (subjectId: string) => void
+  /** A session started as a knowledge check (review block or a due check) and its units. */
+  check: { sessionId: string; unitIds: string[] } | null
+  setCheck: (check: { sessionId: string; unitIds: string[] } | null) => void
 }
 
 export const useSessionUi = create<SessionUiState>()(
@@ -40,6 +43,8 @@ export const useSessionUi = create<SessionUiState>()(
       needsRecalibration: (id) =>
         set((s) => (s.recalibrate.includes(id) ? s : { recalibrate: [...s.recalibrate, id] })),
       recalibrated: (id) => set((s) => ({ recalibrate: s.recalibrate.filter((x) => x !== id) })),
+      check: null,
+      setCheck: (check) => set({ check }),
     }),
     {
       name: 'hoot-session-ui',
@@ -49,6 +54,7 @@ export const useSessionUi = create<SessionUiState>()(
         nextUnit: s.nextUnit,
         keptSegmentId: s.keptSegmentId,
         recalibrate: s.recalibrate,
+        check: s.check,
       }),
     },
   ),

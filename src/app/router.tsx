@@ -17,6 +17,7 @@ import { ExamScopePage } from '@/features/sources/ExamScopePage'
 import { AcademicCalendarPage } from '@/features/schedule/AcademicCalendarPage'
 import { AvailabilityPage } from '@/features/schedule/AvailabilityPage'
 import { TimetablePage } from '@/features/schedule/TimetablePage'
+import { CheckPage } from '@/features/review/CheckPage'
 import { RecallGatePage } from '@/features/review/RecallGatePage'
 import { SessionEndPage } from '@/features/session/SessionEndPage'
 import { SessionDetailPage } from '@/features/session/SessionDetailPage'
@@ -83,6 +84,7 @@ export const router = createBrowserRouter([
               { path: 'session', element: <SessionPage /> },
               { path: 'session/:id/end', element: <SessionEndPage /> },
               { path: 'session/recall', element: <RecallGatePage /> },
+              { path: 'session/review', element: <CheckPage /> },
             ],
           },
         ],
