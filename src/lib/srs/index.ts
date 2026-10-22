@@ -232,13 +232,6 @@ export function combineRecall(recalls: Recall[]): Recall | null {
   return mean >= 1.5 ? 2 : mean >= 0.5 ? 1 : 0
 }
 
-/** Outline recall: share of subheadings the user could explain (≥ 80% → 2, ≥ 40% → 1). */
-export function outlineRecall(explained: number, total: number): Recall {
-  if (total <= 0) return 0
-  const share = explained / total
-  return share >= 0.8 ? 2 : share >= 0.4 ? 1 : 0
-}
-
 /**
  * Strength of a unit with its cards: the cards together weigh as one more unit (PRD "jačina
  * jedinice uključuje i njene kartice"). null when neither is in review.

@@ -78,6 +78,8 @@ export function toEndSources(sources: SessionSource[]): EndSource[] {
         level: u.level,
         difficulty: u.difficulty,
         completedAt: u.completed_at,
+        nextReviewOn: u.next_review_on,
+        lastReviewAt: u.last_review_at,
       })),
     }
   })

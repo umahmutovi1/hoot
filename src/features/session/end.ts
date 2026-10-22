@@ -2,7 +2,9 @@ import { difficultyMultiplier } from '@/lib/estimates'
 import { allocateMinutes, type AllocationUnit } from '@/lib/session/allocate'
 import { coverage, type Covered, type Point } from '@/lib/session/coverage'
 import { activeMs, MINUTE, msByUnit, pauseStats } from '@/lib/session/timer'
+import type { LocalDate } from '@/lib/day'
 import type { Measure } from '@/lib/outline/parse'
+import { readCheckOn } from '@/features/review/apply'
 import type { Op, Row } from '@/lib/sync'
 import { toSegment, type SegmentRow, type SessionRow } from './model'
 
@@ -20,6 +22,10 @@ export interface EndUnit {
   /** Estimated difficulty (rated, or prior corrected by the source's ratings). */
   difficulty: number
   completedAt: string | null
+  /** Planned check (FSRS or the check of what was read). */
+  nextReviewOn: string | null
+  /** Last test; a unit tested during this session is not offered the gate again. */
+  lastReviewAt: string | null
 }
 
 export interface EndSource {
@@ -47,6 +53,8 @@ export interface EndAnswers {
   /** Why focus was low (only kept with focus 1). */
   focusReasons: string[]
   reflection: string
+  /** "Samo spasi": the recall gate of the units read is skipped (recorded with the session). */
+  skipGate?: boolean
 }
 
 /** Covered amount per unit for every range, keyed by unit id. */
@@ -58,6 +66,14 @@ export function coveredUnits(sources: EndSource[], ranges: Range[]): Map<string,
     for (const c of coverage(source.units, r.from, r.to)) out.set(c.unitId, c)
   }
   return out
+}
+
+/**
+ * Statuses the chip on the end form cycles through: "Razumijem" and "Ponovljeno" (questions:
+ * "Znam") come only from the recall gate, so they are offered only to keep a level the unit has.
+ */
+export function endLevels(level: number): number[] {
+  return level > 1 ? [0, 1, level] : [0, 1]
 }
 
 /** A chapter read to its end becomes "Pročitano" if it was not started (PRD decision, Stage 7). */
@@ -97,6 +113,8 @@ export interface EndPlan {
   ops: Op[]
   /** Minutes per unit, for the cards ("28 min"). */
   minutes: Map<string, number>
+  /** Units read to their end in this session and not tested yet: the recall gate offers them. */
+  gate: string[]
 }
 
 const round2 = (x: number) => Math.round(x * 100) / 100
@@ -108,6 +126,8 @@ export function planEnd(
   answers: EndAnswers,
   now: Date = new Date(),
   saved: SavedUnit[] = [],
+  /** Local day of the session; with it a chapter read without its gate gets a check in 2 days. */
+  today: LocalDate | null = null,
 ): EndPlan {
   const end = session.ended_at ? new Date(session.ended_at) : now
   const byUnit = msByUnit(segments.map(toSegment), end)
@@ -139,12 +159,16 @@ export function planEnd(
   const sessionUnits: Row[] = []
   const unitOps: Op[] = []
   const savedBy = new Map(saved.map((r) => [r.unit_id, r]))
+  const gate: string[] = []
 
   for (const id of touched) {
     const { unit } = unitInfo.get(id)!
     const amountDone = covered.get(id)?.amountDone ?? 0
     const min = minutes.get(id) ?? 0
     const levelAfter = answers.levels[id] ?? defaultLevel(unit, covered.get(id))
+    const testedNow = unit.lastReviewAt !== null && unit.lastReviewAt >= session.started_at
+    const read = covered.get(id)?.complete === true && levelAfter >= 1 && !testedNow
+    if (read) gate.push(id)
     const rating = answers.ratings[id] ?? null
     sessionUnits.push({
       session_id: session.id,
@@ -155,8 +179,14 @@ export function planEnd(
       level_before: savedBy.get(id)?.level_before ?? unit.level,
       level_after: levelAfter,
       difficulty: rating,
+      recall_skipped: read && answers.skipGate === true,
     })
     const patch: Row = {}
+    // A chapter read (again) without passing its gate: the check of what was read in 2 days.
+    if (read && today !== null && unit.kind === 'chapter' && levelAfter <= 1) {
+      const on = readCheckOn(today, unit.nextReviewOn)
+      if (on !== unit.nextReviewOn) patch.next_review_on = on
+    }
     if (levelAfter !== unit.level) {
       patch.level = levelAfter
       if (levelAfter >= 1 && !unit.completedAt) patch.completed_at = t
@@ -193,7 +223,7 @@ export function planEnd(
       rows: sessionUnits,
     })
   ops.push(...unitOps)
-  return { ops, minutes }
+  return { ops, minutes, gate }
 }
 
 /**

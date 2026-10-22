@@ -243,6 +243,7 @@ export type UnitPatch = Pick<
   | 'page_end'
   | 'amount'
   | 'completed_at'
+  | 'next_review_on'
 >
 
 /** Partial update of one unit (status, rating, notes, answer, archive, title/pages). */

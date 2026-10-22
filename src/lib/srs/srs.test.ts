@@ -5,7 +5,6 @@ import {
   clampReviewOn,
   combineRecall,
   levelAfter,
-  outlineRecall,
   ratingOf,
   retrievabilityOn,
   review,
@@ -172,19 +171,13 @@ describe('levelAfter', () => {
   })
 })
 
-describe('combineRecall and outlineRecall', () => {
+describe('combineRecall', () => {
   it('rounds the mean of several items', () => {
     expect(combineRecall([])).toBeNull()
     expect(combineRecall([2, 2, 1])).toBe(2)
     expect(combineRecall([2, 1])).toBe(2)
     expect(combineRecall([2, 0])).toBe(1)
     expect(combineRecall([1, 0, 0])).toBe(0)
-  })
-  it('maps the share of explained subheadings', () => {
-    expect(outlineRecall(4, 5)).toBe(2)
-    expect(outlineRecall(2, 5)).toBe(1)
-    expect(outlineRecall(1, 5)).toBe(0)
-    expect(outlineRecall(0, 0)).toBe(0)
   })
 })
 

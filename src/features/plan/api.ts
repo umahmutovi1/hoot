@@ -59,7 +59,7 @@ function useAllScope() {
   })
 }
 
-function useTopicLinks() {
+export function useTopicLinks() {
   const userId = useUserId()
   return useQuery({
     queryKey: topicLinksKey(userId),
