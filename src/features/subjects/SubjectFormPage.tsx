@@ -1,3 +1,8 @@
+import { goBack } from '@/app/navigation'
+import { useCreateRoughSource } from '@/features/sources/api'
+import type { RoughSize } from '@/lib/estimates/rough'
+import { RoughSizeField } from './RoughSizeField'
+import { useRoughTexts } from './roughTexts'
 import { useState, type ReactNode } from 'react'
 import { useFieldArray, useForm, useWatch, type Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -52,6 +57,9 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
   const isEdit = Boolean(initial)
   const [preset, setPreset] = useState<ExamPreset>('partials')
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [roughSize, setRoughSize] = useState<RoughSize | null>('medium')
+  const createRough = useCreateRoughSource()
+  const roughTexts = useRoughTexts()
 
   const newExams = (p: ExamPreset): AssessmentForm[] =>
     presetExams(p).map((e) => ({
@@ -128,7 +136,11 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
   }
 
   const submit = form.handleSubmit((values) => {
-    save.mutate(values)
+    const size = isEdit ? null : roughSize
+    // The rough source needs the subject row first.
+    void save.mutateAsync(values).then(() => {
+      if (size) createRough.mutate({ subjectId: values.id, size, ...roughTexts(size) })
+    })
     navigate(`/subjects/${values.id}`, { replace: true })
   })
 
@@ -142,7 +154,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => goBack(navigate, '/subjects')}
           aria-label={t('common.close')}
           className="flex size-11 items-center justify-center rounded-full glass"
         >
@@ -257,6 +269,8 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
         </button>
         <span className="px-1 text-xs text-ink-muted">{t('subjects.form.scopeLater')}</span>
       </div>
+
+      {!isEdit && <RoughSizeField value={roughSize} onChange={setRoughSize} />}
 
       <div className="flex flex-col rounded-card glass">
         <button

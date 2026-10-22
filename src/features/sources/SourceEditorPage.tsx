@@ -1,3 +1,4 @@
+import { goBack } from '@/app/navigation'
 import type { TFunction } from 'i18next'
 import { useMemo, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
@@ -167,7 +168,7 @@ function SourceEditor({
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => goBack(navigate, `/subjects/${subject.id}`)}
           aria-label={t('common.close')}
           className="flex size-11 items-center justify-center rounded-full glass"
         >

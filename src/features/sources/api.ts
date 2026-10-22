@@ -1,3 +1,4 @@
+import { roughSource, roughToArchive, type RoughSize } from '@/lib/estimates/rough'
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import type { TablesInsert, TablesUpdate } from '@/types/database'
 import { useAuth } from '@/features/auth/auth-context'
@@ -84,6 +85,7 @@ export function useSaveOutline() {
     mutationFn: async ({ form, measure, merge }: SaveOutlineInput) => {
       const { error } = await supabase.from('sources').upsert(toSourceRow(form))
       if (error) throw error
+      await archiveRoughSources(form.subjectId)
       const rows = toUnitRows(form.id, measure, merge.units)
       // Parents come before their children, and FK checks run at the end of the statement.
       if (rows.length > 0) {
@@ -135,6 +137,70 @@ export function useSaveOutline() {
     onError: (_error, _input, rollback) => rollback?.(),
     onSettled: (_data, _error, { form }) =>
       queryClient.invalidateQueries({ queryKey: sourcesKey(userId, form.subjectId) }),
+  })
+}
+
+/**
+ * Real content replaces the rough size (PRD "Onboarding" step 7): the subject's temporary
+ * sources get their parts archived, so they leave the plan and the progress, history stays.
+ */
+async function archiveRoughSources(subjectId: string) {
+  const { data } = await supabase.from('sources').select('id, is_rough').eq('subject_id', subjectId)
+  const rough = roughToArchive(data ?? [])
+  if (rough.length === 0) return
+  const { error } = await supabase
+    .from('units')
+    .update({ archived_at: now() })
+    .in(
+      'source_id',
+      rough.map((r) => r.id),
+    )
+    .is('archived_at', null)
+  if (error) throw error
+}
+
+export interface RoughSourceInput {
+  subjectId: string
+  size: RoughSize
+  /** Localized at creation: "Gruba procjena · ~25 h", parts "Dio 1" … */
+  title: string
+  partTitle: (n: number) => string
+}
+
+/** The temporary source from the rough size of the material (`sources.is_rough`). */
+export async function createRoughSource({ subjectId, size, title, partTitle }: RoughSourceInput) {
+  const plan = roughSource(size)
+  const id = crypto.randomUUID()
+  const { error } = await supabase.from('sources').insert({
+    id,
+    subject_id: subjectId,
+    kind: plan.kind,
+    measure: plan.measure,
+    title,
+    base_min_per_unit: plan.baseMinPerUnit,
+    is_rough: true,
+  })
+  if (error) throw error
+  const units = Array.from({ length: plan.parts }, (_, i) => ({
+    id: crypto.randomUUID(),
+    source_id: id,
+    kind: 'chapter' as const,
+    position: i,
+    title: partTitle(i + 1),
+    amount: 1,
+  }))
+  const { error: uError } = await supabase.from('units').insert(units)
+  if (uError) throw uError
+  return id
+}
+
+export function useCreateRoughSource() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: createRoughSource,
+    onSettled: (_d, _e, { subjectId }) =>
+      queryClient.invalidateQueries({ queryKey: sourcesKey(userId, subjectId) }),
   })
 }
 

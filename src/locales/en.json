@@ -263,6 +263,24 @@
       "title": "New subject name",
       "hint": "Add exams and the rest later on the subject.",
       "create": "Add subject"
+    },
+    "rough": {
+      "title": "How much material?",
+      "small": "Little",
+      "medium": "Medium",
+      "large": "A lot",
+      "hint": {
+        "small": "~10 h · e.g. lecture notes · a rough guess until you add content",
+        "medium": "~25 h · a book up to 250 pages · a rough guess until you add content",
+        "large": "~45 h · a big book + questions · a rough guess until you add content"
+      },
+      "none": "No estimate: the plan picks this subject up once you add a source.",
+      "sourceTitle": {
+        "small": "Rough estimate · ~10 h",
+        "medium": "Rough estimate · ~25 h",
+        "large": "Rough estimate · ~45 h"
+      },
+      "part": "Part {{n}}"
     }
   },
   "progress": {
@@ -711,6 +729,10 @@
       "filter": "Filter by exam",
       "all": "All",
       "noneInExam": "No unit of this source is in this exam yet. Assign them in “Exam scope”."
+    },
+    "rough": {
+      "label": "Rough estimate",
+      "hint": "Replace it with real content: adding a source removes this one."
     }
   },
   "time": {
