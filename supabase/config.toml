@@ -431,3 +431,7 @@ import_map = "./functions/deno.json"
 [functions.ai-status]
 verify_jwt = false
 import_map = "./functions/deno.json"
+
+[functions.sync-calendar]
+verify_jwt = false
+import_map = "./functions/deno.json"
