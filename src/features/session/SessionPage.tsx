@@ -5,6 +5,7 @@ import { goBack } from '@/app/navigation'
 import { ChevronLeftIcon, PencilIcon, PlusIcon } from '@/components/icons'
 import { OfflineNotice } from '@/components/OfflineNotice'
 import { useOnline } from '@/features/owl/api'
+import { LinkedQuestionsOffer } from '@/features/review/LinkedQuestionsOffer'
 import { useSubscriptions } from '@/features/notify/api'
 import { useProfile } from '@/features/settings/profile'
 import { useSources } from '@/features/sources/api'
@@ -290,6 +291,7 @@ export function SessionPage() {
           {t('session.units.other')}
         </button>
       </div>
+      {pickedId && <LinkedQuestionsOffer unitId={pickedId} />}
 
       <button
         type="button"
