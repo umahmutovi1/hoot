@@ -1807,7 +1807,7 @@
     "save": "Spasi",
     "deleteBlock": "Obriši blok",
     "move": "Prebaci gradivo na druge dane",
-    "moveSub": "Plan ga rasporedi od sutra",
+    "moveSub": "Ovaj termin postaje zauzet, plan ga rasporedi drugdje",
     "drop": "Izbaci iz plana",
     "dropSub": "{{exam}}: {{title}} više nije u obimu",
     "delete": "Obriši",
