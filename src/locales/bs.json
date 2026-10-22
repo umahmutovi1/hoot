@@ -1467,6 +1467,22 @@
       "delete": "Obriši razgovor",
       "confirmDelete": "Obrisati ovaj razgovor?",
       "untitled": "Razgovor"
+    },
+    "plan": {
+      "today": "Danas u planu {{time}}.",
+      "free": "Danas nemaš ništa u planu.",
+      "dayOff": "Danas je slobodno, plan nastavlja od sutra.",
+      "todayTitle": "Danas",
+      "doneOf": "{{done}} od {{total}} gotovo",
+      "soonTitle": "Uskoro",
+      "inDays_one": "za {{count}} dan",
+      "inDays_few": "za {{count}} dana",
+      "inDays_other": "za {{count}} dana",
+      "dueToday": "danas",
+      "dueTomorrow": "sutra",
+      "onTrack": "u planu",
+      "short": "fali {{time}}",
+      "left": "još ~{{time}}"
     }
   },
   "offline": {
