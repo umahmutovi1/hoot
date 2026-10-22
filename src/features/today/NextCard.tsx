@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
@@ -24,6 +25,7 @@ import { addDays, toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { activeMs, MINUTE, openSegment } from '@/lib/session/timer'
 import type { ActiveSession } from '@/features/session/model'
+import { ExtraTimeSheet } from './ExtraTimeSheet'
 import type { PlanToday } from './usePlanToday'
 
 const label = 'text-xs font-semibold tracking-[0.6px] text-white/88 uppercase'
@@ -125,8 +127,8 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
 
 /**
  * No block left today (DanasSlobodno, decision after 8b: in the same card, not a separate empty
- * screen): the next planned block (tomorrow or later), a free session, and "Predmeti" when the
- * plan has no material yet.
+ * screen): the next planned block (tomorrow or later), "Imam još vremena", a free session, and
+ * "Predmeti" when the plan has no material yet.
  */
 function FreeCard({ plan }: { plan: PlanToday }) {
   const { t } = useTranslation()
@@ -136,6 +138,7 @@ function FreeCard({ plan }: { plan: PlanToday }) {
   const { data: sources } = useAllSources()
   const goalTitle = useGoalTitle()
   const done = plan.todayBlocks.some((b) => b.status === 'done')
+  const [extra, setExtra] = useState(false)
   const noMaterial =
     sources !== undefined && !sources.some((s) => s.units.some((u) => u.archived_at === null))
   const later = plan.blocks
@@ -171,7 +174,16 @@ function FreeCard({ plan }: { plan: PlanToday }) {
         <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">{title}</span>
         <span className="text-[13px] text-white/84">{sub}</span>
       </div>
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        {!noMaterial && (
+          <button
+            type="button"
+            onClick={() => setExtra(true)}
+            className="flex h-12 items-center rounded-full bg-white/18 px-5 text-base font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]"
+          >
+            {t('today.extra.button')}
+          </button>
+        )}
         {noMaterial && (
           <Link
             to="/subjects"
@@ -185,6 +197,7 @@ function FreeCard({ plan }: { plan: PlanToday }) {
           {t('today.next.freeTitle')}
         </button>
       </div>
+      <ExtraTimeSheet open={extra} onOpenChange={setExtra} plan={plan} />
     </section>
   )
 }

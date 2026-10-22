@@ -54,6 +54,28 @@ export function pickFor(plan: PlanToday, minutes: number): Pick | null {
   })
 }
 
+/**
+ * "Imam još vremena": the pick filled up to `minutes` with the next units of the same subject from
+ * its later blocks (in plan order), so 90 min are not cut to one 50 min block.
+ */
+export function fillPick(plan: PlanToday, pick: Pick, minutes: number): Pick {
+  if (pick.from !== 'next' || pick.minutes >= minutes) return pick
+  const units = [...pick.units]
+  let total = pick.minutes
+  const later = plan.blocks
+    .filter((b) => b.on_date > plan.today && isOpen(b) && b.subject_id === pick.subjectId)
+    .sort((a, b) => a.on_date.localeCompare(b.on_date) || (a.start_min ?? 0) - (b.start_min ?? 0))
+  for (const b of later)
+    for (const u of b.plan_block_units) {
+      if (total >= minutes) break
+      if (units.some((x) => x.unitId === u.unit_id)) continue
+      const m = Math.min(u.planned_minutes, minutes - total)
+      units.push({ unitId: u.unit_id, minutes: m })
+      total += m
+    }
+  return { ...pick, units, minutes: total }
+}
+
 /** Title of a picked piece: subject and the units it covers. */
 export function pickTitle(
   t: ReturnType<typeof useTranslation>['t'],

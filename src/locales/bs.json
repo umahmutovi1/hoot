@@ -144,6 +144,16 @@
       "shiftedOverflow_one": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} blok ide u plan od sutra",
       "shiftedOverflow_few": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} bloka idu u plan od sutra",
       "shiftedOverflow_other": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} blokova ide u plan od sutra"
+    },
+    "extra": {
+      "button": "Imam još vremena",
+      "title": "Imam još vremena",
+      "sub": "Danas dodajem još jedan blok, i preko dnevnog maksimuma (samo danas). Ostali dani se preslože prema tome.",
+      "whyReview": "Provjera koja je na redu: jačina znanja pada.",
+      "whyNext": "Najhitnije sljedeće gradivo, {{minutes}} danas umjesto kasnije.",
+      "addStart": "Dodaj i počni",
+      "add": "Samo dodaj u današnji plan",
+      "added": "Dodano u današnji plan: {{minutes}}"
     }
   },
   "plan": {
