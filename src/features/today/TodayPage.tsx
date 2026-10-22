@@ -61,7 +61,7 @@ export function TodayPage() {
       <div className="mt-1.5 flex flex-col gap-0.5 px-1">
         <span className="text-[13px] font-semibold tracking-[0.2px] text-ink-secondary">
           <span className="uppercase">
-            {format(plan.now, 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
+            {format(toDisplayDate(plan.today), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
           </span>
           {status && (
             <>
@@ -99,7 +99,7 @@ export function TodayPage() {
           <ActionCards />
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />
-          <ExamTiles now={plan.now} />
+          <ExamTiles now={plan.now} today={plan.today} />
         </>
       ) : firstRun ? (
         <section className="mt-16 flex flex-col items-center gap-3.5 px-3 text-center">
