@@ -18,9 +18,6 @@
     "plan": "Plan",
     "subjects": "Predmeti",
     "progress": "Napredak",
-    "startSession": "Pokreni sesiju",
-    "resumeSession": "Nastavi sesiju",
-    "ai": "AI",
     "aiLabel": "AI asistent"
   },
   "auth": {
@@ -1279,5 +1276,19 @@
   "offline": {
     "title": "Nisi na mreži",
     "body": "Ovo se prvi put učitava s interneta. Timer i započeta sesija rade i bez mreže; promjene se šalju kad se veza vrati."
+  },
+  "menu": {
+    "title": "Meni",
+    "open": "Otvori meni",
+    "close": "Zatvori meni",
+    "calendar": "Kalendar",
+    "timetable": "Raspored nastave",
+    "allSubjects": "Svi predmeti",
+    "overview": "Pregled",
+    "sessions": "Sesije",
+    "settings": "Postavke",
+    "allSettings": "Sve postavke",
+    "academicCalendar": "Akademski kalendar",
+    "documents": "Dokumenti"
   }
 }

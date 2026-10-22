@@ -18,9 +18,6 @@
     "plan": "Plan",
     "subjects": "Subjects",
     "progress": "Progress",
-    "startSession": "Start session",
-    "resumeSession": "Resume session",
-    "ai": "AI",
     "aiLabel": "AI assistant"
   },
   "auth": {
@@ -1246,5 +1243,19 @@
   "offline": {
     "title": "You're offline",
     "body": "This loads from the internet the first time. The timer and a started session work offline; changes are sent when you are back online."
+  },
+  "menu": {
+    "title": "Menu",
+    "open": "Open menu",
+    "close": "Close menu",
+    "calendar": "Calendar",
+    "timetable": "Class timetable",
+    "allSubjects": "All subjects",
+    "overview": "Overview",
+    "sessions": "Sessions",
+    "settings": "Settings",
+    "allSettings": "All settings",
+    "academicCalendar": "Academic calendar",
+    "documents": "Documents"
   }
 }
