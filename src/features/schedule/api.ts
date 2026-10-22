@@ -306,3 +306,34 @@ export function useSaveWeekdayTemplate() {
     },
   })
 }
+
+/** Onboarding step 4: the proposed periods replace the whole weekly template. */
+export function useReplaceRules() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  const key = scheduleKey('availability_rules', userId)
+  return useMutation({
+    mutationFn: async (rules: { weekday: number; start_min: number; end_min: number }[]) => {
+      const { error: dError } = await supabase.from('availability_rules').delete().gte('weekday', 0)
+      if (dError) throw dError
+      if (rules.length > 0) {
+        const { error } = await supabase
+          .from('availability_rules')
+          .insert(rules.map((r) => ({ id: crypto.randomUUID(), over_classes: false, ...r })))
+        if (error) throw error
+      }
+    },
+    onMutate: (rules) =>
+      patchList<RuleRow>(queryClient, key, () =>
+        rules.map((r) => ({
+          id: crypto.randomUUID(),
+          user_id: userId!,
+          updated_at: now(),
+          over_classes: false,
+          ...r,
+        })),
+      ),
+    onError: (_e, _input, rollback) => rollback?.(),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+  })
+}

@@ -6,6 +6,7 @@ import {
   capFor,
   classesOverlapping,
   studyMinutesOn,
+  studyMinutesBetween,
   formatClock,
   freeMinutesOn,
   freeSlotsOn,
@@ -383,5 +384,20 @@ describe('busy time from connected calendars', () => {
       events: [ev({})],
     }
     expect(freeSlotsOn('2026-10-19', forced)).toEqual([{ startMin: 17 * 60, endMin: 18 * 60 }])
+  })
+})
+
+describe('studyMinutesBetween', () => {
+  it('sums capped free time up to the day before', () => {
+    const input: DayInput = {
+      rules: Array.from({ length: 7 }, (_, weekday) => ({ weekday, startMin: 600, endMin: 900 })),
+      exceptions: [],
+      entries: [],
+      periods: [],
+      caps: [120, 120, 120, 120, 120, 240, 240],
+    }
+    // Mon 19.10 – Sun 25.10: 5 h of slots a day, capped at 2 h on weekdays and 4 h at the weekend
+    expect(studyMinutesBetween('2026-10-19', '2026-10-26', () => input)).toBe(5 * 120 + 2 * 240)
+    expect(studyMinutesBetween('2026-10-19', '2026-10-19', () => input)).toBe(0)
   })
 })

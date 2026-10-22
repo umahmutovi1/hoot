@@ -535,8 +535,6 @@
     "close": "Close"
   },
   "profile": {
-    "welcomeTitle": "What should I call you?",
-    "welcomeBody": "I use your name in the greeting at the start of the day. You can change it in Settings.",
     "nameLabel": "Name",
     "namePlaceholder": "e.g. Uma",
     "continue": "Continue",
@@ -1379,5 +1377,102 @@
     "ignoredHint": "Ignored: the plan counts this time as free.",
     "ignore": "Ignore",
     "unignore": "Count as busy again"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "stepOf": "Step {{step}} of {{total}}",
+    "next": "Next",
+    "later": "Finish later",
+    "continue": "Continue setup · step {{step}} of {{total}}",
+    "name": {
+      "title": "What should I call you?",
+      "sub": "The plan and reminders will use your name.",
+      "zone": "Time zone: {{zone}} (from the browser)"
+    },
+    "import": {
+      "title": "What do you already have?",
+      "sub": "Import what exists, so classes and commitments are taken before you pick free time.",
+      "calendar": "Academic calendar",
+      "calendarSub": "PDF, photo or text · classes, exam periods, holidays",
+      "timetable": "Class timetable",
+      "timetableSub": "by hand, one class at a time",
+      "feed": "Connected calendar",
+      "feedSub": "Google, Apple or Outlook (iCal link)",
+      "none": "Nothing yet? Just continue; you can add all of this later in Settings.",
+      "added": "Added"
+    },
+    "rhythm": {
+      "title": "Your rhythm",
+      "sub": "When do you usually get up and go to bed?",
+      "weekday": "Weekday",
+      "weekend": "Weekend",
+      "wake": "Get up",
+      "sleep": "Go to bed",
+      "easiest": "When is studying easiest?",
+      "hint": "Pick several if you like. The app learns from your sessions later. Your day starts at {{time}}."
+    },
+    "part": {
+      "morning": "Morning",
+      "midday": "Midday",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "days": {
+      "title": "When can you study?",
+      "sub": "Hatched are classes and busy calendar time. Lavender are the proposed free periods. Tap a day to turn it off.",
+      "weekdays": "M,T,W,T,F,S,S",
+      "allAwake": "With no part of the day picked, all your awake time is proposed (from {{from}}).",
+      "hint": "Classes and busy time are taken out by themselves. Change single days later in Availability."
+    },
+    "max": {
+      "title": "At most per day?",
+      "sub": "The plan never goes beyond your free time or this cap.",
+      "weekday": "Weekdays",
+      "weekend": "Weekends",
+      "less": "Less: {{what}}",
+      "more": "More: {{what}}",
+      "weekly": "That is {{time}} a week",
+      "reserve": "The plan keeps a reserve, so realistic beats ideal."
+    },
+    "presets": {
+      "title": "How do you like breaks?",
+      "sub": "Only a reminder. You always tap the break yourself, and each session can use another one.",
+      "recommended": "recommended",
+      "own": "Build your own sequence (e.g. 45 → 10 → 45 → 20) in Settings."
+    },
+    "subject": {
+      "title": "First subject",
+      "sub": "Rough is fine. Add the material later.",
+      "namePlaceholder": "e.g. Signals and Systems",
+      "exam": "Exam",
+      "examDefault": "Midterm 1",
+      "when": "When?",
+      "fromCalendar": "From the calendar",
+      "exactDate": "Exact date"
+    },
+    "week": {
+      "title": "Your week",
+      "sub": "This is the plan with what you entered.",
+      "free": "free a week",
+      "needed": "needed until: {{exam}}",
+      "noExam": "no dated exam",
+      "fits": "You make it, with {{time}} to spare",
+      "short": "{{time}} short before the exam",
+      "firstSession": "First session",
+      "planSoon": "the schedule comes with the plan",
+      "rough": "The estimate is rough until you add content. After 3 sessions the app knows your pace.",
+      "start": "Start the first session",
+      "today": "Go to Today"
+    },
+    "checklist": {
+      "title_one": "{{count}} more step to an accurate plan",
+      "title_other": "{{count}} more steps to an accurate plan",
+      "progress": "{{done}} of {{total}}",
+      "rhythm": "Name, language and rhythm",
+      "calendar": "Academic calendar",
+      "days": "Study days and periods",
+      "timetable": "Timetable or calendar"
+    }
   }
 }

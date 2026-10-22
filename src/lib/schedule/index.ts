@@ -472,3 +472,14 @@ export function lecturesToLog<T extends ClassEntry>(
       !skipped.has(`${e.id}:${date}`),
   )
 }
+
+/** Study minutes from `from` up to the day before `until` (free time capped per day). */
+export function studyMinutesBetween(
+  from: LocalDate,
+  until: LocalDate,
+  inputFor: (date: LocalDate) => DayInput,
+): number {
+  let total = 0
+  for (let d = from; d < until; d = addDays(d, 1)) total += studyMinutesOn(d, inputFor(d))
+  return total
+}
