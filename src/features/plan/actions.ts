@@ -15,8 +15,9 @@ import { useSessionUi } from '@/features/session/store'
 import { subjectsKey } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
 import { addDays, localDay, wallClock, zonedInstant, type LocalDate } from '@/lib/day'
-import { capFor, freeSlotsOn } from '@/lib/schedule'
-import { LATE_AFTER_MIN, shiftRestOfDay, spanOf, type CutUnit } from '@/lib/scheduler'
+import { capFor, formatClock, freeSlotsOn, subtractSlots } from '@/lib/schedule'
+import { breakAfterBlock } from '@/lib/session/timer'
+import { LATE_AFTER_MIN, shiftRestOfDay, skipBlock, spanOf, type CutUnit } from '@/lib/scheduler'
 import { supabase } from '@/lib/supabase'
 import type { Op, Row } from '@/lib/sync'
 import { planBlocksKey } from './api'
@@ -264,6 +265,161 @@ export function useStartBlock() {
       navigate('/session')
     },
     [writer, suggestedId, setTimerMode, navigate, shiftLate],
+  )
+}
+
+/** How many days ahead "Preskoči" looks for a study day with room for the skipped block. */
+const CARRY_DAYS = 14
+
+/**
+ * "Preskoči" (decision after 8b): the block is not done now, but its material keeps priority.
+ * With `startNext` the next block starts right away and the rest of the day is pulled earlier
+ * (`skipBlock()`). The skipped block takes the first gap left today; without one it becomes the
+ * first block of the next study day (a fixed block, so the replan arranges that day around it).
+ * It is moved, not missed, so it does not lower ρ. Toast with undo.
+ */
+export function useSkipBlock() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  const write = useQueueWrite()
+  const boundary = useDayBoundary()
+  const schedule = useScheduleData()
+  const { resolve, defaultId } = usePresets()
+  const replanNow = usePlanStore((s) => s.replanNow)
+  const start = useStartBlock()
+  const show = useToast((s) => s.show)
+  const { t } = useTranslation()
+  return useCallback(
+    async (block: PlanBlockRow, units: Map<string, UnitInfo>, startNext: boolean) => {
+      const key = planBlocksKey(userId)
+      const blocks = queryClient.getQueryData<PlanBlockRow[]>(key) ?? []
+      const now = new Date()
+      const today = localDay(now, boundary)
+      const wall = wallClock(now, boundary.timeZone).minutes
+      const nowMin = wall < boundary.dayStartMin ? wall + 1440 : wall
+      const preset = resolve(defaultId)
+      const state = usePlanStore.getState().model?.built.state
+      const examEve = (d: LocalDate) =>
+        state?.goals.some((g) => g.kind === 'exam' && g.on === addDays(d, 1))
+          ? state.settings.examEveEndMin
+          : null
+
+      const later = blocks
+        .filter(
+          (b) =>
+            b.id !== block.id &&
+            b.on_date === today &&
+            b.status === 'planned' &&
+            b.start_min !== null &&
+            b.start_min + b.planned_minutes > nowMin,
+        )
+        .sort((a, b) => a.start_min! - b.start_min!)
+      const { moved, skippedAt } = skipBlock(
+        { id: block.id, startMin: block.start_min ?? nowMin, minutes: block.planned_minutes },
+        later.map((b) => ({ id: b.id, startMin: b.start_min!, minutes: b.planned_minutes })),
+        freeSlotsOn(today, schedule.dayInput(today)),
+        { nowMin, preset, startNext, endBy: block.on_date === today ? examEve(today) : null },
+      )
+
+      // No room today: the first free time of the next study day, around its manual blocks.
+      let target: { onDate: LocalDate; startMin: number | null } = {
+        onDate: today,
+        startMin: skippedAt,
+      }
+      if (skippedAt === null) {
+        const span = spanOf(preset, block.planned_minutes)
+        target = { onDate: addDays(today, 1), startMin: null }
+        for (let i = 1; i <= CARRY_DAYS; i++) {
+          const day = addDays(today, i)
+          const fixed = blocks
+            .filter((b) => b.on_date === day && b.origin === 'user' && b.start_min !== null)
+            .map((b) => ({
+              startMin: b.start_min! - breakAfterBlock(preset, block.planned_minutes),
+              endMin:
+                b.start_min! +
+                spanOf(preset, b.planned_minutes) +
+                breakAfterBlock(preset, b.planned_minutes),
+            }))
+          const endBy = examEve(day)
+          const gap = subtractSlots(freeSlotsOn(day, schedule.dayInput(day)), fixed).find(
+            (g) => g.endMin - g.startMin >= span && (endBy === null || g.startMin + span <= endBy),
+          )
+          if (gap) {
+            target = { onDate: day, startMin: gap.startMin }
+            break
+          }
+        }
+      }
+
+      const at = (date: LocalDate, min: number | null) =>
+        min === null ? null : zonedInstant(date, min, boundary.timeZone).toISOString()
+      const carried = skippedAt === null
+      const skippedRow: PlanBlockRow = carried
+        ? {
+            ...block,
+            on_date: target.onDate,
+            start_min: target.startMin,
+            planned_start: at(target.onDate, target.startMin),
+            origin: 'user',
+            reason: JSON.stringify({
+              code: 'manual',
+              mode: blockMode(block, units),
+              carried: true,
+            }),
+          }
+        : { ...block, start_min: skippedAt, planned_start: at(today, skippedAt) }
+      const shifted = later
+        .filter((b) => moved.has(b.id))
+        .map((b) => ({
+          ...b,
+          start_min: moved.get(b.id)!,
+          planned_start: at(today, moved.get(b.id)!),
+        }))
+      const patchOf = (b: PlanBlockRow): Op => ({
+        kind: 'update',
+        table: 'plan_blocks',
+        match: { id: b.id },
+        patch: {
+          on_date: b.on_date,
+          start_min: b.start_min,
+          planned_start: b.planned_start,
+          origin: b.origin,
+          reason: b.reason,
+        },
+      })
+      const changed = [skippedRow, ...shifted]
+      const before = [block, ...later.filter((b) => moved.has(b.id))]
+      const apply = (rows: PlanBlockRow[]) =>
+        queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) =>
+          list.map((b) => rows.find((r) => r.id === b.id) ?? b),
+        )
+      apply(changed)
+      await write(changed.map(patchOf))
+      replanNow()
+
+      const when = target.startMin === null ? '' : formatClock(target.startMin)
+      show(
+        carried
+          ? target.onDate === addDays(today, 1)
+            ? t('today.skip.toTomorrow', { time: when })
+            : t('today.skip.toLater', { time: when })
+          : t('today.skip.toToday', { time: when }),
+        {
+          label: t('today.cant.undo'),
+          run: () => {
+            apply(before)
+            void write(before.map(patchOf)).then(() => replanNow())
+          },
+        },
+      )
+
+      const next = later[0]
+      if (startNext && next) {
+        const nextRow = shifted.find((b) => b.id === next.id) ?? next
+        await start(nextRow, units)
+      }
+    },
+    [userId, queryClient, write, boundary, schedule, resolve, defaultId, replanNow, start, show, t],
   )
 }
 

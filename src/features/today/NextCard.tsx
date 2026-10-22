@@ -23,9 +23,11 @@ import { useLocale } from '@/features/settings/useLocale'
 import { useSubject, useSubjects } from '@/features/subjects/api'
 import { addDays, toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
+import { LATE_AFTER_MIN } from '@/lib/scheduler'
 import { activeMs, MINUTE, openSegment } from '@/lib/session/timer'
 import type { ActiveSession } from '@/features/session/model'
 import { ExtraTimeSheet } from './ExtraTimeSheet'
+import { SkipSheet } from './SkipSheet'
 import type { PlanToday } from './usePlanToday'
 
 const label = 'text-xs font-semibold tracking-[0.6px] text-white/88 uppercase'
@@ -89,17 +91,38 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
   })
   const pages = blockPages(t, block, plan.units)
   const clock = clockOf(block)
+  const [skipping, setSkipping] = useState(false)
+  const lateMin =
+    block.status === 'planned' && block.start_min !== null ? plan.nowMin - block.start_min : 0
+  const late = lateMin > LATE_AFTER_MIN
   return (
     <section className="glass-tint flex flex-col gap-4 rounded-card-lg p-5">
       <div className="flex items-center justify-between">
         <span className={label}>
-          {clock ? t('today.next.labelAt', { time: clock }) : t('today.next.label')}
+          {late
+            ? t('today.skip.late', { min: lateMin })
+            : clock
+              ? t('today.next.labelAt', { time: clock })
+              : t('today.next.label')}
         </span>
-        <span className="flex h-[26px] items-center rounded-full bg-white/18 px-2.5 text-xs font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]">
-          {t(
-            `planBlocks.mode.${block.kind === 'learn' ? blockMode(block, plan.units) : block.kind}`,
+        <div className="flex items-center gap-1.5">
+          {block.status === 'planned' && (
+            <button
+              type="button"
+              onClick={() => setSkipping(true)}
+              className="-my-2.5 flex h-11 items-center px-1"
+            >
+              <span className="flex h-[26px] items-center rounded-full bg-white/94 px-3 text-xs font-semibold text-brand-strong">
+                {t('today.skip.button')}
+              </span>
+            </button>
           )}
-        </span>
+          <span className="flex h-[26px] items-center rounded-full bg-white/18 px-2.5 text-xs font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]">
+            {t(
+              `planBlocks.mode.${block.kind === 'learn' ? blockMode(block, plan.units) : block.kind}`,
+            )}
+          </span>
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <span className="text-sm text-white/88">{subject?.name}</span>
@@ -116,11 +139,16 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
         <span className="text-[40px] font-semibold tracking-[-1.2px] tabular-nums">
           {formatClock(block.planned_minutes * MINUTE)}
         </span>
-        <button type="button" onClick={() => void start(block, plan.units)} className={action}>
+        <button
+          type="button"
+          onClick={() => void start(block, plan.units)}
+          className={`${action} whitespace-nowrap`}
+        >
           <PlayIcon />
-          {t('today.next.start')}
+          {late ? t('today.skip.startNow') : t('today.next.start')}
         </button>
       </div>
+      <SkipSheet block={skipping ? block : null} plan={plan} onClose={() => setSkipping(false)} />
     </section>
   )
 }

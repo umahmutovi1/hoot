@@ -149,6 +149,19 @@
       "addStart": "Add and start",
       "add": "Only add to today's plan",
       "added": "Added to today's plan: {{minutes}}"
+    },
+    "skip": {
+      "button": "Skip",
+      "late": "{{min}} min late",
+      "startNow": "Start now",
+      "title": "Skip this block?",
+      "body": "The material is not lost: it goes into the first free time today, or else becomes the first block of the next study day. It does not count as missed.",
+      "andStart": "Skip and start now: {{title}}",
+      "only": "Only skip",
+      "toToday": "Moved to today at {{time}}",
+      "toTomorrow": "No room today: first block tomorrow at {{time}}",
+      "toLater": "Moved to the first free day at {{time}}",
+      "carried": "moved"
     }
   },
   "plan": {

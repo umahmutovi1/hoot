@@ -154,6 +154,19 @@
       "addStart": "Dodaj i počni",
       "add": "Samo dodaj u današnji plan",
       "added": "Dodano u današnji plan: {{minutes}}"
+    },
+    "skip": {
+      "button": "Preskoči",
+      "late": "Kasniš {{min}} min",
+      "startNow": "Počni sad",
+      "title": "Preskočiti ovaj blok?",
+      "body": "Gradivo ne propada: ide u prvo slobodno mjesto danas, a ako ga nema, kao prvi blok sljedećeg dana učenja. Ne računa se kao propušteno.",
+      "andStart": "Preskoči i kreni odmah: {{title}}",
+      "only": "Samo preskoči",
+      "toToday": "Prebačeno na danas u {{time}}",
+      "toTomorrow": "Danas nema mjesta: prvi blok sutra u {{time}}",
+      "toLater": "Prebačeno na prvi slobodan dan u {{time}}",
+      "carried": "prebačeno"
     }
   },
   "plan": {

@@ -157,6 +157,8 @@ export interface Reason {
   goalId?: string
   mode?: string
   edited?: boolean
+  /** A skipped block moved to the next study day ("Preskoči"). */
+  carried?: boolean
   days?: number
   date?: LocalDate
   /** Priority 5 ("uslovni predmet"). */

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { CheckIcon, ChevronRightIcon, LockIcon } from '@/components/icons'
 import { useStartBlock } from '@/features/plan/actions'
 import { blockSub, blockTitle, isOpen, nextBlock, useGoalTitle } from '@/features/plan/model'
+import { reasonOf } from '@/features/plan/save'
 import type { PlanBlockRow } from '@/features/plan/state'
 import { useActiveSession } from '@/features/session/api'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
@@ -130,7 +131,11 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
                 <span className="truncate text-[13px] text-ink-secondary">
                   {[
                     blockSub(t, b, plan.units),
-                    b.origin === 'user' ? t('planBlocks.manual') : null,
+                    b.origin === 'user'
+                      ? reasonOf(b)?.carried
+                        ? t('today.skip.carried')
+                        : t('planBlocks.manual')
+                      : null,
                     status,
                   ]
                     .filter(Boolean)

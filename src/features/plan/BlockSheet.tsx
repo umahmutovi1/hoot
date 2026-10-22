@@ -14,7 +14,7 @@ import { dateFnsLocales } from '@/lib/locale'
 import { leavesOf } from '@/lib/progress'
 import { formatClock, parseClock } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
-import { useDeleteBlock, useSaveBlock, type BlockDraft } from './actions'
+import { useDeleteBlock, useSaveBlock, useSkipBlock, type BlockDraft } from './actions'
 import { blockMode, blockTitle, useUnitIndex } from './model'
 import { reasonOf } from './save'
 import type { PlanBlockRow } from './state'
@@ -105,6 +105,7 @@ function BlockForm({
   const model = usePlanStore((s) => s.model)
   const save = useSaveBlock()
   const remove = useDeleteBlock()
+  const skip = useSkipBlock()
   const show = useToast((s) => s.show)
   const active = subjects.filter((s) => !s.archived)
 
@@ -481,6 +482,18 @@ function BlockForm({
       >
         {t('blockSheet.save')}
       </button>
+      {block && block.on_date === today && block.status === 'planned' && (
+        <button
+          type="button"
+          onClick={() => {
+            onDone()
+            void skip(block, units, false)
+          }}
+          className="flex h-12 items-center justify-center rounded-full glass text-[15px] font-semibold"
+        >
+          {t('today.skip.button')}
+        </button>
+      )}
       {block && (
         <button
           type="button"

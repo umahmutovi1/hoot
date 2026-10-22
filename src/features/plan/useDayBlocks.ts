@@ -52,7 +52,11 @@ export function useDayBlocks() {
             title: `${(subject?.name ?? '').split(' ')[0]} — ${blockTitle(t, b, units, goalTitle(b.deadline_id ?? ''))}`,
             sub: [
               blockSub(t, b, units),
-              b.origin === 'user' ? t('planBlocks.manual') : null,
+              b.origin === 'user'
+                ? reasonOf(b)?.carried
+                  ? t('today.skip.carried')
+                  : t('planBlocks.manual')
+                : null,
               statusText(b),
             ]
               .filter(Boolean)
