@@ -1931,8 +1931,6 @@
     "summaryLine": "{{yes}} remembered · {{part}} partly · {{no}} not · {{min}} min",
     "relearn": "back to learning",
     "relearnNote": "{{units}}: back in the learning plan.",
-    "nextIn_one": "Next check in ~{{count}} day.",
-    "nextIn_other": "Next check in ~{{count}} days.",
     "done": "Done",
     "empty": "No checks due.",
     "toToday": "To Today",
@@ -1942,7 +1940,10 @@
       "sub_other": "{{count}} chapters · ~{{min}} min",
       "start": "Start"
     },
-    "finishedAria": "Check finished"
+    "finishedAria": "Check finished",
+    "nextFor_one": "check in {{count}} day",
+    "nextFor_other": "check in {{count}} days",
+    "relearnSub": "new learning in the plan"
   },
   "strength": {
     "title": "Knowledge strength",

@@ -90,11 +90,10 @@ describe('checkSummary', () => {
       TODAY,
     )
     expect([s.count, s.remembered, s.partly, s.forgot]).toEqual([3, 1, 1, 1])
-    expect(s.changes.map((c) => [c.unit.id, c.before, c.after, c.relearn])).toEqual([
-      ['n', 0.64, 0.93, false],
-      ['b', null, 0.5, true],
+    expect(s.changes.map((c) => [c.unit.id, c.before, c.after, c.relearn, c.nextInDays])).toEqual([
+      ['n', 0.64, 0.93, false, 3],
+      ['b', null, 0.5, true, null],
     ])
     expect(s.relearn.map((u) => u.id)).toEqual(['b'])
-    expect(s.nextInDays).toBe(2)
   })
 })

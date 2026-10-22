@@ -1982,9 +1982,6 @@
     "summaryLine": "{{yes}} sjećam se · {{part}} djelimično · {{no}} ne sjećam se · {{min}} min",
     "relearn": "vraća se u učenje",
     "relearnNote": "{{units}}: vraćeno u plan učenja.",
-    "nextIn_one": "Sljedeća provjera za ~{{count}} dan.",
-    "nextIn_few": "Sljedeća provjera za ~{{count}} dana.",
-    "nextIn_other": "Sljedeća provjera za ~{{count}} dana.",
     "done": "Gotovo",
     "empty": "Nema provjera na redu.",
     "toToday": "Na Danas",
@@ -1995,7 +1992,11 @@
       "sub_other": "{{count}} poglavlja · ~{{min}} min",
       "start": "Počni"
     },
-    "finishedAria": "Provjera završena"
+    "finishedAria": "Provjera završena",
+    "nextFor_one": "provjera za {{count}} dan",
+    "nextFor_few": "provjera za {{count}} dana",
+    "nextFor_other": "provjera za {{count}} dana",
+    "relearnSub": "novo učenje u planu"
   },
   "strength": {
     "title": "Jačina znanja",
