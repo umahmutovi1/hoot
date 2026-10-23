@@ -1436,6 +1436,7 @@ create table question_links (                          -- ispitno pitanje ↔ po
 alter table timetable_entries add column note text;   -- napomena uz termin (parse-timetable)
 grant update (deadline_id) on external_events to authenticated;   -- Moodle rok → deadlines
 -- RPC question_candidates(question_ids, k): najbliža poglavlja predmeta po pitanju; match_notes(query, k): bilješke i kartice
+-- 0023_fix_stale_embedding_trigger.sql: triger iz 0021 je rušio svaki update units/cards/topics (42703); jedna grana po tabeli
 ```
 
 ## AI integracija
