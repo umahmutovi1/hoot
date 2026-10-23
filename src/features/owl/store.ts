@@ -9,6 +9,9 @@ import type { Json } from '@/types/database'
 // (owl_conversations / owl_messages) so past conversations show up in the history; the
 // current one is also kept on the device for a reload.
 
+/** A shared file or text (same shape as DocumentInput in actions.ts). */
+export type SharedInput = { type: 'file'; file: File } | { type: 'text'; text: string }
+
 export type StateRef = { subject: string | null; topic: 'grades' | 'exams' | 'calendar' | 'plan' }
 
 /** A note or card found by "gdje sam pisala o …" (vector search, no LLM). */
@@ -76,7 +79,7 @@ interface OwlState {
   conversationId: string | null
   messages: OwlMessage[]
   /** Kind preselected when the "give a document" sheet opens from a suggestion. */
-  sheet: { open: boolean; kind: ImportKind; nonce: number }
+  sheet: { open: boolean; kind: ImportKind; nonce: number; shared?: SharedInput | null }
   busy: boolean
   /** Forgets the open conversation when another user signs in. */
   ensureUser: (userId: string) => void
@@ -89,6 +92,8 @@ interface OwlState {
   updateProposal: (id: string, update: (p: ImportProposal) => ImportProposal) => void
   setBusy: (busy: boolean) => void
   openSheet: (kind?: ImportKind) => void
+  /** Android "Podijeli" → Hoot: the sheet opens on its confirm step with the shared item. */
+  openShared: (input: SharedInput) => void
   closeSheet: () => void
 }
 
@@ -172,7 +177,9 @@ export const useOwlStore = create<OwlState>()(
       setBusy: (busy) => set({ busy }),
       openSheet: (kind = 'auto') =>
         set((s) => ({ sheet: { open: true, kind, nonce: s.sheet.nonce + 1 } })),
-      closeSheet: () => set((s) => ({ sheet: { ...s.sheet, open: false } })),
+      openShared: (shared) =>
+        set((s) => ({ sheet: { open: true, kind: 'auto', nonce: s.sheet.nonce + 1, shared } })),
+      closeSheet: () => set((s) => ({ sheet: { ...s.sheet, open: false, shared: null } })),
     }),
     {
       name: 'hoot-owl',

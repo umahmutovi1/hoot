@@ -511,3 +511,33 @@ export function useDeleteCard() {
       queryClient.invalidateQueries({ queryKey: cardsKey(userId, unitId) }),
   })
 }
+
+/** "pojam ⇥ definicija" lines as new cards of a unit (Quizlet / pasted text). */
+export function useImportCards() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      unitId,
+      cards,
+    }: {
+      unitId: string
+      cards: { front: string; back: string }[]
+    }) => {
+      const rows = cards.map((c) => ({
+        id: crypto.randomUUID(),
+        unit_id: unitId,
+        front: c.front.slice(0, 500),
+        back: c.back.slice(0, 2000),
+      }))
+      for (let i = 0; i < rows.length; i += 200) {
+        const { error } = await supabase.from('cards').insert(rows.slice(i, i + 200))
+        if (error) throw error
+      }
+      embedAfterImport()
+      return rows.length
+    },
+    onSettled: (_data, _error, { unitId }) =>
+      queryClient.invalidateQueries({ queryKey: cardsKey(userId, unitId) }),
+  })
+}

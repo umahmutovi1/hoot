@@ -10,6 +10,7 @@ import { ChatPlan } from './ChatPlan'
 import { GiveDocumentSheet } from './GiveDocumentSheet'
 import { ActionCard } from './ActionCard'
 import { ImportCard } from './ImportCard'
+import { ShareReceiver } from './ShareReceiver'
 import { useOwlStore, type OwlMessage, type StateRef } from './store'
 import { useOwl } from './useOwl'
 
@@ -142,6 +143,7 @@ export function OwlChatPage() {
         </form>
       </div>
       <GiveDocumentSheet />
+      <ShareReceiver />
     </div>
   )
 }

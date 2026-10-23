@@ -710,6 +710,19 @@
       "intervals_few": "{{count}} intervala",
       "intervals_other": "{{count}} intervala",
       "delete": "Obriši predložak"
+    },
+    "data": "Podaci",
+    "anki": {
+      "title": "Izvoz kartica za Anki",
+      "count_one": "{{count}} kartica",
+      "count_few": "{{count}} kartice",
+      "count_other": "{{count}} kartica",
+      "format": "CSV",
+      "failed": "Izvoz nije uspio. Pokušaj ponovo.",
+      "quizlet": "Kartice za Quizlet",
+      "quizletHint": "Kopira tekst za Quizlet → Uvezi (tab, nova linija)",
+      "copy": "Kopiraj",
+      "copied": "Kartice su kopirane. Zalijepi ih u Quizlet → Uvezi."
     }
   },
   "validation": {
@@ -1046,7 +1059,19 @@
       "newTitle": "Nova kartica",
       "editTitle": "Uredi karticu",
       "delete": "Obriši karticu",
-      "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
+      "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
+      "import": "Uvezi",
+      "importTitle": "Uvoz kartica",
+      "importPlaceholder": "Jedna kartica po liniji:\nKonvolucija\tmnoženje u frekvenciji\nDTFT - transformacija niza",
+      "importHint": "Pojam i definicija odvojeni tabom (izvoz iz Quizleta, tabela) ili crticom s razmakom.",
+      "importSkipped": "Preskačem linije bez para: {{lines}}",
+      "importNone": "Nema kartica za uvoz",
+      "importSave_one": "Spasi {{count}} karticu",
+      "importSave_few": "Spasi {{count}} kartice",
+      "importSave_other": "Spasi {{count}} kartica",
+      "imported_one": "Uvezena {{count}} kartica",
+      "imported_few": "Uvezene {{count}} kartice",
+      "imported_other": "Uvezeno {{count}} kartica"
     }
   },
   "scope": {
@@ -1451,7 +1476,8 @@
       "notePlaceholder": "npr. samo II godina, grupa B",
       "chars_one": "{{count}} znak",
       "chars_few": "{{count}} znaka",
-      "chars_other": "{{count}} znakova"
+      "chars_other": "{{count}} znakova",
+      "shareHint": "Dokument se čuva u Dokumentima dok ga ne obrišeš. Na Androidu ga možeš i „Podijeliti” u Hoot iz Vibera ili Gmaila."
     },
     "pending": {
       "thinking": "Razmišljam…",

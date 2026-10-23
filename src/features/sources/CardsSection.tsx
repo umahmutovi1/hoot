@@ -8,6 +8,7 @@ import { fieldLabel } from '@/features/subjects/fields'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
 import { useCards, useDeleteCard, useSaveCard } from './api'
+import { CardsImportSheet } from './CardsImportSheet'
 import type { Card } from './model'
 import { cardFormSchema, type CardForm } from './schemas'
 
@@ -20,6 +21,7 @@ export function CardsSection({ unitId }: { unitId: string }) {
   const { data: cards = [] } = useCards(unitId)
   const [sheet, setSheet] = useState<{ open: boolean; id?: string }>({ open: false })
   const [flipped, setFlipped] = useState<Set<string>>(new Set())
+  const [importing, setImporting] = useState(false)
 
   return (
     <div className="flex flex-col gap-2">
@@ -30,13 +32,22 @@ export function CardsSection({ unitId }: { unitId: string }) {
             <span className="font-normal text-ink-muted"> · {cards.length}</span>
           )}
         </span>
-        <button
-          type="button"
-          onClick={() => setSheet({ open: true })}
-          className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
-        >
-          {t('units.cards.add')}
-        </button>
+        <span className="flex gap-1.5">
+          <button
+            type="button"
+            onClick={() => setImporting(true)}
+            className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
+          >
+            {t('units.cards.import')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSheet({ open: true })}
+            className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
+          >
+            {t('units.cards.add')}
+          </button>
+        </span>
       </div>
       {cards.length === 0 ? (
         <p className="rounded-[20px] glass p-4 text-sm text-ink-muted">{t('units.cards.none')}</p>
@@ -79,6 +90,7 @@ export function CardsSection({ unitId }: { unitId: string }) {
           <span className="px-1 text-xs text-ink-muted">{t('units.cards.flipHint')}</span>
         </div>
       )}
+      <CardsImportSheet unitId={unitId} open={importing} onOpenChange={setImporting} />
       <CardSheet
         unitId={unitId}
         card={cards.find((c) => c.id === sheet.id)}
