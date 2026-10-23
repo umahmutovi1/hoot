@@ -840,8 +840,6 @@
         "photo": "Slikaj sadržaj",
         "text": "Ukucaj"
       },
-      "photoSoon": "Uvoz slikom dolazi uskoro",
-      "photoSoonBody": "Za sada ukucaj ili zalijepi sadržaj, jedna linija po jedinici.",
       "outline": "Sadržaj",
       "placeholder": {
         "pages": "Jedno poglavlje po liniji, npr.\n1 Uvod 1\n2 LTI sistemi 74\n2.1 Konvolucija 75",
@@ -916,7 +914,8 @@
       "archiving": "Arhivira se ({{count}})",
       "archivingHint": "Napredak i bilješke ostaju; vraćaš ih iz „Arhivirane jedinice”.",
       "unknownAmount": "obim nepoznat",
-      "saveAndSplit": "Sačuvaj i podijeli po ispitima"
+      "saveAndSplit": "Sačuvaj i podijeli po ispitima",
+      "estimateAi": "Procjena ~{{time}} · težinu je dao AI, možeš je mijenjati"
     },
     "detail": {
       "editContent": "Uredi sadržaj",
@@ -939,6 +938,24 @@
     "rough": {
       "label": "Gruba procjena",
       "hint": "Zamijeni ga pravim sadržajem: kad dodaš izvor, ovaj nestaje."
+    },
+    "import": {
+      "camera": "Uslikaj stranicu sadržaja",
+      "gallery": "Odaberi iz galerije",
+      "photosHint": "Više strana je ok, najviše 4. Može i PDF.",
+      "photos_one": "{{count}} stranica sadržaja",
+      "photos_few": "{{count}} stranice sadržaja",
+      "photos_other": "{{count}} stranica sadržaja",
+      "removePhoto": "Ukloni sliku {{n}}",
+      "deletedAfter": "Slike se brišu odmah nakon obrade.",
+      "extract": "Izvuci poglavlja",
+      "extractQuestions": "Izvuci pitanja",
+      "reading": "Čitam…",
+      "noAi": "AI uvoz trenutno nije dostupan. Sadržaj možeš ukucati.",
+      "fromText": "Pretvori AI-jem",
+      "rate": "Procijeni težinu AI-jem",
+      "rating": "Procjenjujem…",
+      "removeTopic": "Ukloni temu {{name}}"
     }
   },
   "time": {
@@ -2052,5 +2069,22 @@
   "sessionEnd": {
     "saveAndTest": "Spasi i testiraj se",
     "saveOnly": "Samo spasi"
+  },
+  "links": {
+    "title": "Veze s poglavljima",
+    "lead": "AI je predložio poglavlje za svako pitanje. Preskoči ono što ne štima — tvoj izbor se ne prepisuje.",
+    "searching": "Tražim poglavlja za pitanja…",
+    "none": "Nema prijedloga: pitanja se vežu za poglavlja preko tema, a ručno ih povezuješ na ekranu pitanja.",
+    "suggested": "Prijedlog",
+    "skipped": "Preskačem",
+    "skip": "Preskoči",
+    "restore": "Vrati",
+    "skipAria": "Preskoči vezu za {{label}}",
+    "restoreAria": "Vrati vezu za {{label}}",
+    "save_one": "Spasi {{count}} vezu",
+    "save_few": "Spasi {{count}} veze",
+    "save_other": "Spasi {{count}} veza",
+    "later": "Kasnije",
+    "continue": "Nastavi"
   }
 }

@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import type { MergeResult } from '@/lib/outline/merge'
 import type { Measure } from '@/lib/outline/parse'
 import type { ScopeRow } from '@/lib/progress/scope'
+import { embedAfterImport, saveImportTopics } from './importApi'
 import { toSourceRow, toUnitRows } from './mappers'
 import {
   NO_MEMORY,
@@ -76,6 +77,8 @@ export interface SaveOutlineInput {
   form: SourceForm
   measure: Measure
   merge: MergeResult
+  /** label → topic names from an AI import; empty for manual entry. */
+  topics?: Record<string, string[]>
 }
 
 /** Saves a source together with its reviewed outline: upsert units, archive the missing ones. */
@@ -83,7 +86,7 @@ export function useSaveOutline() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ form, measure, merge }: SaveOutlineInput) => {
+    mutationFn: async ({ form, measure, merge, topics = {} }: SaveOutlineInput) => {
       const { error } = await supabase.from('sources').upsert(toSourceRow(form))
       if (error) throw error
       await archiveRoughSources(form.subjectId)
@@ -103,6 +106,11 @@ export function useSaveOutline() {
           )
         if (aError) throw aError
       }
+      const unitTopics = merge.units
+        .filter((u) => (topics[u.label]?.length ?? 0) > 0)
+        .map((u) => ({ unitId: u.id, names: topics[u.label]! }))
+      if (unitTopics.length > 0) await saveImportTopics(form.subjectId, unitTopics)
+      embedAfterImport()
     },
     onMutate: ({ form, measure, merge }) =>
       patchList<SourceWithUnits>(queryClient, sourcesKey(userId, form.subjectId), (list) => {
@@ -137,7 +145,10 @@ export function useSaveOutline() {
       }),
     onError: (_error, _input, rollback) => rollback?.(),
     onSettled: (_data, _error, { form }) =>
-      queryClient.invalidateQueries({ queryKey: sourcesKey(userId, form.subjectId) }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: sourcesKey(userId, form.subjectId) }),
+        queryClient.invalidateQueries({ queryKey: topicsKey(userId, form.subjectId) }),
+      ]),
   })
 }
 
