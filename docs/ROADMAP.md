@@ -226,7 +226,7 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 - [x] RecallGate: ispitna pitanja, bilješke (bez AI za sad), podnaslovi, blurting, kartice; prikaz tačnog odgovora pa ocjena 0–2 (AI izvori dolaze u Etapi 10; svih 7 izvora je u v1)
 - [x] Status „Razumijem“ i „Ponovljeno“ (pitanja: „Znam“) samo kroz recall gate; do Etape 7 se biraju ručno
 - [x] Migracija `0017_fsrs.sql` (samo aditivno: FSRS kolone na `units` i `cards`, `review_streak`, `review_logs.card_id` + proteklo dana i stabilnost, `review_cap_pct`, `session_units.recall_skipped`) i `0018_push.sql` (`push_subscriptions`, `push_jobs`, prekidači notifikacija), regenerisan `database.ts`
-- [ ] Poslije release-a `v0.9.0`: posebna migracija briše SM-2 kolone (`units.srs_ease`, `srs_interval_days`, `srs_success_count`, `profiles.srs_multiplier`); v0.8.0 ih još čita na dijeljenoj bazi, kod ih od Etape 9 ne koristi
+- [x] Poslije release-a `v0.9.0`: `0019_drop_sm2.sql` briše SM-2 kolone (`units.srs_ease`, `srs_interval_days`, `srs_success_count`, `profiles.srs_multiplier`); v0.8.0 ih još čita na dijeljenoj bazi, kod ih od Etape 9 ne koristi
 - [x] `src/lib/srs/` sa `ts-fsrs`: recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu (+0.03 za poglavlja), `next_review_on`, ograničenje na datum ispita, R na dan ispita ≥ cilj (ponavljanje u bufferu), level 3 nakon 4 uspjeha + testovi
 - [x] Kartice kao zasebni FSRS objekti u `review` blokovima; jačina jedinice uključuje kartice
 - [x] Jačina znanja R(t) po jedinici, temi, izvoru, predmetu, ispitu (računa se, ne snima) + testovi
@@ -241,20 +241,30 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 
 - [ ] Anthropic: kartica, workspace ključ, `LLM_PROVIDER=anthropic`, prompt caching za sistemske promptove (ako je kartica dodana)
-- [ ] Embeddings (`gte-small`) za jedinice, bilješke, kartice, pitanja i teme; prijedlog veza pitanje ↔ poglavlje i dedupe tema bez LLM poziva
-- [ ] `evals/`: fiksne slike sadržaja i rasporeda nastave, provjera Zod šeme i očekivanog broja jedinica
-- [ ] `parse-toc` → DodajIzvor → Parsiranje (pregled: novo / izmijenjeno / arhivira se); slike sadržaja se brišu nakon parsiranja; zamjena privremenog izvora (gruba veličina) pravim sadržajem
-- [ ] Merge po `label` + testovi (merge iz Etape 3 se koristi i za AI uvoz)
-- [ ] Ručni unos: dugme „Procijeni težinu AI-jem“ u pregledu
-- [ ] `parse-questions`, teme pri uvozu (postojeće teme u promptu, ručne se ne prepisuju)
-- [ ] ObimIspita: AI prijedlog, ručna izmjena zaključana
-- [ ] `parse-timetable` + „Uslikaj raspored“ i vrsta „Raspored nastave“ u „Daj sovi dokument“ (tekst ili slika sa „pon: od 9 do 10:30 (farma)“, napomene uz termin; uparivanje predmeta preko `fuse.js`), `propose-answer`
-- [ ] `recall-questions` (`count` 3 za recall gate, 5–10 za kviz): AI pitanja iz bilješki, slika stranice (slika se briše), opće znanje (oznaka „može se razlikovati od predavanja“, računa se samo uz još jedan izvor); kviz sa Jedinice i iz sesije, ocjene u `review_logs` + FSRS, „Spasi kao karticu“. Zaseban `quiz` alat ne postoji (PRD „Testiranje bez sadržaja literature“)
-- [ ] Sova dobija ostale alate: pretraga bilješki, recall, raspored nastave i sadržaj kroz isti razgovor (osnova je iz Etape 6); uvoz iz razgovora („ubaci mi ovo“ za već dat dokument) kao kartica za pregled. Do tad sova iz razgovora ništa ne mijenja i to kaže (odluka iz Etape 6)
-- [ ] Povezani kalendari, vrsta „Rokovi“ (Moodle): kartica „N novih rokova iz Moodlea“ → pregled novo / izmijenjeno / preskačem → `deadlines`, uparivanje predmeta (`fuse.js`)
-- [ ] Web Share Target u manifestu (Android): podijeljen PDF/slika otvara „Daj sovi dokument“ sa prilogom
-- [ ] Kartice: izvoz CSV (Anki), uvoz teksta „pojam ⇥ definicija“
-- **DoD** → `v0.10.0`
+  - Odluka (početak Etape 10): Anthropic nalog još nema karticu, pa sve ide kroz Gemini (`LLM_PROVIDER=gemini`); stavka ostaje otvorena i ne blokira etapu
+- [x] Embeddings (`gte-small`) za jedinice, bilješke, kartice, pitanja i teme; prijedlog veza pitanje ↔ poglavlje i dedupe tema bez LLM poziva
+  - Migracije `0020_ai_content.sql` + `0021_embedding_tables.sql`: vektori u `unit_embeddings`, `card_embeddings`, `topic_embeddings` (triger briše zastarjeli vektor; ne u samim tabelama, da ih `select('*')` ne vuče), `question_links` (direktna veza, odluka Etape 10), `timetable_entries.note`, RPC `question_candidates` i `match_notes`; prijedlog obima za poglavlja je pravilo bez LLM-a (PRD „Obim ispita“). `0023_fix_stale_embedding_trigger.sql`: triger iz 0021 je rušio svaki update `units`/`cards`/`topics` (nađeno u e2e, popravljeno uz OK)
+- [x] `evals/`: fiksne slike sadržaja i rasporeda nastave, provjera Zod šeme i očekivanog broja jedinica
+  - Slike sadržaja knjige, liste pitanja i rasporeda nastave (render iz HTML-a) + tekst skripte; `npm run eval` traži `GEMINI_API_KEY` u terminalu (SETUP 4.6) — isti slučajevi su prošli kroz deployane funkcije u e2e
+- [x] `parse-toc` → DodajIzvor → Parsiranje (pregled: novo / izmijenjeno / arhivira se); slike sadržaja se brišu nakon parsiranja; zamjena privremenog izvora (gruba veličina) pravim sadržajem
+- [x] Merge po `label` + testovi (merge iz Etape 3 se koristi i za AI uvoz)
+- [x] Ručni unos: dugme „Procijeni težinu AI-jem“ u pregledu
+- [x] `parse-questions`, teme pri uvozu (postojeće teme u promptu, ručne se ne prepisuju)
+  - Teme se dedupliraju bez LLM-a (isto ime, pa gte-small sličnost ≥ 0.93); poslije uvoza pitanja ekran „Veze s poglavljima“ (AI prijedlog → pregled → Spasi; „Preskoči“ ostaje kao odbijena veza)
+- [x] ObimIspita: AI prijedlog, ručna izmjena zaključana (prijedlog je pravilo bez LLM-a: poglavlja po redu i minutama po parcijalama, pitanja prate povezana poglavlja; samo za jedinice bez reda)
+- [x] `parse-timetable` + „Uslikaj raspored“ i vrsta „Raspored nastave“ u „Daj sovi dokument“ (tekst ili slika sa „pon: od 9 do 10:30 (farma)“, napomene uz termin; uparivanje predmeta preko `fuse.js`), `propose-answer`
+  - Odluka (Etapa 10): `parse_timetable` je vrsta „Raspored nastave“ u istom pipelineu kao `parse-document` (dokument se čuva u Dokumentima kao „Ostalo“, slika/PDF/tekst, poruka uz dokument sužava grupu); pregled novo / izmijenjeno / preskačem, termini idu u trenutni period nastave (bez njega poruka „Prvo dodaj semestar“)
+- [x] `recall-questions` (`count` 3 za recall gate, 5–10 za kviz): AI pitanja iz bilješki, slika stranice (slika se briše), opće znanje (oznaka „može se razlikovati od predavanja“, računa se samo uz još jedan izvor); kviz sa Jedinice i iz sesije, ocjene u `review_logs` + FSRS, „Spasi kao karticu“. Zaseban `quiz` alat ne postoji (PRD „Testiranje bez sadržaja literature“)
+  - AI pitanja se traže dugmetom (gate: 3, kviz: 6 odmah), opće znanje samo ne podiže poglavlje na „Razumijem“ (FSRS i `review_logs` se ipak upisuju); „Predloži odgovor“ (`propose-answer`) u gate-u i na Jedinici pitanja, spašen prijedlog nosi `answer_origin = 'ai'` i oznaku „AI prijedlog · provjeri“
+- [x] Sova dobija ostale alate: pretraga bilješki, recall, raspored nastave i sadržaj kroz isti razgovor (osnova je iz Etape 6); uvoz iz razgovora („ubaci mi ovo“ za već dat dokument) kao kartica za pregled. Do tad sova iz razgovora ništa ne mijenja i to kaže (odluka iz Etape 6)
+  - Odluka (Etapa 10): `answer` vraća jednu akciju (`search_notes`, `quiz`, `add_timetable`, `add_contents`, `import_document`), app je izvrši i prikaže karticu; pretraga bilješki je vektor + leksička provjera bez LLM-a, pa tekst bilješki ne ide u prompt; „ubaci mi ovo“ ponovo čita zadnji dokument iz razgovora kao izabranu vrstu i daje prijedlog za pregled
+- [x] Povezani kalendari, vrsta „Rokovi“ (Moodle): kartica „N novih rokova iz Moodlea“ → pregled novo / izmijenjeno / preskačem → `deadlines`, uparivanje predmeta (`fuse.js`)
+  - Migracija `0022_event_category.sql` (`external_events.category` iz ICS `CATEGORIES`, Moodle tu piše predmet); `sync-calendar` sinhronizuje i feedove „Rokovi“ (ne blokiraju vrijeme), pomjeren datum zadržava vezu na rok i „preskačem“; kartica je jedna od kartica akcije na Danas, pregled na `/today/moodle`
+- [x] Web Share Target u manifestu (Android): podijeljen PDF/slika otvara „Daj sovi dokument“ sa prilogom
+- [x] Kartice: izvoz CSV (Anki), uvoz teksta „pojam ⇥ definicija“
+  - Uz Anki CSV i „Kartice za Quizlet · Kopiraj“ (tab / nova linija za Quizlet → Uvezi); uvoz na Jedinici prima tab ili crticu s razmakom (Quizletov izvoz)
+- [x] Dorada poslije e2e: veze s poglavljima čekaju spašena pitanja i šire teme (#168), triger embeddinga (#169), ispitno pitanje testirano samo sebe u gate-u (#170), liste u prijedlogu odgovora (#171), favicon na iOS-u (#166)
+- [x] **DoD** (uz opći DoD): uvoz sadržaja slikom i pitanja tekstom kroz AI s pregledom, merge po oznaci, teme i veze pitanje ↔ poglavlje; AI pitanja i kviz idu u `review_logs` i FSRS; asistent koristi alate bez direktnog pisanja; Moodle rokovi i raspored nastave kroz pregled → `v0.10.0` (browser e2e na previewu sa privremenim korisnikom, 390 px: slika sadržaja → 18 jedinica sa težinom, izvedenim stranicama i temama, slika obrisana; zalijepljena pitanja → „Veze s poglavljima“ 6/6 tačno → ObimIspita sa AI redovima; kviz iz bilješki → level 2, FSRS i `review_logs.source = notes`, „Spasi kao karticu“; ispitno pitanje → „Predloži odgovor“ → `answer_origin = 'ai'`, „Znam“; chat „gdje sam pisala o …“ → kartica bilješki, raspored nastave iz teksta → 2 termina u periodu nastave; Moodle feed → rok upisan i uparen, preskočen događaj ignorisan, pomjeren datum → „izmijenjeno“ → ažuriran; uvoz kartica, Anki CSV i Quizlet tekst. Web Share Target je u manifestu i service workeru, a dijeljenje s Android telefona ostaje za ručnu provjeru. 18 AI poziva ukupno; korisnik, fajlovi i lokalni ključevi obrisani)
 
 ## Etapa 11 — Napredak
 

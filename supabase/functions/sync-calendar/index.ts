@@ -1,4 +1,5 @@
-// Pulls connected iCal feeds into external_events (PRD "Povezani kalendari i integracije").
+// Pulls connected iCal feeds into external_events (PRD "Povezani kalendari i integracije"): busy
+// time and, from Stage 10, deadline feeds (Moodle), whose events the app offers as deadlines.
 // No LLM call and no AI limit. Two callers:
 //   - the app (user JWT): the user's feeds not synced in the last 30 min, or one feed with force;
 //   - pg_cron (header x-cron-secret = CRON_SECRET): every feed not synced in the last 3 h.
@@ -26,6 +27,7 @@ interface FeedRow {
   id: string
   user_id: string
   url: string
+  kind: string
   busy_only: boolean
   last_synced_at: string | null
 }
@@ -90,6 +92,7 @@ async function syncFeed(
     all_day: e.allDay,
     title: feed.busy_only ? null : (e.title?.slice(0, 300) ?? null),
     location: feed.busy_only ? null : (e.location?.slice(0, 300) ?? null),
+    category: feed.busy_only ? null : (e.category?.slice(0, 300) ?? null),
   }))
   const key = (r: { uid: string; starts_at: string }) =>
     `${r.uid}|${new Date(r.starts_at).toISOString()}`
@@ -97,16 +100,27 @@ async function syncFeed(
 
   const { data: existing, error: readError } = await admin
     .from('external_events')
-    .select('id, uid, starts_at')
+    .select('id, uid, starts_at, deadline_id, ignored')
     .eq('feed_id', feed.id)
   if (readError) return saveFailed(admin, feed.id)
-  // `ignored` is not in the upsert, so "ignoriši" survives every sync.
-  for (let i = 0; i < rows.length; i += 500) {
-    const { error } = await admin
-      .from('external_events')
-      .upsert(rows.slice(i, i + 500), { onConflict: 'feed_id,uid,starts_at' })
-    if (error) return saveFailed(admin, feed.id)
-  }
+  // `ignored` and `deadline_id` are not in the upsert, so "ignoriši" and an imported deadline
+  // survive every sync. A Moodle due date that moved is a new row (the start is in the key):
+  // it keeps its event's deadline and skip, so the app shows it as changed, not new.
+  const linked = new Map<string, { deadline_id: string | null; ignored: boolean }>()
+  for (const r of existing ?? [])
+    if (r.deadline_id || r.ignored)
+      linked.set(r.uid, { deadline_id: r.deadline_id, ignored: r.ignored })
+  const plain = rows.filter((r) => feed.kind !== 'deadlines' || !linked.has(r.uid))
+  const carried = rows
+    .filter((r) => feed.kind === 'deadlines' && linked.has(r.uid))
+    .map((r) => ({ ...r, ...linked.get(r.uid)! }))
+  for (const batch of [plain, carried])
+    for (let i = 0; i < batch.length; i += 500) {
+      const { error } = await admin
+        .from('external_events')
+        .upsert(batch.slice(i, i + 500), { onConflict: 'feed_id,uid,starts_at' })
+      if (error) return saveFailed(admin, feed.id)
+    }
   const gone = (existing ?? []).filter((r) => !keep.has(key(r))).map((r) => r.id)
   for (let i = 0; i < gone.length; i += 200) {
     const { error } = await admin
@@ -153,7 +167,7 @@ Deno.serve(async (req) => {
   const admin = createClient(url, service, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
-  const columns = 'id, user_id, url, busy_only, last_synced_at'
+  const columns = 'id, user_id, url, kind, busy_only, last_synced_at'
 
   try {
     const cronSecret = Deno.env.get('CRON_SECRET')
@@ -164,7 +178,6 @@ Deno.serve(async (req) => {
       const { data, error } = await admin
         .from('calendar_feeds')
         .select(columns)
-        .eq('kind', 'busy')
         .or(`last_synced_at.is.null,last_synced_at.lt.${before}`)
         .order('last_synced_at', { ascending: true, nullsFirst: true })
         .limit(CRON_BATCH)
@@ -188,11 +201,7 @@ Deno.serve(async (req) => {
     const body = requestSchema.safeParse(await readJson(req))
     if (!body.success) return json({ error: 'bad_request' }, 400)
 
-    let query = admin
-      .from('calendar_feeds')
-      .select(columns)
-      .eq('user_id', user.user.id)
-      .eq('kind', 'busy')
+    let query = admin.from('calendar_feeds').select(columns).eq('user_id', user.user.id)
     if (body.data?.feed_id) query = query.eq('id', body.data.feed_id)
     const { data, error } = await query
     if (error) return json({ error: 'failed' }, 500)

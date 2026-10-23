@@ -7,6 +7,7 @@ import { queryPersister } from './queryPersister'
 import { CalendarSync } from '@/features/calendars/CalendarSync'
 import { ReplanRunner } from '@/features/plan/ReplanRunner'
 import { PushJobsRunner } from '@/features/notify/PushJobsRunner'
+import { EmbedRunner } from '@/features/owl/EmbedRunner'
 import { SyncRunner } from './SyncRunner'
 import { ViewportInsets } from './ViewportInsets'
 
@@ -40,6 +41,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <Recalibrator />
         <ReplanRunner />
         <PushJobsRunner />
+        <EmbedRunner />
         {children}
       </AuthProvider>
     </PersistQueryClientProvider>

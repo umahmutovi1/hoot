@@ -6,12 +6,12 @@ import { supabase } from '@/lib/supabase'
 import type { MergeResult } from '@/lib/outline/merge'
 import type { Measure } from '@/lib/outline/parse'
 import type { ScopeRow } from '@/lib/progress/scope'
+import { embedAfterImport, saveImportTopics } from './importApi'
 import { toSourceRow, toUnitRows } from './mappers'
 import {
   NO_MEMORY,
   type AssessmentUnit,
   type Card,
-  type LegacySrs,
   type SourceWithUnits,
   type TopicWithUnits,
   type Unit,
@@ -77,6 +77,8 @@ export interface SaveOutlineInput {
   form: SourceForm
   measure: Measure
   merge: MergeResult
+  /** label → topic names from an AI import; empty for manual entry. */
+  topics?: Record<string, string[]>
 }
 
 /** Saves a source together with its reviewed outline: upsert units, archive the missing ones. */
@@ -84,7 +86,7 @@ export function useSaveOutline() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ form, measure, merge }: SaveOutlineInput) => {
+    mutationFn: async ({ form, measure, merge, topics = {} }: SaveOutlineInput) => {
       const { error } = await supabase.from('sources').upsert(toSourceRow(form))
       if (error) throw error
       await archiveRoughSources(form.subjectId)
@@ -104,6 +106,11 @@ export function useSaveOutline() {
           )
         if (aError) throw aError
       }
+      const unitTopics = merge.units
+        .filter((u) => (topics[u.label]?.length ?? 0) > 0)
+        .map((u) => ({ unitId: u.id, names: topics[u.label]! }))
+      if (unitTopics.length > 0) await saveImportTopics(form.subjectId, unitTopics)
+      embedAfterImport()
     },
     onMutate: ({ form, measure, merge }) =>
       patchList<SourceWithUnits>(queryClient, sourcesKey(userId, form.subjectId), (list) => {
@@ -138,7 +145,10 @@ export function useSaveOutline() {
       }),
     onError: (_error, _input, rollback) => rollback?.(),
     onSettled: (_data, _error, { form }) =>
-      queryClient.invalidateQueries({ queryKey: sourcesKey(userId, form.subjectId) }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: sourcesKey(userId, form.subjectId) }),
+        queryClient.invalidateQueries({ queryKey: topicsKey(userId, form.subjectId) }),
+      ]),
   })
 }
 
@@ -226,7 +236,7 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     ...NO_MEMORY,
     next_review_on: null,
     archived_at: null,
-  } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title' | LegacySrs>
+  } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title'>
 }
 
 export type UnitPatch = Pick<
@@ -307,19 +317,19 @@ export interface SaveScopeInput {
   unitIds: string[]
   /** All of the subject's exams; rows of other exams are never touched. */
   examIds: string[]
-  /** The new rows for those units (already `rowsForChoice`). */
-  rows: ScopeRow[]
+  /** The new rows for those units (already `rowsForChoice`); `by` defaults to the user. */
+  rows: (ScopeRow & { by?: 'ai' | 'user' })[]
 }
 
-/** Replaces the scope rows of the given units; every row is a manual (`user`) choice. */
+/** Replaces the scope rows of the given units: the user's choices, or accepted AI suggestions. */
 export function useSaveScope(subjectId: string | undefined) {
   const userId = useUserId()
   const queryClient = useQueryClient()
-  const toRow = (r: ScopeRow): TablesInsert<'assessment_units'> => ({
+  const toRow = (r: ScopeRow & { by?: 'ai' | 'user' }): TablesInsert<'assessment_units'> => ({
     assessment_id: r.assessmentId,
     unit_id: r.unitId,
     included: r.included,
-    assigned_by: 'user',
+    assigned_by: r.by ?? 'user',
   })
   return useMutation({
     mutationFn: async ({ unitIds, examIds, rows }: SaveScopeInput) => {
@@ -450,10 +460,14 @@ export function useSaveCard() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (form: CardForm) => {
-      const { error } = await supabase
-        .from('cards')
-        .upsert({ id: form.id, unit_id: form.unitId, front: form.front, back: form.back })
+    mutationFn: async (form: CardForm & { origin?: 'ai' | 'user' }) => {
+      const { error } = await supabase.from('cards').upsert({
+        id: form.id,
+        unit_id: form.unitId,
+        front: form.front,
+        back: form.back,
+        ...(form.origin ? { origin: form.origin } : {}),
+      })
       if (error) throw error
     },
     onMutate: (form) =>
@@ -461,7 +475,7 @@ export function useSaveCard() {
         const old = list.find((c) => c.id === form.id)
         const card: Card = {
           user_id: userId!,
-          origin: 'user',
+          origin: form.origin ?? 'user',
           created_at: now(),
           updated_at: now(),
           ...NO_MEMORY,
@@ -493,6 +507,36 @@ export function useDeleteCard() {
         list.filter((c) => c.id !== id),
       ),
     onError: (_error, _vars, rollback) => rollback?.(),
+    onSettled: (_data, _error, { unitId }) =>
+      queryClient.invalidateQueries({ queryKey: cardsKey(userId, unitId) }),
+  })
+}
+
+/** "pojam ⇥ definicija" lines as new cards of a unit (Quizlet / pasted text). */
+export function useImportCards() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      unitId,
+      cards,
+    }: {
+      unitId: string
+      cards: { front: string; back: string }[]
+    }) => {
+      const rows = cards.map((c) => ({
+        id: crypto.randomUUID(),
+        unit_id: unitId,
+        front: c.front.slice(0, 500),
+        back: c.back.slice(0, 2000),
+      }))
+      for (let i = 0; i < rows.length; i += 200) {
+        const { error } = await supabase.from('cards').insert(rows.slice(i, i + 200))
+        if (error) throw error
+      }
+      embedAfterImport()
+      return rows.length
+    },
     onSettled: (_data, _error, { unitId }) =>
       queryClient.invalidateQueries({ queryKey: cardsKey(userId, unitId) }),
   })

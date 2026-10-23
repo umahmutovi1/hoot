@@ -234,7 +234,7 @@ f = \frac{j}{j+2} \cdot \overline{\left(\frac{baza_{izmjereno}}{baza_{tip}}\righ
 - **Prvi prolaz ili ponavljanje** se ne bira nego čita iz statusa jedinice: jedinica koja još nije pređena = prvi prolaz, pređena ili “razumijem” = ponavljanje. Svaki ima svoju brzinu po izvoru (par izvor × način, uz fallback na izvor dok par nema 3 mjerenja). Na početku sesije može se ručno promijeniti.
 - **Kraj sesije**: “do koje stranice” (stranica, slajd, pitanje ili jedinica; može i dio poglavlja), plus težina 1–5 po jedinici. Razlike između poglavlja dolaze iz izmjerenog vremena po poglavlju i ocjene težine, ne iz AI-ja.
 
-**Izvor “Pitanja” (odluka, Etapa 7).** Pitanja se ne mjere vremenom nego uspjehom: koliko pitanja znaš odgovoriti (recall 0–2, FSRS jačina). Vrijeme po pitanju služi samo planu za kapacitet (heuristika pa prosjek iz sesija), ne prikazuje se kao procjena i ne kalibriše se po pitanju. Pitanja su vezana za poglavlja izvora (preko tema ili direktno); AI predloži veze (embeddings + `parse-questions`, Etapa 10), korisnik ih ispravi, a ručna veza se ne prepisuje. U sesiji, nakon čitanja ili ponavljanja poglavlja, app odmah ponudi pitanja iz te oblasti koja su unesena u app (recall gate, Etapa 9).
+**Izvor “Pitanja” (odluka, Etapa 7).** Pitanja se ne mjere vremenom nego uspjehom: koliko pitanja znaš odgovoriti (recall 0–2, FSRS jačina). Vrijeme po pitanju služi samo planu za kapacitet (heuristika pa prosjek iz sesija), ne prikazuje se kao procjena i ne kalibriše se po pitanju. Pitanja su vezana za poglavlja izvora (preko tema ili direktno); AI predloži veze (embeddings + `parse-questions`, Etapa 10), korisnik ih ispravi, a ručna veza se ne prepisuje. **Odluka (Etapa 10):** direktna veza je tabela `question_links` (`assigned_by`, `linked`); gate, „Povezana ispitna pitanja“ i obim koriste uniju direktnih veza i veza preko tema. Poslije spašavanja pitanja app računa embeddinge, RPC `question_candidates` da najbližih 5 poglavlja po pitanju, a jedan AI poziv (`link-questions`) bira 0–2 među njima; prijedlog ide na pregled prije upisa. U sesiji, nakon čitanja ili ponavljanja poglavlja, app odmah ponudi pitanja iz te oblasti koja su unesena u app (recall gate, Etapa 9).
 
 **Web pretraga** težine konkretne knjige nije default; može doći kao opcionalno dugme u v2.
 
@@ -720,7 +720,7 @@ AI pomaže da se podaci unesu brže i da se nađe odgovor u dokumentima, ali nik
 2. **Bilješke i jedinice**: naslovi jedinica, bilješke, kartice i ispitna pitanja dobijaju embedding (isti model). Služe recall pitanjima, vezi pitanje ↔ poglavlje i pretrazi “gdje sam pisala o …” (Etapa 10).
 3. **Stanje plana**: nije vektorska pretraga nego kompaktan JSON sažetak (predmeti, ispiti, bodovi, napredak, zaostatak), isti kao ulaz strategista.
 
-**Asistent (chat).** Razgovor sa sovom postoji od Etape 6 (dokumenti, sažetak stanja, prijedlozi uvoza). Etapa 10 dodaje ostale alate. Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi. Od Etape 6 razgovori se čuvaju u bazi (`owl_conversations`, `owl_messages`): svaki ulaz sa Danas (traka, prijedlog, +) počinje novi razgovor, a stari su u Historiji (sat u zaglavlju razgovora; tap nastavlja razgovor, kanta ga briše). Svako pitanje šalje zadnjih 6 poruka razgovora, odlomke i sažetak stanja; model ništa ne pamti između poziva. **Prompt caching:** stalni dio ide prvi (uputa, pa sažetak stanja), pa razgovor, odlomci i pitanje. Gemini to implicitno kešira (`ai_runs.cached_tokens`); eksplicitni cache (`cachedContents`, TTL 10 min, po razgovoru) se pokušava kad je prefiks dovoljno dug, a free tier ga odbija, pa se odbijanje pamti sat vremena i poziv ide bez njega. Anthropic adapter stavlja `cache_control` na uputu i sažetak.
+**Asistent (chat).** Razgovor sa sovom postoji od Etape 6 (dokumenti, sažetak stanja, prijedlozi uvoza). Etapa 10 dodaje ostale alate. Razgovor nad istim alatima: pretraga dokumenata i bilješki, sažetak stanja i isti prijedlozi kao uvoz (“dodaj sve parcijale iz ovoga”), koji se prikazuju kao kartice sa pregledom. Historija razgovora i trošak se bilježe; isti rate limit kao ostali AI pozivi. **Odluka (Etapa 10):** alati su jedno polje `action` u izlazu `answer` (pretraga bilješki, kviz, raspored nastave, sadržaj, uvoz iz već datog dokumenta); app akciju izvrši i prikaže karticu, a svaka izmjena ide kroz isti pregled. Pretraga bilješki „gdje sam pisala o …“ ne šalje bilješke modelu: `embed` (`search_notes`) nađe kandidate vektorom i zadrži one koji dijele korijen riječi s upitom (gte-small sam slabo razlikuje bosanski tekst). Od Etape 6 razgovori se čuvaju u bazi (`owl_conversations`, `owl_messages`): svaki ulaz sa Danas (traka, prijedlog, +) počinje novi razgovor, a stari su u Historiji (sat u zaglavlju razgovora; tap nastavlja razgovor, kanta ga briše). Svako pitanje šalje zadnjih 6 poruka razgovora, odlomke i sažetak stanja; model ništa ne pamti između poziva. **Prompt caching:** stalni dio ide prvi (uputa, pa sažetak stanja), pa razgovor, odlomci i pitanje. Gemini to implicitno kešira (`ai_runs.cached_tokens`); eksplicitni cache (`cachedContents`, TTL 10 min, po razgovoru) se pokušava kad je prefiks dovoljno dug, a free tier ga odbija, pa se odbijanje pamti sat vremena i poziv ide bez njega. Anthropic adapter stavlja `cache_control` na uputu i sažetak.
 
 ## Bodovi, skala ocjena i projekcija ocjene
 
@@ -764,7 +764,7 @@ Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih 
 
 ## Obim ispita: svi izvori i ručne izmjene
 
-Obim se bira za svaki tip izvora (knjiga, skripta, pitanja, prezentacije, ostalo), jer `assessment_units` već vezuje bilo koju jedinicu. AI predlaže raspodjelu (za pitanja preko tema), a korisnik svaku stavku može prebaciti na jedan od ispita bez “cijelo gradivo” (I, II, …), na sve njih (“Sve”, kad ih je bar dva) ili na “ne ulazi”. Ispiti sa `scope_all` (integralni, završni) uvijek obuhvataju sve osim “ne ulazi”. Red na roditelju važi i za podjedinice. Ručna izmjena je zaključana: ponovno AI parsiranje je ne mijenja. “Ne ulazi” je red sa `included = false`, pa radi i za ispit sa `scope_all = true` (isto koristi “Izbaci iz plana” pri brisanju bloka).
+Obim se bira za svaki tip izvora (knjiga, skripta, pitanja, prezentacije, ostalo), jer `assessment_units` već vezuje bilo koju jedinicu. AI predlaže raspodjelu (za pitanja preko tema), a korisnik svaku stavku može prebaciti na jedan od ispita bez “cijelo gradivo” (I, II, …), na sve njih (“Sve”, kad ih je bar dva) ili na “ne ulazi”. Ispiti sa `scope_all` (integralni, završni) uvijek obuhvataju sve osim “ne ulazi”. Red na roditelju važi i za podjedinice. Ručna izmjena je zaključana: ponovno AI parsiranje je ne mijenja. **Odluka (Etapa 10):** prijedlog za poglavlja (knjiga, skripta, prezentacije, ostalo) je pravilo bez LLM poziva: poglavlja se po redu dijele na parcijale po kumulativnim minutama; pitanja prate obim poglavlja s kojima su povezana. Prijedlog se upisuje kao `assigned_by = 'ai'` samo za jedinice bez ručnog reda. “Ne ulazi” je red sa `included = false`, pa radi i za ispit sa `scope_all = true` (isto koristi “Izbaci iz plana” pri brisanju bloka).
 
 Kolona `assessment_units.assigned_by` je u konsolidovanoj migraciji.
 
@@ -1379,8 +1379,8 @@ create index plan_blocks_replan_idx on plan_blocks (user_id, on_date) where orig
 -- i upiše run sa blokovima; isti run poslan dvaput ne mijenja ništa. Klijent ga šalje kroz offline red (op 'rpc').
 
 -- 0017_fsrs.sql (Etapa 9, samo aditivno: v0.8.0 još čita SM-2 kolone na dijeljenoj bazi;
--- srs_ease, srs_interval_days, srs_success_count i profiles.srs_multiplier se brišu u posebnoj
--- migraciji poslije release-a v0.9.0)
+-- srs_ease, srs_interval_days, srs_success_count i profiles.srs_multiplier briše
+-- 0019_drop_sm2.sql poslije release-a v0.9.0)
 alter table units
   add column fsrs_stability numeric,
   add column fsrs_difficulty numeric,
@@ -1415,6 +1415,28 @@ create table push_jobs (id, user_id, kind ('first_block','break_end','test'), re
 alter table profiles
   add column notify_first_block boolean not null default true,
   add column notify_break_end boolean not null default true;
+
+-- 0020_ai_content.sql + 0021_embedding_tables.sql (Etapa 10, samo aditivno; 0021 uklanja prazne
+-- embedding kolone iz 0020 jer bi ih svaki select('*') vukao i keširao)
+alter type ai_task add value 'link_questions';         -- AI potvrđuje veze pitanje ↔ poglavlje
+create table unit_embeddings  (unit_id  pk → units,  user_id, embedding vector(384), updated_at);  -- naslov + bilješke
+create table card_embeddings  (card_id  pk → cards,  user_id, embedding vector(384), updated_at);  -- pitanje + odgovor
+create table topic_embeddings (topic_id pk → topics, user_id, embedding vector(384), updated_at);  -- naziv (dedupe)
+-- + RLS, grant, HNSW; triger drop_stale_embedding briše vektor kad se tekst promijeni, app računa ono čega nema (RPC unembedded)
+create table question_links (                          -- ispitno pitanje ↔ poglavlje, direktno (uz veze preko tema)
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  question_id uuid not null references units on delete cascade,
+  unit_id uuid not null references units on delete cascade,
+  assigned_by assigned_by not null default 'ai',       -- 'user' se nikad ne prepisuje
+  linked boolean not null default true,                -- false = korisnik odbio AI prijedlog (uvijek 'user')
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (question_id, unit_id)
+);
+alter table timetable_entries add column note text;   -- napomena uz termin (parse-timetable)
+grant update (deadline_id) on external_events to authenticated;   -- Moodle rok → deadlines
+-- RPC question_candidates(question_ids, k): najbliža poglavlja predmeta po pitanju; match_notes(query, k): bilješke i kartice
+-- 0023_fix_stale_embedding_trigger.sql: triger iz 0021 je rušio svaki update units/cards/topics (42703); jedna grana po tabeli
 ```
 
 ## AI integracija
@@ -1425,7 +1447,7 @@ Edge funkcije, sve sa strukturiranim JSON izlazom koji se validira Zod šemom pr
 | --- | --- | --- |
 | `parse-toc` | 1–4 slike ili tekst, tip izvora, predmet, postojeće teme | jedinice, stranice, podjedinice, `ai_difficulty`, teme, upozorenja |
 | `parse-questions` | slika ili tekst liste pitanja, postojeće teme i poglavlja | pitanja, teme, prijedlog ispita |
-| `parse-timetable` | slika rasporeda, nazivi predmeta | termini (dan, vrijeme, tip, sala, parnost), veza na predmet |
+| `parse-timetable` | slika rasporeda, nazivi predmeta | termini (dan, vrijeme, tip, sala, parnost), veza na predmet. **Odluka (Etapa 10):** vrsta `timetable` u `parse-document` (isti pipeline i Dokumenti), `ai_task` `parse_timetable` |
 | `parse-document` | tekst (zalijepljen ili tekst iz PDF-a po stranicama), slika ili skenirani PDF; vrsta (`auto` / akademski kalendar / raspored ispita / dokument); predmeti i postojeći ispiti | vrsta i naslov dokumenta, periodi (nastava, ispitni periodi, neradni dani) ili ispiti sa datumom i vezom na predmet, prepis po stranicama kad tekst nije dat. `ai_task`: `parse_academic_calendar`, `parse_exam_schedule` ili `parse_document` |
 | `documents` | odlomci dokumenta (najviše 16 po pozivu) | embedding (`gte-small`) i upis odlomaka, bez LLM poziva |
 | `answer` | pitanje + najrelevantniji odlomci + sažetak stanja | odgovor sa citatima (dokument, stranica) |

@@ -14,6 +14,8 @@ import { SourceEditorPage } from '@/features/sources/SourceEditorPage'
 import { SourcePage } from '@/features/sources/SourcePage'
 import { UnitPage } from '@/features/sources/UnitPage'
 import { ExamScopePage } from '@/features/sources/ExamScopePage'
+import { QuestionLinksPage } from '@/features/sources/QuestionLinksPage'
+import { DeadlinesImportPage } from '@/features/calendars/DeadlinesImportPage'
 import { AcademicCalendarPage } from '@/features/schedule/AcademicCalendarPage'
 import { AvailabilityPage } from '@/features/schedule/AvailabilityPage'
 import { TimetablePage } from '@/features/schedule/TimetablePage'
@@ -57,6 +59,7 @@ export const router = createBrowserRouter([
               { path: 'welcome', element: <Navigate to="/onboarding" replace /> },
               { path: 'settings', element: <SettingsPage /> },
               { path: 'today/fresh', element: <FreshStartPage /> },
+              { path: 'today/moodle', element: <DeadlinesImportPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
               { path: 'settings/documents', element: <DocumentsPage /> },
               { path: 'settings/feeds', element: <CalendarFeedsPage /> },
@@ -72,6 +75,7 @@ export const router = createBrowserRouter([
               { path: 'subjects/:id/sources/:sourceId', element: <SourcePage /> },
               { path: 'subjects/:id/sources/:sourceId/edit', element: <SourceEditorPage /> },
               { path: 'subjects/:id/sources/:sourceId/units/:unitId', element: <UnitPage /> },
+              { path: 'subjects/:id/sources/:sourceId/links', element: <QuestionLinksPage /> },
               { path: 'subjects/:id/scope', element: <ExamScopePage /> },
               { path: 'sessions', element: <SessionsPage /> },
               { path: 'sessions/:id', element: <SessionDetailPage /> },

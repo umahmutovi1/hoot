@@ -15,6 +15,7 @@ import { localDay } from '@/lib/day'
 import { cn } from '@/lib/utils'
 import { DisplayNameForm } from './DisplayNameForm'
 import { NotifySettings } from '@/features/notify/NotifySettings'
+import { AnkiExport } from './AnkiExport'
 import { PresetSettings } from './PresetSettings'
 import { useDayBoundary, useProfile } from './profile'
 import { useLocale } from './useLocale'
@@ -118,6 +119,13 @@ export function SettingsPage() {
         {t('notify.title')}
       </h2>
       <NotifySettings />
+
+      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+        {t('settings.data')}
+      </h2>
+      <div className="flex flex-col rounded-card glass px-4">
+        <AnkiExport className={cn(row, 'last:border-b-0')} />
+      </div>
 
       <ScaleSheet open={scaleOpen} onOpenChange={setScaleOpen} />
 

@@ -11,6 +11,7 @@ import {
   type ProgressUnit,
 } from '@/lib/progress'
 import { scopeOf, type ScopeRow } from '@/lib/progress/scope'
+import { chaptersByQuestion, questionsByChapter, type DirectLink } from '@/lib/questions/links'
 import type { Assessment } from '@/features/subjects/model'
 
 export type Source = Tables<'sources'>
@@ -19,12 +20,6 @@ export type Topic = Tables<'topics'>
 export type UnitTopic = Tables<'unit_topics'>
 export type Card = Tables<'cards'>
 export type AssessmentUnit = Tables<'assessment_units'>
-
-/**
- * SM-2 columns from 0001 that FSRS replaced (Stage 9). v0.8.0 still reads them, so they are
- * dropped only after the v0.9.0 release; the app no longer writes them.
- */
-export type LegacySrs = 'srs_ease' | 'srs_interval_days' | 'srs_success_count'
 
 /** Memory columns of a unit or card that has not been tested yet. */
 export const NO_MEMORY = {
@@ -174,17 +169,19 @@ export function topicsOfUnit(unitId: string, topics: TopicWithUnits[]): TopicWit
  * Units of the other kind (chapter ↔ question) that share at least one topic with the unit:
  * "Povezana ispitna pitanja" on a chapter, related chapters on a question.
  */
-export function relatedUnits(unit: Unit, topics: TopicWithUnits[], units: Unit[]): Unit[] {
-  const shared = new Set(
-    topicsOfUnit(unit.id, topics).flatMap((t) => t.unit_topics.map((l) => l.unit_id)),
-  )
-  return units.filter(
-    (u) =>
-      u.id !== unit.id &&
-      shared.has(u.id) &&
-      u.archived_at === null &&
-      (u.kind === 'question') !== (unit.kind === 'question'),
-  )
+export function relatedUnits(
+  unit: Unit,
+  topics: TopicWithUnits[],
+  units: Unit[],
+  direct: DirectLink[] = [],
+): Unit[] {
+  const links = topics.flatMap((t) => t.unit_topics)
+  const byChapter = questionsByChapter(units, links, direct)
+  const ids =
+    unit.kind === 'question'
+      ? (chaptersByQuestion(byChapter).get(unit.id) ?? new Set<string>())
+      : (byChapter.get(unit.id) ?? new Set<string>())
+  return units.filter((u) => ids.has(u.id) && u.archived_at === null)
 }
 
 /** "I parcijala" → "I", "II parcijala" → "II"; other titles stay as they are. */

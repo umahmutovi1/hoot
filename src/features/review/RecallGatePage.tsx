@@ -5,8 +5,10 @@ import { goBack } from '@/app/navigation'
 import { ChevronLeftIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useToast } from '@/components/toast-store'
-import { useAllSources, useTopicLinks } from '@/features/plan/api'
+import { useAiAvailability } from '@/features/owl/api'
+import { useAllSources, useQuestionLinks, useTopicLinks } from '@/features/plan/api'
 import { useSubjects } from '@/features/subjects/api'
+import type { DirectLink } from '@/lib/questions/links'
 import type { Op } from '@/lib/sync'
 import { useCardsOf, useReviewWriter } from './api'
 import type { CardReview, UnitReview } from './apply'
@@ -22,7 +24,8 @@ import { GateTest } from './GateTest'
 
 /**
  * RecallGate (PRD "Recall gate"): `?units=` are the units just read (or one chapter tested from
- * Jedinica), `?session=` the session they were read in, `?to=` where to go after. Each chapter is
+ * Jedinica), `?session=` the session they were read in, `?to=` where to go after, `?quiz=1` a
+ * kviz (5–10 AI questions asked right away, PRD "Testiranje bez sadržaja literature"). Each chapter is
  * one test; "Spasi" writes every rating, "Preskoči" keeps what was rated and records the rest as
  * skipped (their check of what was read stays in 2 days).
  */
@@ -31,15 +34,18 @@ export function RecallGatePage() {
   const ids = useMemo(() => (params.get('units') ?? '').split(',').filter(Boolean), [params])
   const { data: sources } = useAllSources()
   const { data: links } = useTopicLinks()
+  const { data: direct } = useQuestionLinks()
   const { data: cards, isPending: cardsPending } = useCardsOf(ids)
-  if (!sources || !links || (ids.length > 0 && cardsPending)) return <SplashScreen />
+  if (!sources || !links || !direct || (ids.length > 0 && cardsPending)) return <SplashScreen />
   return (
     <Gate
       ids={ids}
       sessionId={params.get('session')}
+      quiz={params.get('quiz') === '1'}
       to={params.get('to') ?? '/'}
       sources={sources}
       links={links}
+      direct={direct}
       cards={cards ?? []}
     />
   )
@@ -48,22 +54,27 @@ export function RecallGatePage() {
 function Gate({
   ids,
   sessionId,
+  quiz,
   to,
   sources,
   links,
+  direct,
   cards,
 }: {
   ids: string[]
   sessionId: string | null
+  quiz: boolean
   to: string
   sources: NonNullable<ReturnType<typeof useAllSources>['data']>
   links: { unit_id: string; topic_id: string }[]
+  direct: DirectLink[]
   cards: NonNullable<ReturnType<typeof useCardsOf>['data']>
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const toast = useToast((s) => s.show)
   const writer = useReviewWriter()
+  const aiReady = useAiAvailability().state === 'ready'
   const { data: subjects } = useSubjects()
   const [at, setAt] = useState(0)
   const [answers, setAnswers] = useState<Record<string, GateAnswers>>({})
@@ -92,7 +103,8 @@ function Gate({
       </div>
     )
 
-  const questionsOf = (x: (typeof targets)[number]) => linkedQuestions(x, links, subjectUnits)
+  const questionsOf = (x: (typeof targets)[number]) =>
+    linkedQuestions(x, links, subjectUnits, direct)
   const subjectName = subjects?.find((x) => x.id === source.subject_id)?.name ?? source.title
   const leafLabel = target.label ? `${subjectName} · ${target.label}` : subjectName
 
@@ -138,7 +150,9 @@ function Gate({
         >
           <ChevronLeftIcon size={20} />
         </button>
-        <span className="text-base font-semibold">{t('recall.title')}</span>
+        <span className="text-base font-semibold">
+          {t(quiz ? 'recall.quizTitle' : 'recall.title')}
+        </span>
         <button
           type="button"
           disabled={busy}
@@ -164,6 +178,8 @@ function Gate({
         subjectId={source.subject_id}
         questions={questionsOf(target)}
         cards={cards}
+        aiReady={aiReady}
+        quiz={quiz}
         answers={answers[target.key] ?? EMPTY_ANSWERS}
         onChange={(a) => setAnswers((x) => ({ ...x, [target.key]: a }))}
         footer={{

@@ -23,7 +23,15 @@ import { memoryColumns, memoryOf } from './memory'
 export type RecallSource = Enums<'recall_source'>
 
 /** Most precise first: the chapter's log names the best test it had. */
-const PRECISION: RecallSource[] = ['outline', 'exam_question', 'notes', 'card', 'blurt']
+const PRECISION: RecallSource[] = [
+  'outline',
+  'exam_question',
+  'notes',
+  'page_photo',
+  'card',
+  'blurt',
+  'general',
+]
 
 export interface UnitReview {
   unit: Unit
@@ -96,7 +104,11 @@ export function planReviews(
       retention: targetRetention(limit.priority, kind),
       lastDay: limit.lastDay,
     })
-    const level = levelAfter(kind, unit.level, recall, r.memory.streak)
+    let level = levelAfter(kind, unit.level, recall, r.memory.streak)
+    // General knowledge may differ from the lectures: it moves a chapter up only together with
+    // another test (PRD "Testiranje bez sadržaja literature").
+    if (recalls.every((x) => x.source === 'general') && level > unit.level)
+      level = Math.max(unit.level, Math.min(level, 1))
     // A chapter that failed waits for its learning block; reading it again offers the gate.
     const relearn = kind === 'chapter' && recall === 0
     const nextReviewOn = relearn ? null : r.nextReviewOn

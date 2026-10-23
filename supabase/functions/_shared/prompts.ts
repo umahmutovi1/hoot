@@ -8,12 +8,14 @@ import {
   calendarParseSchema,
   documentParseSchema,
   examScheduleParseSchema,
+  timetableParseSchema,
 } from './schemas.ts'
 import type {
   AnswerOutput,
   AnswerRequest,
   ImportKind,
   ParseDocumentRequest,
+  ParsedClass,
   ParseResult,
 } from './schemas.ts'
 
@@ -42,6 +44,18 @@ const EXAM_RULES = `Exam schedule -> "exams", one per exam that has a date:
   makeup ("popravni"), other. number: ordinal of a partial ("II parcijala" = 2), else null.
 - time: start time HH:MM when given, else null.`
 
+const TIMETABLE_RULES = `Weekly class timetable -> "entries", one per class slot in the week:
+- subject_id: the id of the matching subject from the given list (match by meaning:
+  abbreviations, missing diacritics, typos). null if none matches; keep subject_name as written.
+- kind: lecture ("P", "predavanja"), exercise ("V", "AV", "vježbe", tutorial), lab ("LV",
+  "laboratorijske", "lab"), other.
+- weekday 0 = Monday … 6 = Sunday; start and end HH:MM (24 h). "od 9 do 10:30" = 09:00–10:30.
+  A class without an end time lasts 90 minutes; say so in "warnings".
+- location: the room as written ("S1", "Lab 2"), else null.
+- week_parity: "odd" for odd weeks ("neparne sedmice"), "even" for even weeks, else null.
+- note: any other remark for that class (a group, "online"), else null.
+- If the student's note names a year, group or study programme, keep only those classes.`
+
 const DOCUMENT_RULES = `Document kind: academic_calendar, exam_schedule, rules (rulebook,
 "pravilnik"), syllabus ("silabus", course plan), notice ("obavještenje"), other.`
 
@@ -62,6 +76,11 @@ const VARIANTS: Record<ImportKind, ParseVariant> = {
     schema: examScheduleParseSchema,
     rules: EXAM_RULES,
   },
+  timetable: {
+    task: 'parse_timetable',
+    schema: timetableParseSchema,
+    rules: TIMETABLE_RULES,
+  },
   document: { task: 'parse_document', schema: documentParseSchema, rules: DOCUMENT_RULES },
   auto: {
     task: 'parse_document',
@@ -81,7 +100,9 @@ export function parseRequest(
 ): LlmRequest<Record<string, unknown>> {
   const variant = VARIANTS[req.kind]
   const lines = [`Today: ${req.today}`, `User language: ${LANGUAGE[req.locale]}`]
-  if ((req.kind === 'exam_schedule' || req.kind === 'auto') && req.subjects.length > 0) {
+  const matchesSubjects =
+    req.kind === 'exam_schedule' || req.kind === 'auto' || req.kind === 'timetable'
+  if (matchesSubjects && req.subjects.length > 0) {
     lines.push('Subjects (id: name):', ...req.subjects.map((s) => `${s.id}: ${s.name}`))
   }
   if (req.note) {
@@ -113,10 +134,13 @@ type AnyParse = Partial<z.infer<typeof autoParseSchema>>
 
 /** Maps every parse variant to one shape and drops what the model got inconsistent. */
 export function normalizeParse(req: ParseDocumentRequest, data: AnyParse): ParseResult {
+  // A timetable is kept as an "other" document; its classes come as `entries`.
   const kind =
     req.kind === 'academic_calendar' || req.kind === 'exam_schedule'
       ? req.kind
-      : (data.kind ?? 'other')
+      : req.kind === 'timetable'
+        ? 'other'
+        : (data.kind ?? 'other')
   const subjectIds = new Set(req.subjects.map((s) => s.id))
   const periods =
     kind === 'academic_calendar'
@@ -133,12 +157,26 @@ export function normalizeParse(req: ParseDocumentRequest, data: AnyParse): Parse
           subject_id: e.subject_id && subjectIds.has(e.subject_id) ? e.subject_id : null,
         }))
       : []
+  const entries =
+    req.kind === 'timetable'
+      ? ((data as { entries?: ParsedClass[] }).entries ?? []).flatMap((e) =>
+          e.end <= e.start
+            ? []
+            : [
+                {
+                  ...e,
+                  subject_id: e.subject_id && subjectIds.has(e.subject_id) ? e.subject_id : null,
+                },
+              ],
+        )
+      : []
   return {
     kind,
     title: data.title ?? '',
     pages: req.text ? [] : (data.pages ?? []).filter((p) => p.text.trim() !== ''),
     periods,
     exams,
+    entries,
     warnings: data.warnings ?? [],
   }
 }
@@ -170,13 +208,24 @@ Use only two sources:
    you used in "state_refs".
 If neither source contains the answer, say so and suggest giving the owl the right document.
 Never invent dates, rules or numbers. Today is ${req.today}.
-You cannot add, import, change or delete anything from this chat, and you never claim you did.
-When the student asks you to add or import something (exams, a calendar, a class timetable):
-- an academic calendar or an exam schedule: tell them to give you the document with the + button
-  and pick its kind; you then show what you found for them to save;
-- a weekly class timetable: say you cannot import it yet and that it is entered by hand in
-  Plan → Raspored (Plan → Timetable in English);
-- anything else: say that it is not possible from the chat yet.`
+You never add, change or delete anything yourself and never claim you did. Instead you can pick
+one "action"; the app runs it next to your answer and the student confirms anything it changes:
+- search_notes: the student looks for their own notes or cards ("gdje sam pisala o …", "where
+  did I write about …"). action_text = the topic to look for. Say you are looking; the app lists
+  the notes (you do not see them).
+- quiz: the student wants to be tested on a chapter ("ispitaj me iz …"). action_text = the chapter
+  title as the student said it.
+- add_timetable: the student wants to add their weekly class timetable. Tell them to give it as a
+  photo, PDF or text; the app opens the form.
+- add_contents: the student wants to add a textbook's table of contents or a list of exam
+  questions. action_text = the subject name from STATE, or null.
+- import_document: the student asks to import something from a document already given in this
+  conversation ("ubaci mi ovo", "dodaj sve parcijale iz ovoga"). import_kind = academic_calendar,
+  exam_schedule or timetable. Say you will show what you find for them to save.
+- An academic calendar or exams from a document not given yet: tell them to give it with the +
+  button and pick its kind (action none). Anything else: say it is not possible from the chat yet.
+Otherwise action is none, action_text and import_kind are null.
+`
   const lines: string[] = []
   if (req.history.length > 0) {
     lines.push('CONVERSATION SO FAR:')
@@ -222,4 +271,17 @@ export function toBase64(bytes: Uint8Array): string {
     binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
   }
   return btoa(binary)
+}
+
+/** An action without what it needs falls back to none. */
+export function normalizeAction(output: AnswerOutput) {
+  const text = output.action_text?.trim() || null
+  const needsText = output.action === 'search_notes' || output.action === 'quiz'
+  if ((needsText && !text) || (output.action === 'import_document' && !output.import_kind))
+    return { action: 'none' as const, action_text: null, import_kind: null }
+  return {
+    action: output.action,
+    action_text: output.action === 'add_timetable' ? null : text,
+    import_kind: output.action === 'import_document' ? output.import_kind : null,
+  }
 }

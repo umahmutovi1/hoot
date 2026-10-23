@@ -1,8 +1,9 @@
-# Prompt evals for parse-document. Run before changing a prompt or model:
+# Prompt evals for parse-document, parse-toc and parse-questions. Run before changing a prompt or
+# model:
 #   GEMINI_API_KEY=... npm run eval
 # Every case must pass the Zod schema (the provider validates) and match the expected
 # kind, counts and dates.
-description: Hoot parse-document
+description: Hoot imports
 prompts: ['{{fixture}}']
 providers: ['file://provider.ts']
 defaultTest:
@@ -54,3 +55,47 @@ tests:
     assert:
       - type: javascript
         value: output.kind === 'rules' && output.periods.length === 0 && output.exams.length === 0
+  - description: book table of contents photo, three levels, front and back matter skipped
+    vars: { task: parse-toc, kind: auto, fixture: toc-book.png, topics: [Konvolucija] }
+    assert:
+      - type: javascript
+        value: |
+          const u = output.units
+          const at = (l) => u.find((x) => x.label === l)
+          return u.length === 18 && u.filter((x) => !x.label.includes('.')).length === 6 &&
+            at('2')?.page_start === 74 && at('2.1.2')?.page_start === 77 &&
+            at('6')?.page_start === 423 && u.every((x) => x.page_end === null) &&
+            !u.some((x) => /predgovor|indeks/i.test(x.title)) &&
+            u.some((x) => x.topics.includes('Konvolucija'))
+  - description: script contents as text, a missing page is null and not invented
+    vars:
+      { task: parse-toc, kind: auto, fixture: toc-script.txt, subject: Vjerovatnoća i statistika }
+    assert:
+      - type: javascript
+        value: |
+          const u = output.units
+          const normal = u.find((x) => /normalna/i.test(x.title))
+          return u.length === 8 && normal?.page_start === null &&
+            u.find((x) => /bayes/i.test(x.title))?.page_start === 22 &&
+            !u.some((x) => /literatura/i.test(x.title))
+  - description: exam question list photo, numbers become labels
+    vars: { task: parse-questions, kind: auto, fixture: questions.png, subject: Baze podataka }
+    assert:
+      - type: javascript
+        value: |
+          const q = output.questions
+          return q.length === 12 && q[0].label === 'P1' && q[11].label === 'P12' &&
+            q.find((x) => x.label === 'P7')?.title.includes('b)') &&
+            q.every((x) => !/^\d/.test(x.title) && x.topics.length >= 1)
+  - description: class timetable photo, days, times, kinds and odd weeks
+    vars: { kind: timetable, fixture: timetable.png }
+    assert:
+      - type: javascript
+        value: |
+          const e = output.entries
+          const sis = e.filter((x) => x.subject_id === '11111111-1111-4111-8111-111111111111')
+          const lab = e.find((x) => x.kind === 'lab')
+          return e.length === 7 && sis.length === 2 &&
+            sis.some((x) => x.weekday === 0 && x.start === '09:00' && x.end === '11:00') &&
+            lab?.weekday === 3 && lab?.week_parity === 'odd' && lab?.location === 'Lab 1' &&
+            e.filter((x) => x.subject_id === null).length === 2

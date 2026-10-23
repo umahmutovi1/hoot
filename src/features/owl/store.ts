@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import type { AiErrorCode, Citation, ImportKind } from '@shared/schemas.ts'
-import type { ExamProposal, PeriodProposal } from '@/lib/import'
+import type { AiErrorCode, Citation, ImportKind, ReimportKind } from '@shared/schemas.ts'
+import type { ClassProposal, ExamProposal, PeriodProposal } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
 import type { Json } from '@/types/database'
 
@@ -9,13 +9,36 @@ import type { Json } from '@/types/database'
 // (owl_conversations / owl_messages) so past conversations show up in the history; the
 // current one is also kept on the device for a reload.
 
+/** A shared file or text (same shape as DocumentInput in actions.ts). */
+export type SharedInput = { type: 'file'; file: File } | { type: 'text'; text: string }
+
 export type StateRef = { subject: string | null; topic: 'grades' | 'exams' | 'calendar' | 'plan' }
+
+/** A note or card found by "gdje sam pisala o …" (vector search, no LLM). */
+export interface NoteHit {
+  kind: 'unit' | 'card'
+  unitId: string
+  subjectId: string
+  sourceId: string
+  title: string
+  snippet: string
+}
+
+/** What the app does next to an answer (Stage 10 tools); the user confirms any change. */
+export type OwlAction =
+  | { kind: 'search_notes'; text: string; hits: NoteHit[] | null }
+  | { kind: 'quiz'; text: string }
+  | { kind: 'add_timetable' }
+  | { kind: 'add_contents'; text: string | null }
+  | { kind: 'import_document'; importKind: ReimportKind; documentId: string | null }
 
 export interface ImportProposal {
   documentId: string
   documentTitle: string
   periods: PeriodProposal[]
   exams: ExamProposal[]
+  /** Timetable classes; missing in proposals kept from before Stage 10. */
+  classes?: ClassProposal[]
   warnings: string[]
   savedCount: number | null
 }
@@ -30,6 +53,7 @@ export type OwlMessage =
       text: string
       citations: Citation[]
       stateRefs: StateRef[]
+      action?: OwlAction
     }
   | { id: string; role: 'owl'; type: 'pending'; stage: 'thinking' | 'reading' | 'storing' }
   | { id: string; role: 'owl'; type: 'error'; code: AiErrorCode | 'offline' | 'file' }
@@ -44,6 +68,8 @@ export type OwlMessage =
       /** False when the passages could not be stored; the proposal still stands. */
       stored: boolean
       found: number
+      /** Read again from the chat ("ubaci mi ovo"), not newly given. */
+      again?: boolean
     }
   | { id: string; role: 'owl'; type: 'proposal'; proposal: ImportProposal }
 
@@ -53,7 +79,7 @@ interface OwlState {
   conversationId: string | null
   messages: OwlMessage[]
   /** Kind preselected when the "give a document" sheet opens from a suggestion. */
-  sheet: { open: boolean; kind: ImportKind; nonce: number }
+  sheet: { open: boolean; kind: ImportKind; nonce: number; shared?: SharedInput | null }
   busy: boolean
   /** Forgets the open conversation when another user signs in. */
   ensureUser: (userId: string) => void
@@ -66,6 +92,8 @@ interface OwlState {
   updateProposal: (id: string, update: (p: ImportProposal) => ImportProposal) => void
   setBusy: (busy: boolean) => void
   openSheet: (kind?: ImportKind) => void
+  /** Android "Podijeli" → Hoot: the sheet opens on its confirm step with the shared item. */
+  openShared: (input: SharedInput) => void
   closeSheet: () => void
 }
 
@@ -149,7 +177,9 @@ export const useOwlStore = create<OwlState>()(
       setBusy: (busy) => set({ busy }),
       openSheet: (kind = 'auto') =>
         set((s) => ({ sheet: { open: true, kind, nonce: s.sheet.nonce + 1 } })),
-      closeSheet: () => set((s) => ({ sheet: { ...s.sheet, open: false } })),
+      openShared: (shared) =>
+        set((s) => ({ sheet: { open: true, kind: 'auto', nonce: s.sheet.nonce + 1, shared } })),
+      closeSheet: () => set((s) => ({ sheet: { ...s.sheet, open: false, shared: null } })),
     }),
     {
       name: 'hoot-owl',

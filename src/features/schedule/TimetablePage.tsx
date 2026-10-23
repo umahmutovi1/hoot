@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { ChevronRightIcon, PlusIcon } from '@/components/icons'
+import { CameraIcon, ChevronRightIcon, PlusIcon } from '@/components/icons'
+import { useAiAvailability } from '@/features/owl/api'
+import { useOwlStore } from '@/features/owl/store'
 import { useDayBoundary, useProfile, useUpdateProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { useSubjects } from '@/features/subjects/api'
@@ -30,6 +32,8 @@ export function TimetablePage() {
   const { data: profile } = useProfile()
   const updateProfile = useUpdateProfile()
   const names = useWeekdayNames('short')
+  const aiReady = useAiAvailability().state === 'ready'
+  const openSheet = useOwlStore((s) => s.openSheet)
 
   const teachingRows = periodRows.filter((p) => p.kind === 'teaching')
   const current = currentTeachingPeriod(today, periodRows.map(toPeriod))
@@ -76,6 +80,26 @@ export function TimetablePage() {
           </Link>
         ) : null}
       </div>
+
+      {aiReady && (
+        <button
+          type="button"
+          onClick={() => {
+            openSheet('timetable')
+            navigate('/chat')
+          }}
+          className="flex items-center gap-3 rounded-card glass p-3.5 text-left"
+        >
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-brand-soft text-brand">
+            <CameraIcon size={20} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('timetable.photoTitle')}</span>
+            <span className="text-xs text-ink-muted">{t('timetable.photoHint')}</span>
+          </span>
+          <ChevronRightIcon size={18} className="text-ink-subtle" />
+        </button>
+      )}
 
       {!current && (
         <Link to="/settings/calendar" className="flex items-center gap-3 rounded-card glass p-3.5">

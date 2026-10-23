@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useAllSources, useTopicLinks } from '@/features/plan/api'
+import { useAllSources, useQuestionLinks, useTopicLinks } from '@/features/plan/api'
 import { linkedQuestions } from './gate'
 
 /**
@@ -11,6 +11,7 @@ export function LinkedQuestionsOffer({ unitId }: { unitId: string }) {
   const { t } = useTranslation()
   const { data: sources } = useAllSources()
   const { data: links } = useTopicLinks()
+  const { data: direct } = useQuestionLinks()
   const source = sources?.find((s) => s.units.some((u) => u.id === unitId))
   const unit = source?.units.find((u) => u.id === unitId)
   if (!sources || !links || !source || !unit || unit.kind !== 'chapter') return null
@@ -21,6 +22,7 @@ export function LinkedQuestionsOffer({ unitId }: { unitId: string }) {
     { key: unit.id, title: unit.title, label: unit.label, leaves: [unit] },
     links,
     subjectUnits,
+    direct,
   ).length
   if (count === 0) return null
   return (

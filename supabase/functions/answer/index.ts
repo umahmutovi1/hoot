@@ -4,7 +4,7 @@ import { json } from '../_shared/cors.ts'
 import { embed } from '../_shared/embed.ts'
 import { conversationCache, llmDeps, readJson, serve } from '../_shared/edge.ts'
 import { generate } from '../_shared/llm.ts'
-import { answerRequest, citationsFor } from '../_shared/prompts.ts'
+import { answerRequest, citationsFor, normalizeAction } from '../_shared/prompts.ts'
 import type { Passage } from '../_shared/prompts.ts'
 import { answerRequestSchema } from '../_shared/schemas.ts'
 import type { AnswerResponse } from '../_shared/schemas.ts'
@@ -42,6 +42,7 @@ Deno.serve(
       answer: result.data.answer,
       citations: citationsFor(result.data, passages),
       state_refs: result.data.state_refs,
+      ...normalizeAction(result.data),
     }
     return json(response)
   }),

@@ -1,0 +1,11 @@
+SKRIPTA IZ VJEROVATNOĆE I STATISTIKE
+Sadržaj
+Uvod ............................ 3
+Kombinatorika ................... 5
+Vjerovatnoća događaja ........... 12
+  Uslovna vjerovatnoća .......... 18
+  Bayesova formula .............. 22
+Slučajne varijable .............. 27
+Normalna raspodjela
+Centralna granična teorema ...... 51
+Literatura ...................... 60

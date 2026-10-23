@@ -2,10 +2,11 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { useSubjects } from '@/features/subjects/api'
-import { toSave, type ProposalStatus } from '@/lib/import'
+import type { ProposalStatus } from '@/lib/import'
 import { cn } from '@/lib/utils'
-import { examLines, periodLines, useDateLabel } from './format'
-import { useSaveImport } from './saveImport'
+import { useWeekdayNames } from '@/features/schedule/weekdays'
+import { classLines, examLines, periodLines, useDateLabel } from './format'
+import { NoTeachingPeriod, saveCount, useSaveImport } from './saveImport'
 import { useOwlStore, type ImportProposal } from './store'
 
 const STATUS_CLASS: Record<ProposalStatus, string> = {
@@ -79,8 +80,8 @@ export function ImportCard({
   const subjects = useSubjects().data ?? []
   const updateProposal = useOwlStore((s) => s.updateProposal)
   const save = useSaveImport(t)
-  const count =
-    toSave(proposal.periods).length + toSave(proposal.exams).filter((e) => e.subjectId).length
+  const weekdays = useWeekdayNames('short')
+  const count = saveCount(proposal)
   const nameOf = (id: string | null) => subjects.find((s) => s.id === id)?.name
 
   const rows = [
@@ -89,6 +90,11 @@ export function ImportCard({
       key: e.key,
       status: e.status,
       ...examLines(t, e, nameOf(e.subjectId), day),
+    })),
+    ...(proposal.classes ?? []).map((c) => ({
+      key: c.key,
+      status: c.status,
+      ...classLines(t, c, nameOf(c.subjectId), (d) => weekdays[d] ?? ''),
     })),
   ]
 
@@ -130,7 +136,11 @@ export function ImportCard({
           </Button>
         </div>
       )}
-      {save.isError && <p className="px-2.5 pb-2 text-sm text-danger">{t('owl.error.failed')}</p>}
+      {save.isError && (
+        <p className="px-2.5 pb-2 text-sm text-danger">
+          {t(save.error instanceof NoTeachingPeriod ? 'owl.noTeachingPeriod' : 'owl.error.failed')}
+        </p>
+      )}
     </div>
   )
 }

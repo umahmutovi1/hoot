@@ -115,7 +115,7 @@ const normalize = (s: string) =>
 
 /** The model's subject id when it is one of ours, else the closest name (fuse.js). */
 export function matchSubject(
-  exam: Pick<ParsedExam, 'subject_id' | 'subject_name'>,
+  exam: { subject_id: string | null; subject_name: string },
   subjects: readonly ImportSubject[],
 ): string | null {
   if (exam.subject_id && subjects.some((s) => s.id === exam.subject_id)) return exam.subject_id
@@ -222,4 +222,204 @@ export function toSave<T extends { include: boolean; status: ProposalStatus }>(
   items: readonly T[],
 ) {
   return items.filter((x) => x.include && (x.status === 'new' || x.status === 'changed'))
+}
+
+// ------------------------------------------------------------------ class timetable
+
+export type ClassKind = 'lecture' | 'exercise' | 'lab' | 'other'
+
+export interface ParsedClass {
+  subject_name: string
+  subject_id: string | null
+  kind: ClassKind
+  /** 0 = Monday */
+  weekday: number
+  start: string
+  end: string
+  location: string | null
+  week_parity: 'odd' | 'even' | null
+  note: string | null
+}
+
+/** A class already in the timetable of the period the import goes to. */
+export interface ExistingClass {
+  id: string
+  subjectId: string | null
+  kind: ClassKind
+  weekday: number
+  startMin: number
+  endMin: number
+  location: string | null
+  weekParity: 'odd' | 'even' | null
+}
+
+export interface ClassProposal extends ParsedClass {
+  key: string
+  status: ProposalStatus
+  include: boolean
+  subjectId: string | null
+  existingId: string | null
+  previous: { start: string; end: string; location: string | null } | null
+}
+
+export const clockToMin = (hhmm: string) => {
+  const [h, m] = hhmm.split(':').map(Number)
+  return h! * 60 + m!
+}
+export const minToClock = (min: number) =>
+  `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
+
+/**
+ * Classes from a timetable photo or text (PRD "Raspored nastave", Stage 10): the subject is the
+ * model's id or the closest name (fuse.js); a class of the same subject, kind, day and week
+ * parity that already exists is unchanged or changed (new time or room), the rest is new. A class
+ * whose subject is not found waits for one to be picked.
+ */
+export function proposeClasses(
+  parsed: readonly ParsedClass[],
+  subjects: readonly ImportSubject[],
+  existing: readonly ExistingClass[],
+): ClassProposal[] {
+  const used = new Set<string>()
+  return parsed.map((c, i) => {
+    const key = `c${i}`
+    const subjectId = matchSubject(c, subjects)
+    if (!subjectId)
+      return {
+        ...c,
+        key,
+        status: 'skipped',
+        include: false,
+        subjectId: null,
+        existingId: null,
+        previous: null,
+      }
+    const start = clockToMin(c.start)
+    const end = clockToMin(c.end)
+    const same = existing.filter(
+      (e) =>
+        !used.has(e.id) &&
+        e.subjectId === subjectId &&
+        e.kind === c.kind &&
+        e.weekday === c.weekday &&
+        e.weekParity === c.week_parity,
+    )
+    // The closest start among the subject's classes of that kind on that day.
+    const match = [...same].sort(
+      (a, b) => Math.abs(a.startMin - start) - Math.abs(b.startMin - start),
+    )[0]
+    if (match) used.add(match.id)
+    const unchanged =
+      match &&
+      match.startMin === start &&
+      match.endMin === end &&
+      (c.location === null || (match.location ?? '') === c.location)
+    const status: ProposalStatus = !match ? 'new' : unchanged ? 'unchanged' : 'changed'
+    return {
+      ...c,
+      key,
+      status,
+      include: status !== 'unchanged',
+      subjectId,
+      existingId: match?.id ?? null,
+      previous:
+        match && !unchanged
+          ? {
+              start: minToClock(match.startMin),
+              end: minToClock(match.endMin),
+              location: match.location,
+            }
+          : null,
+    }
+  })
+}
+
+/** Re-evaluates one class after the user picked its subject in the full review. */
+export function assignClassSubject(
+  proposal: ClassProposal,
+  subjectId: string,
+  existing: readonly ExistingClass[],
+): ClassProposal {
+  const [updated] = proposeClasses(
+    [{ ...proposal, subject_id: subjectId }],
+    [{ id: subjectId, name: proposal.subject_name }],
+    existing,
+  )
+  return { ...updated!, key: proposal.key }
+}
+
+// ------------------------------------------------------------------ deadlines from a calendar (Moodle)
+
+export interface DeadlineEvent {
+  id: string
+  title: string | null
+  /** The course (ICS CATEGORIES). */
+  category: string | null
+  /** Due instant, ISO. */
+  startsAt: string
+  deadlineId: string | null
+  ignored: boolean
+}
+
+export interface ExistingDeadline {
+  id: string
+  dueAt: string
+}
+
+export interface DeadlineProposal {
+  key: string
+  eventId: string
+  title: string
+  dueAt: string
+  category: string | null
+  status: 'new' | 'changed'
+  /** false = "Preskačem": the event is ignored from now on. */
+  include: boolean
+  subjectId: string | null
+  deadlineId: string | null
+  previousDueAt: string | null
+}
+
+/**
+ * Kartica "N novih rokova iz Moodlea" (PRD "Povezani kalendari", vrsta "Rokovi"): upcoming events
+ * of deadline feeds that are not imported yet (novo) or whose imported deadline has another date
+ * now (izmijenjeno). Skipped events (`ignored`) never come back. Subject: the course name, else
+ * the title (fuse.js); no match leaves the deadline without a subject until one is picked.
+ */
+export function proposeDeadlines(
+  events: readonly DeadlineEvent[],
+  subjects: readonly ImportSubject[],
+  deadlines: readonly ExistingDeadline[],
+  now: Date,
+): DeadlineProposal[] {
+  const out: DeadlineProposal[] = []
+  const seen = new Set<string>()
+  for (const e of [...events].sort((a, b) => a.startsAt.localeCompare(b.startsAt))) {
+    if (e.ignored || new Date(e.startsAt).getTime() < now.getTime()) continue
+    const linked = e.deadlineId ? deadlines.find((d) => d.id === e.deadlineId) : undefined
+    if (linked && new Date(linked.dueAt).getTime() === new Date(e.startsAt).getTime()) continue
+    // A recurring series is one deadline per date; the same imported deadline is offered once.
+    if (linked && seen.has(linked.id)) continue
+    if (linked) seen.add(linked.id)
+    const title = e.title?.trim() || e.category?.trim() || ''
+    if (!title) continue
+    const plain = normalize(title)
+    const subjectId =
+      matchSubject({ subject_id: null, subject_name: e.category ?? '' }, subjects) ??
+      subjects.find((s) => plain.includes(normalize(s.name)))?.id ??
+      matchSubject({ subject_id: null, subject_name: title }, subjects)
+    out.push({
+      key: e.id,
+      eventId: e.id,
+      title,
+      dueAt: e.startsAt,
+      category: e.category,
+      status: linked ? 'changed' : 'new',
+      include: true,
+      subjectId,
+      deadlineId: linked?.id ?? null,
+      previousDueAt: linked?.dueAt ?? null,
+    })
+  }
+  return out
 }

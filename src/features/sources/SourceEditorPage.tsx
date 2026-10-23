@@ -4,9 +4,10 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BookIcon, CameraIcon, ChevronLeftIcon, CloseIcon, WarningIcon } from '@/components/icons'
+import { BookIcon, ChevronLeftIcon, CloseIcon, SparkleIcon, WarningIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { Button } from '@/components/ui/button'
+import { useAiAvailability } from '@/features/owl/api'
 import { useSubject } from '@/features/subjects/api'
 import { ChipGroup, fieldInput, fieldLabel } from '@/features/subjects/fields'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
@@ -37,6 +38,7 @@ import {
   SOURCE_KINDS,
   type SourceWithUnits,
 } from './model'
+import { ImportPhotos } from './ImportPhotos'
 import { cycleDifficulty, nextLabel, removeUnit, upsertUnit } from './outlineEdit'
 import {
   OUTLINE_MAX_LENGTH,
@@ -46,6 +48,7 @@ import {
   type UnitForm,
 } from './schemas'
 import { UnitSheet } from './UnitSheet'
+import { useAiImport, type AiResult } from './useAiImport'
 
 /**
  * DodajIzvor → Parsiranje for manual entry: /subjects/:id/sources/new, and "Uredi sadržaj" at
@@ -62,7 +65,9 @@ export function SourceEditorPage() {
   return <SourceEditor key={sourceId ?? 'new'} subject={subject} source={source} />
 }
 
-type Step = { kind: 'input' } | { kind: 'review'; outline: ParsedOutline }
+type Step = { kind: 'input' } | ({ kind: 'review' } & AiResult)
+
+const NO_AI = { topics: {}, warnings: [] }
 
 function SourceEditor({
   subject,
@@ -96,6 +101,11 @@ function SourceEditor({
   )
   const [textError, setTextError] = useState<string | null>(null)
   const [step, setStep] = useState<Step>({ kind: 'input' })
+  const [mode, setMode] = useState<'photo' | 'text'>(isEdit ? 'text' : 'photo')
+  const [files, setFiles] = useState<File[]>([])
+  const ai = useAiImport(subject)
+  const { state: aiState } = useAiAvailability()
+  const aiReady = aiState === 'ready'
 
   const toReview = form.handleSubmit(() => {
     const checked = outlineTextSchema.safeParse(text)
@@ -108,21 +118,41 @@ function SourceEditor({
     setStep({
       kind: 'review',
       outline: { ...parsed, units: carryDifficulty(parsed.units, existing) },
+      ...NO_AI,
     })
     window.scrollTo(0, 0)
   })
 
+  /** "Izvuci poglavlja" (photos) or "Pretvori AI-jem" (pasted text). */
+  const toAiReview = (input: 'files' | 'text') =>
+    form.handleSubmit(async (values) => {
+      if (input === 'text' && !text.trim()) return
+      const result = await ai.run(
+        values,
+        measure,
+        input === 'files' ? { kind: 'files', files } : { kind: 'text', text },
+      )
+      if (!result) return
+      setStep({ kind: 'review', ...result })
+      window.scrollTo(0, 0)
+    })()
+
   // With partial exams the next step is ObimIspita, as in the mockup flow.
   const splitByExam = partialExams(subject.assessments).length > 0
 
-  const onSave = (units: OutlineUnit[]) => {
+  const onSave = (units: OutlineUnit[], topics: Record<string, string[]>) => {
     const values = form.getValues()
     const merge = mergeOutline(toStoredUnits(source?.units ?? []), units, () => crypto.randomUUID())
-    save.mutate({ form: values, measure, merge })
+    save.mutate({ form: values, measure, merge, topics })
+    // Questions go on to their chapter links (AI suggestions for review), then the exam scope.
+    const linkable =
+      measure === 'questions' && aiReady && merge.units.some((u) => u.status !== 'unchanged')
     navigate(
-      splitByExam
-        ? `/subjects/${subject.id}/scope?source=${values.id}`
-        : `/subjects/${subject.id}/sources/${values.id}`,
+      linkable
+        ? `/subjects/${subject.id}/sources/${values.id}/links`
+        : splitByExam
+          ? `/subjects/${subject.id}/scope?source=${values.id}`
+          : `/subjects/${subject.id}/sources/${values.id}`,
       { replace: true },
     )
   }
@@ -131,14 +161,32 @@ function SourceEditor({
     return (
       <Review
         outline={step.outline}
+        topics={step.topics}
+        aiWarnings={step.warnings}
         measure={measure}
-        rate={
+        minutesRate={
           measure === 'items'
             ? (form.getValues('minutesPerItem') ?? DEFAULT_ITEM_MINUTES)
             : baseMinPerUnit(kind, measure)
         }
         existing={source}
-        onChange={(outline) => setStep({ kind: 'review', outline })}
+        onChange={(outline) => setStep({ ...step, outline })}
+        onTopics={(topics) => setStep({ ...step, topics })}
+        rate={
+          aiReady
+            ? {
+                busy: ai.busy,
+                error: ai.error,
+                run: async () => {
+                  const result = await ai.run(form.getValues(), measure, {
+                    kind: 'rate',
+                    outline: step.outline,
+                  })
+                  if (result) setStep({ ...step, ...result, warnings: step.warnings })
+                },
+              }
+            : null
+        }
         onBack={() => {
           setText(formatOutline(step.outline.units, measure))
           setStep({ kind: 'input' })
@@ -252,17 +300,52 @@ function SourceEditor({
 
       <OutlineInput
         measure={measure}
+        mode={mode}
+        onMode={setMode}
         text={text}
         error={textError}
         onText={(v) => {
           setText(v)
           if (textError) setTextError(null)
         }}
+        files={files}
+        onFiles={setFiles}
+        busy={ai.busy}
+        aiReady={aiReady}
+        onAiText={() => void toAiReview('text')}
       />
 
-      <Button type="submit" size="pill" className="mt-2 btn-primary">
-        {t('sources.editor.review')}
-      </Button>
+      {ai.error && (
+        <span role="alert" className="text-sm text-danger">
+          {t(`owl.error.${ai.error as 'failed'}`)}
+        </span>
+      )}
+      {mode === 'photo' ? (
+        <>
+          <span className="text-center text-xs text-ink-muted">
+            {t('sources.import.deletedAfter')}
+          </span>
+          <Button
+            type="button"
+            size="pill"
+            disabled={!aiReady || files.length === 0 || ai.busy}
+            onClick={() => void toAiReview('files')}
+            className="btn-primary"
+          >
+            {ai.busy
+              ? t('sources.import.reading')
+              : t(
+                  measure === 'questions'
+                    ? 'sources.import.extractQuestions'
+                    : 'sources.import.extract',
+                )}
+          </Button>
+        </>
+      ) : (
+        <Button type="submit" size="pill" className="mt-2 btn-primary">
+          {t('sources.editor.review')}
+        </Button>
+      )}
       {source && <DeleteSource subjectId={subject.id} sourceId={source.id} />}
     </form>
   )
@@ -270,17 +353,31 @@ function SourceEditor({
 
 function OutlineInput({
   measure,
+  mode,
+  onMode,
   text,
   error,
   onText,
+  files,
+  onFiles,
+  busy,
+  aiReady,
+  onAiText,
 }: {
   measure: Measure
+  mode: 'photo' | 'text'
+  onMode: (mode: 'photo' | 'text') => void
   text: string
   error: string | null
   onText: (text: string) => void
+  files: File[]
+  onFiles: (files: File[]) => void
+  busy: boolean
+  aiReady: boolean
+  onAiText: () => void
 }) {
   const { t } = useTranslation()
-  const [mode, setMode] = useState<'photo' | 'text'>('text')
+  const { state } = useAiAvailability()
   return (
     <>
       <div role="tablist" className="flex rounded-[22px] bg-track p-1">
@@ -290,7 +387,7 @@ function OutlineInput({
             type="button"
             role="tab"
             aria-selected={mode === m}
-            onClick={() => setMode(m)}
+            onClick={() => onMode(m)}
             className={cn(
               'h-10 flex-1 rounded-[18px] text-sm font-semibold',
               mode === m && 'glass',
@@ -302,15 +399,14 @@ function OutlineInput({
       </div>
 
       {mode === 'photo' ? (
-        <div className="flex flex-col gap-3 rounded-card-lg glass p-4">
-          <div className="flex h-[200px] flex-col items-center justify-center gap-2.5 rounded-[20px] border-2 border-dashed border-line bg-canvas-soft px-6 text-center">
-            <div className="flex size-[60px] items-center justify-center rounded-full bg-brand-soft text-brand">
-              <CameraIcon size={26} />
-            </div>
-            <span className="text-[15px] font-semibold">{t('sources.editor.photoSoon')}</span>
-            <span className="text-xs text-ink-muted">{t('sources.editor.photoSoonBody')}</span>
-          </div>
-        </div>
+        <>
+          <ImportPhotos files={files} onChange={onFiles} disabled={busy} />
+          {!aiReady && (
+            <span className="text-[13px] text-ink-muted">
+              {t(state === 'offline' ? 'owl.offline' : 'sources.import.noAi')}
+            </span>
+          )}
+        </>
       ) : (
         <div className="flex flex-col gap-2 rounded-card-lg glass p-4">
           <textarea
@@ -331,6 +427,17 @@ function OutlineInput({
             <span role="alert" className="text-sm text-danger">
               {t(validationKey(error))}
             </span>
+          )}
+          {aiReady && (
+            <button
+              type="button"
+              disabled={busy || !text.trim()}
+              onClick={onAiText}
+              className="flex min-h-11 items-center gap-1.5 self-start text-sm font-semibold text-brand disabled:opacity-50"
+            >
+              <SparkleIcon size={16} />
+              {busy ? t('sources.import.reading') : t('sources.import.fromText')}
+            </button>
           )}
         </div>
       )}
@@ -369,21 +476,30 @@ const STATUS_TAG: Partial<Record<MergeStatus, string>> = {
 
 function Review({
   outline,
+  topics,
+  aiWarnings,
   measure,
-  rate,
+  minutesRate,
   existing,
   onChange,
+  onTopics,
+  rate,
   onBack,
   onSave,
   saveLabel,
 }: {
   outline: ParsedOutline
+  topics: Record<string, string[]>
+  aiWarnings: string[]
   measure: Measure
-  rate: number
+  minutesRate: number
   existing?: SourceWithUnits
   onChange: (outline: ParsedOutline) => void
+  onTopics: (topics: Record<string, string[]>) => void
+  /** "Procijeni težinu AI-jem"; null when AI is not available. */
+  rate: { busy: boolean; error: string | null; run: () => Promise<void> } | null
   onBack: () => void
-  onSave: (units: OutlineUnit[]) => void
+  onSave: (units: OutlineUnit[], topics: Record<string, string[]>) => void
   saveLabel: string
 }) {
   const { t } = useTranslation()
@@ -414,7 +530,7 @@ function Review({
         priorDifficulty: u.difficulty,
         userDifficulty: null,
       })),
-    rate,
+    minutesRate,
   )
   const totalMinutes = [...estimates.values()].reduce((s, e) => s + e.minutes, 0)
 
@@ -461,10 +577,44 @@ function Review({
             )}
           </span>
           <span className="text-xs text-ink-muted">
-            {t('sources.review.estimate', { time: formatDuration(t, totalMinutes) })}
+            {t(
+              Object.keys(topics).length > 0
+                ? 'sources.review.estimateAi'
+                : 'sources.review.estimate',
+              {
+                time: formatDuration(t, totalMinutes),
+              },
+            )}
           </span>
         </div>
       </div>
+
+      {aiWarnings.map((w, i) => (
+        <div
+          key={`ai-${i}`}
+          className="flex items-start gap-2.5 rounded-[20px] bg-warning-soft px-4 py-3.5"
+        >
+          <WarningIcon size={20} className="mt-px shrink-0 text-warning" />
+          <span className="text-[13px] leading-[1.4] text-warning-ink">{w}</span>
+        </div>
+      ))}
+
+      {rate && Object.keys(topics).length === 0 && units.length > 0 && (
+        <button
+          type="button"
+          disabled={rate.busy}
+          onClick={() => void rate.run()}
+          className="flex min-h-11 items-center justify-center gap-1.5 rounded-full glass px-4 text-sm font-semibold text-brand disabled:opacity-50"
+        >
+          <SparkleIcon size={16} />
+          {rate.busy ? t('sources.import.rating') : t('sources.import.rate')}
+        </button>
+      )}
+      {rate?.error && (
+        <span role="alert" className="text-sm text-danger">
+          {t(`owl.error.${rate.error as 'failed'}`)}
+        </span>
+      )}
 
       {outline.warnings.map((w) => (
         <div
@@ -493,7 +643,7 @@ function Review({
                 key={u.label}
                 style={{ paddingLeft: 8 + u.depth * 20 }}
                 className={cn(
-                  'flex items-center gap-2 rounded-[16px] py-1.5 pr-1',
+                  'flex flex-wrap items-center gap-x-2 rounded-[16px] py-1.5 pr-1',
                   guessed && 'bg-warning-soft/60',
                 )}
               >
@@ -513,6 +663,7 @@ function Review({
                     </span>
                     <span className="flex flex-wrap items-center gap-2 text-[11px] text-ink-subtle">
                       {unitMeta(t, measure, u)}
+
                       {status && STATUS_TAG[status] && (
                         <span
                           className={cn(
@@ -561,6 +712,27 @@ function Review({
                 >
                   <CloseIcon size={16} />
                 </button>
+                {(topics[u.label]?.length ?? 0) > 0 && (
+                  <div className="flex basis-full flex-wrap gap-1.5 pb-1 pl-10">
+                    {topics[u.label]!.map((name) => (
+                      <button
+                        key={name}
+                        type="button"
+                        onClick={() =>
+                          onTopics({
+                            ...topics,
+                            [u.label]: topics[u.label]!.filter((x) => x !== name),
+                          })
+                        }
+                        aria-label={t('sources.import.removeTopic', { name })}
+                        className="flex h-7 items-center gap-1 rounded-full bg-brand-soft px-2.5 text-[11px] font-semibold text-brand"
+                      >
+                        {name}
+                        <CloseIcon size={10} />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )
           })}
@@ -583,7 +755,7 @@ function Review({
         type="button"
         size="pill"
         disabled={units.length === 0}
-        onClick={() => onSave(units)}
+        onClick={() => onSave(units, topics)}
         className="mt-2 btn-primary"
       >
         {saveLabel}

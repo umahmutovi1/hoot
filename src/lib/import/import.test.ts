@@ -1,11 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import {
+  assignClassSubject,
   assignSubject,
   matchSubject,
+  proposeClasses,
+  proposeDeadlines,
   proposeExams,
   proposePeriods,
   toSave,
+  type DeadlineEvent,
+  type ExistingClass,
   type ExistingExam,
+  type ParsedClass,
   type ParsedExam,
 } from '.'
 
@@ -167,5 +173,112 @@ describe('proposePeriods', () => {
   it('does not match a different session of the same dates', () => {
     const [p] = proposePeriods([period], [{ ...period, id: 'r', exam_session: 'regular' }])
     expect(p?.status).toBe('new')
+  })
+})
+
+describe('proposeClasses', () => {
+  const subjects = [
+    { id: 'sig', name: 'Signali i sistemi' },
+    { id: 'baze', name: 'Baze podataka' },
+  ]
+  const parsed = (over: Partial<ParsedClass> = {}): ParsedClass => ({
+    subject_name: 'Signali i sistemi',
+    subject_id: null,
+    kind: 'lecture',
+    weekday: 0,
+    start: '09:00',
+    end: '11:00',
+    location: 'S1',
+    week_parity: null,
+    note: null,
+    ...over,
+  })
+  const existing: ExistingClass[] = [
+    {
+      id: 'e1',
+      subjectId: 'sig',
+      kind: 'lecture',
+      weekday: 0,
+      startMin: 540,
+      endMin: 660,
+      location: 'S1',
+      weekParity: null,
+    },
+  ]
+
+  it('is unchanged, changed or new against the timetable', () => {
+    const out = proposeClasses(
+      [
+        parsed(),
+        parsed({ weekday: 2, start: '12:00', end: '14:00' }),
+        parsed({ subject_name: 'Baze podat.', kind: 'lab', week_parity: 'odd' }),
+      ],
+      subjects,
+      existing,
+    )
+    expect(out.map((c) => [c.status, c.subjectId, c.include])).toEqual([
+      ['unchanged', 'sig', false],
+      ['new', 'sig', true],
+      ['new', 'baze', true],
+    ])
+    const moved = proposeClasses([parsed({ start: '10:00', end: '12:00' })], subjects, existing)[0]!
+    expect(moved).toMatchObject({ status: 'changed', existingId: 'e1' })
+    expect(moved.previous).toEqual({ start: '09:00', end: '11:00', location: 'S1' })
+  })
+
+  it('waits for a subject when none matches', () => {
+    const [c] = proposeClasses([parsed({ subject_name: 'Fizika' })], subjects, existing)
+    expect(c).toMatchObject({ status: 'skipped', include: false })
+    expect(assignClassSubject(c!, 'baze', existing)).toMatchObject({
+      status: 'new',
+      subjectId: 'baze',
+      key: c!.key,
+    })
+  })
+})
+
+describe('proposeDeadlines', () => {
+  const now = new Date('2026-10-23T10:00:00Z')
+  const ev = (over: Partial<DeadlineEvent>): DeadlineEvent => ({
+    id: 'e1',
+    title: 'Zadaća 2 se predaje',
+    category: 'Signali i sistemi',
+    startsAt: '2026-11-04T22:59:00.000Z',
+    deadlineId: null,
+    ignored: false,
+    ...over,
+  })
+
+  it('offers new and moved deadlines, never skipped, past or unchanged ones', () => {
+    const out = proposeDeadlines(
+      [
+        ev({}),
+        ev({ id: 'e2', deadlineId: 'd1', startsAt: '2026-11-06T22:59:00.000Z' }),
+        ev({ id: 'e3', deadlineId: 'd2' }),
+        ev({ id: 'e4', ignored: true }),
+        ev({ id: 'e5', startsAt: '2026-10-01T10:00:00.000Z' }),
+      ],
+      subjects,
+      [
+        { id: 'd1', dueAt: '2026-11-04T22:59:00Z' },
+        { id: 'd2', dueAt: '2026-11-04T22:59:00Z' },
+      ],
+      now,
+    )
+    expect(out.map((p) => [p.eventId, p.status, p.subjectId])).toEqual([
+      ['e1', 'new', 'sis'],
+      ['e2', 'changed', 'sis'],
+    ])
+    expect(out[1]!.previousDueAt).toBe('2026-11-04T22:59:00Z')
+  })
+
+  it('matches the subject by the title when the course is missing', () => {
+    const [p] = proposeDeadlines(
+      [ev({ category: null, title: 'Baze podataka: projekat' })],
+      subjects,
+      [],
+      now,
+    )
+    expect(p!.subjectId).toBe('bp')
   })
 })

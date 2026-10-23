@@ -29,7 +29,7 @@ const ACCEPT: Record<Source, string> = {
  */
 export function GiveDocumentSheet() {
   const { t } = useTranslation()
-  const { open, kind, nonce } = useOwlStore((s) => s.sheet)
+  const { open, kind, nonce, shared } = useOwlStore((s) => s.sheet)
   const closeSheet = useOwlStore((s) => s.closeSheet)
   return (
     <BottomSheet
@@ -39,12 +39,19 @@ export function GiveDocumentSheet() {
       subtitle={t('owl.sheet.subtitle')}
     >
       {/* Keyed per opening, so a suggestion's kind and an empty text start fresh. */}
-      <SheetBody key={nonce} initialKind={kind} />
+      <SheetBody key={nonce} initialKind={kind} shared={shared ?? null} />
     </BottomSheet>
   )
 }
 
-function SheetBody({ initialKind }: { initialKind: ImportKind }) {
+function SheetBody({
+  initialKind,
+  shared,
+}: {
+  initialKind: ImportKind
+  /** Shared from another app: start on the confirm step with it. */
+  shared: DocumentInput | null
+}) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
@@ -52,9 +59,9 @@ function SheetBody({ initialKind }: { initialKind: ImportKind }) {
   const newConversation = useOwlStore((s) => s.newConversation)
   const owl = useOwl()
   const [kind, setKind] = useState<ImportKind>(initialKind)
-  const [step, setStep] = useState<'choose' | 'paste' | 'confirm'>('choose')
+  const [step, setStep] = useState<'choose' | 'paste' | 'confirm'>(shared ? 'confirm' : 'choose')
   const [text, setText] = useState('')
-  const [picked, setPicked] = useState<DocumentInput | null>(null)
+  const [picked, setPicked] = useState<DocumentInput | null>(shared)
   const [note, setNote] = useState('')
   // Thumbnail of a picked image; made when the file is picked, revoked when it goes away.
   const [preview, setPreview] = useState<string | null>(null)
@@ -160,6 +167,9 @@ function SheetBody({ initialKind }: { initialKind: ImportKind }) {
               <span className="text-sm font-semibold">{label}</span>
             </button>
           ))}
+          <span className="col-span-2 px-1 pt-1 text-xs leading-[1.4] text-ink-muted">
+            {t('owl.sheet.shareHint')}
+          </span>
         </div>
       )}
       {(['camera', 'image', 'pdf'] as const).map((source) => (

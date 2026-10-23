@@ -1,3 +1,4 @@
+import { questionsByChapter, type DirectLink, type TopicLink } from '@/lib/questions/links'
 import type { Recall } from '@/lib/srs'
 import type { Card, Unit } from '@/features/sources/model'
 import type { CardReview, RecallSource, UnitReview } from './apply'
@@ -18,7 +19,13 @@ export interface GateTarget {
   leaves: Unit[]
 }
 
-export type GateSource = 'exam_question' | 'notes' | 'outline' | 'card'
+export type GateSource = 'exam_question' | 'notes' | 'outline' | 'card' | 'page_photo' | 'general'
+
+/** Sources the AI writes questions for (recall-questions, Stage 10). */
+export type AiSource = 'notes' | 'page_photo' | 'general'
+
+/** AI questions loaded for a test, by source. */
+export type AiQuestions = Partial<Record<AiSource, { question: string; answer: string }[]>>
 
 export interface GateItem {
   /** `q:`, `n:`, `c:` + id */
@@ -29,6 +36,10 @@ export interface GateItem {
   answer: string | null
   /** The exam question or card the item is (its own review), or the leaf for notes. */
   refId: string
+  /** Written by the AI (notes, page photo, general knowledge). */
+  ai?: boolean
+  /** The saved answer of an exam question is an accepted AI proposal ("provjeri"). */
+  aiAnswer?: boolean
 }
 
 /**
@@ -62,25 +73,41 @@ export function gateItems(
   target: GateTarget,
   questions: Unit[],
   cards: Card[],
+  ai: AiQuestions = {},
 ): Record<Exclude<GateSource, 'outline'>, GateItem[]> {
   const leafIds = new Set(target.leaves.map((l) => l.id))
+  const aiItems = (source: AiSource): GateItem[] =>
+    (ai[source] ?? []).map((q, i) => ({
+      key: `a:${source}:${i}`,
+      source,
+      prompt: q.question,
+      answer: q.answer,
+      refId: target.key,
+      ai: true,
+    }))
   return {
+    page_photo: aiItems('page_photo'),
+    general: aiItems('general'),
     exam_question: questions.map((q) => ({
       key: `q:${q.id}`,
       source: 'exam_question',
       prompt: q.title,
       answer: q.answer?.trim() || null,
       refId: q.id,
+      aiAnswer: q.answer_origin === 'ai',
     })),
-    notes: target.leaves
-      .filter((l) => l.notes?.trim())
-      .map((l) => ({
-        key: `n:${l.id}`,
-        source: 'notes',
-        prompt: l.title,
-        answer: l.notes!.trim(),
-        refId: l.id,
-      })),
+    // AI questions from the notes replace the plain "what do you know" item once they are there.
+    notes: ai.notes
+      ? aiItems('notes')
+      : target.leaves
+          .filter((l) => l.notes?.trim())
+          .map((l) => ({
+            key: `n:${l.id}`,
+            source: 'notes',
+            prompt: l.title,
+            answer: l.notes!.trim(),
+            refId: l.id,
+          })),
     card: cards
       .filter((c) => leafIds.has(c.unit_id))
       .map((c) => ({
@@ -129,6 +156,11 @@ export function gateReviews(
     if (r !== undefined) shared.push({ recall: r, source: 'exam_question' })
   }
   if (a.blurt !== null) shared.push({ recall: a.blurt, source: 'blurt' })
+  // AI questions test the whole chapter: every leaf gets them, under their source.
+  for (const [key, recall] of Object.entries(a.ratings)) {
+    const source = /^a:(notes|page_photo|general):/.exec(key)?.[1] as AiSource | undefined
+    if (source) shared.push({ recall, source })
+  }
 
   // Subheadings exist only for a test of two or more leaves; each one is rated by itself.
   const outlineDone =
@@ -145,11 +177,14 @@ export function gateReviews(
     if (outlineDone) own.push({ recall: a.explained[leaf.id] ? 2 : 0, source: 'outline' })
     if (own.length > 0) units.push({ unit: leaf, recalls: own })
   }
+  // A question tested as itself is already one of the leaves above.
+  const leafIds = new Set(target.leaves.map((l) => l.id))
   for (const q of questions) {
+    if (leafIds.has(q.id)) continue
     const r = a.ratings[`q:${q.id}`]
     if (r !== undefined) units.push({ unit: q, recalls: [{ recall: r, source: 'exam_question' }] })
   }
-  const leafById = new Map(target.leaves.map((l) => [l.id, l]))
+  const leafById = new Map(target.leaves.map((l) => [l.id, l] as const))
   const cardReviews: CardReview[] = cards.flatMap((c) => {
     const r = a.ratings[`c:${c.id}`]
     const unit = leafById.get(c.unit_id)
@@ -158,15 +193,20 @@ export function gateReviews(
   return { units, cards: cardReviews }
 }
 
-/** Exam questions linked to the test through topics (PRD "Pitanja kao glavni put"). */
+/**
+ * Exam questions linked to the test through topics or directly (PRD "Pitanja kao glavni put"); an
+ * exam question tested by itself (from its Jedinica) is its own item.
+ */
 export function linkedQuestions(
   target: GateTarget,
-  links: { unit_id: string; topic_id: string }[],
+  links: TopicLink[],
   units: Unit[],
+  direct: DirectLink[] = [],
 ): Unit[] {
-  const leafIds = new Set(target.leaves.map((l) => l.id))
-  const topics = new Set(links.filter((l) => leafIds.has(l.unit_id)).map((l) => l.topic_id))
-  const ids = new Set(links.filter((l) => topics.has(l.topic_id)).map((l) => l.unit_id))
+  const only = target.leaves.length === 1 ? target.leaves[0]! : null
+  if (only?.kind === 'question') return [only]
+  const byChapter = questionsByChapter(units, links, direct)
+  const ids = new Set(target.leaves.flatMap((l) => [...(byChapter.get(l.id) ?? [])]))
   return units
     .filter((u) => u.kind === 'question' && u.archived_at === null && ids.has(u.id))
     .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))

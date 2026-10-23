@@ -5,7 +5,17 @@ import type { z } from 'zod'
 import type { AiErrorCode } from './schemas.ts'
 import { costUsd } from './prices.ts'
 
-export type AiTask = 'parse_academic_calendar' | 'parse_exam_schedule' | 'parse_document' | 'answer'
+export type AiTask =
+  | 'parse_academic_calendar'
+  | 'parse_exam_schedule'
+  | 'parse_document'
+  | 'answer'
+  | 'parse_toc'
+  | 'parse_questions'
+  | 'link_questions'
+  | 'parse_timetable'
+  | 'recall_questions'
+  | 'propose_answer'
 
 export type LlmMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'application/pdf'
 

@@ -710,6 +710,19 @@
       "intervals_few": "{{count}} intervala",
       "intervals_other": "{{count}} intervala",
       "delete": "Obriši predložak"
+    },
+    "data": "Podaci",
+    "anki": {
+      "title": "Izvoz kartica za Anki",
+      "count_one": "{{count}} kartica",
+      "count_few": "{{count}} kartice",
+      "count_other": "{{count}} kartica",
+      "format": "CSV",
+      "failed": "Izvoz nije uspio. Pokušaj ponovo.",
+      "quizlet": "Kartice za Quizlet",
+      "quizletHint": "Kopira tekst za Quizlet → Uvezi (tab, nova linija)",
+      "copy": "Kopiraj",
+      "copied": "Kartice su kopirane. Zalijepi ih u Quizlet → Uvezi."
     }
   },
   "validation": {
@@ -840,8 +853,6 @@
         "photo": "Slikaj sadržaj",
         "text": "Ukucaj"
       },
-      "photoSoon": "Uvoz slikom dolazi uskoro",
-      "photoSoonBody": "Za sada ukucaj ili zalijepi sadržaj, jedna linija po jedinici.",
       "outline": "Sadržaj",
       "placeholder": {
         "pages": "Jedno poglavlje po liniji, npr.\n1 Uvod 1\n2 LTI sistemi 74\n2.1 Konvolucija 75",
@@ -916,7 +927,8 @@
       "archiving": "Arhivira se ({{count}})",
       "archivingHint": "Napredak i bilješke ostaju; vraćaš ih iz „Arhivirane jedinice”.",
       "unknownAmount": "obim nepoznat",
-      "saveAndSplit": "Sačuvaj i podijeli po ispitima"
+      "saveAndSplit": "Sačuvaj i podijeli po ispitima",
+      "estimateAi": "Procjena ~{{time}} · težinu je dao AI, možeš je mijenjati"
     },
     "detail": {
       "editContent": "Uredi sadržaj",
@@ -939,6 +951,24 @@
     "rough": {
       "label": "Gruba procjena",
       "hint": "Zamijeni ga pravim sadržajem: kad dodaš izvor, ovaj nestaje."
+    },
+    "import": {
+      "camera": "Uslikaj stranicu sadržaja",
+      "gallery": "Odaberi iz galerije",
+      "photosHint": "Više strana je ok, najviše 4. Može i PDF.",
+      "photos_one": "{{count}} stranica sadržaja",
+      "photos_few": "{{count}} stranice sadržaja",
+      "photos_other": "{{count}} stranica sadržaja",
+      "removePhoto": "Ukloni sliku {{n}}",
+      "deletedAfter": "Slike se brišu odmah nakon obrade.",
+      "extract": "Izvuci poglavlja",
+      "extractQuestions": "Izvuci pitanja",
+      "reading": "Čitam…",
+      "noAi": "AI uvoz trenutno nije dostupan. Sadržaj možeš ukucati.",
+      "fromText": "Pretvori AI-jem",
+      "rate": "Procijeni težinu AI-jem",
+      "rating": "Procjenjujem…",
+      "removeTopic": "Ukloni temu {{name}}"
     }
   },
   "time": {
@@ -1005,7 +1035,8 @@
         "question": "Pitanje {{n}} od {{total}}"
       },
       "subUnits": "Podjedinice",
-      "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih."
+      "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih.",
+      "aiAnswer": "AI prijedlog · provjeri"
     },
     "topics": {
       "title": "Teme",
@@ -1028,7 +1059,19 @@
       "newTitle": "Nova kartica",
       "editTitle": "Uredi karticu",
       "delete": "Obriši karticu",
-      "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
+      "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
+      "import": "Uvezi",
+      "importTitle": "Uvoz kartica",
+      "importPlaceholder": "Jedna kartica po liniji:\nKonvolucija\tmnoženje u frekvenciji\nDTFT - transformacija niza",
+      "importHint": "Pojam i definicija odvojeni tabom (izvoz iz Quizleta, tabela) ili crticom s razmakom.",
+      "importSkipped": "Preskačem linije bez para: {{lines}}",
+      "importNone": "Nema kartica za uvoz",
+      "importSave_one": "Spasi {{count}} karticu",
+      "importSave_few": "Spasi {{count}} kartice",
+      "importSave_other": "Spasi {{count}} kartica",
+      "imported_one": "Uvezena {{count}} kartica",
+      "imported_few": "Uvezene {{count}} kartice",
+      "imported_other": "Uvezeno {{count}} kartica"
     }
   },
   "scope": {
@@ -1189,7 +1232,9 @@
     "recapTitle": "Kratko ponavljanje nakon predavanja",
     "recapHint": "15 min istog dana, prvi korak ponavljanja",
     "delete": "Obriši termin",
-    "confirmDelete": "Sigurno obrisati?"
+    "confirmDelete": "Sigurno obrisati?",
+    "photoTitle": "Uslikaj raspored",
+    "photoHint": "AI prepozna termine; pregledaš prije spašavanja"
   },
   "availability": {
     "title": "Dostupnost",
@@ -1416,7 +1461,8 @@
         "auto": "Pogodi sama",
         "academic_calendar": "Akademski kalendar",
         "exam_schedule": "Raspored ispita",
-        "document": "Pravilnik, silabus, obavještenje"
+        "document": "Pravilnik, silabus, obavještenje",
+        "timetable": "Raspored nastave"
       },
       "textLabel": "Tekst",
       "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
@@ -1430,7 +1476,8 @@
       "notePlaceholder": "npr. samo II godina, grupa B",
       "chars_one": "{{count}} znak",
       "chars_few": "{{count}} znaka",
-      "chars_other": "{{count}} znakova"
+      "chars_other": "{{count}} znakova",
+      "shareHint": "Dokument se čuva u Dokumentima dok ga ne obrišeš. Na Androidu ga možeš i „Podijeliti” u Hoot iz Vibera ili Gmaila."
     },
     "pending": {
       "thinking": "Razmišljam…",
@@ -1455,7 +1502,9 @@
       "found_few": "Našla sam {{count}} stavke. Pogledaj prije nego spasim:",
       "found_other": "Našla sam {{count}} stavki. Pogledaj prije nego spasim:",
       "noDates": "Datume nisam našla, ali dokument čuvam za pitanja.",
-      "notStored": "„{{title}}“ nisam uspjela spremiti u Dokumente, pa iz njega ne mogu odgovarati. Pošalji ga ponovo kasnije."
+      "notStored": "„{{title}}“ nisam uspjela spremiti u Dokumente, pa iz njega ne mogu odgovarati. Pošalji ga ponovo kasnije.",
+      "again": "Pročitala sam ponovo „{{title}}”.",
+      "nothingAgain": "Nisam našla ništa za uvoz te vrste."
     },
     "kind": {
       "academic_calendar": "Akademski kalendar",
@@ -1499,7 +1548,8 @@
       "from": "Od",
       "to": "Do",
       "warnings": "Napomene asistenta",
-      "missing": "Ovaj prijedlog više ne postoji."
+      "missing": "Ovaj prijedlog više ne postoji.",
+      "classes": "Raspored nastave"
     },
     "documents": {
       "title": "Dokumenti",
@@ -1539,6 +1589,18 @@
       "onTrack": "u planu",
       "short": "fali {{time}}",
       "left": "još ~{{time}}"
+    },
+    "noTeachingPeriod": "Termini se upisuju u period nastave. Prvo dodaj semestar u Akademski kalendar.",
+    "action": {
+      "notesTitle": "Tvoje bilješke",
+      "card": "kartica",
+      "notesNone": "Nisam našla bilješke o „{{text}}”.",
+      "notesFailed": "Pretraga bilješki nije uspjela. Pokušaj ponovo.",
+      "quizNone": "Ne nalazim poglavlje „{{text}}”. Otvori ga u Predmetima i pokreni kviz odatle.",
+      "timetable": "Daj raspored nastave",
+      "contents": "Dodaj sadržaj ili pitanja",
+      "contentsFor": "Dodaj sadržaj · {{subject}}",
+      "giveDocument": "Daj dokument"
     }
   },
   "offline": {
@@ -1888,7 +1950,8 @@
     "back": "Nazad",
     "tabs": {
       "blurt": "Blurting",
-      "questions": "Pitanja"
+      "questions": "Pitanja",
+      "ai": "AI pitanja"
     },
     "askFrom": "PITAJ ME IZ",
     "askFromLabel": "Izvor pitanja",
@@ -1896,12 +1959,17 @@
       "exam_question": "Ispitna pitanja",
       "notes": "Bilješke",
       "outline": "Podnaslovi",
-      "card": "Kartice"
+      "card": "Kartice",
+      "general": "Opće znanje",
+      "page_photo": "Slika stranice"
     },
     "label": {
       "exam_question": "ISPITNO PITANJE {{label}} · povezano preko teme",
       "notes": "IZ TVOJIH BILJEŠKI · {{n}} od {{total}}",
-      "card": "KARTICA · {{n}} od {{total}}"
+      "card": "KARTICA · {{n}} od {{total}}",
+      "general": "OPĆE ZNANJE · AI iz naslova poglavlja · {{n}} od {{total}}",
+      "page_photo": "SA SLIKE STRANICE · {{n}} od {{total}}",
+      "questionSelf": "ISPITNO PITANJE {{label}}"
     },
     "notesPrompt": "Šta znaš o: {{title}}?",
     "answerPlaceholder": "Napiši odgovor iz glave…",
@@ -1910,7 +1978,10 @@
     "answerLabel": {
       "exam_question": "ODGOVOR",
       "notes": "IZ BILJEŠKI",
-      "card": "ODGOVOR"
+      "card": "ODGOVOR",
+      "general": "AI ODGOVOR · provjeri sa predavanjem",
+      "page_photo": "SA STRANICE",
+      "aiProposed": "ODGOVOR · AI prijedlog, provjeri"
     },
     "noAnswer": "NEMA UNESENOG ODGOVORA",
     "noAnswerBody": "Uporedi sa svojim bilješkama i ocijeni se. Možeš jednom upisati odgovor — koristi se pri sljedećem ponavljanju.",
@@ -1946,7 +2017,35 @@
     "nothing": "Nema ničega za provjeru.",
     "offerQuestions_one": "{{count}} povezano ispitno pitanje",
     "offerQuestions_few": "{{count}} povezana ispitna pitanja",
-    "offerQuestions_other": "{{count}} povezanih ispitnih pitanja"
+    "offerQuestions_other": "{{count}} povezanih ispitnih pitanja",
+    "noteAi": "Poglavlje prelazi na „Razumijem” uz „Sjećam se” na ispitnim pitanjima, bilješkama ili podnaslovima. Opće znanje se računa samo uz još jedan izvor.",
+    "propose": "Predloži odgovor",
+    "proposing": "Pišem prijedlog…",
+    "proposedLabel": "AI PRIJEDLOG · provjeri sa predavanjem",
+    "saveCard": "Spasi kao karticu",
+    "cardSaved": "Kartica je spašena",
+    "ai": {
+      "notes": {
+        "label": "IZ TVOJIH BILJEŠKI",
+        "hint": "AI napravi {{count}} pitanja strogo iz tvojih bilješki za ovo poglavlje."
+      },
+      "general": {
+        "label": "OPĆE ZNANJE · AI iz naslova poglavlja",
+        "hint": "Pitanja iz naslova i podnaslova. Odgovori se mogu razlikovati od predavanja, pa se za „Razumijem” računaju samo uz još jedan izvor."
+      },
+      "page_photo": {
+        "label": "SLIKA STRANICE",
+        "hint": "Uslikaj 1–2 stranice, npr. sažetak na kraju poglavlja. Slika se briše odmah nakon obrade."
+      },
+      "make": "Napravi {{count}} pitanja",
+      "making": "Pravim pitanja…",
+      "camera": "Uslikaj",
+      "gallery": "Galerija",
+      "plain": "Bez AI-ja: uporedi sa bilješkama"
+    },
+    "quizTitle": "Kviz",
+    "quizOffer": "Kviz · {{count}} AI pitanja",
+    "discardProposal": "Odbaci"
   },
   "review": {
     "title": "Provjera znanja",
@@ -2052,5 +2151,50 @@
   "sessionEnd": {
     "saveAndTest": "Spasi i testiraj se",
     "saveOnly": "Samo spasi"
+  },
+  "links": {
+    "title": "Veze s poglavljima",
+    "lead": "AI je predložio poglavlje za svako pitanje. Preskoči ono što ne štima — tvoj izbor se ne prepisuje.",
+    "searching": "Tražim poglavlja za pitanja…",
+    "none": "Nema prijedloga: pitanja se vežu za poglavlja preko tema, a ručno ih povezuješ na ekranu pitanja.",
+    "suggested": "Prijedlog",
+    "skipped": "Preskačem",
+    "skip": "Preskoči",
+    "restore": "Vrati",
+    "skipAria": "Preskoči vezu za {{label}}",
+    "restoreAria": "Vrati vezu za {{label}}",
+    "save_one": "Spasi {{count}} vezu",
+    "save_few": "Spasi {{count}} veze",
+    "save_other": "Spasi {{count}} veza",
+    "later": "Kasnije",
+    "continue": "Nastavi"
+  },
+  "moodle": {
+    "title": "Rokovi iz Moodlea",
+    "lead": "Novi i pomjereni rokovi iz povezanog kalendara. Upisuju se tek kad primijeniš.",
+    "card_one": "{{count}} novi rok iz Moodlea",
+    "card_few": "{{count}} nova roka iz Moodlea",
+    "card_other": "{{count}} novih rokova iz Moodlea",
+    "cardSub": "Pregledaj prije upisa",
+    "cardChanged_one": "{{count}} je pomjeren · pregledaj prije upisa",
+    "cardChanged_few": "{{count}} su pomjerena · pregledaj prije upisa",
+    "cardChanged_other": "{{count}} je pomjereno · pregledaj prije upisa",
+    "none": "Nema novih rokova.",
+    "tag": {
+      "new": "Novo",
+      "changed": "Izmijenjeno",
+      "skip": "Preskačem"
+    },
+    "skip": "Preskoči",
+    "restore": "Vrati",
+    "skipAria": "Preskoči {{title}}",
+    "restoreAria": "Vrati {{title}}",
+    "subject": "Predmet za {{title}}",
+    "noSubject": "Bez predmeta",
+    "hint": "Preskočen rok se više ne nudi. Datumi dolaze iz Moodlea; procjenu sati dodaješ na roku.",
+    "apply_one": "Primijeni {{count}} izmjenu",
+    "apply_few": "Primijeni {{count}} izmjene",
+    "apply_other": "Primijeni {{count}} izmjena",
+    "skipAll": "Preskoči sve"
   }
 }

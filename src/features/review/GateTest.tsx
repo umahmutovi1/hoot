@@ -4,21 +4,32 @@ import { useTranslation } from 'react-i18next'
 import { LazyMarkdown } from '@/components/LazyMarkdown'
 import { useToast } from '@/components/toast-store'
 import { useNow } from '@/features/session/useNow'
-import { useUpdateUnit } from '@/features/sources/api'
+import { useSaveCard, useUpdateUnit } from '@/features/sources/api'
 import type { Card, Unit } from '@/features/sources/model'
 import type { Recall } from '@/lib/srs'
 import { cn } from '@/lib/utils'
+import { GATE_QUESTIONS, QUIZ_QUESTIONS } from '@shared/schemas.ts'
+import { AiAsk } from './AiAsk'
 import {
   blurtClock,
   gateItems,
+  type AiQuestions,
+  type AiSource,
   type GateAnswers,
   type GateItem,
   type GateSource,
   type GateTarget,
 } from './gate'
 import { RateButtons } from './RateButtons'
+import { usePagePhotoQuestions, useProposeAnswer, useRecallQuestions } from './recallApi'
+import { AiCallError } from '@/features/owl/api'
 
-const SOURCES: GateSource[] = ['exam_question', 'notes', 'outline', 'card']
+/** Order of the chips (RecallGate mockup), then the sources added with AI. */
+const SOURCES: GateSource[] = ['exam_question', 'notes', 'outline', 'general', 'page_photo', 'card']
+const AI_SOURCES = new Set<GateSource>(['page_photo', 'general'])
+
+const errorCode = (err: unknown) =>
+  err ? (err instanceof AiCallError ? err.code : 'failed') : null
 
 /**
  * One test of the recall gate (RecallGate mockup): blurting, or questions from the sources that
@@ -32,6 +43,8 @@ export function GateTest({
   answers,
   onChange,
   footer,
+  aiReady,
+  quiz = false,
 }: {
   target: GateTarget
   subjectId: string
@@ -41,25 +54,72 @@ export function GateTest({
   onChange: (a: GateAnswers) => void
   /** Primary action when the current source has no more items. */
   footer: { label: string; run: () => void; busy?: boolean }
+  /** AI questions can be asked (online, configured). */
+  aiReady: boolean
+  /** Kviz: 5–10 AI questions, asked right away (notes, else general knowledge). */
+  quiz?: boolean
 }) {
   const { t } = useTranslation()
-  const items = gateItems(target, questions, cards)
+  const count = quiz ? QUIZ_QUESTIONS : GATE_QUESTIONS
+  // An exam question is tested by itself; AI questions are about chapters.
+  const isQuestionTest = target.leaves.length === 1 && target.leaves[0]!.kind === 'question'
+  const hasNotes = target.leaves.some((l) => l.notes?.trim())
+  const [asked, setAsked] = useState<Set<AiSource>>(
+    () => new Set(quiz && aiReady ? [hasNotes ? 'notes' : 'general'] : []),
+  )
+  const [plainNotes, setPlainNotes] = useState(!aiReady)
+  const notesAi = useRecallQuestions(target.key, 'notes', count, aiReady && asked.has('notes'))
+  const generalAi = useRecallQuestions(
+    target.key,
+    'general',
+    count,
+    aiReady && asked.has('general'),
+  )
+  const photoAi = usePagePhotoQuestions(target.key, count)
+  const ai: AiQuestions = {
+    notes: notesAi.data,
+    general: generalAi.data,
+    page_photo: photoAi.data,
+  }
+  const items = gateItems(target, questions, cards, ai)
   const available = SOURCES.filter((s) =>
-    s === 'outline' ? target.leaves.length > 1 : items[s].length > 0,
+    s === 'outline'
+      ? target.leaves.length > 1
+      : s === 'notes'
+        ? hasNotes
+        : AI_SOURCES.has(s)
+          ? !isQuestionTest && (aiReady || items[s as 'general'].length > 0)
+          : items[s as 'card'].length > 0,
   )
   const [tab, setTab] = useState<'questions' | 'blurt'>(
     available.length > 0 ? 'questions' : 'blurt',
   )
-  const [source, setSource] = useState<GateSource | null>(available[0] ?? null)
+  const [source, setSource] = useState<GateSource | null>(
+    quiz && aiReady ? (hasNotes ? 'notes' : 'general') : (available[0] ?? null),
+  )
   const [index, setIndex] = useState<Record<string, number>>({})
   const [revealed, setRevealed] = useState<Set<string>>(new Set())
   const [blurtStart, setBlurtStart] = useState<number | null>(() =>
     available.length === 0 ? Date.now() : null,
   )
   const [compare, setCompare] = useState(false)
-  const isQuestion = target.leaves.length === 1 && target.leaves[0]!.kind === 'question'
+  const isQuestion = isQuestionTest
 
   const list = source && source !== 'outline' ? items[source] : []
+  // An AI source shows its "ask" panel until its questions are there.
+  const aiPanel: AiSource | null =
+    source === 'general' || source === 'page_photo'
+      ? list.length === 0
+        ? source
+        : null
+      : source === 'notes' && aiReady && !plainNotes && !ai.notes
+        ? 'notes'
+        : null
+  const aiState = {
+    notes: { busy: notesAi.isFetching, error: errorCode(notesAi.error) },
+    general: { busy: generalAi.isFetching, error: errorCode(generalAi.error) },
+    page_photo: { busy: photoAi.isPending, error: errorCode(photoAi.error) },
+  }
   const i = source ? Math.min(index[source] ?? 0, Math.max(0, list.length - 1)) : 0
   const item = list[i]
   const hasNext =
@@ -91,7 +151,7 @@ export function GateTest({
               tab === k ? 'bg-white' : 'bg-transparent',
             )}
           >
-            {t(`recall.tabs.${k}`)}
+            {t(k === 'questions' && aiReady ? 'recall.tabs.ai' : `recall.tabs.${k}`)}
           </button>
         ))}
       </div>
@@ -130,15 +190,27 @@ export function GateTest({
                   ))}
                 </div>
               </div>
-              {list.length > 1 && <Dots count={list.length} at={i} />}
-              {source === 'outline' ? (
+              {list.length > 1 && !aiPanel && <Dots count={list.length} at={i} />}
+              {aiPanel ? (
+                <AiAsk
+                  source={aiPanel}
+                  count={count}
+                  busy={aiState[aiPanel].busy}
+                  error={aiState[aiPanel].error}
+                  onAsk={() => setAsked((s) => new Set(s).add(aiPanel))}
+                  onPhotos={(files) => photoAi.mutate(files)}
+                  onPlain={aiPanel === 'notes' ? () => setPlainNotes(true) : undefined}
+                />
+              ) : source === 'outline' ? (
                 <Outline target={target} answers={answers} onChange={onChange} />
               ) : item ? (
                 <Item
                   key={item.key}
                   item={item}
-                  label={itemLabel(t, item, i, list.length, questions)}
+                  label={itemLabel(t, item, i, list.length, questions, target)}
                   subjectId={subjectId}
+                  cardUnitId={target.leaves[0]!.id}
+                  aiReady={aiReady}
                   revealed={revealed.has(item.key)}
                   onReveal={() => setRevealed((s) => new Set(s).add(item.key))}
                 />
@@ -157,7 +229,7 @@ export function GateTest({
         />
       )}
 
-      {tab === 'questions' && item && source !== 'outline' && (
+      {tab === 'questions' && item && source !== 'outline' && !aiPanel && (
         <RateButtons
           value={answers.ratings[item.key] ?? null}
           disabled={!revealed.has(item.key)}
@@ -174,7 +246,7 @@ export function GateTest({
 
       <div className="flex gap-2.5 rounded-[20px] bg-warning-soft px-4 py-3.5">
         <span className="text-[13px] leading-[1.4] text-warning-ink">
-          {t(isQuestion ? 'recall.noteQuestion' : 'recall.note')}
+          {t(isQuestion ? 'recall.noteQuestion' : aiReady ? 'recall.noteAi' : 'recall.note')}
         </span>
       </div>
 
@@ -190,12 +262,25 @@ export function GateTest({
   )
 }
 
-function itemLabel(t: TFunction, item: GateItem, i: number, total: number, questions: Unit[]) {
+function itemLabel(
+  t: TFunction,
+  item: GateItem,
+  i: number,
+  total: number,
+  questions: Unit[],
+  target: GateTarget,
+) {
   if (item.source === 'exam_question') {
     const q = questions.find((x) => x.id === item.refId)
+    // Tested from its own Jedinica: not "linked through a topic".
+    if (item.key === `q:${target.key}`)
+      return t('recall.label.questionSelf', { label: q?.label ?? '' })
     return t('recall.label.exam_question', { label: q?.label ?? '' })
   }
-  return t(`recall.label.${item.source as 'notes' | 'card'}`, { n: i + 1, total })
+  return t(`recall.label.${item.source as 'notes' | 'card' | 'general' | 'page_photo'}`, {
+    n: i + 1,
+    total,
+  })
 }
 
 function Dots({ count, at }: { count: number; at: number }) {
@@ -211,27 +296,43 @@ function Dots({ count, at }: { count: number; at: number }) {
   )
 }
 
+const ANSWER_TONE: Partial<Record<GateSource, { box: string; label: string }>> = {
+  notes: { box: 'bg-success-soft', label: 'text-subject-green-deep' },
+  general: { box: 'bg-subject-blue-soft', label: 'text-subject-blue-deep' },
+}
+
 function Item({
   item,
   label,
   subjectId,
+  cardUnitId,
+  aiReady,
   revealed,
   onReveal,
 }: {
   item: GateItem
   label: string
   subjectId: string
+  /** The leaf a card made from an AI question belongs to. */
+  cardUnitId: string
+  aiReady: boolean
   revealed: boolean
   onReveal: () => void
 }) {
   const { t } = useTranslation()
   const [text, setText] = useState('')
   const [saved, setSaved] = useState(false)
+  const [cardSaved, setCardSaved] = useState(false)
   const update = useUpdateUnit(subjectId)
+  const saveCard = useSaveCard()
+  const propose = useProposeAnswer()
   const toast = useToast((s) => s.show)
   const prompt =
-    item.source === 'notes' ? t('recall.notesPrompt', { title: item.prompt }) : item.prompt
+    item.source === 'notes' && !item.ai
+      ? t('recall.notesPrompt', { title: item.prompt })
+      : item.prompt
   const noAnswer = item.answer === null
+  const tone = ANSWER_TONE[item.source] ?? { box: 'bg-brand-hero', label: 'text-brand-strong' }
 
   return (
     <>
@@ -249,24 +350,19 @@ function Item({
         <div
           className={cn(
             'flex flex-col gap-1 rounded-input p-3.5',
-            noAnswer
-              ? 'bg-warning-soft'
-              : item.source === 'notes'
-                ? 'bg-success-soft'
-                : 'bg-brand-hero',
+            noAnswer ? 'bg-warning-soft' : tone.box,
           )}
         >
           <span
-            className={cn(
-              'text-xs font-semibold',
-              noAnswer
-                ? 'text-warning-muted'
-                : item.source === 'notes'
-                  ? 'text-subject-green-deep'
-                  : 'text-brand-strong',
-            )}
+            className={cn('text-xs font-semibold', noAnswer ? 'text-warning-muted' : tone.label)}
           >
-            {noAnswer ? t('recall.noAnswer') : t(`recall.answerLabel.${item.source as 'notes'}`)}
+            {noAnswer
+              ? t('recall.noAnswer')
+              : item.aiAnswer
+                ? t('recall.answerLabel.aiProposed')
+                : t(
+                    `recall.answerLabel.${item.source as 'notes' | 'general' | 'page_photo' | 'card'}`,
+                  )}
           </span>
           {noAnswer ? (
             <span className="text-[15px] leading-[1.4]">{t('recall.noAnswerBody')}</span>
@@ -274,6 +370,66 @@ function Item({
             <div className="text-[15px] leading-[1.4]">
               <LazyMarkdown>{item.answer!}</LazyMarkdown>
             </div>
+          )}
+          {noAnswer && aiReady && !propose.data && (
+            <button
+              type="button"
+              disabled={propose.isPending}
+              onClick={() => propose.mutate(item.refId)}
+              className="mt-1 h-11 self-start rounded-full bg-white/60 px-4 text-sm font-semibold text-brand disabled:opacity-50"
+            >
+              {propose.isPending ? t('recall.proposing') : t('recall.propose')}
+            </button>
+          )}
+          {propose.error && (
+            <span role="alert" className="text-sm text-danger">
+              {t(`owl.error.${errorCode(propose.error) as 'failed'}`)}
+            </span>
+          )}
+          {noAnswer && propose.data && (
+            <div className="mt-1 flex flex-col gap-1.5 rounded-input bg-white/60 p-3">
+              <span className="text-xs font-semibold text-warning-muted">
+                {t('recall.proposedLabel')}
+              </span>
+              <div className="text-[15px] leading-[1.4]">
+                <LazyMarkdown>{propose.data}</LazyMarkdown>
+              </div>
+              {!saved && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    update.mutate({
+                      id: item.refId,
+                      patch: { answer: propose.data, answer_origin: 'ai' },
+                    })
+                    setSaved(true)
+                    toast(t('recall.answerSaved'))
+                  }}
+                  className="h-11 self-start rounded-full bg-brand-soft px-4 text-sm font-semibold text-brand"
+                >
+                  {t('recall.saveAnswer')}
+                </button>
+              )}
+            </div>
+          )}
+          {item.ai && !cardSaved && (
+            <button
+              type="button"
+              onClick={() => {
+                saveCard.mutate({
+                  id: crypto.randomUUID(),
+                  unitId: cardUnitId,
+                  front: item.prompt,
+                  back: item.answer!,
+                  origin: 'ai',
+                })
+                setCardSaved(true)
+                toast(t('recall.cardSaved'))
+              }}
+              className="mt-1 h-11 self-start rounded-full bg-white/60 px-4 text-sm font-semibold text-brand"
+            >
+              {t('recall.saveCard')}
+            </button>
           )}
           {noAnswer && text.trim() && !saved && (
             <button
