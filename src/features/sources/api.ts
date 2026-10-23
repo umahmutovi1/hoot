@@ -460,10 +460,14 @@ export function useSaveCard() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (form: CardForm) => {
-      const { error } = await supabase
-        .from('cards')
-        .upsert({ id: form.id, unit_id: form.unitId, front: form.front, back: form.back })
+    mutationFn: async (form: CardForm & { origin?: 'ai' | 'user' }) => {
+      const { error } = await supabase.from('cards').upsert({
+        id: form.id,
+        unit_id: form.unitId,
+        front: form.front,
+        back: form.back,
+        ...(form.origin ? { origin: form.origin } : {}),
+      })
       if (error) throw error
     },
     onMutate: (form) =>
@@ -471,7 +475,7 @@ export function useSaveCard() {
         const old = list.find((c) => c.id === form.id)
         const card: Card = {
           user_id: userId!,
-          origin: 'user',
+          origin: form.origin ?? 'user',
           created_at: now(),
           updated_at: now(),
           ...NO_MEMORY,

@@ -17,11 +17,18 @@ import { matchTopics, topicKey, unmatchedNames, type KnownTopic } from '@/lib/to
 // (the function deletes them), the result is reviewed like manual entry, and saving writes the
 // units (merge by label, sources/api.ts) plus the topics below.
 
-/** Images are scaled to 1600 px; a PDF goes as it is. */
-export async function uploadImportFile(userId: string, file: File): Promise<UploadedFile> {
+/**
+ * A photo (or PDF) for one AI call, in `<user_id>/<folder>/`; the function deletes it after
+ * reading. Images are scaled to 1600 px; a PDF goes as it is.
+ */
+export async function uploadImportFile(
+  userId: string,
+  file: File,
+  folder: 'import' | 'recall' = 'import',
+): Promise<UploadedFile> {
   const pdf = file.type === 'application/pdf'
   const body = pdf ? file : await compressImage(file)
-  const path = `${userId}/import/${crypto.randomUUID()}.${pdf ? 'pdf' : 'jpg'}`
+  const path = `${userId}/${folder}/${crypto.randomUUID()}.${pdf ? 'pdf' : 'jpg'}`
   const { error } = await supabase.storage
     .from('uploads')
     .upload(path, body, { contentType: body.type, upsert: false })

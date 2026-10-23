@@ -991,7 +991,8 @@
         "question": "Question {{n}} of {{total}}"
       },
       "subUnits": "Sub-units",
-      "subUnitsHint": "Status is set on the sub-units; the chapter is computed from them."
+      "subUnitsHint": "Status is set on the sub-units; the chapter is computed from them.",
+      "aiAnswer": "AI suggestion · check it"
     },
     "topics": {
       "title": "Topics",
@@ -1856,7 +1857,8 @@
     "back": "Back",
     "tabs": {
       "blurt": "Blurting",
-      "questions": "Questions"
+      "questions": "Questions",
+      "ai": "AI questions"
     },
     "askFrom": "ASK ME FROM",
     "askFromLabel": "Question source",
@@ -1864,12 +1866,16 @@
       "exam_question": "Exam questions",
       "notes": "Notes",
       "outline": "Subheadings",
-      "card": "Cards"
+      "card": "Cards",
+      "general": "General knowledge",
+      "page_photo": "Page photo"
     },
     "label": {
       "exam_question": "EXAM QUESTION {{label}} · linked by topic",
       "notes": "FROM YOUR NOTES · {{n}} of {{total}}",
-      "card": "CARD · {{n}} of {{total}}"
+      "card": "CARD · {{n}} of {{total}}",
+      "general": "GENERAL KNOWLEDGE · AI from the chapter title · {{n}} of {{total}}",
+      "page_photo": "FROM A PAGE PHOTO · {{n}} of {{total}}"
     },
     "notesPrompt": "What do you know about: {{title}}?",
     "answerPlaceholder": "Write the answer from memory…",
@@ -1878,7 +1884,10 @@
     "answerLabel": {
       "exam_question": "ANSWER",
       "notes": "FROM NOTES",
-      "card": "ANSWER"
+      "card": "ANSWER",
+      "general": "AI ANSWER · check it against the lectures",
+      "page_photo": "FROM THE PAGE",
+      "aiProposed": "ANSWER · AI suggestion, check it"
     },
     "noAnswer": "NO ANSWER SAVED",
     "noAnswerBody": "Compare with your notes and rate yourself. You can save an answer once — it is used at the next review.",
@@ -1913,7 +1922,35 @@
     "skipped": "A check of what you read comes in 2 days",
     "nothing": "Nothing to check.",
     "offerQuestions_one": "{{count}} linked exam question",
-    "offerQuestions_other": "{{count}} linked exam questions"
+    "offerQuestions_other": "{{count}} linked exam questions",
+    "noteAi": "A chapter becomes “Understood” with “I remember” on exam questions, notes or subheadings. General knowledge counts only together with another source.",
+    "propose": "Suggest an answer",
+    "proposing": "Writing a suggestion…",
+    "proposedLabel": "AI SUGGESTION · check it against the lectures",
+    "saveCard": "Save as a card",
+    "cardSaved": "Card saved",
+    "ai": {
+      "notes": {
+        "label": "FROM YOUR NOTES",
+        "hint": "The AI writes {{count}} questions strictly from your notes for this chapter."
+      },
+      "general": {
+        "label": "GENERAL KNOWLEDGE · AI from the chapter title",
+        "hint": "Questions from the title and subheadings. Answers may differ from the lectures, so they count for “Understood” only together with another source."
+      },
+      "page_photo": {
+        "label": "PAGE PHOTO",
+        "hint": "Take a photo of 1–2 pages, e.g. the chapter summary. The photo is deleted right after reading."
+      },
+      "make": "Make {{count}} questions",
+      "making": "Making questions…",
+      "camera": "Take a photo",
+      "gallery": "Gallery",
+      "plain": "Without AI: compare with your notes"
+    },
+    "quizTitle": "Quiz",
+    "quizOffer": "Quiz · {{count}} AI questions",
+    "discardProposal": "Discard"
   },
   "review": {
     "title": "Knowledge check",

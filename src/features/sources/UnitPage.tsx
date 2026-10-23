@@ -14,6 +14,8 @@ import { subtreeLeaves } from '@/lib/progress'
 import { scopeOf } from '@/lib/progress/scope'
 import { cn } from '@/lib/utils'
 import { readCheckOn } from '@/features/review/apply'
+import { ProposeAnswer } from '@/features/review/ProposeAnswer'
+import { QuizOffer } from '@/features/review/QuizOffer'
 import { StrengthTiles } from '@/features/review/StrengthTiles'
 import { useNow } from '@/features/session/useNow'
 import { useDayBoundary } from '@/features/settings/profile'
@@ -247,6 +249,13 @@ function UnitDetail({
           empty={t('units.detail.noAnswer')}
           value={unit.answer}
           onSave={(answer) => patch({ answer: answer || null, answer_origin: 'user' })}
+          note={unit.answer && unit.answer_origin === 'ai' ? t('units.detail.aiAnswer') : null}
+        />
+      )}
+      {isQuestion && !unit.answer?.trim() && !unit.archived_at && (
+        <ProposeAnswer
+          questionId={unit.id}
+          onAccept={(answer) => patch({ answer, answer_origin: 'ai' })}
         />
       )}
       <TextSection
@@ -264,6 +273,7 @@ function UnitDetail({
           {t(isQuestion ? 'strength.testQuestion' : 'strength.test')}
         </Link>
       )}
+      {!unit.archived_at && !isQuestion && <QuizOffer unitIds={[unit.id]} to={location.pathname} />}
 
       <BottomSheet open={menuOpen} onOpenChange={setMenuOpen} title={unit.title}>
         <div className="flex flex-col gap-2">
@@ -522,18 +532,28 @@ function TextSection({
   empty,
   value,
   onSave,
+  note = null,
 }: {
   title: string
   empty: string
   value: string | null
   onSave: (value: string) => void
+  /** Small tag next to the title, e.g. "AI prijedlog · provjeri". */
+  note?: string | null
 }) {
   const { t } = useTranslation()
   const [draft, setDraft] = useState<string | null>(null)
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold">{title}</span>
+        <span className="flex items-center gap-2 text-sm font-semibold">
+          {title}
+          {note && (
+            <span className="rounded-[6px] bg-warning-soft px-1.5 py-px text-[10px] font-bold text-warning-ink uppercase">
+              {note}
+            </span>
+          )}
+        </span>
         {draft === null && (
           <button
             type="button"

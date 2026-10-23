@@ -6,6 +6,7 @@ import { ChevronLeftIcon, PencilIcon, PlusIcon } from '@/components/icons'
 import { OfflineNotice } from '@/components/OfflineNotice'
 import { useOnline } from '@/features/owl/api'
 import { LinkedQuestionsOffer } from '@/features/review/LinkedQuestionsOffer'
+import { SessionQuizOffer } from '@/features/review/SessionQuizOffer'
 import { useSubscriptions } from '@/features/notify/api'
 import { useProfile } from '@/features/settings/profile'
 import { useSources } from '@/features/sources/api'
@@ -292,6 +293,7 @@ export function SessionPage() {
         </button>
       </div>
       {pickedId && <LinkedQuestionsOffer unitId={pickedId} />}
+      {pickedId && <SessionQuizOffer unitId={pickedId} />}
 
       <button
         type="button"

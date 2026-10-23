@@ -49,6 +49,7 @@ describe('gateItems and linkedQuestions', () => {
         prompt: 'Razlika 3NF i BCNF?',
         answer: 'BCNF je stroža',
         refId: 'q1',
+        aiAnswer: false,
       },
     ])
     expect(items.notes.map((i) => i.refId)).toEqual(['a'])
@@ -87,5 +88,29 @@ describe('blurtClock', () => {
     expect(blurtClock(0, 0)).toBe('4:00')
     expect(blurtClock(0, 18_500)).toBe('3:42')
     expect(blurtClock(0, 10 * 60_000)).toBe('0:00')
+  })
+})
+
+describe('AI questions in the gate', () => {
+  it('replace the plain notes item and rate every leaf under their source', () => {
+    const leaf = unit('a', { notes: 'Bilješke' })
+    const target = gateTargets([leaf], [leaf])[0]!
+    const ai = {
+      notes: [{ question: 'Q1?', answer: 'A1' }],
+      general: [{ question: 'Q2?', answer: 'A2' }],
+    }
+    const items = gateItems(target, [], [], ai)
+    expect(items.notes.map((i) => i.key)).toEqual(['a:notes:0'])
+    expect(items.general[0]).toMatchObject({ prompt: 'Q2?', ai: true, refId: 'a' })
+    const out = gateReviews(
+      target,
+      { ratings: { 'a:notes:0': 2, 'a:general:0': 1 }, explained: {}, blurt: null },
+      [],
+      [],
+    )
+    expect(out.units[0]!.recalls).toEqual([
+      { recall: 2, source: 'notes' },
+      { recall: 1, source: 'general' },
+    ])
   })
 })
