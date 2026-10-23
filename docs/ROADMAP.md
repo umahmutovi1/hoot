@@ -259,8 +259,9 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
   - Odluka (Etapa 10): `answer` vraća jednu akciju (`search_notes`, `quiz`, `add_timetable`, `add_contents`, `import_document`), app je izvrši i prikaže karticu; pretraga bilješki je vektor + leksička provjera bez LLM-a, pa tekst bilješki ne ide u prompt; „ubaci mi ovo“ ponovo čita zadnji dokument iz razgovora kao izabranu vrstu i daje prijedlog za pregled
 - [x] Povezani kalendari, vrsta „Rokovi“ (Moodle): kartica „N novih rokova iz Moodlea“ → pregled novo / izmijenjeno / preskačem → `deadlines`, uparivanje predmeta (`fuse.js`)
   - Migracija `0022_event_category.sql` (`external_events.category` iz ICS `CATEGORIES`, Moodle tu piše predmet); `sync-calendar` sinhronizuje i feedove „Rokovi“ (ne blokiraju vrijeme), pomjeren datum zadržava vezu na rok i „preskačem“; kartica je jedna od kartica akcije na Danas, pregled na `/today/moodle`
-- [ ] Web Share Target u manifestu (Android): podijeljen PDF/slika otvara „Daj sovi dokument“ sa prilogom
-- [ ] Kartice: izvoz CSV (Anki), uvoz teksta „pojam ⇥ definicija“
+- [x] Web Share Target u manifestu (Android): podijeljen PDF/slika otvara „Daj sovi dokument“ sa prilogom
+- [x] Kartice: izvoz CSV (Anki), uvoz teksta „pojam ⇥ definicija“
+  - Uz Anki CSV i „Kartice za Quizlet · Kopiraj“ (tab / nova linija za Quizlet → Uvezi); uvoz na Jedinici prima tab ili crticu s razmakom (Quizletov izvoz)
 - **DoD** → `v0.10.0`
 
 ## Etapa 11 — Napredak

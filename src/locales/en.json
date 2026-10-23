@@ -686,6 +686,18 @@
       "intervals_one": "{{count}} interval",
       "intervals_other": "{{count}} intervals",
       "delete": "Delete preset"
+    },
+    "data": "Data",
+    "anki": {
+      "title": "Export cards for Anki",
+      "count_one": "{{count}} card",
+      "count_other": "{{count}} cards",
+      "format": "CSV",
+      "failed": "The export failed. Try again.",
+      "quizlet": "Cards for Quizlet",
+      "quizletHint": "Copies text for Quizlet → Import (tab, new line)",
+      "copy": "Copy",
+      "copied": "Cards copied. Paste them into Quizlet → Import."
     }
   },
   "validation": {
@@ -1015,7 +1027,17 @@
       "newTitle": "New card",
       "editTitle": "Edit card",
       "delete": "Delete card",
-      "confirmDelete": "Sure? Tap again to delete"
+      "confirmDelete": "Sure? Tap again to delete",
+      "import": "Import",
+      "importTitle": "Import cards",
+      "importPlaceholder": "One card per line:\nConvolution\tmultiplication in frequency\nDTFT - transform of a sequence",
+      "importHint": "Term and definition separated by a tab (Quizlet export, a spreadsheet) or a spaced dash.",
+      "importSkipped": "Skipping lines without a pair: {{lines}}",
+      "importNone": "No cards to import",
+      "importSave_one": "Save {{count}} card",
+      "importSave_other": "Save {{count}} cards",
+      "imported_one": "{{count}} card imported",
+      "imported_other": "{{count}} cards imported"
     }
   },
   "scope": {
@@ -1415,7 +1437,8 @@
       "noteHint": "(optional)",
       "notePlaceholder": "e.g. only 2nd year, group B",
       "chars_one": "{{count}} character",
-      "chars_other": "{{count}} characters"
+      "chars_other": "{{count}} characters",
+      "shareHint": "The document stays in Documents until you delete it. On Android you can also “Share” it to Hoot from Viber or Gmail."
     },
     "pending": {
       "thinking": "Thinking…",
