@@ -411,6 +411,35 @@ export type Database = {
         }
         Relationships: []
       }
+      card_embeddings: {
+        Row: {
+          card_id: string
+          embedding: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_id: string
+          embedding: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          card_id?: string
+          embedding?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_embeddings_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: true
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cards: {
         Row: {
           back: string
@@ -1172,6 +1201,51 @@ export type Database = {
         }
         Relationships: []
       }
+      question_links: {
+        Row: {
+          assigned_by: Database["public"]["Enums"]["assigned_by"]
+          created_at: string
+          linked: boolean
+          question_id: string
+          unit_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          created_at?: string
+          linked?: boolean
+          question_id: string
+          unit_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          created_at?: string
+          linked?: boolean
+          question_id?: string
+          unit_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_links_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_links_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       review_logs: {
         Row: {
           card_id: string | null
@@ -1560,6 +1634,7 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["class_kind"]
           location: string | null
+          note: string | null
           period_id: string | null
           start_min: number
           subject_id: string | null
@@ -1575,6 +1650,7 @@ export type Database = {
           id?: string
           kind: Database["public"]["Enums"]["class_kind"]
           location?: string | null
+          note?: string | null
           period_id?: string | null
           start_min: number
           subject_id?: string | null
@@ -1590,6 +1666,7 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["class_kind"]
           location?: string | null
+          note?: string | null
           period_id?: string | null
           start_min?: number
           subject_id?: string | null
@@ -1613,6 +1690,35 @@ export type Database = {
             columns: ["subject_id"]
             isOneToOne: false
             referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topic_embeddings: {
+        Row: {
+          embedding: string
+          topic_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          embedding: string
+          topic_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          embedding?: string
+          topic_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topic_embeddings_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: true
+            referencedRelation: "topics"
             referencedColumns: ["id"]
           },
         ]
@@ -1642,6 +1748,35 @@ export type Database = {
             columns: ["subject_id"]
             isOneToOne: false
             referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      unit_embeddings: {
+        Row: {
+          embedding: string
+          unit_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          embedding: string
+          unit_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          embedding?: string
+          unit_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_embeddings_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: true
+            referencedRelation: "units"
             referencedColumns: ["id"]
           },
         ]
@@ -1816,6 +1951,23 @@ export type Database = {
           title: string
         }[]
       }
+      match_notes: {
+        Args: { match_count?: number; query_embedding: string }
+        Returns: {
+          id: string
+          kind: string
+          similarity: number
+          unit_id: string
+        }[]
+      }
+      question_candidates: {
+        Args: { match_count?: number; question_ids: string[] }
+        Returns: {
+          question_id: string
+          similarity: number
+          unit_id: string
+        }[]
+      }
       replace_plan: {
         Args: {
           p_blocks: Json
@@ -1827,6 +1979,13 @@ export type Database = {
           p_units: Json
         }
         Returns: undefined
+      }
+      unembedded: {
+        Args: { max_rows?: number }
+        Returns: {
+          id: string
+          kind: string
+        }[]
       }
     }
     Enums: {
@@ -1842,6 +2001,7 @@ export type Database = {
         | "parse_exam_schedule"
         | "parse_document"
         | "answer"
+        | "link_questions"
       assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
       assigned_by: "ai" | "user"
       block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
@@ -2002,6 +2162,7 @@ export const Constants = {
         "parse_exam_schedule",
         "parse_document",
         "answer",
+        "link_questions",
       ],
       assessment_kind: ["partial", "final", "integral", "makeup", "other"],
       assigned_by: ["ai", "user"],

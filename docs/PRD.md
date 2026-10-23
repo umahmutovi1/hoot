@@ -234,7 +234,7 @@ f = \frac{j}{j+2} \cdot \overline{\left(\frac{baza_{izmjereno}}{baza_{tip}}\righ
 - **Prvi prolaz ili ponavljanje** se ne bira nego čita iz statusa jedinice: jedinica koja još nije pređena = prvi prolaz, pređena ili “razumijem” = ponavljanje. Svaki ima svoju brzinu po izvoru (par izvor × način, uz fallback na izvor dok par nema 3 mjerenja). Na početku sesije može se ručno promijeniti.
 - **Kraj sesije**: “do koje stranice” (stranica, slajd, pitanje ili jedinica; može i dio poglavlja), plus težina 1–5 po jedinici. Razlike između poglavlja dolaze iz izmjerenog vremena po poglavlju i ocjene težine, ne iz AI-ja.
 
-**Izvor “Pitanja” (odluka, Etapa 7).** Pitanja se ne mjere vremenom nego uspjehom: koliko pitanja znaš odgovoriti (recall 0–2, FSRS jačina). Vrijeme po pitanju služi samo planu za kapacitet (heuristika pa prosjek iz sesija), ne prikazuje se kao procjena i ne kalibriše se po pitanju. Pitanja su vezana za poglavlja izvora (preko tema ili direktno); AI predloži veze (embeddings + `parse-questions`, Etapa 10), korisnik ih ispravi, a ručna veza se ne prepisuje. U sesiji, nakon čitanja ili ponavljanja poglavlja, app odmah ponudi pitanja iz te oblasti koja su unesena u app (recall gate, Etapa 9).
+**Izvor “Pitanja” (odluka, Etapa 7).** Pitanja se ne mjere vremenom nego uspjehom: koliko pitanja znaš odgovoriti (recall 0–2, FSRS jačina). Vrijeme po pitanju služi samo planu za kapacitet (heuristika pa prosjek iz sesija), ne prikazuje se kao procjena i ne kalibriše se po pitanju. Pitanja su vezana za poglavlja izvora (preko tema ili direktno); AI predloži veze (embeddings + `parse-questions`, Etapa 10), korisnik ih ispravi, a ručna veza se ne prepisuje. **Odluka (Etapa 10):** direktna veza je tabela `question_links` (`assigned_by`, `linked`); gate, „Povezana ispitna pitanja“ i obim koriste uniju direktnih veza i veza preko tema. Poslije spašavanja pitanja app računa embeddinge, RPC `question_candidates` da najbližih 5 poglavlja po pitanju, a jedan AI poziv (`link-questions`) bira 0–2 među njima; prijedlog ide na pregled prije upisa. U sesiji, nakon čitanja ili ponavljanja poglavlja, app odmah ponudi pitanja iz te oblasti koja su unesena u app (recall gate, Etapa 9).
 
 **Web pretraga** težine konkretne knjige nije default; može doći kao opcionalno dugme u v2.
 
@@ -764,7 +764,7 @@ Uz spremnost za ispit app zna i koliko bodova nosi svaki ispit i rok, koliko ih 
 
 ## Obim ispita: svi izvori i ručne izmjene
 
-Obim se bira za svaki tip izvora (knjiga, skripta, pitanja, prezentacije, ostalo), jer `assessment_units` već vezuje bilo koju jedinicu. AI predlaže raspodjelu (za pitanja preko tema), a korisnik svaku stavku može prebaciti na jedan od ispita bez “cijelo gradivo” (I, II, …), na sve njih (“Sve”, kad ih je bar dva) ili na “ne ulazi”. Ispiti sa `scope_all` (integralni, završni) uvijek obuhvataju sve osim “ne ulazi”. Red na roditelju važi i za podjedinice. Ručna izmjena je zaključana: ponovno AI parsiranje je ne mijenja. “Ne ulazi” je red sa `included = false`, pa radi i za ispit sa `scope_all = true` (isto koristi “Izbaci iz plana” pri brisanju bloka).
+Obim se bira za svaki tip izvora (knjiga, skripta, pitanja, prezentacije, ostalo), jer `assessment_units` već vezuje bilo koju jedinicu. AI predlaže raspodjelu (za pitanja preko tema), a korisnik svaku stavku može prebaciti na jedan od ispita bez “cijelo gradivo” (I, II, …), na sve njih (“Sve”, kad ih je bar dva) ili na “ne ulazi”. Ispiti sa `scope_all` (integralni, završni) uvijek obuhvataju sve osim “ne ulazi”. Red na roditelju važi i za podjedinice. Ručna izmjena je zaključana: ponovno AI parsiranje je ne mijenja. **Odluka (Etapa 10):** prijedlog za poglavlja (knjiga, skripta, prezentacije, ostalo) je pravilo bez LLM poziva: poglavlja se po redu dijele na parcijale po kumulativnim minutama; pitanja prate obim poglavlja s kojima su povezana. Prijedlog se upisuje kao `assigned_by = 'ai'` samo za jedinice bez ručnog reda. “Ne ulazi” je red sa `included = false`, pa radi i za ispit sa `scope_all = true` (isto koristi “Izbaci iz plana” pri brisanju bloka).
 
 Kolona `assessment_units.assigned_by` je u konsolidovanoj migraciji.
 
@@ -1415,6 +1415,27 @@ create table push_jobs (id, user_id, kind ('first_block','break_end','test'), re
 alter table profiles
   add column notify_first_block boolean not null default true,
   add column notify_break_end boolean not null default true;
+
+-- 0020_ai_content.sql + 0021_embedding_tables.sql (Etapa 10, samo aditivno; 0021 uklanja prazne
+-- embedding kolone iz 0020 jer bi ih svaki select('*') vukao i keširao)
+alter type ai_task add value 'link_questions';         -- AI potvrđuje veze pitanje ↔ poglavlje
+create table unit_embeddings  (unit_id  pk → units,  user_id, embedding vector(384), updated_at);  -- naslov + bilješke
+create table card_embeddings  (card_id  pk → cards,  user_id, embedding vector(384), updated_at);  -- pitanje + odgovor
+create table topic_embeddings (topic_id pk → topics, user_id, embedding vector(384), updated_at);  -- naziv (dedupe)
+-- + RLS, grant, HNSW; triger drop_stale_embedding briše vektor kad se tekst promijeni, app računa ono čega nema (RPC unembedded)
+create table question_links (                          -- ispitno pitanje ↔ poglavlje, direktno (uz veze preko tema)
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  question_id uuid not null references units on delete cascade,
+  unit_id uuid not null references units on delete cascade,
+  assigned_by assigned_by not null default 'ai',       -- 'user' se nikad ne prepisuje
+  linked boolean not null default true,                -- false = korisnik odbio AI prijedlog (uvijek 'user')
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (question_id, unit_id)
+);
+alter table timetable_entries add column note text;   -- napomena uz termin (parse-timetable)
+grant update (deadline_id) on external_events to authenticated;   -- Moodle rok → deadlines
+-- RPC question_candidates(question_ids, k): najbliža poglavlja predmeta po pitanju; match_notes(query, k): bilješke i kartice
 ```
 
 ## AI integracija
