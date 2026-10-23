@@ -136,7 +136,9 @@ export function useSessionUnits(sessionId: string | undefined) {
     queryFn: async (): Promise<SessionUnitRow[]> => {
       const { data, error } = await supabase
         .from('session_units')
-        .select('session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty')
+        .select(
+          'session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty, recall_skipped',
+        )
         .eq('session_id', sessionId!)
       if (error) throw error
       return data
@@ -164,6 +166,12 @@ export function useModeRates(subjectId: string | undefined, sourceIds: string[])
       return data
     },
   })
+}
+
+/** Text of the "Pauza je gotova" notification (in the user's language). */
+export interface BreakNotice {
+  title: string
+  body: string
 }
 
 export interface StartInput {
@@ -212,6 +220,28 @@ export function useSessionWriter() {
       table: 'study_segments',
       rows: rows as unknown as Row[],
     })
+    // Web Push at the end of a planned break (notify sends it); leaving the break cancels it.
+    const breakJobOp = (session: SessionRow, at: Date, notice: BreakNotice): Op => ({
+      kind: 'upsert',
+      table: 'push_jobs',
+      onConflict: 'user_id,kind,ref',
+      rows: [
+        {
+          id: crypto.randomUUID(),
+          kind: 'break_end',
+          ref: session.id,
+          send_at: at.toISOString(),
+          title: notice.title,
+          body: notice.body,
+          url: '/session',
+          sent_at: null,
+        },
+      ],
+    })
+    const cancelBreakOps = (session: SessionRow): Op[] =>
+      session.break_ends_at
+        ? [{ kind: 'delete', table: 'push_jobs', match: { kind: 'break_end', ref: session.id } }]
+        : []
     const sessionOp = (row: SessionRow): Op => ({
       kind: 'upsert',
       table: 'study_sessions',
@@ -267,13 +297,19 @@ export function useSessionWriter() {
       },
 
       /** Closes the running segment; `breakEndsAt` is when the preset's break ends (Web Push, Stage 9). */
-      pause: async ({ session, segments }: ActiveSession, breakEndsAt: Date | null = null) => {
+      pause: async (
+        { session, segments }: ActiveSession,
+        breakEndsAt: Date | null = null,
+        /** Push text for the end of the break; null = no notification (off, or no device). */
+        notice: BreakNotice | null = null,
+      ) => {
         const open = segments.find((s) => s.ended_at === null)
         if (!open) return
         const t = nowIso()
         const closed = { ...open, ended_at: t }
         const row = { ...session, break_ends_at: breakEndsAt?.toISOString() ?? null, updated_at: t }
-        await write([segmentOp([closed]), sessionOp(row)], () => ({
+        const push = breakEndsAt && notice ? [breakJobOp(session, breakEndsAt, notice)] : []
+        await write([segmentOp([closed]), sessionOp(row), ...push], () => ({
           session: row,
           segments: segments.map((s) => (s.id === open.id ? closed : s)),
         }))
@@ -289,7 +325,7 @@ export function useSessionWriter() {
           started_at: t,
           ended_at: null,
         }
-        const ops = [segmentOp([segment])]
+        const ops = [segmentOp([segment]), ...cancelBreakOps(session)]
         const row = session.break_ends_at
           ? { ...session, break_ends_at: null, updated_at: t }
           : session
@@ -344,6 +380,7 @@ export function useSessionWriter() {
           ...(kept.length > 0 ? [segmentOp(kept)] : []),
           ...drop.map((id): Op => ({ kind: 'delete', table: 'study_segments', match: { id } })),
           sessionOp({ ...session, ended_at: end, updated_at: nowIso() }),
+          ...cancelBreakOps(session),
           ...(session.block_id ? [blockStatusOp(session.block_id, 'done')] : []),
         ]
         await write(ops, () => null)
@@ -469,6 +506,7 @@ export function useSessionWriter() {
         await write(
           [
             { kind: 'delete', table: 'study_sessions', match: { id: session.id } },
+            ...cancelBreakOps(session),
             ...(session.block_id ? [blockStatusOp(session.block_id, 'planned')] : []),
           ],
           () => null,

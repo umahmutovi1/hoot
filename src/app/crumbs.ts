@@ -77,6 +77,9 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
       }
       return out
     }
+    // The session flow (timer, end form, recall gate, knowledge check) is full screen without the
+    // top bar, like onboarding.
+    case 'session':
     default:
       return []
   }

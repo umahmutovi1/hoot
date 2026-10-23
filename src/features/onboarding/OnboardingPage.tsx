@@ -38,12 +38,16 @@ export function OnboardingPage() {
   const stored = Math.min(Math.max(profile?.onboarding_step ?? 1, 1), ONBOARDING_STEPS)
   const step = Math.min(Math.max(Number(params.get('step')) || stored, 1), ONBOARDING_STEPS)
   const [save, setSaveState] = useState<{ fn: (() => Promise<void> | void) | null }>({ fn: null })
-  const [ready, setReady] = useState(true)
+  // Readiness belongs to the step that set it: before the profile loads step 1 can render for a
+  // moment and must not lock "Dalje" on the step the user is really on.
+  const [readyOf, setReadyOf] = useState<{ step: number; ready: boolean } | null>(null)
+  const ready = readyOf?.step === step ? readyOf.ready : true
+  const setReady = (r: boolean) => setReadyOf({ step, ready: r })
   const [busy, setBusy] = useState(false)
   const setSave: StepProps['setSave'] = (fn) => setSaveState({ fn })
 
   const go = (next: number) => {
-    setReady(true)
+    setReadyOf(null)
     setSaveState({ fn: null })
     setParams({ step: String(next) }, { replace: true })
     if (next > (profile?.onboarding_step ?? 0)) update.mutate({ onboarding_step: next })

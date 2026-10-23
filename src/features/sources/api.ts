@@ -7,13 +7,15 @@ import type { MergeResult } from '@/lib/outline/merge'
 import type { Measure } from '@/lib/outline/parse'
 import type { ScopeRow } from '@/lib/progress/scope'
 import { toSourceRow, toUnitRows } from './mappers'
-import type {
-  AssessmentUnit,
-  Card,
-  SourceWithUnits,
-  TopicWithUnits,
-  Unit,
-  UnitTopic,
+import {
+  NO_MEMORY,
+  type AssessmentUnit,
+  type Card,
+  type LegacySrs,
+  type SourceWithUnits,
+  type TopicWithUnits,
+  type Unit,
+  type UnitTopic,
 } from './model'
 import type { CardForm, SourceForm } from './schemas'
 
@@ -221,12 +223,10 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     answer: null,
     answer_origin: null,
     completed_at: null,
-    srs_ease: 2.5,
-    srs_interval_days: null,
-    srs_success_count: 0,
+    ...NO_MEMORY,
     next_review_on: null,
     archived_at: null,
-  } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title'>
+  } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title' | LegacySrs>
 }
 
 export type UnitPatch = Pick<
@@ -243,6 +243,7 @@ export type UnitPatch = Pick<
   | 'page_end'
   | 'amount'
   | 'completed_at'
+  | 'next_review_on'
 >
 
 /** Partial update of one unit (status, rating, notes, answer, archive, title/pages). */
@@ -463,6 +464,8 @@ export function useSaveCard() {
           origin: 'user',
           created_at: now(),
           updated_at: now(),
+          ...NO_MEMORY,
+          next_review_on: null,
           ...old,
           id: form.id,
           unit_id: form.unitId,

@@ -12,7 +12,8 @@ Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Gemini, Anthropic
 | Resend | SMTP za auth emailove (kod za prijavu), šablon u stilu appa | ✅ |
 | Gemini | API ključ (free tier) za AI dok nema Anthropic kartice | ⏳ treba za Etapu 6 |
 | Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (opcionalno, Etapa 10) |
-| `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`; funkcija i `CRON_SECRET` postavljeni) | ⏳ koraci 3–5 u dashboardu |
+| `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`), Web Push svake minute (`notify`) | ✅ |
+| Web Push | VAPID ključevi (secrets + Cloudflare Production i Preview), `notify` deployana, `pg_cron` svake minute | ✅ |
 | Domena | za emailove drugim korisnicima i vlastiti URL | kasnije |
 
 ---
@@ -55,6 +56,7 @@ Lozinka baze ovdje ne treba (CLI koristi login); treba za `backup.yml` u Etapi 1
    - `VITE_SUPABASE_URL` = `https://lpyyatqzvrvqgcmwiqfr.supabase.co`
    - `VITE_SUPABASE_PUBLISHABLE_KEY` = `sb_publishable_…`
    - `NODE_VERSION` = `24`
+   - `VITE_VAPID_PUBLIC_KEY` = javni VAPID ključ (Etapa 9, vidi 5b)
 5. Rezultat: `main` → `hoot-5ig.pages.dev`, `dev` → `dev.hoot-5ig.pages.dev`, svaka druga grana dobija preview URL.
 
 ## 3. Resend SMTP (kod za prijavu u emailu)
@@ -226,6 +228,44 @@ unset GEMINI_API_KEY
    ```
 5. **Provjera:** Integrations → Cron → posao `sync-calendar` → History poslije prvog pokretanja (svaka 3 h u :17); odgovor funkcije je `{"synced": N, "failed": M}`. Edge Functions → `sync-calendar` → Logs ne smiju sadržavati link.
 6. **Promjena tajne:** novi `secrets set`, pa `select vault.update_secret((select id from vault.secrets where name = 'sync_calendar_cron_secret'), '<novi>');`. **Gašenje:** `select cron.unschedule('sync-calendar');`.
+
+## 5b. Web Push: `notify` i `pg_cron` (Etapa 9)
+
+App sama upisuje kad je obavještenje na redu (`push_jobs`: prvi blok dana 10 min prije, kraj planirane pauze, probno), a `notify` svake minute šalje dospjela na sve uređaje korisnika preko standardnog Web Push-a (VAPID, bez vanjskog servisa). Tekstovi i adrese uređaja se ne loguju.
+
+**iPhone / iPad:** obavještenja rade samo kad je Hoot dodan na početni ekran (Safari → Dijeli → Dodaj na početni ekran, iOS 16.4+) i otvoren odatle; tek tad Postavke → Notifikacije → „Uključi obavještenja na ovom uređaju“ pita za dozvolu. Na Androidu i desktopu radi i u browseru.
+
+1. **VAPID ključevi** (terminal, jednom; privatni ključ ide samo u password manager i Supabase secrets):
+   ```sh
+   npx -y web-push generate-vapid-keys
+   ```
+2. **Secrets** (zamijeni vrijednosti; `VAPID_SUBJECT` je kontakt za push servise):
+   ```sh
+   npx supabase secrets set VAPID_PUBLIC_KEY=<public> VAPID_PRIVATE_KEY=<private> VAPID_SUBJECT=mailto:<tvoj email>
+   ```
+3. **Cloudflare Pages** → `hoot` → Settings → Variables and Secrets: dodaj `VITE_VAPID_PUBLIC_KEY` = javni ključ za **Production i Preview**, pa novi deploy (svaki push na granu ga pravi). Lokalno isti red u `.env.local`.
+4. **Deploy:** `npx supabase functions deploy notify` (u `config.toml` je `verify_jwt = false`; funkcija traži `x-cron-secret`). `CRON_SECRET` je isti kao za `sync-calendar` (5a, korak 1).
+5. **Raspored** (SQL Editor; ekstenzije `pg_cron` i `pg_net` i vault tajna `sync_calendar_cron_secret` su iz 5a):
+   ```sql
+   select cron.schedule(
+     'notify',
+     '* * * * *',
+     $$
+     select net.http_post(
+       url := 'https://lpyyatqzvrvqgcmwiqfr.supabase.co/functions/v1/notify',
+       headers := jsonb_build_object(
+         'Content-Type', 'application/json',
+         'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets
+                           where name = 'sync_calendar_cron_secret')
+       ),
+       body := '{}'::jsonb,
+       timeout_milliseconds := 30000
+     );
+     $$
+   );
+   ```
+6. **Provjera:** Postavke → Notifikacije → uključi na uređaju → „Pošalji probno obavještenje“ stiže za najviše minut. Integrations → Cron → `notify` → History; odgovor je `{"jobs": N, "sent": N, "failed": 0, "stale": 0, "gone": 0}`. Posao koji kasni više od 30 min se odbaci, ne šalje.
+7. **Gašenje:** `select cron.unschedule('notify');`. **Novi ključevi:** ponovi 1–3; stare pretplate tad više ne rade, pa svaki uređaj ponovo uključi obavještenja.
 
 ## 6. Otvaranje aplikacije za više korisnika
 

@@ -1,6 +1,6 @@
 import { addDays, diffDays, type LocalDate } from '@/lib/day'
 import type { PaceAction } from '@/lib/pace'
-import { priorityRule, RESERVE } from './constants'
+import { priorityRule, RESERVE, reviewMinutes } from './constants'
 import { plan, remainingWork } from './plan'
 import type { PlanResult, PlanState } from './types'
 
@@ -46,6 +46,8 @@ export type Suggestion =
   | { kind: 'target_grade'; key: string; subjectId: string; priority: number }
   | { kind: 'exam_period'; key: string; periodId: string; until: LocalDate; capMin: number }
   | { kind: 'campaign_soon'; key: string; subjectId: string; start: LocalDate; days: number }
+  /** "Znanje slabi": checks due today that are not in today's plan (over the review cap). */
+  | { kind: 'check'; key: string; unitIds: string[]; minutes: number }
 
 export type BehindAction =
   | { kind: 'raise_priority'; priority: number }
@@ -282,6 +284,31 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
       })
   }
 
+  // Checks due but not in today's blocks: over the review share, or due since the plan was made.
+  const planned = new Set(
+    [...result.blocks, ...state.fixed]
+      .filter((b) => b.onDate === today)
+      .flatMap((b) => b.units.map((u) => u.unitId)),
+  )
+  const upcoming = new Set(
+    state.goals.filter((g) => g.kind === 'exam' && g.on > today).flatMap((g) => g.unitIds),
+  )
+  const due = state.units.filter(
+    (u) =>
+      u.nextReviewOn !== null &&
+      u.nextReviewOn <= today &&
+      (u.level >= 1 || u.kind === 'question') &&
+      upcoming.has(u.id) &&
+      !planned.has(u.id),
+  )
+  if (due.length > 0)
+    out.push({
+      kind: 'check',
+      key: `check:${today}`,
+      unitIds: due.map((u) => u.id),
+      minutes: due.reduce((sum, u) => sum + reviewMinutes(u.kind, u.minutes), 0),
+    })
+
   const rank: Record<Suggestion['kind'], number> = {
     fresh_start: 0,
     deficit: 1,
@@ -289,6 +316,7 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
     target_grade: 3,
     exam_period: 4,
     campaign_soon: 5,
+    check: 6,
   }
   const goalOn = (s: Suggestion) => (s.kind === 'deficit' ? (goals.get(s.goalId)?.on ?? '') : '')
   const weight = (s: Suggestion) =>

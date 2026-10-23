@@ -10,7 +10,7 @@ import { speedOf, type AssessmentUnit, type SourceWithUnits } from '@/features/s
 import { addDays, localDay, type DayBoundary } from '@/lib/day'
 import { activeMs, MINUTE } from '@/lib/session/timer'
 import { supabase } from '@/lib/supabase'
-import type { PlanBlockRow, PlanInputs, SessionMinutes } from './state'
+import type { CardReview, PlanBlockRow, PlanInputs, SessionMinutes } from './state'
 
 // Plan data: every source, scope row and topic link of the user (the plan spans subjects), the
 // blocks from two weeks ago on (history for ρ) and the latest plan run.
@@ -21,6 +21,7 @@ export const planRunKey = (userId: string | undefined) => ['plan', userId, 'run'
 const allSourcesKey = (userId: string | undefined) => ['plan', userId, 'sources'] as const
 const allScopeKey = (userId: string | undefined) => ['plan', userId, 'scope'] as const
 const topicLinksKey = (userId: string | undefined) => ['plan', userId, 'topics'] as const
+export const cardReviewsKey = (userId: string | undefined) => ['plan', userId, 'cards'] as const
 
 /** History window for ρ (14 days) plus a day of slack around the day boundary. */
 const HISTORY_DAYS = 15
@@ -58,13 +59,31 @@ function useAllScope() {
   })
 }
 
-function useTopicLinks() {
+export function useTopicLinks() {
   const userId = useUserId()
   return useQuery({
     queryKey: topicLinksKey(userId),
     enabled: Boolean(userId),
     queryFn: async () => {
       const { data, error } = await supabase.from('unit_topics').select('unit_id, topic_id')
+      if (error) throw error
+      return data
+    },
+  })
+}
+
+/** Every card in review (its unit, due day and memory), for review blocks and strength. */
+export function useCardReviews() {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: cardReviewsKey(userId),
+    enabled: Boolean(userId),
+    queryFn: async (): Promise<CardReview[]> => {
+      const { data, error } = await supabase
+        .from('cards')
+        .select(
+          'id, unit_id, next_review_on, fsrs_stability, fsrs_difficulty, fsrs_state, fsrs_reps, fsrs_lapses, review_streak, last_review_at',
+        )
       if (error) throw error
       return data
     },
@@ -121,6 +140,7 @@ export function invalidatePlanInputs(queryClient: QueryClient, userId: string | 
     queryClient.invalidateQueries({ queryKey: allSourcesKey(userId) }),
     queryClient.invalidateQueries({ queryKey: allScopeKey(userId) }),
     queryClient.invalidateQueries({ queryKey: topicLinksKey(userId) }),
+    queryClient.invalidateQueries({ queryKey: cardReviewsKey(userId) }),
   ])
 }
 
@@ -132,6 +152,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
   const sources = useAllSources().data
   const scope = useAllScope().data
   const unitTopics = useTopicLinks().data
+  const cards = useCardReviews().data
   const blocks = usePlanBlocks(boundary).data
   const sessionList = useSessions().data
   const scale = useGlobalScale()
@@ -155,6 +176,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       !sources ||
       !scope ||
       !unitTopics ||
+      !cards ||
       !blocks ||
       !sessionList
     )
@@ -175,6 +197,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       sources,
       scope,
       unitTopics,
+      cards,
       logs: schedule.logRows,
       blocks,
       sessions,
@@ -188,6 +211,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
     sources,
     scope,
     unitTopics,
+    cards,
     blocks,
     sessionList,
     globalScale,

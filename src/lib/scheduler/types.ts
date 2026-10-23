@@ -75,8 +75,13 @@ export interface PlanUnit {
   questionCount: number
   pageStart: number | null
   pageEnd: number | null
-  /** Day the unit is due for a check (FSRS, Stage 9); null = not in review. */
+  /**
+   * Day the unit (or one of its cards) is due for a check (FSRS); null = not in review. A check of
+   * what was read (no memory yet) is due 2 days after "Pročitano".
+   */
   nextReviewOn: LocalDate | null
+  /** FSRS memory of the unit, for its strength on a day; null before the first test. */
+  memory?: { stability: number; lastReviewOn: LocalDate } | null
   /** Covered in class on this day (latest lecture log), null = not covered or not tracked. */
   coveredOn: LocalDate | null
   /** The subject has lecture logs for this unit's source: uncovered units are not pushed ahead. */

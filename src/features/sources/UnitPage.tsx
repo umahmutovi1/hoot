@@ -1,7 +1,7 @@
 import { useSpeeds } from '@/features/plan/api'
 import type { TFunction } from 'i18next'
 import { useState } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { MoreIcon, PlusIcon } from '@/components/icons'
@@ -13,7 +13,20 @@ import type { SubjectWithAssessments } from '@/features/subjects/model'
 import { subtreeLeaves } from '@/lib/progress'
 import { scopeOf } from '@/lib/progress/scope'
 import { cn } from '@/lib/utils'
-import { useScope, useSource, useSources, useTopics, useUpdateUnit, type UnitPatch } from './api'
+import { readCheckOn } from '@/features/review/apply'
+import { StrengthTiles } from '@/features/review/StrengthTiles'
+import { useNow } from '@/features/session/useNow'
+import { useDayBoundary } from '@/features/settings/profile'
+import { localDay } from '@/lib/day'
+import {
+  useCards,
+  useScope,
+  useSource,
+  useSources,
+  useTopics,
+  useUpdateUnit,
+  type UnitPatch,
+} from './api'
 import { CardsSection } from './CardsSection'
 import { formatDuration, pagesLabel, STATUS_CHIP, statusLabel } from './format'
 import {
@@ -65,6 +78,30 @@ function UnitDetail({
   const [menuOpen, setMenuOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [difficultyOpen, setDifficultyOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const boundary = useDayBoundary()
+  const now = useNow(60_000)
+  const { data: cards = [] } = useCards(unit.id)
+  const leafIds =
+    children.length > 0
+      ? subtreeLeaves(asProgress(material.units), unit.id).map((l) => l.id)
+      : [unit.id]
+  const gateUrl = `/session/recall?units=${leafIds.join(',')}&to=${encodeURIComponent(location.pathname)}`
+  // "Razumijem" / "Ponovljeno" ("Znam") come only from the recall gate (PRD "Recall gate").
+  const pickLevel = (level: number) => {
+    if (level >= 2) {
+      navigate(gateUrl)
+      return
+    }
+    const read = !isQuestion && level === 1 && unit.level === 0
+    patch({
+      level,
+      ...(read
+        ? { next_review_on: readCheckOn(localDay(now, boundary), unit.next_review_on) }
+        : {}),
+    })
+  }
 
   const { data: scope = [] } = useScope(subject.id)
   const { data: allSources = [] } = useSources(subject.id)
@@ -123,7 +160,7 @@ function UnitDetail({
                   type="button"
                   role="radio"
                   aria-checked={current}
-                  onClick={() => patch({ level })}
+                  onClick={() => pickLevel(level)}
                   className={cn(
                     'flex h-14 flex-1 flex-col items-center justify-center gap-1 rounded-[16px] px-0.5 text-xs font-semibold',
                     current ? 'bg-brand text-white' : done ? 'bg-brand-soft' : 'bg-canvas-soft',
@@ -140,6 +177,13 @@ function UnitDetail({
               )
             })}
           </div>
+          <span className="text-[13px] text-ink-muted">
+            {t(isQuestion ? 'strength.unlockQuestion' : 'strength.unlock')}{' '}
+            <Link to={gateUrl} className="font-semibold text-brand underline">
+              {t('strength.unlockLink')}
+            </Link>
+            .
+          </span>
         </div>
       )}
 
@@ -189,6 +233,9 @@ function UnitDetail({
           </span>
           <span className="text-xs text-ink-muted">{t('units.detail.estimateHint')}</span>
         </div>
+        {children.length === 0 && (
+          <StrengthTiles unit={unit} cards={cards} today={localDay(now, boundary)} />
+        )}
       </div>
 
       <Topics subjectId={subject.id} unit={unit} />
@@ -209,6 +256,14 @@ function UnitDetail({
         onSave={(notes) => patch({ notes: notes || null })}
       />
       <CardsSection unitId={unit.id} />
+      {!unit.archived_at && (
+        <Link
+          to={gateUrl}
+          className="mt-1 flex h-14 items-center justify-center rounded-full btn-primary text-base font-semibold"
+        >
+          {t(isQuestion ? 'strength.testQuestion' : 'strength.test')}
+        </Link>
+      )}
 
       <BottomSheet open={menuOpen} onOpenChange={setMenuOpen} title={unit.title}>
         <div className="flex flex-col gap-2">

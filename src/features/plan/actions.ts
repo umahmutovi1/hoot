@@ -239,6 +239,7 @@ export function useStartBlock() {
   const writer = useSessionWriter()
   const { suggestedId } = usePresets()
   const setTimerMode = useSessionUi((s) => s.setTimerMode)
+  const setCheck = useSessionUi((s) => s.setCheck)
   const shiftLate = useShiftLateDay()
   return useCallback(
     async (
@@ -247,12 +248,19 @@ export function useStartBlock() {
         'id' | 'subject_id' | 'kind' | 'planned_minutes' | 'plan_block_units'
       >,
       units: Map<string, UnitInfo>,
-      opts: { minutes?: number; unitId?: string | null; tied?: boolean; timerMode?: string } = {},
+      opts: {
+        minutes?: number
+        unitId?: string | null
+        tied?: boolean
+        timerMode?: string
+        /** Units of a knowledge check (default: the block's). */
+        checkUnits?: string[]
+      } = {},
     ) => {
       const timerMode = opts.timerMode ?? suggestedId
       const minutes = opts.minutes ?? block.planned_minutes
       if (opts.tied !== false) await shiftLate(block.id, minutes)
-      await writer.start({
+      const sessionId = await writer.start({
         subjectId: block.subject_id,
         unitId:
           opts.unitId !== undefined ? opts.unitId : (block.plan_block_units[0]?.unit_id ?? null),
@@ -262,9 +270,16 @@ export function useStartBlock() {
         plannedMinutes: minutes,
       })
       setTimerMode(timerMode)
-      navigate('/session')
+      // A review block is a series of recall gates (Provjera znanja), timed like any session.
+      if (block.kind === 'review' && sessionId) {
+        setCheck({
+          sessionId,
+          unitIds: opts.checkUnits ?? block.plan_block_units.map((u) => u.unit_id),
+        })
+        navigate('/session/review')
+      } else navigate('/session')
     },
-    [writer, suggestedId, setTimerMode, navigate, shiftLate],
+    [writer, suggestedId, setTimerMode, setCheck, navigate, shiftLate],
   )
 }
 

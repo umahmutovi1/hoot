@@ -9,7 +9,9 @@ import { useAuth } from '@/features/auth/auth-context'
 import { useOnline } from '@/features/owl/api'
 import { useSources } from '@/features/sources/api'
 import { statusLabel, STATUS_CHIP } from '@/features/sources/format'
-import { levelsFor, type SourceWithUnits } from '@/features/sources/model'
+import type { SourceWithUnits } from '@/features/sources/model'
+import { useDayBoundary } from '@/features/settings/profile'
+import { localDay } from '@/lib/day'
 import { useSubject } from '@/features/subjects/api'
 import { pageOffset } from '@/lib/session/coverage'
 import type { Op } from '@/lib/sync'
@@ -18,6 +20,7 @@ import { useSession, useSessionUnits, useSessionWriter, type SessionUnitRow } fr
 import {
   coveredUnits,
   defaultLevel,
+  endLevels,
   planEnd,
   savedRanges,
   summarize,
@@ -167,7 +170,10 @@ function EndForm({
     focusReasons: reasons,
     reflection,
   }
-  const plan = planEnd(session, segments, endSources, answers, new Date(session.ended_at!), saved)
+  const boundary = useDayBoundary()
+  const endedAt = new Date(session.ended_at!)
+  const today = fromHistory ? null : localDay(endedAt, boundary)
+  const plan = planEnd(session, segments, endSources, answers, endedAt, saved, today)
   const covered = coveredUnits(endSources, answers.ranges)
   const summary = summarize(session, segments, new Date(session.ended_at ?? session.started_at))
 
@@ -185,16 +191,32 @@ function EndForm({
     : 0
   const showRate = main && main.source.kind !== 'questions' && mainAmount > 0
 
-  const save = async () => {
+  // "Spasi i testiraj se" opens the recall gate for what was read; "Samo spasi" records the skip.
+  const gate = fromHistory ? [] : plan.gate
+  const save = async (test: boolean) => {
     if (!userId || busy) return
     setBusy(true)
-    patchSources(queryClient, userId, session.subject_id, plan.ops)
-    await writer.write(plan.ops)
+    const { ops } =
+      gate.length > 0 && !test
+        ? planEnd(
+            session,
+            segments,
+            endSources,
+            { ...answers, skipGate: true },
+            endedAt,
+            saved,
+            today,
+          )
+        : plan
+    patchSources(queryClient, userId, session.subject_id, ops)
+    await writer.write(ops)
     if (session.origin === 'timer') needsRecalibration(session.subject_id)
     const queue = syncQueueFor(userId)
     if (navigator.onLine)
       void queue.flush().then(() => queryClient.invalidateQueries({ queryKey: ['sources'] }))
-    navigate(fromHistory ? `/sessions/${session.id}` : '/', { replace: true })
+    if (test)
+      navigate(`/session/recall?units=${gate.join(',')}&session=${session.id}`, { replace: true })
+    else navigate(fromHistory ? `/sessions/${session.id}` : '/', { replace: true })
   }
 
   const addRange = (s: SessionSource) => {
@@ -320,7 +342,7 @@ function EndForm({
       )}
       {cards.map(({ unit }) => {
         const level = levels[unit.id] ?? defaultLevel(unit, covered.get(unit.id))
-        const options = levelsFor(unit.kind)
+        const options = endLevels(unit.level)
         return (
           <div key={unit.id} className="flex flex-col gap-3 rounded-[24px] glass p-4">
             <div className="flex items-start justify-between gap-2">
@@ -447,14 +469,35 @@ function EndForm({
         />
       </label>
 
-      <button
-        type="button"
-        onClick={save}
-        disabled={busy}
-        className="mt-2 h-14 rounded-full btn-primary text-base font-semibold disabled:opacity-50"
-      >
-        {t('common.save')}
-      </button>
+      {gate.length > 0 ? (
+        <div className="mt-2 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => void save(true)}
+            disabled={busy}
+            className="h-14 rounded-full btn-primary text-base font-semibold disabled:opacity-50"
+          >
+            {t('sessionEnd.saveAndTest')}
+          </button>
+          <button
+            type="button"
+            onClick={() => void save(false)}
+            disabled={busy}
+            className="h-12 rounded-full glass text-[15px] font-semibold text-brand disabled:opacity-50"
+          >
+            {t('sessionEnd.saveOnly')}
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => void save(false)}
+          disabled={busy}
+          className="mt-2 h-14 rounded-full btn-primary text-base font-semibold disabled:opacity-50"
+        >
+          {t('common.save')}
+        </button>
+      )}
     </div>
   )
 }

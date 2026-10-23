@@ -5,7 +5,7 @@ import { useAuth } from '@/features/auth/auth-context'
 import { useActiveSession } from '@/features/session/api'
 import { useDayBoundary } from '@/features/settings/profile'
 import { localDay, type DayBoundary, type LocalDate } from '@/lib/day'
-import { inputHash, plan } from '@/lib/scheduler'
+import { inputHash, plan, SCHEDULER_VERSION } from '@/lib/scheduler'
 import {
   invalidatePlanInputs,
   planBlocksKey,
@@ -60,7 +60,7 @@ export function ReplanRunner() {
         const built = buildPlanState(inputs, { now: new Date(), boundary })
         // The current minute only matters for today's first plan; it stays out of the hash so
         // an empty day does not save a new run every few minutes.
-        const hash = inputHash({ ...built.state, nowMin: null })
+        const hash = inputHash({ ...built.state, nowMin: null, version: SCHEDULER_VERSION })
         const result = plan(built.state)
         setModel({ built, hash, result })
         if (active.data) return

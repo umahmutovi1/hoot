@@ -88,6 +88,13 @@
   --color-warning-soft: rgba(195, 141, 82, 0.18);
   --color-warning-ink: #6b4a2a;
   --color-warning-muted: #7e5a36;
+  /* Knowledge strength bands (Jako, Dobro, Slabi, Zaboravlja se). */
+  --color-strength-strong: #5e9c72;
+  --color-strength-good: #9bbf7a;
+  --color-strength-weak: #d8bc7a;
+  --color-strength-fading: #d19a5e;
+  --color-strength-good-soft: rgba(155, 191, 122, 0.2);
+  --color-strength-good-ink: #4e6a33;
   /* Lecture material not started yet (Predmet → Predavanja bar). */
   --color-behind: #f5c58a;
   --color-behind-soft: #fbddb5;

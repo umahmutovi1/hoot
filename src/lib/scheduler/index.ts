@@ -1,6 +1,6 @@
 export * from './types'
 export * from './constants'
-export { aiCapacity, bufferDaysOf, coverageOf, learnEndOf, plan } from './plan'
+export { aiCapacity, bufferDaysOf, coverageOf, lastReviewDay, learnEndOf, plan } from './plan'
 export {
   maxBlockOf,
   maxStudyIn,
