@@ -14,7 +14,14 @@ import {
 } from '@shared/schemas.ts'
 import { chunkPages, type PageText } from '@/lib/documents/chunk'
 import { compressImage } from '@/lib/image'
-import { proposeExams, proposePeriods, type ExistingExam, type ExistingPeriod } from '@/lib/import'
+import {
+  proposeClasses,
+  proposeExams,
+  proposePeriods,
+  type ExistingClass,
+  type ExistingExam,
+  type ExistingPeriod,
+} from '@/lib/import'
 import { supabase } from '@/lib/supabase'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
 import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
@@ -36,6 +43,8 @@ export interface OwlContext {
     starts_on: string
     ends_on: string
   }[]
+  /** Classes of the current teaching period, for a timetable import. */
+  classes: ExistingClass[]
   queryClient: QueryClient
 }
 
@@ -180,7 +189,12 @@ export async function giveDocument(
       ctx.subjects.filter((x) => !x.archived),
       existingExams(ctx.subjects),
     )
-    const found = periods.length + exams.length
+    const classes = proposeClasses(
+      result.entries ?? [],
+      ctx.subjects.filter((x) => !x.archived),
+      ctx.classes,
+    )
+    const found = periods.length + exams.length + classes.length
     const done: OwlMessage = {
       id: pendingId,
       role: 'owl',
@@ -202,6 +216,7 @@ export async function giveDocument(
           documentTitle: title,
           periods,
           exams,
+          classes,
           warnings: result.warnings,
           savedCount: null,
         },

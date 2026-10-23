@@ -87,3 +87,15 @@ tests:
           return q.length === 12 && q[0].label === 'P1' && q[11].label === 'P12' &&
             q.find((x) => x.label === 'P7')?.title.includes('b)') &&
             q.every((x) => !/^\d/.test(x.title) && x.topics.length >= 1)
+  - description: class timetable photo, days, times, kinds and odd weeks
+    vars: { kind: timetable, fixture: timetable.png }
+    assert:
+      - type: javascript
+        value: |
+          const e = output.entries
+          const sis = e.filter((x) => x.subject_id === '11111111-1111-4111-8111-111111111111')
+          const lab = e.find((x) => x.kind === 'lab')
+          return e.length === 7 && sis.length === 2 &&
+            sis.some((x) => x.weekday === 0 && x.start === '09:00' && x.end === '11:00') &&
+            lab?.weekday === 3 && lab?.week_parity === 'odd' && lab?.location === 'Lab 1' &&
+            e.filter((x) => x.subject_id === null).length === 2

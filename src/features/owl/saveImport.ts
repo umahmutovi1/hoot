@@ -1,10 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { TFunction } from 'i18next'
 import { useAuth } from '@/features/auth/auth-context'
-import { useSavePeriod } from '@/features/schedule/api'
+import { scheduleKey, usePeriods, useSavePeriod } from '@/features/schedule/api'
+import { toPeriod } from '@/features/schedule/model'
+import { useDayBoundary } from '@/features/settings/profile'
 import { subjectsKey } from '@/features/subjects/api'
 import { examAtFromDate, examKindDefaults, localDateAt } from '@/features/subjects/model'
-import { toSave, type ExamProposal, type PeriodProposal } from '@/lib/import'
+import { localDay } from '@/lib/day'
+import { clockToMin, toSave, type ExamProposal, type PeriodProposal } from '@/lib/import'
+import { currentTeachingPeriod } from '@/lib/schedule'
 import { supabase } from '@/lib/supabase'
 import type { ImportProposal } from './store'
 
@@ -25,13 +29,35 @@ function examAt(exam: Pick<ExamProposal, 'date' | 'time'>) {
   return localDateAt(exam.date, h!, m!).toISOString()
 }
 
+/** How many items "Spasi N" writes (items without a subject wait for one). */
+export function saveCount(proposal: ImportProposal) {
+  return (
+    toSave(proposal.periods).length +
+    toSave(proposal.exams).filter((e) => e.subjectId).length +
+    toSave(proposal.classes ?? []).filter((c) => c.subjectId).length
+  )
+}
+
+/** Thrown when timetable classes have no teaching period to go into. */
+export class NoTeachingPeriod extends Error {}
+
 /** Writes the accepted items of a proposal ("Spasi N"); returns how many were saved. */
 export function useSaveImport(t: TFunction) {
   const userId = useAuth().session?.user.id
   const queryClient = useQueryClient()
   const savePeriod = useSavePeriod()
+  const { data: periodRows = [] } = usePeriods()
+  const boundary = useDayBoundary()
   return useMutation({
     mutationFn: async (proposal: ImportProposal) => {
+      // Classes go into the current teaching period (PRD "Semestar"); check before writing.
+      const classes = toSave(proposal.classes ?? []).filter((c) => c.subjectId)
+      const teaching = currentTeachingPeriod(
+        localDay(new Date(), boundary),
+        periodRows.map(toPeriod),
+      )
+      if (classes.length > 0 && !teaching) throw new NoTeachingPeriod()
+
       const periods: PeriodProposal[] = toSave(proposal.periods)
       for (const p of periods) {
         await savePeriod.mutateAsync({
@@ -67,8 +93,34 @@ export function useSaveImport(t: TFunction) {
           if (error) throw error
         }
       }
-      return periods.length + exams.length
+      for (const c of classes) {
+        const times = { start_min: clockToMin(c.start), end_min: clockToMin(c.end) }
+        const { error } = c.existingId
+          ? await supabase
+              .from('timetable_entries')
+              .update({ ...times, location: c.location, note: c.note })
+              .eq('id', c.existingId)
+          : await supabase.from('timetable_entries').insert({
+              id: crypto.randomUUID(),
+              subject_id: c.subjectId,
+              kind: c.kind,
+              weekday: c.weekday,
+              ...times,
+              location: c.location,
+              week_parity: c.week_parity,
+              note: c.note?.slice(0, 200) ?? null,
+              period_id: teaching!.id,
+              valid_from: teaching!.startsOn,
+              valid_to: teaching!.endsOn,
+            })
+        if (error) throw error
+      }
+      return periods.length + exams.length + classes.length
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: subjectsKey(userId) }),
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: subjectsKey(userId) }),
+        queryClient.invalidateQueries({ queryKey: scheduleKey('timetable_entries', userId) }),
+      ]),
   })
 }

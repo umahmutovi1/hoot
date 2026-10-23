@@ -1446,7 +1446,7 @@ Edge funkcije, sve sa strukturiranim JSON izlazom koji se validira Zod šemom pr
 | --- | --- | --- |
 | `parse-toc` | 1–4 slike ili tekst, tip izvora, predmet, postojeće teme | jedinice, stranice, podjedinice, `ai_difficulty`, teme, upozorenja |
 | `parse-questions` | slika ili tekst liste pitanja, postojeće teme i poglavlja | pitanja, teme, prijedlog ispita |
-| `parse-timetable` | slika rasporeda, nazivi predmeta | termini (dan, vrijeme, tip, sala, parnost), veza na predmet |
+| `parse-timetable` | slika rasporeda, nazivi predmeta | termini (dan, vrijeme, tip, sala, parnost), veza na predmet. **Odluka (Etapa 10):** vrsta `timetable` u `parse-document` (isti pipeline i Dokumenti), `ai_task` `parse_timetable` |
 | `parse-document` | tekst (zalijepljen ili tekst iz PDF-a po stranicama), slika ili skenirani PDF; vrsta (`auto` / akademski kalendar / raspored ispita / dokument); predmeti i postojeći ispiti | vrsta i naslov dokumenta, periodi (nastava, ispitni periodi, neradni dani) ili ispiti sa datumom i vezom na predmet, prepis po stranicama kad tekst nije dat. `ai_task`: `parse_academic_calendar`, `parse_exam_schedule` ili `parse_document` |
 | `documents` | odlomci dokumenta (najviše 16 po pozivu) | embedding (`gte-small`) i upis odlomaka, bez LLM poziva |
 | `answer` | pitanje + najrelevantniji odlomci + sažetak stanja | odgovor sa citatima (dokument, stranica) |

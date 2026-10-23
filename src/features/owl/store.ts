@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import type { AiErrorCode, Citation, ImportKind } from '@shared/schemas.ts'
-import type { ExamProposal, PeriodProposal } from '@/lib/import'
+import type { ClassProposal, ExamProposal, PeriodProposal } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
 import type { Json } from '@/types/database'
 
@@ -16,6 +16,8 @@ export interface ImportProposal {
   documentTitle: string
   periods: PeriodProposal[]
   exams: ExamProposal[]
+  /** Timetable classes; missing in proposals kept from before Stage 10. */
+  classes?: ClassProposal[]
   warnings: string[]
   savedCount: number | null
 }

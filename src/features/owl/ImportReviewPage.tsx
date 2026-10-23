@@ -4,11 +4,19 @@ import { ScreenTitle } from '@/components/ScreenTitle'
 import { Switch } from '@/components/Switch'
 import { Button } from '@/components/ui/button'
 import { useSubjects } from '@/features/subjects/api'
-import { assignSubject, toSave, type ExamProposal, type PeriodProposal } from '@/lib/import'
+import { useWeekdayNames } from '@/features/schedule/weekdays'
+import {
+  assignClassSubject,
+  assignSubject,
+  type ClassProposal,
+  type ExamProposal,
+  type PeriodProposal,
+} from '@/lib/import'
 import { existingExams } from './actions'
-import { examLines, periodLines, useDateLabel } from './format'
+import { useOwl } from './useOwl'
+import { classLines, examLines, periodLines, useDateLabel } from './format'
 import { StatusChip } from './ImportCard'
-import { useSaveImport } from './saveImport'
+import { NoTeachingPeriod, saveCount, useSaveImport } from './saveImport'
 import { findProposal, useOwlStore } from './store'
 
 const field =
@@ -24,6 +32,8 @@ export function ImportReviewPage() {
   const subjects = (useSubjects().data ?? []).filter((s) => !s.archived)
   const day = useDateLabel()
   const save = useSaveImport(t)
+  const weekdays = useWeekdayNames('short')
+  const owl = useOwl()
 
   if (!proposal || !id) {
     return (
@@ -35,8 +45,12 @@ export function ImportReviewPage() {
   }
 
   const saved = proposal.savedCount !== null
-  const count =
-    toSave(proposal.periods).length + toSave(proposal.exams).filter((e) => e.subjectId).length
+  const count = saveCount(proposal)
+  const setClass = (key: string, update: (c: ClassProposal) => ClassProposal) =>
+    updateProposal(id, (p) => ({
+      ...p,
+      classes: (p.classes ?? []).map((x) => (x.key === key ? update(x) : x)),
+    }))
   const setPeriod = (key: string, patch: Partial<PeriodProposal>) =>
     updateProposal(id, (p) => ({
       ...p,
@@ -182,6 +196,54 @@ export function ImportReviewPage() {
         </section>
       )}
 
+      {(proposal.classes ?? []).length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="px-1 text-[13px] font-semibold text-ink-muted uppercase">
+            {t('owl.reviewPage.classes')}
+          </h2>
+          {(proposal.classes ?? []).map((c) => {
+            const subject = subjects.find((s) => s.id === c.subjectId)
+            const lines = classLines(t, c, subject?.name, (d) => weekdays[d] ?? '')
+            return (
+              <div key={c.key} className="flex flex-col gap-3 rounded-card glass p-4">
+                <ItemHeader
+                  title={lines.title}
+                  detail={lines.detail}
+                  previous={lines.previous}
+                  status={c.status}
+                  include={c.include}
+                  disabled={saved || c.status === 'unchanged' || !c.subjectId}
+                  onInclude={(include) => setClass(c.key, (x) => ({ ...x, include }))}
+                />
+                {c.note && <span className="text-xs text-ink-muted">{c.note}</span>}
+                {c.status === 'skipped' && !saved && (
+                  <label className="flex flex-col gap-1.5">
+                    <span className="text-xs font-semibold text-ink-muted">
+                      {t('owl.reviewPage.pickSubject')} · {c.subject_name}
+                    </span>
+                    <select
+                      className={field}
+                      value=""
+                      onChange={(ev) =>
+                        ev.target.value &&
+                        setClass(c.key, (x) => assignClassSubject(x, ev.target.value, owl.classes))
+                      }
+                    >
+                      <option value="">{t('owl.reviewPage.skipSubject')}</option>
+                      {subjects.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+              </div>
+            )
+          })}
+        </section>
+      )}
+
       {!saved && (
         <div className="fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-30 flex justify-center px-5">
           <Button
@@ -195,7 +257,11 @@ export function ImportReviewPage() {
           </Button>
         </div>
       )}
-      {save.isError && <p className="text-sm text-danger">{t('owl.error.failed')}</p>}
+      {save.isError && (
+        <p className="text-sm text-danger">
+          {t(save.error instanceof NoTeachingPeriod ? 'owl.noTeachingPeriod' : 'owl.error.failed')}
+        </p>
+      )}
     </div>
   )
 }

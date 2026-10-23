@@ -115,7 +115,7 @@ const normalize = (s: string) =>
 
 /** The model's subject id when it is one of ours, else the closest name (fuse.js). */
 export function matchSubject(
-  exam: Pick<ParsedExam, 'subject_id' | 'subject_name'>,
+  exam: { subject_id: string | null; subject_name: string },
   subjects: readonly ImportSubject[],
 ): string | null {
   if (exam.subject_id && subjects.some((s) => s.id === exam.subject_id)) return exam.subject_id
@@ -222,4 +222,128 @@ export function toSave<T extends { include: boolean; status: ProposalStatus }>(
   items: readonly T[],
 ) {
   return items.filter((x) => x.include && (x.status === 'new' || x.status === 'changed'))
+}
+
+// ------------------------------------------------------------------ class timetable
+
+export type ClassKind = 'lecture' | 'exercise' | 'lab' | 'other'
+
+export interface ParsedClass {
+  subject_name: string
+  subject_id: string | null
+  kind: ClassKind
+  /** 0 = Monday */
+  weekday: number
+  start: string
+  end: string
+  location: string | null
+  week_parity: 'odd' | 'even' | null
+  note: string | null
+}
+
+/** A class already in the timetable of the period the import goes to. */
+export interface ExistingClass {
+  id: string
+  subjectId: string | null
+  kind: ClassKind
+  weekday: number
+  startMin: number
+  endMin: number
+  location: string | null
+  weekParity: 'odd' | 'even' | null
+}
+
+export interface ClassProposal extends ParsedClass {
+  key: string
+  status: ProposalStatus
+  include: boolean
+  subjectId: string | null
+  existingId: string | null
+  previous: { start: string; end: string; location: string | null } | null
+}
+
+export const clockToMin = (hhmm: string) => {
+  const [h, m] = hhmm.split(':').map(Number)
+  return h! * 60 + m!
+}
+export const minToClock = (min: number) =>
+  `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
+
+/**
+ * Classes from a timetable photo or text (PRD "Raspored nastave", Stage 10): the subject is the
+ * model's id or the closest name (fuse.js); a class of the same subject, kind, day and week
+ * parity that already exists is unchanged or changed (new time or room), the rest is new. A class
+ * whose subject is not found waits for one to be picked.
+ */
+export function proposeClasses(
+  parsed: readonly ParsedClass[],
+  subjects: readonly ImportSubject[],
+  existing: readonly ExistingClass[],
+): ClassProposal[] {
+  const used = new Set<string>()
+  return parsed.map((c, i) => {
+    const key = `c${i}`
+    const subjectId = matchSubject(c, subjects)
+    if (!subjectId)
+      return {
+        ...c,
+        key,
+        status: 'skipped',
+        include: false,
+        subjectId: null,
+        existingId: null,
+        previous: null,
+      }
+    const start = clockToMin(c.start)
+    const end = clockToMin(c.end)
+    const same = existing.filter(
+      (e) =>
+        !used.has(e.id) &&
+        e.subjectId === subjectId &&
+        e.kind === c.kind &&
+        e.weekday === c.weekday &&
+        e.weekParity === c.week_parity,
+    )
+    // The closest start among the subject's classes of that kind on that day.
+    const match = [...same].sort(
+      (a, b) => Math.abs(a.startMin - start) - Math.abs(b.startMin - start),
+    )[0]
+    if (match) used.add(match.id)
+    const unchanged =
+      match &&
+      match.startMin === start &&
+      match.endMin === end &&
+      (c.location === null || (match.location ?? '') === c.location)
+    const status: ProposalStatus = !match ? 'new' : unchanged ? 'unchanged' : 'changed'
+    return {
+      ...c,
+      key,
+      status,
+      include: status !== 'unchanged',
+      subjectId,
+      existingId: match?.id ?? null,
+      previous:
+        match && !unchanged
+          ? {
+              start: minToClock(match.startMin),
+              end: minToClock(match.endMin),
+              location: match.location,
+            }
+          : null,
+    }
+  })
+}
+
+/** Re-evaluates one class after the user picked its subject in the full review. */
+export function assignClassSubject(
+  proposal: ClassProposal,
+  subjectId: string,
+  existing: readonly ExistingClass[],
+): ClassProposal {
+  const [updated] = proposeClasses(
+    [{ ...proposal, subject_id: subjectId }],
+    [{ id: subjectId, name: proposal.subject_name }],
+    existing,
+  )
+  return { ...updated!, key: proposal.key }
 }

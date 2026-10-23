@@ -1174,7 +1174,9 @@
     "recapTitle": "Short review after a lecture",
     "recapHint": "15 min the same day, the first review step",
     "delete": "Delete class",
-    "confirmDelete": "Delete for sure?"
+    "confirmDelete": "Delete for sure?",
+    "photoTitle": "Photograph the timetable",
+    "photoHint": "The AI finds the classes; you review them before saving"
   },
   "availability": {
     "title": "Availability",
@@ -1399,7 +1401,8 @@
         "auto": "Guess",
         "academic_calendar": "Academic calendar",
         "exam_schedule": "Exam schedule",
-        "document": "Rules, syllabus, notice"
+        "document": "Rules, syllabus, notice",
+        "timetable": "Class timetable"
       },
       "textLabel": "Text",
       "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
@@ -1479,7 +1482,8 @@
       "from": "From",
       "to": "To",
       "warnings": "Notes from the assistant",
-      "missing": "This proposal no longer exists."
+      "missing": "This proposal no longer exists.",
+      "classes": "Class timetable"
     },
     "documents": {
       "title": "Documents",
@@ -1516,7 +1520,8 @@
       "onTrack": "on track",
       "short": "{{time}} short",
       "left": "~{{time}} left"
-    }
+    },
+    "noTeachingPeriod": "Classes go into a teaching period. Add the semester to the academic calendar first."
   },
   "offline": {
     "title": "You're offline",
