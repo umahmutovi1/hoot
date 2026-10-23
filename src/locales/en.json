@@ -815,8 +815,6 @@
         "photo": "Photograph contents",
         "text": "Type"
       },
-      "photoSoon": "Photo import is coming soon",
-      "photoSoonBody": "For now, type or paste the contents, one line per unit.",
       "outline": "Contents",
       "placeholder": {
         "pages": "One chapter per line, e.g.\n1 Introduction 1\n2 LTI systems 74\n2.1 Convolution 75",
@@ -886,7 +884,8 @@
       "archiving": "Archived ({{count}})",
       "archivingHint": "Progress and notes stay; restore them from “Archived units”.",
       "unknownAmount": "size unknown",
-      "saveAndSplit": "Save and split by exam"
+      "saveAndSplit": "Save and split by exam",
+      "estimateAi": "Estimate ~{{time}} · the AI rated difficulty, you can change it"
     },
     "detail": {
       "editContent": "Edit contents",
@@ -909,6 +908,23 @@
     "rough": {
       "label": "Rough estimate",
       "hint": "Replace it with real content: adding a source removes this one."
+    },
+    "import": {
+      "camera": "Take a photo of the contents",
+      "gallery": "Choose from gallery",
+      "photosHint": "Several pages are fine, up to 4. A PDF works too.",
+      "photos_one": "{{count}} page of contents",
+      "photos_other": "{{count}} pages of contents",
+      "removePhoto": "Remove photo {{n}}",
+      "deletedAfter": "Photos are deleted right after reading.",
+      "extract": "Extract chapters",
+      "extractQuestions": "Extract questions",
+      "reading": "Reading…",
+      "noAi": "AI import is not available right now. You can type the contents.",
+      "fromText": "Convert with AI",
+      "rate": "Estimate difficulty with AI",
+      "rating": "Estimating…",
+      "removeTopic": "Remove topic {{name}}"
     }
   },
   "time": {
@@ -1998,5 +2014,21 @@
   "sessionEnd": {
     "saveAndTest": "Save and test yourself",
     "saveOnly": "Just save"
+  },
+  "links": {
+    "title": "Links to chapters",
+    "lead": "The AI suggested a chapter for each question. Skip what is wrong — your choice is never overwritten.",
+    "searching": "Looking for the chapters of the questions…",
+    "none": "No suggestions: questions link to chapters through topics, and you link them by hand on a question's screen.",
+    "suggested": "Suggestion",
+    "skipped": "Skipping",
+    "skip": "Skip",
+    "restore": "Restore",
+    "skipAria": "Skip the link for {{label}}",
+    "restoreAria": "Restore the link for {{label}}",
+    "save_one": "Save {{count}} link",
+    "save_other": "Save {{count}} links",
+    "later": "Later",
+    "continue": "Continue"
   }
 }

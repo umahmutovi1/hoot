@@ -72,6 +72,7 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
         const sourceTo = `${subjectTo}/sources/${fourth}`
         out.push({ label: names.source(fourth) ?? t('crumbs.source'), to: sourceTo })
         if (fifth === 'edit') out.push({ label: t('crumbs.edit'), to: pathname })
+        if (fifth === 'links') out.push({ label: t('links.title'), to: pathname })
         if (fifth === 'units' && sixth)
           out.push({ label: names.unit(sixth) ?? t('crumbs.unit'), to: pathname })
       }
