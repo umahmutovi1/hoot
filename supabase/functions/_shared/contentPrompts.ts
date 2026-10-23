@@ -22,7 +22,9 @@ const KIND_NAME = {
 const TOPIC_RULES = `Topics: give each unit 1-3 short topics (a few words, the concept it teaches),
 in the language of the material. A topic is a specific concept ("Konvolucija", "Parsevalova
 teorema"), never the subject's name or a broad area that would fit most units. Topics connect
-chapters with exam questions, so the same concept must get the same topic name everywhere. When an existing topic fits, copy its name exactly;
+chapters with exam questions, so the same concept must get the same topic name everywhere.
+A whole subject has roughly 10-30 topics: sub-units mostly reuse their chapter's topics and add
+one of their own only for a concept the exam could ask about by name. When an existing topic fits, copy its name exactly;
 create a new topic only for a concept none of them covers.`
 
 function topicLines(topics: string[]): string[] {

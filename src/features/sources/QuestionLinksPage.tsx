@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { goBack } from '@/app/navigation'
 import { ScreenTitle } from '@/components/ScreenTitle'
 import { SplashScreen } from '@/components/SplashScreen'
 import { Button } from '@/components/ui/button'
@@ -141,12 +140,7 @@ function Review({
           {t('links.save', { count: accepted })}
         </Button>
       )}
-      <Button
-        type="button"
-        variant="link"
-        className="h-11 text-brand"
-        onClick={() => (rows.length > 0 ? done() : goBack(navigate, next))}
-      >
+      <Button type="button" variant="link" className="h-11 text-brand" onClick={done}>
         {t(rows.length > 0 ? 'links.later' : 'links.continue')}
       </Button>
     </div>

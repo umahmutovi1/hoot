@@ -30,6 +30,9 @@ export function useLinkSuggestions(questionIds: string[] | null) {
     retry: false,
     queryFn: async (): Promise<QuestionLinkSuggestion[]> => {
       if (!questionIds || questionIds.length === 0) return []
+      await saved(questionIds)
+      // A run may have started before the questions were written; the second one takes them.
+      await embedPending()
       await embedPending()
       const out: QuestionLinkSuggestion[] = []
       for (let i = 0; i < questionIds.length; i += MAX_LINK_QUESTIONS) {
@@ -42,6 +45,18 @@ export function useLinkSuggestions(questionIds: string[] | null) {
       return out
     },
   })
+}
+
+/** The import saves in the background while this screen opens: wait until the rows exist. */
+async function saved(ids: string[]) {
+  for (let i = 0; i < 20; i++) {
+    const { count } = await supabase
+      .from('units')
+      .select('id', { count: 'exact', head: true })
+      .in('id', ids)
+    if (count === ids.length) return
+    await new Promise((r) => setTimeout(r, 750))
+  }
 }
 
 export interface LinkChoice {
