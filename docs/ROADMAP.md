@@ -241,7 +241,9 @@ Specifikacija: PRD „Onboarding“, „Povezani kalendari i integracije“, „
 Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 
 - [ ] Anthropic: kartica, workspace ključ, `LLM_PROVIDER=anthropic`, prompt caching za sistemske promptove (ako je kartica dodana)
+  - Odluka (početak Etape 10): Anthropic nalog još nema karticu, pa sve ide kroz Gemini (`LLM_PROVIDER=gemini`); stavka ostaje otvorena i ne blokira etapu
 - [ ] Embeddings (`gte-small`) za jedinice, bilješke, kartice, pitanja i teme; prijedlog veza pitanje ↔ poglavlje i dedupe tema bez LLM poziva
+  - Migracije `0020_ai_content.sql` + `0021_embedding_tables.sql`: vektori u `unit_embeddings`, `card_embeddings`, `topic_embeddings` (triger briše zastarjeli vektor; ne u samim tabelama, da ih `select('*')` ne vuče), `question_links` (direktna veza, odluka Etape 10), `timetable_entries.note`, RPC `question_candidates` i `match_notes`; prijedlog obima za poglavlja je pravilo bez LLM-a (PRD „Obim ispita“)
 - [ ] `evals/`: fiksne slike sadržaja i rasporeda nastave, provjera Zod šeme i očekivanog broja jedinica
 - [ ] `parse-toc` → DodajIzvor → Parsiranje (pregled: novo / izmijenjeno / arhivira se); slike sadržaja se brišu nakon parsiranja; zamjena privremenog izvora (gruba veličina) pravim sadržajem
 - [ ] Merge po `label` + testovi (merge iz Etape 3 se koristi i za AI uvoz)
