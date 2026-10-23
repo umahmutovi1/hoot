@@ -250,7 +250,7 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - [x] Ručni unos: dugme „Procijeni težinu AI-jem“ u pregledu
 - [x] `parse-questions`, teme pri uvozu (postojeće teme u promptu, ručne se ne prepisuju)
   - Teme se dedupliraju bez LLM-a (isto ime, pa gte-small sličnost ≥ 0.93); poslije uvoza pitanja ekran „Veze s poglavljima“ (AI prijedlog → pregled → Spasi; „Preskoči“ ostaje kao odbijena veza)
-- [ ] ObimIspita: AI prijedlog, ručna izmjena zaključana
+- [x] ObimIspita: AI prijedlog, ručna izmjena zaključana (prijedlog je pravilo bez LLM-a: poglavlja po redu i minutama po parcijalama, pitanja prate povezana poglavlja; samo za jedinice bez reda)
 - [ ] `parse-timetable` + „Uslikaj raspored“ i vrsta „Raspored nastave“ u „Daj sovi dokument“ (tekst ili slika sa „pon: od 9 do 10:30 (farma)“, napomene uz termin; uparivanje predmeta preko `fuse.js`), `propose-answer`
 - [ ] `recall-questions` (`count` 3 za recall gate, 5–10 za kviz): AI pitanja iz bilješki, slika stranice (slika se briše), opće znanje (oznaka „može se razlikovati od predavanja“, računa se samo uz još jedan izvor); kviz sa Jedinice i iz sesije, ocjene u `review_logs` + FSRS, „Spasi kao karticu“. Zaseban `quiz` alat ne postoji (PRD „Testiranje bez sadržaja literature“)
 - [ ] Sova dobija ostale alate: pretraga bilješki, recall, raspored nastave i sadržaj kroz isti razgovor (osnova je iz Etape 6); uvoz iz razgovora („ubaci mi ovo“ za već dat dokument) kao kartica za pregled. Do tad sova iz razgovora ništa ne mijenja i to kaže (odluka iz Etape 6)

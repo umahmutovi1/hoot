@@ -19,7 +19,9 @@ import {
   type ScopeRow,
 } from '@/lib/progress/scope'
 import { cn } from '@/lib/utils'
+import { useQuestionLinks, useTopicLinks } from '@/features/plan/api'
 import { useSaveScope, useScope, useSources } from './api'
+import { scopeSuggestion } from './scopeSuggestion'
 import { formatDuration, pagesLabel } from './format'
 import {
   asProgress,
@@ -32,6 +34,7 @@ import {
   type SourceMaterial,
 } from './model'
 import { goBack } from '@/app/navigation'
+import type { DirectLink, TopicLink } from '@/lib/questions/links'
 
 /** ObimIspita: which top-level unit of each source goes into which exam. */
 export function ExamScopePage() {
@@ -39,13 +42,18 @@ export function ExamScopePage() {
   const { data: subject, isPending } = useSubject(id)
   const { data: sources, isPending: sourcesPending } = useSources(id)
   const { data: scope, isPending: scopePending } = useScope(id)
-  if (isPending || sourcesPending || scopePending) return <SplashScreen />
+  const { data: topicLinks } = useTopicLinks()
+  const { data: questionLinks } = useQuestionLinks()
+  if (isPending || sourcesPending || scopePending || !topicLinks || !questionLinks)
+    return <SplashScreen />
   if (!subject) return <Navigate to="/subjects" replace />
   return (
     <ScopeEditor
       subject={subject}
       materials={(sources ?? []).map(materialOf)}
       stored={scope ?? []}
+      topicLinks={topicLinks}
+      questionLinks={questionLinks}
     />
   )
 }
@@ -62,10 +70,14 @@ function ScopeEditor({
   subject,
   materials,
   stored,
+  topicLinks,
+  questionLinks,
 }: {
   subject: SubjectWithAssessments
   materials: SourceMaterial[]
   stored: AssessmentUnit[]
+  topicLinks: TopicLink[]
+  questionLinks: DirectLink[]
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -90,10 +102,17 @@ function ScopeEditor({
   const assignedBy = new Map(stored.map((r) => [r.unit_id, r.assigned_by]))
   const [draft, setDraft] = useState<Map<string, ScopeChoice>>(new Map())
 
-  const choice = (unitId: string) => draft.get(unitId) ?? choiceOf(unitId, scopeExams, storedRows)
+  // AI prijedlog (a rule, no LLM): only for units without rows; the user's choice is never replaced.
+  const suggested = useMemo(
+    () => scopeSuggestion(materials, exams, stored, topicLinks, questionLinks),
+    [materials, exams, stored, topicLinks, questionLinks],
+  )
+  const pending = [...suggested].filter(([unitId]) => !draft.has(unitId))
+  const choice = (unitId: string) =>
+    draft.get(unitId) ?? suggested.get(unitId) ?? choiceOf(unitId, scopeExams, storedRows)
   const rows: ScopeRow[] = [
     ...storedRows.filter((r) => !draft.has(r.unitId)),
-    ...[...draft].flatMap(([unitId, c]) => rowsForChoice(unitId, scopeExams, c)),
+    ...[...draft, ...pending].flatMap(([unitId, c]) => rowsForChoice(unitId, scopeExams, c)),
   ]
 
   const segments: Segment[] =
@@ -201,7 +220,9 @@ function ScopeEditor({
           <div className="flex flex-col rounded-card glass p-1.5">
             {top.map((u, i) => {
               const c = choice(u.id)
-              const by = draft.has(u.id) ? 'user' : assignedBy.get(u.id)
+              const by = draft.has(u.id)
+                ? 'user'
+                : (assignedBy.get(u.id) ?? (suggested.has(u.id) ? 'ai' : undefined))
               return (
                 <div
                   key={u.id}
@@ -260,12 +281,17 @@ function ScopeEditor({
         size="pill"
         className="mt-2 btn-primary"
         onClick={() => {
-          const unitIds = [...draft.keys()]
+          const unitIds = [...draft.keys(), ...pending.map(([id]) => id)]
           if (unitIds.length > 0) {
             save.mutate({
               unitIds,
               examIds: exams.map((e) => e.id),
-              rows: unitIds.flatMap((id) => rowsForChoice(id, scopeExams, draft.get(id)!)),
+              rows: [
+                ...[...draft].flatMap(([id, c]) => rowsForChoice(id, scopeExams, c)),
+                ...pending.flatMap(([id, c]) =>
+                  rowsForChoice(id, scopeExams, c).map((r) => ({ ...r, by: 'ai' as const })),
+                ),
+              ],
             })
           }
           back()
