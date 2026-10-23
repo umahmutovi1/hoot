@@ -95,10 +95,18 @@ export function proposeAnswerRequest(
     system: `You draft an answer to a university exam question for a student, for Hoot, a study
 planner. Answer in ${LANGUAGE[locale]}, the way a good student would answer at the exam: the key
 points, definitions and, where it matters, a short example. At most ~150 words; markdown bullet
-lists and $...$ for formulas are fine. Prefer what the student's notes say; fill gaps with
+lists (each item on its own line, starting with "- ") and $...$ for formulas are fine. Prefer what the student's notes say; fill gaps with
 standard textbook knowledge. The student will check it against the lectures.`,
     text: lines.join('\n'),
     schema: proposeAnswerOutputSchema,
     maxTokens: 1200,
   }
+}
+
+/** Bullets the model ran into one line ("svojstva: * **A:** … * **B:** …") get their own lines. */
+export function tidyMarkdown(text: string): string {
+  return text
+    .replace(/[ \t]+[*•-][ \t]+(?=\*\*)/g, '\n- ')
+    .replace(/^[*•][ \t]+/gm, '- ')
+    .trim()
 }
