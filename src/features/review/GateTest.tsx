@@ -61,6 +61,8 @@ export function GateTest({
 }) {
   const { t } = useTranslation()
   const count = quiz ? QUIZ_QUESTIONS : GATE_QUESTIONS
+  // An exam question is tested by itself; AI questions are about chapters.
+  const isQuestionTest = target.leaves.length === 1 && target.leaves[0]!.kind === 'question'
   const hasNotes = target.leaves.some((l) => l.notes?.trim())
   const [asked, setAsked] = useState<Set<AiSource>>(
     () => new Set(quiz && aiReady ? [hasNotes ? 'notes' : 'general'] : []),
@@ -86,7 +88,7 @@ export function GateTest({
       : s === 'notes'
         ? hasNotes
         : AI_SOURCES.has(s)
-          ? aiReady || items[s as 'general'].length > 0
+          ? !isQuestionTest && (aiReady || items[s as 'general'].length > 0)
           : items[s as 'card'].length > 0,
   )
   const [tab, setTab] = useState<'questions' | 'blurt'>(
@@ -101,7 +103,7 @@ export function GateTest({
     available.length === 0 ? Date.now() : null,
   )
   const [compare, setCompare] = useState(false)
-  const isQuestion = target.leaves.length === 1 && target.leaves[0]!.kind === 'question'
+  const isQuestion = isQuestionTest
 
   const list = source && source !== 'outline' ? items[source] : []
   // An AI source shows its "ask" panel until its questions are there.
