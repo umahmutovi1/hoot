@@ -104,6 +104,11 @@ describe('parseIcs · Moodle', () => {
     expect(events.map((e) => e.title)).toEqual(['Kviz 1 otvoren', 'Zadaća 2 se predaje'])
     expect(iso(events[1]!)).toEqual(['2026-11-04T22:59:00.000Z', '2026-11-04T22:59:00.000Z'])
   })
+
+  it('keeps the course from CATEGORIES', () => {
+    const events = parseIcs(fixture('moodle'), options)
+    expect(events.map((e) => e.category)).toEqual(['Baze podataka', 'Signali i sistemi'])
+  })
 })
 
 describe('parseIcs · horizon and errors', () => {

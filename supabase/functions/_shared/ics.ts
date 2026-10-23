@@ -12,6 +12,8 @@ export interface IcsEvent {
   allDay: boolean
   title: string | null
   location: string | null
+  /** First CATEGORIES value; Moodle puts the course name there. */
+  category: string | null
 }
 
 export interface IcsOptions {
@@ -124,6 +126,7 @@ function toEvent(
     allDay,
     title: text(item, 'summary'),
     location: text(item, 'location'),
+    category: text(item, 'categories'),
   }
 }
 

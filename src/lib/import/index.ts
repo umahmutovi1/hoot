@@ -347,3 +347,79 @@ export function assignClassSubject(
   )
   return { ...updated!, key: proposal.key }
 }
+
+// ------------------------------------------------------------------ deadlines from a calendar (Moodle)
+
+export interface DeadlineEvent {
+  id: string
+  title: string | null
+  /** The course (ICS CATEGORIES). */
+  category: string | null
+  /** Due instant, ISO. */
+  startsAt: string
+  deadlineId: string | null
+  ignored: boolean
+}
+
+export interface ExistingDeadline {
+  id: string
+  dueAt: string
+}
+
+export interface DeadlineProposal {
+  key: string
+  eventId: string
+  title: string
+  dueAt: string
+  category: string | null
+  status: 'new' | 'changed'
+  /** false = "Preskačem": the event is ignored from now on. */
+  include: boolean
+  subjectId: string | null
+  deadlineId: string | null
+  previousDueAt: string | null
+}
+
+/**
+ * Kartica "N novih rokova iz Moodlea" (PRD "Povezani kalendari", vrsta "Rokovi"): upcoming events
+ * of deadline feeds that are not imported yet (novo) or whose imported deadline has another date
+ * now (izmijenjeno). Skipped events (`ignored`) never come back. Subject: the course name, else
+ * the title (fuse.js); no match leaves the deadline without a subject until one is picked.
+ */
+export function proposeDeadlines(
+  events: readonly DeadlineEvent[],
+  subjects: readonly ImportSubject[],
+  deadlines: readonly ExistingDeadline[],
+  now: Date,
+): DeadlineProposal[] {
+  const out: DeadlineProposal[] = []
+  const seen = new Set<string>()
+  for (const e of [...events].sort((a, b) => a.startsAt.localeCompare(b.startsAt))) {
+    if (e.ignored || new Date(e.startsAt).getTime() < now.getTime()) continue
+    const linked = e.deadlineId ? deadlines.find((d) => d.id === e.deadlineId) : undefined
+    if (linked && new Date(linked.dueAt).getTime() === new Date(e.startsAt).getTime()) continue
+    // A recurring series is one deadline per date; the same imported deadline is offered once.
+    if (linked && seen.has(linked.id)) continue
+    if (linked) seen.add(linked.id)
+    const title = e.title?.trim() || e.category?.trim() || ''
+    if (!title) continue
+    const plain = normalize(title)
+    const subjectId =
+      matchSubject({ subject_id: null, subject_name: e.category ?? '' }, subjects) ??
+      subjects.find((s) => plain.includes(normalize(s.name)))?.id ??
+      matchSubject({ subject_id: null, subject_name: title }, subjects)
+    out.push({
+      key: e.id,
+      eventId: e.id,
+      title,
+      dueAt: e.startsAt,
+      category: e.category,
+      status: linked ? 'changed' : 'new',
+      include: true,
+      subjectId,
+      deadlineId: linked?.id ?? null,
+      previousDueAt: linked?.dueAt ?? null,
+    })
+  }
+  return out
+}
