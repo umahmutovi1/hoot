@@ -1,4 +1,5 @@
 import { addDays, localDay, wallClock, type DayBoundary, type LocalDate } from '@/lib/day'
+import { questionsByChapter } from '@/lib/questions/links'
 import { project, retakeStatus } from '@/lib/grades'
 import {
   coveredLeaves,
@@ -70,6 +71,8 @@ export interface PlanInputs {
   scope: AssessmentUnit[]
   /** unit ↔ topic links of every subject. */
   unitTopics: { unit_id: string; topic_id: string }[]
+  /** Direct exam question ↔ chapter links (`linked = false` = rejected). */
+  questionLinks: { question_id: string; unit_id: string; linked: boolean }[]
   cards: CardReview[]
   logs: LectureLogRow[]
   /** Blocks from 14 days ago on. */
@@ -228,10 +231,6 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
       )
       .map((s, i) => [s.id, i]),
   )
-  const topicsOf = new Map<string, string[]>()
-  for (const l of input.unitTopics)
-    topicsOf.set(l.unit_id, [...(topicsOf.get(l.unit_id) ?? []), l.topic_id])
-
   // A unit is due when it or one of its cards is due.
   const cardDue = new Map<string, LocalDate>()
   for (const c of input.cards) {
@@ -310,18 +309,9 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
       })
     }
   }
-  // Exam questions linked to a chapter through topics.
-  const questionsByTopic = new Map<string, number>()
-  for (const u of units)
-    if (u.kind === 'question')
-      for (const t of topicsOf.get(u.id) ?? [])
-        questionsByTopic.set(t, (questionsByTopic.get(t) ?? 0) + 1)
-  for (const u of units)
-    if (u.kind === 'chapter')
-      u.questionCount = (topicsOf.get(u.id) ?? []).reduce(
-        (s, t) => s + (questionsByTopic.get(t) ?? 0),
-        0,
-      )
+  // Exam questions linked to a chapter through topics or directly.
+  const linked = questionsByChapter(units, input.unitTopics, input.questionLinks)
+  for (const u of units) if (u.kind === 'chapter') u.questionCount = linked.get(u.id)?.size ?? 0
 
   // Goals.
   const goals: PlanGoal[] = []

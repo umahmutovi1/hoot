@@ -21,6 +21,8 @@ export const planRunKey = (userId: string | undefined) => ['plan', userId, 'run'
 const allSourcesKey = (userId: string | undefined) => ['plan', userId, 'sources'] as const
 const allScopeKey = (userId: string | undefined) => ['plan', userId, 'scope'] as const
 const topicLinksKey = (userId: string | undefined) => ['plan', userId, 'topics'] as const
+export const questionLinksKey = (userId: string | undefined) =>
+  ['plan', userId, 'question-links'] as const
 export const cardReviewsKey = (userId: string | undefined) => ['plan', userId, 'cards'] as const
 
 /** History window for ρ (14 days) plus a day of slack around the day boundary. */
@@ -66,6 +68,22 @@ export function useTopicLinks() {
     enabled: Boolean(userId),
     queryFn: async () => {
       const { data, error } = await supabase.from('unit_topics').select('unit_id, topic_id')
+      if (error) throw error
+      return data
+    },
+  })
+}
+
+/** Direct exam question ↔ chapter links (`question_links`), including rejected AI suggestions. */
+export function useQuestionLinks() {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: questionLinksKey(userId),
+    enabled: Boolean(userId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('question_links')
+        .select('question_id, unit_id, linked, assigned_by')
       if (error) throw error
       return data
     },
@@ -140,6 +158,7 @@ export function invalidatePlanInputs(queryClient: QueryClient, userId: string | 
     queryClient.invalidateQueries({ queryKey: allSourcesKey(userId) }),
     queryClient.invalidateQueries({ queryKey: allScopeKey(userId) }),
     queryClient.invalidateQueries({ queryKey: topicLinksKey(userId) }),
+    queryClient.invalidateQueries({ queryKey: questionLinksKey(userId) }),
     queryClient.invalidateQueries({ queryKey: cardReviewsKey(userId) }),
   ])
 }
@@ -152,6 +171,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
   const sources = useAllSources().data
   const scope = useAllScope().data
   const unitTopics = useTopicLinks().data
+  const questionLinks = useQuestionLinks().data
   const cards = useCardReviews().data
   const blocks = usePlanBlocks(boundary).data
   const sessionList = useSessions().data
@@ -176,6 +196,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       !sources ||
       !scope ||
       !unitTopics ||
+      !questionLinks ||
       !cards ||
       !blocks ||
       !sessionList
@@ -197,6 +218,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       sources,
       scope,
       unitTopics,
+      questionLinks,
       cards,
       logs: schedule.logRows,
       blocks,
@@ -211,6 +233,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
     sources,
     scope,
     unitTopics,
+    questionLinks,
     cards,
     blocks,
     sessionList,
