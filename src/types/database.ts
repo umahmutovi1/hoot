@@ -1026,7 +1026,6 @@ export type Database = {
           review_cap_pct: number
           session_presets: Json
           sleep_min: number[] | null
-          srs_multiplier: number
           timer_mode: string
           timezone: string
           updated_at: string
@@ -1059,7 +1058,6 @@ export type Database = {
           review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
-          srs_multiplier?: number
           timer_mode?: string
           timezone?: string
           updated_at?: string
@@ -1092,7 +1090,6 @@ export type Database = {
           review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
-          srs_multiplier?: number
           timer_mode?: string
           timezone?: string
           updated_at?: string
@@ -1714,9 +1711,6 @@ export type Database = {
           position: number
           review_streak: number
           source_id: string
-          srs_ease: number
-          srs_interval_days: number | null
-          srs_success_count: number
           title: string
           updated_at: string
           user_difficulty: number | null
@@ -1750,9 +1744,6 @@ export type Database = {
           position: number
           review_streak?: number
           source_id: string
-          srs_ease?: number
-          srs_interval_days?: number | null
-          srs_success_count?: number
           title: string
           updated_at?: string
           user_difficulty?: number | null
@@ -1786,9 +1777,6 @@ export type Database = {
           position?: number
           review_streak?: number
           source_id?: string
-          srs_ease?: number
-          srs_interval_days?: number | null
-          srs_success_count?: number
           title?: string
           updated_at?: string
           user_difficulty?: number | null

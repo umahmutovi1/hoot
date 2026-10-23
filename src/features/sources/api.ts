@@ -11,7 +11,6 @@ import {
   NO_MEMORY,
   type AssessmentUnit,
   type Card,
-  type LegacySrs,
   type SourceWithUnits,
   type TopicWithUnits,
   type Unit,
@@ -226,7 +225,7 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     ...NO_MEMORY,
     next_review_on: null,
     archived_at: null,
-  } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title' | LegacySrs>
+  } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title'>
 }
 
 export type UnitPatch = Pick<
