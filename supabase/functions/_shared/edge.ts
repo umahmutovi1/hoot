@@ -4,7 +4,9 @@ import { createClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { corsHeaders, json } from './cors.ts'
 import { DAILY_AI_LIMIT, getProvider, LlmError } from './llm.ts'
-import type { LlmDeps, LlmEnv, LlmProvider, PromptCacheStore } from './llm.ts'
+import type { LlmDeps, LlmEnv, LlmFile, LlmProvider, PromptCacheStore } from './llm.ts'
+import { toBase64 } from './prompts.ts'
+import type { UploadedFile } from './schemas.ts'
 
 export interface EdgeContext {
   userId: string
@@ -41,6 +43,7 @@ export function serve(env: LlmEnv, handler: EdgeHandler) {
     try {
       return await handler(req, { userId: data.user.id, db, admin, env })
     } catch (err) {
+      if (err instanceof BadRequest) return json({ error: 'bad_request' }, 400)
       if (err instanceof LlmError) {
         const status =
           err.code === 'rate_limited' || err.code === 'quota_exhausted'
@@ -113,5 +116,44 @@ export async function readJson(req: Request): Promise<unknown> {
     return await req.json()
   } catch {
     return null
+  }
+}
+
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024
+
+export class BadRequest extends Error {}
+
+/**
+ * Photos sent for one AI call (table of contents, question list, timetable, a page for recall
+ * questions): read from the caller's own `<user_id>/<folder>/` and deleted when the call is done,
+ * whatever its result (PRD: content images are not kept).
+ */
+export async function withUploads<T>(
+  ctx: EdgeContext,
+  files: UploadedFile[],
+  folder: string,
+  run: (files: LlmFile[]) => Promise<T>,
+): Promise<T> {
+  const prefix = `${ctx.userId}/${folder}/`
+  if (files.some((f) => !f.path.startsWith(prefix) || f.path.includes('..'))) {
+    throw new BadRequest('path')
+  }
+  try {
+    const out: LlmFile[] = []
+    for (const f of files) {
+      const { data, error } = await ctx.db.storage.from('uploads').download(f.path)
+      if (error || !data) throw new BadRequest('missing file')
+      if (data.size > MAX_UPLOAD_BYTES) throw new BadRequest('too large')
+      out.push({
+        mediaType: f.media_type,
+        base64: toBase64(new Uint8Array(await data.arrayBuffer())),
+      })
+    }
+    return await run(out)
+  } finally {
+    if (files.length > 0) {
+      const { error } = await ctx.db.storage.from('uploads').remove(files.map((f) => f.path))
+      if (error) console.error('upload cleanup failed', error.message)
+    }
   }
 }

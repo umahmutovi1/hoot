@@ -8,11 +8,14 @@ import {
   calendarParseSchema,
   documentParseSchema,
   examScheduleParseSchema,
+  linkOutputSchema,
   MAX_CUSTOM_PRESETS,
   MAX_DOCUMENT_CHARS,
   parseDocumentRequestSchema,
+  questionsParseSchema,
   sessionPresetSchema,
   sessionPresetsSchema,
+  tocParseSchema,
 } from './schemas.ts'
 
 const outputSchemas = {
@@ -21,6 +24,9 @@ const outputSchemas = {
   documentParseSchema,
   autoParseSchema,
   answerOutputSchema,
+  tocParseSchema,
+  questionsParseSchema,
+  linkOutputSchema,
 }
 
 /** Every object key in a JSON schema, to check structured-output limits. */
@@ -38,6 +44,8 @@ describe('structured output schemas', () => {
       const json = toJsonSchema(schema)
       walk(json, (n) => {
         expect(n).not.toHaveProperty('$ref')
+        expect(n).not.toHaveProperty('maxLength')
+        expect(n).not.toHaveProperty('maxItems')
         if (n.type === 'object' && n.properties) {
           expect(new Set(n.required as string[])).toEqual(new Set(Object.keys(n.properties)))
         }
