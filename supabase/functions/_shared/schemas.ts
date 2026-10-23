@@ -9,7 +9,13 @@ export const LOCALES = ['bs', 'en'] as const
 export const localeSchema = z.enum(LOCALES)
 
 /** What the user says is inside an uploaded document; `auto` lets the owl guess. */
-export const IMPORT_KINDS = ['auto', 'academic_calendar', 'exam_schedule', 'document'] as const
+export const IMPORT_KINDS = [
+  'auto',
+  'academic_calendar',
+  'exam_schedule',
+  'timetable',
+  'document',
+] as const
 export const importKindSchema = z.enum(IMPORT_KINDS)
 export type ImportKind = z.infer<typeof importKindSchema>
 
@@ -65,6 +71,28 @@ export const parsedExamSchema = z.object({
 })
 export type ParsedExam = z.infer<typeof parsedExamSchema>
 
+/** A weekly class from a timetable ("Raspored nastave", task parse_timetable). */
+export const parsedClassSchema = z.object({
+  subject_name: z.string().min(1).describe('Subject name exactly as written in the timetable'),
+  subject_id: z
+    .string()
+    .nullable()
+    .describe('id of the matching subject from the given list, null if none matches'),
+  kind: z
+    .enum(['lecture', 'exercise', 'lab', 'other'])
+    .describe('lecture ("P", predavanje), exercise ("AV", vježbe), lab ("LV", laboratorija)'),
+  weekday: z.int().min(0).max(6).describe('0 = Monday … 6 = Sunday'),
+  start: clock,
+  end: clock,
+  location: z.string().nullable().describe('Room as written, null if not given'),
+  week_parity: z
+    .enum(['odd', 'even'])
+    .nullable()
+    .describe('Only when the class is every other week ("neparne sedmice" = odd)'),
+  note: z.string().nullable().describe('Other remarks for this class, e.g. a group; else null'),
+})
+export type ParsedClass = z.infer<typeof parsedClassSchema>
+
 const parseBase = {
   title: z.string().min(1).describe('Short document title, in the document language'),
   pages: z
@@ -81,6 +109,11 @@ export const calendarParseSchema = z.object({
 export const examScheduleParseSchema = z.object({
   ...parseBase,
   exams: z.array(parsedExamSchema),
+})
+
+export const timetableParseSchema = z.object({
+  ...parseBase,
+  entries: z.array(parsedClassSchema),
 })
 
 export const documentParseSchema = z.object({
@@ -103,6 +136,8 @@ export interface ParseResult {
   pages: PageText[]
   periods: ParsedPeriod[]
   exams: ParsedExam[]
+  /** Weekly classes; only for kind `timetable` (stored as an `other` document). */
+  entries: ParsedClass[]
   warnings: string[]
 }
 

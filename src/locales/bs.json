@@ -1207,7 +1207,9 @@
     "recapTitle": "Kratko ponavljanje nakon predavanja",
     "recapHint": "15 min istog dana, prvi korak ponavljanja",
     "delete": "Obriši termin",
-    "confirmDelete": "Sigurno obrisati?"
+    "confirmDelete": "Sigurno obrisati?",
+    "photoTitle": "Uslikaj raspored",
+    "photoHint": "AI prepozna termine; pregledaš prije spašavanja"
   },
   "availability": {
     "title": "Dostupnost",
@@ -1434,7 +1436,8 @@
         "auto": "Pogodi sama",
         "academic_calendar": "Akademski kalendar",
         "exam_schedule": "Raspored ispita",
-        "document": "Pravilnik, silabus, obavještenje"
+        "document": "Pravilnik, silabus, obavještenje",
+        "timetable": "Raspored nastave"
       },
       "textLabel": "Tekst",
       "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
@@ -1517,7 +1520,8 @@
       "from": "Od",
       "to": "Do",
       "warnings": "Napomene asistenta",
-      "missing": "Ovaj prijedlog više ne postoji."
+      "missing": "Ovaj prijedlog više ne postoji.",
+      "classes": "Raspored nastave"
     },
     "documents": {
       "title": "Dokumenti",
@@ -1557,7 +1561,8 @@
       "onTrack": "u planu",
       "short": "fali {{time}}",
       "left": "još ~{{time}}"
-    }
+    },
+    "noTeachingPeriod": "Termini se upisuju u period nastave. Prvo dodaj semestar u Akademski kalendar."
   },
   "offline": {
     "title": "Nisi na mreži",

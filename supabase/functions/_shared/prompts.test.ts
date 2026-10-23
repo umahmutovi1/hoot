@@ -51,6 +51,30 @@ describe('parseRequest', () => {
 })
 
 describe('normalizeParse', () => {
+  it('keeps timetable classes with a valid time and a known subject id', () => {
+    const cls = {
+      subject_name: 'Signali',
+      kind: 'lecture' as const,
+      weekday: 0,
+      location: null,
+      week_parity: null,
+      note: null,
+    }
+    const result = normalizeParse(request({ kind: 'timetable' }), {
+      title: 'Raspored',
+      pages: [],
+      warnings: [],
+      entries: [
+        { ...cls, subject_id: SIGNALI, start: '09:00', end: '11:00' },
+        { ...cls, subject_id: 'unknown', start: '12:00', end: '13:00' },
+        { ...cls, subject_id: null, start: '14:00', end: '14:00' },
+      ],
+    } as never)
+    expect(result.kind).toBe('other')
+    expect(result.entries.map((e) => e.subject_id)).toEqual([SIGNALI, null])
+    expect(parseRequest(request({ kind: 'timetable' }), []).task).toBe('parse_timetable')
+  })
+
   const period = { title: 'Rok', starts_on: '2027-01-25', ends_on: '2027-02-12' }
 
   it('keeps only what matches the recognized kind', () => {
@@ -133,7 +157,7 @@ describe('answer', () => {
   it('tells the owl it cannot change data from the chat', () => {
     const r = answerRequest(req, passages)
     expect(r.system).toContain('never claim you did')
-    expect(r.system).toContain('Plan → Raspored')
+    expect(r.system).toContain('weekly class timetable: tell them to give you the')
   })
 
   it('puts the state in the cacheable prefix and the question last', () => {
