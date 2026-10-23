@@ -242,9 +242,10 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 
 - [ ] Anthropic: kartica, workspace ključ, `LLM_PROVIDER=anthropic`, prompt caching za sistemske promptove (ako je kartica dodana)
   - Odluka (početak Etape 10): Anthropic nalog još nema karticu, pa sve ide kroz Gemini (`LLM_PROVIDER=gemini`); stavka ostaje otvorena i ne blokira etapu
-- [ ] Embeddings (`gte-small`) za jedinice, bilješke, kartice, pitanja i teme; prijedlog veza pitanje ↔ poglavlje i dedupe tema bez LLM poziva
-  - Migracije `0020_ai_content.sql` + `0021_embedding_tables.sql`: vektori u `unit_embeddings`, `card_embeddings`, `topic_embeddings` (triger briše zastarjeli vektor; ne u samim tabelama, da ih `select('*')` ne vuče), `question_links` (direktna veza, odluka Etape 10), `timetable_entries.note`, RPC `question_candidates` i `match_notes`; prijedlog obima za poglavlja je pravilo bez LLM-a (PRD „Obim ispita“)
-- [ ] `evals/`: fiksne slike sadržaja i rasporeda nastave, provjera Zod šeme i očekivanog broja jedinica
+- [x] Embeddings (`gte-small`) za jedinice, bilješke, kartice, pitanja i teme; prijedlog veza pitanje ↔ poglavlje i dedupe tema bez LLM poziva
+  - Migracije `0020_ai_content.sql` + `0021_embedding_tables.sql`: vektori u `unit_embeddings`, `card_embeddings`, `topic_embeddings` (triger briše zastarjeli vektor; ne u samim tabelama, da ih `select('*')` ne vuče), `question_links` (direktna veza, odluka Etape 10), `timetable_entries.note`, RPC `question_candidates` i `match_notes`; prijedlog obima za poglavlja je pravilo bez LLM-a (PRD „Obim ispita“). `0023_fix_stale_embedding_trigger.sql`: triger iz 0021 je rušio svaki update `units`/`cards`/`topics` (nađeno u e2e, popravljeno uz OK)
+- [x] `evals/`: fiksne slike sadržaja i rasporeda nastave, provjera Zod šeme i očekivanog broja jedinica
+  - Slike sadržaja knjige, liste pitanja i rasporeda nastave (render iz HTML-a) + tekst skripte; `npm run eval` traži `GEMINI_API_KEY` u terminalu (SETUP 4.6) — isti slučajevi su prošli kroz deployane funkcije u e2e
 - [x] `parse-toc` → DodajIzvor → Parsiranje (pregled: novo / izmijenjeno / arhivira se); slike sadržaja se brišu nakon parsiranja; zamjena privremenog izvora (gruba veličina) pravim sadržajem
 - [x] Merge po `label` + testovi (merge iz Etape 3 se koristi i za AI uvoz)
 - [x] Ručni unos: dugme „Procijeni težinu AI-jem“ u pregledu
@@ -262,7 +263,8 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - [x] Web Share Target u manifestu (Android): podijeljen PDF/slika otvara „Daj sovi dokument“ sa prilogom
 - [x] Kartice: izvoz CSV (Anki), uvoz teksta „pojam ⇥ definicija“
   - Uz Anki CSV i „Kartice za Quizlet · Kopiraj“ (tab / nova linija za Quizlet → Uvezi); uvoz na Jedinici prima tab ili crticu s razmakom (Quizletov izvoz)
-- **DoD** → `v0.10.0`
+- [x] Dorada poslije e2e: veze s poglavljima čekaju spašena pitanja i šire teme (#168), triger embeddinga (#169), ispitno pitanje testirano samo sebe u gate-u (#170), liste u prijedlogu odgovora (#171), favicon na iOS-u (#166)
+- [x] **DoD** (uz opći DoD): uvoz sadržaja slikom i pitanja tekstom kroz AI s pregledom, merge po oznaci, teme i veze pitanje ↔ poglavlje; AI pitanja i kviz idu u `review_logs` i FSRS; asistent koristi alate bez direktnog pisanja; Moodle rokovi i raspored nastave kroz pregled → `v0.10.0` (browser e2e na previewu sa privremenim korisnikom, 390 px: slika sadržaja → 18 jedinica sa težinom, izvedenim stranicama i temama, slika obrisana; zalijepljena pitanja → „Veze s poglavljima“ 6/6 tačno → ObimIspita sa AI redovima; kviz iz bilješki → level 2, FSRS i `review_logs.source = notes`, „Spasi kao karticu“; ispitno pitanje → „Predloži odgovor“ → `answer_origin = 'ai'`, „Znam“; chat „gdje sam pisala o …“ → kartica bilješki, raspored nastave iz teksta → 2 termina u periodu nastave; Moodle feed → rok upisan i uparen, preskočen događaj ignorisan, pomjeren datum → „izmijenjeno“ → ažuriran; uvoz kartica, Anki CSV i Quizlet tekst. Web Share Target je u manifestu i service workeru, a dijeljenje s Android telefona ostaje za ručnu provjeru. 18 AI poziva ukupno; korisnik, fajlovi i lokalni ključevi obrisani)
 
 ## Etapa 11 — Napredak
 
