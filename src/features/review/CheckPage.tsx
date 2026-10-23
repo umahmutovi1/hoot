@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { CheckIcon, CloseIcon } from '@/components/icons'
 import { LazyMarkdown } from '@/components/LazyMarkdown'
 import { SplashScreen } from '@/components/SplashScreen'
-import { useAllSources, useTopicLinks } from '@/features/plan/api'
+import { useAllSources, useQuestionLinks, useTopicLinks } from '@/features/plan/api'
 import { useActiveSession, useSessionWriter } from '@/features/session/api'
 import type { ActiveSession } from '@/features/session/model'
 import { toSegment } from '@/features/session/model'
@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils'
 import { useCardsOf, useReviewWriter } from './api'
 import { BAND_BG } from './bands'
 import { checkItems, checkReviews, checkSummary, type CheckItem, type CheckSummary } from './check'
+import type { DirectLink } from '@/lib/questions/links'
 import { linkedQuestions } from './gate'
 import { RateButtons } from './RateButtons'
 import { strengthOf } from './strength'
@@ -36,6 +37,7 @@ export function CheckPage() {
   const check = useSessionUi((s) => s.check)
   const { data: sources } = useAllSources()
   const { data: links } = useTopicLinks()
+  const { data: direct } = useQuestionLinks()
   const unitIds = check?.unitIds ?? []
   const { data: cards, isPending: cardsPending } = useCardsOf(unitIds)
   const [summary, setSummary] = useState<(CheckSummary & { minutes: number }) | null>(null)
@@ -44,7 +46,7 @@ export function CheckPage() {
 
   if (summary) return <Summary summary={summary} />
   if (finishing && !active) return <SplashScreen />
-  if (isPending || !sources || !links || (unitIds.length > 0 && cardsPending))
+  if (isPending || !sources || !links || !direct || (unitIds.length > 0 && cardsPending))
     return <SplashScreen />
   if (!active || !check || check.sessionId !== active.session.id) return <Navigate to="/" replace />
   return (
@@ -53,6 +55,7 @@ export function CheckPage() {
       unitIds={unitIds}
       sources={sources}
       links={links}
+      direct={direct}
       cards={cards ?? []}
       onFinishing={() => setFinishing(true)}
       onDone={setSummary}
@@ -65,6 +68,7 @@ function Quiz({
   unitIds,
   sources,
   links,
+  direct,
   cards,
   onFinishing,
   onDone,
@@ -73,6 +77,7 @@ function Quiz({
   unitIds: string[]
   sources: SourceWithUnits[]
   links: { unit_id: string; topic_id: string }[]
+  direct: DirectLink[]
   cards: Card[]
   onFinishing: () => void
   onDone: (s: CheckSummary & { minutes: number }) => void
@@ -101,6 +106,7 @@ function Quiz({
         { key: u.id, title: u.title, label: u.label, leaves: [u] },
         links,
         all.filter((x) => subjectOf.get(x.id) === subjectOf.get(u.id)),
+        direct,
       ),
     today,
   )

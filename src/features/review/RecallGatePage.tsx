@@ -5,8 +5,9 @@ import { goBack } from '@/app/navigation'
 import { ChevronLeftIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useToast } from '@/components/toast-store'
-import { useAllSources, useTopicLinks } from '@/features/plan/api'
+import { useAllSources, useQuestionLinks, useTopicLinks } from '@/features/plan/api'
 import { useSubjects } from '@/features/subjects/api'
+import type { DirectLink } from '@/lib/questions/links'
 import type { Op } from '@/lib/sync'
 import { useCardsOf, useReviewWriter } from './api'
 import type { CardReview, UnitReview } from './apply'
@@ -31,8 +32,9 @@ export function RecallGatePage() {
   const ids = useMemo(() => (params.get('units') ?? '').split(',').filter(Boolean), [params])
   const { data: sources } = useAllSources()
   const { data: links } = useTopicLinks()
+  const { data: direct } = useQuestionLinks()
   const { data: cards, isPending: cardsPending } = useCardsOf(ids)
-  if (!sources || !links || (ids.length > 0 && cardsPending)) return <SplashScreen />
+  if (!sources || !links || !direct || (ids.length > 0 && cardsPending)) return <SplashScreen />
   return (
     <Gate
       ids={ids}
@@ -40,6 +42,7 @@ export function RecallGatePage() {
       to={params.get('to') ?? '/'}
       sources={sources}
       links={links}
+      direct={direct}
       cards={cards ?? []}
     />
   )
@@ -51,6 +54,7 @@ function Gate({
   to,
   sources,
   links,
+  direct,
   cards,
 }: {
   ids: string[]
@@ -58,6 +62,7 @@ function Gate({
   to: string
   sources: NonNullable<ReturnType<typeof useAllSources>['data']>
   links: { unit_id: string; topic_id: string }[]
+  direct: DirectLink[]
   cards: NonNullable<ReturnType<typeof useCardsOf>['data']>
 }) {
   const { t } = useTranslation()
@@ -92,7 +97,8 @@ function Gate({
       </div>
     )
 
-  const questionsOf = (x: (typeof targets)[number]) => linkedQuestions(x, links, subjectUnits)
+  const questionsOf = (x: (typeof targets)[number]) =>
+    linkedQuestions(x, links, subjectUnits, direct)
   const subjectName = subjects?.find((x) => x.id === source.subject_id)?.name ?? source.title
   const leafLabel = target.label ? `${subjectName} · ${target.label}` : subjectName
 

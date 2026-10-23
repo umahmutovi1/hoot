@@ -11,6 +11,7 @@ import {
   type ProgressUnit,
 } from '@/lib/progress'
 import { scopeOf, type ScopeRow } from '@/lib/progress/scope'
+import { chaptersByQuestion, questionsByChapter, type DirectLink } from '@/lib/questions/links'
 import type { Assessment } from '@/features/subjects/model'
 
 export type Source = Tables<'sources'>
@@ -168,17 +169,19 @@ export function topicsOfUnit(unitId: string, topics: TopicWithUnits[]): TopicWit
  * Units of the other kind (chapter ↔ question) that share at least one topic with the unit:
  * "Povezana ispitna pitanja" on a chapter, related chapters on a question.
  */
-export function relatedUnits(unit: Unit, topics: TopicWithUnits[], units: Unit[]): Unit[] {
-  const shared = new Set(
-    topicsOfUnit(unit.id, topics).flatMap((t) => t.unit_topics.map((l) => l.unit_id)),
-  )
-  return units.filter(
-    (u) =>
-      u.id !== unit.id &&
-      shared.has(u.id) &&
-      u.archived_at === null &&
-      (u.kind === 'question') !== (unit.kind === 'question'),
-  )
+export function relatedUnits(
+  unit: Unit,
+  topics: TopicWithUnits[],
+  units: Unit[],
+  direct: DirectLink[] = [],
+): Unit[] {
+  const links = topics.flatMap((t) => t.unit_topics)
+  const byChapter = questionsByChapter(units, links, direct)
+  const ids =
+    unit.kind === 'question'
+      ? (chaptersByQuestion(byChapter).get(unit.id) ?? new Set<string>())
+      : (byChapter.get(unit.id) ?? new Set<string>())
+  return units.filter((u) => ids.has(u.id) && u.archived_at === null)
 }
 
 /** "I parcijala" → "I", "II parcijala" → "II"; other titles stay as they are. */

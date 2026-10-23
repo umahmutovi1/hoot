@@ -1,3 +1,4 @@
+import { questionsByChapter, type DirectLink, type TopicLink } from '@/lib/questions/links'
 import type { Recall } from '@/lib/srs'
 import type { Card, Unit } from '@/features/sources/model'
 import type { CardReview, RecallSource, UnitReview } from './apply'
@@ -158,15 +159,15 @@ export function gateReviews(
   return { units, cards: cardReviews }
 }
 
-/** Exam questions linked to the test through topics (PRD "Pitanja kao glavni put"). */
+/** Exam questions linked to the test through topics or directly (PRD "Pitanja kao glavni put"). */
 export function linkedQuestions(
   target: GateTarget,
-  links: { unit_id: string; topic_id: string }[],
+  links: TopicLink[],
   units: Unit[],
+  direct: DirectLink[] = [],
 ): Unit[] {
-  const leafIds = new Set(target.leaves.map((l) => l.id))
-  const topics = new Set(links.filter((l) => leafIds.has(l.unit_id)).map((l) => l.topic_id))
-  const ids = new Set(links.filter((l) => topics.has(l.topic_id)).map((l) => l.unit_id))
+  const byChapter = questionsByChapter(units, links, direct)
+  const ids = new Set(target.leaves.flatMap((l) => [...(byChapter.get(l.id) ?? [])]))
   return units
     .filter((u) => u.kind === 'question' && u.archived_at === null && ids.has(u.id))
     .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))

@@ -140,6 +140,7 @@ function inputs(patch: Partial<PlanInputs> = {}): PlanInputs {
     sources: [roughSource(10)],
     scope: [],
     unitTopics: [],
+    questionLinks: [],
     cards: [],
     logs: [],
     blocks: [],

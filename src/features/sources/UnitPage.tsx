@@ -1,4 +1,4 @@
-import { useSpeeds } from '@/features/plan/api'
+import { useQuestionLinks, useSpeeds } from '@/features/plan/api'
 import type { TFunction } from 'i18next'
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -473,7 +473,8 @@ function Related({
 }) {
   const { t } = useTranslation()
   const { data: topics = [] } = useTopics(subjectId)
-  const related = relatedUnits(unit, topics, units)
+  const { data: direct = [] } = useQuestionLinks()
+  const related = relatedUnits(unit, topics, units, direct)
   if (related.length === 0) return null
   const questions = unit.kind !== 'question'
   return (
