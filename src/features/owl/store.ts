@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import type { AiErrorCode, Citation, ImportKind } from '@shared/schemas.ts'
+import type { AiErrorCode, Citation, ImportKind, ReimportKind } from '@shared/schemas.ts'
 import type { ClassProposal, ExamProposal, PeriodProposal } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
 import type { Json } from '@/types/database'
@@ -10,6 +10,24 @@ import type { Json } from '@/types/database'
 // current one is also kept on the device for a reload.
 
 export type StateRef = { subject: string | null; topic: 'grades' | 'exams' | 'calendar' | 'plan' }
+
+/** A note or card found by "gdje sam pisala o …" (vector search, no LLM). */
+export interface NoteHit {
+  kind: 'unit' | 'card'
+  unitId: string
+  subjectId: string
+  sourceId: string
+  title: string
+  snippet: string
+}
+
+/** What the app does next to an answer (Stage 10 tools); the user confirms any change. */
+export type OwlAction =
+  | { kind: 'search_notes'; text: string; hits: NoteHit[] | null }
+  | { kind: 'quiz'; text: string }
+  | { kind: 'add_timetable' }
+  | { kind: 'add_contents'; text: string | null }
+  | { kind: 'import_document'; importKind: ReimportKind; documentId: string | null }
 
 export interface ImportProposal {
   documentId: string
@@ -32,6 +50,7 @@ export type OwlMessage =
       text: string
       citations: Citation[]
       stateRefs: StateRef[]
+      action?: OwlAction
     }
   | { id: string; role: 'owl'; type: 'pending'; stage: 'thinking' | 'reading' | 'storing' }
   | { id: string; role: 'owl'; type: 'error'; code: AiErrorCode | 'offline' | 'file' }
@@ -46,6 +65,8 @@ export type OwlMessage =
       /** False when the passages could not be stored; the proposal still stands. */
       stored: boolean
       found: number
+      /** Read again from the chat ("ubaci mi ovo"), not newly given. */
+      again?: boolean
     }
   | { id: string; role: 'owl'; type: 'proposal'; proposal: ImportProposal }
 

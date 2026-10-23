@@ -10,6 +10,7 @@ import {
   type ImportKind,
   type ParseDocumentRequest,
   type ParseResult,
+  type ReimportKind,
   type UploadMediaType,
 } from '@shared/schemas.ts'
 import { chunkPages, type PageText } from '@/lib/documents/chunk'
@@ -26,7 +27,15 @@ import { supabase } from '@/lib/supabase'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
 import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
 import { pdfText } from './pdfText'
-import { historyWritten, useOwlStore, type OwlMessage } from './store'
+import { searchNotes } from './embeddings'
+import {
+  historyWritten,
+  useOwlStore,
+  type ImportProposal,
+  type NoteHit,
+  type OwlAction,
+  type OwlMessage,
+} from './store'
 
 export type DocumentInput = { type: 'file'; file: File } | { type: 'text'; text: string }
 
@@ -182,19 +191,9 @@ export async function giveDocument(
     }
     void ctx.queryClient.invalidateQueries({ queryKey: documentsKey(ctx.userId) })
 
-    // 4. A proposal for the calendar or exams, never written without "Spasi".
-    const periods = proposePeriods(result.periods, ctx.periods as ExistingPeriod[])
-    const exams = proposeExams(
-      result.exams,
-      ctx.subjects.filter((x) => !x.archived),
-      existingExams(ctx.subjects),
-    )
-    const classes = proposeClasses(
-      result.entries ?? [],
-      ctx.subjects.filter((x) => !x.archived),
-      ctx.classes,
-    )
-    const found = periods.length + exams.length + classes.length
+    // 4. A proposal for the calendar, exams or classes, never written without "Spasi".
+    const proposal = proposalFrom(result, documentId, title, ctx)
+    const found = proposal.periods.length + proposal.exams.length + (proposal.classes?.length ?? 0)
     const done: OwlMessage = {
       id: pendingId,
       role: 'owl',
@@ -206,28 +205,133 @@ export async function giveDocument(
       found,
     }
     store().replace(pendingId, done)
-    if (found > 0) {
-      store().push({
-        id: id(),
-        role: 'owl',
-        type: 'proposal',
-        proposal: {
-          documentId,
-          documentTitle: title,
-          periods,
-          exams,
-          classes,
-          warnings: result.warnings,
-          savedCount: null,
-        },
-      })
-    }
+    if (found > 0) store().push({ id: id(), role: 'owl', type: 'proposal', proposal })
   } catch (err) {
     await removeDocument(documentId, storagePath)
     fail(pendingId, err)
   } finally {
     store().setBusy(false)
   }
+}
+
+function proposalFrom(
+  result: ParseResult,
+  documentId: string,
+  title: string,
+  ctx: OwlContext,
+): ImportProposal {
+  const subjects = ctx.subjects.filter((x) => !x.archived)
+  return {
+    documentId,
+    documentTitle: title,
+    periods: proposePeriods(result.periods, ctx.periods as ExistingPeriod[]),
+    exams: proposeExams(result.exams, subjects, existingExams(ctx.subjects)),
+    classes: proposeClasses(result.entries ?? [], subjects, ctx.classes),
+    warnings: result.warnings,
+    savedCount: null,
+  }
+}
+
+/**
+ * "Ubaci mi ovo" (Stage 10): a document already in Documents is read again as the kind the
+ * student asked for, and the result comes as a proposal card like a newly given one.
+ */
+async function importFromDocument(
+  documentId: string,
+  kind: ReimportKind,
+  pendingId: string,
+  ctx: OwlContext,
+) {
+  const { data: doc, error } = await supabase
+    .from('documents')
+    .select('id, title, storage_path, media_type')
+    .eq('id', documentId)
+    .maybeSingle()
+  if (error || !doc) throw new AiCallError('bad_request')
+  const { data: chunks } = await supabase
+    .from('document_chunks')
+    .select('page, position, content')
+    .eq('document_id', documentId)
+    .order('position')
+  const byPage = new Map<number, string[]>()
+  for (const c of chunks ?? [])
+    byPage.set(c.page ?? 1, [...(byPage.get(c.page ?? 1) ?? []), c.content])
+  const text: PageText[] = [...byPage].map(([page, parts]) => ({ page, text: parts.join('\n') }))
+  const request: ParseDocumentRequest = {
+    document_id: documentId,
+    kind,
+    locale: ctx.locale,
+    today: ctx.today,
+    text: text.length > 0 ? capText(text) : null,
+    file:
+      text.length > 0 || !doc.storage_path || !doc.media_type
+        ? null
+        : { path: doc.storage_path, media_type: doc.media_type as UploadMediaType },
+    subjects: ctx.subjects.filter((x) => !x.archived).map((x) => ({ id: x.id, name: x.name })),
+    note: null,
+  }
+  const result = await invokeAi<ParseResult>('parse-document', request)
+  void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
+  const proposal = proposalFrom(result, documentId, doc.title, ctx)
+  const found = proposal.periods.length + proposal.exams.length + (proposal.classes?.length ?? 0)
+  store().replace(pendingId, {
+    id: pendingId,
+    role: 'owl',
+    type: 'document',
+    kind: 'other',
+    title: doc.title,
+    documentId,
+    stored: true,
+    found,
+    again: true,
+  })
+  if (found > 0) store().push({ id: id(), role: 'owl', type: 'proposal', proposal })
+}
+
+/** Units and cards for "gdje sam pisala o …", with their titles; null when the search failed. */
+async function notesFor(query: string): Promise<NoteHit[] | null> {
+  try {
+    const matches = await searchNotes(query)
+    if (matches.length === 0) return []
+    const unitIds = [...new Set(matches.map((m) => m.unit_id))]
+    const cardIds = matches.filter((m) => m.kind === 'card').map((m) => m.id)
+    const { data: units } = await supabase
+      .from('units')
+      .select('id, label, title, notes, source_id, sources(subject_id)')
+      .in('id', unitIds)
+    const { data: cards } = cardIds.length
+      ? await supabase.from('cards').select('id, front').in('id', cardIds)
+      : { data: [] }
+    return matches.flatMap((m) => {
+      const u = units?.find((x) => x.id === m.unit_id)
+      if (!u) return []
+      const source = u.sources as { subject_id: string } | null
+      const raw =
+        m.kind === 'card' ? (cards?.find((c) => c.id === m.id)?.front ?? '') : (u.notes ?? '')
+      return [
+        {
+          kind: m.kind,
+          unitId: u.id,
+          subjectId: source?.subject_id ?? '',
+          sourceId: u.source_id,
+          title: [u.label, u.title].filter(Boolean).join(' '),
+          snippet: raw.replace(/\s+/g, ' ').trim().slice(0, 140),
+        },
+      ]
+    })
+  } catch {
+    return null
+  }
+}
+
+/** The document the student means by "ovo": the last one given or read in this conversation. */
+function lastDocumentId(): string | null {
+  const messages = store().messages
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i]!
+    if (m.type === 'document' && m.stored) return m.documentId
+  }
+  return null
 }
 
 /** Nothing half-stored: the document row cascades its chunks, the file goes too. */
@@ -261,6 +365,27 @@ async function storeChunks(documentId: string, pages: PageText[]) {
   await Promise.all(Array.from({ length: Math.min(EMBED_PARALLEL, batches.length) }, worker))
 }
 
+async function actionFor(res: AnswerResponse): Promise<OwlAction | null> {
+  switch (res.action) {
+    case 'search_notes':
+      return res.action_text
+        ? { kind: 'search_notes', text: res.action_text, hits: await notesFor(res.action_text) }
+        : null
+    case 'quiz':
+      return res.action_text ? { kind: 'quiz', text: res.action_text } : null
+    case 'add_timetable':
+      return { kind: 'add_timetable' }
+    case 'add_contents':
+      return { kind: 'add_contents', text: res.action_text }
+    case 'import_document':
+      return res.import_kind
+        ? { kind: 'import_document', importKind: res.import_kind, documentId: lastDocumentId() }
+        : null
+    default:
+      return null
+  }
+}
+
 /** Ask the owl; answers come from documents (cited) and the state summary. */
 export async function ask(question: string, state: string, ctx: OwlContext) {
   const s = store()
@@ -272,7 +397,9 @@ export async function ask(question: string, state: string, ctx: OwlContext) {
         ? [{ role: 'user', text: m.text }]
         : m.type === 'answer'
           ? [{ role: 'owl', text: m.text }]
-          : [],
+          : m.type === 'file'
+            ? [{ role: 'user', text: `(gives a document: ${m.name})` }]
+            : [],
     )
     .slice(-6)
   s.push({ id: id(), role: 'user', type: 'text', text: question.trim() })
@@ -290,6 +417,8 @@ export async function ask(question: string, state: string, ctx: OwlContext) {
       today: ctx.today,
     }
     const res = await invokeAi<AnswerResponse>('answer', request)
+    void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
+    const action = await actionFor(res)
     store().replace(pendingId, {
       id: pendingId,
       role: 'owl',
@@ -297,8 +426,17 @@ export async function ask(question: string, state: string, ctx: OwlContext) {
       text: res.answer,
       citations: res.citations,
       stateRefs: res.state_refs,
+      ...(action ? { action } : {}),
     })
-    void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
+    if (action?.kind === 'import_document' && action.documentId) {
+      const readingId = id()
+      store().push({ id: readingId, role: 'owl', type: 'pending', stage: 'reading' })
+      try {
+        await importFromDocument(action.documentId, action.importKind, readingId, ctx)
+      } catch (err) {
+        fail(readingId, err)
+      }
+    }
   } catch (err) {
     fail(pendingId, err)
   } finally {

@@ -1439,7 +1439,9 @@
       "found_one": "I found {{count}} item. Have a look before I save:",
       "found_other": "I found {{count}} items. Have a look before I save:",
       "noDates": "I found no dates, but I keep the document for questions.",
-      "notStored": "I couldn’t save “{{title}}” to Documents, so I can’t answer from it. Send it again later."
+      "notStored": "I couldn’t save “{{title}}” to Documents, so I can’t answer from it. Send it again later.",
+      "again": "I read “{{title}}” again.",
+      "nothingAgain": "I found nothing of that kind to import."
     },
     "kind": {
       "academic_calendar": "Academic calendar",
@@ -1521,7 +1523,18 @@
       "short": "{{time}} short",
       "left": "~{{time}} left"
     },
-    "noTeachingPeriod": "Classes go into a teaching period. Add the semester to the academic calendar first."
+    "noTeachingPeriod": "Classes go into a teaching period. Add the semester to the academic calendar first.",
+    "action": {
+      "notesTitle": "Your notes",
+      "card": "card",
+      "notesNone": "I found no notes about “{{text}}”.",
+      "notesFailed": "The notes search failed. Try again.",
+      "quizNone": "I cannot find the chapter “{{text}}”. Open it in Subjects and start the quiz there.",
+      "timetable": "Give the class timetable",
+      "contents": "Add contents or questions",
+      "contentsFor": "Add contents · {{subject}}",
+      "giveDocument": "Give a document"
+    }
   },
   "offline": {
     "title": "You're offline",

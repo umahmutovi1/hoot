@@ -464,6 +464,22 @@ export interface SearchNotesResponse {
 
 export const STATE_TOPICS = ['grades', 'exams', 'calendar', 'plan'] as const
 
+/**
+ * What the app can do next to an answer (Stage 10 tools). The app runs it and shows a card; the
+ * assistant itself never changes anything.
+ */
+export const OWL_ACTIONS = [
+  'none',
+  'search_notes',
+  'quiz',
+  'add_timetable',
+  'add_contents',
+  'import_document',
+] as const
+export type OwlActionKind = (typeof OWL_ACTIONS)[number]
+export const REIMPORT_KINDS = ['academic_calendar', 'exam_schedule', 'timetable'] as const
+export type ReimportKind = (typeof REIMPORT_KINDS)[number]
+
 export const answerOutputSchema = z.object({
   answer: z.string().min(1).describe('Short answer in the user language, plain text'),
   passages: z
@@ -477,6 +493,17 @@ export const answerOutputSchema = z.object({
       }),
     )
     .describe('Parts of the state summary the answer relies on; empty if none'),
+  action: z.enum(OWL_ACTIONS).describe('A tool the app runs next to the answer; none if none fits'),
+  action_text: z
+    .string()
+    .nullable()
+    .describe(
+      'search_notes: what to look for; quiz: the chapter title; add_contents: the subject name; else null',
+    ),
+  import_kind: z
+    .enum(REIMPORT_KINDS)
+    .nullable()
+    .describe('import_document: what the given document contains; else null'),
 })
 export type AnswerOutput = z.infer<typeof answerOutputSchema>
 
@@ -504,6 +531,9 @@ export interface AnswerResponse {
   answer: string
   citations: Citation[]
   state_refs: AnswerOutput['state_refs']
+  action: OwlActionKind
+  action_text: string | null
+  import_kind: ReimportKind | null
 }
 
 // ---------------------------------------------------------------------------
