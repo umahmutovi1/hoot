@@ -1379,8 +1379,8 @@ create index plan_blocks_replan_idx on plan_blocks (user_id, on_date) where orig
 -- i upiše run sa blokovima; isti run poslan dvaput ne mijenja ništa. Klijent ga šalje kroz offline red (op 'rpc').
 
 -- 0017_fsrs.sql (Etapa 9, samo aditivno: v0.8.0 još čita SM-2 kolone na dijeljenoj bazi;
--- srs_ease, srs_interval_days, srs_success_count i profiles.srs_multiplier se brišu u posebnoj
--- migraciji poslije release-a v0.9.0)
+-- srs_ease, srs_interval_days, srs_success_count i profiles.srs_multiplier briše
+-- 0019_drop_sm2.sql poslije release-a v0.9.0)
 alter table units
   add column fsrs_stability numeric,
   add column fsrs_difficulty numeric,

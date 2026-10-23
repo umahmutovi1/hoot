@@ -20,12 +20,6 @@ export type UnitTopic = Tables<'unit_topics'>
 export type Card = Tables<'cards'>
 export type AssessmentUnit = Tables<'assessment_units'>
 
-/**
- * SM-2 columns from 0001 that FSRS replaced (Stage 9). v0.8.0 still reads them, so they are
- * dropped only after the v0.9.0 release; the app no longer writes them.
- */
-export type LegacySrs = 'srs_ease' | 'srs_interval_days' | 'srs_success_count'
-
 /** Memory columns of a unit or card that has not been tested yet. */
 export const NO_MEMORY = {
   fsrs_stability: null,
