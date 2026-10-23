@@ -114,3 +114,14 @@ describe('AI questions in the gate', () => {
     ])
   })
 })
+
+describe('an exam question tested by itself', () => {
+  it('is its own item and gets one review', () => {
+    const q = unit('q9', { kind: 'question', title: 'Šta je ACID?' })
+    const target = gateTargets([q], [q])[0]!
+    const own = linkedQuestions(target, [], [q])
+    expect(own.map((x) => x.id)).toEqual(['q9'])
+    const out = gateReviews(target, { ratings: { 'q:q9': 2 }, explained: {}, blurt: null }, own, [])
+    expect(out.units).toEqual([{ unit: q, recalls: [{ recall: 2, source: 'exam_question' }] }])
+  })
+})

@@ -177,11 +177,14 @@ export function gateReviews(
     if (outlineDone) own.push({ recall: a.explained[leaf.id] ? 2 : 0, source: 'outline' })
     if (own.length > 0) units.push({ unit: leaf, recalls: own })
   }
+  // A question tested as itself is already one of the leaves above.
+  const leafIds = new Set(target.leaves.map((l) => l.id))
   for (const q of questions) {
+    if (leafIds.has(q.id)) continue
     const r = a.ratings[`q:${q.id}`]
     if (r !== undefined) units.push({ unit: q, recalls: [{ recall: r, source: 'exam_question' }] })
   }
-  const leafById = new Map(target.leaves.map((l) => [l.id, l]))
+  const leafById = new Map(target.leaves.map((l) => [l.id, l] as const))
   const cardReviews: CardReview[] = cards.flatMap((c) => {
     const r = a.ratings[`c:${c.id}`]
     const unit = leafById.get(c.unit_id)
@@ -190,13 +193,18 @@ export function gateReviews(
   return { units, cards: cardReviews }
 }
 
-/** Exam questions linked to the test through topics or directly (PRD "Pitanja kao glavni put"). */
+/**
+ * Exam questions linked to the test through topics or directly (PRD "Pitanja kao glavni put"); an
+ * exam question tested by itself (from its Jedinica) is its own item.
+ */
 export function linkedQuestions(
   target: GateTarget,
   links: TopicLink[],
   units: Unit[],
   direct: DirectLink[] = [],
 ): Unit[] {
+  const only = target.leaves.length === 1 ? target.leaves[0]! : null
+  if (only?.kind === 'question') return [only]
   const byChapter = questionsByChapter(units, links, direct)
   const ids = new Set(target.leaves.flatMap((l) => [...(byChapter.get(l.id) ?? [])]))
   return units
