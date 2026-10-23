@@ -455,3 +455,11 @@ import_map = "./functions/deno.json"
 [functions.link-questions]
 verify_jwt = false
 import_map = "./functions/deno.json"
+
+[functions.recall-questions]
+verify_jwt = false
+import_map = "./functions/deno.json"
+
+[functions.propose-answer]
+verify_jwt = false
+import_map = "./functions/deno.json"

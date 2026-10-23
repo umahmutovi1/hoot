@@ -10,6 +10,8 @@ import {
   examScheduleParseSchema,
   linkOutputSchema,
   MAX_CUSTOM_PRESETS,
+  proposeAnswerOutputSchema,
+  recallOutputSchema,
   MAX_DOCUMENT_CHARS,
   parseDocumentRequestSchema,
   questionsParseSchema,
@@ -27,6 +29,8 @@ const outputSchemas = {
   tocParseSchema,
   questionsParseSchema,
   linkOutputSchema,
+  recallOutputSchema,
+  proposeAnswerOutputSchema,
 }
 
 /** Every object key in a JSON schema, to check structured-output limits. */

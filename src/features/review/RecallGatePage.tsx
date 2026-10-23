@@ -5,6 +5,7 @@ import { goBack } from '@/app/navigation'
 import { ChevronLeftIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useToast } from '@/components/toast-store'
+import { useAiAvailability } from '@/features/owl/api'
 import { useAllSources, useQuestionLinks, useTopicLinks } from '@/features/plan/api'
 import { useSubjects } from '@/features/subjects/api'
 import type { DirectLink } from '@/lib/questions/links'
@@ -23,7 +24,8 @@ import { GateTest } from './GateTest'
 
 /**
  * RecallGate (PRD "Recall gate"): `?units=` are the units just read (or one chapter tested from
- * Jedinica), `?session=` the session they were read in, `?to=` where to go after. Each chapter is
+ * Jedinica), `?session=` the session they were read in, `?to=` where to go after, `?quiz=1` a
+ * kviz (5–10 AI questions asked right away, PRD "Testiranje bez sadržaja literature"). Each chapter is
  * one test; "Spasi" writes every rating, "Preskoči" keeps what was rated and records the rest as
  * skipped (their check of what was read stays in 2 days).
  */
@@ -39,6 +41,7 @@ export function RecallGatePage() {
     <Gate
       ids={ids}
       sessionId={params.get('session')}
+      quiz={params.get('quiz') === '1'}
       to={params.get('to') ?? '/'}
       sources={sources}
       links={links}
@@ -51,6 +54,7 @@ export function RecallGatePage() {
 function Gate({
   ids,
   sessionId,
+  quiz,
   to,
   sources,
   links,
@@ -59,6 +63,7 @@ function Gate({
 }: {
   ids: string[]
   sessionId: string | null
+  quiz: boolean
   to: string
   sources: NonNullable<ReturnType<typeof useAllSources>['data']>
   links: { unit_id: string; topic_id: string }[]
@@ -69,6 +74,7 @@ function Gate({
   const navigate = useNavigate()
   const toast = useToast((s) => s.show)
   const writer = useReviewWriter()
+  const aiReady = useAiAvailability().state === 'ready'
   const { data: subjects } = useSubjects()
   const [at, setAt] = useState(0)
   const [answers, setAnswers] = useState<Record<string, GateAnswers>>({})
@@ -144,7 +150,9 @@ function Gate({
         >
           <ChevronLeftIcon size={20} />
         </button>
-        <span className="text-base font-semibold">{t('recall.title')}</span>
+        <span className="text-base font-semibold">
+          {t(quiz ? 'recall.quizTitle' : 'recall.title')}
+        </span>
         <button
           type="button"
           disabled={busy}
@@ -170,6 +178,8 @@ function Gate({
         subjectId={source.subject_id}
         questions={questionsOf(target)}
         cards={cards}
+        aiReady={aiReady}
+        quiz={quiz}
         answers={answers[target.key] ?? EMPTY_ANSWERS}
         onChange={(a) => setAnswers((x) => ({ ...x, [target.key]: a }))}
         footer={{

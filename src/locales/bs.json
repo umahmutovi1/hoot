@@ -1022,7 +1022,8 @@
         "question": "Pitanje {{n}} od {{total}}"
       },
       "subUnits": "Podjedinice",
-      "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih."
+      "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih.",
+      "aiAnswer": "AI prijedlog · provjeri"
     },
     "topics": {
       "title": "Teme",
@@ -1905,7 +1906,8 @@
     "back": "Nazad",
     "tabs": {
       "blurt": "Blurting",
-      "questions": "Pitanja"
+      "questions": "Pitanja",
+      "ai": "AI pitanja"
     },
     "askFrom": "PITAJ ME IZ",
     "askFromLabel": "Izvor pitanja",
@@ -1913,12 +1915,16 @@
       "exam_question": "Ispitna pitanja",
       "notes": "Bilješke",
       "outline": "Podnaslovi",
-      "card": "Kartice"
+      "card": "Kartice",
+      "general": "Opće znanje",
+      "page_photo": "Slika stranice"
     },
     "label": {
       "exam_question": "ISPITNO PITANJE {{label}} · povezano preko teme",
       "notes": "IZ TVOJIH BILJEŠKI · {{n}} od {{total}}",
-      "card": "KARTICA · {{n}} od {{total}}"
+      "card": "KARTICA · {{n}} od {{total}}",
+      "general": "OPĆE ZNANJE · AI iz naslova poglavlja · {{n}} od {{total}}",
+      "page_photo": "SA SLIKE STRANICE · {{n}} od {{total}}"
     },
     "notesPrompt": "Šta znaš o: {{title}}?",
     "answerPlaceholder": "Napiši odgovor iz glave…",
@@ -1927,7 +1933,10 @@
     "answerLabel": {
       "exam_question": "ODGOVOR",
       "notes": "IZ BILJEŠKI",
-      "card": "ODGOVOR"
+      "card": "ODGOVOR",
+      "general": "AI ODGOVOR · provjeri sa predavanjem",
+      "page_photo": "SA STRANICE",
+      "aiProposed": "ODGOVOR · AI prijedlog, provjeri"
     },
     "noAnswer": "NEMA UNESENOG ODGOVORA",
     "noAnswerBody": "Uporedi sa svojim bilješkama i ocijeni se. Možeš jednom upisati odgovor — koristi se pri sljedećem ponavljanju.",
@@ -1963,7 +1972,35 @@
     "nothing": "Nema ničega za provjeru.",
     "offerQuestions_one": "{{count}} povezano ispitno pitanje",
     "offerQuestions_few": "{{count}} povezana ispitna pitanja",
-    "offerQuestions_other": "{{count}} povezanih ispitnih pitanja"
+    "offerQuestions_other": "{{count}} povezanih ispitnih pitanja",
+    "noteAi": "Poglavlje prelazi na „Razumijem” uz „Sjećam se” na ispitnim pitanjima, bilješkama ili podnaslovima. Opće znanje se računa samo uz još jedan izvor.",
+    "propose": "Predloži odgovor",
+    "proposing": "Pišem prijedlog…",
+    "proposedLabel": "AI PRIJEDLOG · provjeri sa predavanjem",
+    "saveCard": "Spasi kao karticu",
+    "cardSaved": "Kartica je spašena",
+    "ai": {
+      "notes": {
+        "label": "IZ TVOJIH BILJEŠKI",
+        "hint": "AI napravi {{count}} pitanja strogo iz tvojih bilješki za ovo poglavlje."
+      },
+      "general": {
+        "label": "OPĆE ZNANJE · AI iz naslova poglavlja",
+        "hint": "Pitanja iz naslova i podnaslova. Odgovori se mogu razlikovati od predavanja, pa se za „Razumijem” računaju samo uz još jedan izvor."
+      },
+      "page_photo": {
+        "label": "SLIKA STRANICE",
+        "hint": "Uslikaj 1–2 stranice, npr. sažetak na kraju poglavlja. Slika se briše odmah nakon obrade."
+      },
+      "make": "Napravi {{count}} pitanja",
+      "making": "Pravim pitanja…",
+      "camera": "Uslikaj",
+      "gallery": "Galerija",
+      "plain": "Bez AI-ja: uporedi sa bilješkama"
+    },
+    "quizTitle": "Kviz",
+    "quizOffer": "Kviz · {{count}} AI pitanja",
+    "discardProposal": "Odbaci"
   },
   "review": {
     "title": "Provjera znanja",

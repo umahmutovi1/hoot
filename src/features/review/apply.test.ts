@@ -58,6 +58,32 @@ describe('planReviews', () => {
     expect(plan.outcomes[0]).toMatchObject({ levelBefore: 1, levelAfter: 2, relearn: false })
   })
 
+  it('general knowledge alone does not make a chapter "Razumijem"; with another test it does', () => {
+    const alone = planReviews(
+      [{ unit: unit('a'), recalls: [{ recall: 2, source: 'general' }] }],
+      [],
+      ctx(),
+    )
+    expect(patchOf(alone, 'units', 'a')!.patch.level).toBeUndefined()
+    expect(patchOf(alone, 'units', 'a')!.patch.fsrs_reps).toBe(1)
+    expect(logsOf(alone)[0]).toMatchObject({ source: 'general', recall: 2 })
+    const both = planReviews(
+      [
+        {
+          unit: unit('a'),
+          recalls: [
+            { recall: 2, source: 'general' },
+            { recall: 2, source: 'page_photo' },
+          ],
+        },
+      ],
+      [],
+      ctx(),
+    )
+    expect(patchOf(both, 'units', 'a')!.patch.level).toBe(2)
+    expect(logsOf(both)[0]).toMatchObject({ source: 'page_photo' })
+  })
+
   it('a failed check of a known chapter sends it back to learning', () => {
     const known = unit('a', {
       level: 2,

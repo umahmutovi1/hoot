@@ -308,6 +308,70 @@ export interface LinkQuestionsResponse {
 }
 
 // ---------------------------------------------------------------------------
+// recall-questions, propose-answer (testing without the book's text, Stage 10)
+// ---------------------------------------------------------------------------
+
+/** Where AI questions come from (`review_logs.source` of their ratings). */
+export const RECALL_AI_SOURCES = ['notes', 'page_photo', 'general'] as const
+export type RecallAiSource = (typeof RECALL_AI_SOURCES)[number]
+
+/** 3 for the recall gate, 5–10 for a quiz (PRD "Testiranje bez sadržaja literature"). */
+export const GATE_QUESTIONS = 3
+export const QUIZ_QUESTIONS = 6
+export const MAX_RECALL_QUESTIONS = 10
+/** Photos of a page or two (e.g. the chapter summary). */
+export const MAX_PAGE_PHOTOS = 2
+
+export const recallQuestionsRequestSchema = z
+  .object({
+    unit_id: z.uuid(),
+    source: z.enum(RECALL_AI_SOURCES),
+    count: z.int().min(1).max(MAX_RECALL_QUESTIONS),
+    locale: localeSchema,
+    files: z.array(uploadedFileSchema).max(MAX_PAGE_PHOTOS),
+  })
+  .refine((r) => (r.source === 'page_photo') === r.files.length > 0, {
+    message: 'page photos only for page_photo',
+  })
+export type RecallQuestionsRequest = z.infer<typeof recallQuestionsRequestSchema>
+
+export const recallOutputSchema = z.object({
+  questions: z
+    .array(
+      z.object({
+        question: z.string().min(1).describe('A short question in the user language'),
+        answer: z.string().min(1).describe('The correct answer, 1-3 sentences'),
+      }),
+    )
+    .describe('Exactly the requested number of questions, each answerable from the material'),
+})
+export type RecallOutput = z.infer<typeof recallOutputSchema>
+
+export interface RecallQuestion {
+  question: string
+  answer: string
+}
+
+export interface RecallQuestionsResponse {
+  source: RecallAiSource
+  questions: RecallQuestion[]
+}
+
+export const proposeAnswerRequestSchema = z.object({
+  question_id: z.uuid(),
+  locale: localeSchema,
+})
+export type ProposeAnswerRequest = z.infer<typeof proposeAnswerRequestSchema>
+
+export const proposeAnswerOutputSchema = z.object({
+  answer: z
+    .string()
+    .min(1)
+    .describe('A concise exam answer in the user language; markdown lists and $math$ allowed'),
+})
+export type ProposeAnswerOutput = z.infer<typeof proposeAnswerOutputSchema>
+
+// ---------------------------------------------------------------------------
 // embed (gte-small vectors of units, cards and topics; no LLM)
 // ---------------------------------------------------------------------------
 

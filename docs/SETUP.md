@@ -164,9 +164,9 @@ unset GEMINI_API_KEY
 
 > **Modeli i limiti (stanje 20. 10. 2026).** Free tier ima limit po modelu: Gemini 2.5 Flash samo 5 zahtjeva u minuti i 20 dnevno, a `gemini-2.5-flash-lite` više nije dostupan novim nalozima (404). Zato je `LLM_MODEL=gemini-3.5-flash-lite`, a `LLM_FALLBACK_MODEL=gemini-2.5-flash` se koristi kad prvi vrati 429 ili 503 (kvote su po modelu). Trenutne limite vidiš u AI Studio → Rate Limit. Antigravity iz te liste je Googleov agent, ne model za API. Promjena modela je samo `secrets set`, bez deploya.
 
-**4. Edge funkcije** (Etapa 6: `parse-document`, `documents`, `answer`, `ai-status`; Etapa 10: `embed`, vektori jedinica, kartica i tema bez LLM-a; `parse-toc`, `parse-questions`, `link-questions`; slike sadržaja se brišu iz `uploads/<user_id>/import/` odmah poslije poziva):
+**4. Edge funkcije** (Etapa 6: `parse-document`, `documents`, `answer`, `ai-status`; Etapa 10: `embed`, vektori jedinica, kartica i tema bez LLM-a; `parse-toc`, `parse-questions`, `link-questions`, `recall-questions`, `propose-answer`; slike sadržaja i stranica se brišu iz `uploads/<user_id>/import/` i `…/recall/` odmah poslije poziva):
 ```bash
-for f in ai-status parse-document documents answer embed parse-toc parse-questions link-questions; do npx supabase functions deploy $f; done
+for f in ai-status parse-document documents answer embed parse-toc parse-questions link-questions recall-questions propose-answer; do npx supabase functions deploy $f; done
 ```
 - `supabase/config.toml` za svaku ima `verify_jwt = false` (funkcija sama provjerava token preko `auth.getUser`, što radi i sa novim JWT ključevima) i `import_map = "./functions/deno.json"`. Bez `import_map` deploy pada sa „Relative import path \"@supabase/supabase-js\"“.
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY` i `SUPABASE_SERVICE_ROLE_KEY` Supabase sam daje funkcijama; ne postavljaju se ručno.
