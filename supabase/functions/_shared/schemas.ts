@@ -172,6 +172,142 @@ export const embedChunksRequestSchema = z.object({
 export type EmbedChunksRequest = z.infer<typeof embedChunksRequestSchema>
 
 // ---------------------------------------------------------------------------
+// parse-toc, parse-questions, link-questions (AI content import, Stage 10)
+// ---------------------------------------------------------------------------
+
+/** An uploaded image (or PDF) in `<user_id>/<folder>/…`; deleted by the function after reading. */
+export const uploadedFileSchema = z.object({
+  path: z.string().min(1).max(300),
+  media_type: uploadMediaTypeSchema,
+})
+export type UploadedFile = z.infer<typeof uploadedFileSchema>
+
+/** Photos of a table of contents or a question list per call (PRD: 1–4). */
+export const MAX_IMPORT_FILES = 4
+export const MAX_IMPORT_TEXT = 20_000
+export const MAX_TOPIC_NAME = 60
+/** Existing topics of the subject sent so the model reuses them instead of near-duplicates. */
+export const MAX_PROMPT_TOPICS = 150
+
+const topicNames = z
+  .array(z.string().trim().min(1).max(MAX_TOPIC_NAME))
+  .max(3)
+  .describe('1-3 topics; reuse an existing topic name exactly when it fits')
+
+export const parsedTocUnitSchema = z.object({
+  label: z
+    .string()
+    .min(1)
+    .max(20)
+    .describe('Number as printed ("4", "4.1", "4.1.2"); when there is none, the position "1", "2"'),
+  title: z.string().min(1).max(200),
+  page_start: z
+    .int()
+    .min(1)
+    .nullable()
+    .describe('First page (slides: first slide); null if not printed'),
+  page_end: z.int().min(1).nullable().describe('Last page only when printed, else null'),
+  ai_difficulty: z.int().min(1).max(5).describe('1 easy … 5 hard, relative within this subject'),
+  topics: topicNames,
+})
+export type ParsedTocUnit = z.infer<typeof parsedTocUnitSchema>
+
+export const tocParseSchema = z.object({
+  units: z.array(parsedTocUnitSchema).max(300),
+  warnings: z.array(z.string()),
+})
+export type TocParse = z.infer<typeof tocParseSchema>
+
+const importBase = {
+  subject: z.string().trim().min(1).max(120),
+  locale: localeSchema,
+  files: z.array(uploadedFileSchema).max(MAX_IMPORT_FILES),
+  text: z.string().max(MAX_IMPORT_TEXT).nullable(),
+  topics: z.array(z.string().trim().min(1).max(MAX_TOPIC_NAME)).max(MAX_PROMPT_TOPICS),
+}
+
+export const parseTocRequestSchema = z
+  .object({
+    ...importBase,
+    source_kind: z.enum(['book', 'script', 'slides', 'other']),
+    measure: z.enum(['pages', 'slides', 'items']),
+    title: z.string().trim().max(120),
+    /**
+     * "Procijeni težinu AI-jem" for a manual outline: the units are given, the model only rates
+     * difficulty and picks topics (no files, no text).
+     */
+    units: z
+      .array(z.object({ label: z.string().min(1).max(20), title: z.string().min(1).max(200) }))
+      .max(300)
+      .nullable(),
+  })
+  .refine((r) => r.files.length > 0 || Boolean(r.text?.trim()) || (r.units?.length ?? 0) > 0, {
+    message: 'files, text or units are required',
+  })
+export type ParseTocRequest = z.infer<typeof parseTocRequestSchema>
+
+export const parsedQuestionSchema = z.object({
+  label: z
+    .string()
+    .min(1)
+    .max(20)
+    .describe(
+      'Question number as printed ("8" -> "P8"); when there is none, "P1", "P2" by position',
+    ),
+  title: z.string().min(1).max(600).describe('The full question text as written'),
+  topics: topicNames,
+})
+export type ParsedQuestion = z.infer<typeof parsedQuestionSchema>
+
+export const questionsParseSchema = z.object({
+  questions: z.array(parsedQuestionSchema).max(300),
+  warnings: z.array(z.string()),
+})
+export type QuestionsParse = z.infer<typeof questionsParseSchema>
+
+export const parseQuestionsRequestSchema = z
+  .object(importBase)
+  .refine((r) => r.files.length > 0 || Boolean(r.text?.trim()), {
+    message: 'files or text are required',
+  })
+export type ParseQuestionsRequest = z.infer<typeof parseQuestionsRequestSchema>
+
+/** Questions per link-questions call; candidates come from embeddings (question_candidates). */
+export const MAX_LINK_QUESTIONS = 60
+export const LINK_CANDIDATES = 5
+
+export const linkQuestionsRequestSchema = z.object({
+  locale: localeSchema,
+  question_ids: z.array(z.uuid()).min(1).max(MAX_LINK_QUESTIONS),
+})
+export type LinkQuestionsRequest = z.infer<typeof linkQuestionsRequestSchema>
+
+export const linkOutputSchema = z.object({
+  links: z
+    .array(
+      z.object({
+        question: z.int().min(1).describe('Number of the question'),
+        chapters: z
+          .array(z.int().min(1))
+          .max(2)
+          .describe('Numbers of the candidate chapters the question is about; [] if none fits'),
+      }),
+    )
+    .describe('One entry per question'),
+})
+export type LinkOutput = z.infer<typeof linkOutputSchema>
+
+export interface QuestionLinkSuggestion {
+  question_id: string
+  unit_id: string
+  similarity: number
+}
+
+export interface LinkQuestionsResponse {
+  links: QuestionLinkSuggestion[]
+}
+
+// ---------------------------------------------------------------------------
 // embed (gte-small vectors of units, cards and topics; no LLM)
 // ---------------------------------------------------------------------------
 

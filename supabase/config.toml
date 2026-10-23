@@ -443,3 +443,15 @@ import_map = "./functions/deno.json"
 [functions.embed]
 verify_jwt = false
 import_map = "./functions/deno.json"
+
+[functions.parse-toc]
+verify_jwt = false
+import_map = "./functions/deno.json"
+
+[functions.parse-questions]
+verify_jwt = false
+import_map = "./functions/deno.json"
+
+[functions.link-questions]
+verify_jwt = false
+import_map = "./functions/deno.json"
