@@ -48,6 +48,7 @@ describe('crumbsFor', () => {
       'čet, 22. okt@/sessions/a',
     ])
     expect(path('/subjects/s1/edit').at(-1)).toBe('crumbs.edit@/subjects/s1/edit')
+    expect(path('/today/moodle')).toEqual(['nav.today@/', 'moodle.title@/today/moodle'])
     expect(path('/subjects/s1/sources/src1/links').slice(-2)).toEqual([
       'Knjiga@/subjects/s1/sources/src1',
       'links.title@/subjects/s1/sources/src1/links',

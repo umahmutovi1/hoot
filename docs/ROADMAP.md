@@ -257,7 +257,8 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
   - AI pitanja se traže dugmetom (gate: 3, kviz: 6 odmah), opće znanje samo ne podiže poglavlje na „Razumijem“ (FSRS i `review_logs` se ipak upisuju); „Predloži odgovor“ (`propose-answer`) u gate-u i na Jedinici pitanja, spašen prijedlog nosi `answer_origin = 'ai'` i oznaku „AI prijedlog · provjeri“
 - [x] Sova dobija ostale alate: pretraga bilješki, recall, raspored nastave i sadržaj kroz isti razgovor (osnova je iz Etape 6); uvoz iz razgovora („ubaci mi ovo“ za već dat dokument) kao kartica za pregled. Do tad sova iz razgovora ništa ne mijenja i to kaže (odluka iz Etape 6)
   - Odluka (Etapa 10): `answer` vraća jednu akciju (`search_notes`, `quiz`, `add_timetable`, `add_contents`, `import_document`), app je izvrši i prikaže karticu; pretraga bilješki je vektor + leksička provjera bez LLM-a, pa tekst bilješki ne ide u prompt; „ubaci mi ovo“ ponovo čita zadnji dokument iz razgovora kao izabranu vrstu i daje prijedlog za pregled
-- [ ] Povezani kalendari, vrsta „Rokovi“ (Moodle): kartica „N novih rokova iz Moodlea“ → pregled novo / izmijenjeno / preskačem → `deadlines`, uparivanje predmeta (`fuse.js`)
+- [x] Povezani kalendari, vrsta „Rokovi“ (Moodle): kartica „N novih rokova iz Moodlea“ → pregled novo / izmijenjeno / preskačem → `deadlines`, uparivanje predmeta (`fuse.js`)
+  - Migracija `0022_event_category.sql` (`external_events.category` iz ICS `CATEGORIES`, Moodle tu piše predmet); `sync-calendar` sinhronizuje i feedove „Rokovi“ (ne blokiraju vrijeme), pomjeren datum zadržava vezu na rok i „preskačem“; kartica je jedna od kartica akcije na Danas, pregled na `/today/moodle`
 - [ ] Web Share Target u manifestu (Android): podijeljen PDF/slika otvara „Daj sovi dokument“ sa prilogom
 - [ ] Kartice: izvoz CSV (Anki), uvoz teksta „pojam ⇥ definicija“
 - **DoD** → `v0.10.0`

@@ -664,6 +664,7 @@ export type Database = {
       external_events: {
         Row: {
           all_day: boolean
+          category: string | null
           deadline_id: string | null
           ends_at: string
           feed_id: string
@@ -678,6 +679,7 @@ export type Database = {
         }
         Insert: {
           all_day?: boolean
+          category?: string | null
           deadline_id?: string | null
           ends_at: string
           feed_id: string
@@ -692,6 +694,7 @@ export type Database = {
         }
         Update: {
           all_day?: boolean
+          category?: string | null
           deadline_id?: string | null
           ends_at?: string
           feed_id?: string
