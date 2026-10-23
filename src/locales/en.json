@@ -2072,5 +2072,30 @@
     "save_other": "Save {{count}} links",
     "later": "Later",
     "continue": "Continue"
+  },
+  "moodle": {
+    "title": "Deadlines from Moodle",
+    "lead": "New and moved deadlines from the connected calendar. Nothing is saved until you apply.",
+    "card_one": "{{count}} new deadline from Moodle",
+    "card_other": "{{count}} new deadlines from Moodle",
+    "cardSub": "Review before saving",
+    "cardChanged_one": "{{count}} moved · review before saving",
+    "cardChanged_other": "{{count}} moved · review before saving",
+    "none": "No new deadlines.",
+    "tag": {
+      "new": "New",
+      "changed": "Changed",
+      "skip": "Skipping"
+    },
+    "skip": "Skip",
+    "restore": "Restore",
+    "skipAria": "Skip {{title}}",
+    "restoreAria": "Restore {{title}}",
+    "subject": "Subject for {{title}}",
+    "noSubject": "No subject",
+    "hint": "A skipped deadline is not offered again. Dates come from Moodle; add the hours estimate on the deadline.",
+    "apply_one": "Apply {{count}} change",
+    "apply_other": "Apply {{count}} changes",
+    "skipAll": "Skip all"
   }
 }

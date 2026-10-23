@@ -37,3 +37,38 @@ export function takeByBudget<T>(
   }
   return out
 }
+<<<<<<< Updated upstream
+=======
+
+/** Word stems for a rough lexical check: lowercase, no diacritics, first 5 letters of 4+ letter words. */
+export function stems(text: string): Set<string> {
+  const plain = text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'dj')
+  return new Set((plain.match(/[a-z0-9]{4,}/g) ?? []).map((w) => w.slice(0, 5)))
+}
+
+/** gte-small alone puts unrelated Bosnian text around 0.8; this close it is the same thing. */
+export const SURE_SIMILARITY = 0.9
+/** Common words that say nothing about the topic. */
+const STOP = new Set(['gdje', 'sam', 'pisal', 'pisao', 'about', 'where', 'what', 'kako', 'sta'])
+
+/**
+ * Notes search (no LLM): vector hits are kept when they share a word stem with the query or are
+ * nearly identical in meaning; shared stems rank first.
+ */
+export function rankNotes<T extends { similarity: number; text: string }>(
+  query: string,
+  hits: T[],
+  limit = 5,
+): T[] {
+  const wanted = [...stems(query)].filter((s) => !STOP.has(s))
+  return hits
+    .map((h) => {
+      const have = stems(h.text)
+      return { h, shared: wanted.filter((s) => have.has(s)).length }
+    })
+    .filter(({ h, shared }) => shared > 0 || h.similarity >= SURE_SIMILARITY)
+    .sort((a, b) => b.shared - a.shared || b.h.similarity - a.h.similarity)
+    .slice(0, limit)
+    .map(({ h }) => h)
+}
+>>>>>>> Stashed changes

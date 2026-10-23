@@ -1,3 +1,5 @@
+import { MoodleCard } from '@/features/calendars/MoodleCard'
+import { useDeadlineProposals } from '@/features/calendars/moodle'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -179,6 +181,7 @@ function ActionCards() {
   const [more, setMore] = useState(false)
   const urgent = suggestions.filter((s) => s.kind === 'fresh_start' || s.kind === 'deficit')
   const rest = suggestions.filter((s) => s.kind !== 'fresh_start' && s.kind !== 'deficit')
+  const moodle = useDeadlineProposals()
   const cards = [
     ...urgent.map((s) => <SuggestionCard key={s.key} suggestion={s} />),
     ...lectures.pending.map((l) => (
@@ -189,6 +192,7 @@ function ActionCards() {
         onSkip={lectures.refresh}
       />
     )),
+    ...(moodle.length > 0 ? [<MoodleCard key="moodle" proposals={moodle} />] : []),
     ...rest.map((s) => <SuggestionCard key={s.key} suggestion={s} />),
   ]
   if (cards.length === 0) return null

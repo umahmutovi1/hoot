@@ -2128,5 +2128,33 @@
     "save_other": "Spasi {{count}} veza",
     "later": "Kasnije",
     "continue": "Nastavi"
+  },
+  "moodle": {
+    "title": "Rokovi iz Moodlea",
+    "lead": "Novi i pomjereni rokovi iz povezanog kalendara. Upisuju se tek kad primijeniš.",
+    "card_one": "{{count}} novi rok iz Moodlea",
+    "card_few": "{{count}} nova roka iz Moodlea",
+    "card_other": "{{count}} novih rokova iz Moodlea",
+    "cardSub": "Pregledaj prije upisa",
+    "cardChanged_one": "{{count}} je pomjeren · pregledaj prije upisa",
+    "cardChanged_few": "{{count}} su pomjerena · pregledaj prije upisa",
+    "cardChanged_other": "{{count}} je pomjereno · pregledaj prije upisa",
+    "none": "Nema novih rokova.",
+    "tag": {
+      "new": "Novo",
+      "changed": "Izmijenjeno",
+      "skip": "Preskačem"
+    },
+    "skip": "Preskoči",
+    "restore": "Vrati",
+    "skipAria": "Preskoči {{title}}",
+    "restoreAria": "Vrati {{title}}",
+    "subject": "Predmet za {{title}}",
+    "noSubject": "Bez predmeta",
+    "hint": "Preskočen rok se više ne nudi. Datumi dolaze iz Moodlea; procjenu sati dodaješ na roku.",
+    "apply_one": "Primijeni {{count}} izmjenu",
+    "apply_few": "Primijeni {{count}} izmjene",
+    "apply_other": "Primijeni {{count}} izmjena",
+    "skipAll": "Preskoči sve"
   }
 }

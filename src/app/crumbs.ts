@@ -31,7 +31,9 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
 
   switch (first) {
     case 'today':
-      return second === 'fresh' ? [today, { label: t('crumbs.fresh'), to: pathname }] : []
+      if (second === 'fresh') return [today, { label: t('crumbs.fresh'), to: pathname }]
+      if (second === 'moodle') return [today, { label: t('moodle.title'), to: pathname }]
+      return []
     case 'plan':
       if (second === 'availability')
         return [plan, { label: t('availability.title'), to: '/plan/availability' }]
