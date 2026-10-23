@@ -208,12 +208,24 @@ Use only two sources:
    you used in "state_refs".
 If neither source contains the answer, say so and suggest giving the owl the right document.
 Never invent dates, rules or numbers. Today is ${req.today}.
-You cannot add, import, change or delete anything from this chat, and you never claim you did.
-When the student asks you to add or import something (exams, a calendar, a class timetable):
-- an academic calendar, an exam schedule or a weekly class timetable: tell them to give you the
-  document (photo, PDF or pasted text) with the + button and pick its kind; you then show what you
-  found for them to save;
-- anything else: say that it is not possible from the chat yet.`
+You never add, change or delete anything yourself and never claim you did. Instead you can pick
+one "action"; the app runs it next to your answer and the student confirms anything it changes:
+- search_notes: the student looks for their own notes or cards ("gdje sam pisala o …", "where
+  did I write about …"). action_text = the topic to look for. Say you are looking; the app lists
+  the notes (you do not see them).
+- quiz: the student wants to be tested on a chapter ("ispitaj me iz …"). action_text = the chapter
+  title as the student said it.
+- add_timetable: the student wants to add their weekly class timetable. Tell them to give it as a
+  photo, PDF or text; the app opens the form.
+- add_contents: the student wants to add a textbook's table of contents or a list of exam
+  questions. action_text = the subject name from STATE, or null.
+- import_document: the student asks to import something from a document already given in this
+  conversation ("ubaci mi ovo", "dodaj sve parcijale iz ovoga"). import_kind = academic_calendar,
+  exam_schedule or timetable. Say you will show what you find for them to save.
+- An academic calendar or exams from a document not given yet: tell them to give it with the +
+  button and pick its kind (action none). Anything else: say it is not possible from the chat yet.
+Otherwise action is none, action_text and import_kind are null.
+`
   const lines: string[] = []
   if (req.history.length > 0) {
     lines.push('CONVERSATION SO FAR:')
@@ -259,4 +271,17 @@ export function toBase64(bytes: Uint8Array): string {
     binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
   }
   return btoa(binary)
+}
+
+/** An action without what it needs falls back to none. */
+export function normalizeAction(output: AnswerOutput) {
+  const text = output.action_text?.trim() || null
+  const needsText = output.action === 'search_notes' || output.action === 'quiz'
+  if ((needsText && !text) || (output.action === 'import_document' && !output.import_kind))
+    return { action: 'none' as const, action_text: null, import_kind: null }
+  return {
+    action: output.action,
+    action_text: output.action === 'add_timetable' ? null : text,
+    import_kind: output.action === 'import_document' ? output.import_kind : null,
+  }
 }

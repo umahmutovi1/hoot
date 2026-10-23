@@ -1476,7 +1476,9 @@
       "found_few": "Našla sam {{count}} stavke. Pogledaj prije nego spasim:",
       "found_other": "Našla sam {{count}} stavki. Pogledaj prije nego spasim:",
       "noDates": "Datume nisam našla, ali dokument čuvam za pitanja.",
-      "notStored": "„{{title}}“ nisam uspjela spremiti u Dokumente, pa iz njega ne mogu odgovarati. Pošalji ga ponovo kasnije."
+      "notStored": "„{{title}}“ nisam uspjela spremiti u Dokumente, pa iz njega ne mogu odgovarati. Pošalji ga ponovo kasnije.",
+      "again": "Pročitala sam ponovo „{{title}}”.",
+      "nothingAgain": "Nisam našla ništa za uvoz te vrste."
     },
     "kind": {
       "academic_calendar": "Akademski kalendar",
@@ -1562,7 +1564,18 @@
       "short": "fali {{time}}",
       "left": "još ~{{time}}"
     },
-    "noTeachingPeriod": "Termini se upisuju u period nastave. Prvo dodaj semestar u Akademski kalendar."
+    "noTeachingPeriod": "Termini se upisuju u period nastave. Prvo dodaj semestar u Akademski kalendar.",
+    "action": {
+      "notesTitle": "Tvoje bilješke",
+      "card": "kartica",
+      "notesNone": "Nisam našla bilješke o „{{text}}”.",
+      "notesFailed": "Pretraga bilješki nije uspjela. Pokušaj ponovo.",
+      "quizNone": "Ne nalazim poglavlje „{{text}}”. Otvori ga u Predmetima i pokreni kviz odatle.",
+      "timetable": "Daj raspored nastave",
+      "contents": "Dodaj sadržaj ili pitanja",
+      "contentsFor": "Dodaj sadržaj · {{subject}}",
+      "giveDocument": "Daj dokument"
+    }
   },
   "offline": {
     "title": "Nisi na mreži",

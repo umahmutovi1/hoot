@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { answerRequest, citationsFor, normalizeParse, parseRequest, toBase64 } from './prompts.ts'
+import {
+  answerRequest,
+  citationsFor,
+  normalizeAction,
+  normalizeParse,
+  parseRequest,
+  toBase64,
+} from './prompts.ts'
 import type { ParseDocumentRequest } from './schemas.ts'
 
 const SIGNALI = '11111111-1111-4111-8111-111111111111'
@@ -157,7 +164,24 @@ describe('answer', () => {
   it('tells the owl it cannot change data from the chat', () => {
     const r = answerRequest(req, passages)
     expect(r.system).toContain('never claim you did')
-    expect(r.system).toContain('weekly class timetable: tell them to give you the')
+    expect(r.system).toContain('import_document')
+  })
+
+  it('drops an action that lacks what it needs', () => {
+    const base = { answer: 'a', passages: [], state_refs: [], import_kind: null }
+    expect(normalizeAction({ ...base, action: 'quiz', action_text: ' ' })).toEqual({
+      action: 'none',
+      action_text: null,
+      import_kind: null,
+    })
+    expect(
+      normalizeAction({ ...base, action: 'import_document', action_text: null }),
+    ).toMatchObject({ action: 'none' })
+    expect(normalizeAction({ ...base, action: 'search_notes', action_text: ' Fourier ' })).toEqual({
+      action: 'search_notes',
+      action_text: 'Fourier',
+      import_kind: null,
+    })
   })
 
   it('puts the state in the cacheable prefix and the question last', () => {
@@ -172,7 +196,14 @@ describe('answer', () => {
 
   it('cites each used document page once and ignores unknown numbers', () => {
     const citations = citationsFor(
-      { answer: 'x', passages: [1, 3, 2, 9], state_refs: [] },
+      {
+        answer: 'x',
+        passages: [1, 3, 2, 9],
+        state_refs: [],
+        action: 'none',
+        action_text: null,
+        import_kind: null,
+      },
       passages,
     )
     expect(citations).toEqual([

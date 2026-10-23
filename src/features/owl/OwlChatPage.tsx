@@ -8,6 +8,7 @@ import type { Citation } from '@shared/schemas.ts'
 import { useAiAvailability, useDocumentFileUrl, useDocuments } from './api'
 import { ChatPlan } from './ChatPlan'
 import { GiveDocumentSheet } from './GiveDocumentSheet'
+import { ActionCard } from './ActionCard'
 import { ImportCard } from './ImportCard'
 import { useOwlStore, type OwlMessage, type StateRef } from './store'
 import { useOwl } from './useOwl'
@@ -202,18 +203,23 @@ function Message({ message: m }: { message: OwlMessage }) {
           {m.stateRefs.map((r) => (
             <StateChip key={`${r.subject}:${r.topic}`} stateRef={r} />
           ))}
+          {m.action && <ActionCard action={m.action} />}
         </OwlBubble>
       )
     case 'document':
       return (
         <OwlBubble>
           <span>
-            {m.stored === false
-              ? t('owl.document.notStored', { title: m.title })
-              : t('owl.document.stored', { title: m.title })}
+            {m.again
+              ? t('owl.document.again', { title: m.title })
+              : m.stored === false
+                ? t('owl.document.notStored', { title: m.title })
+                : t('owl.document.stored', { title: m.title })}
           </span>
           {m.found > 0 ? (
             <span>{t('owl.document.found', { count: m.found })}</span>
+          ) : m.again ? (
+            <span>{t('owl.document.nothingAgain')}</span>
           ) : (
             (m.kind === 'academic_calendar' || m.kind === 'exam_schedule') && (
               <span>{t('owl.document.noDates')}</span>

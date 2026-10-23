@@ -4,7 +4,7 @@ import { json } from '../_shared/cors.ts'
 import { embed } from '../_shared/embed.ts'
 import { readJson, serve } from '../_shared/edge.ts'
 import type { EdgeContext } from '../_shared/edge.ts'
-import { embedText, takeByBudget } from '../_shared/embedText.ts'
+import { embedText, rankNotes, takeByBudget } from '../_shared/embedText.ts'
 import type { EmbedSourceRow } from '../_shared/embedText.ts'
 import { embedRequestSchema } from '../_shared/schemas.ts'
 import type {
@@ -15,9 +15,8 @@ import type {
   SearchNotesResponse,
 } from '../_shared/schemas.ts'
 
-const NOTE_MATCHES = 8
-// gte-small similarities cluster high; below this a note is unrelated.
-const MIN_NOTE_SIMILARITY = 0.75
+// Vector candidates; the lexical check (rankNotes) keeps the ones about the query.
+const NOTE_CANDIDATES = 12
 
 const TABLES: Record<EmbedKind, { table: string; key: string; columns: string }> = {
   unit: { table: 'unit_embeddings', key: 'unit_id', columns: 'id, title, notes' },
@@ -53,12 +52,20 @@ Deno.serve(
     if (body.op === 'search_notes') {
       const { data, error } = await ctx.db.rpc('match_notes', {
         query_embedding: await embed(body.query),
-        match_count: NOTE_MATCHES,
+        match_count: NOTE_CANDIDATES,
       })
       if (error) throw error
-      const matches = ((data ?? []) as NoteMatch[]).filter(
-        (m) => m.similarity >= MIN_NOTE_SIMILARITY,
+      const found = (data ?? []) as NoteMatch[]
+      const texts = new Map<string, string>()
+      const unitIds = found.filter((m) => m.kind === 'unit').map((m) => m.id)
+      const cardIds = found.filter((m) => m.kind === 'card').map((m) => m.id)
+      for (const r of await readRows(ctx, 'unit', unitIds)) texts.set(r.id, embedText(r))
+      for (const r of await readRows(ctx, 'card', cardIds)) texts.set(r.id, embedText(r))
+      const ranked = rankNotes(
+        body.query,
+        found.map((m) => ({ ...m, text: texts.get(m.id) ?? '' })),
       )
+      const matches = ranked.map(({ text: _text, ...m }) => m)
       return json({ matches } satisfies SearchNotesResponse)
     }
 
