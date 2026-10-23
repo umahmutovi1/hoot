@@ -317,19 +317,19 @@ export interface SaveScopeInput {
   unitIds: string[]
   /** All of the subject's exams; rows of other exams are never touched. */
   examIds: string[]
-  /** The new rows for those units (already `rowsForChoice`). */
-  rows: ScopeRow[]
+  /** The new rows for those units (already `rowsForChoice`); `by` defaults to the user. */
+  rows: (ScopeRow & { by?: 'ai' | 'user' })[]
 }
 
-/** Replaces the scope rows of the given units; every row is a manual (`user`) choice. */
+/** Replaces the scope rows of the given units: the user's choices, or accepted AI suggestions. */
 export function useSaveScope(subjectId: string | undefined) {
   const userId = useUserId()
   const queryClient = useQueryClient()
-  const toRow = (r: ScopeRow): TablesInsert<'assessment_units'> => ({
+  const toRow = (r: ScopeRow & { by?: 'ai' | 'user' }): TablesInsert<'assessment_units'> => ({
     assessment_id: r.assessmentId,
     unit_id: r.unitId,
     included: r.included,
-    assigned_by: 'user',
+    assigned_by: r.by ?? 'user',
   })
   return useMutation({
     mutationFn: async ({ unitIds, examIds, rows }: SaveScopeInput) => {
