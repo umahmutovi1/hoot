@@ -207,7 +207,7 @@ export function GateTest({
                 <Item
                   key={item.key}
                   item={item}
-                  label={itemLabel(t, item, i, list.length, questions)}
+                  label={itemLabel(t, item, i, list.length, questions, target)}
                   subjectId={subjectId}
                   cardUnitId={target.leaves[0]!.id}
                   aiReady={aiReady}
@@ -262,9 +262,19 @@ export function GateTest({
   )
 }
 
-function itemLabel(t: TFunction, item: GateItem, i: number, total: number, questions: Unit[]) {
+function itemLabel(
+  t: TFunction,
+  item: GateItem,
+  i: number,
+  total: number,
+  questions: Unit[],
+  target: GateTarget,
+) {
   if (item.source === 'exam_question') {
     const q = questions.find((x) => x.id === item.refId)
+    // Tested from its own Jedinica: not "linked through a topic".
+    if (item.key === `q:${target.key}`)
+      return t('recall.label.questionSelf', { label: q?.label ?? '' })
     return t('recall.label.exam_question', { label: q?.label ?? '' })
   }
   return t(`recall.label.${item.source as 'notes' | 'card' | 'general' | 'page_photo'}`, {

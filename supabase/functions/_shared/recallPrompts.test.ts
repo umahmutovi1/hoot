@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeRecall, proposeAnswerRequest, recallRequest } from './recallPrompts.ts'
+import {
+  normalizeRecall,
+  proposeAnswerRequest,
+  recallRequest,
+  tidyMarkdown,
+} from './recallPrompts.ts'
 import { recallQuestionsRequestSchema } from './schemas.ts'
 
 const material = {
@@ -81,5 +86,15 @@ describe('proposeAnswerRequest', () => {
     )
     expect(r.task).toBe('propose_answer')
     expect(r.text).toContain('Chapter: Normalizacija\nNotes:\nBCNF je stroža.\nChapter: Ključevi')
+  })
+})
+
+describe('tidyMarkdown', () => {
+  it('puts run-in bullets on their own lines', () => {
+    expect(tidyMarkdown('ACID svojstva: * **A:** sve ili ništa. * **C:** konzistentno.')).toBe(
+      'ACID svojstva:\n- **A:** sve ili ništa.\n- **C:** konzistentno.',
+    )
+    expect(tidyMarkdown('* jedan\n* dva')).toBe('- jedan\n- dva')
+    expect(tidyMarkdown('a - b')).toBe('a - b')
   })
 })

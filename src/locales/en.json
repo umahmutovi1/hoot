@@ -1916,7 +1916,8 @@
       "notes": "FROM YOUR NOTES · {{n}} of {{total}}",
       "card": "CARD · {{n}} of {{total}}",
       "general": "GENERAL KNOWLEDGE · AI from the chapter title · {{n}} of {{total}}",
-      "page_photo": "FROM A PAGE PHOTO · {{n}} of {{total}}"
+      "page_photo": "FROM A PAGE PHOTO · {{n}} of {{total}}",
+      "questionSelf": "EXAM QUESTION {{label}}"
     },
     "notesPrompt": "What do you know about: {{title}}?",
     "answerPlaceholder": "Write the answer from memory…",

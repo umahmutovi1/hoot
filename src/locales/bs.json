@@ -1968,7 +1968,8 @@
       "notes": "IZ TVOJIH BILJEŠKI · {{n}} od {{total}}",
       "card": "KARTICA · {{n}} od {{total}}",
       "general": "OPĆE ZNANJE · AI iz naslova poglavlja · {{n}} od {{total}}",
-      "page_photo": "SA SLIKE STRANICE · {{n}} od {{total}}"
+      "page_photo": "SA SLIKE STRANICE · {{n}} od {{total}}",
+      "questionSelf": "ISPITNO PITANJE {{label}}"
     },
     "notesPrompt": "Šta znaš o: {{title}}?",
     "answerPlaceholder": "Napiši odgovor iz glave…",

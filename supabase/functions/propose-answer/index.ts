@@ -4,7 +4,7 @@
 import { json } from '../_shared/cors.ts'
 import { llmDeps, readJson, serve } from '../_shared/edge.ts'
 import { generate } from '../_shared/llm.ts'
-import { proposeAnswerRequest } from '../_shared/recallPrompts.ts'
+import { proposeAnswerRequest, tidyMarkdown } from '../_shared/recallPrompts.ts'
 import { proposeAnswerRequestSchema } from '../_shared/schemas.ts'
 import type { ProposeAnswerOutput } from '../_shared/schemas.ts'
 
@@ -69,6 +69,6 @@ Deno.serve(
         locale,
       ),
     )
-    return json({ answer: result.data.answer.trim() } satisfies ProposeAnswerOutput)
+    return json({ answer: tidyMarkdown(result.data.answer) } satisfies ProposeAnswerOutput)
   }),
 )
