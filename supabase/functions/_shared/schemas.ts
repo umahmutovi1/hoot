@@ -172,6 +172,58 @@ export const embedChunksRequestSchema = z.object({
 export type EmbedChunksRequest = z.infer<typeof embedChunksRequestSchema>
 
 // ---------------------------------------------------------------------------
+// embed (gte-small vectors of units, cards and topics; no LLM)
+// ---------------------------------------------------------------------------
+
+export const EMBED_KINDS = ['unit', 'card', 'topic'] as const
+export type EmbedKind = (typeof EMBED_KINDS)[number]
+
+/** Rows sent per `embed` call; the function stops earlier when the text budget is used up. */
+export const EMBED_ROWS = 8
+
+export const embedRequestSchema = z.discriminatedUnion('op', [
+  /** Embed stored rows (read through RLS) and save their vectors. */
+  z.object({
+    op: z.literal('store'),
+    items: z
+      .array(z.object({ kind: z.enum(EMBED_KINDS), id: z.uuid() }))
+      .min(1)
+      .max(EMBED_ROWS),
+  }),
+  /** Vectors of short texts that are not stored yet (topic names before a save). */
+  z.object({
+    op: z.literal('vectors'),
+    texts: z.array(z.string().trim().min(1).max(200)).min(1).max(EMBED_ROWS),
+  }),
+  /** "Gdje sam pisala o …": nearest notes and cards to a query. */
+  z.object({
+    op: z.literal('search_notes'),
+    query: z.string().trim().min(1).max(500),
+  }),
+])
+export type EmbedRequest = z.infer<typeof embedRequestSchema>
+
+export interface EmbedStoreResponse {
+  /** Rows embedded in this call; the rest is sent again. */
+  done: string[]
+}
+
+export interface EmbedVectorsResponse {
+  vectors: number[][]
+}
+
+export interface NoteMatch {
+  kind: 'unit' | 'card'
+  id: string
+  unit_id: string
+  similarity: number
+}
+
+export interface SearchNotesResponse {
+  matches: NoteMatch[]
+}
+
+// ---------------------------------------------------------------------------
 // answer
 // ---------------------------------------------------------------------------
 
