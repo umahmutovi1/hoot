@@ -40,11 +40,7 @@ export function takeByBudget<T>(
 
 /** Word stems for a rough lexical check: lowercase, no diacritics, first 5 letters of 4+ letter words. */
 export function stems(text: string): Set<string> {
-  const plain = text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/đ/g, 'dj')
+  const plain = text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'dj')
   return new Set((plain.match(/[a-z0-9]{4,}/g) ?? []).map((w) => w.slice(0, 5)))
 }
 
