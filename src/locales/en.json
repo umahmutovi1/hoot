@@ -185,15 +185,9 @@
       "deadline_one": "{{count}} deadline",
       "deadline_other": "{{count}} deadlines"
     },
-    "view": {
-      "month": "Month",
-      "day": "Day"
-    },
-    "viewLabel": "Calendar view",
     "prevWeek": "Previous week",
     "nextWeek": "Next week",
     "cancelled": "cancelled",
-    "noClasses": "No classes this day.",
     "timetableButton": "Timetable",
     "legendPlanned": "Planned study",
     "schedule": {
@@ -201,7 +195,8 @@
       "moved": "A moved block becomes manual",
       "revert": "Restore the plan",
       "reverted": "The plan's suggestion is back"
-    }
+    },
+    "openMonth": "Show the month, {{month}}"
   },
   "subjects": {
     "title": "Subjects",

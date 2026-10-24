@@ -192,15 +192,9 @@
       "deadline_few": "{{count}} roka",
       "deadline_other": "{{count}} rokova"
     },
-    "view": {
-      "month": "Mjesec",
-      "day": "Dan"
-    },
-    "viewLabel": "Prikaz kalendara",
     "prevWeek": "Prethodna sedmica",
     "nextWeek": "Sljedeća sedmica",
     "cancelled": "otkazano",
-    "noClasses": "Nema nastave ovaj dan.",
     "timetableButton": "Raspored",
     "legendPlanned": "Planirano učenje",
     "schedule": {
@@ -208,7 +202,8 @@
       "moved": "Pomjeren blok postaje ručni",
       "revert": "Vrati predloženo",
       "reverted": "Vraćen je prijedlog plana"
-    }
+    },
+    "openMonth": "Prikaži mjesec, {{month}}"
   },
   "subjects": {
     "title": "Predmeti",

@@ -40,9 +40,12 @@ type CalendarMode = (typeof VIEWS)[number]
  */
 export function CalendarView() {
   const { t } = useTranslation()
+  const { locale } = useLocale()
   const [params, setParams] = useSearchParams()
   const view: CalendarMode = VIEWS.find((v) => v === params.get('view')) ?? 'day'
-  const setView = (v: CalendarMode) => setParams(v === 'day' ? {} : { view: v }, { replace: true })
+  // Month is pushed, so back returns to the day; picking a day replaces it (no month in history).
+  const setView = (v: CalendarMode) =>
+    v === 'day' ? setParams({}, { replace: true }) : setParams({ view: v })
   const [today] = useState(() => new Date())
   const now = useNow()
   // `?date=yyyy-MM-dd` opens a day directly (e.g. "Prikaži u kalendaru" on an exam).
@@ -79,28 +82,40 @@ export function CalendarView() {
 
   return (
     <div className="flex flex-col">
-      <div role="tablist" aria-label={t('plan.viewLabel')} className="mb-3 flex gap-1.5">
-        {VIEWS.map((v) => (
-          <button
-            key={v}
-            type="button"
-            role="tab"
-            aria-selected={view === v}
-            onClick={() => setView(v)}
-            className={cn(
-              'h-9 rounded-full px-4 text-[13px] font-semibold',
-              view === v ? 'bg-ink text-white' : 'glass text-ink',
-            )}
-          >
-            {t(`plan.view.${v}`)}
-          </button>
-        ))}
-      </div>
-
-      {view === 'month' && <MonthGrid today={today} selected={selected} onSelect={setSelected} />}
+      {view === 'month' && (
+        <MonthGrid
+          today={today}
+          selected={selected}
+          onSelect={(date) => {
+            setSelected(date)
+            setView('day')
+          }}
+        />
+      )}
       {view === 'day' && (
         <div className="flex flex-col gap-3">
-          <DayStrip selected={selected} today={today} onSelect={setSelected} />
+          {/* iOS calendar hierarchy: Dan is the default; the month pill opens Mjesec, and a day
+              picked there returns to Dan. */}
+          <DayStrip
+            selected={selected}
+            today={today}
+            onSelect={setSelected}
+            title={
+              <button
+                type="button"
+                onClick={() => setView('month')}
+                aria-label={t('plan.openMonth', {
+                  month: format(selected, 'LLLL yyyy', { locale: dateFnsLocales[locale] }),
+                })}
+                className="flex h-10 items-center gap-1 rounded-full glass pr-4 pl-2.5 text-[15px] font-semibold text-brand"
+              >
+                <ChevronLeftIcon size={16} />
+                <span className="first-letter:uppercase">
+                  {format(selected, 'LLLL yyyy', { locale: dateFnsLocales[locale] })}
+                </span>
+              </button>
+            }
+          />
           <div className="flex items-center justify-between gap-3 px-1">
             <span className="text-xs leading-[1.4] text-ink-muted">
               {t('plan.schedule.note')} · {t('plan.schedule.moved')}
@@ -119,11 +134,6 @@ export function CalendarView() {
             data-timeline-scroll
             className="max-h-[52dvh] overflow-y-auto overscroll-contain rounded-card-lg glass p-3 pr-2"
           >
-            {dayClasses.length === 0 &&
-              agenda.busyFor(selectedDate).length === 0 &&
-              blocks.length === 0 && (
-                <p className="px-1 pb-2 text-sm text-ink-muted">{t('plan.noClasses')}</p>
-              )}
             <DayTimeline
               items={dayClasses}
               busy={agenda.busyFor(selectedDate)}

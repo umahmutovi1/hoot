@@ -355,7 +355,7 @@ Satnicu pravi čista TypeScript funkcija `plan(state) → blocks`, bez AI-ja: br
 **Lista vs satnica.** Plan se pravi u dva sloja:
 
 1. `plan()` raspodijeli rad po danima → “Danas” lista.
-2. `placeTimes()` odmah poslije `plan()` (odluka nakon Etape 7: automatski, ne na zahtjev) smjesti blokove svakog dana u slobodne termine → popuni `start_min` i `planned_start`. Ručni blokovi sa zadatim vremenom su fiksni; ostali se slažu oko njih. Dnevni pogled kalendara (Plan → Dan; odluka nakon 8b: Kalendar i Satnica su spojeni u jedan kalendar sa pogledima Dan, default, i Mjesec) samo prikazuje dan i dozvoljava pomjeranje bloka (pomjeren blok postaje ručni, kao u toku 7).
+2. `placeTimes()` odmah poslije `plan()` (odluka nakon Etape 7: automatski, ne na zahtjev) smjesti blokove svakog dana u slobodne termine → popuni `start_min` i `planned_start`. Ručni blokovi sa zadatim vremenom su fiksni; ostali se slažu oko njih. Dnevni pogled kalendara (Plan → Dan; odluka nakon 8b: Kalendar i Satnica su spojeni u jedan kalendar sa pogledima Dan, default, i Mjesec) (od oktobra 2026 kao na iOS-u: Dan pokazuje cijeli dan 00–24, a Mjesec se otvara pilulom „‹ mjesec godina“ i tap na dan vraća na Dan) samo prikazuje dan i dozvoljava pomjeranje bloka (pomjeren blok postaje ručni, kao u toku 7).
 
 `placeTimes()` pravila:
 
