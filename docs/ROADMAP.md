@@ -273,7 +273,8 @@ Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, t
 - [x] AI dugme samo ikona: bez labela i podvlake; isključeno `bg-white/30` + ikona `brand-accent`, uključeno `glass-tint` + bijela ikona; `aria-label` „AI asistent“
 - [x] Sticky gornji red (`TopBar` u `AppShell`): `sticky top-0` + safe-area, sadržaj ispod se zamuti (`backdrop-filter` blur, maska za meku donju ivicu), fallback platno 0.92
 - [x] Meni: naziv sekcije je link na glavnu stranicu (Plan, Predmeti, Napredak, Postavke), chevron je zasebno dugme 44 px; animirano otvaranje podstranica
-- [ ] Sheetovi: `BottomSheet` na shadcn Drawer (`vaul`), povlačenje nadolje zatvara, kriva `cubic-bezier(0.32, 0.72, 0, 1)` ~400 ms, `prefers-reduced-motion` → fade
+- [x] Sheetovi: `BottomSheet` na shadcn Drawer (`vaul`), povlačenje nadolje zatvara, kriva `cubic-bezier(0.32, 0.72, 0, 1)` ~400 ms, `prefers-reduced-motion` → fade
+  - Povlači se samo ručka (`handleOnly`): forme, označavanje teksta i scroll unutar sheeta ostaju kao prije; tastatura ide preko `--vv-bottom` (vaul `repositionInputs` isključen)
 - [x] Exam kartice na Danas po mockupu: datum → ime → % → traka; dani do ispita desno u redu datuma; % i traka uvijek (bez izvora „—“), jednaka visina; traka 3 px radijus, track 0.65
 - [ ] Swipe ulijevo na listama (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): arhiviraj / obriši / preskoči, toast Poništi, iste akcije u „⋯“ / dugom pritisku
 - [ ] Pretraga: ikona u gornjem redu, indeks ekrana i postavki sa sinonimima + podaci iz keša, `fuse.js`, offline, nedavne

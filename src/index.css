@@ -199,6 +199,31 @@
     0 10px 26px rgba(76, 72, 146, 0.22);
 }
 
+/* Sheets (vaul): in on the iOS curve in ~400 ms, out in ~250 ms; the scrim fades with them and
+   follows the drag. `html` outranks vaul's injected styles. Reduced motion: a 150 ms fade only. */
+html [data-vaul-drawer] {
+  animation-duration: 0.4s;
+  transition-duration: 0.4s;
+  user-select: auto;
+}
+html [data-vaul-drawer][data-state='closed'],
+html [data-vaul-overlay][data-state='closed'] {
+  animation-duration: 0.25s;
+}
+html [data-vaul-overlay] {
+  animation-duration: 0.4s;
+}
+@media (prefers-reduced-motion: reduce) {
+  html [data-vaul-drawer][data-state='open'],
+  html [data-vaul-overlay][data-state='open'] {
+    animation: fadeIn 0.15s linear;
+  }
+  html [data-vaul-drawer][data-state='closed'],
+  html [data-vaul-overlay][data-state='closed'] {
+    animation: fadeOut 0.15s linear;
+  }
+}
+
 /* No backdrop-filter, or the user asked for less transparency: opaque surfaces, no blur. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-strong,
