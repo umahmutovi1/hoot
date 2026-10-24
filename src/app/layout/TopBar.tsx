@@ -5,12 +5,15 @@ import { AiSparkIcon, CloseIcon, MenuIcon } from '@/components/icons'
 import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/utils'
 
+/** Faint glass pill behind the AI icon and the right-hand group (design README, 10b). */
+const pill = 'rounded-full bg-white/30 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.6)]'
+
 /**
  * First row of every screen (docs/design/NavMeni.html): the owl logo (home = Danas), the assistant
- * right next to it and the menu in the corner. No background of its own; "✦ AI" sits on a faint
- * glass pill so it reads as a button. It opens the chat and, while it is open (underlined), closes
- * it again. Inside the open menu the same row repeats with × in place of ☰, so nothing moves when
- * it opens; leaving through the logo or AI closes the menu too.
+ * right next to it and the menu in the corner. The AI spark is an icon on a faint pill; while the
+ * chat is open it turns into the session purple (`glass-tint`) with a white icon and closes the
+ * chat again. Inside the open menu the same row repeats with × in place of ☰, so nothing moves
+ * when it opens; leaving through the logo or AI closes the menu too.
  */
 export function TopBar({
   menuOpen,
@@ -46,16 +49,12 @@ export function TopBar({
         }}
         aria-label={inChat ? t('nav.aiClose') : t('nav.aiLabel')}
         aria-pressed={inChat}
-        className="relative flex h-11 items-center gap-1.5 rounded-full bg-white/30 px-3.5 text-[15px] font-semibold text-brand-accent shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.6)] transition-transform active:scale-95"
+        className={cn(
+          'flex size-11 shrink-0 items-center justify-center transition-transform active:scale-95',
+          inChat ? 'glass-tint rounded-full text-white' : cn(pill, 'text-brand-accent'),
+        )}
       >
         <AiSparkIcon size={22} />
-        {t('nav.ai')}
-        {inChat && (
-          <span
-            aria-hidden="true"
-            className="absolute inset-x-3.5 bottom-1 h-0.5 rounded-full bg-brand-accent"
-          />
-        )}
       </button>
       <span className="flex-1" />
       <button
@@ -63,7 +62,7 @@ export function TopBar({
         onClick={onMenu}
         aria-label={menuOpen ? t('menu.close') : t('menu.open')}
         aria-expanded={menuOpen}
-        className={cn('flex size-11 items-center justify-center text-ink')}
+        className={cn(pill, 'flex size-11 items-center justify-center text-ink')}
       >
         {menuOpen ? <CloseIcon size={22} /> : <MenuIcon size={22} />}
       </button>

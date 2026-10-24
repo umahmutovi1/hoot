@@ -270,16 +270,16 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 
 Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, teme i geste“, „Pregled“ (vodeći princip: manje odluka), design README „Odluke nakon v0.10.0“. Mockupi za Pretragu i Izgled (teme) prvo.
 
-- [ ] AI dugme samo ikona: bez labela i podvlake; isključeno `bg-white/30` + ikona `brand-accent`, uključeno `glass-tint` + bijela ikona; `aria-label` „AI asistent“
-- [ ] Sticky gornji red (`TopBar` u `AppShell`): `sticky top-0` + safe-area, sadržaj ispod se zamuti (`backdrop-filter` blur, maska za meku donju ivicu), fallback platno 0.92
-- [ ] Meni: naziv sekcije je link na glavnu stranicu (Plan, Predmeti, Napredak, Postavke), chevron je zasebno dugme 44 px; animirano otvaranje podstranica
+- [x] AI dugme samo ikona: bez labela i podvlake; isključeno `bg-white/30` + ikona `brand-accent`, uključeno `glass-tint` + bijela ikona; `aria-label` „AI asistent“
+- [x] Sticky gornji red (`TopBar` u `AppShell`): `sticky top-0` + safe-area, sadržaj ispod se zamuti (`backdrop-filter` blur, maska za meku donju ivicu), fallback platno 0.92
+- [x] Meni: naziv sekcije je link na glavnu stranicu (Plan, Predmeti, Napredak, Postavke), chevron je zasebno dugme 44 px; animirano otvaranje podstranica
 - [ ] Sheetovi: `BottomSheet` na shadcn Drawer (`vaul`), povlačenje nadolje zatvara, kriva `cubic-bezier(0.32, 0.72, 0, 1)` ~400 ms, `prefers-reduced-motion` → fade
-- [ ] Exam kartice na Danas po mockupu: datum → ime → % → traka; dani do ispita desno u redu datuma; % i traka uvijek (bez izvora „—“), jednaka visina; traka 3 px radijus, track 0.65
+- [x] Exam kartice na Danas po mockupu: datum → ime → % → traka; dani do ispita desno u redu datuma; % i traka uvijek (bez izvora „—“), jednaka visina; traka 3 px radijus, track 0.65
 - [ ] Swipe ulijevo na listama (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): arhiviraj / obriši / preskoči, toast Poništi, iste akcije u „⋯“ / dugom pritisku
 - [ ] Pretraga: ikona u gornjem redu, indeks ekrana i postavki sa sinonimima + podaci iz keša, `fuse.js`, offline, nedavne
 - [ ] Teme boja: tokeni po `[data-theme]` (brand, `glass-tint`, `btn-primary`, magla, `theme-color`), bez hardkodirane rgba u utility-jima; Lavanda, Grafit, Pijesak, Kadulja, Okean; Postavke → Izgled; migracija `profiles.theme`
 - [ ] „Više vremena ovaj dan“ na Plan → Dan i u pretrazi (model `availability_days` postoji)
-- [ ] Fokus kartica na Danas sa dva prstena po mockupu (`Danas.dc.html:35-46`): vanjski plan danas (`brand-accent`), unutrašnji sedmica (pink), 80 px; sada je jedan prsten u `FocusBar.tsx`
+- [x] Fokus kartica na Danas sa dva prstena po mockupu (`Danas.dc.html:35-46`): vanjski plan danas (`brand-accent`), unutrašnji sedmica (pink), 80 px; sada je jedan prsten u `FocusBar.tsx`
 - [ ] Blok na listi Danas: tap otvara “Započeti sesiju sada?” (Počni, Uredi, Preskoči, Obriši / Izbaci iz plana); “+ Dodaj blok” na listi; “Počni” na kartici Sljedeće ostaje direktan; “Odradila sam bez timera” (ručna sesija vezana za blok) i “Drugi predmet u ovo vrijeme” u “Obriši blok?”; postavka “Početak dana” se zove “Granica dana”
 - [ ] Nazad dok sesija radi (strelica, browser, Android gest): sheet Nastavi / Izađi, timer radi dalje / Završi ranije / Odbaci sesiju
 - [ ] BlockSheet: prekidač “Zadrži ovo vrijeme” (default uključen = ručni blok; isključen = AI blok koji replan smije presložiti) + “Vrati planu” na pojedinačnom ručnom bloku

@@ -19,7 +19,6 @@
     "subjects": "Predmeti",
     "progress": "Napredak",
     "aiLabel": "AI asistent",
-    "ai": "AI",
     "aiClose": "Zatvori asistenta",
     "home": "Hoot, idi na Danas"
   },
@@ -134,9 +133,6 @@
       "title": "Raspored",
       "classUntil": "do {{time}}"
     },
-    "examIn_one": "za {{count}} dan",
-    "examIn_few": "za {{count}} dana",
-    "examIn_other": "za {{count}} dana",
     "examToday": "danas",
     "examTomorrow": "sutra",
     "late": {
@@ -167,7 +163,8 @@
       "toTomorrow": "Danas nema mjesta: prvi blok sutra u {{time}}",
       "toLater": "Prebačeno na prvi slobodan dan u {{time}}",
       "carried": "prebačeno"
-    }
+    },
+    "examInShort": "{{count}} d"
   },
   "plan": {
     "title": "Plan",
@@ -1619,7 +1616,8 @@
     "settings": "Postavke",
     "allSettings": "Sve postavke",
     "academicCalendar": "Akademski kalendar",
-    "documents": "Dokumenti"
+    "documents": "Dokumenti",
+    "subpages": "Podstranice: {{section}}"
   },
   "feeds": {
     "title": "Povezani kalendari",

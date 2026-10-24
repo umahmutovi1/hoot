@@ -71,30 +71,30 @@ function ExamTile({
       to={`/subjects/${subject.id}`}
       className="glass flex min-w-0 flex-1 flex-col gap-2 rounded-card p-3.5"
     >
-      <span className="flex flex-col gap-px">
+      {/* Four rows 8 px apart (design README, 10b); % and bar always exist, so every tile has
+          the same shape and height. */}
+      <span className="flex items-baseline justify-between gap-1">
         <span className={cn('text-xs font-bold uppercase', palette.deepText)}>
           {format(new Date(at), 'd MMM', { locale: dateFnsLocales[locale] })}
         </span>
-        <span className="text-xs text-ink-secondary">
+        <span className="truncate text-[11px] text-ink-secondary">
           {days <= 0
             ? t('today.examToday')
             : days === 1
               ? t('today.examTomorrow')
-              : t('today.examIn', { count: days })}
+              : t('today.examInShort', { count: days })}
         </span>
       </span>
       <span className="truncate text-sm font-semibold">{subject.name}</span>
-      {pct !== null && (
-        <>
-          <span className="text-[22px] font-semibold tabular-nums">{pct}%</span>
-          <span className="h-[5px] rounded-full bg-track">
-            <span
-              className={cn('block h-[5px] rounded-full', palette.bar)}
-              style={{ width: `${pct}%` }}
-            />
-          </span>
-        </>
-      )}
+      <span className="text-[22px] leading-tight font-semibold tabular-nums">
+        {pct === null ? '—' : `${pct}%`}
+      </span>
+      <span className="h-[5px] rounded-[3px] bg-white/65">
+        <span
+          className={cn('block h-[5px] rounded-[3px]', palette.bar)}
+          style={{ width: `${pct ?? 0}%` }}
+        />
+      </span>
     </Link>
   )
 }
