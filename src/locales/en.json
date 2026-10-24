@@ -160,7 +160,16 @@
       "toLater": "Moved to the first free day at {{time}}",
       "carried": "moved"
     },
-    "examInShort": "{{count}} d"
+    "examInShort": "{{count}} d",
+    "start": {
+      "title": "Start a session now?",
+      "pauses": "Breaks: {{preset}}",
+      "begin": "Start",
+      "edit": "Edit",
+      "skip": "Skip",
+      "drop": "Drop from plan",
+      "delete": "Delete"
+    }
   },
   "plan": {
     "title": "Plan",

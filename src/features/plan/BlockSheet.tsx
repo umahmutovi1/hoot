@@ -44,6 +44,7 @@ export function BlockSheet({
   block,
   date,
   today,
+  startDeleting = false,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -52,11 +53,16 @@ export function BlockSheet({
   /** Day of a new block. */
   date: LocalDate
   today: LocalDate
+  /**
+   * Open straight on the delete question ("Izbaci iz plana" on Danas); Odustani then closes the
+   * sheet instead of going back to the form. Remount (key) to switch.
+   */
+  startDeleting?: boolean
 }) {
   const { t } = useTranslation()
-  const [deleting, setDeleting] = useState(false)
+  const [deleting, setDeleting] = useState(startDeleting)
   const close = (o: boolean) => {
-    if (!o) setDeleting(false)
+    if (!o) setDeleting(startDeleting)
     onOpenChange(o)
   }
   return (
@@ -74,7 +80,7 @@ export function BlockSheet({
           date={date}
           today={today}
           deleting={deleting}
-          setDeleting={setDeleting}
+          setDeleting={startDeleting ? () => close(false) : setDeleting}
           onDone={() => close(false)}
         />
       )}

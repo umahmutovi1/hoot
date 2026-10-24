@@ -164,7 +164,16 @@
       "toLater": "Prebačeno na prvi slobodan dan u {{time}}",
       "carried": "prebačeno"
     },
-    "examInShort": "{{count}} d"
+    "examInShort": "{{count}} d",
+    "start": {
+      "title": "Započeti sesiju sada?",
+      "pauses": "Pauze: {{preset}}",
+      "begin": "Počni",
+      "edit": "Uredi",
+      "skip": "Preskoči",
+      "drop": "Izbaci iz plana",
+      "delete": "Obriši"
+    }
   },
   "plan": {
     "title": "Plan",
