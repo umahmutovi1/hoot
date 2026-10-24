@@ -63,7 +63,10 @@ export function SettingsPage() {
         </button>
       )}
 
-      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+      <h2
+        id="general"
+        className="scroll-mt-[calc(84px+env(safe-area-inset-top))] px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase"
+      >
         {t('settings.general')}
       </h2>
       <div className="flex flex-col rounded-card glass px-4 py-1.5">
@@ -110,17 +113,26 @@ export function SettingsPage() {
         </div>
       </div>
 
-      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+      <h2
+        id="session"
+        className="scroll-mt-[calc(84px+env(safe-area-inset-top))] px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase"
+      >
         {t('settings.session')}
       </h2>
       <PresetSettings />
 
-      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+      <h2
+        id="notify"
+        className="scroll-mt-[calc(84px+env(safe-area-inset-top))] px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase"
+      >
         {t('notify.title')}
       </h2>
       <NotifySettings />
 
-      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+      <h2
+        id="data"
+        className="scroll-mt-[calc(84px+env(safe-area-inset-top))] px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase"
+      >
         {t('settings.data')}
       </h2>
       <div className="flex flex-col rounded-card glass px-4">

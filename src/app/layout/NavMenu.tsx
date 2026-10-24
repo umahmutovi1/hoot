@@ -35,9 +35,11 @@ interface Section {
 export function NavMenu({
   open,
   onOpenChange,
+  onSearch,
 }: {
   open: boolean
   onOpenChange: (o: boolean) => void
+  onSearch: () => void
 }) {
   const { t } = useTranslation()
   return (
@@ -53,6 +55,10 @@ export function NavMenu({
             <TopBar
               menuOpen
               onMenu={() => onOpenChange(false)}
+              onSearch={() => {
+                onOpenChange(false)
+                onSearch()
+              }}
               onLeave={() => onOpenChange(false)}
             />
           </div>

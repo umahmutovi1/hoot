@@ -1,7 +1,7 @@
 import { MoodleCard } from '@/features/calendars/MoodleCard'
 import { useDeadlineProposals } from '@/features/calendars/moodle'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { SparkleIcon } from '@/components/icons'
@@ -24,6 +24,7 @@ import { calendarStatus, formatClock } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
 import { SetupChecklist } from '@/features/onboarding/SetupChecklist'
 import { ExamTiles } from './ExamTiles'
+import { ExtraTimeSheet } from './ExtraTimeSheet'
 import { FactCard } from './FactCard'
 import { FocusBar } from './FocusBar'
 import { GainedCard } from './GainedCard'
@@ -49,6 +50,8 @@ export function TodayPage() {
   const { locale } = useLocale()
   const { data: profile } = useProfile()
   const plan = usePlanToday()
+  // `?extra=1` (search: "Imam još vremena") opens that sheet.
+  const [params, setParams] = useSearchParams()
   const name = profile?.display_name ?? ''
   const { periods, dayRows } = useScheduleData()
   const status = calendarStatus(plan.today, periods)
@@ -104,6 +107,11 @@ export function TodayPage() {
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />
           <ExamTiles now={plan.now} today={plan.today} />
+          <ExtraTimeSheet
+            open={params.get('extra') === '1'}
+            onOpenChange={(o) => !o && setParams({}, { replace: true })}
+            plan={plan}
+          />
         </>
       ) : firstRun ? (
         <section className="mt-16 flex flex-col items-center gap-3.5 px-3 text-center">

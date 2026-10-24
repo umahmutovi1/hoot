@@ -4,6 +4,7 @@ import { Toast } from '@/components/Toast'
 import { ContinueOnboarding } from '@/features/onboarding/ContinueOnboarding'
 import { ForgottenGuard } from '@/features/session/ForgottenGuard'
 import { SessionStartSheet } from '@/features/session/SessionStartSheet'
+import { SearchPanel } from '@/features/search/SearchPanel'
 import { LocaleSync } from '@/features/settings/LocaleSync'
 import { Crumbs } from './Crumbs'
 import { NavMenu } from './NavMenu'
@@ -21,6 +22,7 @@ export function AppShell() {
   const [openOn, setOpenOn] = useState<string | null>(null)
   const menuOpen = openOn === pathname
   const setMenuOpen = (open: boolean) => setOpenOn(open ? pathname : null)
+  const [searching, setSearching] = useState(false)
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col gap-3 px-5 pb-[calc(24px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] keyboard:pb-[calc(8px+var(--vv-bottom,0px))]">
@@ -28,12 +30,17 @@ export function AppShell() {
       {/* Sticky: what scrolls under the row is blurred and fades out at its lower edge, so the
           logo, AI and ☰ stay legible on any content (design README, 10b). */}
       <div className="glass-bar sticky top-0 z-40 -mx-5 px-5 pt-[calc(24px+env(safe-area-inset-top))]">
-        <TopBar menuOpen={menuOpen} onMenu={() => setMenuOpen(true)} />
+        <TopBar
+          menuOpen={menuOpen}
+          onMenu={() => setMenuOpen(true)}
+          onSearch={() => setSearching(true)}
+        />
       </div>
       <Crumbs />
       <ContinueOnboarding />
       <Outlet />
-      <NavMenu open={menuOpen} onOpenChange={setMenuOpen} />
+      <NavMenu open={menuOpen} onOpenChange={setMenuOpen} onSearch={() => setSearching(true)} />
+      <SearchPanel open={searching} onOpenChange={setSearching} />
       <SessionStartSheet />
       <ForgottenGuard />
       <Toast />
