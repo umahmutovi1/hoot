@@ -6,14 +6,17 @@ import { cn } from '@/lib/utils'
 import { LockIcon } from '@/components/icons'
 import type { DayBusy, DayClass } from './agenda'
 import type { PlanBlockRow } from './state'
-import { hourRange, layoutLanes } from './calendar'
+import { layoutLanes } from './calendar'
 
 const HOUR_PX = 52
 const AXIS_PX = 50
+/** Without "now" or a block the axis opens at the start of a usual day. */
+const MORNING_MIN = 8 * 60
 
 /**
- * One day on a time axis (day-view inspiration, Satnica grid): 52 px per hour, cards in the
- * subject's colors, overlapping items side by side, a line at the current time.
+ * One day on a time axis (day-view inspiration, Satnica grid): the whole day 00–24 like the iOS
+ * calendar, 52 px per hour, cards in the subject's colors, overlapping items side by side, a line at
+ * the current time. It opens scrolled to now, the first block or 08:00.
  */
 /** A plan block on the axis: its subject's color, done ticked, manual with a lock. */
 export interface DayBlock {
@@ -45,15 +48,16 @@ export function DayTimeline({
   busy?: DayBusy[]
   nowMin?: number
   /**
-   * The day shown: when it changes, the page scrolls to the "now" line (today) or the first
-   * block, if that is off screen, so evening blocks are not hidden below a morning axis.
+   * The day shown: when it changes, the axis scrolls to the "now" line (today), the first block
+   * or 08:00.
    */
   scrollKey?: string
   onPick?: (item: DayClass) => void
   onPickBusy?: (item: DayBusy) => void
 }) {
   const { t } = useTranslation()
-  const [from, to] = hourRange([...items, ...busy, ...blocks])
+  const from = 0
+  const to = 24
   const top = (min: number) => ((min - from * 60) / 60) * HOUR_PX
   const hours = Array.from({ length: to - from + 1 }, (_, i) => from + i)
   const firstBlock = blocks.reduce<number | null>(
@@ -61,7 +65,7 @@ export function DayTimeline({
     null,
   )
   const inRange = nowMin !== undefined && nowMin >= from * 60 && nowMin <= to * 60
-  const target = inRange ? nowMin : firstBlock
+  const target = inRange ? nowMin : (firstBlock ?? MORNING_MIN)
   const anchor = useRef<HTMLDivElement>(null)
   const scrolledFor = useRef<string | null>(null)
   const targetTop = target === null ? null : Math.max(0, top(target) - 30)
