@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Start sesije</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;padding:32px;background:#F4F2F9;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Geist,system-ui,sans-serif;color:#14121C;letter-spacing:-0.2px}
+a{color:#4C4892;text-decoration:none}
+h2.note{font-size:15px;font-weight:600;margin:0 0 6px}
+p.note{margin:0 0 24px;max-width:980px;font-size:14px;line-height:1.5;color:#3F3B4E}
+.row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;margin-bottom:40px}
+.cap{font-size:13px;font-weight:600;color:#55516A;margin:0 0 8px 4px;max-width:390px}
+.phone{width:390px;height:844px;position:relative;overflow:hidden;border-radius:44px;box-shadow:0 20px 60px rgba(40,34,80,.25);
+  background:radial-gradient(120% 55% at 0% 0%,rgba(150,141,222,.62),rgba(150,141,222,0) 62%),radial-gradient(90% 45% at 100% 22%,rgba(229,182,206,.62),rgba(229,182,206,0) 62%),radial-gradient(110% 50% at 0% 68%,rgba(168,196,234,.6),rgba(168,196,234,0) 62%),radial-gradient(95% 45% at 100% 100%,rgba(160,148,226,.55),rgba(160,148,226,0) 62%),linear-gradient(180deg,#ECE9F4,#E8E5F1)}
+.status{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;font-size:16px;font-weight:600}
+.bar{height:60px;display:flex;align-items:center;gap:4px;padding:0 20px}
+.icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#14121C}
+.ai{border-radius:22px;background:rgba(255,255,255,.30);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.6);color:#6A64B8}
+.grp{display:flex;height:44px;border-radius:22px;background:rgba(255,255,255,.30);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.6)}
+.pad{padding:0 16px;display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.2px;color:#3F3B4E}
+.h-big{font-size:36px;line-height:1.1;font-weight:700;letter-spacing:-.9px;margin:0}
+.h2{margin:10px 6px 0;font-size:20px;font-weight:700;letter-spacing:-.4px}
+.glass{background:rgba(255,255,255,.36);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.55),inset 0 1px 1px rgba(255,255,255,.85),inset 0 -1px 1px rgba(58,51,96,.05),0 8px 28px rgba(58,51,96,.07)}
+.tint{color:#fff;background:linear-gradient(160deg,rgba(100,93,180,.9),rgba(76,72,146,.94));box-shadow:inset 0 0 0 .5px rgba(255,255,255,.3),inset 0 1px 1px rgba(255,255,255,.45),0 14px 34px rgba(76,72,146,.24)}
+.btn-primary{color:#fff;background:linear-gradient(160deg,#6E67BE,#4C4892);box-shadow:inset 0 1px 1px rgba(255,255,255,.4),0 6px 16px rgba(76,72,146,.22)}
+.list{border-radius:26px;overflow:hidden}
+.lr{display:flex;align-items:center;gap:12px;padding:13px 16px;min-height:44px}
+.lr.hl{background:rgba(106,100,184,.10)}
+.dv{margin-left:72px;height:1px;background:rgba(58,51,96,.14)}
+.tm{width:44px;font-size:13px;font-weight:500;color:#55516A;font-variant-numeric:tabular-nums;flex-shrink:0}
+.ring{width:22px;height:22px;border-radius:11px;border:2px solid;box-sizing:border-box;flex-shrink:0}
+.ring.hatch{border:none;background:repeating-linear-gradient(135deg,rgba(58,51,96,.16) 0 3px,transparent 3px 6px)}
+.plus{width:22px;height:22px;border-radius:11px;background:rgba(106,100,184,.12);color:#4C4892;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0}
+.txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.t1{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t2{font-size:13px;color:#3F3B4E}
+.scrim{position:absolute;inset:0;background:rgba(40,34,80,.20)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:rgba(250,249,253,.80);backdrop-filter:blur(36px) saturate(180%);-webkit-backdrop-filter:blur(36px) saturate(180%);box-shadow:inset 0 1px 1px rgba(255,255,255,.9),0 -10px 40px rgba(40,34,80,.12);border-radius:32px 32px 0 0;padding:12px 20px 34px;display:flex;flex-direction:column;gap:14px}
+.grab{width:40px;height:5px;border-radius:3px;background:rgba(58,51,96,.16);align-self:center}
+.x{position:absolute;right:14px;top:14px;width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center}
+.x::before{content:'';position:absolute;inset:6px;border-radius:16px;background:rgba(106,100,184,.10)}
+.x svg{position:relative}
+.st{margin:2px 48px 0 0;font-size:22px;font-weight:700;letter-spacing:-.4px}
+.sb{margin:-6px 0 0;font-size:15px;line-height:1.45;color:#3F3B4E}
+.dot{width:10px;height:10px;border-radius:5px;flex-shrink:0}
+.tag{height:24px;padding:0 10px;border-radius:12px;background:rgba(106,100,184,.12);color:#36336E;font-size:12px;font-weight:600;display:flex;align-items:center}
+.mtag{font-size:12px;color:#55516A}
+.big{height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600}
+.acts{display:flex;gap:8px}
+.act{flex:1;height:64px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:13px;font-weight:600;color:#14121C;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.7),inset 0 1px 1px rgba(255,255,255,.9)}
+.act svg{color:#4C4892}
+.act.danger,.act.danger svg{color:#B0413E}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.7),inset 0 1px 1px rgba(255,255,255,.9);min-height:44px}
+.opt .ic{width:36px;height:36px;border-radius:12px;background:rgba(106,100,184,.12);color:#4C4892;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.opt b{font-size:15px;font-weight:600}
+.opt small{font-size:12px;color:#55516A;line-height:1.35}
+.opt.danger b,.opt.danger .ic{color:#B0413E}
+.opt.danger .ic{background:rgba(176,65,62,.10)}
+.toast{position:absolute;left:16px;right:16px;bottom:28px;min-height:52px;border-radius:26px;background:rgba(28,25,44,.88);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 18px;font-size:14px;box-sizing:border-box;z-index:3}
+.toast b{height:36px;padding:0 14px;border-radius:18px;display:flex;align-items:center;font-weight:600;background:rgba(255,255,255,.14);flex-shrink:0}
+.field{display:flex;flex-direction:column;gap:8px}
+.lbl{font-size:13px;font-weight:600;color:#3F3B4E}
+.chips{display:flex;gap:6px}
+.chip{height:36px;padding:0 14px;border-radius:18px;background:rgba(255,255,255,.5);font-size:13px;font-weight:600;display:flex;align-items:center}
+.chip.on{background:#14121C;color:#fff}
+.sw{width:51px;height:31px;border-radius:16px;background:rgba(58,51,96,.18);position:relative;flex-shrink:0}
+.sw i{position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:14px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.sw.on{background:#5E9C72}
+.sw.on i{left:22px}
+.ses-time{font-size:72px;font-weight:600;letter-spacing:-2px;text-align:center;font-variant-numeric:tabular-nums;margin-top:40px}
+</style>
+</helmet>
+
+<h2 class="note">Start sesije i nazad iz sesije (Etapa 10b) · PRD „Brze akcije dana → Blok na listi Danas“, „Timer dugme → Nazad dok sesija radi“, „Pomjeren blok: zaključaj ili ne“</h2>
+<p class="note">Tap na blok u listi Danas više ne pokreće sesiju odmah nego otvara mali sheet „Započeti sesiju sada?“ (predmet, gradivo, trajanje, pauze). „Počni“ je isti start kao sa kartice „Sljedeće“ (koja ostaje direktna, bez sheeta). Ispod su tri jednaka dugmeta: Uredi (BlockSheet), Preskoči (isti SkipSheet kao na kartici) i treće po vrsti bloka: AI blok → „Izbaci iz plana“ (otvara isto pitanje kao brisanje u Planu), ručni blok → „Obriši“ (odmah, toast Poništi). Odrađen ili preskočen blok se ne otvara. Lista ima red „+ Dodaj blok“ (BlockSheet sa današnjim datumom). Sheet se zatvara povlačenjem nadolje, × ili tapom na scrim.</p>
+
+<div class="row">
+<div><div class="cap">1 · Lista Danas sa „+ Dodaj blok“ (tap na red 09:00)</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="tint" style="border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="font-size:20px;font-weight:600">Baze · 5.1–5.3 Normalizacija</span><span style="align-self:flex-end;height:44px;padding:0 22px;border-radius:22px;background:rgba(255,255,255,.94);color:#36336E;font-weight:600;display:flex;align-items:center;gap:8px">▶ Počni</span></div>
+<h2 class="h2">Danas</h2>
+<div class="glass list">
+<div class="lr hl"><span class="tm">09:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">60 min · čitanje</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">11:00</span><span class="ring hatch" style="border-color:transparent"></span><span class="txt"><span class="t1">Signali · predavanje</span><span class="t2">do 13:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">14:30</span><span class="ring" style="border-color:#5F86B5"></span><span class="txt"><span class="t1">Vjerovatnoća · 12 pitanja</span><span class="t2">50 min · pitanja</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · Fourier, ponavljanje</span><span class="t2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" style="margin-right:4px;vertical-align:-1px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>45 min · ručno</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr add"><span class="tm"></span><span class="plus">+</span><span class="txt"><span class="t1" style="color:#4C4892;font-weight:600">Dodaj blok</span></span></div>
+</div></div></div></div>
+
+<div><div class="cap">2 · „Započeti sesiju sada?“ · AI blok</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="tint" style="border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="font-size:20px;font-weight:600">Baze · 5.1–5.3 Normalizacija</span><span style="align-self:flex-end;height:44px;padding:0 22px;border-radius:22px;background:rgba(255,255,255,.94);color:#36336E;font-weight:600;display:flex;align-items:center;gap:8px">▶ Počni</span></div>
+<h2 class="h2">Danas</h2>
+<div class="glass list">
+<div class="lr hl"><span class="tm">09:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">60 min · čitanje</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">11:00</span><span class="ring hatch" style="border-color:transparent"></span><span class="txt"><span class="t1">Signali · predavanje</span><span class="t2">do 13:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">14:30</span><span class="ring" style="border-color:#5F86B5"></span><span class="txt"><span class="t1">Vjerovatnoća · 12 pitanja</span><span class="t2">50 min · pitanja</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · Fourier, ponavljanje</span><span class="t2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" style="margin-right:4px;vertical-align:-1px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>45 min · ručno</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr add"><span class="tm"></span><span class="plus">+</span><span class="txt"><span class="t1" style="color:#4C4892;font-weight:600">Dodaj blok</span></span></div>
+</div></div><div class="scrim"></div>
+<div class="sheet"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
+<h2 class="st">Započeti sesiju sada?</h2>
+<div class="glass" style="border-radius:22px;padding:14px 16px;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:#6A64B8"></span><span style="font-size:14px;font-weight:600;color:#3F3B4E;flex:1">Baze podataka</span><span class="tag">Čitanje</span></div>
+<span style="font-size:20px;font-weight:600;letter-spacing:-.4px">5.1–5.3 Normalizacija</span>
+<span style="font-size:13px;color:#3F3B4E">09:00–10:00 · 60 min · str. 142–168</span>
+<span style="font-size:13px;color:#55516A">Pauze: Standardno 50/15</span>
+</div>
+<a class="btn-primary big"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M7 5v14l12-7z"/></svg>Počni</a>
+<div class="acts"><span class="act"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Uredi</span><span class="act"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l8 6-8 6z"/><path d="M18 6v12"/></svg>Preskoči</span><span class="act danger"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/></svg>Izbaci iz plana</span></div>
+<span style="height:44px;margin-top:-6px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#4C4892">Odradila sam bez timera</span>
+</div></div></div>
+
+<div><div class="cap">3 · Ručni blok: treće dugme je „Obriši“</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="tint" style="border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="font-size:20px;font-weight:600">Baze · 5.1–5.3 Normalizacija</span><span style="align-self:flex-end;height:44px;padding:0 22px;border-radius:22px;background:rgba(255,255,255,.94);color:#36336E;font-weight:600;display:flex;align-items:center;gap:8px">▶ Počni</span></div>
+<h2 class="h2">Danas</h2>
+<div class="glass list">
+<div class="lr"><span class="tm">09:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">60 min · čitanje</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">11:00</span><span class="ring hatch" style="border-color:transparent"></span><span class="txt"><span class="t1">Signali · predavanje</span><span class="t2">do 13:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">14:30</span><span class="ring" style="border-color:#5F86B5"></span><span class="txt"><span class="t1">Vjerovatnoća · 12 pitanja</span><span class="t2">50 min · pitanja</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr hl"><span class="tm">16:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · Fourier, ponavljanje</span><span class="t2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" style="margin-right:4px;vertical-align:-1px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>45 min · ručno</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr add"><span class="tm"></span><span class="plus">+</span><span class="txt"><span class="t1" style="color:#4C4892;font-weight:600">Dodaj blok</span></span></div>
+</div></div><div class="scrim"></div>
+<div class="sheet"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
+<h2 class="st">Započeti sesiju sada?</h2>
+<div class="glass" style="border-radius:22px;padding:14px 16px;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:#B66A8C"></span><span style="font-size:14px;font-weight:600;color:#3F3B4E;flex:1">Signali i sistemi</span><span class="mtag">ručno</span><span class="tag">Ponavljanje</span></div>
+<span style="font-size:20px;font-weight:600;letter-spacing:-.4px">Fourier, ponavljanje</span>
+<span style="font-size:13px;color:#3F3B4E">16:00–16:45 · 45 min</span>
+<span style="font-size:13px;color:#55516A">Pauze: Standardno 50/15</span>
+</div>
+<a class="btn-primary big"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M7 5v14l12-7z"/></svg>Počni</a>
+<div class="acts"><span class="act"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Uredi</span><span class="act"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l8 6-8 6z"/><path d="M18 6v12"/></svg>Preskoči</span><span class="act danger"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/></svg>Obriši</span></div>
+<span style="height:44px;margin-top:-6px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#4C4892">Odradila sam bez timera</span>
+</div></div></div>
+
+<div><div class="cap">4 · „Izbaci iz plana“ na AI bloku → isto pitanje kao u Planu</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="tint" style="border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="font-size:20px;font-weight:600">Baze · 5.1–5.3 Normalizacija</span><span style="align-self:flex-end;height:44px;padding:0 22px;border-radius:22px;background:rgba(255,255,255,.94);color:#36336E;font-weight:600;display:flex;align-items:center;gap:8px">▶ Počni</span></div>
+<h2 class="h2">Danas</h2>
+<div class="glass list">
+<div class="lr hl"><span class="tm">09:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">60 min · čitanje</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">11:00</span><span class="ring hatch" style="border-color:transparent"></span><span class="txt"><span class="t1">Signali · predavanje</span><span class="t2">do 13:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">14:30</span><span class="ring" style="border-color:#5F86B5"></span><span class="txt"><span class="t1">Vjerovatnoća · 12 pitanja</span><span class="t2">50 min · pitanja</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · Fourier, ponavljanje</span><span class="t2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" style="margin-right:4px;vertical-align:-1px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>45 min · ručno</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr add"><span class="tm"></span><span class="plus">+</span><span class="txt"><span class="t1" style="color:#4C4892;font-weight:600">Dodaj blok</span></span></div>
+</div></div><div class="scrim"></div>
+<div class="sheet"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span><h2 class="st">Obriši blok?</h2>
+<div class="opt"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8.5 3v4M15.5 3v4"/><path d="M10 15h5M13 13l2 2-2 2"/></svg></span><span class="txt"><b>Prebaci gradivo na druge dane</b><small>Ovaj termin postaje zauzet, plan ga rasporedi drugdje</small></span></div>
+<div class="opt danger"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/></svg></span><span class="txt"><b>Izbaci iz plana</b><small>Kolokvij I: 5.1–5.3 Normalizacija više nije u obimu</small></span></div>
+<div class="opt"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><span class="txt"><b>Drugi predmet u ovo vrijeme</b><small>Isto vrijeme i trajanje; gradivo bloka ide u plan od sutra</small></span></div>
+<span style="height:44px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#4C4892">Odustani</span>
+</div></div></div>
+</div>
+
+<h2 class="note">BlockSheet: „Zadrži ovo vrijeme“ i „Vrati planu“</h2>
+<p class="note">Kad se u BlockSheetu promijeni dan ili vrijeme, ispod vremena se pojavi prekidač „Zadrži ovo vrijeme“ (uključen po defaultu, kao do sad): uključen → blok postaje ručni (<code>origin = 'user'</code>), replan ga ne pomjera; isključen → blok ostaje AI blok sa novim vremenom dok se plan ne promijeni. Prekidač zamjenjuje napomenu „Kad ga izmijeniš, plan ga više neće pomjerati.“ Ručni blok koji je nastao iz AI bloka (oznaka „ručno uređen“) ima tekst-dugme „Vrati planu“ ispod „Spasi“: blok opet postaje AI blok, replan ga slaže sam (toast sa Poništi). Novi ručni blok (Dodaj blok) nema ni prekidač ni „Vrati planu“.</p>
+<div class="row">
+<div><div class="cap">5 · Pomjereno vrijeme, prekidač uključen (default)</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="scrim"></div>
+<div class="sheet" style="top:120px"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span><h2 class="st">Uredi blok</h2>
+<div class="field"><span class="lbl">Dan</span><div class="chips"><span class="chip on">Danas</span><span class="chip">Sutra</span><span class="chip">Sub 24.</span><span class="chip">…</span></div></div>
+<div class="field"><span class="lbl">Trajanje</span><div class="chips"><span class="chip">−</span><span class="chip" style="flex:1;justify-content:center;background:transparent">60 min</span><span class="chip">+</span></div></div>
+<div class="field"><span class="lbl">Vrijeme</span><div class="glass" style="border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px">16:00–17:00</span><span style="font-size:12px;color:#55516A">bilo 09:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div></div>
+<div class="glass" style="border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Zadrži ovo vrijeme</span><span style="font-size:12px;color:#55516A;line-height:1.35">Plan ga više neće pomjerati.</span></span><span class="sw on"><i></i></span></div>
+<a class="btn-primary big">Spasi</a>
+</div></div></div>
+
+<div><div class="cap">6 · Prekidač isključen</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="scrim"></div>
+<div class="sheet" style="top:120px"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span><h2 class="st">Uredi blok</h2>
+<div class="field"><span class="lbl">Dan</span><div class="chips"><span class="chip on">Danas</span><span class="chip">Sutra</span><span class="chip">Sub 24.</span><span class="chip">…</span></div></div>
+<div class="field"><span class="lbl">Trajanje</span><div class="chips"><span class="chip">−</span><span class="chip" style="flex:1;justify-content:center;background:transparent">60 min</span><span class="chip">+</span></div></div>
+<div class="field"><span class="lbl">Vrijeme</span><div class="glass" style="border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px">16:00–17:00</span><span style="font-size:12px;color:#55516A">bilo 09:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div></div>
+<div class="glass" style="border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Zadrži ovo vrijeme</span><span style="font-size:12px;color:#55516A;line-height:1.35">Plan ga smije pomjeriti kad se nešto promijeni.</span></span><span class="sw"><i></i></span></div>
+<a class="btn-primary big">Spasi</a>
+</div>
+<div class="toast"><span>Blok je u 16:00. Plan ga može pomjeriti.</span><b>Poništi</b></div>
+</div></div>
+
+<div><div class="cap">7 · Ručni blok nastao iz AI bloka: „Vrati planu“</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="scrim"></div>
+<div class="sheet" style="top:150px"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span><h2 class="st">Uredi blok</h2><span style="margin-top:-10px;font-size:13px;color:#55516A">ručno uređen</span>
+<div class="field"><span class="lbl">Dan</span><div class="chips"><span class="chip on">Danas</span><span class="chip">Sutra</span><span class="chip">Sub 24.</span><span class="chip">…</span></div></div>
+<div class="field"><span class="lbl">Vrijeme</span><div class="glass" style="border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px"><span style="flex:1;font-size:15px">16:00–17:00</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div></div>
+<a class="btn-primary big">Spasi</a>
+<span style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0"><span style="font-size:15px;font-weight:600;color:#4C4892;height:28px;display:flex;align-items:center">Vrati planu</span><span style="font-size:12px;color:#55516A">Plan ga opet slaže sam.</span></span>
+<span style="height:44px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#B0413E">Obriši blok</span>
+</div></div></div>
+</div>
+
+<h2 class="note">Nazad dok sesija radi (proširen EndEarlySheet)</h2>
+<p class="note">Strelica nazad u sesiji, nazad u browseru i Android gest (<code>useBlocker</code>) otvaraju ovaj sheet umjesto tihog izlaska. Isti EndEarlySheet dobija varijantu „nazad“: naslov „Izaći iz sesije?“ i četiri opcije. „Nastavi učiti“ samo zatvori sheet (i povlačenje nadolje). „Izađi, timer radi dalje“ je dosadašnje ponašanje (Danas pokazuje sesiju u toku). „Završi ranije“ spasi do sada i vodi na kraj sesije. „Odbaci sesiju“ je crveno: sesija se briše, ništa se ne računa, toast sa Poništi. Ispod 2 min učenja (slučajan start) tekst kaže „Sesija je tek počela“, a redoslijed ostaje isti. Zatvaranje taba ne pita ništa (timer je u segmentima). Dugme „Završi“ u sesiji i dalje otvara postojeću varijantu „Završavaš ranije?“.</p>
+<div class="row">
+<div><div class="cap">8 · Nazad iz sesije</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0"><span class="icon glass" style="border-radius:22px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14121C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span><span style="display:flex;flex-direction:column;align-items:center;gap:2px"><span style="font-size:16px;font-weight:600">Baze podataka</span><span style="font-size:12px;color:#3F3B4E">Učim · interval 1 od 2</span></span><span class="icon glass" style="border-radius:22px"></span></div>
+<div class="ses-time">23:41</div>
+<div class="scrim"></div>
+<div class="sheet"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span><h2 class="st">Izaći iz sesije?</h2>
+<p class="sb">Do sad je 23 min od planiranih 50. Timer ne staje dok ne izabereš.</p>
+<a class="btn-primary big" style="height:52px">Nastavi učiti</a>
+<div class="opt"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></svg></span><span class="txt"><b>Izađi, timer radi dalje</b><small>Sesija ostaje na Danas, vratiš se jednim tapom</small></span></div>
+<div class="opt"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg></span><span class="txt"><b>Završi ranije</b><small>Spasi 23 min i idi na kraj sesije</small></span></div>
+<div class="opt danger"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/></svg></span><span class="txt"><b>Odbaci sesiju</b><small>Sesija se briše kao da nije ni počela; ništa se ne računa</small></span></div>
+</div></div></div>
+
+<div><div class="cap">10 · „Odradila sam bez timera“ (start sheet ili propušten blok)</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="tint" style="border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="font-size:20px;font-weight:600">Baze · 5.1–5.3 Normalizacija</span><span style="align-self:flex-end;height:44px;padding:0 22px;border-radius:22px;background:rgba(255,255,255,.94);color:#36336E;font-weight:600;display:flex;align-items:center;gap:8px">▶ Počni</span></div>
+<h2 class="h2">Danas</h2>
+<div class="glass list">
+<div class="lr hl"><span class="tm">09:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">60 min · čitanje</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">11:00</span><span class="ring hatch" style="border-color:transparent"></span><span class="txt"><span class="t1">Signali · predavanje</span><span class="t2">do 13:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">14:30</span><span class="ring" style="border-color:#5F86B5"></span><span class="txt"><span class="t1">Vjerovatnoća · 12 pitanja</span><span class="t2">50 min · pitanja</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · Fourier, ponavljanje</span><span class="t2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" style="margin-right:4px;vertical-align:-1px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>45 min · ručno</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr add"><span class="tm"></span><span class="plus">+</span><span class="txt"><span class="t1" style="color:#4C4892;font-weight:600">Dodaj blok</span></span></div>
+</div></div><div class="scrim"></div>
+<div class="sheet"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span><h2 class="st">Odradila si bez timera?</h2>
+<p class="sb">Baze podataka · 5.1–5.3 Normalizacija. Blok se označi kao odrađen; vrijeme ide u napredak, ali ne u kalibraciju.</p>
+<div class="field"><span class="lbl">Koliko si učila?</span><div class="chips"><span class="chip">30 min</span><span class="chip">45 min</span><span class="chip on">60 min</span><span class="chip">Drugo</span></div></div>
+<div class="field"><span class="lbl">Dokle si stigla?</span><div class="glass" style="border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px"><span style="flex:1;font-size:15px">do str. 168 (kraj bloka)</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div></div>
+<a class="btn-primary big">Spasi</a>
+</div></div></div>
+
+<div><div class="cap">11 · „Drugi predmet u ovo vrijeme“</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="tint" style="border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="font-size:20px;font-weight:600">Baze · 5.1–5.3 Normalizacija</span><span style="align-self:flex-end;height:44px;padding:0 22px;border-radius:22px;background:rgba(255,255,255,.94);color:#36336E;font-weight:600;display:flex;align-items:center;gap:8px">▶ Počni</span></div>
+<h2 class="h2">Danas</h2>
+<div class="glass list">
+<div class="lr hl"><span class="tm">09:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">60 min · čitanje</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">11:00</span><span class="ring hatch" style="border-color:transparent"></span><span class="txt"><span class="t1">Signali · predavanje</span><span class="t2">do 13:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">14:30</span><span class="ring" style="border-color:#5F86B5"></span><span class="txt"><span class="t1">Vjerovatnoća · 12 pitanja</span><span class="t2">50 min · pitanja</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · Fourier, ponavljanje</span><span class="t2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" style="margin-right:4px;vertical-align:-1px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>45 min · ručno</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr add"><span class="tm"></span><span class="plus">+</span><span class="txt"><span class="t1" style="color:#4C4892;font-weight:600">Dodaj blok</span></span></div>
+</div></div><div class="scrim"></div>
+<div class="sheet"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span><h2 class="st">Šta ćeš učiti umjesto?</h2>
+<p class="sb">09:00–10:00 · 60 min. Gradivo iz Baza ide u plan od sutra.</p>
+<div class="chips" style="flex-wrap:wrap"><span class="chip on">Signali i sistemi</span><span class="chip">Vjerovatnoća</span><span class="chip">Engleski</span></div>
+<span style="font-size:13px;color:#3F3B4E">Plan bira gradivo: <b>3.2 Fourierova transformacija</b> · 60 min</span>
+<a class="btn-primary big">Spasi</a>
+</div>
+</div></div>
+
+<div><div class="cap">9 · Poslije „Odbaci sesiju“</div>
+<div class="phone"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="tint" style="border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:10px"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="font-size:20px;font-weight:600">Baze · 5.1–5.3 Normalizacija</span><span style="align-self:flex-end;height:44px;padding:0 22px;border-radius:22px;background:rgba(255,255,255,.94);color:#36336E;font-weight:600;display:flex;align-items:center;gap:8px">▶ Počni</span></div>
+<h2 class="h2">Danas</h2>
+<div class="glass list">
+<div class="lr"><span class="tm">09:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">60 min · čitanje</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">11:00</span><span class="ring hatch" style="border-color:transparent"></span><span class="txt"><span class="t1">Signali · predavanje</span><span class="t2">do 13:00</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">14:30</span><span class="ring" style="border-color:#5F86B5"></span><span class="txt"><span class="t1">Vjerovatnoća · 12 pitanja</span><span class="t2">50 min · pitanja</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · Fourier, ponavljanje</span><span class="t2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" style="margin-right:4px;vertical-align:-1px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>45 min · ručno</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6A80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="dv"></div>
+<div class="lr add"><span class="tm"></span><span class="plus">+</span><span class="txt"><span class="t1" style="color:#4C4892;font-weight:600">Dodaj blok</span></span></div>
+</div></div>
+<div class="toast"><span>Sesija je odbačena</span><b>Poništi</b></div>
+</div></div>
+</div>
+</x-dc>
+</body>
+</html>

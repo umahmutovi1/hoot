@@ -74,9 +74,12 @@ Male staklene indigo pločice sa bijelom linijskom ikonom ostaju samo kao ikone 
 
 ## Odluke nakon v0.10.0 (oktobar 2026, Etapa 10b)
 PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (default → jedan tap → tek onda postavka).
-- **Prvi red je ljepljiv** na svim ekranima sa prvim redom: `sticky top-0` + `env(safe-area-inset-top)`, pozadina
-  `linear-gradient(to bottom, platno 0.92 → 0.6 → 0)` (token boje platna iz teme), bez `backdrop-filter` i bez ivice. Mrvice skrolaju.
-  Red: logo · AI · razmak · pretraga · ☰.
+- **Prvi red je ljepljiv** na svim ekranima sa prvim redom: `sticky top-0` + `env(safe-area-inset-top)`. **Izmjena (oktobar 2026):** umjesto
+  gradijenta platna sadržaj ispod reda se zamuti kao na iOS-u: `backdrop-filter: blur(20px) saturate(180%)` uz vrlo blag sloj boje platna
+  (0.55), a donja ivica se gasi maskom (`mask-image: linear-gradient(to bottom, #000 75%, transparent)`), pa nema oštre linije. Logo, AI i
+  ☰ ostaju oštri iznad zamućenja. Bez podrške za `backdrop-filter` ili uz „smanji prozirnost“: platno 0.92 bez blura. Mrvice skrolaju.
+  Red: logo · AI · razmak · [pretraga ☰]. Pretraga i ☰ dijele jednu široku pilulu (88 × 44, ista pozadina kao isključeno AI dugme:
+  `bg-white/30` + inset svjetlo), ikone ostaju boje teksta.
 - **AI dugme** je samo ikona iskre u krugu 44 px, bez labela „AI“ i bez podvlake. Isključeno: `bg-white/30` + inset svjetlo, ikona
   `brand-accent`. Uključeno (u chatu): pozadina `glass-tint` (ista ljubičasta kao kartica „Sljedeće“ / sesija), ikona bijela.
   Boje pozadine i ikone zamijene mjesta; `aria-pressed` i `aria-label` „AI asistent“.
@@ -102,3 +105,10 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   Boje predmeta ostaju iste u svim temama.
 - Mockupi za Pretragu, Izgled (teme), sheet „Započeti sesiju sada?“, Podsjetnike i pregled plana i programa rade se na početku
   etape kojoj pripadaju (10b / 10c), u istom stilu kao postojeći `.dc.html`.
+- Mockupi Etape 10b: `Pretraga.dc.html` (panel, nedavne, grupe, bez rezultata), `Izgled.dc.html` (Postavke → Opće → Izgled, 5 tema sa
+  tačnim tokenima i izračunatim kontrastom) i `StartSesije.dc.html` (sheet „Započeti sesiju sada?“, „+ Dodaj blok“, BlockSheet
+  „Zadrži ovo vrijeme“ / „Vrati planu“, nazad iz sesije). Statični su (bez `support.js`), više stanja na jednoj tabli kao `NavMeni.html`.
+- **Odluke uz mockupe (oktobar 2026):** (1) Lavanda: svijetli kraj `glass-tint` je #645DB4 umjesto #6E67BE (bijeli tekst 4.09 → 4.64:1),
+  sve ostalo ostaje; vrijednosti ostalih tema su u `Izgled.dc.html`. (2) Pretraga ima i grupu „Akcije“ (prva; otvara sheet: Više vremena
+  ovaj dan, Imam još vremena) uz Ekrane, Postavke, Predmete, Ispite, Izvore, Jedinice i Dokumente. (3) Na AI bloku start sheet ima
+  „Izbaci iz plana“, koje otvara postojeće pitanje „Obriši blok?“ iz Plana (kao u PRD-u).
