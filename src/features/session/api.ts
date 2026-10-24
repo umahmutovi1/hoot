@@ -434,11 +434,15 @@ export function useSessionWriter() {
         mode: StudyMode | null
         start: Date
         end: Date
+        /** "Odradila sam bez timera" (Stage 10b): the session closes this block. */
+        blockId?: string | null
+        unitId?: string | null
       }) => {
+        const blockId = input.blockId ?? null
         const session: SessionRow = {
           id: crypto.randomUUID(),
           subject_id: input.subjectId,
-          block_id: null,
+          block_id: blockId,
           mode: input.mode,
           timer_mode: 'free',
           origin: 'manual',
@@ -455,11 +459,16 @@ export function useSessionWriter() {
         const segment: SegmentRow = {
           id: crypto.randomUUID(),
           session_id: session.id,
-          unit_id: null,
+          unit_id: input.unitId ?? null,
           started_at: session.started_at,
           ended_at: session.ended_at,
         }
-        await write([sessionOp(session), segmentOp([segment])])
+        await write([
+          sessionOp(session),
+          segmentOp([segment]),
+          ...(blockId ? [blockStatusOp(blockId, 'done')] : []),
+        ])
+        if (blockId) void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'blocks'] })
         queryClient.setQueryData(sessionKey(userId, session.id), { session, segments: [segment] })
         return session.id
       },
@@ -510,6 +519,21 @@ export function useSessionWriter() {
             ...(session.block_id ? [blockStatusOp(session.block_id, 'planned')] : []),
           ],
           () => null,
+        )
+        if (session.block_id)
+          void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'blocks'] })
+      },
+
+      /** Undo of `discard`: the session and its segments come back as they were (no break push). */
+      restore: async (data: ActiveSession) => {
+        const { session, segments } = data
+        await write(
+          [
+            sessionOp(session),
+            segmentOp(segments),
+            ...(session.block_id ? [blockStatusOp(session.block_id, 'in_progress')] : []),
+          ],
+          () => data,
         )
         if (session.block_id)
           void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'blocks'] })

@@ -19,6 +19,8 @@ import { blockMode, blockTitle, useUnitIndex } from './model'
 import { reasonOf } from './save'
 import type { PlanBlockRow } from './state'
 import { usePlanStore } from './store'
+import { pickFor } from '@/features/today/pick'
+import { usePlanToday } from '@/features/today/usePlanToday'
 
 const TYPES = [
   { id: 'reading', kind: 'learn' },
@@ -133,7 +135,10 @@ function BlockForm({
   const [minutes, setMinutes] = useState(block?.planned_minutes ?? 45)
   const [timeOn, setTimeOn] = useState(block?.start_min !== null && block?.start_min !== undefined)
   const [time, setTime] = useState(formatClock(block?.start_min ?? 9 * 60))
-  const [drop, setDrop] = useState(false)
+  // Delete question: move the material, drop it from the exam, or give the slot to another subject.
+  const [choice, setChoice] = useState<'move' | 'drop' | 'other'>('move')
+  const [otherId, setOtherId] = useState<string | null>(null)
+  const planToday = usePlanToday()
   const [showAll, setShowAll] = useState(false)
 
   const subjectUnits = useMemo(() => {
@@ -223,8 +228,46 @@ function BlockForm({
 
   const confirmDelete = async () => {
     if (!block) return
-    const undo = await remove(block, drop)
+    const undo = await remove(block, choice === 'drop')
     show(t('blockSheet.deletedToast'), { label: t('today.cant.undo'), run: () => void undo() })
+    onDone()
+  }
+
+  /**
+   * "Drugi predmet u ovo vrijeme" (decision, Stage 10b): the slot becomes a manual block of the
+   * other subject, same day, time and length, with the material `pickForTime()` picks for it; the
+   * deleted block's material goes back to the plan from tomorrow.
+   */
+  const giveSlot = async (other: string) => {
+    if (!block) return
+    const pick = pickFor(planToday, block.planned_minutes, other)
+    const kind = pick?.kind === 'review' || pick?.kind === 'questions' ? pick.kind : 'learn'
+    const unitIds = pick?.units.map((u) => u.unitId) ?? []
+    const goals = model?.built.state.goals ?? []
+    const exam =
+      goals.find(
+        (g) =>
+          g.kind === 'exam' && g.subjectId === other && unitIds.some((u) => g.unitIds.includes(u)),
+      ) ?? goals.find((g) => g.kind === 'exam' && g.subjectId === other)
+    const undoDelete = await remove(block, false, true)
+    const undoSave = await save({
+      id: crypto.randomUUID(),
+      subjectId: other,
+      assessmentId: exam?.id ?? null,
+      deadlineId: null,
+      onDate: block.on_date,
+      startMin: block.start_min,
+      minutes: block.planned_minutes,
+      kind,
+      mode: kind === 'learn' ? 'reading' : kind,
+      unitIds,
+      title: null,
+      edited: false,
+    })
+    show(t('blockSheet.otherToast', { subject: active.find((x) => x.id === other)?.name ?? '' }), {
+      label: t('today.cant.undo'),
+      run: () => void undoSave().then(() => undoDelete()),
+    })
     onDone()
   }
 
@@ -234,6 +277,8 @@ function BlockForm({
     const exam = model?.built.state.goals.find((g) => g.id === block.assessment_id)
     const examTitle =
       subjects.flatMap((s) => s.assessments).find((a) => a.id === exam?.id)?.title ?? ''
+    const others = active.filter((s) => s.id !== block.subject_id)
+    const pickedOther = otherId ?? others[0]?.id ?? null
     return (
       <div className="flex flex-col gap-3.5">
         <p className="-mt-2 text-sm text-ink-muted">
@@ -243,33 +288,79 @@ function BlockForm({
             formatDuration(t, block.planned_minutes),
           ].join(' · ')}
         </p>
-        {canDrop && (
-          <div
-            role="radiogroup"
-            aria-label={t('blockSheet.deleteTitle')}
-            className="flex flex-col gap-2"
-          >
+        <div
+          role="radiogroup"
+          aria-label={t('blockSheet.deleteTitle')}
+          className="flex flex-col gap-2"
+        >
+          <RadioCard
+            checked={choice === 'move'}
+            onSelect={() => setChoice('move')}
+            title={t('blockSheet.move')}
+            subtitle={t('blockSheet.moveSub')}
+          />
+          {canDrop && (
             <RadioCard
-              checked={!drop}
-              onSelect={() => setDrop(false)}
-              title={t('blockSheet.move')}
-              subtitle={t('blockSheet.moveSub')}
-            />
-            <RadioCard
-              checked={drop}
-              onSelect={() => setDrop(true)}
+              checked={choice === 'drop'}
+              onSelect={() => setChoice('drop')}
               title={t('blockSheet.drop')}
               subtitle={t('blockSheet.dropSub', { title, exam: examTitle })}
             />
+          )}
+          {others.length > 0 && (
+            <RadioCard
+              checked={choice === 'other'}
+              onSelect={() => setChoice('other')}
+              title={t('blockSheet.other')}
+              subtitle={t('blockSheet.otherSub')}
+            />
+          )}
+        </div>
+        {choice === 'other' && (
+          <div
+            role="radiogroup"
+            aria-label={t('blockSheet.subject')}
+            className="flex flex-wrap gap-2"
+          >
+            {others.map((s) => {
+              const on = s.id === pickedOther
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setOtherId(s.id)}
+                  className={cn(
+                    'flex h-11 items-center gap-2 rounded-full px-4 text-[15px] font-semibold',
+                    on ? 'bg-ink text-white' : 'glass',
+                  )}
+                >
+                  <span className={cn('size-2 rounded-full', paletteOf(s.color).bar)} />
+                  {s.name.split(' ')[0]}
+                </button>
+              )
+            })}
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => void confirmDelete()}
-          className="flex h-14 items-center justify-center rounded-full bg-danger text-base font-semibold text-white"
-        >
-          {t('blockSheet.delete')}
-        </button>
+        {choice === 'other' ? (
+          <button
+            type="button"
+            disabled={!pickedOther}
+            onClick={() => pickedOther && void giveSlot(pickedOther)}
+            className="btn-primary flex h-14 items-center justify-center rounded-full text-base font-semibold"
+          >
+            {t('blockSheet.save')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => void confirmDelete()}
+            className="flex h-14 items-center justify-center rounded-full bg-danger text-base font-semibold text-white"
+          >
+            {t('blockSheet.delete')}
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setDeleting(false)}

@@ -50,7 +50,12 @@ function Stat({
       <span className={`text-xs font-semibold ${tone}`}>{label}</span>
       <span className="text-xl font-semibold tabular-nums">
         {value}
-        {rest && <span className="text-sm font-medium text-ink-secondary"> / {rest}</span>}
+        {rest && (
+          <span className="text-sm font-medium whitespace-nowrap text-ink-secondary">
+            {' '}
+            / {rest}
+          </span>
+        )}
       </span>
     </div>
   )

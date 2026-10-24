@@ -169,6 +169,13 @@
       "skip": "Skip",
       "drop": "Drop from plan",
       "delete": "Delete"
+    },
+    "noTimer": {
+      "link": "I did it without the timer",
+      "title": "Studied without the timer?",
+      "body": "{{title}}. The block is marked done; the time counts toward progress but not calibration.",
+      "howLong": "How long did you study?",
+      "next": "Next"
     }
   },
   "plan": {
@@ -649,6 +656,18 @@
       "keepGoing": "Keep studying",
       "finish": "End now",
       "discard": "Discard the session (nothing counts)"
+    },
+    "leave": {
+      "title": "End the session?",
+      "body": "{{time}} studied so far. The timer keeps going until you choose.",
+      "bodyPlanned": "{{time}} of the planned {{planned}} so far. The timer keeps going until you choose.",
+      "exit": "Leave, timer keeps running",
+      "exitSub": "The session stays on Today, one tap to come back",
+      "finish": "Finish early",
+      "finishSub": "Save {{time}} and go to the session summary",
+      "discard": "Discard session",
+      "discardSub": "The session is deleted as if it never started; nothing counts",
+      "discarded": "Session discarded"
     }
   },
   "settings": {
@@ -1884,7 +1903,10 @@
     "savedToast": "Block saved",
     "lockedToast": "The block is manual now, the plan won't move it",
     "deletedToast": "Block deleted",
-    "add": "Add block"
+    "add": "Add block",
+    "other": "Another subject in this slot",
+    "otherSub": "Same time and length; this block's material goes back to the plan from tomorrow",
+    "otherToast": "This slot is now for {{subject}}"
   },
   "crumbs": {
     "label": "Breadcrumb",

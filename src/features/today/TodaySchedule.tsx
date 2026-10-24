@@ -11,6 +11,7 @@ import { useSubjects } from '@/features/subjects/api'
 import { classesOn, formatClock } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
 import { BlockStartSheet } from './BlockStartSheet'
+import { DoneWithoutTimerSheet } from './DoneWithoutTimerSheet'
 import { SkipSheet } from './SkipSheet'
 import type { PlanToday } from './usePlanToday'
 
@@ -25,7 +26,8 @@ function shortName(name: string) {
 /**
  * "Raspored" on Today: the day's blocks and classes by time. Done blocks are ticked, the next one
  * is highlighted (manual blocks carry "ručno"). A tap on an open block asks "Započeti sesiju
- * sada?" first (decision, Stage 10b); "+ Dodaj blok" adds a block today.
+ * sada?" first (decision, Stage 10b), a missed one offers "Odradila sam bez timera"; "+ Dodaj blok"
+ * adds a block today.
  */
 export function TodaySchedule({ plan }: { plan: PlanToday }) {
   const { t } = useTranslation()
@@ -34,6 +36,7 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
   const { data: active } = useActiveSession()
   const [picked, setPicked] = useState<PlanBlockRow | null>(null)
   const [skipping, setSkipping] = useState<PlanBlockRow | null>(null)
+  const [noTimer, setNoTimer] = useState<PlanBlockRow | null>(null)
   // Edit (block), new (null) or the delete question; the key remounts BlockSheet per mode.
   const [editing, setEditing] = useState<{
     open: boolean
@@ -93,7 +96,8 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
           const done = b.status === 'done'
           const current = next?.id === b.id
           const closed = !isOpen(b)
-          const canOpen = isOpen(b)
+          // A missed block can still be marked done without the timer.
+          const canOpen = isOpen(b) || b.status === 'missed'
           const status =
             b.status === 'missed'
               ? t('planBlocks.missed')
@@ -159,7 +163,7 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
               {canOpen ? (
                 <button
                   type="button"
-                  onClick={() => setPicked(b)}
+                  onClick={() => (isOpen(b) ? setPicked(b) : setNoTimer(b))}
                   className={cn(
                     'flex w-full items-center gap-3 px-4 py-[13px]',
                     current && 'bg-canvas-soft',
@@ -210,7 +214,12 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
           setPicked(null)
           setEditing({ open: true, block: b, deleting: true })
         }}
+        onNoTimer={(b) => {
+          setPicked(null)
+          setNoTimer(b)
+        }}
       />
+      <DoneWithoutTimerSheet block={noTimer} plan={plan} onClose={() => setNoTimer(null)} />
       <SkipSheet block={skipping} plan={plan} onClose={() => setSkipping(null)} />
       <BlockSheet
         key={`${editing.block?.id ?? 'new'}-${editing.deleting}`}
