@@ -1,6 +1,16 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckIcon, ChevronRightIcon, LockIcon, PlusIcon } from '@/components/icons'
+import {
+  CheckIcon,
+  ChevronRightIcon,
+  LockIcon,
+  PlusIcon,
+  SkipIcon,
+  TrashIcon,
+} from '@/components/icons'
+import { SwipeRow } from '@/components/SwipeRow'
+import { useToast } from '@/components/toast-store'
+import { useDeleteBlock } from '@/features/plan/actions'
 import { BlockSheet } from '@/features/plan/BlockSheet'
 import { blockSub, blockTitle, isOpen, nextBlock, useGoalTitle } from '@/features/plan/model'
 import { reasonOf } from '@/features/plan/save'
@@ -35,6 +45,8 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
   const schedule = useScheduleData()
   const { data: active } = useActiveSession()
   const [picked, setPicked] = useState<PlanBlockRow | null>(null)
+  const remove = useDeleteBlock()
+  const show = useToast((s) => s.show)
   const [skipping, setSkipping] = useState<PlanBlockRow | null>(null)
   const [noTimer, setNoTimer] = useState<PlanBlockRow | null>(null)
   // Edit (block), new (null) or the delete question; the key remounts BlockSheet per mode.
@@ -160,14 +172,50 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
           return (
             <div key={b.id}>
               {divider}
-              {canOpen ? (
+              {isOpen(b) ? (
+                // Swipe left: Preskoči (AI block, the same sheet as on the card) or Obriši
+                // (manual block, with undo), Stage 10b.
+                <SwipeRow
+                  actions={[
+                    b.origin === 'user'
+                      ? {
+                          id: 'delete',
+                          label: t('swipe.delete'),
+                          tone: 'danger',
+                          icon: <TrashIcon size={18} />,
+                          run: async () => {
+                            const undo = await remove(b, false)
+                            show(t('blockSheet.deletedToast'), {
+                              label: t('today.cant.undo'),
+                              run: () => void undo(),
+                            })
+                          },
+                        }
+                      : {
+                          id: 'skip',
+                          label: t('swipe.skip'),
+                          tone: 'skip',
+                          icon: <SkipIcon size={18} />,
+                          run: () => setSkipping(b),
+                        },
+                  ]}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setPicked(b)}
+                    className={cn(
+                      'flex w-full items-center gap-3 px-4 py-[13px]',
+                      current && 'bg-canvas-soft',
+                    )}
+                  >
+                    {content}
+                  </button>
+                </SwipeRow>
+              ) : canOpen ? (
                 <button
                   type="button"
-                  onClick={() => (isOpen(b) ? setPicked(b) : setNoTimer(b))}
-                  className={cn(
-                    'flex w-full items-center gap-3 px-4 py-[13px]',
-                    current && 'bg-canvas-soft',
-                  )}
+                  onClick={() => setNoTimer(b)}
+                  className="flex w-full items-center gap-3 px-4 py-[13px]"
                 >
                   {content}
                 </button>

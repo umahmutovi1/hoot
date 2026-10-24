@@ -5,18 +5,20 @@ import { format } from 'date-fns'
 import type { TFunction } from 'i18next'
 import { useQuery } from '@tanstack/react-query'
 import { ScreenTitle } from '@/components/ScreenTitle'
-import { DocIcon } from '@/components/icons'
+import { DocIcon, TrashIcon } from '@/components/icons'
+import { SwipeRow } from '@/components/SwipeRow'
 import { Button } from '@/components/ui/button'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { supabase } from '@/lib/supabase'
 import { useDeleteDocument, useDocumentFileUrl, useDocuments, type DocumentRow } from './api'
 
-/** Documents the owl answers from (Postavke → Dokumenti). */
+/** Documents the owl answers from (Postavke → Dokumenti); swipe left deletes one, with undo. */
 export function DocumentsPage() {
   const { t } = useTranslation()
   const { locale } = useLocale()
   const { data: documents } = useDocuments()
+  const remove = useDeleteDocument()
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -26,22 +28,35 @@ export function DocumentsPage() {
         <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('owl.documents.empty')}</p>
       )}
       {documents && documents.length > 0 && (
-        <div className="flex flex-col rounded-card glass px-4 py-1.5">
+        <div className="flex flex-col overflow-hidden rounded-card glass py-1.5">
           {documents.map((d, i) => (
-            <Link
+            <SwipeRow
               key={d.id}
-              to={`/settings/documents/${d.id}`}
-              className={`flex items-center gap-3 py-3 ${i > 0 ? 'border-t border-canvas' : ''}`}
+              actions={[
+                {
+                  id: 'delete',
+                  label: t('swipe.delete'),
+                  tone: 'danger',
+                  icon: <TrashIcon size={18} />,
+                  deferred: t('swipe.documentDeleted'),
+                  run: () => remove.mutateAsync(d),
+                },
+              ]}
             >
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-[14px] bg-canvas text-brand">
-                <DocIcon size={18} />
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="truncate text-[15px] font-semibold">{d.title}</span>
-                <span className="text-xs text-ink-muted">{documentMeta(t, d, locale)}</span>
-              </span>
-              <span className="text-ink-muted">›</span>
-            </Link>
+              <Link
+                to={`/settings/documents/${d.id}`}
+                className={`mx-4 flex items-center gap-3 py-3 ${i > 0 ? 'border-t border-canvas' : ''}`}
+              >
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-[14px] bg-canvas text-brand">
+                  <DocIcon size={18} />
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span className="truncate text-[15px] font-semibold">{d.title}</span>
+                  <span className="text-xs text-ink-muted">{documentMeta(t, d, locale)}</span>
+                </span>
+                <span className="text-ink-muted">›</span>
+              </Link>
+            </SwipeRow>
           ))}
         </div>
       )}

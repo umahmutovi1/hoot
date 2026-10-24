@@ -41,6 +41,8 @@ export function useAllSources() {
       const { data, error } = await supabase
         .from('sources')
         .select('*, units(*)')
+        // An archived source is out of the plan, progress and scope (Stage 10b).
+        .is('archived_at', null)
         .order('created_at')
       if (error) throw error
       return data

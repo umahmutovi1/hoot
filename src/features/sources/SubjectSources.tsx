@@ -1,12 +1,19 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { ArchiveIcon } from '@/components/icons'
+import { SwipeRow } from '@/components/SwipeRow'
+import { useToast } from '@/components/toast-store'
+import { useArchiveSource, useArchivedSources } from './api'
 import { leavesOf, levelMinutes } from '@/lib/progress'
 import { cn } from '@/lib/utils'
 import { amountLabel } from './format'
 import { LevelBar } from './LevelBar'
 import { asProgress, measureOf, type SourceMaterial } from './model'
 
-/** "Izvori" on Predmet: one card per source with its progress bar. */
+/**
+ * "Izvori" on Predmet: one card per source with its progress bar. Swipe left archives a source
+ * (Stage 10b: nothing with units on it is deleted); archived ones are listed below to restore.
+ */
 export function SubjectSources({
   subjectId,
   materials,
@@ -15,6 +22,15 @@ export function SubjectSources({
   materials: SourceMaterial[]
 }) {
   const { t } = useTranslation()
+  const archive = useArchiveSource(subjectId)
+  const show = useToast((s) => s.show)
+  const archiveSource = (id: string) => {
+    archive.mutate({ id, archived: true })
+    show(t('swipe.sourceArchived'), {
+      label: t('today.cant.undo'),
+      run: () => archive.mutate({ id, archived: false }),
+    })
+  }
   return (
     <>
       <div className="mt-1.5 flex items-center justify-between">
@@ -32,9 +48,58 @@ export function SubjectSources({
         materials
           // A rough source whose parts were archived (real content arrived) is gone.
           .filter((m) => !m.source.is_rough || m.units.some((u) => !u.archived_at))
-          .map((m) => <SourceCard key={m.source.id} subjectId={subjectId} material={m} />)
+          .map((m) => (
+            <SwipeRow
+              key={m.source.id}
+              className="rounded-card"
+              actions={[
+                {
+                  id: 'archive',
+                  label: t('swipe.archive'),
+                  tone: 'archive',
+                  icon: <ArchiveIcon size={18} />,
+                  run: () => archiveSource(m.source.id),
+                },
+              ]}
+            >
+              <SourceCard subjectId={subjectId} material={m} />
+            </SwipeRow>
+          ))
       )}
+      <ArchivedSources subjectId={subjectId} />
     </>
+  )
+}
+
+function ArchivedSources({ subjectId }: { subjectId: string }) {
+  const { t } = useTranslation()
+  const { data: archived = [] } = useArchivedSources(subjectId)
+  const restore = useArchiveSource(subjectId)
+  const show = useToast((s) => s.show)
+  if (archived.length === 0) return null
+  return (
+    <details className="group rounded-card glass px-4 py-1">
+      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-sm font-semibold text-ink-secondary">
+        {t('swipe.archivedSources')} ({archived.length})
+      </summary>
+      <div className="flex flex-col pb-2">
+        {archived.map((s) => (
+          <div key={s.id} className="flex min-h-11 items-center justify-between gap-3">
+            <span className="truncate text-[15px] text-ink-muted">{s.title}</span>
+            <button
+              type="button"
+              onClick={() => {
+                restore.mutate({ id: s.id, archived: false })
+                show(t('swipe.sourceRestored'))
+              }}
+              className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
+            >
+              {t('swipe.restore')}
+            </button>
+          </div>
+        ))}
+      </div>
+    </details>
   )
 }
 

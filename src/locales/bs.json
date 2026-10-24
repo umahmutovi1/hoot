@@ -2234,5 +2234,20 @@
     "apply_few": "Primijeni {{count}} izmjene",
     "apply_other": "Primijeni {{count}} izmjena",
     "skipAll": "Preskoči sve"
+  },
+  "swipe": {
+    "actions": "Radnje",
+    "delete": "Obriši",
+    "archive": "Arhiviraj",
+    "skip": "Preskoči",
+    "restore": "Vrati",
+    "sessionDeleted": "Sesija je obrisana",
+    "classDeleted": "Termin je obrisan",
+    "deadlineDeleted": "Rok je obrisan",
+    "documentDeleted": "Dokument je obrisan",
+    "subjectArchived": "Predmet je arhiviran",
+    "sourceArchived": "Izvor je arhiviran",
+    "sourceRestored": "Izvor je vraćen",
+    "archivedSources": "Arhivirani izvori"
   }
 }

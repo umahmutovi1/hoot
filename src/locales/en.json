@@ -2173,5 +2173,20 @@
     "apply_one": "Apply {{count}} change",
     "apply_other": "Apply {{count}} changes",
     "skipAll": "Skip all"
+  },
+  "swipe": {
+    "actions": "Actions",
+    "delete": "Delete",
+    "archive": "Archive",
+    "skip": "Skip",
+    "restore": "Restore",
+    "sessionDeleted": "Session deleted",
+    "classDeleted": "Class deleted",
+    "deadlineDeleted": "Deadline deleted",
+    "documentDeleted": "Document deleted",
+    "subjectArchived": "Subject archived",
+    "sourceArchived": "Source archived",
+    "sourceRestored": "Source restored",
+    "archivedSources": "Archived sources"
   }
 }

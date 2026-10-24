@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { CameraIcon, ChevronRightIcon, PlusIcon } from '@/components/icons'
+import { CameraIcon, ChevronRightIcon, PlusIcon, TrashIcon } from '@/components/icons'
+import { SwipeRow } from '@/components/SwipeRow'
 import { useAiAvailability } from '@/features/owl/api'
 import { useOwlStore } from '@/features/owl/store'
 import { useDayBoundary, useProfile, useUpdateProfile } from '@/features/settings/profile'
@@ -13,7 +14,7 @@ import { localDay, toDisplayDate, weekdayOf } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { currentTeachingPeriod, formatClock, weeklyClassCount } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
-import { usePeriods, useTimetable } from './api'
+import { useDeleteClass, usePeriods, useTimetable } from './api'
 import { ClassSheet } from './ClassSheet'
 import { CLASS_KIND_STYLE } from './format'
 import { toClass, toPeriod, type TimetableRow } from './model'
@@ -22,6 +23,7 @@ import { useWeekdayNames } from './weekdays'
 /** Raspored nastave: classes of the current teaching period, one weekday at a time. */
 export function TimetablePage() {
   const { t } = useTranslation()
+  const deleteClass = useDeleteClass()
   const { locale } = useLocale()
   const navigate = useNavigate()
   const boundary = useDayBoundary()
@@ -131,12 +133,26 @@ export function TimetablePage() {
 
       <div className="flex flex-col gap-2">
         {list.map((e) => (
-          <ClassCard
+          <SwipeRow
             key={e.id}
-            entry={e}
-            subject={subjects.find((s) => s.id === e.subject_id)}
-            onOpen={() => setSheet({ open: true, id: e.id })}
-          />
+            className="rounded-[22px]"
+            actions={[
+              {
+                id: 'delete',
+                label: t('swipe.delete'),
+                tone: 'danger',
+                icon: <TrashIcon size={18} />,
+                deferred: t('swipe.classDeleted'),
+                run: () => deleteClass.mutateAsync(e.id),
+              },
+            ]}
+          >
+            <ClassCard
+              entry={e}
+              subject={subjects.find((s) => s.id === e.subject_id)}
+              onOpen={() => setSheet({ open: true, id: e.id })}
+            />
+          </SwipeRow>
         ))}
         {list.length === 0 && (
           <p className="rounded-[22px] glass p-5 text-center text-sm text-ink-muted">
