@@ -2383,6 +2383,42 @@
         "title": "Izvoz podataka",
         "sub": "Postavke › Podaci",
         "syn": "anki, csv, json, ics, izvoz, backup"
+      },
+      "appearance": {
+        "title": "Izgled",
+        "sub": "Postavke › Opće · tema",
+        "syn": "tema, boja, boje, izgled, lavanda, grafit, pijesak, kadulja, okean"
+      }
+    }
+  },
+  "appearance": {
+    "title": "Izgled",
+    "intro": "Tema mijenja boje appa. Boje predmeta ostaju iste.",
+    "themes": "Tema",
+    "note": "Mijenja se odmah i važi na svim tvojim uređajima. Tamni režim stiže kasnije.",
+    "changed": "Tema: {{name}}",
+    "row": "Izgled",
+    "rowSub": "tema boja",
+    "theme": {
+      "lavender": {
+        "name": "Lavanda",
+        "sub": "zadana · ljubičasta magla"
+      },
+      "graphite": {
+        "name": "Grafit",
+        "sub": "neutralna · topla siva"
+      },
+      "sand": {
+        "name": "Pijesak",
+        "sub": "topla · bež"
+      },
+      "sage": {
+        "name": "Kadulja",
+        "sub": "smirena · zelena"
+      },
+      "ocean": {
+        "name": "Okean",
+        "sub": "hladna · plava"
       }
     }
   }

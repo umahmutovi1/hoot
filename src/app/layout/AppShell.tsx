@@ -6,6 +6,7 @@ import { ForgottenGuard } from '@/features/session/ForgottenGuard'
 import { SessionStartSheet } from '@/features/session/SessionStartSheet'
 import { SearchPanel } from '@/features/search/SearchPanel'
 import { LocaleSync } from '@/features/settings/LocaleSync'
+import { ThemeSync } from '@/features/settings/ThemeSync'
 import { Crumbs } from './Crumbs'
 import { NavMenu } from './NavMenu'
 import { TopBar } from './TopBar'
@@ -27,6 +28,7 @@ export function AppShell() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col gap-3 px-5 pb-[calc(24px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] keyboard:pb-[calc(8px+var(--vv-bottom,0px))]">
       <LocaleSync />
+      <ThemeSync />
       {/* Sticky: what scrolls under the row is blurred and fades out at its lower edge, so the
           logo, AI and ☰ stay legible on any content (design README, 10b). */}
       <div className="glass-bar sticky top-0 z-40 -mx-5 px-5 pt-[calc(24px+env(safe-area-inset-top))]">

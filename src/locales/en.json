@@ -2322,6 +2322,42 @@
         "title": "Export data",
         "sub": "Settings › Data",
         "syn": "anki, csv, json, ics, export, backup"
+      },
+      "appearance": {
+        "title": "Appearance",
+        "sub": "Settings › General · theme",
+        "syn": "theme, colour, color, look, lavender, graphite, sand, sage, ocean"
+      }
+    }
+  },
+  "appearance": {
+    "title": "Appearance",
+    "intro": "A theme changes the app colours. Subject colours stay the same.",
+    "themes": "Theme",
+    "note": "Applies at once on all your devices. Dark mode comes later.",
+    "changed": "Theme: {{name}}",
+    "row": "Appearance",
+    "rowSub": "colour theme",
+    "theme": {
+      "lavender": {
+        "name": "Lavender",
+        "sub": "default · purple mist"
+      },
+      "graphite": {
+        "name": "Graphite",
+        "sub": "neutral · warm grey"
+      },
+      "sand": {
+        "name": "Sand",
+        "sub": "warm · beige"
+      },
+      "sage": {
+        "name": "Sage",
+        "sub": "calm · green"
+      },
+      "ocean": {
+        "name": "Ocean",
+        "sub": "cool · blue"
       }
     }
   }
