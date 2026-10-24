@@ -280,7 +280,7 @@ Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, t
 - [ ] Teme boja: tokeni po `[data-theme]` (brand, `glass-tint`, `btn-primary`, magla, `theme-color`), bez hardkodirane rgba u utility-jima; Lavanda, Grafit, Pijesak, Kadulja, Okean; Postavke → Izgled; migracija `profiles.theme`
 - [ ] „Više vremena ovaj dan“ na Plan → Dan i u pretrazi (model `availability_days` postoji)
 - [ ] Fokus kartica na Danas sa dva prstena po mockupu (`Danas.dc.html:35-46`): vanjski plan danas (`brand-accent`), unutrašnji sedmica (pink), 80 px; sada je jedan prsten u `FocusBar.tsx`
-- [ ] Blok na listi Danas: tap otvara “Započeti sesiju sada?” (Počni, Uredi, Preskoči, Obriši / Izbaci iz plana); “+ Dodaj blok” na listi; “Počni” na kartici Sljedeće ostaje direktan
+- [ ] Blok na listi Danas: tap otvara “Započeti sesiju sada?” (Počni, Uredi, Preskoči, Obriši / Izbaci iz plana); “+ Dodaj blok” na listi; “Počni” na kartici Sljedeće ostaje direktan; “Odradila sam bez timera” (ručna sesija vezana za blok) i “Drugi predmet u ovo vrijeme” u “Obriši blok?”; postavka “Početak dana” se zove “Granica dana”
 - [ ] Nazad dok sesija radi (strelica, browser, Android gest): sheet Nastavi / Izađi, timer radi dalje / Završi ranije / Odbaci sesiju
 - [ ] BlockSheet: prekidač “Zadrži ovo vrijeme” (default uključen = ručni blok; isključen = AI blok koji replan smije presložiti) + “Vrati planu” na pojedinačnom ručnom bloku
 - [ ] Današnji dan se preslaže: današnji slobodni termini u `input_hash`, promjena dostupnosti / nastave / zauzetosti ponovo smjesti današnje nezapočete AI blokove od sada (toast + Poništi); više slobodnog vremena → kartica “Imaš X min više danas”; testovi u `state.ts` / `plan()`
