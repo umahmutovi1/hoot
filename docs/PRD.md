@@ -838,7 +838,7 @@ Odluka, oktobar 2026 (Etapa 10c). Proširuje Web Push iz Etape 9 i zamjenjuje �
 
 Odluke, oktobar 2026 (Etapa 10b). Izgled je u design/README.md.
 
-- **Gornji red je uvijek vidljiv (sticky):** logo, AI, pretraga, ☰. Sadržaj koji skrola ispod reda se zamuti kao na iOS-u (blur iza reda, donja ivica se mekano gasi), pa logo, AI i ☰ ostaju jasni i izdvojeni (izmjena, oktobar 2026; ranije gradijent platna).
+- **Gornji red je uvijek vidljiv (sticky):** logo, AI, pretraga, ☰ (pretraga i ☰ grupisani u jednu pilulu, kao pozadina AI dugmeta). Sadržaj koji skrola ispod reda se zamuti kao na iOS-u (blur iza reda, donja ivica se mekano gasi), pa logo, AI i ☰ ostaju jasni i izdvojeni (izmjena, oktobar 2026; ranije gradijent platna).
 - **AI dugme** je samo ikona (bez labela i podvlake): isključeno je svijetlo sa ljubičastom ikonom, uključeno ljubičasta pozadina kao kartica sesije (`glass-tint`) sa bijelom ikonom.
 - **Meni.** Tap na naziv sekcije vodi na njenu glavnu stranicu; tap na chevron samo otvara podstranice (jedan tap manje).
 - **Sheetovi** klize odozdo kao na iOS-u (fizička kriva, ~400 ms) i zatvaraju se povlačenjem nadolje.

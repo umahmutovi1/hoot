@@ -78,7 +78,8 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   gradijenta platna sadržaj ispod reda se zamuti kao na iOS-u: `backdrop-filter: blur(20px) saturate(180%)` uz vrlo blag sloj boje platna
   (0.55), a donja ivica se gasi maskom (`mask-image: linear-gradient(to bottom, #000 75%, transparent)`), pa nema oštre linije. Logo, AI i
   ☰ ostaju oštri iznad zamućenja. Bez podrške za `backdrop-filter` ili uz „smanji prozirnost“: platno 0.92 bez blura. Mrvice skrolaju.
-  Red: logo · AI · razmak · pretraga · ☰.
+  Red: logo · AI · razmak · [pretraga ☰]. Pretraga i ☰ dijele jednu široku pilulu (88 × 44, ista pozadina kao isključeno AI dugme:
+  `bg-white/30` + inset svjetlo), ikone ostaju boje teksta.
 - **AI dugme** je samo ikona iskre u krugu 44 px, bez labela „AI“ i bez podvlake. Isključeno: `bg-white/30` + inset svjetlo, ikona
   `brand-accent`. Uključeno (u chatu): pozadina `glass-tint` (ista ljubičasta kao kartica „Sljedeće“ / sesija), ikona bijela.
   Boje pozadine i ikone zamijene mjesta; `aria-pressed` i `aria-label` „AI asistent“.
