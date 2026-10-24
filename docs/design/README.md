@@ -105,3 +105,7 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
 - Mockupi Etape 10b: `Pretraga.dc.html` (panel, nedavne, grupe, bez rezultata), `Izgled.dc.html` (Postavke → Opće → Izgled, 5 tema sa
   tačnim tokenima i izračunatim kontrastom) i `StartSesije.dc.html` (sheet „Započeti sesiju sada?“, „+ Dodaj blok“, BlockSheet
   „Zadrži ovo vrijeme“ / „Vrati planu“, nazad iz sesije). Statični su (bez `support.js`), više stanja na jednoj tabli kao `NavMeni.html`.
+- **Odluke uz mockupe (oktobar 2026):** (1) Lavanda: svijetli kraj `glass-tint` je #645DB4 umjesto #6E67BE (bijeli tekst 4.09 → 4.64:1),
+  sve ostalo ostaje; vrijednosti ostalih tema su u `Izgled.dc.html`. (2) Pretraga ima i grupu „Akcije“ (prva; otvara sheet: Više vremena
+  ovaj dan, Imam još vremena) uz Ekrane, Postavke, Predmete, Ispite, Izvore, Jedinice i Dokumente. (3) Na AI bloku start sheet ima
+  „Izbaci iz plana“, koje otvara postojeće pitanje „Obriši blok?“ iz Plana (kao u PRD-u).
