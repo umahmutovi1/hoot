@@ -134,6 +134,8 @@ function BlockForm({
   const [day, setDay] = useState<LocalDate>(block?.on_date ?? date)
   const [minutes, setMinutes] = useState(block?.planned_minutes ?? 45)
   const [timeOn, setTimeOn] = useState(block?.start_min !== null && block?.start_min !== undefined)
+  // "Zadrži ovo vrijeme" (Stage 10b): on by default, as before (the block becomes manual).
+  const [keepTime, setKeepTime] = useState(true)
   const [time, setTime] = useState(formatClock(block?.start_min ?? 9 * 60))
   // Delete question: move the material, drop it from the exam, or give the slot to another subject.
   const [choice, setChoice] = useState<'move' | 'drop' | 'other'>('move')
@@ -188,6 +190,12 @@ function BlockForm({
   const wasAi = block?.origin === 'ai'
   const edited = wasAi || (block ? reasonOf(block)?.edited === true : false)
   const subjectName = active.find((s) => s.id === subjectId)?.name ?? ''
+  const startMin = timeOn ? (parseClock(time) ?? null) : null
+  // An AI block whose day or time changed asks whether to keep that time.
+  const moved = Boolean(block && wasAi && (day !== block.on_date || startMin !== block.start_min))
+  const asAi = moved && !keepTime
+  // A manual block that came from the plan can go back to it.
+  const fromPlan = block?.origin === 'user' && reasonOf(block)?.edited === true
 
   const submit = async () => {
     if (!subjectId) return
@@ -210,19 +218,44 @@ function BlockForm({
         kind === 'deadline' ? null : ((covering ?? nextExam)?.id ?? block?.assessment_id ?? null),
       deadlineId: kind === 'deadline' ? (deadline?.id ?? block?.deadline_id ?? null) : null,
       onDate: day,
-      startMin: timeOn ? (parseClock(time) ?? null) : null,
+      startMin,
       minutes,
       kind,
       mode: type,
       unitIds: kind === 'deadline' ? [] : unitIds,
       title: block?.title ?? null,
       edited,
+      ...(asAi && block
+        ? {
+            asAi: {
+              planRunId: block.plan_run_id,
+              reason: block.reason,
+              units: sameUnits(block, unitIds)
+                ? block.plan_block_units.map(({ user_id: _u, ...u }) => u)
+                : null,
+            },
+          }
+        : {}),
     }
     const undo = await save(draft)
-    show(wasAi ? t('blockSheet.lockedToast') : t('blockSheet.savedToast'), {
-      label: t('today.cant.undo'),
-      run: () => void undo(),
-    })
+    show(
+      asAi
+        ? t('blockSheet.movedAiToast')
+        : wasAi
+          ? t('blockSheet.lockedToast')
+          : t('blockSheet.savedToast'),
+      {
+        label: t('today.cant.undo'),
+        run: () => void undo(),
+      },
+    )
+    onDone()
+  }
+
+  const backToPlan = async () => {
+    if (!block) return
+    const undo = await remove(block, false)
+    show(t('blockSheet.backToPlanToast'), { label: t('today.cant.undo'), run: () => void undo() })
     onDone()
   }
 
@@ -565,10 +598,27 @@ function BlockForm({
         </span>
       </div>
 
-      {wasAi && (
-        <p className="rounded-[18px] bg-canvas px-3.5 py-3 text-[13px] text-ink-secondary">
-          {t('blockSheet.lockNote')}
-        </p>
+      {moved ? (
+        <div className="glass flex items-center gap-3 rounded-[20px] px-3.5 py-3">
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('blockSheet.keepTime')}</span>
+            <span className="text-xs leading-[1.35] text-ink-muted">
+              {keepTime ? t('blockSheet.keepTimeOn') : t('blockSheet.keepTimeOff')}
+            </span>
+          </span>
+          <Switch
+            checked={keepTime}
+            onChange={setKeepTime}
+            label={t('blockSheet.keepTime')}
+            hideLabel
+          />
+        </div>
+      ) : (
+        wasAi && (
+          <p className="rounded-[18px] bg-canvas px-3.5 py-3 text-[13px] text-ink-secondary">
+            {t('blockSheet.lockNote')}
+          </p>
+        )
       )}
 
       <button
@@ -579,6 +629,16 @@ function BlockForm({
       >
         {t('blockSheet.save')}
       </button>
+      {fromPlan && (
+        <button
+          type="button"
+          onClick={() => void backToPlan()}
+          className="flex min-h-12 flex-col items-center justify-center gap-0.5 py-1"
+        >
+          <span className="text-[15px] font-semibold text-brand">{t('blockSheet.backToPlan')}</span>
+          <span className="text-xs text-ink-muted">{t('blockSheet.backToPlanSub')}</span>
+        </button>
+      )}
       {block && block.on_date === today && block.status === 'planned' && (
         <button
           type="button"
@@ -602,4 +662,11 @@ function BlockForm({
       )}
     </div>
   )
+}
+
+/** The sheet left the block's units as they were (keep their page ranges and minutes). */
+function sameUnits(block: PlanBlockRow, unitIds: string[]) {
+  const before = block.plan_block_units.map((u) => u.unit_id).sort()
+  const after = [...unitIds].sort()
+  return before.length === after.length && before.every((id, i) => id === after[i])
 }

@@ -650,6 +650,11 @@ export interface BlockDraft {
   title: string | null
   /** An AI block the user changed (Satnica "Vrati predloženo" brings the plan back). */
   edited: boolean
+  /**
+   * "Zadrži ovo vrijeme" off (Stage 10b): the block stays an AI block of its run, with its reason
+   * and units, only at the new day and time; the replan may arrange it again.
+   */
+  asAi?: { planRunId: string | null; reason: string | null; units: UnitRow[] | null }
 }
 
 function blockRow(d: BlockDraft, timeZone: string) {
@@ -665,14 +670,16 @@ function blockRow(d: BlockDraft, timeZone: string) {
     planned_minutes: d.minutes,
     kind: d.kind,
     status: 'planned' as const,
-    origin: 'user' as const,
-    plan_run_id: null,
+    origin: d.asAi ? ('ai' as const) : ('user' as const),
+    plan_run_id: d.asAi?.planRunId ?? null,
     title: d.title,
-    reason: JSON.stringify({ code: 'manual', mode: d.mode, ...(d.edited ? { edited: true } : {}) }),
+    reason: d.asAi
+      ? d.asAi.reason
+      : JSON.stringify({ code: 'manual', mode: d.mode, ...(d.edited ? { edited: true } : {}) }),
   }
 }
 
-interface UnitRow {
+export interface UnitRow {
   block_id: string
   unit_id: string
   page_from: number | null
@@ -681,6 +688,7 @@ interface UnitRow {
 }
 
 function unitRows(d: BlockDraft): UnitRow[] {
+  if (d.asAi?.units) return d.asAi.units
   const each = d.unitIds.length > 0 ? Math.max(1, Math.round(d.minutes / d.unitIds.length)) : 0
   return d.unitIds.map((unit_id) => ({
     block_id: d.id,
@@ -742,7 +750,8 @@ export function useSaveBlock() {
         },
       ])
       await write(writeBlockOps(row, units))
-      replanNow()
+      // A moved AI block is not a plan input; the next replan may arrange it again.
+      if (!draft.asAi) replanNow()
       return async () => {
         if (previous) {
           queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) => [

@@ -26,6 +26,8 @@ import { SetupChecklist } from '@/features/onboarding/SetupChecklist'
 import { ExamTiles } from './ExamTiles'
 import { FactCard } from './FactCard'
 import { FocusBar } from './FocusBar'
+import { GainedCard } from './GainedCard'
+import { useGainedCard } from './useGainedCard'
 import { DayOffCard, NextCard } from './NextCard'
 import { QuickActions } from './QuickActions'
 import { TodaySchedule } from './TodaySchedule'
@@ -98,7 +100,7 @@ export function TodayPage() {
           <div className="mt-3 empty:hidden">
             <QuickActions plan={plan} dayOff={dayOff} />
           </div>
-          <ActionCards />
+          <ActionCards plan={plan} />
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />
           <ExamTiles now={plan.now} today={plan.today} />
@@ -174,8 +176,9 @@ function MovedCard({ plan }: { plan: PlanToday }) {
 }
 
 /** At most one action card above the schedule; the rest open under "Još N prijedloga". */
-function ActionCards() {
+function ActionCards({ plan }: { plan: PlanToday }) {
   const { t } = useTranslation()
+  const gained = useGainedCard(plan)
   const lectures = usePendingLectures()
   const suggestions = useSuggestions()
   const [more, setMore] = useState(false)
@@ -184,6 +187,7 @@ function ActionCards() {
   const moodle = useDeadlineProposals()
   const cards = [
     ...urgent.map((s) => <SuggestionCard key={s.key} suggestion={s} />),
+    ...(gained ? [<GainedCard key="gained" plan={plan} />] : []),
     ...lectures.pending.map((l) => (
       <LecturePromptCard
         key={l.entry.id}

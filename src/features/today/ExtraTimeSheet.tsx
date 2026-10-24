@@ -22,10 +22,13 @@ export function ExtraTimeSheet({
   open,
   onOpenChange,
   plan,
+  initialMinutes = 60,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   plan: PlanToday
+  /** "Imaš X min više danas" opens it on the time that was gained. */
+  initialMinutes?: number
 }) {
   const { t } = useTranslation()
   return (
@@ -35,14 +38,25 @@ export function ExtraTimeSheet({
       title={t('today.extra.title')}
       subtitle={t('today.extra.sub')}
     >
-      {open && <ExtraForm plan={plan} onDone={() => onOpenChange(false)} />}
+      {open && (
+        <ExtraForm plan={plan} initial={initialMinutes} onDone={() => onOpenChange(false)} />
+      )}
     </BottomSheet>
   )
 }
 
-function ExtraForm({ plan, onDone }: { plan: PlanToday; onDone: () => void }) {
+function ExtraForm({
+  plan,
+  initial,
+  onDone,
+}: {
+  plan: PlanToday
+  initial: number
+  onDone: () => void
+}) {
   const { t } = useTranslation()
-  const [minutes, setMinutes] = useState<number>(60)
+  const [minutes, setMinutes] = useState<number>(initial)
+  const options = [...new Set([...EXTRA_MINUTES, initial])].sort((a, b) => a - b)
   const [busy, setBusy] = useState(false)
   const { data: subjects = [] } = useSubjects()
   const goalTitle = useGoalTitle()
@@ -102,7 +116,7 @@ function ExtraForm({ plan, onDone }: { plan: PlanToday; onDone: () => void }) {
   return (
     <div className="flex flex-col gap-3.5">
       <div className="flex gap-2" role="radiogroup" aria-label={t('today.extra.title')}>
-        {EXTRA_MINUTES.map((m) => (
+        {options.map((m) => (
           <button
             key={m}
             type="button"

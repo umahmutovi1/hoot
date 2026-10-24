@@ -180,6 +180,13 @@
       "body": "{{title}}. Blok se označi kao odrađen; vrijeme ide u napredak, ali ne u kalibraciju.",
       "howLong": "Koliko si učila?",
       "next": "Dalje"
+    },
+    "replaced": "Danas je presložen: {{subject}} sad u {{time}}",
+    "gained": {
+      "title": "Imaš {{minutes}} više danas",
+      "sub": "Dodati {{title}}?",
+      "add": "Dodaj",
+      "later": "Ne sad"
     }
   },
   "plan": {
@@ -1957,7 +1964,14 @@
     "add": "Dodaj blok",
     "other": "Drugi predmet u ovo vrijeme",
     "otherSub": "Isto vrijeme i trajanje; gradivo ovog bloka ide u plan od sutra",
-    "otherToast": "Termin je sad za {{subject}}"
+    "otherToast": "Termin je sad za {{subject}}",
+    "keepTime": "Zadrži ovo vrijeme",
+    "keepTimeOn": "Plan ga više neće pomjerati.",
+    "keepTimeOff": "Plan ga smije pomjeriti kad se nešto promijeni.",
+    "movedAiToast": "Blok je pomjeren. Plan ga može presložiti.",
+    "backToPlan": "Vrati planu",
+    "backToPlanSub": "Plan ga opet slaže sam.",
+    "backToPlanToast": "Blok je vraćen planu"
   },
   "crumbs": {
     "label": "Putanja",

@@ -90,10 +90,29 @@ export function replaceArgs(
       rho: built.state.rho,
     },
     p_today: built.today,
-    p_from: built.state.from,
+    p_from: built.replaceFrom,
     p_blocks: blocks,
     p_units: units,
   }
+}
+
+/**
+ * Today's not-started AI blocks that a `replaceToday` build placed at a new time (decision, Stage
+ * 10b: today's free time changed). Their content stays; only `start_min` / `planned_start` move.
+ */
+export function todayMoves(
+  built: BuiltState,
+  result: PlanResult,
+  blocks: PlanBlockRow[],
+): { block: PlanBlockRow; startMin: number }[] {
+  if (!built.replacedToday) return []
+  return blocks
+    .filter((b) => b.on_date === built.today && b.origin === 'ai' && b.status === 'planned')
+    .flatMap((block) => {
+      const startMin = result.fixedTimes[block.id]
+      return startMin !== undefined && startMin !== block.start_min ? [{ block, startMin }] : []
+    })
+    .sort((a, b) => a.startMin - b.startMin)
 }
 
 /**

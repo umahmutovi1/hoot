@@ -17,6 +17,12 @@ interface PlanStore {
   /** Bumped by "Preračunaj" and quick actions: replan now, without the 2 s debounce. */
   nudge: number
   replanNow: () => void
+  /**
+   * Free time today grew since the last run (Stage 10b): "Imaš X min više danas" offers it once;
+   * the plan never fills it silently.
+   */
+  extraToday: { date: string; minutes: number } | null
+  setExtraToday: (extra: { date: string; minutes: number } | null) => void
 }
 
 export const usePlanStore = create<PlanStore>()((set) => ({
@@ -24,4 +30,6 @@ export const usePlanStore = create<PlanStore>()((set) => ({
   setModel: (model) => set({ model }),
   nudge: 0,
   replanNow: () => set((s) => ({ nudge: s.nudge + 1 })),
+  extraToday: null,
+  setExtraToday: (extraToday) => set({ extraToday }),
 }))

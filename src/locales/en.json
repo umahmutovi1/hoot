@@ -176,6 +176,13 @@
       "body": "{{title}}. The block is marked done; the time counts toward progress but not calibration.",
       "howLong": "How long did you study?",
       "next": "Next"
+    },
+    "replaced": "Today was rearranged: {{subject}} now at {{time}}",
+    "gained": {
+      "title": "You have {{minutes}} more today",
+      "sub": "Add {{title}}?",
+      "add": "Add",
+      "later": "Not now"
     }
   },
   "plan": {
@@ -1906,7 +1913,14 @@
     "add": "Add block",
     "other": "Another subject in this slot",
     "otherSub": "Same time and length; this block's material goes back to the plan from tomorrow",
-    "otherToast": "This slot is now for {{subject}}"
+    "otherToast": "This slot is now for {{subject}}",
+    "keepTime": "Keep this time",
+    "keepTimeOn": "The plan will not move it.",
+    "keepTimeOff": "The plan may move it when something changes.",
+    "movedAiToast": "Block moved. The plan may rearrange it.",
+    "backToPlan": "Return to plan",
+    "backToPlanSub": "The plan arranges it again.",
+    "backToPlanToast": "Block returned to the plan"
   },
   "crumbs": {
     "label": "Breadcrumb",
