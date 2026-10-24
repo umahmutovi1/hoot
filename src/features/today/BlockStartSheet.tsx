@@ -21,7 +21,7 @@ const secondary =
  * "Započeti sesiju sada?" (StartSesije.dc.html, PRD "Blok na listi Danas"): a tap on a block in
  * the Danas list asks before starting. Počni is the same start as on "Sljedeće"; below are Uredi,
  * Preskoči and, by origin, "Izbaci iz plana" (AI block: the delete question from Plan) or "Obriši"
- * (manual block: at once, with undo).
+ * (manual block: at once, with undo). "Odradila sam bez timera" closes it with a manual session.
  */
 export function BlockStartSheet({
   block,
@@ -31,6 +31,7 @@ export function BlockStartSheet({
   onEdit,
   onSkip,
   onDrop,
+  onNoTimer,
 }: {
   block: PlanBlockRow | null
   plan: PlanToday
@@ -40,6 +41,7 @@ export function BlockStartSheet({
   onEdit: (block: PlanBlockRow) => void
   onSkip: (block: PlanBlockRow) => void
   onDrop: (block: PlanBlockRow) => void
+  onNoTimer: (block: PlanBlockRow) => void
 }) {
   const { t } = useTranslation()
   // Keep the last block while the sheet slides out.
@@ -60,6 +62,7 @@ export function BlockStartSheet({
           onEdit={onEdit}
           onSkip={onSkip}
           onDrop={onDrop}
+          onNoTimer={onNoTimer}
         />
       )}
     </BottomSheet>
@@ -74,6 +77,7 @@ function Body({
   onEdit,
   onSkip,
   onDrop,
+  onNoTimer,
 }: {
   block: PlanBlockRow
   plan: PlanToday
@@ -82,6 +86,7 @@ function Body({
   onEdit: (block: PlanBlockRow) => void
   onSkip: (block: PlanBlockRow) => void
   onDrop: (block: PlanBlockRow) => void
+  onNoTimer: (block: PlanBlockRow) => void
 }) {
   const { t } = useTranslation()
   const { data: subjects = [] } = useSubjects()
@@ -176,6 +181,13 @@ function Body({
           </button>
         )}
       </div>
+      <button
+        type="button"
+        onClick={() => onNoTimer(block)}
+        className="-mt-1 flex h-11 items-center justify-center text-[15px] font-semibold text-brand"
+      >
+        {t('today.noTimer.link')}
+      </button>
     </div>
   )
 }

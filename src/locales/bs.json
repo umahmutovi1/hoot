@@ -173,6 +173,13 @@
       "skip": "Preskoči",
       "drop": "Izbaci iz plana",
       "delete": "Obriši"
+    },
+    "noTimer": {
+      "link": "Odradila sam bez timera",
+      "title": "Odradila si bez timera?",
+      "body": "{{title}}. Blok se označi kao odrađen; vrijeme ide u napredak, ali ne u kalibraciju.",
+      "howLong": "Koliko si učila?",
+      "next": "Dalje"
     }
   },
   "plan": {
@@ -670,6 +677,18 @@
       "keepGoing": "Nastavi učiti",
       "finish": "Završi sad",
       "discard": "Odbaci sesiju (ništa se ne računa)"
+    },
+    "leave": {
+      "title": "Završi sesiju?",
+      "body": "Do sad je {{time}} učenja. Timer ne staje dok ne izabereš.",
+      "bodyPlanned": "Do sad je {{time}} od planiranih {{planned}}. Timer ne staje dok ne izabereš.",
+      "exit": "Izađi, timer radi dalje",
+      "exitSub": "Sesija ostaje na Danas, vratiš se jednim tapom",
+      "finish": "Završi ranije",
+      "finishSub": "Spasi {{time}} i idi na kraj sesije",
+      "discard": "Odbaci sesiju",
+      "discardSub": "Sesija se briše kao da nije ni počela; ništa se ne računa",
+      "discarded": "Sesija je odbačena"
     }
   },
   "settings": {
@@ -1935,7 +1954,10 @@
     "savedToast": "Blok je spašen",
     "lockedToast": "Blok je sad ručni, plan ga ne pomjera",
     "deletedToast": "Blok je obrisan",
-    "add": "Dodaj blok"
+    "add": "Dodaj blok",
+    "other": "Drugi predmet u ovo vrijeme",
+    "otherSub": "Isto vrijeme i trajanje; gradivo ovog bloka ide u plan od sutra",
+    "otherToast": "Termin je sad za {{subject}}"
   },
   "crumbs": {
     "label": "Putanja",

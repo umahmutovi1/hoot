@@ -821,7 +821,7 @@ Tap otvara kratki izbor umjesto da odmah pokrene nešto nepredvidivo:
 2. Inače je označen sljedeći neodrađeni blok iz današnjeg plana (“Preporučeno”); ostali današnji blokovi su ispod.
 3. “Slobodna sesija”: bira se samo predmet, jedinica u sesiji. Vrijeme ulazi u kalibraciju, ali ne zatvara nijedan planirani blok.
 
-**Nazad dok sesija radi (odluka, oktobar 2026, Etapa 10b).** Strelica nazad u sesiji i nazad u browseru / Android gest (`useBlocker`) ne izlaze tiho nego otvaraju sheet (proširen EndEarlySheet): “Nastavi učiti” (zatvori sheet), “Izađi, timer radi dalje” (kao do sad: Danas pokazuje sesiju u toku), “Završi ranije” (spasi do sada → kraj sesije) i “Odbaci sesiju” (crveno, tekst “Sesija se briše kao da nije ni počela; ništa se ne računa”, uz Poništi u toastu). Zatvaranje taba ne pita ništa (timer je u segmentima i preživi).
+**Nazad dok sesija radi (odluka, oktobar 2026, Etapa 10b).** Strelica nazad u sesiji i nazad u browseru / Android gest (`useBlocker`) ne izlaze tiho nego otvaraju sheet “Završi sesiju?” (proširen EndEarlySheet): “Nastavi učiti” (zatvori sheet), “Izađi, timer radi dalje” (kao do sad: Danas pokazuje sesiju u toku), “Završi ranije” (spasi do sada → kraj sesije) i “Odbaci sesiju” (crveno, tekst “Sesija se briše kao da nije ni počela; ništa se ne računa”, uz Poništi u toastu). Zatvaranje taba ne pita ništa (timer je u segmentima i preživi).
 
 ## Podsjetnici i notifikacije
 

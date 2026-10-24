@@ -770,7 +770,8 @@ export function useSaveBlock() {
 
 /**
  * Deleting a block: its material goes back into the pool (replan places it from tomorrow), or,
- * for "Izbaci iz plana", its units stop counting for its exam. Returns an undo.
+ * for "Izbaci iz plana", its units stop counting for its exam. `reuseSlot` ("Drugi predmet u ovo
+ * vrijeme") leaves the time free for the block that takes it. Returns an undo.
  */
 export function useDeleteBlock() {
   const userId = useUserId()
@@ -779,13 +780,13 @@ export function useDeleteBlock() {
   const cut = useCutScope()
   const replanNow = usePlanStore((s) => s.replanNow)
   return useCallback(
-    async (block: PlanBlockRow, drop: boolean) => {
+    async (block: PlanBlockRow, drop: boolean, reuseSlot = false) => {
       const key = planBlocksKey(userId)
       const exceptionsKey = scheduleKey('availability_exceptions', userId)
       // "Prebaci" (decision, Stage 8b): the AI block's time becomes busy that day, so the replan
       // places its units elsewhere instead of in the same slot again.
       const busy: ExceptionRow | null =
-        !drop && block.origin === 'ai' && block.start_min !== null
+        !drop && !reuseSlot && block.origin === 'ai' && block.start_min !== null
           ? {
               id: crypto.randomUUID(),
               user_id: userId!,

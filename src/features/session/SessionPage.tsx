@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link, Navigate, useBlocker, useNavigate, type BlockerFunction } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { goBack } from '@/app/navigation'
 import { ChevronLeftIcon, PencilIcon, PlusIcon } from '@/components/icons'
@@ -65,6 +65,20 @@ export function SessionPage() {
   const [picker, setPicker] = useState(false)
   const [endSheet, setEndSheet] = useState(false)
   const vibrated = useRef<string | null>(null)
+  // Leaving the running session (‹, browser back, Android gesture) asks first (decision, 10b);
+  // the session flow itself (end form, knowledge check) and an explicit exit pass.
+  const running = useRef(false)
+  useEffect(() => {
+    running.current = Boolean(data)
+  }, [data])
+  const leaving = useRef(false)
+  const blocker = useBlocker(
+    useCallback<BlockerFunction>(
+      ({ nextLocation }) =>
+        running.current && !leaving.current && !nextLocation.pathname.startsWith('/session'),
+      [],
+    ),
+  )
 
   const segments = data ? [...data.segments].sort(bySegmentStart) : []
   const list = segments.map(toSegment)
@@ -353,6 +367,26 @@ export function SessionPage() {
         open={endSheet}
         onOpenChange={setEndSheet}
         onFinish={() => void finish()}
+        onBeforeLeave={() => (leaving.current = true)}
+      />
+      <EndEarlySheet
+        variant="back"
+        data={data}
+        activeMs={active}
+        open={blocker.state === 'blocked'}
+        onOpenChange={(o) => !o && blocker.state === 'blocked' && blocker.reset()}
+        onExit={() => {
+          leaving.current = true
+          blocker.proceed?.()
+        }}
+        onFinish={() => {
+          blocker.reset?.()
+          void finish()
+        }}
+        onBeforeLeave={() => {
+          leaving.current = true
+          blocker.reset?.()
+        }}
       />
       {forgotten && forgotten.id !== keptSegmentId && (
         <ForgottenSheet segment={forgotten} now={now} onFinish={(at) => void finish(at)} />

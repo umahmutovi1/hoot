@@ -38,6 +38,8 @@ export interface PickInput {
   dueReviews: PickReview[]
   /** Planned blocks after today. */
   laterBlocks: PickBlock[]
+  /** Only this subject ("Drugi predmet u ovo vrijeme", Stage 10b). */
+  subjectId?: string
 }
 
 export interface Pick {
@@ -81,9 +83,17 @@ function fromBlock(block: PickBlock, minutes: number, from: Pick['from']): Pick 
   }
 }
 
-export function pickForTime(input: PickInput): Pick | null {
-  const { minutes } = input
+export function pickForTime(all: PickInput): Pick | null {
+  const { minutes } = all
   if (minutes <= 0) return null
+  const of = <T extends { subjectId: string }>(list: T[]) =>
+    all.subjectId === undefined ? list : list.filter((x) => x.subjectId === all.subjectId)
+  const input = {
+    ...all,
+    todayBlocks: of(all.todayBlocks),
+    dueReviews: of(all.dueReviews),
+    laterBlocks: of(all.laterBlocks),
+  }
 
   const due = input.dueReviews
     .filter((r) => r.nextReviewOn <= input.today)
