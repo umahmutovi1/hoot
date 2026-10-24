@@ -107,7 +107,7 @@ export function CalendarView() {
                 aria-label={t('plan.openMonth', {
                   month: format(selected, 'LLLL yyyy', { locale: dateFnsLocales[locale] }),
                 })}
-                className="flex h-10 items-center gap-1 rounded-full glass pr-4 pl-2.5 text-[15px] font-semibold text-brand"
+                className="flex h-10 items-center gap-1 rounded-full glass pr-4 pl-2.5 text-[15px] font-semibold text-ink"
               >
                 <ChevronLeftIcon size={16} />
                 <span className="first-letter:uppercase">
