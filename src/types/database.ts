@@ -1009,6 +1009,7 @@ export type Database = {
           deficit: Json | null
           id: string
           input_hash: string
+          today_slots: string | null
           user_id: string
           with_times: boolean
         }
@@ -1017,6 +1018,7 @@ export type Database = {
           deficit?: Json | null
           id?: string
           input_hash: string
+          today_slots?: string | null
           user_id?: string
           with_times?: boolean
         }
@@ -1025,6 +1027,7 @@ export type Database = {
           deficit?: Json | null
           id?: string
           input_hash?: string
+          today_slots?: string | null
           user_id?: string
           with_times?: boolean
         }
@@ -1058,6 +1061,7 @@ export type Database = {
           review_cap_pct: number
           session_presets: Json
           sleep_min: number[] | null
+          theme: string
           timer_mode: string
           timezone: string
           updated_at: string
@@ -1090,6 +1094,7 @@ export type Database = {
           review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
+          theme?: string
           timer_mode?: string
           timezone?: string
           updated_at?: string
@@ -1122,6 +1127,7 @@ export type Database = {
           review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
+          theme?: string
           timer_mode?: string
           timezone?: string
           updated_at?: string

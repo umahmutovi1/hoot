@@ -132,6 +132,8 @@ export interface PlanRun {
   input_hash: string
   deficit: unknown
   created_at: string
+  /** `todaySlotsKey` of the run (Stage 10b); null for older runs. */
+  today_slots: string | null
 }
 
 export function usePlanRun() {
@@ -142,7 +144,7 @@ export function usePlanRun() {
     queryFn: async (): Promise<PlanRun | null> => {
       const { data, error } = await supabase
         .from('plan_runs')
-        .select('id, input_hash, deficit, created_at')
+        .select('id, input_hash, deficit, created_at, today_slots')
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()

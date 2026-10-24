@@ -94,6 +94,15 @@ export interface BuiltState {
   realization: ReturnType<typeof realization>
   /** Today's blocks stay as they are (replan starts tomorrow). */
   keepToday: boolean
+  /** First day whose unstarted AI blocks the saved run replaces (`replace_plan` `p_from`). */
+  replaceFrom: LocalDate
+  /**
+   * Today's free slots and manual blocks with a time (part of `input_hash`, and kept on the run):
+   * when it differs from the last run's, today's AI blocks get new times.
+   */
+  todaySlotsKey: string
+  /** Built with `replaceToday` (and today kept). */
+  replacedToday: boolean
   /** Subjects behind their lectures, with the actions `paceActions()` suggests. */
   behind: SubjectBehindInput[]
 }
@@ -213,9 +222,18 @@ export function historyOf(
 export interface BuildOptions {
   now: Date
   boundary: DayBoundary
+  /**
+   * Today's free time changed since the last run (decision, Stage 10b): today joins the planned
+   * days with its not-started AI blocks fixed (same content, cap 0 so nothing is added), and
+   * `placeTimes()` gives them new times from now (`fixedTimes`).
+   */
+  replaceToday?: boolean
 }
 
-export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOptions): BuiltState {
+export function buildPlanState(
+  input: PlanInputs,
+  { now, boundary, replaceToday = false }: BuildOptions,
+): BuiltState {
   const { profile } = input
   const today = localDay(now, boundary)
   const subjects = input.subjects.filter((s) => !s.archived)
@@ -394,7 +412,18 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
   // not "plan me something else today".
   const skippedToday = input.blocks.some((b) => carriedFrom(b) === today)
   const keepToday = (todayAi.length > 0 || skippedToday) && !impossible
-  const from = keepToday ? addDays(today, 1) : today
+  const replacedToday = keepToday && replaceToday
+  const replaceFrom = keepToday ? addDays(today, 1) : today
+  const from = replacedToday ? today : replaceFrom
+  const todaySlotsKey = JSON.stringify({
+    on: today,
+    slots: freeSlotsOn(today, input.dayInput(today)).map((x) => [x.startMin, x.endMin]),
+    manual: input.blocks
+      .filter((b) => b.on_date === today && b.origin === 'user' && b.start_min !== null)
+      .filter((b) => b.status === 'planned' || b.status === 'in_progress')
+      .map((b) => [b.start_min, b.planned_minutes])
+      .sort((a, b) => a[0]! - b[0]! || a[1]! - b[1]!),
+  })
 
   const fixed: FixedBlock[] = input.blocks
     .filter((b) => b.on_date >= today && (b.status === 'planned' || b.status === 'in_progress'))
@@ -404,7 +433,8 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
       subjectId: b.subject_id,
       goalId: b.assessment_id ?? b.deadline_id,
       onDate: b.on_date,
-      startMin: b.origin === 'user' ? b.start_min : null,
+      // An AI block keeps its time only once started (never moved under a running session).
+      startMin: b.origin === 'user' || b.status === 'in_progress' ? b.start_min : null,
       minutes: b.planned_minutes,
       kind: b.kind,
       origin: b.origin,
@@ -421,7 +451,9 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
     days.push({
       date: d,
       slots: freeSlotsOn(d, dayInput),
-      cap: capFor(d, dayInput),
+      // Re-placing today only moves its blocks; it never adds work (that is the "Imaš X min više
+      // danas" card).
+      cap: replacedToday && d === today ? 0 : capFor(d, dayInput),
       lectureSubjectIds: [
         ...new Set(
           classesOn(d, dayInput.entries, dayInput.periods)
@@ -474,7 +506,17 @@ export function buildPlanState(input: PlanInputs, { now, boundary }: BuildOption
     if (actions.length > 0)
       behind.push({ subjectId: subject.id, behindMinutes: Math.round(b.behindMinutes), actions })
   }
-  return { state, today, targetGrade, realization: rho, keepToday, behind }
+  return {
+    state,
+    today,
+    targetGrade,
+    realization: rho,
+    keepToday,
+    replaceFrom,
+    todaySlotsKey,
+    replacedToday,
+    behind,
+  }
 }
 
 /** Only what the plan uses (strength on a day), so other memory fields do not change the hash. */
@@ -488,4 +530,24 @@ function memoryRef(m: ReturnType<typeof memoryOf>): PlanUnit['memory'] {
 function minutesOf(now: Date, boundary: DayBoundary): number {
   const m = wallClock(now, boundary.timeZone).minutes
   return m < boundary.dayStartMin ? m + 24 * 60 : m
+}
+
+/**
+ * Minutes of free time from `nowMin` that today gained between two slot keys (`todaySlotsKey`);
+ * 0 for another day, an unreadable key or less time.
+ */
+export function gainedToday(previous: string, current: string, nowMin: number): number {
+  const read = (key: string) => {
+    try {
+      return JSON.parse(key) as { on: string; slots: [number, number][] }
+    } catch {
+      return null
+    }
+  }
+  const a = read(previous)
+  const b = read(current)
+  if (!a || !b || a.on !== b.on) return 0
+  const free = (slots: [number, number][]) =>
+    slots.reduce((sum, [start, end]) => sum + Math.max(0, end - Math.max(start, nowMin)), 0)
+  return Math.max(0, free(b.slots) - free(a.slots))
 }
