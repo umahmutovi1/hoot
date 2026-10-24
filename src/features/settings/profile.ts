@@ -131,6 +131,7 @@ export function useUpdateProfile() {
           | 'exam_eve_end_min'
           | 'notify_first_block'
           | 'notify_break_end'
+          | 'theme'
         >
       >,
     ) => {

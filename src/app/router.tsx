@@ -2,6 +2,7 @@ import { CalendarFeedsPage } from '@/features/calendars/CalendarFeedsPage'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
+import { AppearancePage } from '@/features/settings/AppearancePage'
 import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { DocumentPage, DocumentsPage } from '@/features/owl/DocumentsPage'
@@ -61,6 +62,7 @@ export const router = createBrowserRouter([
               { path: 'today/fresh', element: <FreshStartPage /> },
               { path: 'today/moodle', element: <DeadlinesImportPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
+              { path: 'settings/appearance', element: <AppearancePage /> },
               { path: 'settings/documents', element: <DocumentsPage /> },
               { path: 'settings/feeds', element: <CalendarFeedsPage /> },
               { path: 'settings/documents/:id', element: <DocumentPage /> },
