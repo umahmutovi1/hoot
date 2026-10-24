@@ -102,3 +102,6 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   Boje predmeta ostaju iste u svim temama.
 - Mockupi za Pretragu, Izgled (teme), sheet „Započeti sesiju sada?“, Podsjetnike i pregled plana i programa rade se na početku
   etape kojoj pripadaju (10b / 10c), u istom stilu kao postojeći `.dc.html`.
+- Mockupi Etape 10b: `Pretraga.dc.html` (panel, nedavne, grupe, bez rezultata), `Izgled.dc.html` (Postavke → Opće → Izgled, 5 tema sa
+  tačnim tokenima i izračunatim kontrastom) i `StartSesije.dc.html` (sheet „Započeti sesiju sada?“, „+ Dodaj blok“, BlockSheet
+  „Zadrži ovo vrijeme“ / „Vrati planu“, nazad iz sesije). Statični su (bez `support.js`), više stanja na jednoj tabli kao `NavMeni.html`.

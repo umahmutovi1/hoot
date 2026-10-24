@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Pretraga</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;padding:32px;background:#F4F2F9;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Geist,system-ui,sans-serif;color:#14121C;letter-spacing:-0.2px}
+a{color:#4C4892}
+h2.note{font-size:15px;font-weight:600;margin:0 0 6px}
+p.note{margin:0 0 24px;max-width:980px;font-size:14px;line-height:1.5;color:#3F3B4E}
+.row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:13px;font-weight:600;color:#55516A;margin:0 0 8px 4px}
+.phone{width:390px;height:844px;position:relative;overflow:hidden;border-radius:44px;box-shadow:0 20px 60px rgba(40,34,80,.25);
+  background:radial-gradient(120% 55% at 0% 0%,rgba(150,141,222,.62),rgba(150,141,222,0) 62%),radial-gradient(90% 45% at 100% 22%,rgba(229,182,206,.62),rgba(229,182,206,0) 62%),radial-gradient(110% 50% at 0% 68%,rgba(168,196,234,.6),rgba(168,196,234,0) 62%),radial-gradient(95% 45% at 100% 100%,rgba(160,148,226,.55),rgba(160,148,226,0) 62%),linear-gradient(180deg,#ECE9F4,#E8E5F1)}
+.status{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;font-size:16px;font-weight:600}
+.glass{background:rgba(255,255,255,.36);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.55),inset 0 1px 1px rgba(255,255,255,.85),inset 0 -1px 1px rgba(58,51,96,.05),0 8px 28px rgba(58,51,96,.07)}
+.bar{height:60px;display:flex;align-items:center;gap:4px;padding:0 20px}
+.icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#14121C}
+.ai{border-radius:22px;background:rgba(255,255,255,.30);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.6);color:#6A64B8}
+.under{position:absolute;inset:54px 0 0;padding:60px 24px 0;display:flex;flex-direction:column;gap:12px;filter:blur(.5px)}
+.scrim{position:absolute;inset:0;background:rgba(40,34,80,.20)}
+.panel{position:absolute;left:12px;right:12px;top:54px;border-radius:30px;display:flex;flex-direction:column;max-height:760px;
+  background:rgba(250,249,253,.88);backdrop-filter:blur(36px) saturate(180%);-webkit-backdrop-filter:blur(36px) saturate(180%);
+  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.6),inset 0 1px 1px rgba(255,255,255,.9),0 24px 60px rgba(40,34,80,.18)}
+.field-row{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 12px}
+.field{flex:1;height:44px;border-radius:22px;background:rgba(106,100,184,.10);display:flex;align-items:center;gap:8px;padding:0 6px 0 14px;font-size:16px}
+.field .ph{color:#6E6A80}
+.caret{display:inline-block;width:2px;height:20px;background:#6A64B8;margin-left:1px;vertical-align:-4px}
+.clear{width:32px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-left:auto;color:#55516A}
+.cancel{height:44px;padding:0 8px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#4C4892}
+.group{padding:6px 12px 4px}
+.ghead{display:flex;justify-content:space-between;align-items:baseline;padding:8px 8px 4px;font-size:12px;font-weight:600;letter-spacing:.4px;color:#3F3B4E}
+.ghead a{font-size:13px;font-weight:600;letter-spacing:0;text-decoration:none}
+.res{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 8px;border-radius:16px}
+.res.on{background:rgba(106,100,184,.10)}
+.res+.res{border-top:1px solid rgba(106,100,184,.12)}
+.gi{width:34px;height:34px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(106,100,184,.12);color:#4C4892}
+.txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.t1{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t1 b{font-weight:700}
+.t2{font-size:12px;color:#55516A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.go{color:#6E6A80;flex-shrink:0}
+.dot{width:8px;height:8px;border-radius:4px;display:inline-block;margin-right:6px;vertical-align:1px}
+.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:8px;background:rgba(106,100,184,.12);color:#36336E;flex-shrink:0}
+.empty{padding:28px 24px 32px;display:flex;flex-direction:column;gap:6px;text-align:center}
+.foot{padding:6px 20px 14px;font-size:12px;color:#55516A;text-align:center}
+.kbd{position:absolute;left:0;right:0;bottom:0;height:290px;background:rgba(209,206,219,.94);display:flex;align-items:center;justify-content:center;font-size:13px;color:#55516A}
+</style>
+</helmet>
+
+<h2 class="note">Pretraga (Etapa 10b) · PRD „Navigacija, pretraga, teme i geste“</h2>
+<p class="note">Ikona lupe u prvom redu (logo · AI · razmak · <b>pretraga</b> · ☰) otvara panel odozgo u staklu sheetova, kao meni: isti rub (12 px), radijus 30, scrim 0.20 ispod. Polje je odmah u fokusu (tastatura gore), „Otkaži“ i Esc zatvaraju. Indeks se pravi na uređaju: svi ekrani i postavke sa sinonimima, akcije (otvaraju sheet), te predmeti, ispiti, izvori, jedinice i dokumenti iz TanStack keša; <code>fuse.js</code>, radi offline, bez AI-ja. Rezultati su grupisani (Akcije, Ekrani, Postavke, Predmeti, Ispiti, Izvori, Jedinice, Dokumenti), najviše 3 po grupi uz „Sve (N)“; pogođeni dio je podebljan. Tap vodi direktno na ekran ili otvara sheet i upisuje upit u nedavne (zadnjih 6, samo na uređaju). Prazno polje pokazuje nedavne; bez nedavnih je samo polje i tiha napomena.</p>
+
+<div class="row">
+
+<!-- 1 · prazno polje -->
+<div>
+<div class="cap">1 · Prazno polje: nedavne</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="under">
+    <span style="font-size:13px;font-weight:600;color:#3F3B4E">ČETVRTAK, 22. OKTOBAR</span>
+    <span style="font-size:36px;font-weight:700;letter-spacing:-.9px">Danas</span>
+    <div class="glass" style="height:110px;border-radius:28px"></div>
+    <div style="height:170px;border-radius:28px;background:#4C4892"></div>
+  </div>
+  <div class="scrim"></div>
+  <div class="panel">
+    <div class="field-row">
+      <div class="field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span><span class="caret"></span><span class="ph">Pretraži Hoot</span></span></div>
+      <span class="cancel">Otkaži</span>
+    </div>
+    <div class="group">
+      <div class="ghead"><span>NEDAVNO</span><a>Obriši</a></div>
+      <div class="res"><span class="gi" style="background:transparent;color:#55516A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="txt"><span class="t1">pauze</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span></div>
+      <div class="res"><span class="gi" style="background:transparent;color:#55516A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="txt"><span class="t1">Fourierova transformacija</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span></div>
+      <div class="res"><span class="gi" style="background:transparent;color:#55516A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="txt"><span class="t1">više vremena</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span></div>
+    </div>
+    <div class="foot">Pretraga radi i bez interneta.</div>
+  </div>
+  <div class="kbd">tastatura</div>
+</div>
+</div>
+
+<!-- 2 · akcije i postavke -->
+<div>
+<div class="cap">2 · „više vr“: akcije i postavke (sinonimi)</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="scrim" style="top:0"></div>
+  <div class="panel">
+    <div class="field-row">
+      <div class="field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>više vr<span class="caret"></span></span><span class="clear"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span></div>
+      <span class="cancel">Otkaži</span>
+    </div>
+    <div class="group">
+      <div class="ghead"><span>AKCIJE</span></div>
+      <div class="res on"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9.5V13M9.5 13h5M10 2.5h4"/></svg></span><span class="txt"><span class="t1"><b>Više vr</b>emena ovaj dan</span><span class="t2">Plan › Dan · izaberi dan i do kad</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+      <div class="res"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9.5V13l2.5 2M10 2.5h4"/></svg></span><span class="txt"><span class="t1">Imam još <b>vr</b>emena</span><span class="t2">Danas · 30 / 60 / 90 min</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+    </div>
+    <div class="group">
+      <div class="ghead"><span>POSTAVKE</span></div>
+      <div class="res"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8.5 3v4M15.5 3v4"/></svg></span><span class="txt"><span class="t1">Dostupnost</span><span class="t2">Plan › Dostupnost · „<b>više vr</b>emena“ · sedmični sati</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+      <div class="res"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span><span class="txt"><span class="t1">Dnevni maksimum</span><span class="t2">Postavke › Plan · „<b>više vr</b>emena“</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+    </div>
+    <div class="foot">Tap na akciju otvara njen sheet; Enter otvara označeni rezultat.</div>
+  </div>
+  <div class="kbd">tastatura</div>
+</div>
+</div>
+
+<!-- 3 · podaci -->
+<div>
+<div class="cap">3 · „fourier“: jedinice, izvori, dokumenti iz keša</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="scrim" style="top:0"></div>
+  <div class="panel">
+    <div class="field-row">
+      <div class="field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>fourier<span class="caret"></span></span><span class="clear"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span></div>
+      <span class="cancel">Otkaži</span>
+    </div>
+    <div class="group">
+      <div class="ghead"><span>JEDINICE</span><a>Sve (5)</a></div>
+      <div class="res on"><span class="gi" style="background:rgba(182,106,140,.16);color:#8E4A69"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg></span><span class="txt"><span class="t1">3.2 <b>Fourier</b>ova transformacija</span><span class="t2"><span class="dot" style="background:#B66A8C"></span>Signali › Knjiga · str. 61–74</span></span><span class="tag">Razumijem</span></div>
+      <div class="res"><span class="gi" style="background:rgba(182,106,140,.16);color:#8E4A69"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg></span><span class="txt"><span class="t1">3.1 <b>Fourier</b>ov red</span><span class="t2"><span class="dot" style="background:#B66A8C"></span>Signali › Knjiga · str. 48–60</span></span><span class="tag" style="background:rgba(94,156,114,.18);color:#365C45">Ponovljeno</span></div>
+      <div class="res"><span class="gi" style="background:rgba(95,134,181,.16);color:#3F6590"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></svg></span><span class="txt"><span class="t1">Svojstva <b>Fourier</b>ove transformacije</span><span class="t2"><span class="dot" style="background:#B66A8C"></span>Signali › Ispitna pitanja · pitanje 14</span></span><span class="tag" style="background:rgba(195,141,82,.18);color:#6B4A2A">Nije</span></div>
+    </div>
+    <div class="group">
+      <div class="ghead"><span>IZVORI</span></div>
+      <div class="res"><span class="gi" style="background:rgba(182,106,140,.16);color:#8E4A69"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="3.5" width="14" height="17" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span><span class="txt"><span class="t1"><b>Fourier</b> — slajdovi s predavanja</span><span class="t2"><span class="dot" style="background:#B66A8C"></span>Signali · 42 slajda · 30%</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+    </div>
+    <div class="group">
+      <div class="ghead"><span>DOKUMENTI</span></div>
+      <div class="res"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5"/></svg></span><span class="txt"><span class="t1">Signali — bilješke 12. okt</span><span class="t2">Bilješke · „… <b>Fourier</b>ova transformacija pravougaonog …“</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+    </div>
+    <div class="foot">Jedinica otvara Jedinicu, izvor Izvor, dokument Dokumente.</div>
+  </div>
+</div>
+</div>
+
+<!-- 4 · tema i bez rezultata -->
+<div>
+<div class="cap">4 · „boja“ (sinonim) · i bez rezultata</div>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+  <div class="scrim" style="top:0"></div>
+  <div class="panel" style="max-height:330px">
+    <div class="field-row">
+      <div class="field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>boja<span class="caret"></span></span><span class="clear"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span></div>
+      <span class="cancel">Otkaži</span>
+    </div>
+    <div class="group">
+      <div class="ghead"><span>POSTAVKE</span></div>
+      <div class="res on"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.4-1.2-1.6-1.2-2.9 0-1 .8-1.6 1.8-1.6h2.1a4 4 0 0 0 4-4C20.5 6.6 16.7 3.5 12 3.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15" cy="7.5" r="1"/></svg></span><span class="txt"><span class="t1">Izgled</span><span class="t2">Postavke › Opće · tema, „<b>boja</b>“ · Lavanda</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+      <div class="res"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3"/></svg></span><span class="txt"><span class="t1">Boja predmeta</span><span class="t2">Predmet › Uredi · „<b>boja</b>“</span></span><span class="go"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+    </div>
+  </div>
+  <div class="panel" style="top:410px">
+    <div class="field-row">
+      <div class="field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>kvantna<span class="caret"></span></span><span class="clear"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span></div>
+      <span class="cancel">Otkaži</span>
+    </div>
+    <div class="empty">
+      <span style="font-size:16px;font-weight:600">Nema rezultata za „kvantna“</span>
+      <span style="font-size:14px;color:#3F3B4E;line-height:1.45">Pretražuju se ekrani, postavke i ono što je već u appu: predmeti, ispiti, izvori, jedinice i dokumenti.</span>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+</x-dc>
+</body>
+</html>

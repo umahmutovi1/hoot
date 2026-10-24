@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Izgled</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;padding:32px;background:#F4F2F9;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Geist,system-ui,sans-serif;color:#14121C;letter-spacing:-0.2px}
+h2.note{font-size:15px;font-weight:600;margin:0 0 6px}
+p.note{margin:0 0 24px;max-width:980px;font-size:14px;line-height:1.5;color:#3F3B4E}
+.row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;margin-bottom:40px}
+.cap{font-size:13px;font-weight:600;color:#55516A;margin:0 0 8px 4px}
+.t-lavender{--brand:#4C4892;--brand-strong:#36336E;--brand-accent:#6A64B8;--accent-rgb:106,100,184;--brand-rgb:76,72,146;
+  --btn-from:#6E67BE;--btn-to:#4C4892;--tint-from:rgba(100,93,180,.90);--tint-to:rgba(76,72,146,.94);
+  --canvas-top:#ECE9F4;--canvas-bottom:#E8E5F1;--edge:#DCD8EE;
+  --mist-1:150,141,222;--mist-2:229,182,206;--mist-3:168,196,234;--mist-4:160,148,226}
+.t-graphite{--brand:#4A4A55;--brand-strong:#303039;--brand-accent:#5E5D6A;--accent-rgb:94,93,106;--brand-rgb:74,74,85;
+  --btn-from:#6A6975;--btn-to:#42414C;--tint-from:rgba(100,99,111,.90);--tint-to:rgba(62,61,72,.94);
+  --canvas-top:#EEECE9;--canvas-bottom:#EAE7E3;--edge:#DEDAD5;
+  --mist-1:189,183,176;--mist-2:217,203,192;--mist-3:191,194,200;--mist-4:179,174,182}
+.t-sand{--brand:#76593A;--brand-strong:#563F27;--brand-accent:#876843;--accent-rgb:135,104,67;--brand-rgb:118,89,58;
+  --btn-from:#906E48;--btn-to:#6B5034;--tint-from:rgba(131,99,63,.90);--tint-to:rgba(99,74,48,.94);
+  --canvas-top:#F3EEE6;--canvas-bottom:#EFE9DF;--edge:#E8DFD0;
+  --mist-1:227,201,163;--mist-2:237,201,181;--mist-3:220,211,188;--mist-4:217,190,150}
+.t-sage{--brand:#41664F;--brand-strong:#2E4A39;--brand-accent:#4D7760;--accent-rgb:77,119,96;--brand-rgb:65,102,79;
+  --btn-from:#527E64;--btn-to:#3A5D48;--tint-from:rgba(72,112,90,.90);--tint-to:rgba(54,86,67,.94);
+  --canvas-top:#ECF1EC;--canvas-bottom:#E7EDE7;--edge:#DAE4DA;
+  --mist-1:174,205,182;--mist-2:216,210,186;--mist-3:174,202,202;--mist-4:165,196,172}
+.t-ocean{--brand:#3A5D86;--brand-strong:#2B4767;--brand-accent:#46709F;--accent-rgb:70,112,159;--brand-rgb:58,93,134;
+  --btn-from:#4E78A9;--btn-to:#365A82;--tint-from:rgba(66,106,152,.90);--tint-to:rgba(48,82,122,.94);
+  --canvas-top:#EAEFF5;--canvas-bottom:#E5EBF2;--edge:#D7E1EE;
+  --mist-1:156,187,224;--mist-2:190,214,228;--mist-3:168,204,218;--mist-4:152,175,220}
+.phone{width:390px;height:844px;position:relative;overflow:hidden;border-radius:44px;box-shadow:0 20px 60px rgba(40,34,80,.25);
+  background:radial-gradient(120% 55% at 0% 0%,rgba(var(--mist-1),.62),rgba(var(--mist-1),0) 62%),radial-gradient(90% 45% at 100% 22%,rgba(var(--mist-2),.62),rgba(var(--mist-2),0) 62%),radial-gradient(110% 50% at 0% 68%,rgba(var(--mist-3),.6),rgba(var(--mist-3),0) 62%),radial-gradient(95% 45% at 100% 100%,rgba(var(--mist-4),.55),rgba(var(--mist-4),0) 62%),linear-gradient(180deg,var(--canvas-top),var(--canvas-bottom))}
+.sw{display:inline-flex;align-items:flex-end;justify-content:flex-end;padding:5px;box-sizing:border-box;flex-shrink:0;box-shadow:inset 0 0 0 .5px rgba(58,51,96,.12);
+  background:radial-gradient(120% 90% at 0% 0%,rgba(var(--mist-1),.9),rgba(var(--mist-1),0) 70%),radial-gradient(90% 80% at 100% 30%,rgba(var(--mist-2),.85),rgba(var(--mist-2),0) 70%),linear-gradient(180deg,var(--canvas-top),var(--canvas-bottom))}
+.sw i{width:16px;height:16px;border-radius:8px;background:linear-gradient(160deg,var(--btn-from),var(--btn-to))}
+.status{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;font-size:16px;font-weight:600}
+.bar{height:60px;display:flex;align-items:center;gap:4px;padding:0 20px}
+.icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#14121C}
+.ai{border-radius:22px;background:rgba(255,255,255,.30);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.6);color:var(--brand-accent)}
+.pad{padding:0 16px;display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.2px;color:#3F3B4E}
+.eyebrow a{color:var(--brand)}
+.h-big{font-size:36px;line-height:1.1;font-weight:700;letter-spacing:-.9px;margin:0}
+.h-tab{font-size:30px;font-weight:700;letter-spacing:-.6px;margin:0}
+.glass{background:rgba(255,255,255,.36);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.55),inset 0 1px 1px rgba(255,255,255,.85),inset 0 -1px 1px rgba(58,51,96,.05),0 8px 28px rgba(58,51,96,.07)}
+.tint{color:#fff;background:linear-gradient(160deg,var(--tint-from),var(--tint-to));box-shadow:inset 0 0 0 .5px rgba(255,255,255,.3),inset 0 1px 1px rgba(255,255,255,.45),0 14px 34px rgba(var(--brand-rgb),.24)}
+.btn-primary{color:#fff;background:linear-gradient(160deg,var(--btn-from),var(--btn-to));box-shadow:inset 0 1px 1px rgba(255,255,255,.4),0 6px 16px rgba(var(--brand-rgb),.22)}
+.stats{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));row-gap:10px;column-gap:12px}
+.stats div{display:flex;flex-direction:column;gap:1px}
+.stats .l{font-size:12px;font-weight:600;color:#3F3B4E}
+.stats .v{font-size:20px;font-weight:600}
+.stats small{font-size:14px;font-weight:500;color:#3F3B4E}
+.ex{flex:1;min-width:0;border-radius:24px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.ex span{font-size:12px;font-weight:700}
+.ex b{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex em{font-style:normal;font-size:22px;font-weight:600}
+.ex i{display:block;height:5px;border-radius:3px;background:rgba(255,255,255,.65)}
+.ex s{display:block;height:5px;border-radius:3px}
+.crumbs{display:flex;align-items:center;gap:6px;padding:0 16px;height:44px;font-size:15px;color:#3F3B4E}
+.crumbs a{color:var(--brand);text-decoration:none}
+.sec{font-size:13px;font-weight:600;color:#3F3B4E;letter-spacing:.3px;padding:6px 4px 0}
+.list{border-radius:24px;padding:2px 16px;display:flex;flex-direction:column}
+.li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(var(--accent-rgb),.12);font-size:15px}
+.li:last-child{border-bottom:none}
+.opt{display:flex;align-items:center;gap:12px;padding:12px;border-radius:20px;border:2px solid rgba(58,51,96,.10);background:rgba(255,255,255,.55)}
+.opt.on{border-color:var(--brand-accent);background:rgba(255,255,255,.40)}
+.radio{width:22px;height:22px;border-radius:11px;border:2px solid #AFAAC4;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-sizing:border-box}
+.radio.on{border-color:var(--brand)}
+.radio.on i{width:10px;height:10px;border-radius:5px;background:var(--brand)}
+.seg{display:flex;padding:4px;border-radius:22px;background:rgba(var(--accent-rgb),.10);width:190px}
+.seg span{flex:1;text-align:center;height:36px;line-height:36px;border-radius:18px;font-size:13px;font-weight:600;color:#3F3B4E}
+.seg span.on{background:rgba(255,255,255,.8);color:#14121C}
+.toast{position:absolute;left:16px;right:16px;bottom:28px;height:52px;border-radius:26px;background:rgba(28,25,44,.88);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 18px;font-size:14px}
+.toast b{height:36px;padding:0 14px;border-radius:18px;display:flex;align-items:center;font-weight:600;color:#fff;background:rgba(255,255,255,.14)}
+.tok{width:390px;margin-top:14px;border-collapse:collapse;font-size:12px}
+.tok th{text-align:left;font-weight:600;color:#3F3B4E;padding:3px 8px 3px 4px;vertical-align:middle;white-space:nowrap}
+.tok td{padding:3px 0;color:#14121C}
+.tok code{font-family:ui-monospace,Menlo,monospace;font-size:11px}
+.chip{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-2px;margin-right:4px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+</style>
+</helmet>
+
+<h2 class="note">Izgled · teme boja (Etapa 10b) · PRD „Navigacija, pretraga, teme i geste“, design README „Teme“</h2>
+<p class="note">Postavke → Opće → Izgled. Pet svijetlih tema; tap na temu je primijeni odmah (bez „Spasi“) i upiše <code>profiles.theme</code> kroz offline red, pa važi na svim uređajima; toast „Tema: Okean“ uz Poništi. Tema mijenja samo tokene na <code>&lt;html data-theme&gt;</code>: brand, brand-strong, brand-accent (i iz njega izvedene prozirne: canvas .10, brand-soft .12, hairline .12, hero .16), <code>btn-primary</code>, <code>glass-tint</code> (kartica „Sljedeće“, sesija, AI uključen), sjene tih površina (brand rgb), maglu (4 radijalna sloja), platno i <code>theme-color</code> (boja Safarijevih traka = rub magle). Tekst (ink), staklo, statusne boje i boje predmeta ostaju iste u svim temama (prsten „Sedmica“ ostaje pink). Kontrast je izračunat po WCAG 2.1 nad najgorim mjestom: tekst brand boje na staklu iznad najtamnijeg sloja magle, bijeli tekst na svjetlijem kraju gradijenta, a sekundarni bijeli (.88) na sredini kartice. <b>Jedna izmjena za Lavandu:</b> svijetli kraj <code>glass-tint</code> ide sa #6E67BE na #645DB4, jer je bijeli tekst na njemu bio 4.09:1; sve ostalo u Lavandi ostaje kao sada.</p>
+
+<div class="row">
+<div>
+<div class="cap">1 · Postavke: novi red „Izgled“ u Opće</div>
+<div class="phone t-lavender"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div>
+<div class="crumbs"><span style="font-size:18px">‹</span><a>Postavke</a></div>
+<div class="pad">
+<h1 class="h-tab">Postavke</h1>
+<span class="sec">OPĆE</span>
+<div class="glass list">
+<div class="li"><span style="flex:1">Jezik</span><div class="seg"><span class="on">Bosanski</span><span>English</span></div></div>
+<div class="li"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span>Izgled</span><span style="font-size:12px;color:#55516A">tema boja</span></span><span class="t-lavender sw" style="width:22px;height:22px;border-radius:7px"><i></i></span><span style="font-size:14px;color:#55516A">Lavanda</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+<div class="li"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span>Vremenska zona</span><span style="font-size:12px;color:#55516A">iz browsera</span></span><span style="font-size:14px;color:#55516A">Europe/Sarajevo</span></div>
+<div class="li"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span>Početak dana</span><span style="font-size:12px;color:#55516A">učenje u 01:30 pripada prethodnom danu</span></span><span style="font-size:14px;color:#55516A">04:00</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55516A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div>
+</div>
+<span class="sec">PLAN</span>
+<div class="glass list" style="height:140px"></div>
+</div></div>
+</div>
+
+<div>
+<div class="cap">2 · Izgled (Lavanda izabrana)</div>
+<div class="phone t-lavender"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div>
+<div class="crumbs"><span style="font-size:18px">‹</span><a>Postavke</a><span>›</span><span>Izgled</span></div>
+<div class="pad">
+<div style="display:flex;flex-direction:column;gap:6px"><h1 class="h-tab">Izgled</h1><span style="font-size:14px;color:#3F3B4E;line-height:1.45">Tema mijenja boje appa. Boje predmeta ostaju iste.</span></div>
+<span class="sec">TEMA</span>
+<div role="radiogroup" style="display:flex;flex-direction:column;gap:8px"><div class="opt on"><span class="t-lavender sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Lavanda</span><span style="font-size:12px;color:#55516A">zadana · ljubičasta magla</span></span><span class="radio on"><i></i></span></div><div class="opt"><span class="t-graphite sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Grafit</span><span style="font-size:12px;color:#55516A">neutralna · topla siva</span></span><span class="radio"><i></i></span></div><div class="opt"><span class="t-sand sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Pijesak</span><span style="font-size:12px;color:#55516A">topla · bež</span></span><span class="radio"><i></i></span></div><div class="opt"><span class="t-sage sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Kadulja</span><span style="font-size:12px;color:#55516A">smirena · zelena</span></span><span class="radio"><i></i></span></div><div class="opt"><span class="t-ocean sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Okean</span><span style="font-size:12px;color:#55516A">hladna · plava</span></span><span class="radio"><i></i></span></div></div>
+<span style="font-size:12px;color:#55516A;padding:0 4px">Mijenja se odmah i važi na svim tvojim uređajima. Tamni režim stiže kasnije.</span>
+</div></div>
+</div>
+
+<div>
+<div class="cap">3 · Odmah poslije tapa na Okean</div>
+<div class="phone t-ocean"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div>
+<div class="crumbs"><span style="font-size:18px">‹</span><a>Postavke</a><span>›</span><span>Izgled</span></div>
+<div class="pad">
+<div style="display:flex;flex-direction:column;gap:6px"><h1 class="h-tab">Izgled</h1><span style="font-size:14px;color:#3F3B4E;line-height:1.45">Tema mijenja boje appa. Boje predmeta ostaju iste.</span></div>
+<span class="sec">TEMA</span>
+<div role="radiogroup" style="display:flex;flex-direction:column;gap:8px"><div class="opt"><span class="t-lavender sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Lavanda</span><span style="font-size:12px;color:#55516A">zadana · ljubičasta magla</span></span><span class="radio"><i></i></span></div><div class="opt"><span class="t-graphite sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Grafit</span><span style="font-size:12px;color:#55516A">neutralna · topla siva</span></span><span class="radio"><i></i></span></div><div class="opt"><span class="t-sand sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Pijesak</span><span style="font-size:12px;color:#55516A">topla · bež</span></span><span class="radio"><i></i></span></div><div class="opt"><span class="t-sage sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Kadulja</span><span style="font-size:12px;color:#55516A">smirena · zelena</span></span><span class="radio"><i></i></span></div><div class="opt on"><span class="t-ocean sw" style="width:40px;height:40px;border-radius:12px"><i></i></span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Okean</span><span style="font-size:12px;color:#55516A">hladna · plava</span></span><span class="radio on"><i></i></span></div></div>
+<span style="font-size:12px;color:#55516A;padding:0 4px">Mijenja se odmah i važi na svim tvojim uređajima. Tamni režim stiže kasnije.</span>
+</div>
+<div class="toast"><span>Tema: Okean</span><b>Poništi</b></div>
+</div>
+</div>
+</div>
+
+<h2 class="note">Danas u svakoj temi · tačne vrijednosti tokena</h2>
+<p class="note">Isti ekran, mijenjaju se samo tokeni. Magla: slojevi na istim pozicijama i prozirnostima kao sada (.62 / .62 / .60 / .55); platno je linearni gradijent odozgo nadolje. Sjene <code>glass-tint</code> i <code>btn-primary</code> koriste brand rgb (.24 / .22).</p>
+<div class="row">
+<div><div class="cap">Lavanda (zadana) · <code>lavender</code></div><div class="phone t-lavender"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div>
+<div class="pad">
+<div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="glass" style="border-radius:28px;padding:18px;display:flex;align-items:center;gap:16px">
+<svg width="80" height="80" viewBox="0 0 76 76" style="flex-shrink:0"><circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="32" fill="none" stroke="var(--brand-accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="62 201" transform="rotate(-90 38 38)"/><circle cx="38" cy="38" r="20" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="20" fill="none" stroke="#B66A8C" stroke-width="9" stroke-linecap="round" stroke-dasharray="80 126" transform="rotate(-90 38 38)"/></svg>
+<div class="stats"><div><span class="l" style="color:var(--brand)">Plan danas</span><span class="v">50<small> / 160</small></span></div><div><span class="l" style="color:#8E4A69">Sedmica</span><span class="v">7h 15<small> / 10h</small></span></div><div><span class="l">Sljedeći ispit</span><span class="v">7 dana</span></div><div><span class="l">Spremnost</span><span class="v">64%</span></div></div>
+</div>
+<section class="tint" style="border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.18);font-size:12px;font-weight:600;display:flex;align-items:center">Čitanje</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;color:rgba(255,255,255,.88)">Baze podataka</span><span style="font-size:22px;font-weight:600;letter-spacing:-.5px">5.1–5.3 Normalizacija</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:36px;font-weight:600;letter-spacing:-1.2px">60:00</span><span style="height:48px;padding:0 24px;border-radius:24px;background:rgba(255,255,255,.94);color:var(--brand-strong);display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600">▶ Počni</span></div>
+</section>
+<div class="glass" style="border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:15px;font-weight:600">Dokle ste stigli?</span>
+<div style="display:flex;gap:8px"><span class="btn-primary" style="flex:1;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Pogl. 5</span><span style="flex:1;height:40px;border-radius:20px;background:rgba(var(--accent-rgb),.10);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Drugo…</span></div>
+</div>
+<div style="display:flex;gap:10px">
+<div class="glass ex"><span style="color:#8E4A69">28 OKT</span><b>Signali</b><em>64%</em><i><s style="width:64%;background:#B66A8C"></s></i></div>
+<div class="glass ex"><span style="color:#4C4892">4 NOV</span><b>Baze</b><em>31%</em><i><s style="width:31%;background:#6A64B8"></s></i></div>
+<div class="glass ex"><span style="color:#3F6590">18 DEC</span><b>Vjerovatnoća</b><em>7%</em><i><s style="width:7%;background:#5F86B5"></s></i></div>
+</div>
+</div></div><table class="tok"><tr><th>brand</th><td><span class="chip" style="background:#4C4892"></span><code>#4C4892</code></td></tr><tr><th>brand-strong</th><td><span class="chip" style="background:#36336E"></span><code>#36336E</code></td></tr><tr><th>brand-accent</th><td><span class="chip" style="background:#6A64B8"></span><code>#6A64B8</code></td></tr><tr><th>btn-primary</th><td><span class="chip" style="background:#6E67BE"></span><code>#6E67BE</code> → <span class="chip" style="background:#4C4892"></span><code>#4C4892</code></td></tr><tr><th>glass-tint</th><td><span class="chip" style="background:#645DB4"></span><code>#645DB4</code> .90 → <span class="chip" style="background:#4C4892"></span><code>#4C4892</code> .94</td></tr><tr><th>platno</th><td><span class="chip" style="background:#ECE9F4"></span><code>#ECE9F4</code> → <span class="chip" style="background:#E8E5F1"></span><code>#E8E5F1</code></td></tr><tr><th>magla 1–4</th><td><span class="chip" style="background:#968DDE"></span> <span class="chip" style="background:#E5B6CE"></span> <span class="chip" style="background:#A8C4EA"></span> <span class="chip" style="background:#A094E2"></span> <code>#968DDE #E5B6CE #A8C4EA #A094E2</code></td></tr><tr><th>theme-color</th><td><span class="chip" style="background:#DCD8EE"></span><code>#DCD8EE</code></td></tr><tr><th colspan="2" style="padding-top:10px">Kontrast (WCAG, cilj ≥ 4.5)</th></tr><tr><th>brand na staklu (najtamnija magla)</th><td><b>5.13</b> ✓</td></tr><tr><th>brand na platnu</th><td><b>6.61</b> ✓</td></tr><tr><th>brand-accent ikona na AI pilulu</th><td><b>4.50</b> ✓</td></tr><tr><th>bijelo na btn-primary (svijetli kraj)</th><td><b>4.83</b> ✓</td></tr><tr><th>bijelo na glass-tint (svijetli kraj)</th><td><b>4.63</b> ✓</td></tr><tr><th>bijelo .88 na glass-tint (sredina)</th><td><b>4.81</b> ✓</td></tr></table></div><div><div class="cap">Grafit · <code>graphite</code></div><div class="phone t-graphite"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div>
+<div class="pad">
+<div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="glass" style="border-radius:28px;padding:18px;display:flex;align-items:center;gap:16px">
+<svg width="80" height="80" viewBox="0 0 76 76" style="flex-shrink:0"><circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="32" fill="none" stroke="var(--brand-accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="62 201" transform="rotate(-90 38 38)"/><circle cx="38" cy="38" r="20" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="20" fill="none" stroke="#B66A8C" stroke-width="9" stroke-linecap="round" stroke-dasharray="80 126" transform="rotate(-90 38 38)"/></svg>
+<div class="stats"><div><span class="l" style="color:var(--brand)">Plan danas</span><span class="v">50<small> / 160</small></span></div><div><span class="l" style="color:#8E4A69">Sedmica</span><span class="v">7h 15<small> / 10h</small></span></div><div><span class="l">Sljedeći ispit</span><span class="v">7 dana</span></div><div><span class="l">Spremnost</span><span class="v">64%</span></div></div>
+</div>
+<section class="tint" style="border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.18);font-size:12px;font-weight:600;display:flex;align-items:center">Čitanje</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;color:rgba(255,255,255,.88)">Baze podataka</span><span style="font-size:22px;font-weight:600;letter-spacing:-.5px">5.1–5.3 Normalizacija</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:36px;font-weight:600;letter-spacing:-1.2px">60:00</span><span style="height:48px;padding:0 24px;border-radius:24px;background:rgba(255,255,255,.94);color:var(--brand-strong);display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600">▶ Počni</span></div>
+</section>
+<div class="glass" style="border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:15px;font-weight:600">Dokle ste stigli?</span>
+<div style="display:flex;gap:8px"><span class="btn-primary" style="flex:1;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Pogl. 5</span><span style="flex:1;height:40px;border-radius:20px;background:rgba(var(--accent-rgb),.10);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Drugo…</span></div>
+</div>
+<div style="display:flex;gap:10px">
+<div class="glass ex"><span style="color:#8E4A69">28 OKT</span><b>Signali</b><em>64%</em><i><s style="width:64%;background:#B66A8C"></s></i></div>
+<div class="glass ex"><span style="color:#4C4892">4 NOV</span><b>Baze</b><em>31%</em><i><s style="width:31%;background:#6A64B8"></s></i></div>
+<div class="glass ex"><span style="color:#3F6590">18 DEC</span><b>Vjerovatnoća</b><em>7%</em><i><s style="width:7%;background:#5F86B5"></s></i></div>
+</div>
+</div></div><table class="tok"><tr><th>brand</th><td><span class="chip" style="background:#4A4A55"></span><code>#4A4A55</code></td></tr><tr><th>brand-strong</th><td><span class="chip" style="background:#303039"></span><code>#303039</code></td></tr><tr><th>brand-accent</th><td><span class="chip" style="background:#5E5D6A"></span><code>#5E5D6A</code></td></tr><tr><th>btn-primary</th><td><span class="chip" style="background:#6A6975"></span><code>#6A6975</code> → <span class="chip" style="background:#42414C"></span><code>#42414C</code></td></tr><tr><th>glass-tint</th><td><span class="chip" style="background:#64636F"></span><code>#64636F</code> .90 → <span class="chip" style="background:#3E3D48"></span><code>#3E3D48</code> .94</td></tr><tr><th>platno</th><td><span class="chip" style="background:#EEECE9"></span><code>#EEECE9</code> → <span class="chip" style="background:#EAE7E3"></span><code>#EAE7E3</code></td></tr><tr><th>magla 1–4</th><td><span class="chip" style="background:#BDB7B0"></span> <span class="chip" style="background:#D9CBC0"></span> <span class="chip" style="background:#BFC2C8"></span> <span class="chip" style="background:#B3AEB6"></span> <code>#BDB7B0 #D9CBC0 #BFC2C8 #B3AEB6</code></td></tr><tr><th>theme-color</th><td><span class="chip" style="background:#DEDAD5"></span><code>#DEDAD5</code></td></tr><tr><th colspan="2" style="padding-top:10px">Kontrast (WCAG, cilj ≥ 4.5)</th></tr><tr><th>brand na staklu (najtamnija magla)</th><td><b>6.48</b> ✓</td></tr><tr><th>brand na platnu</th><td><b>7.41</b> ✓</td></tr><tr><th>brand-accent ikona na AI pilulu</th><td><b>5.77</b> ✓</td></tr><tr><th>bijelo na btn-primary (svijetli kraj)</th><td><b>5.39</b> ✓</td></tr><tr><th>bijelo na glass-tint (svijetli kraj)</th><td><b>4.81</b> ✓</td></tr><tr><th>bijelo .88 na glass-tint (sredina)</th><td><b>5.52</b> ✓</td></tr></table></div><div><div class="cap">Pijesak · <code>sand</code></div><div class="phone t-sand"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div>
+<div class="pad">
+<div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="glass" style="border-radius:28px;padding:18px;display:flex;align-items:center;gap:16px">
+<svg width="80" height="80" viewBox="0 0 76 76" style="flex-shrink:0"><circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="32" fill="none" stroke="var(--brand-accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="62 201" transform="rotate(-90 38 38)"/><circle cx="38" cy="38" r="20" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="20" fill="none" stroke="#B66A8C" stroke-width="9" stroke-linecap="round" stroke-dasharray="80 126" transform="rotate(-90 38 38)"/></svg>
+<div class="stats"><div><span class="l" style="color:var(--brand)">Plan danas</span><span class="v">50<small> / 160</small></span></div><div><span class="l" style="color:#8E4A69">Sedmica</span><span class="v">7h 15<small> / 10h</small></span></div><div><span class="l">Sljedeći ispit</span><span class="v">7 dana</span></div><div><span class="l">Spremnost</span><span class="v">64%</span></div></div>
+</div>
+<section class="tint" style="border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.18);font-size:12px;font-weight:600;display:flex;align-items:center">Čitanje</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;color:rgba(255,255,255,.88)">Baze podataka</span><span style="font-size:22px;font-weight:600;letter-spacing:-.5px">5.1–5.3 Normalizacija</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:36px;font-weight:600;letter-spacing:-1.2px">60:00</span><span style="height:48px;padding:0 24px;border-radius:24px;background:rgba(255,255,255,.94);color:var(--brand-strong);display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600">▶ Počni</span></div>
+</section>
+<div class="glass" style="border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:15px;font-weight:600">Dokle ste stigli?</span>
+<div style="display:flex;gap:8px"><span class="btn-primary" style="flex:1;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Pogl. 5</span><span style="flex:1;height:40px;border-radius:20px;background:rgba(var(--accent-rgb),.10);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Drugo…</span></div>
+</div>
+<div style="display:flex;gap:10px">
+<div class="glass ex"><span style="color:#8E4A69">28 OKT</span><b>Signali</b><em>64%</em><i><s style="width:64%;background:#B66A8C"></s></i></div>
+<div class="glass ex"><span style="color:#4C4892">4 NOV</span><b>Baze</b><em>31%</em><i><s style="width:31%;background:#6A64B8"></s></i></div>
+<div class="glass ex"><span style="color:#3F6590">18 DEC</span><b>Vjerovatnoća</b><em>7%</em><i><s style="width:7%;background:#5F86B5"></s></i></div>
+</div>
+</div></div><table class="tok"><tr><th>brand</th><td><span class="chip" style="background:#76593A"></span><code>#76593A</code></td></tr><tr><th>brand-strong</th><td><span class="chip" style="background:#563F27"></span><code>#563F27</code></td></tr><tr><th>brand-accent</th><td><span class="chip" style="background:#876843"></span><code>#876843</code></td></tr><tr><th>btn-primary</th><td><span class="chip" style="background:#906E48"></span><code>#906E48</code> → <span class="chip" style="background:#6B5034"></span><code>#6B5034</code></td></tr><tr><th>glass-tint</th><td><span class="chip" style="background:#83633F"></span><code>#83633F</code> .90 → <span class="chip" style="background:#634A30"></span><code>#634A30</code> .94</td></tr><tr><th>platno</th><td><span class="chip" style="background:#F3EEE6"></span><code>#F3EEE6</code> → <span class="chip" style="background:#EFE9DF"></span><code>#EFE9DF</code></td></tr><tr><th>magla 1–4</th><td><span class="chip" style="background:#E3C9A3"></span> <span class="chip" style="background:#EDC9B5"></span> <span class="chip" style="background:#DCD3BC"></span> <span class="chip" style="background:#D9BE96"></span> <code>#E3C9A3 #EDC9B5 #DCD3BC #D9BE96</code></td></tr><tr><th>theme-color</th><td><span class="chip" style="background:#E8DFD0"></span><code>#E8DFD0</code></td></tr><tr><th colspan="2" style="padding-top:10px">Kontrast (WCAG, cilj ≥ 4.5)</th></tr><tr><th>brand na staklu (najtamnija magla)</th><td><b>5.08</b> ✓</td></tr><tr><th>brand na platnu</th><td><b>5.57</b> ✓</td></tr><tr><th>brand-accent ikona na AI pilulu</th><td><b>4.64</b> ✓</td></tr><tr><th>bijelo na btn-primary (svijetli kraj)</th><td><b>4.65</b> ✓</td></tr><tr><th>bijelo na glass-tint (svijetli kraj)</th><td><b>4.53</b> ✓</td></tr><tr><th>bijelo .88 na glass-tint (sredina)</th><td><b>4.81</b> ✓</td></tr></table></div><div><div class="cap">Kadulja · <code>sage</code></div><div class="phone t-sage"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div>
+<div class="pad">
+<div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="glass" style="border-radius:28px;padding:18px;display:flex;align-items:center;gap:16px">
+<svg width="80" height="80" viewBox="0 0 76 76" style="flex-shrink:0"><circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="32" fill="none" stroke="var(--brand-accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="62 201" transform="rotate(-90 38 38)"/><circle cx="38" cy="38" r="20" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="20" fill="none" stroke="#B66A8C" stroke-width="9" stroke-linecap="round" stroke-dasharray="80 126" transform="rotate(-90 38 38)"/></svg>
+<div class="stats"><div><span class="l" style="color:var(--brand)">Plan danas</span><span class="v">50<small> / 160</small></span></div><div><span class="l" style="color:#8E4A69">Sedmica</span><span class="v">7h 15<small> / 10h</small></span></div><div><span class="l">Sljedeći ispit</span><span class="v">7 dana</span></div><div><span class="l">Spremnost</span><span class="v">64%</span></div></div>
+</div>
+<section class="tint" style="border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.18);font-size:12px;font-weight:600;display:flex;align-items:center">Čitanje</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;color:rgba(255,255,255,.88)">Baze podataka</span><span style="font-size:22px;font-weight:600;letter-spacing:-.5px">5.1–5.3 Normalizacija</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:36px;font-weight:600;letter-spacing:-1.2px">60:00</span><span style="height:48px;padding:0 24px;border-radius:24px;background:rgba(255,255,255,.94);color:var(--brand-strong);display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600">▶ Počni</span></div>
+</section>
+<div class="glass" style="border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:15px;font-weight:600">Dokle ste stigli?</span>
+<div style="display:flex;gap:8px"><span class="btn-primary" style="flex:1;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Pogl. 5</span><span style="flex:1;height:40px;border-radius:20px;background:rgba(var(--accent-rgb),.10);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Drugo…</span></div>
+</div>
+<div style="display:flex;gap:10px">
+<div class="glass ex"><span style="color:#8E4A69">28 OKT</span><b>Signali</b><em>64%</em><i><s style="width:64%;background:#B66A8C"></s></i></div>
+<div class="glass ex"><span style="color:#4C4892">4 NOV</span><b>Baze</b><em>31%</em><i><s style="width:31%;background:#6A64B8"></s></i></div>
+<div class="glass ex"><span style="color:#3F6590">18 DEC</span><b>Vjerovatnoća</b><em>7%</em><i><s style="width:7%;background:#5F86B5"></s></i></div>
+</div>
+</div></div><table class="tok"><tr><th>brand</th><td><span class="chip" style="background:#41664F"></span><code>#41664F</code></td></tr><tr><th>brand-strong</th><td><span class="chip" style="background:#2E4A39"></span><code>#2E4A39</code></td></tr><tr><th>brand-accent</th><td><span class="chip" style="background:#4D7760"></span><code>#4D7760</code></td></tr><tr><th>btn-primary</th><td><span class="chip" style="background:#527E64"></span><code>#527E64</code> → <span class="chip" style="background:#3A5D48"></span><code>#3A5D48</code></td></tr><tr><th>glass-tint</th><td><span class="chip" style="background:#48705A"></span><code>#48705A</code> .90 → <span class="chip" style="background:#365643"></span><code>#365643</code> .94</td></tr><tr><th>platno</th><td><span class="chip" style="background:#ECF1EC"></span><code>#ECF1EC</code> → <span class="chip" style="background:#E7EDE7"></span><code>#E7EDE7</code></td></tr><tr><th>magla 1–4</th><td><span class="chip" style="background:#AECDB6"></span> <span class="chip" style="background:#D8D2BA"></span> <span class="chip" style="background:#AECACA"></span> <span class="chip" style="background:#A5C4AC"></span> <code>#AECDB6 #D8D2BA #AECACA #A5C4AC</code></td></tr><tr><th>theme-color</th><td><span class="chip" style="background:#DAE4DA"></span><code>#DAE4DA</code></td></tr><tr><th colspan="2" style="padding-top:10px">Kontrast (WCAG, cilj ≥ 4.5)</th></tr><tr><th>brand na staklu (najtamnija magla)</th><td><b>5.04</b> ✓</td></tr><tr><th>brand na platnu</th><td><b>5.67</b> ✓</td></tr><tr><th>brand-accent ikona na AI pilulu</th><td><b>4.63</b> ✓</td></tr><tr><th>bijelo na btn-primary (svijetli kraj)</th><td><b>4.63</b> ✓</td></tr><tr><th>bijelo na glass-tint (svijetli kraj)</th><td><b>4.61</b> ✓</td></tr><tr><th>bijelo .88 na glass-tint (sredina)</th><td><b>4.86</b> ✓</td></tr></table></div><div><div class="cap">Okean · <code>ocean</code></div><div class="phone t-ocean"><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div>
+<div class="pad">
+<div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">ČETVRTAK, 22. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div>
+<div class="glass" style="border-radius:28px;padding:18px;display:flex;align-items:center;gap:16px">
+<svg width="80" height="80" viewBox="0 0 76 76" style="flex-shrink:0"><circle cx="38" cy="38" r="32" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="32" fill="none" stroke="var(--brand-accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="62 201" transform="rotate(-90 38 38)"/><circle cx="38" cy="38" r="20" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="9"/><circle cx="38" cy="38" r="20" fill="none" stroke="#B66A8C" stroke-width="9" stroke-linecap="round" stroke-dasharray="80 126" transform="rotate(-90 38 38)"/></svg>
+<div class="stats"><div><span class="l" style="color:var(--brand)">Plan danas</span><span class="v">50<small> / 160</small></span></div><div><span class="l" style="color:#8E4A69">Sedmica</span><span class="v">7h 15<small> / 10h</small></span></div><div><span class="l">Sljedeći ispit</span><span class="v">7 dana</span></div><div><span class="l">Spremnost</span><span class="v">64%</span></div></div>
+</div>
+<section class="tint" style="border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.88)">SLJEDEĆE · 09:00</span><span style="height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.18);font-size:12px;font-weight:600;display:flex;align-items:center">Čitanje</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;color:rgba(255,255,255,.88)">Baze podataka</span><span style="font-size:22px;font-weight:600;letter-spacing:-.5px">5.1–5.3 Normalizacija</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:36px;font-weight:600;letter-spacing:-1.2px">60:00</span><span style="height:48px;padding:0 24px;border-radius:24px;background:rgba(255,255,255,.94);color:var(--brand-strong);display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600">▶ Počni</span></div>
+</section>
+<div class="glass" style="border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:15px;font-weight:600">Dokle ste stigli?</span>
+<div style="display:flex;gap:8px"><span class="btn-primary" style="flex:1;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Pogl. 5</span><span style="flex:1;height:40px;border-radius:20px;background:rgba(var(--accent-rgb),.10);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Drugo…</span></div>
+</div>
+<div style="display:flex;gap:10px">
+<div class="glass ex"><span style="color:#8E4A69">28 OKT</span><b>Signali</b><em>64%</em><i><s style="width:64%;background:#B66A8C"></s></i></div>
+<div class="glass ex"><span style="color:#4C4892">4 NOV</span><b>Baze</b><em>31%</em><i><s style="width:31%;background:#6A64B8"></s></i></div>
+<div class="glass ex"><span style="color:#3F6590">18 DEC</span><b>Vjerovatnoća</b><em>7%</em><i><s style="width:7%;background:#5F86B5"></s></i></div>
+</div>
+</div></div><table class="tok"><tr><th>brand</th><td><span class="chip" style="background:#3A5D86"></span><code>#3A5D86</code></td></tr><tr><th>brand-strong</th><td><span class="chip" style="background:#2B4767"></span><code>#2B4767</code></td></tr><tr><th>brand-accent</th><td><span class="chip" style="background:#46709F"></span><code>#46709F</code></td></tr><tr><th>btn-primary</th><td><span class="chip" style="background:#4E78A9"></span><code>#4E78A9</code> → <span class="chip" style="background:#365A82"></span><code>#365A82</code></td></tr><tr><th>glass-tint</th><td><span class="chip" style="background:#426A98"></span><code>#426A98</code> .90 → <span class="chip" style="background:#30527A"></span><code>#30527A</code> .94</td></tr><tr><th>platno</th><td><span class="chip" style="background:#EAEFF5"></span><code>#EAEFF5</code> → <span class="chip" style="background:#E5EBF2"></span><code>#E5EBF2</code></td></tr><tr><th>magla 1–4</th><td><span class="chip" style="background:#9CBBE0"></span> <span class="chip" style="background:#BED6E4"></span> <span class="chip" style="background:#A8CCDA"></span> <span class="chip" style="background:#98AFDC"></span> <code>#9CBBE0 #BED6E4 #A8CCDA #98AFDC</code></td></tr><tr><th>theme-color</th><td><span class="chip" style="background:#D7E1EE"></span><code>#D7E1EE</code></td></tr><tr><th colspan="2" style="padding-top:10px">Kontrast (WCAG, cilj ≥ 4.5)</th></tr><tr><th>brand na staklu (najtamnija magla)</th><td><b>5.02</b> ✓</td></tr><tr><th>brand na platnu</th><td><b>5.87</b> ✓</td></tr><tr><th>brand-accent ikona na AI pilulu</th><td><b>4.65</b> ✓</td></tr><tr><th>bijelo na btn-primary (svijetli kraj)</th><td><b>4.58</b> ✓</td></tr><tr><th>bijelo na glass-tint (svijetli kraj)</th><td><b>4.64</b> ✓</td></tr><tr><th>bijelo .88 na glass-tint (sredina)</th><td><b>4.83</b> ✓</td></tr></table></div>
+</div>
+</x-dc>
+</body>
+</html>
