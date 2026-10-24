@@ -19,7 +19,6 @@
     "subjects": "Subjects",
     "progress": "Progress",
     "aiLabel": "AI assistant",
-    "ai": "AI",
     "aiClose": "Close the assistant",
     "home": "Hoot, go to Today"
   },
@@ -131,8 +130,6 @@
       "title": "Schedule",
       "classUntil": "until {{time}}"
     },
-    "examIn_one": "in {{count}} day",
-    "examIn_other": "in {{count}} days",
     "examToday": "today",
     "examTomorrow": "tomorrow",
     "late": {
@@ -162,7 +159,8 @@
       "toTomorrow": "No room today: first block tomorrow at {{time}}",
       "toLater": "Moved to the first free day at {{time}}",
       "carried": "moved"
-    }
+    },
+    "examInShort": "{{count}} d"
   },
   "plan": {
     "title": "Plan",
@@ -1575,7 +1573,8 @@
     "settings": "Settings",
     "allSettings": "All settings",
     "academicCalendar": "Academic calendar",
-    "documents": "Documents"
+    "documents": "Documents",
+    "subpages": "Pages in {{section}}"
   },
   "feeds": {
     "title": "Connected calendars",
