@@ -97,6 +97,7 @@ const roughSource = (parts: number): SourceWithUnits => ({
   subject_id: 's',
   kind: 'other',
   title: '~',
+  archived_at: null,
   author: null,
   measure: 'items',
   base_min_per_unit: 60,

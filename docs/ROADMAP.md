@@ -276,7 +276,8 @@ Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, t
 - [x] Sheetovi: `BottomSheet` na shadcn Drawer (`vaul`), povlačenje nadolje zatvara, kriva `cubic-bezier(0.32, 0.72, 0, 1)` ~400 ms, `prefers-reduced-motion` → fade
   - Povlači se samo ručka (`handleOnly`): forme, označavanje teksta i scroll unutar sheeta ostaju kao prije; tastatura ide preko `--vv-bottom` (vaul `repositionInputs` isključen)
 - [x] Exam kartice na Danas po mockupu: datum → ime → % → traka; dani do ispita desno u redu datuma; % i traka uvijek (bez izvora „—“), jednaka visina; traka 3 px radijus, track 0.65
-- [ ] Swipe ulijevo na listama (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): arhiviraj / obriši / preskoči, toast Poništi, iste akcije u „⋯“ / dugom pritisku
+- [x] Swipe ulijevo na listama (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): arhiviraj / obriši / preskoči, toast Poništi, iste akcije u „⋯“ / dugom pritisku
+  - Odluka (Etapa 10b): izvor dobija arhiviranje (`sources.archived_at`, migracija `0025_source_archive.sql`): arhiviran izvor ispada iz plana, napretka i obima, jedinice i historija ostaju; „Arhivirani izvori“ na predmetu ga vraćaju. Brisanje koje se ne može vratiti poslije (sesija, termin, rok, dokument) sakrije red odmah, a briše se tek kad toast Poništi istekne. Iste radnje: dugi pritisak, desni klik i skriveno dugme „Radnje“ (tastatura)
 - [ ] Pretraga: ikona u gornjem redu, indeks ekrana i postavki sa sinonimima + podaci iz keša, `fuse.js`, offline, nedavne
 - [ ] Teme boja: tokeni po `[data-theme]` (brand, `glass-tint`, `btn-primary`, magla, `theme-color`), bez hardkodirane rgba u utility-jima; Lavanda, Grafit, Pijesak, Kadulja, Okean; Postavke → Izgled; migracija `profiles.theme`
 - [ ] „Više vremena ovaj dan“ na Plan → Dan i u pretrazi (model `availability_days` postoji)

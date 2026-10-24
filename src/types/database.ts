@@ -1406,6 +1406,7 @@ export type Database = {
       }
       sources: {
         Row: {
+          archived_at: string | null
           author: string | null
           base_min_per_unit: number
           created_at: string
@@ -1423,6 +1424,7 @@ export type Database = {
           weight: number | null
         }
         Insert: {
+          archived_at?: string | null
           author?: string | null
           base_min_per_unit: number
           created_at?: string
@@ -1440,6 +1442,7 @@ export type Database = {
           weight?: number | null
         }
         Update: {
+          archived_at?: string | null
           author?: string | null
           base_min_per_unit?: number
           created_at?: string

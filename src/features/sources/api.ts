@@ -61,9 +61,62 @@ export function useSources(subjectId: string | undefined) {
         .from('sources')
         .select('*, units(*)')
         .eq('subject_id', subjectId!)
+        .is('archived_at', null)
         .order('created_at')
       if (error) throw error
       return data
+    },
+  })
+}
+
+const archivedKey = (userId: string | undefined, subjectId: string | undefined) =>
+  ['sources', userId, subjectId, 'archived'] as const
+
+/** "Arhivirani izvori" on a subject: archived sources, newest first, to restore. */
+export function useArchivedSources(subjectId: string | undefined) {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: archivedKey(userId, subjectId),
+    enabled: Boolean(userId && subjectId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sources')
+        .select('id, title, kind, archived_at')
+        .eq('subject_id', subjectId!)
+        .not('archived_at', 'is', null)
+        .order('archived_at', { ascending: false })
+      if (error) throw error
+      return data
+    },
+  })
+}
+
+/**
+ * Archive (or restore) a source (swipe, Stage 10b): it leaves the plan, progress and scope, its
+ * units and history stay. Every list that reads sources is refreshed.
+ */
+export function useArchiveSource(subjectId: string | undefined) {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, archived }: { id: string; archived: boolean }) => {
+      const { error } = await supabase
+        .from('sources')
+        .update({ archived_at: archived ? new Date().toISOString() : null })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onMutate: ({ id, archived }) =>
+      archived
+        ? patchList<SourceWithUnits>(queryClient, sourcesKey(userId, subjectId), (list) =>
+            list.filter((s) => s.id !== id),
+          )
+        : undefined,
+    onError: (_error, _vars, rollback) => rollback?.(),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: sourcesKey(userId, subjectId) })
+      void queryClient.invalidateQueries({ queryKey: archivedKey(userId, subjectId) })
+      void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'sources'] })
     },
   })
 }

@@ -3,7 +3,8 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { SessionsCard } from '@/features/session/SessionsCard'
 import { useTranslation } from 'react-i18next'
 import { differenceInCalendarDays, format } from 'date-fns'
-import { ChevronRightIcon, FlagIcon, PencilIcon } from '@/components/icons'
+import { ChevronRightIcon, FlagIcon, PencilIcon, TrashIcon } from '@/components/icons'
+import { SwipeRow } from '@/components/SwipeRow'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
@@ -17,7 +18,7 @@ import {
 } from '@/features/sources/model'
 import { SubjectLectures } from '@/features/schedule/SubjectLectures'
 import { ProgressRing, SubjectSources } from '@/features/sources/SubjectSources'
-import { useDeadlines, useSubject, useUpdateSubject } from './api'
+import { useDeadlines, useDeleteDeadline, useSubject, useUpdateSubject } from './api'
 import { paletteOf, type SubjectPalette } from './colors'
 import { DeadlineRow } from './DeadlineRow'
 import { DeadlineSheet } from './DeadlineSheet'
@@ -68,6 +69,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const editPath = `/subjects/${subject.id}/edit`
   const { data: allDeadlines = [] } = useDeadlines()
   const deadlines = allDeadlines.filter((d) => d.subject_id === subject.id)
+  const deleteDeadline = useDeleteDeadline()
   // Sheets keep only the id, so they always render the latest cached row.
   const [examSheet, setExamSheet] = useState<{ open: boolean; id?: string }>({ open: false })
   const { data: sources = [] } = useSources(subject.id)
@@ -259,20 +261,34 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
           {deadlines.map((d, i) => (
             <div key={d.id}>
               {i > 0 && <div className="mx-3 h-px bg-hairline" />}
-              <DeadlineRow
-                deadline={d}
-                now={now}
-                worth={worth(d.id)}
-                onOpen={() => setDeadlineSheet({ open: true, id: d.id })}
-                result={
-                  <ResultChip
-                    item={itemOf(d.id)}
-                    worth={worth(d.id)}
-                    due={d.done || isDue(d.due_at)}
-                    onOpen={() => setResultSheet({ open: true, kind: 'deadline', id: d.id })}
-                  />
-                }
-              />
+              <SwipeRow
+                className="rounded-[18px]"
+                actions={[
+                  {
+                    id: 'delete',
+                    label: t('swipe.delete'),
+                    tone: 'danger',
+                    icon: <TrashIcon size={18} />,
+                    deferred: t('swipe.deadlineDeleted'),
+                    run: () => deleteDeadline.mutateAsync(d.id),
+                  },
+                ]}
+              >
+                <DeadlineRow
+                  deadline={d}
+                  now={now}
+                  worth={worth(d.id)}
+                  onOpen={() => setDeadlineSheet({ open: true, id: d.id })}
+                  result={
+                    <ResultChip
+                      item={itemOf(d.id)}
+                      worth={worth(d.id)}
+                      due={d.done || isDue(d.due_at)}
+                      onOpen={() => setResultSheet({ open: true, kind: 'deadline', id: d.id })}
+                    />
+                  }
+                />
+              </SwipeRow>
             </div>
           ))}
         </div>

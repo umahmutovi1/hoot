@@ -1,14 +1,12 @@
 import { useEffect } from 'react'
-import { useToast } from './toast-store'
-
-const VISIBLE_MS = 6000
+import { TOAST_MS, useToast } from './toast-store'
 
 export function Toast() {
   const toast = useToast((s) => s.toast)
   const hide = useToast((s) => s.hide)
   useEffect(() => {
     if (!toast) return
-    const timer = setTimeout(hide, VISIBLE_MS)
+    const timer = setTimeout(hide, TOAST_MS)
     return () => clearTimeout(timer)
   }, [toast, hide])
   if (!toast) return null
