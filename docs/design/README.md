@@ -97,7 +97,7 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   red prati prst (otpor poslije širine dugmadi), puni swipe izvrši prvu akciju; uvijek toast Poništi. Ne počinje s lijeve ivice (iOS nazad).
 - **Blok na Danas:** tap otvara mali sheet „Započeti sesiju sada?“ (predmet, gradivo, trajanje, predložak; Počni kao `btn-primary`,
   ispod Uredi · Preskoči · Obriši). Nazad u sesiji otvara sheet sa 4 opcije (Nastavi, Izađi a timer radi, Završi ranije, Odbaci crveno).
-- **Plan kalendar kao iOS (oktobar 2026):** Dan je default i nema tabova Dan/Mjesec. Iznad pilula dana je pilula „‹ Oktobar 2026“ (lijevo,
+- **Plan kalendar kao iOS (oktobar 2026):** Dan je default i nema tabova Dan/Mjesec. Iznad pilula dana je pilula „‹ Oktobar 2026“ (crni tekst, lijevo,
   strelice sedmice desno) koja otvara Mjesec; tap na dan u Mjesecu vraća na Dan (nazad iz Mjeseca isto). Vremenska osa Dana je cijeli dan
   00–24 i otvara se na sada (danas), prvom bloku ili 08:00. Prazan dan nema napomenu „Nema nastave ovaj dan“.
 - **Pretraga:** polje u `glass-sheet` panelu odozgo (kao meni), rezultati grupisani (Ekrani, Postavke, Predmeti, Izvori, Jedinice,
