@@ -226,7 +226,14 @@
       "revert": "Vrati predloženo",
       "reverted": "Vraćen je prijedlog plana"
     },
-    "openMonth": "Prikaži mjesec, {{month}}"
+    "openMonth": "Prikaži mjesec, {{month}}",
+    "more": {
+      "title": "Više vremena ovaj dan",
+      "sub": "{{day}} · maksimum {{cap}}",
+      "done": "{{day}}: maksimum je {{cap}}",
+      "fullDay": "Maksimum je već koliko i slobodnog vremena; za više dodaj termine u Dostupnosti.",
+      "button": "Više vremena"
+    }
   },
   "subjects": {
     "title": "Predmeti",
@@ -2249,5 +2256,134 @@
     "sourceArchived": "Izvor je arhiviran",
     "sourceRestored": "Izvor je vraćen",
     "archivedSources": "Arhivirani izvori"
+  },
+  "search": {
+    "placeholder": "Pretraži Hoot",
+    "cancel": "Otkaži",
+    "clear": "Obriši upit",
+    "recent": "Nedavno",
+    "clearRecent": "Obriši",
+    "offline": "Pretraga radi i bez interneta.",
+    "none": "Nema rezultata za „{{query}}“",
+    "noneSub": "Pretražuju se ekrani, postavke i ono što je već u appu: predmeti, ispiti, izvori, jedinice i dokumenti.",
+    "all": "Sve ({{count}})",
+    "open": "Pretraga",
+    "group": {
+      "actions": "Akcije",
+      "screens": "Ekrani",
+      "settings": "Postavke",
+      "subjects": "Predmeti",
+      "exams": "Ispiti",
+      "sources": "Izvori",
+      "units": "Jedinice",
+      "documents": "Dokumenti"
+    },
+    "items": {
+      "moreTime": {
+        "title": "Više vremena ovaj dan",
+        "sub": "Plan › Dan · veći maksimum za jedan dan",
+        "syn": "više vremena, dodatno vrijeme, produži dan, više sati, maksimum dana"
+      },
+      "extraTime": {
+        "title": "Imam još vremena",
+        "sub": "Danas · 30 / 60 / 90 min",
+        "syn": "više vremena, slobodno, dodaj učenje, imam vremena"
+      },
+      "newSubject": {
+        "title": "Novi predmet",
+        "sub": "Predmeti · naziv i datum ispita",
+        "syn": "dodaj predmet, kolegij, novi kurs"
+      },
+      "today": {
+        "title": "Danas",
+        "sub": "Šta učiti danas",
+        "syn": "početna, danas, plan dana"
+      },
+      "plan": {
+        "title": "Plan · Dan",
+        "sub": "Kalendar dana sa blokovima",
+        "syn": "kalendar, satnica, raspored učenja, blokovi"
+      },
+      "month": {
+        "title": "Plan · Mjesec",
+        "sub": "Mjesečni kalendar",
+        "syn": "mjesec, kalendar, ispiti u mjesecu"
+      },
+      "timetable": {
+        "title": "Raspored nastave",
+        "sub": "Plan › Raspored nastave",
+        "syn": "nastava, predavanja, vježbe, termini"
+      },
+      "subjects": {
+        "title": "Predmeti",
+        "sub": "Svi predmeti i ispiti",
+        "syn": "kolegiji, kursevi"
+      },
+      "progress": {
+        "title": "Napredak",
+        "sub": "Sati, prognoza, jačina znanja",
+        "syn": "statistika, prognoza, spremnost, ocjena"
+      },
+      "sessions": {
+        "title": "Sesije",
+        "sub": "Napredak › Sesije",
+        "syn": "historija, istorija, učenje, timer"
+      },
+      "chat": {
+        "title": "Asistent",
+        "sub": "AI asistent",
+        "syn": "ai, chat, pitaj, razgovor"
+      },
+      "settings": {
+        "title": "Postavke",
+        "sub": "Sve postavke",
+        "syn": "podešavanja, opcije"
+      },
+      "academic": {
+        "title": "Akademski kalendar",
+        "sub": "Postavke › Akademski kalendar",
+        "syn": "semestar, ispitni rok, neradni dani, praznici"
+      },
+      "feeds": {
+        "title": "Povezani kalendari",
+        "sub": "Postavke › Povezani kalendari",
+        "syn": "google kalendar, ical, moodle, zauzeto"
+      },
+      "documents": {
+        "title": "Dokumenti",
+        "sub": "Postavke › Dokumenti",
+        "syn": "bilješke, pdf, fajlovi, skripte"
+      },
+      "availability": {
+        "title": "Dostupnost",
+        "sub": "Plan › Dostupnost · sati i dnevni maksimum",
+        "syn": "više vremena, sati, kad učim, dnevni maksimum, slobodno vrijeme"
+      },
+      "language": {
+        "title": "Jezik",
+        "sub": "Postavke › Opće",
+        "syn": "bosanski, engleski, english"
+      },
+      "presets": {
+        "title": "Predlošci sesije",
+        "sub": "Postavke › Sesija",
+        "syn": "pauze, pomodoro, predložak, 50/15, timer"
+      },
+      "notifications": {
+        "title": "Notifikacije",
+        "sub": "Postavke › Notifikacije",
+        "syn": "obavještenja, podsjetnik, push, zvono"
+      },
+      "grades": {
+        "title": "Bodovi i ocjene",
+        "sub": "Postavke › Opće",
+        "syn": "skala ocjena, bodovi, ocjena"
+      },
+      "export": {
+        "title": "Izvoz podataka",
+        "sub": "Postavke › Podaci",
+        "syn": "anki, csv, json, ics, izvoz, backup"
+      }
+    }
   }
 }

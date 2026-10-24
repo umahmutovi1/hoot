@@ -278,9 +278,10 @@ Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, t
 - [x] Exam kartice na Danas po mockupu: datum → ime → % → traka; dani do ispita desno u redu datuma; % i traka uvijek (bez izvora „—“), jednaka visina; traka 3 px radijus, track 0.65
 - [x] Swipe ulijevo na listama (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): arhiviraj / obriši / preskoči, toast Poništi, iste akcije u „⋯“ / dugom pritisku
   - Odluka (Etapa 10b): izvor dobija arhiviranje (`sources.archived_at`, migracija `0025_source_archive.sql`): arhiviran izvor ispada iz plana, napretka i obima, jedinice i historija ostaju; „Arhivirani izvori“ na predmetu ga vraćaju. Brisanje koje se ne može vratiti poslije (sesija, termin, rok, dokument) sakrije red odmah, a briše se tek kad toast Poništi istekne. Iste radnje: dugi pritisak, desni klik i skriveno dugme „Radnje“ (tastatura)
-- [ ] Pretraga: ikona u gornjem redu, indeks ekrana i postavki sa sinonimima + podaci iz keša, `fuse.js`, offline, nedavne
+- [x] Pretraga: ikona u gornjem redu, indeks ekrana i postavki sa sinonimima + podaci iz keša, `fuse.js`, offline, nedavne
 - [ ] Teme boja: tokeni po `[data-theme]` (brand, `glass-tint`, `btn-primary`, magla, `theme-color`), bez hardkodirane rgba u utility-jima; Lavanda, Grafit, Pijesak, Kadulja, Okean; Postavke → Izgled; migracija `profiles.theme`
-- [ ] „Više vremena ovaj dan“ na Plan → Dan i u pretrazi (model `availability_days` postoji)
+- [x] „Više vremena ovaj dan“ na Plan → Dan i u pretrazi (model `availability_days` postoji)
+  - Jedan tap podiže maksimum tog dana (`availability_days.cap_min`: +30 min / +1 h / +2 h / +3 h) uz Poništi; ako je maksimum već koliko i slobodnog vremena, sheet upućuje na Dostupnost
 - [x] Fokus kartica na Danas sa dva prstena po mockupu (`Danas.dc.html:35-46`): vanjski plan danas (`brand-accent`), unutrašnji sedmica (pink), 80 px; sada je jedan prsten u `FocusBar.tsx`
 - [x] Blok na listi Danas: tap otvara “Započeti sesiju sada?” (Počni, Uredi, Preskoči, Obriši / Izbaci iz plana); “+ Dodaj blok” na listi; “Počni” na kartici Sljedeće ostaje direktan; “Odradila sam bez timera” (ručna sesija vezana za blok) i “Drugi predmet u ovo vrijeme” u “Obriši blok?”; postavka “Početak dana” se zove “Granica dana”
   - Granica dana nije red u Postavkama (predlaže je onboarding iz vremena lijeganja), pa nema šta preimenovati u appu; naslov sheeta nazad iz sesije je “Završi sesiju?” (odluka korisnice)

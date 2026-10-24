@@ -25,6 +25,7 @@ import { useToast } from '@/components/toast-store'
 import { useDeleteBlock } from './actions'
 import { BlockSheet } from './BlockSheet'
 import { DayTimeline } from './DayTimeline'
+import { MoreTimeSheet } from './MoreTimeSheet'
 import type { PlanBlockRow } from './state'
 import { toTimeline, useDayBlocks, type DayBlockView } from './useDayBlocks'
 
@@ -71,6 +72,8 @@ export function CalendarView() {
   const remove = useDeleteBlock()
   const show = useToast((s) => s.show)
   const edited = blocks.filter((b) => b.edited && b.block.status === 'planned')
+  // "Više vremena ovaj dan": the button, or `?more=1` from search.
+  const [moreOpen, setMoreOpen] = useState(() => params.get('more') === '1')
   const revert = async () => {
     const undos: (() => Promise<void>)[] = []
     for (const b of edited) undos.push(await remove(b.block, false))
@@ -120,15 +123,24 @@ export function CalendarView() {
             <span className="text-xs leading-[1.4] text-ink-muted">
               {t('plan.schedule.note')} · {t('plan.schedule.moved')}
             </span>
-            {edited.length > 0 && (
+            <span className="flex shrink-0 gap-1.5">
+              {edited.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => void revert()}
+                  className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
+                >
+                  {t('plan.schedule.revert')}
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => void revert()}
+                onClick={() => setMoreOpen(true)}
                 className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
               >
-                {t('plan.schedule.revert')}
+                {t('plan.more.button')}
               </button>
-            )}
+            </span>
           </div>
           <div
             data-timeline-scroll
@@ -160,6 +172,14 @@ export function CalendarView() {
         onPickClass={(item) => openClass(item, selected)}
       />
       <BusySheet item={busy} onClose={() => setBusy(null)} />
+      <MoreTimeSheet
+        open={moreOpen}
+        onOpenChange={(o) => {
+          setMoreOpen(o)
+          if (!o && params.get('more')) setParams({}, { replace: true })
+        }}
+        date={selectedDate}
+      />
       <BlockSheet
         open={sheet.open}
         onOpenChange={(open) => setSheet((s) => ({ ...s, open }))}

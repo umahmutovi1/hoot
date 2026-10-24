@@ -214,6 +214,13 @@ export const ArchiveIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const SearchIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-3.5-3.5" />
+  </Icon>
+)
+
 export const TrashIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13" />

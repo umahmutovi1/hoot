@@ -219,7 +219,14 @@
       "revert": "Restore the plan",
       "reverted": "The plan's suggestion is back"
     },
-    "openMonth": "Show the month, {{month}}"
+    "openMonth": "Show the month, {{month}}",
+    "more": {
+      "title": "More time this day",
+      "sub": "{{day}} · maximum {{cap}}",
+      "done": "{{day}}: maximum is {{cap}}",
+      "fullDay": "The maximum already equals the free time; add hours in Availability for more.",
+      "button": "More time"
+    }
   },
   "subjects": {
     "title": "Subjects",
@@ -2188,5 +2195,134 @@
     "sourceArchived": "Source archived",
     "sourceRestored": "Source restored",
     "archivedSources": "Archived sources"
+  },
+  "search": {
+    "placeholder": "Search Hoot",
+    "cancel": "Cancel",
+    "clear": "Clear query",
+    "recent": "Recent",
+    "clearRecent": "Clear",
+    "offline": "Search works offline too.",
+    "none": "No results for “{{query}}”",
+    "noneSub": "Search covers screens, settings and what is already in the app: subjects, exams, sources, units and documents.",
+    "all": "All ({{count}})",
+    "open": "Search",
+    "group": {
+      "actions": "Actions",
+      "screens": "Screens",
+      "settings": "Settings",
+      "subjects": "Subjects",
+      "exams": "Exams",
+      "sources": "Sources",
+      "units": "Units",
+      "documents": "Documents"
+    },
+    "items": {
+      "moreTime": {
+        "title": "More time this day",
+        "sub": "Plan › Day · a higher maximum for one day",
+        "syn": "more time, extra time, longer day, more hours, day maximum"
+      },
+      "extraTime": {
+        "title": "I have more time",
+        "sub": "Today · 30 / 60 / 90 min",
+        "syn": "more time, free time, add study"
+      },
+      "newSubject": {
+        "title": "New subject",
+        "sub": "Subjects · name and exam date",
+        "syn": "add subject, course, class"
+      },
+      "today": {
+        "title": "Today",
+        "sub": "What to study today",
+        "syn": "home, today, day plan"
+      },
+      "plan": {
+        "title": "Plan · Day",
+        "sub": "Day calendar with blocks",
+        "syn": "calendar, schedule, blocks"
+      },
+      "month": {
+        "title": "Plan · Month",
+        "sub": "Month calendar",
+        "syn": "month, calendar, exams this month"
+      },
+      "timetable": {
+        "title": "Class timetable",
+        "sub": "Plan › Class timetable",
+        "syn": "classes, lectures, labs"
+      },
+      "subjects": {
+        "title": "Subjects",
+        "sub": "All subjects and exams",
+        "syn": "courses, classes"
+      },
+      "progress": {
+        "title": "Progress",
+        "sub": "Hours, forecast, memory strength",
+        "syn": "statistics, forecast, readiness, grade"
+      },
+      "sessions": {
+        "title": "Sessions",
+        "sub": "Progress › Sessions",
+        "syn": "history, study, timer"
+      },
+      "chat": {
+        "title": "Assistant",
+        "sub": "AI assistant",
+        "syn": "ai, chat, ask"
+      },
+      "settings": {
+        "title": "Settings",
+        "sub": "All settings",
+        "syn": "preferences, options"
+      },
+      "academic": {
+        "title": "Academic calendar",
+        "sub": "Settings › Academic calendar",
+        "syn": "semester, exam period, holidays"
+      },
+      "feeds": {
+        "title": "Connected calendars",
+        "sub": "Settings › Connected calendars",
+        "syn": "google calendar, ical, moodle, busy"
+      },
+      "documents": {
+        "title": "Documents",
+        "sub": "Settings › Documents",
+        "syn": "notes, pdf, files"
+      },
+      "availability": {
+        "title": "Availability",
+        "sub": "Plan › Availability · hours and daily maximum",
+        "syn": "more time, hours, when I study, daily maximum, free time"
+      },
+      "language": {
+        "title": "Language",
+        "sub": "Settings › General",
+        "syn": "bosnian, english"
+      },
+      "presets": {
+        "title": "Session presets",
+        "sub": "Settings › Session",
+        "syn": "breaks, pomodoro, preset, 50/15, timer"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "sub": "Settings › Notifications",
+        "syn": "reminders, push, bell"
+      },
+      "grades": {
+        "title": "Points and grades",
+        "sub": "Settings › General",
+        "syn": "grade scale, points, grade"
+      },
+      "export": {
+        "title": "Export data",
+        "sub": "Settings › Data",
+        "syn": "anki, csv, json, ics, export, backup"
+      }
+    }
   }
 }
