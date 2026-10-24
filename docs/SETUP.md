@@ -267,6 +267,19 @@ App sama upisuje kad je obavještenje na redu (`push_jobs`: prvi blok dana 10 mi
 6. **Provjera:** Postavke → Notifikacije → uključi na uređaju → „Pošalji probno obavještenje“ stiže za najviše minut. Integrations → Cron → `notify` → History; odgovor je `{"jobs": N, "sent": N, "failed": 0, "stale": 0, "gone": 0}`. Posao koji kasni više od 30 min se odbaci, ne šalje.
 7. **Gašenje:** `select cron.unschedule('notify');`. **Novi ključevi:** ponovi 1–3; stare pretplate tad više ne rade, pa svaki uređaj ponovo uključi obavještenja.
 
+## 5c. Google Drive Picker (Etapa 10c)
+
+Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove koje korisnik izabere), pa Google ne traži sigurnosnu procjenu, a token se ne čuva.
+
+1. console.cloud.google.com → isti projekat kao Gemini ključ (`hoot`) → APIs & Services → Library → uključi **Google Drive API** i **Google Picker API**.
+2. OAuth consent screen → External → ime „Hoot“, email podrške; scope `.../auth/drive.file`; Test users: svoj Gmail. Testing režim je dovoljan dok je app za jednu osobu.
+3. Credentials → Create credentials → **OAuth client ID** → Web application → Authorized JavaScript origins: `https://hoot-5ig.pages.dev`, `https://dev.hoot-5ig.pages.dev`, `http://localhost:5173`.
+4. Credentials → Create credentials → **API key** → Restrict key: HTTP referrers (isti originsi) i API restrictions: samo Google Picker API.
+5. Cloudflare Pages → `hoot` → Settings → Environment variables (Production i Preview): `VITE_GOOGLE_CLIENT_ID`, `VITE_GOOGLE_PICKER_API_KEY`, `VITE_GOOGLE_APP_ID` (broj projekta). Javni su po dizajnu (kao `VITE_SUPABASE_PUBLISHABLE_KEY`), ograničeni originom.
+6. Prije otvaranja za više korisnika: consent screen → Publish app (za `drive.file` bez verifikacije osim brendiranja).
+
+**Web pretraga za „Fakultet s interneta“ (Etapa 10c).** Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
+
 ## 6. Otvaranje aplikacije za više korisnika
 
 Kod i baza su već spremni (svaka tabela ima `user_id` + RLS, profil se pravi automatski). Treba samo email sa vlastite domene.

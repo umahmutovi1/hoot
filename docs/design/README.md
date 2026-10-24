@@ -66,8 +66,39 @@ Male staklene indigo pločice sa bijelom linijskom ikonom ostaju samo kao ikone 
 
 ## Odluke pri implementaciji redizajna (v0.7.2)
 - Redizajn mijenja izgled postojećih ekrana. Elementi za funkcije koje još ne postoje (pretraga i notifikacije u zaglavlju Danas,
-  plan i satnica u chatu, „Zašto ovako danas", prognoza, mapa termina, check-in…) dolaze u etapi kojoj pripadaju; pretraga nije u PRD-u.
+  plan i satnica u chatu, „Zašto ovako danas", prognoza, mapa termina, check-in…) dolaze u etapi kojoj pripadaju; pretraga je od oktobra 2026 u PRD-u (Etapa 10b).
 - Do schedulera (Etapa 8b) kartica „Sljedeće" na Danas nudi slobodnu sesiju (Počni → PokreniSesiju); dok sesija traje, ista kartica
   pokazuje sesiju u toku i vraća u nju.
-- **Nakon 8b:** dan bez bloka više nije poseban prazan ekran (DanasSlobodno): Danas zadržava fokus traku, a kartica „Sljedeće“ kaže „Danas nema plana“, sljedeći blok (sutra ili kasnije) i nudi slobodnu sesiju (uz „Predmeti“ kad plan nema gradiva). Tako se ekran ne mijenja dok se plan učitava. Kartice ispita imaju „za X dana“ ispod datuma; PokreniSesiju uz čipove nudi „+ Predmet“ i „+ Izvor“.
+- **Nakon 8b:** dan bez bloka više nije poseban prazan ekran (DanasSlobodno): Danas zadržava fokus traku, a kartica „Sljedeće“ kaže „Danas nema plana“, sljedeći blok (sutra ili kasnije) i nudi slobodnu sesiju (uz „Predmeti“ kad plan nema gradiva). Tako se ekran ne mijenja dok se plan učitava. Kartice ispita imaju „za X dana“ ispod datuma (od Etape 10b u redu datuma, vidi ispod); PokreniSesiju uz čipove nudi „+ Predmet“ i „+ Izvor“.
 - Ekrani preko cijelog ekrana i dalje imaju ljepljivo zaglavlje sa `env(safe-area-inset-top)`, a svaki sheet ima ×.
+
+## Odluke nakon v0.10.0 (oktobar 2026, Etapa 10b)
+PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (default → jedan tap → tek onda postavka).
+- **Prvi red je ljepljiv** na svim ekranima sa prvim redom: `sticky top-0` + `env(safe-area-inset-top)`, pozadina
+  `linear-gradient(to bottom, platno 0.92 → 0.6 → 0)` (token boje platna iz teme), bez `backdrop-filter` i bez ivice. Mrvice skrolaju.
+  Red: logo · AI · razmak · pretraga · ☰.
+- **AI dugme** je samo ikona iskre u krugu 44 px, bez labela „AI“ i bez podvlake. Isključeno: `bg-white/30` + inset svjetlo, ikona
+  `brand-accent`. Uključeno (u chatu): pozadina `glass-tint` (ista ljubičasta kao kartica „Sljedeće“ / sesija), ikona bijela.
+  Boje pozadine i ikone zamijene mjesta; `aria-pressed` i `aria-label` „AI asistent“.
+- **Meni:** naziv sekcije je link na glavnu stranicu sekcije, chevron desno je zasebno dugme 44 px koje otvara podstranice;
+  podstranice se otvaraju animirano (visina, 200 ms), ne iskaču.
+- **Motion sheetova:** BottomSheet je shadcn Drawer (`vaul`): ulazi odozdo krivom `cubic-bezier(0.32, 0.72, 0, 1)` ~400 ms
+  (izlaz ~250 ms), ručka gore se može povući nadolje i zatvara sheet, scrim se gasi zajedno sa povlačenjem.
+  `prefers-reduced-motion` → samo fade 150 ms.
+- **Fokus kartica na Danas:** dva prstena kao u mockupu (80 px, debljina 9, track bijeli 0.6): vanjski r 32 plan danas (`brand-accent`),
+  unutrašnji r 20 sedmica (pink deep); pored 2×2 statistika (Plan danas, Sedmica, Sljedeći ispit, Spremnost).
+- **Kartice ispita:** hijerarhija iz mockupa u 4 reda sa jednakim razmakom 8 px: (1) datum, velika slova, boja predmeta, a desno u istom
+  redu dani do ispita sitno sekundarno („5 d“, „sutra“, „danas“), (2) ime predmeta 14/600 (jedan red, `truncate`), (3) % 22/600,
+  (4) traka 5 px, radijus 3 px, track 0.65. % i traka uvijek postoje (bez izvora „—“ i prazna traka), pa su sve tri kartice istog oblika i visine.
+- **Swipe ulijevo** na redu liste: crveno „Obriši“ / sivo-ljubičasto „Arhiviraj“ / „Preskoči“ dugmad 72 px se otkrivaju ispod reda,
+  red prati prst (otpor poslije širine dugmadi), puni swipe izvrši prvu akciju; uvijek toast Poništi. Ne počinje s lijeve ivice (iOS nazad).
+- **Blok na Danas:** tap otvara mali sheet „Započeti sesiju sada?“ (predmet, gradivo, trajanje, predložak; Počni kao `btn-primary`,
+  ispod Uredi · Preskoči · Obriši). Nazad u sesiji otvara sheet sa 4 opcije (Nastavi, Izađi a timer radi, Završi ranije, Odbaci crveno).
+- **Pretraga:** polje u `glass-sheet` panelu odozgo (kao meni), rezultati grupisani (Ekrani, Postavke, Predmeti, Izvori, Jedinice,
+  Dokumenti), ikona grupe lijevo; prazno polje: nedavne pretrage.
+- **Teme:** samo tokeni se mijenjaju po `[data-theme]` na `<html>` (brand, brand-strong, brand-accent, `glass-tint`, `btn-primary`,
+  magla, platno, `theme-color`). Lavanda (default, sadašnje boje), Grafit (topla siva, akcent #4A4A55), Pijesak (bež, akcent #8A6A45),
+  Kadulja (zelena, akcent #4F7A62), Okean (plava, akcent #3F6590); tačne vrijednosti se biraju u mockupu „Izgled“ uz kontrast ≥ 4.5:1.
+  Boje predmeta ostaju iste u svim temama.
+- Mockupi za Pretragu, Izgled (teme), sheet „Započeti sesiju sada?“, Podsjetnike i pregled plana i programa rade se na početku
+  etape kojoj pripadaju (10b / 10c), u istom stilu kao postojeći `.dc.html`.
