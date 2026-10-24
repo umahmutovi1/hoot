@@ -271,7 +271,7 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, teme i geste“, „Pregled“ (vodeći princip: manje odluka), design README „Odluke nakon v0.10.0“. Mockupi za Pretragu i Izgled (teme) prvo.
 
 - [ ] AI dugme samo ikona: bez labela i podvlake; isključeno `bg-white/30` + ikona `brand-accent`, uključeno `glass-tint` + bijela ikona; `aria-label` „AI asistent“
-- [ ] Sticky gornji red (`TopBar` u `AppShell`): `sticky top-0` + safe-area, gradijent boje platna → providno, bez `backdrop-filter`
+- [ ] Sticky gornji red (`TopBar` u `AppShell`): `sticky top-0` + safe-area, sadržaj ispod se zamuti (`backdrop-filter` blur, maska za meku donju ivicu), fallback platno 0.92
 - [ ] Meni: naziv sekcije je link na glavnu stranicu (Plan, Predmeti, Napredak, Postavke), chevron je zasebno dugme 44 px; animirano otvaranje podstranica
 - [ ] Sheetovi: `BottomSheet` na shadcn Drawer (`vaul`), povlačenje nadolje zatvara, kriva `cubic-bezier(0.32, 0.72, 0, 1)` ~400 ms, `prefers-reduced-motion` → fade
 - [ ] Exam kartice na Danas po mockupu: datum → ime → % → traka; dani do ispita desno u redu datuma; % i traka uvijek (bez izvora „—“), jednaka visina; traka 3 px radijus, track 0.65
