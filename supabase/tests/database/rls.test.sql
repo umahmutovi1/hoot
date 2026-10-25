@@ -76,6 +76,7 @@ begin
   insert into documents (id, user_id, kind, title) values (doc, a, 'other', 'Bilješke');
   insert into owl_conversations (id, user_id) values (conv, a);
   insert into ai_runs (user_id, task, provider, model, ok) values (a, 'quiz', 'test', 'test', true);
+  insert into academic_years (user_id, label, year_of_study, starts_on, ends_on) values (a, '2026/27', 2, current_date, current_date + 365);
 end $$;
 
 select ok(

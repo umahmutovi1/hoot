@@ -743,6 +743,7 @@ export function useSaveBlock() {
         ...list.filter((b) => b.id !== draft.id),
         {
           ...row,
+          skip_requested_at: previous?.skip_requested_at ?? null,
           user_id: userId!,
           created_at: previous?.created_at ?? now,
           updated_at: now,

@@ -146,6 +146,8 @@ function optimisticSubject(
     ...meta,
     archived: false,
     points_total: 100,
+    academic_year_id: null,
+    semester_no: null,
     grade_scale: null,
     custom_scale: false,
     target_grade: null,
@@ -201,6 +203,8 @@ function optimisticAssessment(
     pass_min_pct: row.pass_min_pct ?? null,
     entry_min_points: row.entry_min_points ?? null,
     retake_of: row.retake_of ?? null,
+    eve_reserved:
+      row.eve_reserved !== undefined ? row.eve_reserved : (existing?.eve_reserved ?? null),
   }
 }
 
@@ -421,6 +425,30 @@ export function useSaveExamResult() {
         list.map((s) => ({
           ...s,
           assessments: s.assessments.map((a) => (a.id === id ? { ...a, ...patch } : a)),
+        })),
+      ),
+    onError: (_error, _vars, rollback) => rollback?.(),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: subjectsKey(userId) }),
+  })
+}
+
+/** "Dan pred ispit": true = reserved, false = declined (no card again), null = not asked. */
+export function useSetEveReserved() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, value }: { id: string; value: boolean | null }) => {
+      const { error } = await supabase
+        .from('assessments')
+        .update({ eve_reserved: value })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onMutate: ({ id, value }) =>
+      patchSubjects(queryClient, userId, (list) =>
+        list.map((s) => ({
+          ...s,
+          assessments: s.assessments.map((a) => (a.id === id ? { ...a, eve_reserved: value } : a)),
         })),
       ),
     onError: (_error, _vars, rollback) => rollback?.(),

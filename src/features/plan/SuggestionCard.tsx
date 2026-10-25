@@ -5,7 +5,8 @@ import { format } from 'date-fns'
 import { CalendarIcon, ChartIcon, FlagIcon, SparkleIcon, WarningIcon } from '@/components/icons'
 import { formatDuration } from '@/features/sources/format'
 import { useLocale } from '@/features/settings/useLocale'
-import { useSubjects } from '@/features/subjects/api'
+import { useSetEveReserved, useSubjects } from '@/features/subjects/api'
+import { useToast } from '@/components/toast-store'
 import { asPriority } from '@/features/subjects/model'
 import { addDays, toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
@@ -71,6 +72,9 @@ function Card({
   )
 }
 
+/** "utorak, 27. okt" at the start of a sentence. */
+const upperFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
 const primary =
   'btn-primary flex min-h-10 items-center rounded-full px-4 py-2 text-sm font-semibold'
 const secondary =
@@ -88,6 +92,9 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
   const patch = usePatchSubject()
   const caps = useRaiseCaps()
   const startCheck = useStartCheck()
+  const setEve = useSetEveReserved()
+  const toast = useToast((s) => s.show)
+  const [raiseCap, setRaiseCap] = useState(true)
   const [replanOpen, setReplanOpen] = useState(false)
   const [done, setDone] = useState<string | null>(null)
   const today = model?.built.today ?? ''
@@ -217,6 +224,81 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
           {laterButton}
         </Card>
       )
+    case 'exam_eve': {
+      const day = format(toDisplayDate(suggestion.day), 'EEEE, d. MMM', {
+        locale: dateFnsLocales[locale],
+      })
+      const reserve = () => {
+        const previous = model?.built.state.days.find((d) => d.date === suggestion.day)?.cap
+        const raise = raiseCap && suggestion.capMin !== null
+        setEve.mutate({ id: suggestion.goalId, value: true })
+        if (raise)
+          caps.mutate({
+            from: suggestion.day,
+            until: suggestion.day,
+            cap: (c) => Math.max(c, suggestion.capMin!),
+          })
+        toast(
+          t('suggestions.eve.done', { day: upperFirst(day), subject: name(suggestion.subjectId) }),
+          {
+            label: t('today.cant.undo'),
+            run: () => {
+              setEve.mutate({ id: suggestion.goalId, value: null })
+              if (raise && previous !== undefined)
+                caps.mutate({ from: suggestion.day, until: suggestion.day, cap: () => previous })
+            },
+          },
+        )
+      }
+      return (
+        <Card
+          icon={<CalendarIcon size={18} />}
+          title={
+            suggestion.takenBy
+              ? t('suggestions.eve.takenTitle', {
+                  taken: upperFirst(
+                    format(toDisplayDate(suggestion.takenBy.day), 'EEEE, d. MMM', {
+                      locale: dateFnsLocales[locale],
+                    }),
+                  ),
+                  other: name(suggestion.takenBy.subjectId),
+                  day,
+                  subject: name(suggestion.subjectId),
+                })
+              : t('suggestions.eve.title', { day, subject: name(suggestion.subjectId) })
+          }
+          sub={t(suggestion.takenBy ? 'suggestions.eve.takenSub' : 'suggestions.eve.sub')}
+        >
+          {suggestion.capMin !== null && (
+            <label className="flex min-h-11 w-full items-center gap-3 rounded-[16px] bg-white/50 px-3.5 py-2 text-sm">
+              <input
+                type="checkbox"
+                checked={raiseCap}
+                onChange={(e) => setRaiseCap(e.target.checked)}
+                className="size-5 accent-brand"
+              />
+              <span className="flex-1">
+                {t('suggestions.eve.raiseCap', { time: formatDuration(t, suggestion.capMin) })}
+              </span>
+            </label>
+          )}
+          <button type="button" className={cn(primary, 'flex-1 justify-center')} onClick={reserve}>
+            {t(suggestion.takenBy ? 'suggestions.eve.reserveDay' : 'suggestions.eve.reserve', {
+              day: format(toDisplayDate(suggestion.day), 'EEEE', {
+                locale: dateFnsLocales[locale],
+              }),
+            })}
+          </button>
+          <button
+            type="button"
+            className={secondary}
+            onClick={() => setEve.mutate({ id: suggestion.goalId, value: false })}
+          >
+            {t('suggestions.eve.no')}
+          </button>
+        </Card>
+      )
+    }
     case 'check': {
       // One subject per check session: the one with the most checks waiting.
       const subjectOf = new Map(model?.built.state.units.map((u) => [u.id, u.subjectId]) ?? [])

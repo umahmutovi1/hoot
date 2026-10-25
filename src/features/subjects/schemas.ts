@@ -58,6 +58,8 @@ export const assessmentFormSchema = z
     entryMinPoints: points.nullable(),
     /** Makeups: the exam they repeat. */
     retakeOf: z.string().nullable(),
+    /** "Dan prije samo za ovaj predmet"; absent = leave the saved answer as it is. */
+    eveReserved: z.boolean().nullable().optional(),
   })
   .superRefine((a, ctx) => {
     shareWithinGrade(a, ctx)

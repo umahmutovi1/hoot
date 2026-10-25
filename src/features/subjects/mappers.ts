@@ -46,6 +46,7 @@ export function toAssessmentRow(
     pass_min_pct: form.passMinPct,
     entry_min_points: form.entryMinPoints,
     retake_of: form.kind === 'makeup' ? form.retakeOf : null,
+    ...(form.eveReserved !== undefined ? { eve_reserved: form.eveReserved } : {}),
   }
 }
 
@@ -82,6 +83,7 @@ export function assessmentToForm(a: Assessment): AssessmentForm {
     passMinPct: a.pass_min_pct,
     entryMinPoints: a.entry_min_points,
     retakeOf: a.retake_of,
+    eveReserved: a.eve_reserved,
   }
 }
 
