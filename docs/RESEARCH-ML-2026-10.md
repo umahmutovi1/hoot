@@ -13,7 +13,12 @@
 7. **Podaci: tri sloja.** Javni Anki dataset za FSRS, simulator studenta koji pokreće pravi `plan()` za poređenje politika, i hijerarhijski prior populacije pa lični posterior. Novi korisnik odmah dobija razumne procjene.
 8. **Python trenira, TS izvršava.** Modeli su linearni i konjugatni, pa izlaz je mali JSON (koeficijenti, hiperparametri) u `src/lib/`. Nema ONNX-a, nema servera, sve radi offline i ulazi u `input_hash`.
 9. **Fine-tune LLM-a se ne isplati.** Scheduling ga ne treba, a za `parse-document` je skupo i van obima.
-10. **Pročitani radovi iz poruke ne nude metodu.** IJRASET rad poziva Gemini da napravi plan, bez algoritma, podataka i evaluacije; Hoot je već ispred. Awesome-lista samo potvrđuje smjer (predikcija trajanja, energija po dobu dana, adaptivni replan).
+10. **Radovi iz poruke daju ideje, ali ne metodu.**
+    - IJRASET rad poziva Gemini da napravi plan.
+    - Lingshetti 2025 predlaže Q-learning sa nagradom „dobitak − zamor“, bez stanja, podataka i koda.
+    - Chauhan 2025 je pregled za građevinske projekte sa nedosljednim tabelama.
+    - Awesome-lista samo potvrđuje smjer.
+    - Reddit tema je najkorisnija: korisnici traže lanac dokument → raspored → replan, kakav Hoot već ima, i da app „ne izmišlja njihove brojeve“, što ulazi u model trajanja kao prior.
 
 ---
 
@@ -22,10 +27,20 @@
 | Izvor | Šta je | Upotrebljivo |
 | --- | --- | --- |
 | [IJRASET 2026, „AI Powered Smart Study Planner“](https://www.ijraset.com/best-journal/ai-powered-smart-study-planner-309) | React + Django + Gemini API koji generiše plan i kvizove | Ne. Nema algoritma, dataseta ni evaluacije; „Results“ su screenshotovi. Potvrđuje samo da je LLM kao planer uobičajen, i zato je deterministički `plan()` diferencijacija |
-| [ResearchGate 391661197](https://www.researchgate.net/publication/391661197_AI-Powered_Smart_Study_Planner_Enhancing_Personalized_Learning_Through_Intelligent_Scheduling) | AI study planner | Nije pročitano (403). Ubaciti ako PDF stigne |
-| [ResearchGate 392703149, „Adaptive Scheduling“](https://www.researchgate.net/publication/392703149_ADAPTIVE_SCHEDULING_APPLYING_AI_AND_MACHINE_LEARNING_TO_OPTIMIZE_PROJECT_TIMELINES_AND_RESOURCE) | ML za projektne rokove i resurse | Nije pročitano (403). Ubaciti ako PDF stigne |
+| [Lingshetti i dr. 2025, IJSRSET 12(3)](https://www.researchgate.net/publication/391661197_AI-Powered_Smart_Study_Planner_Enhancing_Personalized_Learning_Through_Intelligent_Scheduling) | Q-learning scheduler sa nagradom `R(t) = α·P(t) − β·C(t) + γ·M(t)` (dobitak znanja, zamor, motivacija); decision tree / SVM za „tip učenika“, Bayesian Knowledge Tracing, collaborative filtering; 30 studenata, 4 sedmice, +24 % prema +8,9 % u kontrolnoj grupi | Ideja da. Oblik nagrade (dobitak − trošak zamora) je isti kao naš kriterij `ΔR(dan ispita) × bodovi` po minuti (5.3), a zamor već pokrivaju predlošci sesije. Metoda ne: Q-learning nema definisano stanje ni akcije, nema podataka ni koda, a 30 korisnika kroz 4 sedmice je premalo za RL. Rezultat nije ponovljiv (nema randomizacije ni veličine efekta). BKT je zamijenjen FSRS-om, koji je bolje izmjeren (srs-benchmark) |
+| [Chauhan 2025, IJETMR 12(5)](https://www.researchgate.net/publication/392703149_ADAPTIVE_SCHEDULING_APPLYING_AI_AND_MACHINE_LEARNING_TO_OPTIMIZE_PROJECT_TIMELINES_AND_RESOURCE) | Pregled ML-a u upravljanju građevinskim projektima: stabla odlučivanja i neuronske mreže za trajanje zadataka; tabele za 5 projekata (−10 % trajanja, +20 % „tačnosti“ procjene) | Samo potvrda smjera. Metodologija spominje 10 pa 12 projekata, a tabele 5; „tačnost“ nije definisana; dio referenci se ne može naći. Korisno je samo podsjećanje na PERT (vjerovatnosna trajanja), što podržava P50/P80 iz 5.1 |
 | [awesome-time-tracking: AI predictive scheduling](https://github.com/ever-works/awesome-time-tracking/blob/develop/details/ai-predictive-scheduling-algorithms.md) | Pregled: predikcija trajanja, energija po dobu dana, optimizacija kalendara, adaptivni replan; Motion, Reclaim, SkedPal | Smjer da, model ne. Bez arhitektura, featura i referenci |
-| [Reddit r/ProductivityApps](https://www.reddit.com/r/ProductivityApps/comments/1vbwi6a/is_there_an_ai_calendar_that_can_turn_a_study/) | „AI kalendar koji pretvara plan učenja u raspored“ | Nije pročitano (blokirano). Konkurencija je pokrivena u RESEARCH-2026-10 sekciji 1 |
+| [Reddit r/ProductivityApps](https://www.reddit.com/r/ProductivityApps/comments/1vbwi6a/is_there_an_ai_calendar_that_can_turn_a_study/) | Studentica za board ispit traži app koji 15 str. plana (moduli u „danima“) pretvori u raspored | Da, vidi 1.1 |
+
+### 1.1 Šta Reddit tema kaže o potrebama
+
+Lista želja iz posta: (1) uvoz dokumenta „bez reinterpretacije mojih brojeva“, (2) vlastita dostupnost umjesto 9–17, (3) automatski replan kad kasni, (4) vremenski budžet po zadatku unutar modula, da se ne zaglavi, (5) Google Calendar sync, (6) boje po projektu. Odgovori su skoro jednoglasni: nijedan alat ne radi cijeli lanac. Savjetuju da se razdvoje ekstrakcija (LLM → tabela) i scheduling (Motion, Reclaim, TurboHog, Kairos, Increment), a da konverziju „dan → sati“ korisnik uradi sam množiteljem.
+
+Šta to znači za Hoot:
+
+- **Hoot pokriva tačke 1–4 i 6** u jednom lancu (uvoz s pregledom, dostupnost, replan, minute po jedinici, boje predmeta). Tačka 5 je ICS izvoz u Etapi 12, a upis u Google Calendar je pod „Kasnije“. To je diferencijacija koju vrijedi pokazati u portfoliju.
+- **„Ne izmišljaj moje brojeve“ je ML zahtjev.** Kad dokument nosi trajanja („modul 2 dana“), to je najjači prior za taj izvor. U modelu 5.1 korisnikov broj ulazi kao prior sa vlastitom varijansom, koriguje se ličnim planning-fallacy faktorom i nikad se ne prepisuje (`assigned_by = 'user'`). „Koliko sati je jedan dan“ je upravo `b_korisnik`: naučen, a ne pitanje u postavkama.
+- **„Budžet po zadatku unutar modula“** je raspodjela budžeta modula na jedinice po težini i obimu. To `estimates` već radi za stranice; ostaje da uvoz zna za trajanje na nivou modula. Prijedlog za `parse-document` šemu, van ove etape.
 
 ---
 
@@ -92,6 +107,7 @@ b_korisnik ~ N(0, τ_k²) · b_izvor ~ N(0, τ_i²) · ε ~ N(0, σ²)
 - **Zašto log:** trajanja su pozitivna i desno nakrivljena. Ljudi sistematski potcjenjuju duže zadatke ([planning fallacy](https://en.wikipedia.org/wiki/Planning_fallacy)), pa greške rastu multiplikativno.
 - **Veza sa sadašnjim kodom:** posterior srednje vrijednosti efekta izvora je tačno `k/(k + σ²/τ_i²) · izmjereno + …`. Konstanta 5 u `k/(k+5)` postaje omjer `σ²/τ_i²` koji se fituje (marginalni likelihood). Isto važi za `j/(j+2)` (nivo korisnika) i `n/(n+3)` (težina).
 - **Izlaz:** posterior prediktivna raspodjela daje P50 i P80. Plan koristi P50, a za prioritet 4–5 P75–P80. To je rezerva svjesna nesigurnosti: kad izvor ima 20 mjerenja, rezerva se smanji sama.
+- **Korisnikov broj je prior, ne zamjena:** kad korisnik ili uvezeni dokument da trajanje, ono ulazi kao prior izvora sa vlastitom varijansom, uz lični faktor optimizma. Mjerenja ga postepeno preuzimaju, a sam broj ostaje sačuvan (`assigned_by = 'user'`), kao u 1.1.
 - **Online u TS-u:** Normal-Normal konjugat, update u zatvorenom obliku po sesiji. Python samo fituje `μ`, `β`, `τ`, `σ`.
 - **Evaluacija:** vremenski backtest (fit do dana t, predikcija poslije), MAE na log-minutama, pokrivenost P80 intervala (cilj ~80 %), poređenje sa sadašnjim blendom.
 
@@ -150,7 +166,7 @@ P(done) = σ(β₀ + β_dio_dana + β_vikend + β_kind + β_demand·demand + β_
 
 ## Otvorena pitanja
 
-- ResearchGate radovi 391661197 i 392703149 i Reddit tema nisu pročitani (403 / blokirano). Ako PDF-ovi stignu, dopuniti sekciju 1.
+- Trajanja na nivou modula iz uvezenog dokumenta (1.1): proširiti šemu `parse-document` i koristiti ih kao prior. Odluka van Etape 11a.
 - COOP/COEP za FSRS optimizer u browseru: odlučiti nakon spike-a (5.3).
 
 ## Izvori
@@ -159,4 +175,4 @@ P(done) = σ(β₀ + β_dio_dana + β_vikend + β_kind + β_demand·demand + β_
 - Bayes i personalizacija: [partial pooling tutorial](https://www.huber.embl.de/users/kaspar/teaching/bayes-r/tutorial-partial-pooling.html) · [Amazon, empirical Bayes za cold start](https://cdn.amazon.science/b5/2f/a9d9581d4f8eab473a4ab4a8ad35/addressing-cold-start-in-product-search-via-empirical-bayes.pdf) · [IntelligentPooling](https://arxiv.org/pdf/2008.01571) · [Thompson sampling, Drink Less](https://arxiv.org/abs/2311.14359v1)
 - Procjena vremena i ponašanje: [Planning fallacy](https://en.wikipedia.org/wiki/Planning_fallacy) · [Hawkes procesi za prokrastinaciju studenata](https://arxiv.org/pdf/2102.00089) · [Procrastination modeling, UW](https://digital.lib.washington.edu/researchworks/items/d6010a9b-56d5-4739-8712-f5809f5f3f6e)
 - Raspoređivanje: [Horn 1974, Some simple scheduling algorithms](https://ideas.repec.org/a/wly/navlog/v21y1974i1p177-185.html) · [Shioura, Strusevich, Shakhlevich 2024](https://www.citedrive.com/en/discovery/generalizing-horns-conditions-for-preemptive-scheduling-on-identical-parallel-machines-via-network-flow-techniques) · [highs-js (HiGHS u WASM-u)](https://github.com/coder0xff/highs-js) · [Making the most of your day: online learning for time allocation](https://arxiv.org/pdf/2102.08087)
-- Iz zahtjeva: [IJRASET 2026](https://www.ijraset.com/best-journal/ai-powered-smart-study-planner-309) · [awesome-time-tracking](https://github.com/ever-works/awesome-time-tracking/blob/develop/details/ai-predictive-scheduling-algorithms.md)
+- Iz zahtjeva: [IJRASET 2026](https://www.ijraset.com/best-journal/ai-powered-smart-study-planner-309) · [Lingshetti i dr. 2025, doi 10.32628/IJSRSET2512320](https://doi.org/10.32628/IJSRSET2512320) · [Chauhan 2025, doi 10.29121/ijetmr.v12.i5.2025.1631](https://doi.org/10.29121/ijetmr.v12.i5.2025.1631) · [Reddit r/ProductivityApps](https://www.reddit.com/r/ProductivityApps/comments/1vbwi6a/is_there_an_ai_calendar_that_can_turn_a_study/) · [awesome-time-tracking](https://github.com/ever-works/awesome-time-tracking/blob/develop/details/ai-predictive-scheduling-algorithms.md)
