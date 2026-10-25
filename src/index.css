@@ -342,6 +342,9 @@
 /* Sheets (vaul): in on the iOS curve in ~400 ms, out in ~250 ms; the scrim fades with them and
    follows the drag. `html` outranks vaul's injected styles. Reduced motion: a 150 ms fade only. */
 html [data-vaul-drawer] {
+  /* vaul sets `touch-action: none`, which stops a long sheet from scrolling on touch screens;
+     only the handle drags (handleOnly), so the content may pan. */
+  touch-action: pan-y;
   animation-duration: 0.4s;
   transition-duration: 0.4s;
   user-select: auto;

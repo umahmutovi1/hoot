@@ -1,3 +1,4 @@
+import { useActualTimes } from './useActualTimes'
 import { useTranslation } from 'react-i18next'
 import { useDayBoundary } from '@/features/settings/profile'
 import { useSubjects } from '@/features/subjects/api'
@@ -20,6 +21,8 @@ export interface DayBlockView {
   manual: boolean
   /** A manual block that was an AI block ("Vrati predloženo"). */
   edited: boolean
+  /** A done block: how long its session really took (its `startMin` is the real start). */
+  actualMinutes: number | null
 }
 
 /** The plan blocks of a day as the calendar, Satnica and the day list show them. */
@@ -31,6 +34,7 @@ export function useDayBlocks() {
   const fixedTimes = usePlanStore((s) => s.model?.result.fixedTimes)
   const { data: subjects = [] } = useSubjects()
   const goalTitle = useGoalTitle()
+  const actual = useActualTimes()
   const statusText = (b: PlanBlockRow) =>
     b.status === 'done'
       ? t('planBlocks.done')
@@ -46,9 +50,11 @@ export function useDayBlocks() {
         .filter((b) => b.status !== 'skipped')
         .map((b) => {
           const subject = subjects.find((s) => s.id === b.subject_id)
+          const real = b.status === 'done' ? actual.get(b.id) : undefined
           return {
             block: b,
-            startMin: b.start_min ?? fixedTimes?.[b.id] ?? null,
+            startMin: real?.startMin ?? b.start_min ?? fixedTimes?.[b.id] ?? null,
+            actualMinutes: real?.minutes ?? null,
             title: `${(subject?.name ?? '').split(' ')[0]} — ${blockTitle(t, b, units, goalTitle(b.deadline_id ?? ''))}`,
             sub: [
               blockSub(t, b, units),
@@ -77,7 +83,7 @@ export function toTimeline(blocks: DayBlockView[]): DayBlock[] {
     .map((b) => ({
       id: b.block.id,
       startMin: b.startMin!,
-      endMin: b.startMin! + b.block.planned_minutes,
+      endMin: b.startMin! + (b.actualMinutes ?? b.block.planned_minutes),
       title: b.title,
       sub: b.sub,
       color: b.color,

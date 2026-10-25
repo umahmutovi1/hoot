@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils'
 import { useSession, useSessionUnits, useSessionWriter, type SessionUnitRow } from './api'
 import {
   coveredUnits,
+  readAfter,
   defaultLevel,
   endLevels,
   planEnd,
@@ -345,7 +346,10 @@ function EndForm({
         <h2 className="mt-1 text-lg font-semibold">{t('session.end.difficulty')}</h2>
       )}
       {cards.map(({ unit }) => {
-        const level = levels[unit.id] ?? defaultLevel(unit, covered.get(unit.id))
+        // Reading over several sessions adds up; a chapter not finished yet shows "Djelimično".
+        const progress = { ...unit, readAmount: Number(unit.read_amount ?? 0) }
+        const level = levels[unit.id] ?? defaultLevel(progress, covered.get(unit.id))
+        const readNow = readAfter(progress, covered.get(unit.id))
         const options = endLevels(unit.level)
         return (
           <div key={unit.id} className="flex flex-col gap-3 rounded-[24px] glass p-4">
@@ -375,7 +379,7 @@ function EndForm({
                   STATUS_CHIP[level],
                 )}
               >
-                {statusLabel(t, unit.kind, level)}
+                {statusLabel(t, unit.kind, level, { amount: unit.amount, read_amount: readNow })}
               </button>
             </div>
             <div

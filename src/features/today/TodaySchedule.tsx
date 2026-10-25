@@ -17,6 +17,7 @@ import { reasonOf } from '@/features/plan/save'
 import type { PlanBlockRow } from '@/features/plan/state'
 import { useActiveSession, useSessions } from '@/features/session/api'
 import { useAgenda } from '@/features/plan/agenda'
+import { useActualTimes } from '@/features/plan/useActualTimes'
 import { useNavigate } from 'react-router-dom'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useSubjects } from '@/features/subjects/api'
@@ -48,6 +49,10 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
   const agenda = useAgenda()
   const navigate = useNavigate()
   const { data: sessions = [] } = useSessions()
+  const actual = useActualTimes()
+  // A done block sits at the time it was really studied.
+  const timeOf = (b: PlanBlockRow) =>
+    (b.status === 'done' ? actual.get(b.id)?.startMin : undefined) ?? b.start_min
   const { data: active } = useActiveSession()
   const [picked, setPicked] = useState<PlanBlockRow | null>(null)
   const remove = useDeleteBlock()
@@ -72,7 +77,7 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
   const rows: Row[] = [
     ...plan.todayBlocks.map((block): Row => ({
       kind: 'block',
-      at: block.start_min ?? 9999,
+      at: timeOf(block) ?? 9999,
       block,
     })),
     ...classesOn(plan.today, dayInput.entries, dayInput.periods)
@@ -144,7 +149,7 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
                   current ? 'font-bold text-brand' : 'font-medium text-ink-muted',
                 )}
               >
-                {b.start_min === null ? '—' : formatClock(b.start_min)}
+                {timeOf(b) === null ? '—' : formatClock(timeOf(b)!)}
               </span>
               {done ? (
                 <span className="flex size-[22px] shrink-0 items-center justify-center rounded-full bg-success text-white">
