@@ -114,3 +114,17 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   sve ostalo ostaje; vrijednosti ostalih tema su u `Izgled.dc.html`. (2) Pretraga ima i grupu „Akcije“ (prva; otvara sheet: Više vremena
   ovaj dan, Imam još vremena) uz Ekrane, Postavke, Predmete, Ispite, Izvore, Jedinice i Dokumente. (3) Na AI bloku start sheet ima
   „Izbaci iz plana“, koje otvara postojeće pitanje „Obriši blok?“ iz Plana (kao u PRD-u).
+
+## Etapa 10c (oktobar 2026)
+PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s interneta), „Materijali“, „Dan pred ispit“, „Podsjetnici i notifikacije“.
+Statični mockupi (bez `support.js`), više stanja na jednoj tabli kao `StartSesije.dc.html`:
+- `AkademskaGodina.dc.html`: Predmeti po semestru (trenutni otvoren, ostali sklopljeni ispod „Ranije“, „prenesen“), kartica „Nova akademska
+  godina“, semestar na Novi predmet (trenutni izabran sam), onboarding 1b „Gdje studiraš?“ i nalaz s interneta u koraku „Šta već imaš?“,
+  Postavke → Fakultet i godina (podaci, akademske godine, „Potraži na internetu“).
+- `PlanIProgram.dc.html`: „Nađeno na internetu“ (link, oznaka godine, „provjeri godinu“), prazan nalaz → Dodaj PDF, pregled plana i programa
+  po predmetu (literatura → izvori, teme i tempo, bodovanje → ispiti), novi predmet iz plana cijele godine, kalendar s interneta.
+- `Materijali.dc.html`: Novi izvor „Odakle je sadržaj?“ (PDF, Google Drive, slika, ukucaj), PDF sa outline-om bez AI-ja, pregled jedinica,
+  PDF bez outline-a (AI samo za stranice sadržaja), Drive folder → prezentacije, izvor sa „Otvori u Drive-u“.
+- `DanPredIspit.dc.html`: kartica 3 dana prije (uz povećanje maksimuma), dva ispita zaredom, toast, prekidač u ExamSheetu, rezervisan dan u Plan → Dan.
+- `Podsjetnici.dc.html`: Postavke → Notifikacije (pomaci, bez „Prvi blok dana“), onboarding „Pauze i podsjetnici“, notifikacije na Androidu
+  (Započni / Preskoči, „Kasniš 15 min“, potvrda preskoka) i iPhoneu (bez dugmadi).
