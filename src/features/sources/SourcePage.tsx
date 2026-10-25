@@ -1,3 +1,4 @@
+import { DocIcon } from '@/components/icons'
 import { useSpeeds } from '@/features/plan/api'
 import { useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
@@ -71,6 +72,34 @@ function SourceDetail({
         </span>
         <h1 className="text-[26px] leading-[1.15] font-bold">{source.title}</h1>
       </div>
+
+      {source.file_name && (
+        // Where the units came from (Stage 10c): the PDF's name, and the Drive link when picked there.
+        <div className="flex items-center gap-3 rounded-[20px] glass p-3">
+          <span
+            aria-hidden="true"
+            className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
+          >
+            <DocIcon size={18} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="truncate text-[15px] font-semibold">{source.file_name}</span>
+            <span className="text-xs text-ink-muted">
+              {t(source.drive_file_id ? 'sources.pdf.originDrive' : 'sources.pdf.originDevice')}
+            </span>
+          </span>
+          {source.external_url && (
+            <a
+              href={source.external_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-11 shrink-0 items-center px-1 text-[13px] font-semibold text-brand"
+            >
+              {t('sources.pdf.openDrive')}
+            </a>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col gap-3 rounded-card glass p-4">
         <LevelBar

@@ -308,8 +308,9 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 - [x] Onboarding korak 1b „Fakultet i godina“ (preskočiv) i podsjetnici u koraku 6
 - [ ] `find-academic-info`: web search kroz wrapper (Gemini grounding / Anthropic web search), lista dokumenata → `parse-document` pregled sa linkom na izvor
 - [ ] Plan i program (`syllabus`) u `parse-document`: literatura → izvori, sedmične teme → teme i tempo predavanja, bodovanje → ispiti i bodovi; pregled po predmetu
-- [ ] PDF s uređaja: outline + broj stranica preko `pdf.js` → pregled kao `parse-toc`; AI samo za stranice sadržaja kad nema outline-a
-- [ ] Google Drive Picker (`drive.file`): fajl ili folder → isti tok, izvor pamti `drive_file_id` i link; SETUP.md
+- [x] PDF s uređaja: outline + broj stranica preko `pdf.js` → pregled kao `parse-toc`; AI samo za stranice sadržaja kad nema outline-a
+- [x] Google Drive Picker (`drive.file`): fajl ili folder → isti tok, izvor pamti `drive_file_id` i link; SETUP.md
+  - `src/lib/outline/pdf.ts` (outline → jedinice preko istog parsera kao `parse-toc`, pomak iz oznaka stranica, stranice sadržaja, fajl = jedinica), `pdfRead.ts` (pdf.js), `drive.ts` (GIS token + Picker, preuzimanje u browser). Odluka: u Pickeru se biraju PDF-ovi (više odjednom, folder se otvori i označe svi), jer `drive.file` za izabran folder ne daje pouzdano pristup fajlovima u njemu; više fajlova = jedan izvor, fajl = jedinica. Prezentacije: svaki PDF je jedna jedinica sa brojem slajdova. CSP dozvoljava samo Google prijavu, Picker i Drive API
 - [x] Dan pred ispit: kartica 3 dana prije, prekidač u ExamSheetu, `plan()` pravilo (samo taj predmet, ponavljanja drugih se pomjeraju, dva ispita zaredom → bliži), `input_hash` + testovi i property test (rezervisan dan nema blok drugog predmeta)
   - `src/lib/scheduler/eve.ts` (`reservedDays`, `eveCandidate`): zadnji dan sa slobodnim vremenom prije ispita, najviše 7 dana unazad; rezervisan dan ponavlja cijeli obim (i već ponovljeno), slabije jedinice prve; kartica „Dan pred ispit“ na Danas, prekidač u ExamSheetu, traka sa „Ukloni“ u Plan → Dan
 - [x] Podsjetnici prije svakog bloka (pomaci, preskok samo iza započetog bloka, tihi sati), „kasniš 15 min“, akcije Započni (deep link) i Preskoči (`push-action`, jednokratni token); zamjenjuje `first_block` 10 min

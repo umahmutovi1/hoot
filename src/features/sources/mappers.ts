@@ -16,6 +16,9 @@ export function toSourceRow(form: SourceForm): TablesInsert<'sources'> {
       form.measure === 'items' && form.minutesPerItem !== null
         ? form.minutesPerItem
         : baseMinPerUnit(form.kind, form.measure),
+    ...(form.fileName !== undefined ? { file_name: form.fileName } : {}),
+    ...(form.driveFileId !== undefined ? { drive_file_id: form.driveFileId } : {}),
+    ...(form.externalUrl !== undefined ? { external_url: form.externalUrl } : {}),
   }
 }
 

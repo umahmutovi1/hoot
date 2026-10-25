@@ -880,7 +880,9 @@
       "titlePlaceholder": "npr. Oppenheim — Signals & Systems",
       "mode": {
         "photo": "Slikaj sadržaj",
-        "text": "Ukucaj"
+        "text": "Ukucaj",
+        "pdf": "PDF s uređaja",
+        "drive": "Google Drive"
       },
       "outline": "Sadržaj",
       "placeholder": {
@@ -897,7 +899,14 @@
       },
       "review": "Pregledaj jedinice",
       "delete": "Obriši izvor",
-      "confirmDelete": "Sigurno? Brišu se i jedinice i bilješke. Tapni ponovo"
+      "confirmDelete": "Sigurno? Brišu se i jedinice i bilješke. Tapni ponovo",
+      "from": "Odakle je sadržaj?",
+      "modeSub": {
+        "pdf": "Poglavlja i broj stranica iz fajla · fajl ostaje kod tebe",
+        "drive": "Jedan ili više PDF-ova · izvor pamti link na Drive",
+        "photo": "Stranice sadržaja, najviše 4",
+        "text": "Jedno poglavlje po liniji"
+      }
     },
     "section": "Izvori",
     "add": "+ Izvor",
@@ -998,6 +1007,35 @@
       "rate": "Procijeni težinu AI-jem",
       "rating": "Procjenjujem…",
       "removeTopic": "Ukloni temu {{name}}"
+    },
+    "pdf": {
+      "pick": "Izaberi PDF",
+      "pickDrive": "Izaberi na Google Drive-u",
+      "reading": "Čitam PDF…",
+      "failed": "PDF nije pročitan. Probaj drugi fajl ili ukucaj sadržaj.",
+      "onDevice": "{{pages}} str. · čita se na uređaju",
+      "fromDrive": "{{pages}} str. · Google Drive",
+      "change": "Promijeni",
+      "severalName_one": "{{count}} PDF",
+      "severalName_few": "{{count}} PDF-a",
+      "severalName_other": "{{count}} PDF-ova",
+      "severalSub": "Google Drive · jedan izvor",
+      "perFile": "Svaki fajl je jedna jedinica (broj stranica ili slajdova iz fajla), redom po nazivu.",
+      "outlineFound": "Sadržaj je pročitan iz bookmarka u PDF-u ({{count}} stavki). Bez AI poziva.",
+      "pagesLabel": "Stranice knjige",
+      "asInPdf": "Kao u PDF-u",
+      "shift": "Pomak −{{n}}",
+      "shiftHint": "PDF ima {{n}} stranica prije „1“. Pomak daje brojeve iz knjige.",
+      "noOutline": "PDF nema sadržaj u bookmarkima. Asistent može pročitati samo stranice sadržaja, ne cijeli fajl.",
+      "tocPages": "Stranice sadržaja",
+      "tocFrom": "Od stranice",
+      "tocTo": "Do stranice",
+      "tocHint": "Nađene po riječi „Sadržaj“; ispravi ako treba. Šalje se samo tekst ovih stranica (najviše 8).",
+      "typeInstead": "Ukucaj sama",
+      "privacy": "Fajl se ne uploaduje; izvor pamti naziv fajla i broj stranica.",
+      "originDrive": "PDF · Google Drive",
+      "originDevice": "PDF s uređaja · fajl je kod tebe",
+      "openDrive": "Otvori u Drive-u"
     }
   },
   "time": {
