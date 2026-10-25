@@ -50,7 +50,8 @@ function ExamTile({ subject, at }: { subject: SubjectWithAssessments; at: string
     <Link
       to={`/subjects/${subject.id}`}
       // Square tile in the Danas.dc.html order: date and name on top, % and bar at the bottom.
-      className="glass flex aspect-square min-w-0 flex-1 flex-col justify-between rounded-card p-3.5"
+      // Always a third of the row, so one or two exams do not make a huge square.
+      className="glass flex aspect-square w-[calc((100%-20px)/3)] min-w-0 shrink-0 flex-col justify-between rounded-card p-3.5"
     >
       <span className="flex min-w-0 flex-col gap-1">
         <span className={cn('text-xs font-bold uppercase', palette.deepText)}>
