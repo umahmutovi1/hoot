@@ -16,6 +16,8 @@ export type AiTask =
   | 'parse_timetable'
   | 'recall_questions'
   | 'propose_answer'
+  | 'parse_syllabus'
+  | 'find_academic_info'
 
 export type LlmMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'application/pdf'
 
@@ -43,6 +45,18 @@ export interface LlmRequest<T> {
   files?: LlmFile[]
   schema: z.ZodType<T>
   maxTokens: number
+  /**
+   * Web search (find-academic-info, Stage 10c): Google Search grounding on Gemini, the web
+   * search tool on Anthropic. The JSON then comes as text (search results carry citations,
+   * which strict structured output does not allow) and is validated by the same schema.
+   */
+  webSearch?: { maxUses: number }
+}
+
+/** A page the web search actually returned (title may be just the domain). */
+export interface WebSource {
+  url: string
+  title: string | null
 }
 
 /** What a provider returns: the raw JSON (validated by the wrapper) and token usage. */
@@ -54,6 +68,8 @@ export interface LlmRawResult {
   model?: string
   /** Input tokens served from a prompt cache (explicit or implicit). */
   cachedTokens?: number
+  /** Pages the web search returned (only with `webSearch`). */
+  sources?: WebSource[]
 }
 
 export interface LlmProvider {
@@ -64,6 +80,8 @@ export interface LlmProvider {
 
 export interface LlmResult<T> {
   data: T
+  /** Pages the web search returned (only with `webSearch`). */
+  sources: WebSource[]
   provider: string
   model: string
   inputTokens: number
@@ -147,6 +165,7 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
       })
       return {
         data: parsed.data,
+        sources: raw.sources ?? [],
         provider: provider.name,
         model,
         inputTokens,
@@ -171,6 +190,28 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
     error: `${error.code}: ${error.message}`.slice(0, 1000),
   })
   throw error
+}
+
+/**
+ * The first JSON object in a model's text answer (with or without a ```json fence); null when
+ * there is none, so the wrapper counts it as invalid output and retries once.
+ */
+export function jsonFromText(text: string): unknown {
+  const fenced = /```(?:json)?\s*([\s\S]*?)```/i.exec(text)
+  const body = fenced ? fenced[1]! : text
+  const start = body.indexOf('{')
+  const end = body.lastIndexOf('}')
+  if (start < 0 || end <= start) return null
+  try {
+    return JSON.parse(body.slice(start, end + 1))
+  } catch {
+    return null
+  }
+}
+
+/** Instruction for a text answer that has to match the request's schema (web search calls). */
+export function jsonInstruction(schema: unknown): string {
+  return `Answer with only one JSON object that matches this JSON Schema, no other text:\n${JSON.stringify(schema)}`
 }
 
 function errorMessage(err: unknown): string {

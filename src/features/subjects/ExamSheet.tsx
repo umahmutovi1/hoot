@@ -11,7 +11,10 @@ import { dateRangeLabel } from '@/features/schedule/format'
 import { toPeriod } from '@/features/schedule/model'
 import { useDayBoundary, useGlobalScale } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
-import { localDay } from '@/lib/day'
+import { localDay, toDisplayDate } from '@/lib/day'
+import { eveCandidate } from '@/lib/scheduler'
+import { usePlanStore } from '@/features/plan/store'
+import { format } from 'date-fns'
 import { dateFnsLocales } from '@/lib/locale'
 import { examPeriodsFor, suggestExamPeriod, type Period } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
@@ -59,6 +62,9 @@ export function ExamSheet({ subjectId, exam, open, onOpenChange }: ExamSheetProp
     </BottomSheet>
   )
 }
+
+/** "uto, 27. okt" at the start of a sentence. */
+const upperFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 function ExamForm({
   subjectId,
@@ -112,6 +118,7 @@ function ExamForm({
     passMinPct,
     entryMinPoints,
     retakeOf,
+    eveReserved,
   ] = useWatch({
     control: form.control,
     name: [
@@ -127,8 +134,11 @@ function ExamForm({
       'passMinPct',
       'entryMinPoints',
       'retakeOf',
+      'eveReserved',
     ],
   })
+  const planState = usePlanStore((s) => s.model?.built.state)
+  const eveDay = exam && planState ? eveCandidate(planState, exam.id).day : null
   const subject = useSubject(subjectId).data
   const pointsTotal = subject ? gradeSubjectOf(subject, globalScale).pointsTotal : 100
   const others = (subject?.assessments ?? []).filter((a) => a.id !== form.getValues('id'))
@@ -468,6 +478,25 @@ function ExamForm({
             label={t('subjects.form.contingent')}
             onChange={(v) => form.setValue('contingent', v, set)}
           />
+          <div className="flex flex-col gap-1">
+            <Switch
+              checked={eveReserved === true}
+              label={t('exams.eve.label')}
+              onChange={(v) => form.setValue('eveReserved', v, set)}
+            />
+            <span className="text-xs leading-[1.4] text-ink-muted">
+              {eveDay
+                ? t('exams.eve.sub', {
+                    day: upperFirst(
+                      format(toDisplayDate(eveDay), 'EEE, d. MMM', {
+                        locale: dateFnsLocales[locale],
+                      }),
+                    ),
+                    subject: subject?.name ?? '',
+                  })
+                : t('exams.eve.subGeneric')}
+            </span>
+          </div>
         </>
       )}
 

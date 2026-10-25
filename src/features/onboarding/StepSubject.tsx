@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useAcademicTerm } from '@/features/academic/api'
 import { useAllSources } from '@/features/plan/api'
 import { createRoughSource } from '@/features/sources/api'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
@@ -29,6 +30,7 @@ export function StepSubject({ setSave }: StepProps) {
   const { locale } = useLocale()
   const boundary = useDayBoundary()
   const save = useSaveSubject()
+  const { defaultTerm } = useAcademicTerm()
   const existing = useSubjects().data ?? []
   const { data: sources = [] } = useAllSources()
   const roughTexts = useRoughTexts()
@@ -76,6 +78,7 @@ export function StepSubject({ setSave }: StepProps) {
             studyMode: 'regular',
             campaignStartOn: null,
             targetGrade: null,
+            ...defaultTerm,
             assessments: [],
           }
       if (examDate && form.assessments.length === 0) form.assessments = [assessment]
@@ -85,7 +88,7 @@ export function StepSubject({ setSave }: StepProps) {
       if (size && !hasMaterial)
         await createRoughSource({ subjectId: form.id, size, ...roughTexts(size) })
     })
-  }, [name, exam, date, usePeriod, size, period, existing, sources]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [name, exam, date, usePeriod, size, period, existing, sources, defaultTerm]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const field = 'h-12 rounded-input glass px-4 text-[15px] outline-none'
   return (

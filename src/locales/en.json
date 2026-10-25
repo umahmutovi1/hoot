@@ -67,7 +67,6 @@
     "todayInCalendar": "Today in the calendar",
     "next": {
       "label": "Next",
-      "freeTitle": "Free session",
       "freeSub": "Pick a subject and how much time you have",
       "start": "Start",
       "running": "Running",
@@ -117,7 +116,8 @@
       "noMaterialBody": "Add a source or a rough size of the material to a subject, and the plan spreads the studying until the exam.",
       "addMaterial": "Subjects",
       "tomorrow": "tomorrow",
-      "next": "Next block: {{when}} {{time}} · {{subject}}"
+      "next": "Next block: {{when}} {{time}} · {{subject}}",
+      "addSession": "Add session"
     },
     "more_one": "{{count}} more suggestion",
     "more_other": "{{count}} more suggestions",
@@ -148,7 +148,8 @@
       "toToday": "Moved to today at {{time}}",
       "toTomorrow": "No room today: first block tomorrow at {{time}}",
       "toLater": "Moved to the first free day at {{time}}",
-      "carried": "moved"
+      "carried": "moved",
+      "fromNotification": "Skipped from a notification: {{title}}"
     },
     "start": {
       "title": "Start a session now?",
@@ -215,6 +216,11 @@
       "done": "{{day}}: maximum is {{cap}}",
       "fullDay": "The maximum already equals the free time; add hours in Availability for more.",
       "button": "More time"
+    },
+    "eve": {
+      "band": "Only for {{subject}} · exam {{when}}",
+      "remove": "Remove",
+      "removed": "The day is no longer kept. The plan is updated."
     }
   },
   "subjects": {
@@ -797,6 +803,11 @@
       "2": "2 · What's on it",
       "next": "Next: what's on it",
       "back": "Back"
+    },
+    "eve": {
+      "label": "Day before only for this subject",
+      "sub": "{{day}}: only {{subject}}; everything else moves",
+      "subGeneric": "Last study day before the exam: only this subject; everything else moves"
     }
   },
   "deadlines": {
@@ -844,7 +855,9 @@
       "titlePlaceholder": "e.g. Oppenheim — Signals & Systems",
       "mode": {
         "photo": "Photograph contents",
-        "text": "Type"
+        "text": "Type",
+        "pdf": "PDF from this device",
+        "drive": "Google Drive"
       },
       "outline": "Contents",
       "placeholder": {
@@ -861,7 +874,14 @@
       },
       "review": "Review units",
       "delete": "Delete source",
-      "confirmDelete": "Sure? Units and notes are deleted too. Tap again"
+      "confirmDelete": "Sure? Units and notes are deleted too. Tap again",
+      "from": "Where is the content from?",
+      "modeSub": {
+        "pdf": "Chapters and pages from the file · the file stays with you",
+        "drive": "One or more PDFs · the source keeps the Drive link",
+        "photo": "Contents pages, up to 4",
+        "text": "One chapter per line"
+      }
     },
     "section": "Sources",
     "add": "+ Source",
@@ -956,6 +976,34 @@
       "rate": "Estimate difficulty with AI",
       "rating": "Estimating…",
       "removeTopic": "Remove topic {{name}}"
+    },
+    "pdf": {
+      "pick": "Choose a PDF",
+      "pickDrive": "Choose on Google Drive",
+      "reading": "Reading the PDF…",
+      "failed": "The PDF could not be read. Try another file or type the contents.",
+      "onDevice": "{{pages}} pages · read on this device",
+      "fromDrive": "{{pages}} pages · Google Drive",
+      "change": "Change",
+      "severalName_one": "{{count}} PDF",
+      "severalName_other": "{{count}} PDFs",
+      "severalSub": "Google Drive · one source",
+      "perFile": "Each file is one unit (pages or slides from the file), in name order.",
+      "outlineFound": "The contents come from the PDF's bookmarks ({{count}} items). No AI call.",
+      "pagesLabel": "Book pages",
+      "asInPdf": "As in the PDF",
+      "shift": "Shift −{{n}}",
+      "shiftHint": "The PDF has {{n}} pages before “1”. The shift gives the book's page numbers.",
+      "noOutline": "The PDF has no bookmarks. The assistant can read only the contents pages, not the whole file.",
+      "tocPages": "Contents pages",
+      "tocFrom": "From page",
+      "tocTo": "To page",
+      "tocHint": "Found by the word “Contents”; fix it if needed. Only the text of these pages is sent (at most 8).",
+      "typeInstead": "Type it instead",
+      "privacy": "The file is not uploaded; the source keeps its name and page count.",
+      "originDrive": "PDF · Google Drive",
+      "originDevice": "PDF from your device · the file stays with you",
+      "openDrive": "Open in Drive"
     }
   },
   "time": {
@@ -1024,7 +1072,10 @@
       },
       "subUnits": "Sub-units",
       "subUnitsHint": "Status is set on the sub-units; the chapter is computed from them.",
-      "aiAnswer": "AI suggestion · check it"
+      "aiAnswer": "AI suggestion · check it",
+      "yoursOnly": "your rating",
+      "defaultDifficulty": "default · tap to change",
+      "partialHint": "“Partly read” is set at the end of a session when you stop mid-chapter."
     },
     "topics": {
       "title": "Topics",
@@ -1444,7 +1495,8 @@
         "academic_calendar": "Academic calendar",
         "exam_schedule": "Exam schedule",
         "document": "Rules, syllabus, notice",
-        "timetable": "Class timetable"
+        "timetable": "Class timetable",
+        "syllabus": "Syllabus"
       },
       "textLabel": "Text",
       "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
@@ -1577,6 +1629,40 @@
       "contents": "Add contents or questions",
       "contentsFor": "Add contents · {{subject}}",
       "giveDocument": "Give a document"
+    },
+    "syllabus": {
+      "books_one": "{{count}} book",
+      "books_other": "{{count}} books",
+      "topics_one": "{{count}} topic",
+      "topics_other": "{{count}} topics",
+      "exams_one": "{{count}} exam",
+      "exams_other": "{{count}} exams",
+      "newSubject": "not one of your subjects · offered as new",
+      "section": "Syllabus",
+      "addTitle": "Not one of your subjects — add it?",
+      "addSub": "It gets the current semester; exams and points from the syllabus.",
+      "add": "Add subject",
+      "match": "Match with…",
+      "skip": "Skip",
+      "literature": "Literature → sources",
+      "required": "required · rough size until you import the contents",
+      "extra": "extra · not in the plan",
+      "have": "you have it",
+      "topicsTitle": "Topics",
+      "week": "week {{n}}",
+      "grading": "Grading → exams",
+      "points": "{{points}} pts",
+      "pass": "pass {{points}} pts",
+      "was": "was {{points}} pts",
+      "manual": "manual",
+      "manualSub": "your change stays ({{points}} pts)",
+      "onlyTotal": "only in the point total",
+      "newExamSub": "date from the academic calendar (tentative)",
+      "total": "Total points: {{points}}",
+      "totalWas": "was {{points}}",
+      "hint": "Subjects are matched by name and new ones are offered. Your own changes are never overwritten.",
+      "fromWeb": "From the web: {{host}}",
+      "checkYear": "Check it is for {{year}}: the document comes from the web, not from you."
     }
   },
   "offline": {
@@ -1708,10 +1794,12 @@
       "reserve": "The plan keeps a reserve, so realistic beats ideal."
     },
     "presets": {
-      "title": "How do you like breaks?",
+      "title": "Breaks and reminders",
       "sub": "Only a reminder. You always tap the break yourself, and each session can use another one.",
       "recommended": "recommended",
-      "own": "Build your own sequence (e.g. 45 → 10 → 45 → 20) in Settings."
+      "own": "Build your own sequence (e.g. 45 → 10 → 45 → 20) in Settings.",
+      "reminders": "Reminder before a block",
+      "remindersHint": "Pick one or more. Tapping the notification starts the session; “Skip” works without opening the app."
     },
     "subject": {
       "title": "First subject",
@@ -1836,6 +1924,17 @@
       "sub_other": "In {{count}} days",
       "now": "Start now",
       "done": "The campaign starts today. The plan is recomputed."
+    },
+    "eve": {
+      "title": "Keep {{day}} only for {{subject}}? Everything else moves.",
+      "sub": "That day: review, questions and weak topics. Reviews of other subjects move a day earlier or later.",
+      "takenTitle": "{{taken}} is already for {{other}}. Keep {{day}} for {{subject}}?",
+      "takenSub": "The day before belongs to the closer exam.",
+      "raiseCap": "and raise that day's maximum to {{time}}",
+      "reserve": "Keep it",
+      "reserveDay": "Keep {{day}}",
+      "no": "No",
+      "done": "{{day}} is only for {{subject}}. The plan is updated."
     }
   },
   "replan": {
@@ -2098,17 +2197,20 @@
     "nextReview": "Next review",
     "step": "step {{n}} of 4",
     "unitStrength": "strength {{pct}} · {{band}}",
-    "notInReview": "not in review yet",
     "unlock": "“Understood” unlocks through a",
     "unlockLink": "memory test",
     "unlockQuestion": "“Know it” unlocks through a",
     "test": "Test yourself on this chapter",
-    "testQuestion": "Test yourself"
+    "testQuestion": "Test yourself",
+    "notRead": "Not read yet",
+    "notReadSub": "Strength appears once you read the chapter and take a test.",
+    "notTested": "Not tested yet",
+    "notTestedSub": "Strength is known after the first recall test.",
+    "nextAfterRead": "After reading",
+    "nextAfterTest": "After the first test"
   },
   "notify": {
     "title": "Notifications",
-    "firstBlock": "First block of the day",
-    "firstBlockSub": "10 min before",
     "breakEnd": "End of break",
     "breakEndSub": "also when the screen is locked",
     "enable": "Turn on notifications on this device",
@@ -2121,13 +2223,32 @@
     "testSent": "The test notification arrives within a minute",
     "failed": "Could not turn them on. Try again.",
     "push": {
-      "firstBlockTitle": "In 10 min: {{subject}}",
-      "firstBlockBody": "{{title}} · {{time}}",
       "breakEndTitle": "Break is over",
       "breakEndBody": "Time for the next interval.",
       "testTitle": "Hoot",
-      "testBody": "Notifications work."
-    }
+      "testBody": "Notifications work.",
+      "reminderTitle": "In {{minutes}} min: {{subject}}",
+      "reminderTitleHours": "In {{hours}} h: {{subject}}",
+      "reminderBody": "{{title}} · {{minutes}} min · {{time}}",
+      "lateTitle": "15 min late for {{subject}}",
+      "lateBody": "{{title}} · was at {{time}}",
+      "start": "Start",
+      "skip": "Skip",
+      "skippedTitle": "Skipped: {{subject}} · {{title}}",
+      "skippedBody": "The material stays in the plan. Hoot places it when it opens."
+    },
+    "reminders": "Reminder before a block",
+    "remindersSub": "Pick one or more. None means no reminders.",
+    "offset": {
+      "120": "2 h",
+      "60": "1 h",
+      "30": "30 min",
+      "15": "15 min",
+      "5": "5 min"
+    },
+    "remindersHint": "If you don't start a block, “15 min late” comes 15 min later, once per block. Nothing comes between {{from}} and {{to}} (your rhythm).",
+    "remindersHintNoRhythm": "If you don't start a block, “15 min late” comes 15 min later, once per block.",
+    "offsetsLabel": "Reminder before a block"
   },
   "sessionEnd": {
     "saveAndTest": "Save and test yourself",
@@ -2323,6 +2444,11 @@
         "title": "Appearance",
         "sub": "Settings › General · theme",
         "syn": "theme, colour, color, look, lavender, graphite, sand, sage, ocean"
+      },
+      "faculty": {
+        "title": "Faculty and year",
+        "sub": "Settings › General · faculty, program, academic years",
+        "syn": "faculty, university, program, year of study, semester, academic year"
       }
     }
   },
@@ -2355,6 +2481,92 @@
         "name": "Ocean",
         "sub": "cool · blue"
       }
+    }
+  },
+  "academic": {
+    "semester": {
+      "label": "Semester",
+      "winter": "{{n}} · winter",
+      "summer": "{{n}} · summer",
+      "ofYear": "{{n}} · {{year}}",
+      "none": "No semester",
+      "hint": "The current semester is picked for you ({{year}}). Other years are in Settings → Faculty and year."
+    },
+    "group": {
+      "current": "Semester {{n}} · {{season}} · {{year}}",
+      "row": "Semester {{n}}",
+      "rowNoSemester": "No semester in the year",
+      "rowSub_one": "{{year}} · {{count}} subject",
+      "rowSub_other": "{{year}} · {{count}} subjects",
+      "none": "No semester",
+      "noneSub_one": "{{count}} subject",
+      "noneSub_other": "{{count}} subjects",
+      "earlier": "Earlier",
+      "later": "Next semester",
+      "carried": "carried over"
+    },
+    "season": {
+      "winter": "winter",
+      "summer": "summer"
+    },
+    "subtitle": "{{active}} · semester {{n}} · {{year}}",
+    "newYear": {
+      "title": "New academic year — add {{label}}?",
+      "sub": "Subjects from {{previous}} fold away; unpassed ones stay on top as “carried over”.",
+      "add": "Add {{label}}",
+      "added": "Academic year {{label}} added.",
+      "search": "Look up the calendar and syllabus for year {{year}}"
+    },
+    "faculty": {
+      "title": "Faculty and year",
+      "row": "Faculty and year",
+      "rowEmpty": "For subjects by semester and finding the calendar",
+      "rowValue": "{{institution}} · year {{n}}",
+      "institution": "Faculty",
+      "institutionPlaceholder": "e.g. Faculty of Electrical Engineering Sarajevo",
+      "program": "Study program",
+      "programPlaceholder": "e.g. Computer Science",
+      "yearOfStudy": "Year of study",
+      "saved": "Saved."
+    },
+    "years": {
+      "title": "Academic years",
+      "row": "{{label}} · year {{n}}",
+      "sub_one": "{{from}} – {{to}} · {{count}} subject",
+      "sub_other": "{{from}} – {{to}} · {{count}} subjects",
+      "current": "current",
+      "add": "Add academic year",
+      "empty": "Pick the year of study and save: the current academic year is added and subjects are grouped by semester."
+    },
+    "onboarding": {
+      "title": "Where do you study?",
+      "sub": "Hoot looks up the academic calendar and syllabus online, and you review what it finds.",
+      "privacy": "Only the faculty, program and year go online. What is found waits in the next step."
+    },
+    "found": {
+      "title": "Found on the web",
+      "crumb": "Found",
+      "year": "year {{n}}",
+      "searching": "Looking for the academic calendar and syllabus…",
+      "kind": {
+        "academic_calendar": "Academic calendar",
+        "syllabus": "Syllabus",
+        "other": "Document"
+      },
+      "checkYear": "{{year}} · check the year",
+      "noYear": "no year given",
+      "import": "Import",
+      "importing": "Downloading…",
+      "warning": "These documents come from the web: check they are for {{year}} and your programme. Nothing is saved without a review.",
+      "none": "I found no calendar or syllabus for {{year}}.",
+      "noneSub": "If you have it as a PDF or image (Moodle, notice board), give it to me and I'll read it the same way.",
+      "addPdf": "Add a PDF",
+      "search": "Search the web",
+      "searchButton": "Look up the calendar and syllabus online",
+      "privacy": "Only the faculty, programme and year go online. The same search is not repeated until you change the faculty, programme or year.",
+      "cardTitle_one": "{{count}} document from the web",
+      "cardTitle_other": "{{count}} documents from the web",
+      "cardSub": "Academic calendar and syllabus · you review before saving"
     }
   }
 }

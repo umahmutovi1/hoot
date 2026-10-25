@@ -41,6 +41,7 @@ export type Database = {
     Tables: {
       academic_periods: {
         Row: {
+          academic_year_id: string | null
           created_at: string
           ends_on: string
           exam_session: string | null
@@ -52,6 +53,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          academic_year_id?: string | null
           created_at?: string
           ends_on: string
           exam_session?: string | null
@@ -63,6 +65,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          academic_year_id?: string | null
           created_at?: string
           ends_on?: string
           exam_session?: string | null
@@ -72,6 +75,47 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academic_periods_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academic_years: {
+        Row: {
+          created_at: string
+          ends_on: string
+          id: string
+          label: string
+          starts_on: string
+          updated_at: string
+          user_id: string
+          year_of_study: number | null
+        }
+        Insert: {
+          created_at?: string
+          ends_on: string
+          id?: string
+          label: string
+          starts_on: string
+          updated_at?: string
+          user_id?: string
+          year_of_study?: number | null
+        }
+        Update: {
+          created_at?: string
+          ends_on?: string
+          id?: string
+          label?: string
+          starts_on?: string
+          updated_at?: string
+          user_id?: string
+          year_of_study?: number | null
         }
         Relationships: []
       }
@@ -168,6 +212,7 @@ export type Database = {
           created_at: string
           date_tentative: boolean
           entry_min_points: number | null
+          eve_reserved: boolean | null
           exam_period_id: string | null
           format: Database["public"]["Enums"]["exam_format"]
           id: string
@@ -195,6 +240,7 @@ export type Database = {
           created_at?: string
           date_tentative?: boolean
           entry_min_points?: number | null
+          eve_reserved?: boolean | null
           exam_period_id?: string | null
           format?: Database["public"]["Enums"]["exam_format"]
           id?: string
@@ -222,6 +268,7 @@ export type Database = {
           created_at?: string
           date_tentative?: boolean
           entry_min_points?: number | null
+          eve_reserved?: boolean | null
           exam_period_id?: string | null
           format?: Database["public"]["Enums"]["exam_format"]
           id?: string
@@ -930,6 +977,7 @@ export type Database = {
           planned_minutes: number
           planned_start: string | null
           reason: string | null
+          skip_requested_at: string | null
           start_min: number | null
           status: Database["public"]["Enums"]["block_status"]
           subject_id: string
@@ -949,6 +997,7 @@ export type Database = {
           planned_minutes: number
           planned_start?: string | null
           reason?: string | null
+          skip_requested_at?: string | null
           start_min?: number | null
           status?: Database["public"]["Enums"]["block_status"]
           subject_id: string
@@ -968,6 +1017,7 @@ export type Database = {
           planned_minutes?: number
           planned_start?: string | null
           reason?: string | null
+          skip_requested_at?: string | null
           start_min?: number | null
           status?: Database["public"]["Enums"]["block_status"]
           subject_id?: string
@@ -1038,6 +1088,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          academic_search: Json | null
           buffer_days: number
           created_at: string
           daily_cap_min: number[]
@@ -1049,6 +1100,7 @@ export type Database = {
           grade_scale: Json | null
           ics_token: string | null
           id: string
+          institution: string | null
           lecture_pace_days: number
           locale: string
           max_subjects_per_day: number
@@ -1061,16 +1113,20 @@ export type Database = {
           points_total: number
           preferred_slots: string[]
           recap_after_lecture: boolean
+          reminder_offsets_min: number[]
           review_cap_pct: number
           session_presets: Json
           sleep_min: number[] | null
+          study_program: string | null
           theme: string
           timer_mode: string
           timezone: string
           updated_at: string
           wake_min: number[] | null
+          year_of_study: number | null
         }
         Insert: {
+          academic_search?: Json | null
           buffer_days?: number
           created_at?: string
           daily_cap_min?: number[]
@@ -1082,6 +1138,7 @@ export type Database = {
           grade_scale?: Json | null
           ics_token?: string | null
           id: string
+          institution?: string | null
           lecture_pace_days?: number
           locale?: string
           max_subjects_per_day?: number
@@ -1094,16 +1151,20 @@ export type Database = {
           points_total?: number
           preferred_slots?: string[]
           recap_after_lecture?: boolean
+          reminder_offsets_min?: number[]
           review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
+          study_program?: string | null
           theme?: string
           timer_mode?: string
           timezone?: string
           updated_at?: string
           wake_min?: number[] | null
+          year_of_study?: number | null
         }
         Update: {
+          academic_search?: Json | null
           buffer_days?: number
           created_at?: string
           daily_cap_min?: number[]
@@ -1115,6 +1176,7 @@ export type Database = {
           grade_scale?: Json | null
           ics_token?: string | null
           id?: string
+          institution?: string | null
           lecture_pace_days?: number
           locale?: string
           max_subjects_per_day?: number
@@ -1127,19 +1189,26 @@ export type Database = {
           points_total?: number
           preferred_slots?: string[]
           recap_after_lecture?: boolean
+          reminder_offsets_min?: number[]
           review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
+          study_program?: string | null
           theme?: string
           timer_mode?: string
           timezone?: string
           updated_at?: string
           wake_min?: number[] | null
+          year_of_study?: number | null
         }
         Relationships: []
       }
       push_jobs: {
         Row: {
+          action_token_hash: string | null
+          action_used_at: string | null
+          actions: Json | null
+          block_id: string | null
           body: string
           created_at: string
           id: string
@@ -1153,6 +1222,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          action_token_hash?: string | null
+          action_used_at?: string | null
+          actions?: Json | null
+          block_id?: string | null
           body: string
           created_at?: string
           id?: string
@@ -1166,6 +1239,10 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          action_token_hash?: string | null
+          action_used_at?: string | null
+          actions?: Json | null
+          block_id?: string | null
           body?: string
           created_at?: string
           id?: string
@@ -1178,7 +1255,15 @@ export type Database = {
           url?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "push_jobs_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "plan_blocks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       push_subscriptions: {
         Row: {
@@ -1413,6 +1498,9 @@ export type Database = {
           author: string | null
           base_min_per_unit: number
           created_at: string
+          drive_file_id: string | null
+          external_url: string | null
+          file_name: string | null
           id: string
           is_rough: boolean
           kind: Database["public"]["Enums"]["source_kind"]
@@ -1431,6 +1519,9 @@ export type Database = {
           author?: string | null
           base_min_per_unit: number
           created_at?: string
+          drive_file_id?: string | null
+          external_url?: string | null
+          file_name?: string | null
           id?: string
           is_rough?: boolean
           kind: Database["public"]["Enums"]["source_kind"]
@@ -1449,6 +1540,9 @@ export type Database = {
           author?: string | null
           base_min_per_unit?: number
           created_at?: string
+          drive_file_id?: string | null
+          external_url?: string | null
+          file_name?: string | null
           id?: string
           is_rough?: boolean
           kind?: Database["public"]["Enums"]["source_kind"]
@@ -1591,6 +1685,7 @@ export type Database = {
       }
       subjects: {
         Row: {
+          academic_year_id: string | null
           archived: boolean
           campaign_start_on: string | null
           color: string | null
@@ -1602,12 +1697,14 @@ export type Database = {
           points_total: number
           priority: number
           priority_boost_until: string | null
+          semester_no: number | null
           study_mode: string
           target_grade: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          academic_year_id?: string | null
           archived?: boolean
           campaign_start_on?: string | null
           color?: string | null
@@ -1619,12 +1716,14 @@ export type Database = {
           points_total?: number
           priority?: number
           priority_boost_until?: string | null
+          semester_no?: number | null
           study_mode?: string
           target_grade?: number | null
           updated_at?: string
           user_id?: string
         }
         Update: {
+          academic_year_id?: string | null
           archived?: boolean
           campaign_start_on?: string | null
           color?: string | null
@@ -1636,12 +1735,21 @@ export type Database = {
           points_total?: number
           priority?: number
           priority_boost_until?: string | null
+          semester_no?: number | null
           study_mode?: string
           target_grade?: number | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "subjects_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       timetable_entries: {
         Row: {
@@ -2020,6 +2128,8 @@ export type Database = {
         | "parse_document"
         | "answer"
         | "link_questions"
+        | "parse_syllabus"
+        | "find_academic_info"
       assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
       assigned_by: "ai" | "user"
       block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
@@ -2181,6 +2291,8 @@ export const Constants = {
         "parse_document",
         "answer",
         "link_questions",
+        "parse_syllabus",
+        "find_academic_info",
       ],
       assessment_kind: ["partial", "final", "integral", "makeup", "other"],
       assigned_by: ["ai", "user"],

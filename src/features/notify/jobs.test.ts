@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { diffJobs, firstBlockJobs, isIos, keyBytes, type SavedJob } from './jobs'
+import { blockJobs, diffJobs, isIos, isQuiet, keyBytes, type SavedJob } from './jobs'
 
 const NOW = new Date('2026-10-23T08:00:00Z')
 const block = (id: string, on: string, start: string | null, status = 'planned') => ({
@@ -7,35 +7,6 @@ const block = (id: string, on: string, start: string | null, status = 'planned')
   on_date: on,
   status,
   planned_start: start,
-})
-const text = (b: { id: string }) => ({ title: `t-${b.id}`, body: 'b' })
-
-describe('firstBlockJobs', () => {
-  it('one job per day for the earliest planned block, 10 min before, only ahead', () => {
-    const jobs = firstBlockJobs(
-      [
-        block('a', '2026-10-23', '2026-10-23T07:00:00Z'), // passed
-        block('b', '2026-10-24', '2026-10-24T09:00:00Z'),
-        block('c', '2026-10-24', '2026-10-24T07:30:00Z'),
-        block('d', '2026-10-25', null),
-        block('e', '2026-10-26', '2026-10-26T07:00:00Z', 'done'),
-        block('f', '2026-11-05', '2026-11-05T07:00:00Z'), // past 7 days
-      ],
-      '2026-10-23',
-      NOW,
-      text,
-    )
-    expect(jobs).toEqual([
-      {
-        kind: 'first_block',
-        ref: '2026-10-24',
-        send_at: '2026-10-24T07:20:00.000Z',
-        url: '/',
-        title: 't-c',
-        body: 'b',
-      },
-    ])
-  })
 })
 
 describe('diffJobs', () => {
@@ -88,5 +59,116 @@ describe('helpers', () => {
     expect(isIos('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 5)).toBe(true)
     expect(isIos('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 0)).toBe(false)
     expect(isIos('Mozilla/5.0 (Linux; Android 15)', 5)).toBe(false)
+  })
+})
+
+describe('blockJobs', () => {
+  const actions = { start: 'Započni', skip: 'Preskoči', skippedTitle: 'P', skippedBody: 'G' }
+  const b = (id: string, on: string, start: string | null, status = 'planned') => ({
+    ...block(id, on, start, status),
+    planned_minutes: 50,
+  })
+  const run = (
+    blocks: ReturnType<typeof b>[],
+    offsets: number[],
+    quiet: (at: Date) => boolean = () => false,
+  ) =>
+    blockJobs(blocks, '2026-10-23', NOW, {
+      offsets,
+      quiet,
+      text: (x, offset) => ({ title: `${x.id}:${offset ?? 'late'}`, body: 'b' }),
+      url: (x) => `/?block=${x.id}`,
+      actions: () => actions,
+    })
+
+  it('one job per offset and one "Kasniš" per timed planned block, only ahead', () => {
+    const jobs = run(
+      [
+        b('a', '2026-10-23', '2026-10-23T08:20:00Z'), // 30 min before is past, 5 min before not
+        b('n', '2026-10-23', null),
+        b('d', '2026-10-23', '2026-10-23T10:00:00Z', 'done'),
+        b('x', '2026-11-05', '2026-11-05T10:00:00Z'), // past 7 days
+      ],
+      [30, 5, 5],
+    )
+    expect(jobs.map((j) => [j.kind, j.ref, j.send_at, j.block_id, j.url])).toEqual([
+      ['block_reminder', 'a:5', '2026-10-23T08:15:00.000Z', 'a', '/?block=a'],
+      ['block_late', 'a', '2026-10-23T08:35:00.000Z', 'a', '/?block=a'],
+    ])
+    expect(jobs[0]).toMatchObject({ title: 'a:5', actions })
+  })
+
+  it('no offsets: no reminders and no "Kasniš"; quiet hours drop a job', () => {
+    expect(run([b('a', '2026-10-24', '2026-10-24T09:00:00Z')], [])).toEqual([])
+    const quiet = (at: Date) => at.getUTCHours() < 8
+    expect(
+      run([b('a', '2026-10-24', '2026-10-24T08:10:00Z')], [60, 5], quiet).map((j) => j.ref),
+    ).toEqual(['a:5', 'a'])
+  })
+})
+
+describe('isQuiet', () => {
+  const tz = 'Europe/Sarajevo'
+  it('between going to bed and getting up, weekday or weekend', () => {
+    const sleep = [23 * 60, 24 * 60 + 60]
+    const wake = [7 * 60, 9 * 60]
+    // Friday 23 Oct 2026 (CEST, UTC+2)
+    expect(isQuiet(new Date('2026-10-23T21:30:00Z'), tz, sleep, wake)).toBe(true) // 23:30
+    expect(isQuiet(new Date('2026-10-23T04:30:00Z'), tz, sleep, wake)).toBe(true) // 06:30
+    expect(isQuiet(new Date('2026-10-23T05:30:00Z'), tz, sleep, wake)).toBe(false) // 07:30
+    // Saturday: up at 09:00, to bed at 01:00
+    expect(isQuiet(new Date('2026-10-24T06:30:00Z'), tz, sleep, wake)).toBe(true) // 08:30
+    expect(isQuiet(new Date('2026-10-24T21:30:00Z'), tz, sleep, wake)).toBe(false) // 23:30
+    expect(isQuiet(new Date('2026-10-24T05:30:00Z'), tz, null, wake)).toBe(false)
+  })
+})
+
+describe('diffJobs over several kinds', () => {
+  it('matches by kind and ref, so a reminder and "Kasniš" of one block are separate', () => {
+    const saved: SavedJob[] = [
+      {
+        id: '1',
+        kind: 'block_late',
+        ref: 'a',
+        send_at: '2026-10-23T09:15:00Z',
+        title: 't',
+        body: 'b',
+        sent_at: null,
+      },
+      {
+        id: '2',
+        kind: 'first_block',
+        ref: '2026-10-24',
+        send_at: '2026-10-24T07:00:00Z',
+        title: 't',
+        body: 'b',
+        sent_at: null,
+      },
+    ]
+    const wanted = [
+      {
+        kind: 'block_late' as const,
+        ref: 'a',
+        send_at: '2026-10-23T09:15:00Z',
+        title: 't',
+        body: 'b',
+        url: null,
+      },
+      {
+        kind: 'block_reminder' as const,
+        ref: 'a',
+        send_at: '2026-10-23T08:30:00Z',
+        title: 't',
+        body: 'b',
+        url: null,
+      },
+    ]
+    const { upsert, remove } = diffJobs(saved, wanted, [
+      'first_block',
+      'block_reminder',
+      'block_late',
+    ])
+    expect(upsert.map((j) => j.kind)).toEqual(['block_reminder'])
+    expect(remove).toEqual(['2'])
   })
 })

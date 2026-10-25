@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ScreenTitle } from '@/components/ScreenTitle'
@@ -18,6 +19,17 @@ import { classLines, examLines, periodLines, useDateLabel } from './format'
 import { StatusChip } from './ImportCard'
 import { NoTeachingPeriod, saveCount, useSaveImport } from './saveImport'
 import { findProposal, useOwlStore } from './store'
+import { SyllabusReview } from './SyllabusReview'
+import { yearLabelOn } from '@/lib/academic'
+import { localDay } from '@/lib/day'
+
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
+}
 
 const field =
   'h-11 min-w-0 rounded-input bg-canvas px-3 text-[15px] outline-none disabled:opacity-60'
@@ -34,6 +46,7 @@ export function ImportReviewPage() {
   const save = useSaveImport(t)
   const weekdays = useWeekdayNames('short')
   const owl = useOwl()
+  const [today] = useState(() => localDay(new Date()))
 
   if (!proposal || !id) {
     return (
@@ -74,6 +87,24 @@ export function ImportReviewPage() {
     <div className="flex flex-col gap-4 pb-24">
       <ScreenTitle title={t('owl.reviewPage.title')} />
       <p className="px-1 text-sm text-ink-muted">{proposal.documentTitle}</p>
+      {proposal.origin && (
+        // Found on the web (PRD "Fakultet s interneta"): the link, and a check of the year.
+        <section className="flex flex-col gap-2 rounded-card bg-warning-soft p-4 text-sm text-warning-ink">
+          <a
+            href={proposal.origin.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline underline-offset-2"
+          >
+            {t('owl.syllabus.fromWeb', { host: hostOf(proposal.origin.url) })}
+          </a>
+          <span>
+            {t('owl.syllabus.checkYear', {
+              year: proposal.origin.academicYear ?? yearLabelOn(today),
+            })}
+          </span>
+        </section>
+      )}
 
       {proposal.warnings.length > 0 && (
         <section className="flex flex-col gap-1 rounded-card bg-warning-soft p-4 text-sm text-warning-ink">
@@ -242,6 +273,19 @@ export function ImportReviewPage() {
             )
           })}
         </section>
+      )}
+
+      {(proposal.syllabus?.length ?? 0) > 0 && (
+        <SyllabusReview
+          items={proposal.syllabus!}
+          saved={saved}
+          onChange={(key, update) =>
+            updateProposal(id, (p) => ({
+              ...p,
+              syllabus: (p.syllabus ?? []).map((x) => (x.key === key ? update(x) : x)),
+            }))
+          }
+        />
       )}
 
       {!saved && (

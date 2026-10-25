@@ -3,6 +3,8 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequireAuth } from '@/features/auth/RequireAuth'
 import { AppearancePage } from '@/features/settings/AppearancePage'
+import { FacultyPage } from '@/features/academic/FacultyPage'
+import { FoundPage } from '@/features/academic/FoundPage'
 import { RequireOnboarding } from '@/features/onboarding/RequireOnboarding'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { DocumentPage, DocumentsPage } from '@/features/owl/DocumentsPage'
@@ -63,6 +65,8 @@ export const router = createBrowserRouter([
               { path: 'today/moodle', element: <DeadlinesImportPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
               { path: 'settings/appearance', element: <AppearancePage /> },
+              { path: 'settings/academic', element: <FacultyPage /> },
+              { path: 'settings/academic/found', element: <FoundPage /> },
               { path: 'settings/documents', element: <DocumentsPage /> },
               { path: 'settings/feeds', element: <CalendarFeedsPage /> },
               { path: 'settings/documents/:id', element: <DocumentPage /> },

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Dan pred ispit</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;padding:32px;background:#F4F2F9;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Geist,system-ui,sans-serif;color:#14121C;letter-spacing:-0.2px}
+a{color:#4C4892;text-decoration:none}
+h2.note{font-size:15px;font-weight:600;margin:0 0 6px}
+p.note{margin:0 0 24px;max-width:980px;font-size:14px;line-height:1.5;color:#3F3B4E}
+.row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;margin-bottom:40px}
+.cap{font-size:13px;font-weight:600;color:#55516A;margin:0 0 8px 4px;max-width:390px}
+.phone{width:390px;height:844px;position:relative;overflow:hidden;border-radius:44px;box-shadow:0 20px 60px rgba(40,34,80,.25);
+  background:radial-gradient(120% 55% at 0% 0%,rgba(150,141,222,.62),rgba(150,141,222,0) 62%),radial-gradient(90% 45% at 100% 22%,rgba(229,182,206,.62),rgba(229,182,206,0) 62%),radial-gradient(110% 50% at 0% 68%,rgba(168,196,234,.6),rgba(168,196,234,0) 62%),radial-gradient(95% 45% at 100% 100%,rgba(160,148,226,.55),rgba(160,148,226,0) 62%),linear-gradient(180deg,#ECE9F4,#E8E5F1)}
+.status{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;font-size:16px;font-weight:600}
+.bar{height:60px;display:flex;align-items:center;gap:4px;padding:0 20px}
+.icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#14121C}
+.ai{border-radius:22px;background:rgba(255,255,255,.30);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.6);color:#6A64B8}
+.grp{display:flex;height:44px;border-radius:22px;background:rgba(255,255,255,.30);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.6)}
+.pad{padding:0 16px;display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.2px;color:#3F3B4E}
+.h-big{font-size:36px;line-height:1.1;font-weight:700;letter-spacing:-.9px;margin:0}
+.h2{margin:10px 6px 0;font-size:20px;font-weight:700;letter-spacing:-.4px}
+.glass{background:rgba(255,255,255,.36);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.55),inset 0 1px 1px rgba(255,255,255,.85),inset 0 -1px 1px rgba(58,51,96,.05),0 8px 28px rgba(58,51,96,.07)}
+.tint{color:#fff;background:linear-gradient(160deg,rgba(100,93,180,.9),rgba(76,72,146,.94));box-shadow:inset 0 0 0 .5px rgba(255,255,255,.3),inset 0 1px 1px rgba(255,255,255,.45),0 14px 34px rgba(76,72,146,.24)}
+.btn-primary{color:#fff;background:linear-gradient(160deg,#6E67BE,#4C4892);box-shadow:inset 0 1px 1px rgba(255,255,255,.4),0 6px 16px rgba(76,72,146,.22)}
+.list{border-radius:26px;overflow:hidden}
+.lr{display:flex;align-items:center;gap:12px;padding:13px 16px;min-height:44px}
+.lr.hl{background:rgba(106,100,184,.10)}
+.dv{margin-left:72px;height:1px;background:rgba(58,51,96,.14)}
+.tm{width:44px;font-size:13px;font-weight:500;color:#55516A;font-variant-numeric:tabular-nums;flex-shrink:0}
+.ring{width:22px;height:22px;border-radius:11px;border:2px solid;box-sizing:border-box;flex-shrink:0}
+.ring.hatch{border:none;background:repeating-linear-gradient(135deg,rgba(58,51,96,.16) 0 3px,transparent 3px 6px)}
+.plus{width:22px;height:22px;border-radius:11px;background:rgba(106,100,184,.12);color:#4C4892;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0}
+.txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.t1{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t2{font-size:13px;color:#3F3B4E}
+.scrim{position:absolute;inset:0;background:rgba(40,34,80,.20)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:rgba(250,249,253,.80);backdrop-filter:blur(36px) saturate(180%);-webkit-backdrop-filter:blur(36px) saturate(180%);box-shadow:inset 0 1px 1px rgba(255,255,255,.9),0 -10px 40px rgba(40,34,80,.12);border-radius:32px 32px 0 0;padding:12px 20px 34px;display:flex;flex-direction:column;gap:14px}
+.grab{width:40px;height:5px;border-radius:3px;background:rgba(58,51,96,.16);align-self:center}
+.x{position:absolute;right:14px;top:14px;width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center}
+.x::before{content:'';position:absolute;inset:6px;border-radius:16px;background:rgba(106,100,184,.10)}
+.x svg{position:relative}
+.st{margin:2px 48px 0 0;font-size:22px;font-weight:700;letter-spacing:-.4px}
+.sb{margin:-6px 0 0;font-size:15px;line-height:1.45;color:#3F3B4E}
+.dot{width:10px;height:10px;border-radius:5px;flex-shrink:0}
+.tag{height:24px;padding:0 10px;border-radius:12px;background:rgba(106,100,184,.12);color:#36336E;font-size:12px;font-weight:600;display:flex;align-items:center}
+.mtag{font-size:12px;color:#55516A}
+.big{height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600}
+.acts{display:flex;gap:8px}
+.act{flex:1;height:64px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:13px;font-weight:600;color:#14121C;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.7),inset 0 1px 1px rgba(255,255,255,.9)}
+.act svg{color:#4C4892}
+.act.danger,.act.danger svg{color:#B0413E}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.7),inset 0 1px 1px rgba(255,255,255,.9);min-height:44px}
+.opt .ic{width:36px;height:36px;border-radius:12px;background:rgba(106,100,184,.12);color:#4C4892;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.opt b{font-size:15px;font-weight:600}
+.opt small{font-size:12px;color:#55516A;line-height:1.35}
+.opt.danger b,.opt.danger .ic{color:#B0413E}
+.opt.danger .ic{background:rgba(176,65,62,.10)}
+.toast{position:absolute;left:16px;right:16px;bottom:28px;min-height:52px;border-radius:26px;background:rgba(28,25,44,.88);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 18px;font-size:14px;box-sizing:border-box;z-index:3}
+.toast b{height:36px;padding:0 14px;border-radius:18px;display:flex;align-items:center;font-weight:600;background:rgba(255,255,255,.14);flex-shrink:0}
+.field{display:flex;flex-direction:column;gap:8px}
+.lbl{font-size:13px;font-weight:600;color:#3F3B4E}
+.chips{display:flex;gap:6px}
+.chip{height:36px;padding:0 14px;border-radius:18px;background:rgba(255,255,255,.5);font-size:13px;font-weight:600;display:flex;align-items:center}
+.chip.on{background:#14121C;color:#fff}
+.sw{width:51px;height:31px;border-radius:16px;background:rgba(58,51,96,.18);position:relative;flex-shrink:0}
+.sw i{position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:14px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.sw.on{background:#5E9C72}
+.sw.on i{left:22px}
+.ses-time{font-size:72px;font-weight:600;letter-spacing:-2px;text-align:center;font-variant-numeric:tabular-nums;margin-top:40px}
+
+.sec{font-size:13px;font-weight:600;color:#6E6A80;text-transform:uppercase;letter-spacing:.2px;margin:6px 4px 0}
+.crumbs{display:flex;align-items:center;gap:6px;padding:0 20px 4px;font-size:14px;color:#55516A;height:32px}
+.crumbs a{color:#4C4892;font-weight:600}
+.h-mid{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.6px;margin:0}
+.card{border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.subj{display:flex;align-items:center;gap:12px}
+.av{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.av.pink{background:rgba(182,106,140,.16);color:#8E4A6A}
+.av.ind{background:rgba(106,100,184,.16);color:#4C4892}
+.av.blue{background:rgba(95,134,181,.16);color:#3F6590}
+.av.green{background:rgba(94,156,114,.16);color:#3E7350}
+.sname{flex:1;font-size:17px;font-weight:600}
+.meta{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#55516A}
+.meta b{font-weight:600}
+.grp-h{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:0 18px;border-radius:26px;font-size:15px}
+.grp-h small{font-size:13px;color:#55516A}
+.chev{color:#6E6A80;flex-shrink:0}
+.warn{border-radius:18px;padding:10px 14px;background:rgba(195,141,82,.18);color:#8F6136;font-size:13px;line-height:1.4}
+.okp{border-radius:18px;padding:10px 14px;background:rgba(94,156,114,.16);color:#3E7350;font-size:13px;line-height:1.4}
+.hint{font-size:12px;line-height:1.4;color:#6E6A80}
+.input{height:52px;border-radius:18px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.7);display:flex;align-items:center;padding:0 16px;font-size:16px;color:#14121C}
+.input.ph{color:#8A869C}
+.chips.wrap{flex-wrap:wrap}
+.chip.soft{background:rgba(106,100,184,.14);color:#36336E}
+.st-new{color:#3E7350;background:rgba(94,156,114,.16)}
+.st-chg{color:#8F6136;background:rgba(195,141,82,.18)}
+.st-keep{color:#55516A;background:rgba(58,51,96,.08)}
+.st-skip{color:#6E6A80;background:transparent;box-shadow:inset 0 0 0 1px rgba(58,51,96,.18)}
+.stag{height:22px;padding:0 8px;border-radius:11px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;flex-shrink:0}
+.rv{display:flex;align-items:flex-start;gap:12px;padding:12px 16px}
+.rv .txt{gap:2px}
+.chk{width:22px;height:22px;border-radius:7px;background:#4C4892;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.chk.off{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(58,51,96,.3)}
+.pill-btn{height:44px;padding:0 18px;border-radius:22px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:15px;font-weight:600}
+.ghost{background:rgba(255,255,255,.55);color:#36336E;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.7)}
+.link{color:#4C4892;font-weight:600;font-size:14px}
+.progress{display:flex;gap:4px}
+.progress i{flex:1;height:4px;border-radius:2px;background:rgba(58,51,96,.14)}
+.progress i.on{background:#6A64B8}
+.ob-top{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:60px}
+.ob-top .circ{width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center}
+.ob-bottom{position:absolute;left:20px;right:20px;bottom:30px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ob-bottom .big{width:100%}
+.file{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px}
+.file .ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.ic.pdf{background:rgba(176,65,62,.12);color:#B0413E}
+.ic.drive{background:rgba(95,134,181,.16);color:#3F6590}
+.unit{display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:15px}
+.unit .lb{width:34px;font-size:13px;font-weight:600;color:#55516A;flex-shrink:0}
+.unit .pg{font-size:13px;color:#55516A;font-variant-numeric:tabular-nums}
+.unit.sub{padding-left:40px;font-size:14px}
+.dots{display:flex;gap:3px}
+.dots i{width:6px;height:6px;border-radius:3px;background:rgba(58,51,96,.18)}
+.dots i.on{background:#6A64B8}
+.seg{display:flex;padding:3px;border-radius:22px;background:rgba(255,255,255,.4);gap:2px}
+.seg span{flex:1;height:36px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#3F3B4E}
+.seg span.on{background:#fff;color:#14121C;box-shadow:0 2px 8px rgba(58,51,96,.12)}
+.lock{background:linear-gradient(180deg,#2B2747 0%,#4A4378 55%,#6E5E98 100%);color:#fff}
+.lock .clock{font-size:76px;font-weight:300;text-align:center;letter-spacing:-2px;margin-top:30px}
+.lock .date{font-size:17px;text-align:center;opacity:.85}
+.nt{margin:0 12px;border-radius:24px;background:rgba(250,249,253,.92);color:#14121C;padding:14px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.nt .app{display:flex;align-items:center;gap:8px;font-size:12px;color:#55516A}
+.nt .app img{width:18px;height:18px}
+.nt b{font-size:15px;font-weight:600}
+.nt span.body{font-size:14px;color:#3F3B4E}
+.nt .na{display:flex;gap:18px;padding-top:6px;font-size:14px;font-weight:600;color:#4C4892}
+.nt.ios{background:rgba(245,244,250,.78);backdrop-filter:blur(20px);border-radius:22px}
+.tl{position:relative;border-radius:26px;padding:10px 0}
+.tl .hr{display:flex;align-items:flex-start;height:44px;padding:0 16px;font-size:12px;color:#6E6A80;gap:10px}
+.tl .hr i{flex:1;height:1px;background:rgba(58,51,96,.10);margin-top:7px}
+.blk{position:absolute;left:62px;right:16px;border-radius:14px;padding:8px 12px;font-size:13px;font-weight:600;display:flex;flex-direction:column;gap:2px}
+.blk small{font-weight:400;font-size:12px;color:#3F3B4E}
+.blk.pink{background:rgba(182,106,140,.22);box-shadow:inset 3px 0 0 #B66A8C}
+.blk.hatch{background:repeating-linear-gradient(135deg,rgba(58,51,96,.10) 0 4px,transparent 4px 8px);color:#3F3B4E}
+.daypills{display:flex;gap:6px}
+.daypills span{flex:1;height:58px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:#55516A;gap:2px}
+.daypills span b{font-size:17px;color:#14121C}
+.daypills span.on{background:#14121C;color:rgba(255,255,255,.8)}
+.daypills span.on b{color:#fff}
+.daypills span .res{width:6px;height:6px;border-radius:3px;background:#B66A8C}
+</style>
+</helmet>
+
+<h2 class="note">Dan pred ispit (Etapa 10c) · PRD „Scheduler, replan i AI strategist“ → „Dan pred ispit“</h2>
+<p class="note">Tri dana prije svakog ispita (i parcijale) Danas pokazuje karticu (kao ostale kartice akcije, najviše jedna iznad liste): „Rezervisati [dan] samo za [predmet]? Ostalo se pomjera.“ uz opciju „i povećaj maksimum tog dana na X h“ (availability_days.cap_min; uključena kad je maksimum tog dana manji od slobodnog vremena). Rezerviši → eve_reserved = true, toast sa Poništi; Ne → false i kartica se ne vraća; bez odgovora ništa. Rezervisan dan je zadnji dan učenja prije ispita: plan() tu stavlja samo blokove tog predmeta; ponavljanja drugih se pomjeraju dan ranije ili poslije (nikad poslije njihovog ispita); ručni blokovi i nastava ostaju. Dva ispita sa istim zadnjim danom: dan pripada bližem ispitu, a kartica drugog to kaže i nudi dan ranije. Isti izbor je prekidač u ExamSheetu, a Plan → Dan označava rezervisan dan tačkom boje predmeta i trakom sa „Ukloni“.</p>
+
+<div class="row"><div><div class="cap">1 · Kartica na Danas 3 dana prije ispita</div><div class="phone "><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">NEDJELJA, 25. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div><div class="glass card"><div style="display:flex;gap:12px;align-items:flex-start"><span style="width:40px;height:40px;border-radius:14px;background:rgba(182,106,140,.16);color:#8E4A6A;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><span style="display:flex;flex-direction:column;gap:4px"><b style="font-size:16px;line-height:1.3">Rezervisati utorak, 27. okt samo za Signale? Ostalo se pomjera.</b><span style="font-size:13px;line-height:1.4;color:#3F3B4E">Ispit je u srijedu u 10:00. Taj dan: ponavljanje, pitanja i slabe teme iz obima; ponavljanja drugih predmeta idu dan ranije ili poslije.</span></span></div><div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:18px;background:rgba(255,255,255,.5)"><span class="chk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span style="flex:1;font-size:14px">i povećaj maksimum tog dana na <b>6 h</b></span><span class="mtag">sad 4 h</span></div><div style="display:flex;gap:8px"><span class="pill-btn btn-primary" style="flex:1">Rezerviši</span><span class="pill-btn ghost">Ne</span></div></div><h2 class="h2">Danas</h2><div class="glass list"><div class="lr"><span class="tm">10:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · 3.1–3.4 Fourierov red</span><span class="t2">60 min · čitanje</span></span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div><div class="dv"></div><div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">50 min · čitanje</span></span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div></div></div></div></div><div><div class="cap">2 · Dva ispita zaredom: dan pripada bližem</div><div class="phone "><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">NEDJELJA, 25. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div><div class="glass card"><div style="display:flex;gap:12px;align-items:flex-start"><span style="width:40px;height:40px;border-radius:14px;background:rgba(182,106,140,.16);color:#8E4A6A;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><span style="display:flex;flex-direction:column;gap:4px"><b style="font-size:16px;line-height:1.3">Utorak, 27. okt je već za Signale. Rezervisati ponedjeljak, 26. okt za Baze?</b><span style="font-size:13px;line-height:1.4;color:#3F3B4E">Baze i Signali imaju ispit u srijedu; dan pred ispit pripada bližem (Signali u 10:00, Baze u 14:00).</span></span></div><div style="display:flex;gap:8px"><span class="pill-btn btn-primary" style="flex:1">Rezerviši ponedjeljak</span><span class="pill-btn ghost">Ne</span></div></div><h2 class="h2">Danas</h2><div class="glass list"><div class="lr"><span class="tm">10:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · 3.1–3.4 Fourierov red</span><span class="t2">60 min · čitanje</span></span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div><div class="dv"></div><div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">50 min · čitanje</span></span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div></div></div></div></div><div><div class="cap">3 · Poslije „Rezerviši“: toast Poništi</div><div class="phone "><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">NEDJELJA, 25. OKTOBAR · <a>4. sedmica nastave</a></span><h1 class="h-big">Danas</h1></div><div class="glass card"><span style="font-size:13px;color:#55516A">Još 2 prijedloga</span></div><h2 class="h2">Danas</h2><div class="glass list"><div class="lr"><span class="tm">10:00</span><span class="ring" style="border-color:#B66A8C"></span><span class="txt"><span class="t1">Signali · 3.1–3.4 Fourierov red</span><span class="t2">60 min · čitanje</span></span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div><div class="dv"></div><div class="lr"><span class="tm">16:00</span><span class="ring" style="border-color:#6A64B8"></span><span class="txt"><span class="t1">Baze · 5.1–5.3 Normalizacija</span><span class="t2">50 min · čitanje</span></span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></div></div></div><div class="toast"><span>Utorak je samo za Signale. Plan je preračunat.</span><b>Poništi</b></div></div></div></div><div class="row"><div><div class="cap">4 · ExamSheet: „Dan prije samo za ovaj predmet“</div><div class="phone "><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="crumbs"><span style="font-size:20px;color:#14121C">‹</span><a>Predmeti</a> › <span>Signali i sistemi</span></div><div class="pad"><div style="display:flex;flex-direction:column;gap:2px"><span class="eyebrow">PREDMET</span><h1 class="h-mid">Signali i sistemi</h1></div></div><div class="scrim"></div><div class="sheet"><span class="grab"></span><span class="x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3F3B4E" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span><h2 class="st">I parcijala</h2><div class="field"><span class="lbl">Datum i vrijeme</span><div class="input">sri, 28. okt · 10:00</div></div><div class="glass list" style="border-radius:22px"><div class="lr"><span class="txt"><span class="t1">Samo ako zatreba</span><span class="t2">Ulazi u plan tek kad je potreban</span></span><span class="sw"><i></i></span></div><div class="dv" style="margin-left:16px"></div><div class="lr"><span class="txt"><span class="t1">Dan prije samo za ovaj predmet</span><span class="t2" style="white-space:normal">Uto, 27. okt: samo Signali; ostalo se pomjera</span></span><span class="sw on"><i></i></span></div></div><span class="hint">Ručni blokovi i nastava ostaju. Dva ispita zaredom: dan pripada bližem.</span><span class="big btn-primary">Spasi</span></div></div></div><div><div class="cap">5 · Plan → Dan: rezervisan dan</div><div class="phone "><div class="status"><span>9:41</span><span>●●● ⌁ ▮</span></div><div class="bar"><span class="icon"><img src="owl-pwa-icons/logo.svg" width="34" height="34" alt=""></span><span class="icon ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7z"/><path d="M18 14l.8 2.2 2.2.8-2.2.8L18 20l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span style="flex:1"></span><span class="grp"><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></span></div><div class="crumbs"><span style="font-size:20px;color:#14121C">‹</span><a>Plan</a> › <span>Dan</span></div><div class="pad"><span style="height:36px;padding:0 14px;border-radius:18px;background:rgba(255,255,255,.4);display:inline-flex;align-items:center;font-weight:600;align-self:flex-start">‹ Oktobar 2026</span><div class="daypills"><span>P<b>26</b></span><span class="on">U<b>27</b><i class="res"></i></span><span>S<b>28</b></span><span>Č<b>29</b></span><span>P<b>30</b></span></div><div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:18px;background:rgba(182,106,140,.14);color:#8E4A6A;font-size:14px;font-weight:600"><span class="dot" style="background:#B66A8C"></span><span style="flex:1">Samo za Signale · ispit sutra u 10:00</span><span class="link" style="font-size:13px;color:#8E4A6A">Ukloni</span></div><div class="glass tl" style="height:400px"><div class="hr"><span>08:00</span><i></i></div><div class="hr"><span>09:00</span><i></i></div><div class="hr"><span>10:00</span><i></i></div><div class="hr"><span>11:00</span><i></i></div><div class="hr"><span>12:00</span><i></i></div><div class="hr"><span>13:00</span><i></i></div><div class="hr"><span>14:00</span><i></i></div><div class="hr"><span>15:00</span><i></i></div><div class="hr"><span>16:00</span><i></i></div><div class="blk hatch" style="top:100px;height:76px">Signali · predavanje<small>10:00–12:00 · nastava ostaje</small></div><div class="blk pink" style="top:188px;height:60px">Signali · ponavljanje 1–3<small>12:30 · 60 min</small></div><div class="blk pink" style="top:276px;height:48px">Signali · 18 ispitnih pitanja<small>14:30 · 50 min</small></div><div class="blk pink" style="top:340px;height:40px">Signali · slabe teme: konvolucija<small>16:00 · 30 min</small></div></div></div></div></div></div>
+</x-dc>
+</body>
+</html>

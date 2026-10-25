@@ -2,7 +2,7 @@
 // derived from the same Zod schema with z.toJSONSchema(). The stable part of a prompt
 // (system + prefix) goes into an explicit context cache when the request allows it.
 import { toJsonSchema } from '../jsonSchema.ts'
-import { LlmError, ProviderBusyError } from '../llm.ts'
+import { jsonFromText, jsonInstruction, LlmError, ProviderBusyError } from '../llm.ts'
 import type { LlmProvider, LlmRawResult, LlmRequest } from '../llm.ts'
 
 const API = 'https://generativelanguage.googleapis.com/v1beta'
@@ -37,15 +37,23 @@ function userParts(req: LlmRequest<unknown>, withPrefix: boolean) {
 }
 
 export function buildGeminiBody(model: string, req: LlmRequest<unknown>, cacheName?: string) {
+  // With Google Search grounding the JSON is asked for in the prompt (older models do not
+  // combine tools with a response schema); the wrapper validates it with the same schema.
+  const search = Boolean(req.webSearch)
+  const system = search
+    ? `${req.system}\n\n${jsonInstruction(toJsonSchema(req.schema))}`
+    : req.system
   return {
     // A cached request carries system + prefix inside the cache.
     ...(cacheName
       ? { cachedContent: cacheName }
-      : { systemInstruction: { parts: [{ text: req.system }] } }),
+      : { systemInstruction: { parts: [{ text: system }] } }),
     contents: [{ role: 'user', parts: userParts(req, !cacheName) }],
+    ...(search ? { tools: [{ google_search: {} }] } : {}),
     generationConfig: {
-      responseMimeType: 'application/json',
-      responseJsonSchema: toJsonSchema(req.schema),
+      ...(search
+        ? {}
+        : { responseMimeType: 'application/json', responseJsonSchema: toJsonSchema(req.schema) }),
       maxOutputTokens: req.maxTokens,
       temperature: 0.2,
       // 2.5 models think by default and thinking tokens eat into maxOutputTokens;
@@ -63,7 +71,11 @@ export async function cacheKey(model: string, req: LlmRequest<unknown>): Promise
 }
 
 interface GeminiResponse {
-  candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[]
+  candidates?: {
+    content?: { parts?: { text?: string }[] }
+    finishReason?: string
+    groundingMetadata?: { groundingChunks?: { web?: { uri?: string; title?: string } }[] }
+  }[]
   usageMetadata?: {
     promptTokenCount?: number
     candidatesTokenCount?: number
@@ -73,7 +85,7 @@ interface GeminiResponse {
   promptFeedback?: { blockReason?: string }
 }
 
-export function readGeminiResponse(body: GeminiResponse): LlmRawResult {
+export function readGeminiResponse(body: GeminiResponse, fromText = false): LlmRawResult {
   const usage = body.usageMetadata ?? {}
   const inputTokens = usage.promptTokenCount ?? 0
   const outputTokens = (usage.candidatesTokenCount ?? 0) + (usage.thoughtsTokenCount ?? 0)
@@ -84,13 +96,25 @@ export function readGeminiResponse(body: GeminiResponse): LlmRawResult {
     throw new LlmError('failed', `gemini: no output (${reason})`)
   }
   let json: unknown
-  try {
-    json = JSON.parse(text)
-  } catch {
-    // Truncated (MAX_TOKENS) or malformed JSON: counts as invalid output, so it is retried.
-    json = null
+  if (fromText) json = jsonFromText(text)
+  else
+    try {
+      json = JSON.parse(text)
+    } catch {
+      // Truncated (MAX_TOKENS) or malformed JSON: counts as invalid output, so it is retried.
+      json = null
+    }
+  // Grounding: the pages the search used (uri is a Google redirect, title the site's domain).
+  const sources = (candidate?.groundingMetadata?.groundingChunks ?? []).flatMap((c) =>
+    c.web?.uri ? [{ url: c.web.uri, title: c.web.title ?? null }] : [],
+  )
+  return {
+    json,
+    inputTokens,
+    outputTokens,
+    cachedTokens: usage.cachedContentTokenCount ?? 0,
+    ...(fromText ? { sources } : {}),
   }
-  return { json, inputTokens, outputTokens, cachedTokens: usage.cachedContentTokenCount ?? 0 }
 }
 
 /** 429 per-day quota (free tier) vs. per-minute limit or overload. */
@@ -152,8 +176,8 @@ export function geminiProvider({
       const models = fallbackModel && fallbackModel !== model ? [model, fallbackModel] : [model]
       let busy: LlmError | null = null
       for (const m of models) {
-        // Caches belong to one model; only the primary one uses it.
-        const cacheName = m === model ? await cacheFor(m, req) : null
+        // Caches belong to one model; only the primary one uses it (never with web search).
+        const cacheName = m === model && !req.webSearch ? await cacheFor(m, req) : null
         let res = await call(m, cacheName ?? undefined)
         if (cacheName && res.status >= 400 && res.status < 500 && res.status !== 429) {
           // A cache that expired or was dropped early: send the full prompt instead.
@@ -163,7 +187,11 @@ export function geminiProvider({
           await sleep(RETRY_DELAY_MS)
           res = await call(m)
         }
-        if (res.ok) return { ...readGeminiResponse((await res.json()) as GeminiResponse), model: m }
+        if (res.ok)
+          return {
+            ...readGeminiResponse((await res.json()) as GeminiResponse, Boolean(req.webSearch)),
+            model: m,
+          }
         if (res.status === 429 || RETRY_STATUSES.has(res.status)) {
           busy = await busyError(res)
           continue

@@ -251,7 +251,7 @@ unset GEMINI_API_KEY
 
 ## 5b. Web Push: `notify` i `pg_cron` (Etapa 9)
 
-App sama upisuje kad je obavještenje na redu (`push_jobs`: prvi blok dana 10 min prije, kraj planirane pauze, probno), a `notify` svake minute šalje dospjela na sve uređaje korisnika preko standardnog Web Push-a (VAPID, bez vanjskog servisa). Tekstovi i adrese uređaja se ne loguju.
+App sama upisuje kad je obavještenje na redu (`push_jobs`: podsjetnik prije bloka i „Kasniš 15 min“ od Etape 10c, kraj planirane pauze, probno), a `notify` svake minute šalje dospjela na sve uređaje korisnika preko standardnog Web Push-a (VAPID, bez vanjskog servisa). Tekstovi i adrese uređaja se ne loguju.
 
 **iPhone / iPad:** obavještenja rade samo kad je Hoot dodan na početni ekran (Safari → Dijeli → Dodaj na početni ekran, iOS 16.4+) i otvoren odatle; tek tad Postavke → Notifikacije → „Uključi obavještenja na ovom uređaju“ pita za dozvolu. Na Androidu i desktopu radi i u browseru.
 
@@ -285,7 +285,8 @@ App sama upisuje kad je obavještenje na redu (`push_jobs`: prvi blok dana 10 mi
    );
    ```
 6. **Provjera:** Postavke → Notifikacije → uključi na uređaju → „Pošalji probno obavještenje“ stiže za najviše minut. Integrations → Cron → `notify` → History; odgovor je `{"jobs": N, "sent": N, "failed": 0, "stale": 0, "gone": 0}`. Posao koji kasni više od 30 min se odbaci, ne šalje.
-7. **Gašenje:** `select cron.unschedule('notify');`. **Novi ključevi:** ponovi 1–3; stare pretplate tad više ne rade, pa svaki uređaj ponovo uključi obavještenja.
+7. **Podsjetnici i Preskoči (Etapa 10c):** od Etape 10c app piše podsjetnike prije svakog bloka i „Kasniš 15 min“ (umjesto prvog bloka dana), a notifikacija ima Započni / Preskoči. Poslije mergea: `npx supabase functions deploy notify` i `npx supabase functions deploy push-action` (`verify_jwt = false`, ključ je jednokratni token iz notifikacije; bez novih secreta). Provjera na Androidu: podsjetnik stiže sa dva dugmeta; Preskoči zamijeni notifikaciju sa „Preskočeno: …“, a blok se pomjeri kad se app otvori. Na iPhoneu dugmadi nema (tap otvara blok).
+8. **Gašenje:** `select cron.unschedule('notify');`. **Novi ključevi:** ponovi 1–3; stare pretplate tad više ne rade, pa svaki uređaj ponovo uključi obavještenja.
 
 ## 5c. Google Drive Picker (Etapa 10c)
 
@@ -297,8 +298,10 @@ Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove
 4. Credentials → Create credentials → **API key** → Restrict key: HTTP referrers (isti originsi) i API restrictions: samo Google Picker API.
 5. Cloudflare Pages → `hoot` → Settings → Environment variables (Production i Preview): `VITE_GOOGLE_CLIENT_ID`, `VITE_GOOGLE_PICKER_API_KEY`, `VITE_GOOGLE_APP_ID` (broj projekta). Javni su po dizajnu (kao `VITE_SUPABASE_PUBLISHABLE_KEY`), ograničeni originom.
 6. Prije otvaranja za više korisnika: consent screen → Publish app (za `drive.file` bez verifikacije osim brendiranja).
+7. Bez sve tri varijable app ne nudi opciju „Google Drive“ (ostaju PDF s uređaja, slika i kucanje). CSP u `public/_headers` već dozvoljava `apis.google.com`, `accounts.google.com/gsi`, `docs.google.com` (Picker iframe) i `www.googleapis.com` (preuzimanje); poslije dodavanja varijabli treba novi deploy (Retry deployment ili novi commit), jer Vite ih ugrađuje pri buildu.
+8. Provjera: Predmet → + Izvor → Google Drive → izaberi PDF → „Pregledaj jedinice“; na izvoru je „Otvori u Drive-u“.
 
-**Web pretraga za „Fakultet s interneta“ (Etapa 10c).** Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
+**Web pretraga za „Fakultet s interneta“ (Etapa 10c).** Poslije mergea: `npx supabase functions deploy find-academic-info` i ponovo `parse-document` (nova vrsta „Plan i program“); novih secreta nema, koristi `LLM_PROVIDER` / `LLM_MODEL` / ključ kao ostale AI funkcije. Eval za plan i program: `GEMINI_API_KEY=... npm run eval` (slučaj „syllabus of a programme“). Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
 
 ## 6. Otvaranje aplikacije za više korisnika
 

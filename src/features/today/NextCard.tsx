@@ -20,7 +20,6 @@ import {
 import type { PlanBlockRow } from '@/features/plan/state'
 import { useActiveSession } from '@/features/session/api'
 import { formatClock, toSegment } from '@/features/session/model'
-import { useSessionUi } from '@/features/session/store'
 import { useNow } from '@/features/session/useNow'
 import { useLocale } from '@/features/settings/useLocale'
 import { useSubject, useSubjects } from '@/features/subjects/api'
@@ -157,13 +156,12 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
 
 /**
  * No block left today (DanasSlobodno, decision after 8b: in the same card, not a separate empty
- * screen): the next planned block (tomorrow or later), "Imam još vremena", a free session, and
- * "Predmeti" when the plan has no material yet.
+ * screen): the next planned block (tomorrow or later) and "Dodaj sesiju", or "Predmeti" when the
+ * plan has no material yet.
  */
 function FreeCard({ plan }: { plan: PlanToday }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
-  const openStart = useSessionUi((s) => s.openStart)
   const { data: subjects = [] } = useSubjects()
   const { data: sources } = useAllSources()
   const goalTitle = useGoalTitle()
@@ -204,36 +202,19 @@ function FreeCard({ plan }: { plan: PlanToday }) {
         <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">{title}</span>
         <span className="text-[13px] text-white/84">{sub}</span>
       </div>
-      {/* Side by side (feedback after 10b): "Dodaj blok" (the plan's suggestion, as "Imam još
-          vremena" was) left of the free session. */}
-      <div className="flex items-center gap-2">
-        {!noMaterial && (
-          <button
-            type="button"
-            onClick={() => setExtra(true)}
-            className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-full bg-white/18 px-3 text-[15px] font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]"
-          >
-            <PlusIcon size={16} />
-            {t('blockSheet.add')}
-          </button>
-        )}
-        {noMaterial && (
-          <Link
-            to="/subjects"
-            className="flex h-12 flex-1 items-center justify-center rounded-full bg-white/18 px-3 text-[15px] font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]"
-          >
-            {t('today.free.addMaterial')}
-          </Link>
-        )}
-        <button
-          type="button"
-          onClick={openStart}
-          className={cn(action, 'flex-1 justify-center px-3 text-[15px]')}
-        >
-          <PlayIcon />
-          {t('today.next.freeTitle')}
+      {/* One button bottom right, like "Počni" on a block (feedback after 10c): "Dodaj sesiju" is
+          the add-block flow (the plan's suggestion, then "Započeti odmah?"), which replaced the
+          free session here; without material it leads to Predmeti. */}
+      {noMaterial ? (
+        <Link to="/subjects" className={cn(action, 'self-end')}>
+          {t('today.free.addMaterial')}
+        </Link>
+      ) : (
+        <button type="button" onClick={() => setExtra(true)} className={cn(action, 'self-end')}>
+          <PlusIcon size={16} />
+          {t('today.free.addSession')}
         </button>
-      </div>
+      )}
       <BlockSheet
         open={extra}
         onOpenChange={setExtra}

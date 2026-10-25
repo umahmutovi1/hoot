@@ -5,7 +5,7 @@ import { useSubjects } from '@/features/subjects/api'
 import type { ProposalStatus } from '@/lib/import'
 import { cn } from '@/lib/utils'
 import { useWeekdayNames } from '@/features/schedule/weekdays'
-import { classLines, examLines, periodLines, useDateLabel } from './format'
+import { syllabusLines, classLines, examLines, periodLines, useDateLabel } from './format'
 import { NoTeachingPeriod, saveCount, useSaveImport } from './saveImport'
 import { useOwlStore, type ImportProposal } from './store'
 
@@ -95,6 +95,10 @@ export function ImportCard({
       key: c.key,
       status: c.status,
       ...classLines(t, c, nameOf(c.subjectId), (d) => weekdays[d] ?? ''),
+    })),
+    ...(proposal.syllabus ?? []).map((p) => ({
+      key: p.key,
+      ...syllabusLines(t, p, nameOf(p.subjectId)),
     })),
   ]
 

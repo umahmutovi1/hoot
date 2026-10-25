@@ -20,6 +20,10 @@ export const sourceFormSchema = z
       .positive('validation.positive')
       .max(600, 'validation.tooLarge')
       .nullable(),
+    /** The PDF it came from (Stage 10c): file name, Google Drive id and link; absent = unchanged. */
+    fileName: z.string().max(255).nullable().optional(),
+    driveFileId: z.string().max(128).nullable().optional(),
+    externalUrl: z.url().nullable().optional(),
   })
   .refine((s) => s.measure !== 'items' || s.minutesPerItem !== null, {
     path: ['minutesPerItem'],

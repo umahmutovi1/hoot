@@ -21,6 +21,8 @@ export function toSubjectRow(form: SubjectForm): TablesInsert<'subjects'> {
     study_mode: form.studyMode,
     campaign_start_on: form.studyMode === 'campaign' ? form.campaignStartOn : null,
     target_grade: form.targetGrade,
+    ...(form.academicYearId !== undefined ? { academic_year_id: form.academicYearId } : {}),
+    ...(form.semesterNo !== undefined ? { semester_no: form.semesterNo } : {}),
   }
 }
 
@@ -46,6 +48,7 @@ export function toAssessmentRow(
     pass_min_pct: form.passMinPct,
     entry_min_points: form.entryMinPoints,
     retake_of: form.kind === 'makeup' ? form.retakeOf : null,
+    ...(form.eveReserved !== undefined ? { eve_reserved: form.eveReserved } : {}),
   }
 }
 
@@ -82,6 +85,7 @@ export function assessmentToForm(a: Assessment): AssessmentForm {
     passMinPct: a.pass_min_pct,
     entryMinPoints: a.entry_min_points,
     retakeOf: a.retake_of,
+    eveReserved: a.eve_reserved,
   }
 }
 
@@ -94,6 +98,8 @@ export function subjectToForm(s: SubjectWithAssessments): SubjectForm {
     studyMode: s.study_mode as StudyMode,
     campaignStartOn: s.campaign_start_on,
     targetGrade: s.target_grade,
+    academicYearId: s.academic_year_id,
+    semesterNo: s.semester_no,
     assessments: [...s.assessments].sort((a, b) => a.at.localeCompare(b.at)).map(assessmentToForm),
   }
 }

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import type { SyllabusProposal } from '@/lib/import/syllabus'
 import type { AiErrorCode, Citation, ImportKind, ReimportKind } from '@shared/schemas.ts'
 import type { ClassProposal, ExamProposal, PeriodProposal } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
@@ -39,6 +40,10 @@ export interface ImportProposal {
   exams: ExamProposal[]
   /** Timetable classes; missing in proposals kept from before Stage 10. */
   classes?: ClassProposal[]
+  /** Syllabus per subject (Stage 10c). */
+  syllabus?: SyllabusProposal[]
+  /** Found on the web: link to the source and the year it says it is for. */
+  origin?: { url: string; academicYear: string | null } | null
   warnings: string[]
   savedCount: number | null
 }

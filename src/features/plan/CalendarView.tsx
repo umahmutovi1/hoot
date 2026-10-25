@@ -25,6 +25,7 @@ import { useToast } from '@/components/toast-store'
 import { useDeleteBlock } from './actions'
 import { BlockSheet } from './BlockSheet'
 import { DayTimeline } from './DayTimeline'
+import { EveBand } from './EveBand'
 import { MoreTimeSheet } from './MoreTimeSheet'
 import type { PlanBlockRow } from './state'
 import { toTimeline, useDayBlocks, type DayBlockView } from './useDayBlocks'
@@ -119,6 +120,7 @@ export function CalendarView() {
               </button>
             }
           />
+          <EveBand date={selectedDate} />
           <div className="flex items-center justify-between gap-3 px-1">
             <span className="text-xs leading-[1.4] text-ink-muted">
               {t('plan.schedule.note')} · {t('plan.schedule.moved')}

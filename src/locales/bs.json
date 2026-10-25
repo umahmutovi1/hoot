@@ -67,7 +67,6 @@
     "todayInCalendar": "Danas u kalendaru",
     "next": {
       "label": "Sljedeće",
-      "freeTitle": "Slobodna sesija",
       "freeSub": "Izaberi predmet i koliko vremena imaš",
       "start": "Počni",
       "running": "U toku",
@@ -119,7 +118,8 @@
       "noMaterialBody": "Dodaj predmetu izvor ili grubu veličinu gradiva, pa plan rasporedi učenje do ispita.",
       "addMaterial": "Predmeti",
       "tomorrow": "sutra",
-      "next": "Sljedeći blok: {{when}} {{time}} · {{subject}}"
+      "next": "Sljedeći blok: {{when}} {{time}} · {{subject}}",
+      "addSession": "Dodaj sesiju"
     },
     "more_one": "Još {{count}} prijedlog",
     "more_few": "Još {{count}} prijedloga",
@@ -152,7 +152,8 @@
       "toToday": "Prebačeno na danas u {{time}}",
       "toTomorrow": "Danas nema mjesta: prvi blok sutra u {{time}}",
       "toLater": "Prebačeno na prvi slobodan dan u {{time}}",
-      "carried": "prebačeno"
+      "carried": "prebačeno",
+      "fromNotification": "Preskočeno iz notifikacije: {{title}}"
     },
     "start": {
       "title": "Započeti sesiju sada?",
@@ -222,6 +223,11 @@
       "done": "{{day}}: maksimum je {{cap}}",
       "fullDay": "Maksimum je već koliko i slobodnog vremena; za više dodaj termine u Dostupnosti.",
       "button": "Više vremena"
+    },
+    "eve": {
+      "band": "Samo za {{subject}} · ispit {{when}}",
+      "remove": "Ukloni",
+      "removed": "Dan više nije rezervisan. Plan je preračunat."
     }
   },
   "subjects": {
@@ -822,6 +828,11 @@
       "2": "2 · Šta ulazi",
       "next": "Dalje: šta ulazi",
       "back": "Nazad"
+    },
+    "eve": {
+      "label": "Dan prije samo za ovaj predmet",
+      "sub": "{{day}}: samo {{subject}}; ostalo se pomjera",
+      "subGeneric": "Zadnji dan učenja prije ispita: samo ovaj predmet; ostalo se pomjera"
     }
   },
   "deadlines": {
@@ -869,7 +880,9 @@
       "titlePlaceholder": "npr. Oppenheim — Signals & Systems",
       "mode": {
         "photo": "Slikaj sadržaj",
-        "text": "Ukucaj"
+        "text": "Ukucaj",
+        "pdf": "PDF s uređaja",
+        "drive": "Google Drive"
       },
       "outline": "Sadržaj",
       "placeholder": {
@@ -886,7 +899,14 @@
       },
       "review": "Pregledaj jedinice",
       "delete": "Obriši izvor",
-      "confirmDelete": "Sigurno? Brišu se i jedinice i bilješke. Tapni ponovo"
+      "confirmDelete": "Sigurno? Brišu se i jedinice i bilješke. Tapni ponovo",
+      "from": "Odakle je sadržaj?",
+      "modeSub": {
+        "pdf": "Poglavlja i broj stranica iz fajla · fajl ostaje kod tebe",
+        "drive": "Jedan ili više PDF-ova · izvor pamti link na Drive",
+        "photo": "Stranice sadržaja, najviše 4",
+        "text": "Jedno poglavlje po liniji"
+      }
     },
     "section": "Izvori",
     "add": "+ Izvor",
@@ -987,6 +1007,35 @@
       "rate": "Procijeni težinu AI-jem",
       "rating": "Procjenjujem…",
       "removeTopic": "Ukloni temu {{name}}"
+    },
+    "pdf": {
+      "pick": "Izaberi PDF",
+      "pickDrive": "Izaberi na Google Drive-u",
+      "reading": "Čitam PDF…",
+      "failed": "PDF nije pročitan. Probaj drugi fajl ili ukucaj sadržaj.",
+      "onDevice": "{{pages}} str. · čita se na uređaju",
+      "fromDrive": "{{pages}} str. · Google Drive",
+      "change": "Promijeni",
+      "severalName_one": "{{count}} PDF",
+      "severalName_few": "{{count}} PDF-a",
+      "severalName_other": "{{count}} PDF-ova",
+      "severalSub": "Google Drive · jedan izvor",
+      "perFile": "Svaki fajl je jedna jedinica (broj stranica ili slajdova iz fajla), redom po nazivu.",
+      "outlineFound": "Sadržaj je pročitan iz bookmarka u PDF-u ({{count}} stavki). Bez AI poziva.",
+      "pagesLabel": "Stranice knjige",
+      "asInPdf": "Kao u PDF-u",
+      "shift": "Pomak −{{n}}",
+      "shiftHint": "PDF ima {{n}} stranica prije „1“. Pomak daje brojeve iz knjige.",
+      "noOutline": "PDF nema sadržaj u bookmarkima. Asistent može pročitati samo stranice sadržaja, ne cijeli fajl.",
+      "tocPages": "Stranice sadržaja",
+      "tocFrom": "Od stranice",
+      "tocTo": "Do stranice",
+      "tocHint": "Nađene po riječi „Sadržaj“; ispravi ako treba. Šalje se samo tekst ovih stranica (najviše 8).",
+      "typeInstead": "Ukucaj sama",
+      "privacy": "Fajl se ne uploaduje; izvor pamti naziv fajla i broj stranica.",
+      "originDrive": "PDF · Google Drive",
+      "originDevice": "PDF s uređaja · fajl je kod tebe",
+      "openDrive": "Otvori u Drive-u"
     }
   },
   "time": {
@@ -1055,7 +1104,10 @@
       },
       "subUnits": "Podjedinice",
       "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih.",
-      "aiAnswer": "AI prijedlog · provjeri"
+      "aiAnswer": "AI prijedlog · provjeri",
+      "yoursOnly": "tvoja ocjena",
+      "defaultDifficulty": "zadano · tapni da promijeniš",
+      "partialHint": "„Djelimično“ se upiše na kraju sesije, kad staneš usred poglavlja."
     },
     "topics": {
       "title": "Teme",
@@ -1481,7 +1533,8 @@
         "academic_calendar": "Akademski kalendar",
         "exam_schedule": "Raspored ispita",
         "document": "Pravilnik, silabus, obavještenje",
-        "timetable": "Raspored nastave"
+        "timetable": "Raspored nastave",
+        "syllabus": "Plan i program"
       },
       "textLabel": "Tekst",
       "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
@@ -1620,6 +1673,43 @@
       "contents": "Dodaj sadržaj ili pitanja",
       "contentsFor": "Dodaj sadržaj · {{subject}}",
       "giveDocument": "Daj dokument"
+    },
+    "syllabus": {
+      "books_one": "{{count}} knjiga",
+      "books_few": "{{count}} knjige",
+      "books_other": "{{count}} knjiga",
+      "topics_one": "{{count}} tema",
+      "topics_few": "{{count}} teme",
+      "topics_other": "{{count}} tema",
+      "exams_one": "{{count}} ispit",
+      "exams_few": "{{count}} ispita",
+      "exams_other": "{{count}} ispita",
+      "newSubject": "nemaš ovaj predmet · ponuda za novi",
+      "section": "Plan i program",
+      "addTitle": "Nemaš ovaj predmet — dodati ga?",
+      "addSub": "Dobija trenutni semestar; ispiti i bodovi iz plana i programa.",
+      "add": "Dodaj predmet",
+      "match": "Upari sa…",
+      "skip": "Preskoči",
+      "literature": "Literatura → izvori",
+      "required": "obavezna · gruba veličina dok ne uvezeš sadržaj",
+      "extra": "dopunska · ne ulazi u plan",
+      "have": "već imaš",
+      "topicsTitle": "Teme",
+      "week": "{{n}}. sed.",
+      "grading": "Bodovanje → ispiti",
+      "points": "{{points}} b",
+      "pass": "prag {{points}} b",
+      "was": "bilo {{points}} b",
+      "manual": "ručno",
+      "manualSub": "tvoja izmjena ostaje ({{points}} b)",
+      "onlyTotal": "samo u zbiru bodova",
+      "newExamSub": "datum iz akademskog kalendara (okvirno)",
+      "total": "Ukupno bodova: {{points}}",
+      "totalWas": "bilo {{points}}",
+      "hint": "Predmeti se uparuju po nazivu, a novi se nude. Tvoje ručne izmjene se ne prepisuju.",
+      "fromWeb": "Sa interneta: {{host}}",
+      "checkYear": "Provjeri da je za {{year}}: dokument je sa interneta, a ne od tebe."
     }
   },
   "offline": {
@@ -1751,10 +1841,12 @@
       "reserve": "Plan ostavlja rezervu, bolje realno nego idealno."
     },
     "presets": {
-      "title": "Kako voliš pauze?",
+      "title": "Pauze i podsjetnici",
       "sub": "Ovo je samo podsjetnik. Pauzu uvijek tapneš sama, a za svaku sesiju možeš izabrati drugi.",
       "recommended": "preporučeno",
-      "own": "Vlastiti niz (npr. 45 → 10 → 45 → 20) složiš u Postavkama."
+      "own": "Vlastiti niz (npr. 45 → 10 → 45 → 20) složiš u Postavkama.",
+      "reminders": "Podsjetnik prije bloka",
+      "remindersHint": "Može više izbora. Tap na notifikaciju pokreće sesiju; „Preskoči“ radi i bez otvaranja appa."
     },
     "subject": {
       "title": "Prvi predmet",
@@ -1886,6 +1978,17 @@
       "sub_other": "Za {{count}} dana",
       "now": "Počni odmah",
       "done": "Kampanja kreće danas. Plan je preračunat."
+    },
+    "eve": {
+      "title": "Rezervisati {{day}} samo za {{subject}}? Ostalo se pomjera.",
+      "sub": "Taj dan: ponavljanje, pitanja i slabe teme. Ponavljanja drugih predmeta idu dan ranije ili poslije.",
+      "takenTitle": "{{taken}} je već za {{other}}. Rezervisati {{day}} za {{subject}}?",
+      "takenSub": "Dan pred ispit pripada bližem ispitu.",
+      "raiseCap": "i povećaj maksimum tog dana na {{time}}",
+      "reserve": "Rezerviši",
+      "reserveDay": "Rezerviši {{day}}",
+      "no": "Ne",
+      "done": "{{day}} je samo za {{subject}}. Plan je preračunat."
     }
   },
   "replan": {
@@ -2155,17 +2258,20 @@
     "nextReview": "Sljedeće ponavljanje",
     "step": "korak {{n}} od 4",
     "unitStrength": "jačina {{pct}} · {{band}}",
-    "notInReview": "još nije u ponavljanju",
     "unlock": "„Razumijem” se otključava kroz",
     "unlockLink": "test pamćenja",
     "unlockQuestion": "„Znam” se otključava kroz",
     "test": "Testiraj se iz ovog poglavlja",
-    "testQuestion": "Testiraj se"
+    "testQuestion": "Testiraj se",
+    "notRead": "Još nije pročitano",
+    "notReadSub": "Jačina se računa kad poglavlje pročitaš i prođe test.",
+    "notTested": "Još nije testirano",
+    "notTestedSub": "Jačina se zna poslije prvog testa pamćenja.",
+    "nextAfterRead": "Poslije čitanja",
+    "nextAfterTest": "Poslije prvog testa"
   },
   "notify": {
     "title": "Notifikacije",
-    "firstBlock": "Prvi blok dana",
-    "firstBlockSub": "10 min prije",
     "breakEnd": "Kraj pauze",
     "breakEndSub": "i kad je ekran zaključan",
     "enable": "Uključi obavještenja na ovom uređaju",
@@ -2178,13 +2284,32 @@
     "testSent": "Probno obavještenje stiže za najviše minut",
     "failed": "Uključivanje nije uspjelo. Pokušaj ponovo.",
     "push": {
-      "firstBlockTitle": "Za 10 min: {{subject}}",
-      "firstBlockBody": "{{title}} · {{time}}",
       "breakEndTitle": "Pauza je gotova",
       "breakEndBody": "Vrijeme je za sljedeći interval.",
       "testTitle": "Hoot",
-      "testBody": "Obavještenja rade."
-    }
+      "testBody": "Obavještenja rade.",
+      "reminderTitle": "Za {{minutes}} min: {{subject}}",
+      "reminderTitleHours": "Za {{hours}} h: {{subject}}",
+      "reminderBody": "{{title}} · {{minutes}} min · {{time}}",
+      "lateTitle": "Kasniš 15 min na {{subject}}",
+      "lateBody": "{{title}} · bilo je za {{time}}",
+      "start": "Započni",
+      "skip": "Preskoči",
+      "skippedTitle": "Preskočeno: {{subject}} · {{title}}",
+      "skippedBody": "Gradivo ostaje u planu. Hoot ga smjesti kad se otvori."
+    },
+    "reminders": "Podsjetnik prije bloka",
+    "remindersSub": "Može više izbora. Bez izbora nema podsjetnika.",
+    "offset": {
+      "120": "2 h",
+      "60": "1 h",
+      "30": "30 min",
+      "15": "15 min",
+      "5": "5 min"
+    },
+    "remindersHint": "Ako blok ne započneš, 15 min poslije stiže „Kasniš 15 min“, jednom po bloku. Između {{from}} i {{to}} (tvoj ritam) ništa ne stiže.",
+    "remindersHintNoRhythm": "Ako blok ne započneš, 15 min poslije stiže „Kasniš 15 min“, jednom po bloku.",
+    "offsetsLabel": "Podsjetnik prije bloka"
   },
   "sessionEnd": {
     "saveAndTest": "Spasi i testiraj se",
@@ -2384,6 +2509,11 @@
         "title": "Izgled",
         "sub": "Postavke › Opće · tema",
         "syn": "tema, boja, boje, izgled, lavanda, grafit, pijesak, kadulja, okean"
+      },
+      "faculty": {
+        "title": "Fakultet i godina",
+        "sub": "Postavke › Opće · fakultet, program, akademske godine",
+        "syn": "fakultet, studij, program, godina studija, semestar, akademska godina, univerzitet"
       }
     }
   },
@@ -2416,6 +2546,96 @@
         "name": "Okean",
         "sub": "hladna · plava"
       }
+    }
+  },
+  "academic": {
+    "semester": {
+      "label": "Semestar",
+      "winter": "{{n}}. · zimski",
+      "summer": "{{n}}. · ljetni",
+      "ofYear": "{{n}}. · {{year}}",
+      "none": "Bez semestra",
+      "hint": "Trenutni semestar je izabran sam ({{year}}). Ostale godine su u Postavkama → Fakultet i godina."
+    },
+    "group": {
+      "current": "{{n}}. semestar · {{season}} · {{year}}",
+      "row": "{{n}}. semestar",
+      "rowNoSemester": "Bez semestra u godini",
+      "rowSub_one": "{{year}} · {{count}} predmet",
+      "rowSub_few": "{{year}} · {{count}} predmeta",
+      "rowSub_other": "{{year}} · {{count}} predmeta",
+      "none": "Bez semestra",
+      "noneSub_one": "{{count}} predmet",
+      "noneSub_few": "{{count}} predmeta",
+      "noneSub_other": "{{count}} predmeta",
+      "earlier": "Ranije",
+      "later": "Sljedeći semestar",
+      "carried": "prenesen"
+    },
+    "season": {
+      "winter": "zimski",
+      "summer": "ljetni"
+    },
+    "subtitle": "{{active}} · {{n}}. semestar · {{year}}",
+    "newYear": {
+      "title": "Nova akademska godina — dodati {{label}}?",
+      "sub": "Predmeti iz {{previous}} se sklope, a nepoloženi ostaju gore kao „prenesen“.",
+      "add": "Dodaj {{label}}",
+      "added": "Dodana je akademska godina {{label}}.",
+      "search": "Potraži kalendar i plan i program za {{year}}. godinu"
+    },
+    "faculty": {
+      "title": "Fakultet i godina",
+      "row": "Fakultet i godina",
+      "rowEmpty": "Za predmete po semestru i pretragu kalendara",
+      "rowValue": "{{institution}} · {{n}}. godina",
+      "institution": "Fakultet",
+      "institutionPlaceholder": "npr. Elektrotehnički fakultet Sarajevo",
+      "program": "Studijski program",
+      "programPlaceholder": "npr. Računarstvo i informatika",
+      "yearOfStudy": "Godina studija",
+      "saved": "Spašeno."
+    },
+    "years": {
+      "title": "Akademske godine",
+      "row": "{{label}} · {{n}}. godina",
+      "sub_one": "{{from}} – {{to}} · {{count}} predmet",
+      "sub_few": "{{from}} – {{to}} · {{count}} predmeta",
+      "sub_other": "{{from}} – {{to}} · {{count}} predmeta",
+      "current": "trenutna",
+      "add": "Dodaj akademsku godinu",
+      "empty": "Izaberi godinu studija i spasi: dodaje se trenutna akademska godina, a predmeti se grupišu po semestru."
+    },
+    "onboarding": {
+      "title": "Gdje studiraš?",
+      "sub": "Hoot potraži akademski kalendar i plan i program na internetu, a ti pregledaš šta je našao.",
+      "privacy": "Na internet ide samo naziv fakulteta, programa i godina. Nađeno te čeka u sljedećem koraku."
+    },
+    "found": {
+      "title": "Nađeno na internetu",
+      "crumb": "Nađeno",
+      "year": "{{n}}. godina",
+      "searching": "Tražim akademski kalendar i plan i program…",
+      "kind": {
+        "academic_calendar": "Akademski kalendar",
+        "syllabus": "Plan i program",
+        "other": "Dokument"
+      },
+      "checkYear": "{{year}} · provjeri godinu",
+      "noYear": "godina nije navedena",
+      "import": "Uvezi",
+      "importing": "Preuzimam…",
+      "warning": "Dokumenti su sa interneta: provjeri da su za {{year}} i tvoj program. Ništa se ne spašava bez pregleda.",
+      "none": "Nisam našla kalendar ni plan i program za {{year}}.",
+      "noneSub": "Ako ga imaš kao PDF ili sliku (Moodle, oglasna ploča), daj mi ga i pročitat ću ga isto.",
+      "addPdf": "Dodaj PDF",
+      "search": "Potraži na internetu",
+      "searchButton": "Potraži kalendar i plan i program na internetu",
+      "privacy": "Na internet ide samo naziv fakulteta, programa i godina. Ista pretraga se ne ponavlja dok ne promijeniš fakultet, program ili godinu.",
+      "cardTitle_one": "{{count}} dokument sa interneta",
+      "cardTitle_few": "{{count}} dokumenta sa interneta",
+      "cardTitle_other": "{{count}} dokumenata sa interneta",
+      "cardSub": "Akademski kalendar i plan i program · pregledaš prije spašavanja"
     }
   }
 }

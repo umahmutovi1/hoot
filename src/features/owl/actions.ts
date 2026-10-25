@@ -24,6 +24,7 @@ import {
   type ExistingPeriod,
 } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
+import { proposeSyllabus, type SyllabusExisting } from '@/lib/import/syllabus'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
 import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
 import { pdfText } from './pdfText'
@@ -38,6 +39,12 @@ import {
 } from './store'
 
 export type DocumentInput = { type: 'file'; file: File } | { type: 'text'; text: string }
+
+/** A document found on the web ("Fakultet s interneta"): its link and the year it says. */
+export interface DocumentOrigin {
+  url: string
+  academicYear: string | null
+}
 
 export interface OwlContext {
   userId: string
@@ -115,6 +122,7 @@ export async function giveDocument(
   kind: ImportKind,
   note: string | null,
   ctx: OwlContext,
+  origin: DocumentOrigin | null = null,
 ) {
   const s = store()
   if (s.busy) return
@@ -192,8 +200,8 @@ export async function giveDocument(
     void ctx.queryClient.invalidateQueries({ queryKey: documentsKey(ctx.userId) })
 
     // 4. A proposal for the calendar, exams or classes, never written without "Spasi".
-    const proposal = proposalFrom(result, documentId, title, ctx)
-    const found = proposal.periods.length + proposal.exams.length + (proposal.classes?.length ?? 0)
+    const proposal = { ...(await proposalFrom(result, documentId, title, ctx)), origin }
+    const found = foundCount(proposal)
     const done: OwlMessage = {
       id: pendingId,
       role: 'owl',
@@ -214,19 +222,54 @@ export async function giveDocument(
   }
 }
 
-function proposalFrom(
+/** Items a proposal brings (a syllabus subject counts as one). */
+function foundCount(p: ImportProposal) {
+  return p.periods.length + p.exams.length + (p.classes?.length ?? 0) + (p.syllabus?.length ?? 0)
+}
+
+/** What a syllabus is compared with: the subjects' sources, topics, exams and point totals. */
+export async function syllabusExisting(
+  ctx: Pick<OwlContext, 'subjects'>,
+): Promise<SyllabusExisting> {
+  const [sources, topics] = await Promise.all([
+    supabase.from('sources').select('subject_id, title').is('archived_at', null),
+    supabase.from('topics').select('subject_id, name'),
+  ])
+  return {
+    sources: (sources.data ?? []).map((x) => ({ subjectId: x.subject_id, title: x.title })),
+    topics: (topics.data ?? []).map((x) => ({ subjectId: x.subject_id, name: x.name })),
+    exams: ctx.subjects.flatMap((x) =>
+      x.assessments.map((a) => ({
+        id: a.id,
+        subjectId: x.id,
+        kind: a.kind,
+        date: localDateOf(a.at),
+        pointsMax: a.points_max,
+        passMinPct: a.pass_min_pct,
+      })),
+    ),
+    pointsTotal: Object.fromEntries(ctx.subjects.map((x) => [x.id, x.points_total])),
+  }
+}
+
+async function proposalFrom(
   result: ParseResult,
   documentId: string,
   title: string,
   ctx: OwlContext,
-): ImportProposal {
+): Promise<ImportProposal> {
   const subjects = ctx.subjects.filter((x) => !x.archived)
+  const syllabus = result.syllabus ?? []
   return {
     documentId,
     documentTitle: title,
     periods: proposePeriods(result.periods, ctx.periods as ExistingPeriod[]),
     exams: proposeExams(result.exams, subjects, existingExams(ctx.subjects)),
     classes: proposeClasses(result.entries ?? [], subjects, ctx.classes),
+    syllabus:
+      syllabus.length > 0
+        ? proposeSyllabus(syllabus, subjects, await syllabusExisting(ctx))
+        : undefined,
     warnings: result.warnings,
     savedCount: null,
   }
@@ -272,8 +315,8 @@ async function importFromDocument(
   }
   const result = await invokeAi<ParseResult>('parse-document', request)
   void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
-  const proposal = proposalFrom(result, documentId, doc.title, ctx)
-  const found = proposal.periods.length + proposal.exams.length + (proposal.classes?.length ?? 0)
+  const proposal = await proposalFrom(result, documentId, doc.title, ctx)
+  const found = foundCount(proposal)
   store().replace(pendingId, {
     id: pendingId,
     role: 'owl',

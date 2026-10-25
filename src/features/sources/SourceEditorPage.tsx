@@ -1,10 +1,20 @@
 import type { TFunction } from 'i18next'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BookIcon, ChevronLeftIcon, CloseIcon, SparkleIcon, WarningIcon } from '@/components/icons'
+import {
+  ArchiveIcon,
+  BookIcon,
+  CameraIcon,
+  ChevronLeftIcon,
+  CloseIcon,
+  DocIcon,
+  SparkleIcon,
+  TextIcon,
+  WarningIcon,
+} from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { Button } from '@/components/ui/button'
 import { useAiAvailability } from '@/features/owl/api'
@@ -49,6 +59,9 @@ import {
 } from './schemas'
 import { UnitSheet } from './UnitSheet'
 import { useAiImport, type AiResult } from './useAiImport'
+import { driveAvailable } from './drive'
+import { PdfImport, type PdfOrigin } from './PdfImport'
+import type { AiOutline } from '@/lib/outline/ai'
 
 /**
  * DodajIzvor → Parsiranje for manual entry: /subjects/:id/sources/new, and "Uredi sadržaj" at
@@ -101,7 +114,7 @@ function SourceEditor({
   )
   const [textError, setTextError] = useState<string | null>(null)
   const [step, setStep] = useState<Step>({ kind: 'input' })
-  const [mode, setMode] = useState<'photo' | 'text'>(isEdit ? 'text' : 'photo')
+  const [mode, setMode] = useState<InputMode>(isEdit ? 'text' : 'pdf')
   const [files, setFiles] = useState<File[]>([])
   const ai = useAiImport(subject)
   const { state: aiState } = useAiAvailability()
@@ -132,6 +145,27 @@ function SourceEditor({
         measure,
         input === 'files' ? { kind: 'files', files } : { kind: 'text', text },
       )
+      if (!result) return
+      setStep({ kind: 'review', ...result })
+      window.scrollTo(0, 0)
+    })()
+
+  /** Where the units came from (PDF, Drive): kept on the source when it is saved. */
+  const keepOrigin = (origin: PdfOrigin) => {
+    form.setValue('fileName', origin.fileName)
+    form.setValue('driveFileId', origin.driveFileId)
+    form.setValue('externalUrl', origin.externalUrl)
+  }
+  const fromPdf = (outline: AiOutline, origin: PdfOrigin) => {
+    keepOrigin(origin)
+    setStep({ kind: 'review', ...outline, warnings: [] })
+    window.scrollTo(0, 0)
+  }
+  /** A PDF without an outline: only its table-of-contents pages go to the model. */
+  const fromPdfToc = (tocText: string, origin: PdfOrigin) =>
+    form.handleSubmit(async (values) => {
+      keepOrigin(origin)
+      const result = await ai.run(values, measure, { kind: 'text', text: tocText })
       if (!result) return
       setStep({ kind: 'review', ...result })
       window.scrollTo(0, 0)
@@ -313,6 +347,19 @@ function SourceEditor({
         busy={ai.busy}
         aiReady={aiReady}
         onAiText={() => void toAiReview('text')}
+        pdf={(source) => (
+          <PdfImport
+            source={source}
+            measure={measure}
+            title={form.getValues('title')}
+            onTitle={(title) => form.setValue('title', title, { shouldValidate: true })}
+            onReview={fromPdf}
+            onAiText={(tocText, origin) => void fromPdfToc(tocText, origin)}
+            onTypeInstead={() => setMode('text')}
+            aiReady={aiReady}
+            busy={ai.busy}
+          />
+        )}
       />
 
       {ai.error && (
@@ -320,7 +367,7 @@ function SourceEditor({
           {t(`owl.error.${ai.error as 'failed'}`)}
         </span>
       )}
-      {mode === 'photo' ? (
+      {mode === 'pdf' || mode === 'drive' ? null : mode === 'photo' ? (
         <>
           <span className="text-center text-xs text-ink-muted">
             {t('sources.import.deletedAfter')}
@@ -351,6 +398,15 @@ function SourceEditor({
   )
 }
 
+type InputMode = 'pdf' | 'drive' | 'photo' | 'text'
+const INPUT_MODES: InputMode[] = ['pdf', 'drive', 'photo', 'text']
+const MODE_ICONS: Record<InputMode, ReactNode> = {
+  pdf: <DocIcon size={18} />,
+  drive: <ArchiveIcon size={18} />,
+  photo: <CameraIcon size={18} />,
+  text: <TextIcon size={18} />,
+}
+
 function OutlineInput({
   measure,
   mode,
@@ -363,10 +419,11 @@ function OutlineInput({
   busy,
   aiReady,
   onAiText,
+  pdf,
 }: {
   measure: Measure
-  mode: 'photo' | 'text'
-  onMode: (mode: 'photo' | 'text') => void
+  mode: InputMode
+  onMode: (mode: InputMode) => void
   text: string
   error: string | null
   onText: (text: string) => void
@@ -375,30 +432,56 @@ function OutlineInput({
   busy: boolean
   aiReady: boolean
   onAiText: () => void
+  pdf: (source: 'pdf' | 'drive') => ReactNode
 }) {
   const { t } = useTranslation()
   const { state } = useAiAvailability()
+  // A PDF's outline and pages make sense for pages and slides; question lists are typed or photographed.
+  const modes = INPUT_MODES.filter(
+    (m) =>
+      (m !== 'pdf' && m !== 'drive') ||
+      ((measure === 'pages' || measure === 'slides') && (m !== 'drive' || driveAvailable())),
+  )
+  const current = modes.includes(mode) ? mode : modes[0]!
   return (
     <>
-      <div role="tablist" className="flex rounded-[22px] bg-track p-1">
-        {(['photo', 'text'] as const).map((m) => (
-          <button
-            key={m}
-            type="button"
-            role="tab"
-            aria-selected={mode === m}
-            onClick={() => onMode(m)}
-            className={cn(
-              'h-10 flex-1 rounded-[18px] text-sm font-semibold',
-              mode === m && 'glass',
-            )}
-          >
-            {t(`sources.editor.mode.${m}`)}
-          </button>
-        ))}
+      <div className="flex flex-col gap-2">
+        <span className={fieldLabel}>{t('sources.editor.from')}</span>
+        <div
+          role="radiogroup"
+          aria-label={t('sources.editor.from')}
+          className="flex flex-col gap-2"
+        >
+          {modes.map((m) => (
+            <button
+              key={m}
+              type="button"
+              role="radio"
+              aria-checked={current === m}
+              onClick={() => onMode(m)}
+              className={cn(
+                'flex min-h-14 items-center gap-3 rounded-[20px] border-2 glass p-3 text-left',
+                current === m ? 'border-brand-accent' : 'border-surface',
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className="icon-tile flex size-9 shrink-0 items-center justify-center rounded-[12px]"
+              >
+                {MODE_ICONS[m]}
+              </span>
+              <span className="flex min-w-0 flex-col gap-0.5">
+                <span className="text-[15px] font-semibold">{t(`sources.editor.mode.${m}`)}</span>
+                <span className="text-xs text-ink-muted">{t(`sources.editor.modeSub.${m}`)}</span>
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {mode === 'photo' ? (
+      {current === 'pdf' || current === 'drive' ? (
+        pdf(current)
+      ) : current === 'photo' ? (
         <>
           <ImportPhotos files={files} onChange={onFiles} disabled={busy} />
           {!aiReady && (

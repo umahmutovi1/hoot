@@ -1,0 +1,32 @@
+UNIVERZITET U SARAJEVU – ELEKTROTEHNIČKI FAKULTET
+Nastavni plan i program – Računarstvo i informatika, II godina, III semestar, 2026/2027
+
+1. SIGNALI I SISTEMI (RI-2-3), 6 ECTS
+Literatura:
+Obavezna:
+ - A. V. Oppenheim, A. S. Willsky: Signals and Systems, 2nd ed., Prentice Hall
+ - Interna skripta "Signali i sistemi – zbirka zadataka", ETF 2024
+Dopunska:
+ - S. Haykin, B. Van Veen: Signals and Systems, Wiley
+Sedmični plan:
+ 1. sedmica: Uvod, klasifikacija signala
+ 2. sedmica: Osnovne operacije nad signalima
+ 3. sedmica: LTI sistemi, konvolucija
+ 4. sedmica: Svojstva LTI sistema
+ 5. sedmica: Fourierov red
+ 6. sedmica: Fourierova transformacija
+ 7. sedmica: I parcijalni ispit
+Način provjere znanja i ocjenjivanja:
+ Prisustvo i aktivnost: 10 bodova
+ Zadaće: 10 bodova
+ I parcijalni ispit: 20 bodova (minimum 10)
+ II parcijalni ispit: 20 bodova (minimum 10)
+ Završni (usmeni) ispit: 40 bodova (minimum 20)
+
+2. NUMERIČKA ANALIZA (RI-2-4), 5 ECTS
+Literatura (obavezna): R. L. Burden, J. D. Faires: Numerical Analysis, Cengage
+Sedmični plan:
+ 1. Greške u numeričkom računanju
+ 2. Rješavanje nelinearnih jednačina
+ 3. Interpolacija
+Ocjenjivanje: I parcijala 25 bodova, II parcijala 25 bodova, Integralni ispit 50 bodova.

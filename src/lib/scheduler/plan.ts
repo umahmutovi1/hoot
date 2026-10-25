@@ -13,6 +13,7 @@ import {
   TARGET_MARGIN,
   workShare,
 } from './constants'
+import { reservedDays } from './eve'
 import { placeTimes, type PlaceItem } from './place'
 import { growthLimit } from './realization'
 import type {
@@ -43,6 +44,10 @@ import type {
  *    deficit.
  * 4. `placeTimes()` puts the day's blocks into free slots with breaks; what does not fit stays
  *    in the pool for later days.
+ *
+ * A reserved day before an exam ("Dan pred ispit") holds only that subject: its reviews,
+ * questions and weakest units of the scope; other subjects' work and capacity skip the day, and
+ * a review that would land there before its own exam comes a day earlier.
  *
  * Campaign subjects (and, for subjects that track lectures, material not covered in class yet)
  * enter rotation on an ALAP start computed from a first pass. Remaining required work at the
@@ -347,10 +352,22 @@ function run(
   const effCap = aiCap.map((c, k) => Math.min(c, growthLimit(state.growthBase, k)))
   const prefix = [0]
   for (const c of effCap) prefix.push(prefix[prefix.length - 1]! + c)
-  /** Capacity from day k up to (not including) `end`. */
-  const capUntil = (k: number, end: LocalDate) => {
+  const reserved = reservedDays(state)
+  /** The day is reserved for another subject's exam. */
+  const blockedFor = (d: LocalDate, subjectId: string) => {
+    const owner = reserved.get(d)
+    return owner !== undefined && owner.subjectId !== subjectId
+  }
+  /** Capacity from day k up to (not including) `end`, without days reserved for others. */
+  const capUntil = (k: number, end: LocalDate, subjectId: string) => {
     const e = dayIndex.get(end) ?? (end > (state.days.at(-1)?.date ?? end) ? state.days.length : 0)
-    return e > k ? prefix[e]! - prefix[k]! : 0
+    if (e <= k) return 0
+    let c = prefix[e]! - prefix[k]!
+    for (const [d, owner] of reserved) {
+      const i = dayIndex.get(d)
+      if (i !== undefined && i >= k && i < e && owner.subjectId !== subjectId) c -= effCap[i]!
+    }
+    return c
   }
 
   const goalsOfUnit = new Map<string, PlanGoal[]>()
@@ -367,7 +384,12 @@ function run(
   const eligible = (w: Work, date: LocalDate) => {
     if (w.left <= 0) return false
     const start = startOf(w)
-    return start !== null && date >= start && date < learnEnd.get(w.goal.id)!
+    return (
+      start !== null &&
+      date >= start &&
+      date < learnEnd.get(w.goal.id)! &&
+      !blockedFor(date, w.subjectId)
+    )
   }
 
   // When each unit is due: its FSRS day, but never after the last day before its nearest exam
@@ -378,7 +400,10 @@ function run(
   for (const u of state.units) {
     if (u.nextReviewOn === null) continue
     const goal = (goalsOfUnit.get(u.id) ?? []).find((g) => g.on > state.from)
-    const last = goal ? lastReviewDay(goal, learnEnd.get(goal.id)!, state.from) : null
+    let last = goal ? lastReviewDay(goal, learnEnd.get(goal.id)!, state.from) : null
+    // A day reserved for another exam: the check comes earlier, never after its own exam.
+    while (last !== null && last > state.from && blockedFor(last, u.subjectId))
+      last = addDays(last, -1)
     dueOn.set(u.id, last !== null && u.nextReviewOn > last ? last : u.nextReviewOn)
   }
 
@@ -410,6 +435,7 @@ function run(
           on !== undefined &&
           on <= d &&
           !reviewed.has(u.id) &&
+          !blockedFor(d, u.subjectId) &&
           (goalsOfUnit.get(u.id) ?? []).some((g) => g.on > d)
         )
       })
@@ -461,7 +487,7 @@ function run(
       for (const sid of [...day.lectureSubjectIds].sort()) {
         const subject = subjects.get(sid)
         const goal = goals.find((g) => g.subjectId === sid && g.kind === 'exam' && g.on > d)
-        if (!subject || !goal || reviewBudget < RECAP_MINUTES) continue
+        if (!subject || !goal || reviewBudget < RECAP_MINUTES || blockedFor(d, sid)) continue
         const covered = state.units
           .filter((u) => u.subjectId === sid && u.coveredOn === d)
           .sort((a, b) => a.order - b.order || byId(a, b))
@@ -484,29 +510,38 @@ function run(
     }
     const reviewUsed = drafts.reduce((s, x) => s + x.minutes, 0)
 
-    // Buffer days: review and questions from the exam's scope only.
+    // Buffer days: review and questions from the exam's scope only. The reserved day before an
+    // exam is one too, and it may take the whole day, weakest units first.
     let bufferUsed = 0
+    const eveOf = reserved.get(d)
     for (const g of goals) {
       if (g.kind !== 'exam') continue
       const end = learnEnd.get(g.id)!
-      if (!(d >= end && d < g.on)) continue
+      const eve = eveOf?.id === g.id
+      if (!eve && !(d >= end && d < g.on)) continue
+      if (blockedFor(d, g.subjectId)) continue
       const subject = subjects.get(g.subjectId)
       if (!subject) continue
       const pool = g.unitIds
         .map((id) => units.get(id))
-        .filter((u): u is PlanUnit => Boolean(u) && !reviewed.has(u!.id))
+        // The reserved day goes over the scope once more, also what was reviewed before.
+        .filter((u): u is PlanUnit => Boolean(u) && (eve || !reviewed.has(u!.id)))
         .filter((u) => u.kind === 'question' || u.level >= 1)
         .filter((u) => !drafts.some((x) => x.reviews.includes(u.id)))
         .sort(
           (a, b) =>
-            a.level - b.level || b.difficulty - a.difficulty || a.order - b.order || byId(a, b),
+            (eve ? strength(a) - strength(b) : 0) ||
+            a.level - b.level ||
+            b.difficulty - a.difficulty ||
+            a.order - b.order ||
+            byId(a, b),
         )
       if (pool.length === 0) continue
       const daysLeft = Math.max(1, diffDays(d, g.on))
       const total = pool.reduce((s, u) => s + reviewMinutes(u.kind, u.minutes), 0)
       let budget = Math.min(
         cap - reviewUsed - bufferUsed,
-        Math.max(Math.min(total, minBlock), Math.ceil(total / daysLeft)),
+        eve ? total : Math.max(Math.min(total, minBlock), Math.ceil(total / daysLeft)),
       )
       const draft: Draft = {
         subjectId: g.subjectId,
@@ -550,7 +585,7 @@ function run(
         const perGoal = new Map<string, number>()
         for (const w of list) perGoal.set(w.goal.id, (perGoal.get(w.goal.id) ?? 0) + w.left)
         for (const [gid, left] of perGoal) {
-          const c = capUntil(k, learnEnd.get(gid)!)
+          const c = capUntil(k, learnEnd.get(gid)!, sid)
           u += c > 0 ? left / c : left
         }
         const soft = new Map<LocalDate, number>()
@@ -559,7 +594,7 @@ function run(
         let acc = 0
         for (const [due, left] of [...soft].sort(([a], [b]) => (a < b ? -1 : 1))) {
           acc += left
-          const c = capUntil(k, addDays(due, 1))
+          const c = capUntil(k, addDays(due, 1), sid)
           u = Math.max(u, c > 0 ? acc / c : acc)
         }
         urgency.set(sid, u * weightOf(subject))
@@ -807,10 +842,16 @@ function alapStarts(state: PlanState, first: Pass) {
     )
   })
   const dates = state.days.map((d) => d.date)
+  const reserved = reservedDays(state)
   const campaign = new Map<string, LocalDate>()
   const late = new Map<string, LocalDate>()
 
-  const walk = (work: number, end: LocalDate): LocalDate => {
+  // Free capacity a subject can take: none on a day reserved for another subject's exam.
+  const freeFor = (d: LocalDate, sid: string) => {
+    const owner = reserved.get(d)
+    return owner && owner.subjectId !== sid ? 0 : free.get(d)!
+  }
+  const walk = (work: number, end: LocalDate, sid: string): LocalDate => {
     let i = dates.findIndex((d) => d >= end)
     if (i < 0) i = dates.length
     i -= 1
@@ -820,7 +861,7 @@ function alapStarts(state: PlanState, first: Pass) {
     let start: number | null = null
     for (let j = i; j >= 0; j--) {
       const d = dates[j]!
-      const take = Math.min(free.get(d)!, work - acc)
+      const take = Math.min(freeFor(d, sid), work - acc)
       free.set(d, free.get(d)! - take)
       acc += take
       if (acc >= work) {
@@ -833,7 +874,7 @@ function alapStarts(state: PlanState, first: Pass) {
     let extra = 0
     let days = 0
     let j = start
-    const cap = (d: LocalDate) => free.get(d)!
+    const cap = (d: LocalDate) => freeFor(d, sid)
     while (j > 0 && (extra < margin || days < CAMPAIGN_MIN_MARGIN_DAYS)) {
       j--
       extra += cap(dates[j]!)
@@ -853,6 +894,7 @@ function alapStarts(state: PlanState, first: Pass) {
       const start = walk(
         required.reduce((s, w) => s + w.left, 0),
         end,
+        subject.id,
       )
       const prev = campaign.get(subject.id)
       if (!prev || start < prev) campaign.set(subject.id, start)
@@ -864,6 +906,7 @@ function alapStarts(state: PlanState, first: Pass) {
         walk(
           lateWork.reduce((s, w) => s + w.left, 0),
           end,
+          subject.id,
         ),
       )
     }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useDayBoundary } from '@/features/settings/profile'
+import { useSubjects } from '@/features/subjects/api'
 import { addDays, type LocalDate } from '@/lib/day'
 import { suggestions as rules, type Suggestion } from '@/lib/scheduler'
 import { usePlanBlocks } from './api'
@@ -32,6 +33,7 @@ export function useSuggestions(subjectId?: string): Suggestion[] {
   const boundary = useDayBoundary()
   const blocks = usePlanBlocks(boundary).data
   const schedule = useScheduleData()
+  const subjects = useSubjects().data
   const { snoozed, accepted, deficits, recordDeficit } = usePlanUi()
   const today = model?.built.today
 
@@ -56,6 +58,9 @@ export function useSuggestions(subjectId?: string): Suggestion[] {
         .map((p) => ({ id: p.id, startsOn: p.startsOn, endsOn: p.endsOn })),
       missedStreak: missedStreak(blocks ?? [], today),
       previousDeficit: previous ?? null,
+      eveAnswered: (subjects ?? []).flatMap((s) =>
+        s.assessments.filter((a) => a.eve_reserved !== null).map((a) => a.id),
+      ),
     })
     return list.filter((s) => {
       if ((snoozed[s.key] ?? '') >= today) return false
@@ -63,5 +68,5 @@ export function useSuggestions(subjectId?: string): Suggestion[] {
       if (subjectId && (!('subjectId' in s) || s.subjectId !== subjectId)) return false
       return true
     })
-  }, [model, today, deficits, schedule.periods, blocks, snoozed, accepted, subjectId])
+  }, [model, today, deficits, schedule.periods, blocks, subjects, snoozed, accepted, subjectId])
 }

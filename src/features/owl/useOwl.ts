@@ -9,7 +9,13 @@ import { useDeadlines, useSubjects } from '@/features/subjects/api'
 import { localDay } from '@/lib/day'
 import type { ExistingClass } from '@/lib/import'
 import { currentTeachingPeriod } from '@/lib/schedule'
-import { ask, giveDocument, type DocumentInput, type OwlContext } from './actions'
+import {
+  ask,
+  giveDocument,
+  type DocumentInput,
+  type DocumentOrigin,
+  type OwlContext,
+} from './actions'
 import { buildStateSummary } from './stateSummary'
 import { useOwlStore } from './store'
 import type { ImportKind } from '@shared/schemas.ts'
@@ -61,8 +67,12 @@ export function useOwl() {
     return {
       ready: ctx !== null && subjects !== undefined && periods !== undefined,
       classes,
-      giveDocument: (input: DocumentInput, kind: ImportKind, note: string | null = null) =>
-        ctx ? giveDocument(input, kind, note, ctx) : Promise.resolve(),
+      giveDocument: (
+        input: DocumentInput,
+        kind: ImportKind,
+        note: string | null = null,
+        origin: DocumentOrigin | null = null,
+      ) => (ctx ? giveDocument(input, kind, note, ctx, origin) : Promise.resolve()),
       ask: (question: string) =>
         ctx
           ? ask(

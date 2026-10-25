@@ -136,6 +136,7 @@ export function applyReplace(
     status: 'planned',
     origin: 'ai',
     title: null,
+    skip_requested_at: null,
     plan_run_id: args.p_run_id,
     created_at: now,
     updated_at: now,
