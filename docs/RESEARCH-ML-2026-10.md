@@ -18,7 +18,10 @@
     - Lingshetti 2025 predlaže Q-learning sa nagradom „dobitak − zamor“, bez stanja, podataka i koda.
     - Chauhan 2025 je pregled za građevinske projekte sa nedosljednim tabelama.
     - Awesome-lista samo potvrđuje smjer.
-    - Reddit tema je najkorisnija: korisnici traže lanac dokument → raspored → replan, kakav Hoot već ima, i da app „ne izmišlja njihove brojeve“, što ulazi u model trajanja kao prior.
+    - Reddit teme su najkorisnije:
+      - Korisnici traže lanac dokument → raspored → replan, kakav Hoot već ima, i da app „ne izmišlja njihove brojeve“, što ulazi u model trajanja kao prior.
+      - Najveća žalba na Reclaim je što blok sam označi kao završen. To diktira kako se označavaju podaci za model odrađenosti.
+      - Cijena od 10+ $ mjesečno odbija korisnike, pa lokalni ML ima smisla i zbog troška.
 
 ---
 
@@ -31,6 +34,8 @@
 | [Chauhan 2025, IJETMR 12(5)](https://www.researchgate.net/publication/392703149_ADAPTIVE_SCHEDULING_APPLYING_AI_AND_MACHINE_LEARNING_TO_OPTIMIZE_PROJECT_TIMELINES_AND_RESOURCE) | Pregled ML-a u upravljanju građevinskim projektima: stabla odlučivanja i neuronske mreže za trajanje zadataka; tabele za 5 projekata (−10 % trajanja, +20 % „tačnosti“ procjene) | Samo potvrda smjera. Metodologija spominje 10 pa 12 projekata, a tabele 5; „tačnost“ nije definisana; dio referenci se ne može naći. Korisno je samo podsjećanje na PERT (vjerovatnosna trajanja), što podržava P50/P80 iz 5.1 |
 | [awesome-time-tracking: AI predictive scheduling](https://github.com/ever-works/awesome-time-tracking/blob/develop/details/ai-predictive-scheduling-algorithms.md) | Pregled: predikcija trajanja, energija po dobu dana, optimizacija kalendara, adaptivni replan; Motion, Reclaim, SkedPal | Smjer da, model ne. Bez arhitektura, featura i referenci |
 | [Reddit r/ProductivityApps](https://www.reddit.com/r/ProductivityApps/comments/1vbwi6a/is_there_an_ai_calendar_that_can_turn_a_study/) | Studentica za board ispit traži app koji 15 str. plana (moduli u „danima“) pretvori u raspored | Da, vidi 1.1 |
+| [Reddit r/ProductivityApps, „Best AI task manager/calendar“ (2024–2025)](https://www.reddit.com/r/ProductivityApps/comments/1ci2o2h/best_ai_task_managercalendar/) | Iskustva sa Reclaim, SkedPal, FlowSavvy, Motion, Morgen, Dola | Da, vidi 1.2 |
+| [Reddit r/iosapps, Planif.ai (apr 2026)](https://www.reddit.com/r/iosapps/comments/1sr149s/planifai_i_built_an_ai_calendar_where_you_just/) | Besplatan AI kalendar: prirodni jezik → događaji uz potvrdu; povratne informacije korisnika | Da, vidi 1.2 |
 
 ### 1.1 Šta Reddit tema kaže o potrebama
 
@@ -41,6 +46,42 @@ Lista želja iz posta: (1) uvoz dokumenta „bez reinterpretacije mojih brojeva�
 - **Hoot pokriva tačke 1–4 i 6** u jednom lancu (uvoz s pregledom, dostupnost, replan, minute po jedinici, boje predmeta). Tačka 5 je ICS izvoz u Etapi 12, a upis u Google Calendar je pod „Kasnije“. To je diferencijacija koju vrijedi pokazati u portfoliju.
 - **„Ne izmišljaj moje brojeve“ je ML zahtjev.** Kad dokument nosi trajanja („modul 2 dana“), to je najjači prior za taj izvor. U modelu 5.1 korisnikov broj ulazi kao prior sa vlastitom varijansom, koriguje se ličnim planning-fallacy faktorom i nikad se ne prepisuje (`assigned_by = 'user'`). „Koliko sati je jedan dan“ je upravo `b_korisnik`: naučen, a ne pitanje u postavkama.
 - **„Budžet po zadatku unutar modula“** je raspodjela budžeta modula na jedinice po težini i obimu. To `estimates` već radi za stranice; ostaje da uvoz zna za trajanje na nivou modula. Prijedlog za `parse-document` šemu, van ove etape.
+
+### 1.2 Šta ostala dva Reddit threada kažu
+
+**„Best AI task manager/calendar“** (2024–2025):
+- **Najjača žalba je na Reclaim:** sam označi zadatak kao završen kad prođe planirano vrijeme, iako nije urađen. Morgen se hvali upravo suprotnim („ne označava dok ti ne označiš“).
+- **SkedPal** traži ručni replan nakon svakog novog zadatka.
+- **Želje:**
+  - unos prirodnim jezikom
+  - brzo dodavanje iz Android widgeta
+  - podzadaci
+  - planiranje više sedmica unaprijed
+  - automatsko vrijeme putovanja kao buffer
+- **Cijena je stalna tema:** FlowSavvy od 133 $ godišnje je „apsurdno“, Zidy od 250 $ mjesečno „ko bi to platio“, a traži se i doživotna licenca. OP je na kraju ostao na TickTicku jer „ništa ne odgovara“.
+
+**Planif.ai** (iOS, apr 2026):
+- **Model:** prirodni jezik → događaji, uz potvrdu prije upisa i rješavanje konflikata. Besplatno je jer je kontekst mali, uz dnevne limite i lokalnu pohranu.
+- **Šta korisnici traže, po učestalosti:**
+  1. sync sa Apple i Google kalendarom (bez toga „ne bih ga koristio redovno“)
+  2. dark mode
+  3. widgeti i Apple Reminders
+  4. 24-satni format i brz povratak na „danas“
+- **Ostale zamjerke:**
+  - ekran za prijavu na startu tjera ljude (gost način postoji, ali se ne vidi)
+  - streakovi su upitni
+  - pozdrav „dobro jutro“ u ponoć
+
+**Šta to znači za Hoot:**
+
+- **Oznake za model odrađenosti (5.2) su najvažnija pouka.** Hoot već ne označava blok kao odrađen sam od sebe: odrađen je samo uz timer ili „Odradila sam bez timera“. Ali prošli blok koji ostane `planned` ili `missed` nije potvrđeno propušten: korisnica je možda učila i nije označila.
+  - **Model mora razlikovati tri ishoda:** odrađen (potvrđeno), preskočen (eksplicitno, „Preskoči“ ili „Danas ne mogu“) i nepotvrđen (vrijeme prošlo, ništa označeno).
+  - **Nepotvrđeni ulaze u model sa manjom težinom**, kao šum u oznakama, a ne kao siguran neuspjeh.
+  - **Notifikacija „Dokle ste stigli?“** (Etapa 12) smanjuje taj šum, pa joj raste vrijednost. Ide u Etapu 11a kao napomena uz migraciju `ml_signals`.
+- **Lokalni ML je i odgovor na cijenu.** Korisnici odbijaju 10+ $ mjesečno. Modeli koji rade u browseru (inference u TS-u) ne koštaju ništa po korisniku, a AI ostaje samo tamo gdje mora (uvoz, objašnjenja) i nosi limite. Isti obrazac koristi Planif.ai.
+- **„Potvrda prije upisa“ se ponavlja u oba threada.** Hoot već ima pregled prije spašavanja; to vrijedi i za strateške akcije (jedan tap, nikad automatski).
+- **Sync sa kalendarom je uslov za svakodnevno korištenje.** Hoot ima ICS uvoz zauzetosti, a ICS izvoz je u Etapi 12. Upis u Google Calendar je pod „Kasnije“ i ostaje tamo dok se app ne otvori za više korisnika (Google verifikacija).
+- **Van ML-a, za ROADMAP „Kasnije“ ako se ponovi:** tamni režim je već tamo; brzo dodavanje (widget ili Web Share Target, koji već postoji) i login (magic link na startu je ista prepreka kao Planif.ai „sign in“, ali je za Hoot potreban jer se podaci sinhronizuju).
 
 ---
 
@@ -123,6 +164,7 @@ P(done) = σ(β₀ + β_dio_dana + β_vikend + β_kind + β_demand·demand + β_
   - **Ocjena termina:** odrađenost je jedan od signala iz PRD „Termini učenja“ (Beta po terminu postaje poseban slučaj ovog modela).
   - **Prognoza:** `forecast()` uzorkuje odrađenost po bloku, a ne dnevne minute.
 - **Interpretabilnost:** koeficijenti se prevode u rečenice („navečer ti propadne 40 % blokova“), u skladu sa „Uvidi“ u PRD-u.
+- **Oznake (1.2):** odrađen = 1, eksplicitno preskočen = 0, nepotvrđen (vrijeme prošlo bez oznake) = 0 sa manjom težinom. Nikad se ne zaključuje „odrađen“ samo iz proteklog vremena.
 - **Lični update:** Laplaceova aproksimacija oko priora iz Pythona, update po bloku u TS-u. Gradient boosting tek kad bude podataka od više korisnika, i samo ako backtest pokaže dobitak (log loss, Brier, kalibracijska kriva).
 - **Thompson za termine:** ostaje kako je planirano u Etapi 11, uz sigurno istraživanje: uzorkuje se samo među terminima unutar ε od najboljeg, najviše jedan istraživački blok sedmično. Izvor obrasca: kontekstualni banditi u mobilnim intervencijama ([Drink Less, Thompson sampling](https://arxiv.org/abs/2311.14359v1)).
 
@@ -175,4 +217,4 @@ P(done) = σ(β₀ + β_dio_dana + β_vikend + β_kind + β_demand·demand + β_
 - Bayes i personalizacija: [partial pooling tutorial](https://www.huber.embl.de/users/kaspar/teaching/bayes-r/tutorial-partial-pooling.html) · [Amazon, empirical Bayes za cold start](https://cdn.amazon.science/b5/2f/a9d9581d4f8eab473a4ab4a8ad35/addressing-cold-start-in-product-search-via-empirical-bayes.pdf) · [IntelligentPooling](https://arxiv.org/pdf/2008.01571) · [Thompson sampling, Drink Less](https://arxiv.org/abs/2311.14359v1)
 - Procjena vremena i ponašanje: [Planning fallacy](https://en.wikipedia.org/wiki/Planning_fallacy) · [Hawkes procesi za prokrastinaciju studenata](https://arxiv.org/pdf/2102.00089) · [Procrastination modeling, UW](https://digital.lib.washington.edu/researchworks/items/d6010a9b-56d5-4739-8712-f5809f5f3f6e)
 - Raspoređivanje: [Horn 1974, Some simple scheduling algorithms](https://ideas.repec.org/a/wly/navlog/v21y1974i1p177-185.html) · [Shioura, Strusevich, Shakhlevich 2024](https://www.citedrive.com/en/discovery/generalizing-horns-conditions-for-preemptive-scheduling-on-identical-parallel-machines-via-network-flow-techniques) · [highs-js (HiGHS u WASM-u)](https://github.com/coder0xff/highs-js) · [Making the most of your day: online learning for time allocation](https://arxiv.org/pdf/2102.08087)
-- Iz zahtjeva: [IJRASET 2026](https://www.ijraset.com/best-journal/ai-powered-smart-study-planner-309) · [Lingshetti i dr. 2025, doi 10.32628/IJSRSET2512320](https://doi.org/10.32628/IJSRSET2512320) · [Chauhan 2025, doi 10.29121/ijetmr.v12.i5.2025.1631](https://doi.org/10.29121/ijetmr.v12.i5.2025.1631) · [Reddit r/ProductivityApps](https://www.reddit.com/r/ProductivityApps/comments/1vbwi6a/is_there_an_ai_calendar_that_can_turn_a_study/) · [awesome-time-tracking](https://github.com/ever-works/awesome-time-tracking/blob/develop/details/ai-predictive-scheduling-algorithms.md)
+- Iz zahtjeva: [IJRASET 2026](https://www.ijraset.com/best-journal/ai-powered-smart-study-planner-309) · [Lingshetti i dr. 2025, doi 10.32628/IJSRSET2512320](https://doi.org/10.32628/IJSRSET2512320) · [Chauhan 2025, doi 10.29121/ijetmr.v12.i5.2025.1631](https://doi.org/10.29121/ijetmr.v12.i5.2025.1631) · [Reddit r/ProductivityApps](https://www.reddit.com/r/ProductivityApps/comments/1vbwi6a/is_there_an_ai_calendar_that_can_turn_a_study/) · [Reddit, Best AI task manager/calendar](https://www.reddit.com/r/ProductivityApps/comments/1ci2o2h/best_ai_task_managercalendar/) · [Reddit, Planif.ai](https://www.reddit.com/r/iosapps/comments/1sr149s/planifai_i_built_an_ai_calendar_where_you_just/) · [awesome-time-tracking](https://github.com/ever-works/awesome-time-tracking/blob/develop/details/ai-predictive-scheduling-algorithms.md)
