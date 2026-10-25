@@ -128,3 +128,5 @@ Statični mockupi (bez `support.js`), više stanja na jednoj tabli kao `StartSes
 - `DanPredIspit.dc.html`: kartica 3 dana prije (uz povećanje maksimuma), dva ispita zaredom, toast, prekidač u ExamSheetu, rezervisan dan u Plan → Dan.
 - `Podsjetnici.dc.html`: Postavke → Notifikacije (pomaci, bez „Prvi blok dana“), onboarding „Pauze i podsjetnici“, notifikacije na Androidu
   (Započni / Preskoči, „Kasniš 15 min“, potvrda preskoka) i iPhoneu (bez dugmadi).
+- **Odluke uz mockupe (oktobar 2026):** (1) Predmeti se grupišu po semestru (godina + semestar), ne po cijeloj godini. (2) Drive folder je jedan
+  izvor, svaki PDF jedna jedinica. (3) „Kasniš 15 min“ nema svoj prekidač: ide uz podsjetnike (bar jedan pomak).
