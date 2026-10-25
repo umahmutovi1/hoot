@@ -1068,7 +1068,8 @@
       "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih.",
       "aiAnswer": "AI prijedlog · provjeri",
       "yoursOnly": "tvoja ocjena",
-      "defaultDifficulty": "zadano · tapni da promijeniš"
+      "defaultDifficulty": "zadano · tapni da promijeniš",
+      "partialHint": "„Djelimično“ se upiše na kraju sesije, kad staneš usred poglavlja."
     },
     "topics": {
       "title": "Teme",

@@ -180,6 +180,11 @@ function UnitDetail({
             </Link>
             .
           </span>
+          {!isQuestion && unit.level === 0 && (
+            <span className="-mt-1 text-[13px] text-ink-muted">
+              {t('units.detail.partialHint')}
+            </span>
+          )}
         </div>
       )}
 
