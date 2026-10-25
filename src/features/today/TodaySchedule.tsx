@@ -15,7 +15,9 @@ import { BlockSheet } from '@/features/plan/BlockSheet'
 import { blockSub, blockTitle, isOpen, nextBlock, useGoalTitle } from '@/features/plan/model'
 import { reasonOf } from '@/features/plan/save'
 import type { PlanBlockRow } from '@/features/plan/state'
-import { useActiveSession } from '@/features/session/api'
+import { useActiveSession, useSessions } from '@/features/session/api'
+import { useAgenda } from '@/features/plan/agenda'
+import { useNavigate } from 'react-router-dom'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useSubjects } from '@/features/subjects/api'
 import { classesOn, formatClock } from '@/lib/schedule'
@@ -43,6 +45,9 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
   const { t } = useTranslation()
   const { data: subjects = [] } = useSubjects()
   const schedule = useScheduleData()
+  const agenda = useAgenda()
+  const navigate = useNavigate()
+  const { data: sessions = [] } = useSessions()
   const { data: active } = useActiveSession()
   const [picked, setPicked] = useState<PlanBlockRow | null>(null)
   const remove = useDeleteBlock()
@@ -59,6 +64,10 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
   const name = (id: string | null) => subjects.find((s) => s.id === id)?.name ?? ''
   const next = nextBlock(plan.todayBlocks, plan.nowMin)
   const goalTitle = useGoalTitle()
+  const sessionOf = (blockId: string) =>
+    sessions
+      .filter((x) => x.block_id === blockId)
+      .sort((a, b) => (a.started_at < b.started_at ? 1 : -1))[0]?.id
 
   const rows: Row[] = [
     ...plan.todayBlocks.map((block): Row => ({
@@ -74,6 +83,17 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
         id: c.id,
         title: `${shortName(name(c.subjectId))} · ${t(`timetable.kind.${c.kind}`).toLowerCase()}`,
         sub: t('today.schedule.classUntil', { time: formatClock(c.endMin) }),
+      })),
+    // Busy time from connected calendars (Stage 10b: Raspored shows everything on the calendar).
+    ...agenda
+      .busyFor(plan.today)
+      .filter((x) => !x.ignored)
+      .map((x): Row => ({
+        kind: 'class',
+        at: x.startMin,
+        id: x.id,
+        title: x.title ?? t('today.schedule.busy'),
+        sub: t('today.schedule.busyUntil', { time: formatClock(x.endMin), source: x.source }),
       })),
   ].sort((a, b) => a.at - b.at)
 
@@ -166,7 +186,9 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
                     .join(' · ')}
                 </span>
               </span>
-              {canOpen && <ChevronRightIcon size={16} className="text-ink-subtle" />}
+              {(canOpen || (done && sessionOf(b.id))) && (
+                <ChevronRightIcon size={16} className="text-ink-subtle" />
+              )}
             </>
           )
           return (
@@ -211,6 +233,15 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
                     {content}
                   </button>
                 </SwipeRow>
+              ) : done && sessionOf(b.id) ? (
+                // A done block opens its session (as in Napredak → Sesije).
+                <button
+                  type="button"
+                  onClick={() => navigate(`/sessions/${sessionOf(b.id)}`)}
+                  className="flex w-full items-center gap-3 px-4 py-[13px]"
+                >
+                  {content}
+                </button>
               ) : canOpen ? (
                 <button
                   type="button"

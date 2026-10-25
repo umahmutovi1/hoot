@@ -69,10 +69,10 @@ function ExamTile({
   return (
     <Link
       to={`/subjects/${subject.id}`}
-      className="glass flex min-w-0 flex-1 flex-col gap-2 rounded-card p-3.5"
+      // Square tile (decision after 10b feedback): date and days on top, readiness big in the
+      // middle, the name and the bar at the bottom; every tile has the same shape.
+      className="glass flex aspect-square min-w-0 flex-1 flex-col rounded-card p-3"
     >
-      {/* Four rows 8 px apart (design README, 10b); % and bar always exist, so every tile has
-          the same shape and height. */}
       <span className="flex items-baseline justify-between gap-1">
         <span className={cn('text-xs font-bold uppercase', palette.deepText)}>
           {format(new Date(at), 'd MMM', { locale: dateFnsLocales[locale] })}
@@ -85,11 +85,11 @@ function ExamTile({
               : t('today.examInShort', { count: days })}
         </span>
       </span>
-      <span className="truncate text-sm font-semibold">{subject.name}</span>
-      <span className="text-[22px] leading-tight font-semibold tabular-nums">
+      <span className="flex flex-1 items-center justify-center text-[28px] leading-none font-semibold tracking-[-0.6px] tabular-nums">
         {pct === null ? '—' : `${pct}%`}
       </span>
-      <span className="h-[5px] rounded-[3px] bg-white/65">
+      <span className="truncate text-[13px] font-semibold">{subject.name}</span>
+      <span className="mt-1.5 h-[5px] rounded-[3px] bg-white/65">
         <span
           className={cn('block h-[5px] rounded-[3px]', palette.bar)}
           style={{ width: `${pct ?? 0}%` }}

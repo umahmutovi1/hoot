@@ -182,8 +182,8 @@ function BlockForm({
   if (!days.includes(day)) days.push(day)
   const dayTop = (d: LocalDate) => {
     const n = diffDays(today, d)
+    // "Sutra" did not fit the chip; tomorrow is named by its weekday like the other days.
     if (n === 0) return t('blockSheet.today')
-    if (n === 1) return t('blockSheet.tomorrow')
     return format(toDisplayDate(d), 'EEE', { locale: dateFnsLocales[locale] })
   }
 

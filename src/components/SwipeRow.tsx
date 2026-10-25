@@ -124,6 +124,8 @@ export function SwipeRow({
       <div
         className={cn(
           'relative touch-pan-y bg-inherit select-none [-webkit-touch-callout:none]',
+          // While open, row and buttons are one flat strip (no rounded gap between them).
+          dx < 0 && '[&>*]:rounded-r-none',
           !dragging && 'transition-transform duration-200 ease-out motion-reduce:transition-none',
         )}
         style={{ transform: dx ? `translateX(${dx}px)` : undefined }}
@@ -201,6 +203,8 @@ export function SwipeRow({
             setDx(0)
           }
         }}
+        // Links inside the row would start a native drag (and cancel the swipe) with a mouse.
+        onDragStart={(e) => e.preventDefault()}
         onContextMenu={(e) => {
           e.preventDefault()
           setMenu(true)

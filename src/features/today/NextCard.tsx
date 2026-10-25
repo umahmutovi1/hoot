@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
+import { ChevronRightIcon } from '@/components/icons'
 import { useStartBlock } from '@/features/plan/actions'
 import { useAllSources } from '@/features/plan/api'
 import {
@@ -236,8 +237,13 @@ function RunningCard({ data }: { data: ActiveSession }) {
   const { data: subject } = useSubject(data.session.subject_id)
   const list = data.segments.map(toSegment)
   const running = Boolean(openSegment(list))
+  // The whole card opens the session; finishing or discarding happens there (decision, 10b).
   return (
-    <section className="glass-tint flex flex-col gap-4 rounded-card-lg p-5">
+    <Link
+      to="/session"
+      aria-label={t('today.next.open')}
+      className="glass-tint flex flex-col gap-4 rounded-card-lg p-5 active:scale-[0.99]"
+    >
       <span className={label}>{running ? t('today.next.running') : t('today.next.paused')}</span>
       <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">
         {subject?.name ?? t('session.title')}
@@ -246,11 +252,10 @@ function RunningCard({ data }: { data: ActiveSession }) {
         <span className="text-[40px] font-semibold tracking-[-1.2px] tabular-nums">
           {formatClock(activeMs(list, now))}
         </span>
-        <Link to="/session" className={action}>
-          <PlayIcon />
-          {t('today.next.resume')}
-        </Link>
+        <span className="flex size-12 items-center justify-center rounded-full bg-white/18">
+          <ChevronRightIcon size={22} />
+        </span>
       </div>
-    </section>
+    </Link>
   )
 }

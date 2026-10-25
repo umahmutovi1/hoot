@@ -76,7 +76,7 @@ Male staklene indigo pločice sa bijelom linijskom ikonom ostaju samo kao ikone 
 PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (default → jedan tap → tek onda postavka).
 - **Prvi red je ljepljiv** na svim ekranima sa prvim redom: `sticky top-0` + `env(safe-area-inset-top)`. **Izmjena (oktobar 2026):** umjesto
   gradijenta platna sadržaj ispod reda se zamuti kao na iOS-u: `backdrop-filter: blur(20px) saturate(180%)` uz vrlo blag sloj boje platna
-  (0.55), a donja ivica se gasi maskom (`mask-image: linear-gradient(to bottom, #000 75%, transparent)`), pa nema oštre linije. Logo, AI i
+  (0.22, blur 40 px, saturate 190%, kao na iOS-u: sadržaj ostaje u boji, nije bjelkast), a donja ivica se gasi maskom (`mask-image: linear-gradient(to bottom, #000 75%, transparent)`), pa nema oštre linije. Logo, AI i
   ☰ ostaju oštri iznad zamućenja. Bez podrške za `backdrop-filter` ili uz „smanji prozirnost“: platno 0.92 bez blura. Mrvice skrolaju.
   Red: logo · AI · razmak · [pretraga ☰]. Pretraga i ☰ dijele jednu široku pilulu (88 × 44, ista pozadina kao isključeno AI dugme:
   `bg-white/30` + inset svjetlo), ikone ostaju boje teksta.
@@ -90,13 +90,12 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   `prefers-reduced-motion` → samo fade 150 ms.
 - **Fokus kartica na Danas:** dva prstena kao u mockupu (80 px, debljina 9, track bijeli 0.6): vanjski r 32 plan danas (`brand-accent`),
   unutrašnji r 20 sedmica (pink deep); pored 2×2 statistika (Plan danas, Sedmica, Sljedeći ispit, Spremnost).
-- **Kartice ispita:** hijerarhija iz mockupa u 4 reda sa jednakim razmakom 8 px: (1) datum, velika slova, boja predmeta, a desno u istom
-  redu dani do ispita sitno sekundarno („5 d“, „sutra“, „danas“), (2) ime predmeta 14/600 (jedan red, `truncate`), (3) % 22/600,
-  (4) traka 5 px, radijus 3 px, track 0.65. % i traka uvijek postoje (bez izvora „—“ i prazna traka), pa su sve tri kartice istog oblika i visine.
+- **Kartice ispita (izmijenjeno poslije pregleda 10b):** kvadratne (`aspect-square`), sve iste: gore datum velikim slovima u boji predmeta i desno dani do ispita sitno („5 d“, „sutra“, „danas“); u sredini velik % (28/600, „—“ bez izvora); dolje ime predmeta (jedan red) i traka 5 px, radijus 3 px, track 0.65.
 - **Swipe ulijevo** na redu liste: crveno „Obriši“ / sivo-ljubičasto „Arhiviraj“ / „Preskoči“ dugmad 72 px se otkrivaju ispod reda,
   red prati prst (otpor poslije širine dugmadi), puni swipe izvrši prvu akciju; uvijek toast Poništi. Ne počinje s lijeve ivice (iOS nazad).
+  Dok je red otvoren, red i dugmad su jedna ravna traka (desni uglovi reda nisu zaobljeni, bez razmaka).
 - **Blok na Danas:** tap otvara mali sheet „Započeti sesiju sada?“ (predmet, gradivo, trajanje, predložak; Počni kao `btn-primary`,
-  ispod Uredi · Preskoči · Obriši). Nazad u sesiji otvara sheet sa 4 opcije (Nastavi, Izađi a timer radi, Završi ranije, Odbaci crveno).
+  ispod Uredi · Preskoči · Obriši). Nazad u sesiji samo izlazi (timer radi); „Završi“ uvijek otvara sheet Završi · Odbaci (crveno) · Nastavi učiti.
 - **Plan kalendar kao iOS (oktobar 2026):** Dan je default i nema tabova Dan/Mjesec. Iznad pilula dana je pilula „‹ Oktobar 2026“ (crni tekst, lijevo,
   strelice sedmice desno) koja otvara Mjesec; tap na dan u Mjesecu vraća na Dan (nazad iz Mjeseca isto). Vremenska osa Dana je cijeli dan
   00–24 i otvara se na sada (danas), prvom bloku ili 08:00. Prazan dan nema napomenu „Nema nastave ovaj dan“.
