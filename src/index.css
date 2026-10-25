@@ -349,6 +349,12 @@ html [data-vaul-drawer] {
   transition-duration: 0.4s;
   user-select: auto;
 }
+/* vaul's ::after (200% tall, below the sheet) covers the gap when a sheet is pulled up; our sheets
+   scroll themselves, so it became scrollable empty space under the content ("na bijelo"). Only the
+   handle drags, so the sheet is never pulled up and the cover is not needed. */
+html [data-vaul-drawer]::after {
+  display: none;
+}
 html [data-vaul-drawer][data-state='closed'],
 html [data-vaul-overlay][data-state='closed'] {
   animation-duration: 0.25s;

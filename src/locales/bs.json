@@ -67,7 +67,6 @@
     "todayInCalendar": "Danas u kalendaru",
     "next": {
       "label": "Sljedeće",
-      "freeTitle": "Slobodna sesija",
       "freeSub": "Izaberi predmet i koliko vremena imaš",
       "start": "Počni",
       "running": "U toku",
@@ -119,7 +118,8 @@
       "noMaterialBody": "Dodaj predmetu izvor ili grubu veličinu gradiva, pa plan rasporedi učenje do ispita.",
       "addMaterial": "Predmeti",
       "tomorrow": "sutra",
-      "next": "Sljedeći blok: {{when}} {{time}} · {{subject}}"
+      "next": "Sljedeći blok: {{when}} {{time}} · {{subject}}",
+      "addSession": "Dodaj sesiju"
     },
     "more_one": "Još {{count}} prijedlog",
     "more_few": "Još {{count}} prijedloga",
@@ -1066,7 +1066,10 @@
       },
       "subUnits": "Podjedinice",
       "subUnitsHint": "Status se mijenja na podjedinicama; poglavlje ga računa iz njih.",
-      "aiAnswer": "AI prijedlog · provjeri"
+      "aiAnswer": "AI prijedlog · provjeri",
+      "yoursOnly": "tvoja ocjena",
+      "defaultDifficulty": "zadano · tapni da promijeniš",
+      "partialHint": "„Djelimično“ se upiše na kraju sesije, kad staneš usred poglavlja."
     },
     "topics": {
       "title": "Teme",
@@ -2179,12 +2182,17 @@
     "nextReview": "Sljedeće ponavljanje",
     "step": "korak {{n}} od 4",
     "unitStrength": "jačina {{pct}} · {{band}}",
-    "notInReview": "još nije u ponavljanju",
     "unlock": "„Razumijem” se otključava kroz",
     "unlockLink": "test pamćenja",
     "unlockQuestion": "„Znam” se otključava kroz",
     "test": "Testiraj se iz ovog poglavlja",
-    "testQuestion": "Testiraj se"
+    "testQuestion": "Testiraj se",
+    "notRead": "Još nije pročitano",
+    "notReadSub": "Jačina se računa kad poglavlje pročitaš i prođe test.",
+    "notTested": "Još nije testirano",
+    "notTestedSub": "Jačina se zna poslije prvog testa pamćenja.",
+    "nextAfterRead": "Poslije čitanja",
+    "nextAfterTest": "Poslije prvog testa"
   },
   "notify": {
     "title": "Notifikacije",

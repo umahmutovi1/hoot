@@ -130,3 +130,5 @@ Statični mockupi (bez `support.js`), više stanja na jednoj tabli kao `StartSes
   (Započni / Preskoči, „Kasniš 15 min“, potvrda preskoka) i iPhoneu (bez dugmadi).
 - **Odluke uz mockupe (oktobar 2026):** (1) Predmeti se grupišu po semestru (godina + semestar), ne po cijeloj godini. (2) Drive folder je jedan
   izvor, svaki PDF jedna jedinica. (3) „Kasniš 15 min“ nema svoj prekidač: ide uz podsjetnike (bar jedan pomak).
+- **Poslije pregleda (oktobar 2026):** kartica „Sljedeće“ kad danas nema plana ima jedno dugme dole desno, „Dodaj sesiju“ (tok „Dodaj
+  blok“: prijedlog plana, pa „Započeti odmah?“); slobodne sesije na kartici više nema (ostaje u chatu). Bez materijala dugme je „Dodaj materijal“.
