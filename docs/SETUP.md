@@ -14,6 +14,7 @@ Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Gemini, Anthropic
 | Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (opcionalno, Etapa 10) |
 | `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`), Web Push svake minute (`notify`) | ✅ |
 | Web Push | VAPID ključevi (secrets + Cloudflare Production i Preview), `notify` deployana, `pg_cron` svake minute | ✅ |
+| Sigurnost u CI | CodeQL, Dependabot, `npm audit`, gitleaks, RLS testovi, CSP u `public/_headers` (Etapa 10b, vidi 2a) | ⏳ koraci u 2a |
 | Domena | za emailove drugim korisnicima i vlastiti URL | kasnije |
 
 ---
@@ -58,6 +59,25 @@ Lozinka baze ovdje ne treba (CLI koristi login); treba za `backup.yml` u Etapi 1
    - `NODE_VERSION` = `24`
    - `VITE_VAPID_PUBLIC_KEY` = javni VAPID ključ (Etapa 9, vidi 5b)
 5. Rezultat: `main` → `hoot-5ig.pages.dev`, `dev` → `dev.hoot-5ig.pages.dev`, svaka druga grana dobija preview URL.
+
+## 2a. Sigurnost u CI i GitHubu (Etapa 10b)
+
+U repou (ništa ručno): `ci.yml` ima `npm audit --audit-level=high`, job `secrets` (gitleaks preko cijele historije) i job `db` (lokalni Supabase u CI-ju: `supabase db lint` i RLS testovi iz `supabase/tests/database/rls.test.sql`); `codeql.yml` (CodeQL JS/TS, i sedmično); `.github/dependabot.yml` (npm i GitHub Actions, PR-ovi u `dev`); `public/_headers` (CSP i sigurnosna zaglavlja za Cloudflare). Lokalno: `npx supabase start` pa `npx supabase test db` (treba Docker).
+
+Ručno u GitHubu, ovim redom:
+
+1. **Prije nego repo postane javan:** na PR-u „chore(security)“ job `secrets` (gitleaks) mora biti zelen: tada u historiji nema ključa. Ako nije zelen, javi; ključ se rotira i historija čisti prije objave.
+2. Repo javan: **Settings → General → Danger Zone → Change repository visibility → Make public** (u docs/ ostaju ime i email autorice u PRD-u; po želji ih ukloni prije).
+3. **Settings → Advanced Security** (ili „Code security“):
+   - Dependabot alerts → **Enable**; Dependabot security updates → **Enable** (verzijska ažuriranja već vodi `.github/dependabot.yml`).
+   - Secret Protection: **Secret scanning** i **Push protection** → Enable (besplatno za javne repoe).
+   - Code scanning → **ne** uključivati „Default setup“: CodeQL radi preko `codeql.yml` (oba zajedno se sudaraju). Nakon prvog run-a rezultati su u **Security → Code scanning**.
+   - Private vulnerability reporting → Enable (opcionalno).
+4. **Settings → Rules → Rulesets → `protect-main-dev` → Edit → Require status checks to pass** → dodaj `check`, `secrets`, `db`, `analyze` (CodeQL) uz postojeće; Save.
+5. Dependabot PR-ovi idu u `dev` kao i ostali (squash nakon zelenog CI-ja).
+
+Cloudflare (ništa za podesiti): `_headers` se deploya sa buildom. Provjera poslije deploya:
+`curl -sI https://dev.hoot-5ig.pages.dev | grep -i -E "content-security|x-frame|strict-transport"`. Ako se Supabase URL promijeni (vlastita domena), dodaj ga u `connect-src` i `img-src` u `public/_headers`.
 
 ## 3. Resend SMTP (kod za prijavu u emailu)
 

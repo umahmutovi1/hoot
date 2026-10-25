@@ -24,6 +24,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # High or critical advisories fail the build (low ones go to Dependabot).
+      - run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck
@@ -35,3 +37,31 @@ jobs:
         run: deno check --config deno.json $(find . -name '*.ts' ! -name '*.test.ts' ! -path './node_modules/*')
       - run: npm test
       - run: npm run build
+
+  # Committed secrets, over the whole history (PRD "Sigurnosno skeniranje").
+  secrets:
+    runs-on: ubuntu-latest
+    # The action lists the PR's commits through the API.
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Migrations on a local stack: plpgsql lint and RLS tests (another user and anon see no row,
+  # every table has RLS, a policy and the grant). Only the services the migrations need.
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.121.0
+      - run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector,mailpit,realtime,supavisor,postgres-meta
+      - run: supabase db lint --local --fail-on error
+      - run: supabase test db
