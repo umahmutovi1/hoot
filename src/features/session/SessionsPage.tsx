@@ -99,13 +99,13 @@ export function SessionsPage() {
               })}
             </span>
           </div>
-          <div className="flex flex-col gap-0.5 rounded-[24px] glass p-1.5">
+          {/* Rows reach the card's edges, so a swiped row's button is flush (like Raspored). */}
+          <div className="flex flex-col overflow-hidden rounded-[24px] glass">
             {items.map((s) => {
               const subject = subjects?.find((x) => x.id === s.subject_id)
               return (
                 <SwipeRow
                   key={s.id}
-                  className="rounded-[18px]"
                   actions={[
                     {
                       id: 'delete',
@@ -124,7 +124,7 @@ export function SessionsPage() {
                 >
                   <Link
                     to={`/sessions/${s.id}`}
-                    className="flex min-h-14 items-center gap-3 rounded-[18px] p-3"
+                    className="flex min-h-14 items-center gap-3 px-4 py-3"
                   >
                     <span
                       aria-hidden="true"

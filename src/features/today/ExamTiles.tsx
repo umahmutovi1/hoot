@@ -49,22 +49,25 @@ function ExamTile({ subject, at }: { subject: SubjectWithAssessments; at: string
   return (
     <Link
       to={`/subjects/${subject.id}`}
-      // Danas.dc.html: date, name, %, bar, 8 px apart; % and bar always exist, so every tile has
-      // the same height.
-      className="glass flex min-w-0 flex-1 flex-col gap-2 rounded-card p-3.5"
+      // Square tile in the Danas.dc.html order: date and name on top, % and bar at the bottom.
+      className="glass flex aspect-square min-w-0 flex-1 flex-col justify-between rounded-card p-3.5"
     >
-      <span className={cn('text-xs font-bold uppercase', palette.deepText)}>
-        {format(new Date(at), 'd MMM', { locale: dateFnsLocales[locale] })}
+      <span className="flex min-w-0 flex-col gap-1">
+        <span className={cn('text-xs font-bold uppercase', palette.deepText)}>
+          {format(new Date(at), 'd MMM', { locale: dateFnsLocales[locale] })}
+        </span>
+        <span className="truncate text-sm font-semibold">{subject.name}</span>
       </span>
-      <span className="truncate text-sm font-semibold">{subject.name}</span>
-      <span className="text-[22px] leading-tight font-semibold tabular-nums">
-        {pct === null ? '—' : `${pct}%`}
-      </span>
-      <span className="h-[5px] rounded-[3px] bg-white/65">
-        <span
-          className={cn('block h-[5px] rounded-[3px]', palette.bar)}
-          style={{ width: `${pct ?? 0}%` }}
-        />
+      <span className="flex flex-col gap-2">
+        <span className="text-[22px] leading-tight font-semibold tabular-nums">
+          {pct === null ? '—' : `${pct}%`}
+        </span>
+        <span className="h-[5px] rounded-[3px] bg-white/65">
+          <span
+            className={cn('block h-[5px] rounded-[3px]', palette.bar)}
+            style={{ width: `${pct ?? 0}%` }}
+          />
+        </span>
       </span>
     </Link>
   )
