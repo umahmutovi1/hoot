@@ -1,6 +1,8 @@
 import { useCreateRoughSource } from '@/features/sources/api'
 import type { RoughSize } from '@/lib/estimates/rough'
 import { RoughSizeField } from './RoughSizeField'
+import { SemesterField } from '@/features/academic/SemesterField'
+import { useAcademicTerm } from '@/features/academic/api'
 import { useRoughTexts } from './roughTexts'
 import { useState, type ReactNode } from 'react'
 import { useFieldArray, useForm, useWatch, type Control } from 'react-hook-form'
@@ -63,6 +65,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
   const [roughSize, setRoughSize] = useState<RoughSize | null>('medium')
   const createRough = useCreateRoughSource()
   const roughTexts = useRoughTexts()
+  const { defaultTerm } = useAcademicTerm()
 
   const newExams = (p: ExamPreset): AssessmentForm[] =>
     presetExams(p).map((e) => ({
@@ -93,9 +96,9 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
     },
   })
   const exams = useFieldArray({ control: form.control, name: 'assessments', keyName: 'key' })
-  const [color, priority, studyMode, targetGrade] = useWatch({
+  const [color, priority, studyMode, targetGrade, academicYearId, semesterNo] = useWatch({
     control: form.control,
-    name: ['color', 'priority', 'studyMode', 'targetGrade'],
+    name: ['color', 'priority', 'studyMode', 'targetGrade', 'academicYearId', 'semesterNo'],
   })
   const nameError = form.formState.errors.name?.message
   const boundary = useDayBoundary()
@@ -141,8 +144,10 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
 
   const submit = form.handleSubmit((values) => {
     const size = isEdit ? null : roughSize
+    // A new subject without a picked semester gets the current one.
+    const term = values.academicYearId === undefined ? (defaultTerm ?? {}) : {}
     // The rough source needs the subject row first.
-    void save.mutateAsync(values).then(() => {
+    void save.mutateAsync({ ...values, ...term }).then(() => {
       if (size) createRough.mutate({ subjectId: values.id, size, ...roughTexts(size) })
     })
     navigate(`/subjects/${values.id}`, { replace: true })
@@ -191,6 +196,18 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
           ))}
         </div>
       </div>
+
+      <SemesterField
+        value={
+          academicYearId === undefined
+            ? (defaultTerm ?? { academicYearId: null, semesterNo: null })
+            : { academicYearId, semesterNo: semesterNo ?? null }
+        }
+        onChange={(term) => {
+          form.setValue('academicYearId', term.academicYearId, { shouldDirty: true })
+          form.setValue('semesterNo', term.semesterNo, { shouldDirty: true })
+        }}
+      />
 
       {!isEdit && (
         <div className="flex flex-col gap-2">

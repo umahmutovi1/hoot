@@ -2405,6 +2405,11 @@
         "title": "Izgled",
         "sub": "Postavke › Opće · tema",
         "syn": "tema, boja, boje, izgled, lavanda, grafit, pijesak, kadulja, okean"
+      },
+      "faculty": {
+        "title": "Fakultet i godina",
+        "sub": "Postavke › Opće · fakultet, program, akademske godine",
+        "syn": "fakultet, studij, program, godina studija, semestar, akademska godina, univerzitet"
       }
     }
   },
@@ -2437,6 +2442,70 @@
         "name": "Okean",
         "sub": "hladna · plava"
       }
+    }
+  },
+  "academic": {
+    "semester": {
+      "label": "Semestar",
+      "winter": "{{n}}. · zimski",
+      "summer": "{{n}}. · ljetni",
+      "ofYear": "{{n}}. · {{year}}",
+      "none": "Bez semestra",
+      "hint": "Trenutni semestar je izabran sam ({{year}}). Ostale godine su u Postavkama → Fakultet i godina."
+    },
+    "group": {
+      "current": "{{n}}. semestar · {{season}} · {{year}}",
+      "row": "{{n}}. semestar",
+      "rowNoSemester": "Bez semestra u godini",
+      "rowSub_one": "{{year}} · {{count}} predmet",
+      "rowSub_few": "{{year}} · {{count}} predmeta",
+      "rowSub_other": "{{year}} · {{count}} predmeta",
+      "none": "Bez semestra",
+      "noneSub_one": "{{count}} predmet",
+      "noneSub_few": "{{count}} predmeta",
+      "noneSub_other": "{{count}} predmeta",
+      "earlier": "Ranije",
+      "later": "Sljedeći semestar",
+      "carried": "prenesen"
+    },
+    "season": {
+      "winter": "zimski",
+      "summer": "ljetni"
+    },
+    "subtitle": "{{active}} · {{n}}. semestar · {{year}}",
+    "newYear": {
+      "title": "Nova akademska godina — dodati {{label}}?",
+      "sub": "Predmeti iz {{previous}} se sklope, a nepoloženi ostaju gore kao „prenesen“.",
+      "add": "Dodaj {{label}}",
+      "added": "Dodana je akademska godina {{label}}.",
+      "search": "Potraži kalendar i plan i program za {{year}}. godinu"
+    },
+    "faculty": {
+      "title": "Fakultet i godina",
+      "row": "Fakultet i godina",
+      "rowEmpty": "Za predmete po semestru i pretragu kalendara",
+      "rowValue": "{{institution}} · {{n}}. godina",
+      "institution": "Fakultet",
+      "institutionPlaceholder": "npr. Elektrotehnički fakultet Sarajevo",
+      "program": "Studijski program",
+      "programPlaceholder": "npr. Računarstvo i informatika",
+      "yearOfStudy": "Godina studija",
+      "saved": "Spašeno."
+    },
+    "years": {
+      "title": "Akademske godine",
+      "row": "{{label}} · {{n}}. godina",
+      "sub_one": "{{from}} – {{to}} · {{count}} predmet",
+      "sub_few": "{{from}} – {{to}} · {{count}} predmeta",
+      "sub_other": "{{from}} – {{to}} · {{count}} predmeta",
+      "current": "trenutna",
+      "add": "Dodaj akademsku godinu",
+      "empty": "Izaberi godinu studija i spasi: dodaje se trenutna akademska godina, a predmeti se grupišu po semestru."
+    },
+    "onboarding": {
+      "title": "Gdje studiraš?",
+      "sub": "Hoot potraži akademski kalendar i plan i program na internetu, a ti pregledaš šta je našao.",
+      "privacy": "Na internet ide samo naziv fakulteta, programa i godina. Nađeno te čeka u sljedećem koraku."
     }
   }
 }

@@ -146,8 +146,6 @@ function optimisticSubject(
     ...meta,
     archived: false,
     points_total: 100,
-    academic_year_id: null,
-    semester_no: null,
     grade_scale: null,
     custom_scale: false,
     target_grade: null,
@@ -159,6 +157,11 @@ function optimisticSubject(
     priority: row.priority ?? 3,
     study_mode: row.study_mode ?? 'regular',
     campaign_start_on: row.campaign_start_on ?? null,
+    academic_year_id:
+      row.academic_year_id !== undefined
+        ? row.academic_year_id
+        : (existing?.academic_year_id ?? null),
+    semester_no: row.semester_no !== undefined ? row.semester_no : (existing?.semester_no ?? null),
     assessments: form.assessments.map((a) =>
       optimisticAssessment(
         userId,

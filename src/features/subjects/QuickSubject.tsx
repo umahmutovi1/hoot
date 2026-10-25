@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { useAcademicTerm } from '@/features/academic/api'
 import { useSaveSubject, useSubjects } from './api'
 import { ColorSwatch, fieldInput, fieldLabel } from './fields'
 import { DEFAULT_PRIORITY, SUBJECT_COLORS, type SubjectColor } from './model'
@@ -22,6 +23,7 @@ export function QuickSubject({
   const { t } = useTranslation()
   const { data: subjects = [] } = useSubjects()
   const save = useSaveSubject()
+  const { defaultTerm } = useAcademicTerm()
   const [name, setName] = useState('')
   const [color, setColor] = useState<SubjectColor>(
     () => SUBJECT_COLORS.find((c) => !subjects.some((s) => s.color === c)) ?? 'pink',
@@ -40,6 +42,7 @@ export function QuickSubject({
       studyMode: 'regular',
       campaignStartOn: null,
       targetGrade: null,
+      ...defaultTerm,
       assessments: [],
     })
     onCreated(id)

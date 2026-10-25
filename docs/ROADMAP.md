@@ -303,7 +303,8 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 
 - [x] Migracija: `academic_years`, `academic_periods.academic_year_id`, `subjects.academic_year_id` + `semester_no`, `profiles.institution` / `study_program` / `year_of_study` / `reminder_offsets_min`, `assessments.eve_reserved`, `sources.file_name` / `drive_file_id` / `external_url`, nove vrste `push_jobs` i `ai_task`; regenerisan `database.ts`
   - `0027_academic_structure_reminders.sql`; uz plan još `profiles.academic_search` (zadnja pretraga fakulteta čeka pregled), `plan_blocks.skip_requested_at` (Preskoči iz notifikacije bilježi server, app primijeni `skipBlock()` pri otvaranju) i `push_jobs.block_id` / `action_token_hash` / `action_used_at`
-- [ ] Predmeti grupisani po godini i semestru (trenutni otvoren, ostali sklopljeni, „prenesen“ za nepoložene), default semestar za novi predmet, kartica „Nova akademska godina“
+- [x] Predmeti grupisani po godini i semestru (trenutni otvoren, ostali sklopljeni, „prenesen“ za nepoložene), default semestar za novi predmet, kartica „Nova akademska godina“
+  - `src/lib/academic/` (godina od 1. oktobra, semestar iz perioda nastave godine ili mjeseca, grupe, „prenesen“, ponuda nove godine); Postavke → Fakultet i godina (`/settings/academic`): podaci, akademske godine. Prva akademska godina uzme aktivne predmete bez godine (trenutni semestar); istekla godina nije trenutna, pa se njeni semestri sklope ispod „Ranije“ dok se ne doda nova
 - [ ] Onboarding korak 1b „Fakultet i godina“ (preskočiv) i podsjetnici u koraku 6
 - [ ] `find-academic-info`: web search kroz wrapper (Gemini grounding / Anthropic web search), lista dokumenata → `parse-document` pregled sa linkom na izvor
 - [ ] Plan i program (`syllabus`) u `parse-document`: literatura → izvori, sedmične teme → teme i tempo predavanja, bodovanje → ispiti i bodovi; pregled po predmetu
