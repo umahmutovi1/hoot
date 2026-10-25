@@ -90,7 +90,7 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   `prefers-reduced-motion` → samo fade 150 ms.
 - **Fokus kartica na Danas:** dva prstena kao u mockupu (80 px, debljina 9, track bijeli 0.6): vanjski r 32 plan danas (`brand-accent`),
   unutrašnji r 20 sedmica (pink deep); pored 2×2 statistika (Plan danas, Sedmica, Sljedeći ispit, Spremnost).
-- **Kartice ispita (izmijenjeno poslije pregleda 10b):** kvadratne (`aspect-square`), sve iste: gore datum velikim slovima u boji predmeta i desno dani do ispita sitno („5 d“, „sutra“, „danas“); u sredini velik % (28/600, „—“ bez izvora); dolje ime predmeta (jedan red) i traka 5 px, radijus 3 px, track 0.65.
+- **Kartice ispita (izmijenjeno poslije pregleda 10b):** kao `Danas.dc.html`: datum (velika slova, boja predmeta), ime predmeta 14/600 (jedan red), % 22/600 („—“ bez izvora), traka 5 px (radijus 3, track 0.65), razmak 8 px; sve iste visine. Dani do ispita se za sada ne prikazuju.
 - **Swipe ulijevo** na redu liste: crveno „Obriši“ / sivo-ljubičasto „Arhiviraj“ / „Preskoči“ dugmad 72 px se otkrivaju ispod reda,
   red prati prst (otpor poslije širine dugmadi), puni swipe izvrši prvu akciju; uvijek toast Poništi. Ne počinje s lijeve ivice (iOS nazad).
   Dok je red otvoren, red i dugmad su jedna ravna traka (desni uglovi reda nisu zaobljeni, bez razmaka).

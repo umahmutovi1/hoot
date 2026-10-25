@@ -24,7 +24,7 @@ import { calendarStatus, formatClock } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
 import { SetupChecklist } from '@/features/onboarding/SetupChecklist'
 import { ExamTiles } from './ExamTiles'
-import { ExtraTimeSheet } from './ExtraTimeSheet'
+import { BlockSheet } from '@/features/plan/BlockSheet'
 import { FactCard } from './FactCard'
 import { FocusBar } from './FocusBar'
 import { GainedCard } from './GainedCard'
@@ -106,11 +106,13 @@ export function TodayPage() {
           <ActionCards plan={plan} />
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />
-          <ExamTiles now={plan.now} today={plan.today} />
-          <ExtraTimeSheet
+          <ExamTiles now={plan.now} />
+          <BlockSheet
             open={params.get('extra') === '1'}
             onOpenChange={(o) => !o && setParams({}, { replace: true })}
-            plan={plan}
+            block={null}
+            date={plan.today}
+            today={plan.today}
           />
         </>
       ) : firstRun ? (

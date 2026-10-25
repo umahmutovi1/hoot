@@ -7,20 +7,11 @@ import { useLocale } from '@/features/settings/useLocale'
 import { useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
 import { nextAssessment, type SubjectWithAssessments } from '@/features/subjects/model'
-import { diffDays, localDay, type LocalDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
-import { useDayBoundary } from '@/features/settings/profile'
 import { cn } from '@/lib/utils'
 
-/**
- * "Ispiti" on Today: the next exam of up to three subjects, soonest first, with how many days are
- * left and the material progress.
- */
-/**
- * Days are counted from `today`, the local day at the day boundary (04:00), like the focus bar:
- * at 01:30 it is still yesterday.
- */
-export function ExamTiles({ now, today }: { now: Date; today: LocalDate }) {
+/** "Ispiti" on Today: the next exam of up to three subjects, soonest first, with the material progress. */
+export function ExamTiles({ now }: { now: Date }) {
   const { t } = useTranslation()
   const { data: subjects = [] } = useSubjects()
   const upcoming = subjects
@@ -41,26 +32,15 @@ export function ExamTiles({ now, today }: { now: Date; today: LocalDate }) {
       </div>
       <div className="flex gap-2.5">
         {upcoming.map(({ subject, exam }) => (
-          <ExamTile key={subject.id} subject={subject} at={exam!.at} today={today} />
+          <ExamTile key={subject.id} subject={subject} at={exam!.at} />
         ))}
       </div>
     </>
   )
 }
 
-function ExamTile({
-  subject,
-  at,
-  today,
-}: {
-  subject: SubjectWithAssessments
-  at: string
-  today: LocalDate
-}) {
-  const { t } = useTranslation()
+function ExamTile({ subject, at }: { subject: SubjectWithAssessments; at: string }) {
   const { locale } = useLocale()
-  const boundary = useDayBoundary()
-  const days = diffDays(today, localDay(new Date(at), { ...boundary, dayStartMin: 0 }))
   const { data: sources = [] } = useSources(subject.id)
   const palette = paletteOf(subject.color)
   const materials = sources.map(materialOf)
@@ -69,27 +49,18 @@ function ExamTile({
   return (
     <Link
       to={`/subjects/${subject.id}`}
-      // Square tile (decision after 10b feedback): date and days on top, readiness big in the
-      // middle, the name and the bar at the bottom; every tile has the same shape.
-      className="glass flex aspect-square min-w-0 flex-1 flex-col rounded-card p-3"
+      // Danas.dc.html: date, name, %, bar, 8 px apart; % and bar always exist, so every tile has
+      // the same height.
+      className="glass flex min-w-0 flex-1 flex-col gap-2 rounded-card p-3.5"
     >
-      <span className="flex items-baseline justify-between gap-1">
-        <span className={cn('text-xs font-bold uppercase', palette.deepText)}>
-          {format(new Date(at), 'd MMM', { locale: dateFnsLocales[locale] })}
-        </span>
-        <span className="truncate text-[11px] text-ink-secondary">
-          {days <= 0
-            ? t('today.examToday')
-            : days === 1
-              ? t('today.examTomorrow')
-              : t('today.examInShort', { count: days })}
-        </span>
+      <span className={cn('text-xs font-bold uppercase', palette.deepText)}>
+        {format(new Date(at), 'd MMM', { locale: dateFnsLocales[locale] })}
       </span>
-      <span className="flex flex-1 items-center justify-center text-[28px] leading-none font-semibold tracking-[-0.6px] tabular-nums">
+      <span className="truncate text-sm font-semibold">{subject.name}</span>
+      <span className="text-[22px] leading-tight font-semibold tabular-nums">
         {pct === null ? '—' : `${pct}%`}
       </span>
-      <span className="truncate text-[13px] font-semibold">{subject.name}</span>
-      <span className="mt-1.5 h-[5px] rounded-[3px] bg-white/65">
+      <span className="h-[5px] rounded-[3px] bg-white/65">
         <span
           className={cn('block h-[5px] rounded-[3px]', palette.bar)}
           style={{ width: `${pct ?? 0}%` }}

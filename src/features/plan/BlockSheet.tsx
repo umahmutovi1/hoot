@@ -14,12 +14,19 @@ import { dateFnsLocales } from '@/lib/locale'
 import { leavesOf } from '@/lib/progress'
 import { formatClock, parseClock } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
-import { useDeleteBlock, useSaveBlock, useSkipBlock, type BlockDraft } from './actions'
+import {
+  useAddExtraTime,
+  useDeleteBlock,
+  useSaveBlock,
+  useSkipBlock,
+  useStartBlock,
+  type BlockDraft,
+} from './actions'
 import { blockMode, blockTitle, useUnitIndex } from './model'
 import { reasonOf } from './save'
 import type { PlanBlockRow } from './state'
 import { usePlanStore } from './store'
-import { pickFor } from '@/features/today/pick'
+import { fillPick, pickFor, pickTitle } from '@/features/today/pick'
 import { usePlanToday } from '@/features/today/usePlanToday'
 
 const TYPES = [
@@ -47,6 +54,7 @@ export function BlockSheet({
   date,
   today,
   startDeleting = false,
+  initialMinutes,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -60,6 +68,8 @@ export function BlockSheet({
    * sheet instead of going back to the form. Remount (key) to switch.
    */
   startDeleting?: boolean
+  /** A new block's length to start from ("Imaš X min više danas"). */
+  initialMinutes?: number
 }) {
   const { t } = useTranslation()
   const [deleting, setDeleting] = useState(startDeleting)
@@ -83,6 +93,7 @@ export function BlockSheet({
           today={today}
           deleting={deleting}
           setDeleting={startDeleting ? () => close(false) : setDeleting}
+          initialMinutes={initialMinutes}
           onDone={() => close(false)}
         />
       )}
@@ -97,6 +108,7 @@ function BlockForm({
   deleting,
   setDeleting,
   onDone,
+  initialMinutes,
 }: {
   block: PlanBlockRow | null
   date: LocalDate
@@ -104,6 +116,7 @@ function BlockForm({
   deleting: boolean
   setDeleting: (d: boolean) => void
   onDone: () => void
+  initialMinutes?: number
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -132,7 +145,14 @@ function BlockForm({
     block?.plan_block_units.map((u) => u.unit_id) ?? [],
   )
   const [day, setDay] = useState<LocalDate>(block?.on_date ?? date)
-  const [minutes, setMinutes] = useState(block?.planned_minutes ?? 45)
+  const [minutes, setMinutes] = useState(block?.planned_minutes ?? initialMinutes ?? 45)
+  // A new block starts as the plan's suggestion (decision after 10b): only day, length and time
+  // are chosen; "Ručno" shows subject, type and units.
+  const [suggesting, setSuggesting] = useState(!block)
+  // After adding a block for today: "Započeti odmah?"
+  const [added, setAdded] = useState<PlanBlockRow | null>(null)
+  const addExtra = useAddExtraTime()
+  const start = useStartBlock()
   const [timeOn, setTimeOn] = useState(block?.start_min !== null && block?.start_min !== undefined)
   // "Zadrži ovo vrijeme" (Stage 10b): on by default, as before (the block becomes manual).
   const [keepTime, setKeepTime] = useState(true)
@@ -405,6 +425,105 @@ function BlockForm({
     )
   }
 
+  // The plan's suggestion for the chosen length (`pickForTime()`, filled up like "Imam još
+  // vremena"); the block takes its goal from the block the material comes from.
+  const firstPick = suggesting ? pickFor(planToday, minutes) : null
+  const pick = firstPick ? fillPick(planToday, firstPick, minutes) : null
+  const pickSubject = active.find((s) => s.id === pick?.subjectId)
+
+  const addSuggested = async () => {
+    if (!pick) return
+    const source = planToday.blocks.find((b) =>
+      b.plan_block_units.some((u) => u.unit_id === pick.units[0]?.unitId),
+    )
+    const kind = pick.kind
+    const mode =
+      kind === 'review' || kind === 'recap'
+        ? 'review'
+        : kind === 'questions'
+          ? 'questions'
+          : 'reading'
+    const unitIds = pick.units.map((u) => u.unitId)
+    // Today without a time: from now, as "Imam još vremena" (free time for that slot, may pass the
+    // day's maximum). Otherwise a manual block on the chosen day and time.
+    const { id, undo } =
+      day === today && !timeOn
+        ? await addExtra({
+            subjectId: pick.subjectId,
+            kind,
+            minutes: pick.minutes,
+            unitIds,
+            assessmentId: source?.assessment_id ?? null,
+            deadlineId: source?.deadline_id ?? null,
+            mode,
+          }).then((r) => ({ id: r.draft.id, undo: r.undo }))
+        : await (async () => {
+            const blockId = crypto.randomUUID()
+            const undoSave = await save({
+              id: blockId,
+              subjectId: pick.subjectId,
+              assessmentId: source?.assessment_id ?? null,
+              deadlineId: source?.deadline_id ?? null,
+              onDate: day,
+              startMin,
+              minutes: pick.minutes,
+              kind,
+              mode,
+              unitIds,
+              title: null,
+              edited: false,
+            })
+            return { id: blockId, undo: undoSave }
+          })()
+    show(t('blockSheet.addedToast'), { label: t('today.cant.undo'), run: () => void undo() })
+    if (day !== today) {
+      onDone()
+      return
+    }
+    setAdded({
+      id,
+      subject_id: pick.subjectId,
+      kind,
+      planned_minutes: pick.minutes,
+      plan_block_units: pick.units.map((u) => ({
+        block_id: id,
+        unit_id: u.unitId,
+        page_from: null,
+        page_to: null,
+        planned_minutes: u.minutes,
+        user_id: '',
+      })),
+    } as PlanBlockRow)
+  }
+
+  if (added)
+    return (
+      <div className="flex flex-col gap-3.5">
+        <p className="-mt-1 text-[15px] leading-[1.45] text-ink-secondary">
+          {t('blockSheet.startNow', {
+            title: pick ? pickTitle(t, pick, units, pickSubject?.name.split(' ')[0] ?? '') : '',
+          })}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            onDone()
+            void start(added, units)
+          }}
+          className="btn-primary flex h-14 items-center justify-center rounded-full text-base font-semibold"
+        >
+          {t('today.start.begin')}
+        </button>
+        <button
+          type="button"
+          onClick={onDone}
+          className="flex h-12 items-center justify-center rounded-full text-[15px] font-semibold text-brand"
+        >
+          {t('blockSheet.later')}
+        </button>
+      </div>
+    )
+
   const label = 'text-[13px] font-semibold tracking-[0.3px] text-ink-secondary uppercase'
   return (
     <div className="flex flex-col gap-4">
@@ -419,103 +538,140 @@ function BlockForm({
             .join(' · ')}
         </p>
       )}
-      <div className="flex flex-col gap-2">
-        <span className={label}>{t('blockSheet.subject')}</span>
+      {!block && (
         <div
-          role="radiogroup"
-          aria-label={t('blockSheet.subject')}
-          className="flex flex-wrap gap-2"
+          role="tablist"
+          aria-label={t('blockSheet.mode')}
+          className="flex rounded-full bg-canvas p-1"
         >
-          {active.map((s) => {
-            const on = s.id === subjectId
-            const palette = paletteOf(s.color)
-            return (
-              <button
-                key={s.id}
-                type="button"
-                role="radio"
-                aria-checked={on}
-                onClick={() => {
-                  setSubjectId(s.id)
-                  setUnitIds([])
-                  setShowAll(false)
-                }}
-                className={cn(
-                  'flex h-11 items-center gap-2 rounded-full border-2 px-3.5 text-sm font-semibold',
-                  on ? cn(palette.border, palette.soft) : 'border-hairline bg-white/55',
-                )}
-              >
-                <span className={cn('size-2.5 rounded-full', palette.bar)} />
-                {s.name.split(' ')[0]}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <span className={label}>{t('blockSheet.type')}</span>
-        <div role="radiogroup" aria-label={t('blockSheet.type')} className="flex flex-wrap gap-1.5">
-          {TYPES.map((x) => (
+          {([true, false] as const).map((on) => (
             <button
-              key={x.id}
+              key={String(on)}
               type="button"
-              role="radio"
-              aria-checked={type === x.id}
-              onClick={() => setType(x.id)}
+              role="tab"
+              aria-selected={suggesting === on}
+              onClick={() => setSuggesting(on)}
               className={cn(
-                'flex h-10 items-center rounded-full px-3.5 text-[13px] font-semibold',
-                type === x.id ? 'bg-brand text-white' : 'bg-canvas text-ink',
+                'h-9 flex-1 rounded-full text-[13px] font-semibold',
+                suggesting === on ? 'bg-white/80 text-ink shadow-sm' : 'text-ink-secondary',
               )}
             >
-              {t(`planBlocks.mode.${x.id === 'reading' ? 'reading' : x.id}`)}
+              {on ? t('blockSheet.suggested') : t('blockSheet.manual')}
             </button>
           ))}
         </div>
-      </div>
+      )}
+      {!suggesting && (
+        <>
+          <div className="flex flex-col gap-2">
+            <span className={label}>{t('blockSheet.subject')}</span>
+            <div
+              role="radiogroup"
+              aria-label={t('blockSheet.subject')}
+              className="flex flex-wrap gap-2"
+            >
+              {active.map((s) => {
+                const on = s.id === subjectId
+                const palette = paletteOf(s.color)
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    onClick={() => {
+                      setSubjectId(s.id)
+                      setUnitIds([])
+                      setShowAll(false)
+                    }}
+                    className={cn(
+                      'flex h-11 items-center gap-2 rounded-full border-2 px-3.5 text-sm font-semibold',
+                      on ? cn(palette.border, palette.soft) : 'border-hairline bg-white/55',
+                    )}
+                  >
+                    <span className={cn('size-2.5 rounded-full', palette.bar)} />
+                    {s.name.split(' ')[0]}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
 
-      {type !== 'deadline' && shown.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <span className={label}>
-            {t('blockSheet.units')}{' '}
-            <span className="font-normal tracking-normal normal-case">
-              {t('blockSheet.optional')}
-            </span>
-          </span>
-          <div role="group" aria-label={t('blockSheet.units')} className="flex flex-wrap gap-1.5">
-            {shown.map((i) => {
-              const on = unitIds.includes(i.unit.id)
-              return (
+          <div className="flex flex-col gap-2">
+            <span className={label}>{t('blockSheet.type')}</span>
+            <div
+              role="radiogroup"
+              aria-label={t('blockSheet.type')}
+              className="flex flex-wrap gap-1.5"
+            >
+              {TYPES.map((x) => (
                 <button
-                  key={i.unit.id}
+                  key={x.id}
                   type="button"
-                  role="checkbox"
-                  aria-checked={on}
-                  onClick={() =>
-                    setUnitIds(
-                      on ? unitIds.filter((x) => x !== i.unit.id) : [...unitIds, i.unit.id],
-                    )
-                  }
+                  role="radio"
+                  aria-checked={type === x.id}
+                  onClick={() => setType(x.id)}
                   className={cn(
-                    'flex h-10 max-w-full items-center truncate rounded-full border px-3.5 text-[13px] font-semibold',
-                    on ? 'border-brand bg-brand-hero text-brand-strong' : 'border-line bg-white/55',
+                    'flex h-10 items-center rounded-full px-3.5 text-[13px] font-semibold',
+                    type === x.id ? 'bg-brand text-white' : 'bg-canvas text-ink',
                   )}
                 >
-                  {unitLabel(i)}
+                  {t(`planBlocks.mode.${x.id === 'reading' ? 'reading' : x.id}`)}
                 </button>
-              )
-            })}
-            {!showAll && open.length > shown.length && (
-              <button
-                type="button"
-                onClick={() => setShowAll(true)}
-                className="h-10 px-2 text-[13px] font-semibold text-brand"
-              >
-                {t('blockSheet.allUnits', { count: open.length })}
-              </button>
-            )}
+              ))}
+            </div>
           </div>
-        </div>
+
+          {type !== 'deadline' && shown.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <span className={label}>
+                {t('blockSheet.units')}{' '}
+                <span className="font-normal tracking-normal normal-case">
+                  {t('blockSheet.optional')}
+                </span>
+              </span>
+              <div
+                role="group"
+                aria-label={t('blockSheet.units')}
+                className="flex flex-wrap gap-1.5"
+              >
+                {shown.map((i) => {
+                  const on = unitIds.includes(i.unit.id)
+                  return (
+                    <button
+                      key={i.unit.id}
+                      type="button"
+                      role="checkbox"
+                      aria-checked={on}
+                      onClick={() =>
+                        setUnitIds(
+                          on ? unitIds.filter((x) => x !== i.unit.id) : [...unitIds, i.unit.id],
+                        )
+                      }
+                      className={cn(
+                        'flex h-10 max-w-full items-center truncate rounded-full border px-3.5 text-[13px] font-semibold',
+                        on
+                          ? 'border-brand bg-brand-hero text-brand-strong'
+                          : 'border-line bg-white/55',
+                      )}
+                    >
+                      {unitLabel(i)}
+                    </button>
+                  )
+                })}
+                {!showAll && open.length > shown.length && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAll(true)}
+                    className="h-10 px-2 text-[13px] font-semibold text-brand"
+                  >
+                    {t('blockSheet.allUnits', { count: open.length })}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <div className="flex flex-col gap-2">
@@ -598,6 +754,35 @@ function BlockForm({
         </span>
       </div>
 
+      {suggesting && (
+        <div className="glass flex flex-col gap-1 rounded-[20px] px-4 py-3.5">
+          <span className="text-xs font-semibold tracking-[0.4px] text-ink-secondary uppercase">
+            {t('blockSheet.suggestion')}
+          </span>
+          {pick ? (
+            <>
+              <span className="flex items-center gap-2 text-[15px] font-semibold">
+                <span
+                  className={cn(
+                    'size-2.5 shrink-0 rounded-full',
+                    paletteOf(pickSubject?.color ?? null).bar,
+                  )}
+                />
+                <span className="truncate">
+                  {pickTitle(t, pick, units, pickSubject?.name.split(' ')[0] ?? '')}
+                </span>
+              </span>
+              <span className="text-[13px] text-ink-muted">
+                {t(`planBlocks.mode.${pick.kind === 'learn' ? 'reading' : pick.kind}`)} ·{' '}
+                {t('time.minutes', { m: pick.minutes })}
+              </span>
+            </>
+          ) : (
+            <span className="text-[13px] text-ink-muted">{t('blockSheet.noSuggestion')}</span>
+          )}
+        </div>
+      )}
+
       {moved ? (
         <div className="glass flex items-center gap-3 rounded-[20px] px-3.5 py-3">
           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -623,11 +808,11 @@ function BlockForm({
 
       <button
         type="button"
-        onClick={() => void submit()}
-        disabled={!subjectId}
+        onClick={() => void (suggesting ? addSuggested() : submit())}
+        disabled={suggesting ? !pick : !subjectId}
         className="btn-primary flex h-14 items-center justify-center rounded-full text-base font-semibold"
       >
-        {t('blockSheet.save')}
+        {suggesting ? t('blockSheet.addOne') : t('blockSheet.save')}
       </button>
       {fromPlan && (
         <button
