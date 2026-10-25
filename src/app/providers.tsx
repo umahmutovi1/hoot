@@ -6,7 +6,6 @@ import { Recalibrator } from '@/features/session/Recalibrator'
 import { queryPersister } from './queryPersister'
 import { CalendarSync } from '@/features/calendars/CalendarSync'
 import { ReplanRunner } from '@/features/plan/ReplanRunner'
-import { PendingSkipRunner } from '@/features/notify/PendingSkipRunner'
 import { PushJobsRunner } from '@/features/notify/PushJobsRunner'
 import { EmbedRunner } from '@/features/owl/EmbedRunner'
 import { SyncRunner } from './SyncRunner'
@@ -42,7 +41,6 @@ export function Providers({ children }: { children: ReactNode }) {
         <Recalibrator />
         <ReplanRunner />
         <PushJobsRunner />
-        <PendingSkipRunner />
         <EmbedRunner />
         {children}
       </AuthProvider>

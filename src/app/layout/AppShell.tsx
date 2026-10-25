@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom'
 import { Toast } from '@/components/Toast'
 import { ContinueOnboarding } from '@/features/onboarding/ContinueOnboarding'
+import { PendingSkipRunner } from '@/features/notify/PendingSkipRunner'
 import { ForgottenGuard } from '@/features/session/ForgottenGuard'
 import { SessionStartSheet } from '@/features/session/SessionStartSheet'
 import { SearchPanel } from '@/features/search/SearchPanel'
@@ -44,6 +45,8 @@ export function AppShell() {
       <NavMenu open={menuOpen} onOpenChange={setMenuOpen} onSearch={() => setSearching(true)} />
       <SearchPanel open={searching} onOpenChange={setSearching} />
       <SessionStartSheet />
+      {/* Inside the router: applying a skip can start the next block (navigation). */}
+      <PendingSkipRunner />
       <ForgottenGuard />
       <Toast />
       {/* A new screen starts at the top; back restores where you were. */}
