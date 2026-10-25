@@ -42,6 +42,15 @@ export function NavMenu({
   onSearch: () => void
 }) {
   const { t } = useTranslation()
+  const { pathname } = useLocation()
+  // The menu shows the page it was opened on, also while it fades out after a tap on a section:
+  // the new page's section must not expand on the way out.
+  const [openedOn, setOpenedOn] = useState(pathname)
+  const [wasOpen, setWasOpen] = useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) setOpenedOn(pathname)
+  }
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -62,16 +71,15 @@ export function NavMenu({
               onLeave={() => onOpenChange(false)}
             />
           </div>
-          <MenuBody onNavigate={() => onOpenChange(false)} />
+          <MenuBody pathname={openedOn} onNavigate={() => onOpenChange(false)} />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
   )
 }
 
-function MenuBody({ onNavigate }: { onNavigate: () => void }) {
+function MenuBody({ pathname, onNavigate }: { pathname: string; onNavigate: () => void }) {
   const { t } = useTranslation()
-  const { pathname } = useLocation()
   const { data: subjects } = useSubjects()
   const active = (subjects ?? []).filter((s) => !s.archived)
 

@@ -39,7 +39,7 @@ export function UnitPickerSheet({
                 key={u.id}
                 checked={u.id === selected}
                 title={unitTitle(u)}
-                meta={[pagesLabel(t, s.measure, u), statusLabel(t, u.kind, u.level)]
+                meta={[pagesLabel(t, s.measure, u), statusLabel(t, u.kind, u.level, u)]
                   .filter(Boolean)
                   .join(' · ')}
                 onSelect={() => onPick(u.id)}

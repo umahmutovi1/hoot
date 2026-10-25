@@ -24,6 +24,8 @@ export function useSubjects() {
       const { data, error } = await supabase
         .from('subjects')
         .select('*, assessments(*)')
+        // Archived exams are out of every screen, the plan and grades (decision after 10b).
+        .is('assessments.archived_at', null)
         .order('created_at')
       if (error) throw error
       return data
@@ -34,6 +36,54 @@ export function useSubjects() {
 export function useSubject(id: string | undefined) {
   const query = useSubjects()
   return { ...query, data: query.data?.find((s) => s.id === id) }
+}
+
+const archivedExamsKey = (userId: string | undefined, subjectId: string) =>
+  ['subjects', userId, subjectId, 'archived-exams'] as const
+
+/** "Arhivirani ispiti" on a subject, to restore. */
+export function useArchivedExams(subjectId: string) {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: archivedExamsKey(userId, subjectId),
+    enabled: Boolean(userId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('assessments')
+        .select('id, title, at')
+        .eq('subject_id', subjectId)
+        .not('archived_at', 'is', null)
+        .order('at')
+      if (error) throw error
+      return data
+    },
+  })
+}
+
+/** Archive (or restore) an exam: out of Danas, the calendar, the plan and grades (after 10b). */
+export function useArchiveExam(subjectId: string) {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, archived }: { id: string; archived: boolean }) => {
+      const { error } = await supabase
+        .from('assessments')
+        .update({ archived_at: archived ? new Date().toISOString() : null })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onMutate: ({ id, archived }) =>
+      archived
+        ? patchSubjects(queryClient, userId, (list) =>
+            list.map((s) => ({ ...s, assessments: s.assessments.filter((a) => a.id !== id) })),
+          )
+        : undefined,
+    onError: (_error, _vars, rollback) => rollback?.(),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: subjectsKey(userId) })
+      void queryClient.invalidateQueries({ queryKey: archivedExamsKey(userId, subjectId) })
+    },
+  })
 }
 
 export function useDeadlines() {
@@ -133,6 +183,7 @@ function optimisticAssessment(
     result_points: null,
     result_max: null,
     result_annulled: false,
+    archived_at: null,
     ...existing,
     id: form.id,
     subject_id: subjectId,

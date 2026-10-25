@@ -86,6 +86,8 @@ export interface PlanUnit {
   coveredOn: LocalDate | null
   /** The subject has lecture logs for this unit's source: uncovered units are not pushed ahead. */
   tracked: boolean
+  /** Share of a not yet read unit read so far (`units.read_amount`), 0–1; absent = none. */
+  readShare?: number
 }
 
 export interface PlanDay {

@@ -204,7 +204,7 @@ function UnitList({
                 STATUS_CHIP[level],
               )}
             >
-              {statusLabel(t, u.kind, level)}
+              {statusLabel(t, u.kind, level, u)}
             </span>
           </Link>
         )

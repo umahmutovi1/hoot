@@ -3,7 +3,8 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { SessionsCard } from '@/features/session/SessionsCard'
 import { useTranslation } from 'react-i18next'
 import { differenceInCalendarDays, format } from 'date-fns'
-import { ChevronRightIcon, FlagIcon, PencilIcon, TrashIcon } from '@/components/icons'
+import { ArchiveIcon, ChevronRightIcon, FlagIcon, PencilIcon, TrashIcon } from '@/components/icons'
+import { useToast } from '@/components/toast-store'
 import { SwipeRow } from '@/components/SwipeRow'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
@@ -18,7 +19,14 @@ import {
 } from '@/features/sources/model'
 import { SubjectLectures } from '@/features/schedule/SubjectLectures'
 import { ProgressRing, SubjectSources } from '@/features/sources/SubjectSources'
-import { useDeadlines, useDeleteDeadline, useSubject, useUpdateSubject } from './api'
+import {
+  useArchiveExam,
+  useArchivedExams,
+  useDeadlines,
+  useDeleteDeadline,
+  useSubject,
+  useUpdateSubject,
+} from './api'
 import { paletteOf, type SubjectPalette } from './colors'
 import { DeadlineRow } from './DeadlineRow'
 import { DeadlineSheet } from './DeadlineSheet'
@@ -41,6 +49,7 @@ import {
   asPriority,
   localDateOf,
   nextAssessment,
+  shownExams,
   type Assessment,
   type SubjectWithAssessments,
 } from './model'
@@ -65,7 +74,23 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const [now] = useState(() => new Date())
   const palette = paletteOf(subject.color)
   const next = nextAssessment(subject.assessments, now)
-  const exams = [...subject.assessments].sort((a, b) => a.at.localeCompare(b.at))
+  // A makeup appears once its exam is failed; archived exams are not loaded (after 10b).
+  const exams = shownExams(subject.assessments).sort((a, b) => a.at.localeCompare(b.at))
+  const archiveExam = useArchiveExam(subject.id)
+  const show = useToast((s) => s.show)
+  const archiveRow = (exam: Assessment) => ({
+    id: 'archive',
+    label: t('swipe.archive'),
+    tone: 'archive' as const,
+    icon: <ArchiveIcon size={18} />,
+    run: () => {
+      archiveExam.mutate({ id: exam.id, archived: true })
+      show(t('swipe.examArchived'), {
+        label: t('today.cant.undo'),
+        run: () => archiveExam.mutate({ id: exam.id, archived: false }),
+      })
+    },
+  })
   const editPath = `/subjects/${subject.id}/edit`
   const { data: allDeadlines = [] } = useDeadlines()
   const deadlines = allDeadlines.filter((d) => d.subject_id === subject.id)
@@ -219,11 +244,15 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
             .map((exam, i) => (
               <div key={exam.id}>
                 {i > 0 && <div className="mx-3 h-px bg-hairline" />}
-                {examRow(exam)}
+                <SwipeRow className="rounded-[18px]" actions={[archiveRow(exam)]}>
+                  {examRow(exam)}
+                </SwipeRow>
                 {exams
                   .filter((m) => m.kind === 'makeup' && m.retake_of === exam.id)
                   .map((m) => (
-                    <div key={m.id}>{examRow(m, true)}</div>
+                    <SwipeRow key={m.id} className="rounded-[18px]" actions={[archiveRow(m)]}>
+                      {examRow(m, true)}
+                    </SwipeRow>
                   ))}
               </div>
             ))}
@@ -241,6 +270,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
           )}
         </div>
       )}
+
+      <ArchivedExams subjectId={subject.id} />
 
       <SubjectSources subjectId={subject.id} materials={materials} />
 
@@ -507,5 +538,41 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
         )}
       </div>
     </div>
+  )
+}
+
+/** "Arhivirani ispiti (N)": archived exams of the subject, to restore. */
+function ArchivedExams({ subjectId }: { subjectId: string }) {
+  const { t } = useTranslation()
+  const { locale } = useLocale()
+  const { data: archived = [] } = useArchivedExams(subjectId)
+  const restore = useArchiveExam(subjectId)
+  const show = useToast((s) => s.show)
+  if (archived.length === 0) return null
+  return (
+    <details className="rounded-card glass px-4 py-1">
+      <summary className="flex min-h-11 cursor-pointer list-none items-center text-sm font-semibold text-ink-secondary">
+        {t('swipe.archivedExams')} ({archived.length})
+      </summary>
+      <div className="flex flex-col pb-2">
+        {archived.map((e) => (
+          <div key={e.id} className="flex min-h-11 items-center justify-between gap-3">
+            <span className="truncate text-[15px] text-ink-muted">
+              {e.title} · {format(new Date(e.at), 'd. MMM', { locale: dateFnsLocales[locale] })}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                restore.mutate({ id: e.id, archived: false })
+                show(t('swipe.examRestored'))
+              }}
+              className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
+            >
+              {t('swipe.restore')}
+            </button>
+          </div>
+        ))}
+      </div>
+    </details>
   )
 }

@@ -31,8 +31,17 @@ export function pagesLabel(
   return t(measure === 'slides' ? 'sources.slidesRange' : 'sources.pagesRange', { range })
 }
 
-export function statusLabel(t: TFunction, kind: Unit['kind'], level: number) {
+export function statusLabel(
+  t: TFunction,
+  kind: Unit['kind'],
+  level: number,
+  /** A chapter not read yet but started: "Djelimično · 2/9" (decision after 10b). */
+  partial?: Pick<Unit, 'amount' | 'read_amount'>,
+) {
   const l = Math.min(3, Math.max(0, Math.round(level))) as 0 | 1 | 2 | 3
+  const read = Number(partial?.read_amount ?? 0)
+  if (kind === 'chapter' && l === 0 && partial && read > 0 && read < partial.amount)
+    return t('units.status.partial', { done: read, total: partial.amount })
   return kind === 'question'
     ? t(`units.status.question.${l === 2 ? 1 : l}`)
     : t(`units.status.chapter.${l}`)

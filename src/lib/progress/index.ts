@@ -2,7 +2,8 @@
  * Progress (PRD "Model izvora, jedinica i progresa"), always weighted by estimated minutes:
  *   p_u = level/3,  P_source = Σ p·m / Σ m (over leaves),  P_subject = Σ w·P / Σ w.
  * Computed from units on every render, never stored. Archived units are filtered out by the
- * caller. Parents take their progress from their leaves; status changes only on leaves.
+ * caller. Parents take their progress from their leaves; status changes only on leaves. A partly
+ * read unit (level 0) counts its read share of "Pročitano".
  */
 
 export interface ProgressUnit {
@@ -10,6 +11,8 @@ export interface ProgressUnit {
   parentId: string | null
   level: number
   minutes: number
+  /** Share of a not yet read unit read so far (0–1), counted toward "Pročitano". */
+  read?: number
 }
 
 export interface Progress {
@@ -23,6 +26,12 @@ export const EMPTY_PROGRESS: Progress = { fraction: 0, totalMinutes: 0, remainin
 
 export function unitFraction(level: number): number {
   return Math.min(3, Math.max(0, level)) / 3
+}
+
+function leafFraction(u: ProgressUnit): number {
+  return u.level <= 0
+    ? Math.min(1, Math.max(0, u.read ?? 0)) * unitFraction(1)
+    : unitFraction(u.level)
 }
 
 /** Units without (active) children. */
@@ -52,7 +61,7 @@ export function subtreeLeaves<T extends ProgressUnit>(units: T[], rootId: string
 export function progressOf(leaves: ProgressUnit[]): Progress {
   const totalMinutes = leaves.reduce((s, u) => s + u.minutes, 0)
   if (totalMinutes <= 0) return EMPTY_PROGRESS
-  const done = leaves.reduce((s, u) => s + unitFraction(u.level) * u.minutes, 0)
+  const done = leaves.reduce((s, u) => s + leafFraction(u) * u.minutes, 0)
   return { fraction: done / totalMinutes, totalMinutes, remainingMinutes: totalMinutes - done }
 }
 
@@ -61,7 +70,10 @@ export function levelMinutes(leaves: ProgressUnit[]): [number, number, number, n
   const out: [number, number, number, number] = [0, 0, 0, 0]
   for (const u of leaves) {
     const level = Math.min(3, Math.max(0, u.level)) as 0 | 1 | 2 | 3
-    out[level] += u.minutes
+    // The read part of a partly read unit shows as "Pročitano".
+    const read = level === 0 ? Math.min(1, Math.max(0, u.read ?? 0)) : 0
+    out[level] += u.minutes * (1 - read)
+    out[1] += u.minutes * read
   }
   return out
 }

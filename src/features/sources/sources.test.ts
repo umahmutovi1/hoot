@@ -44,6 +44,7 @@ const unit = (id: string, extra: Partial<Unit> = {}): Unit => ({
   fsrs_reps: 0,
   fsrs_lapses: 0,
   review_streak: 0,
+  read_amount: null,
   last_review_at: null,
   next_review_on: null,
   archived_at: null,

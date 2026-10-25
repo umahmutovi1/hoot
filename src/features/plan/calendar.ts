@@ -1,3 +1,4 @@
+import { shownExams } from '@/features/subjects/model'
 import {
   addDays,
   differenceInCalendarDays,
@@ -37,7 +38,9 @@ function activeExams(subjects: SubjectWithAssessments[], keep: (exam: Assessment
   return subjects
     .filter((s) => !s.archived)
     .flatMap((subject) =>
-      subject.assessments.filter(keep).map((exam) => ({ exam, subject }) satisfies DayExam),
+      shownExams(subject.assessments)
+        .filter(keep)
+        .map((exam) => ({ exam, subject }) satisfies DayExam),
     )
 }
 

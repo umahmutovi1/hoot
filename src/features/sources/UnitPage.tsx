@@ -174,7 +174,7 @@ function UnitDetail({
                       current ? 'bg-white' : done ? 'bg-brand-accent' : 'bg-line',
                     )}
                   />
-                  {statusLabel(t, unit.kind, level)}
+                  {statusLabel(t, unit.kind, level, unit)}
                 </button>
               )
             })}

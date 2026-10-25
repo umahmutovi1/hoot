@@ -975,7 +975,8 @@
         "0": "Don't know",
         "1": "Partly",
         "3": "Know"
-      }
+      },
+      "partial": "Partly read · {{done}}/{{total}}"
     },
     "sheet": {
       "newTitle": "New unit",
@@ -2186,7 +2187,10 @@
     "subjectArchived": "Subject archived",
     "sourceArchived": "Source archived",
     "sourceRestored": "Source restored",
-    "archivedSources": "Archived sources"
+    "archivedSources": "Archived sources",
+    "examArchived": "Exam archived",
+    "examRestored": "Exam restored",
+    "archivedExams": "Archived exams"
   },
   "search": {
     "placeholder": "Search Hoot",
