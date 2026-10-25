@@ -50,6 +50,25 @@ tests:
           return output.kind === 'exam_schedule' && output.exams.length === 3 &&
             output.exams.every((x) => x.subject_id !== null && x.date.startsWith('2026-12')) &&
             output.pages.length === 1
+  - description: syllabus of a programme, two subjects, literature, weekly plan and grading
+    vars: { kind: syllabus, fixture: syllabus.txt }
+    assert:
+      - type: javascript
+        value: |
+          const subs = output.syllabus
+          const sis = subs.find((x) => x.subject_id === '11111111-1111-4111-8111-111111111111')
+          const num = subs.find((x) => x.subject_id === null)
+          const g = (s, k, n) => s?.grading.find((x) => x.kind === k && (n === undefined || x.number === n))
+          return output.kind === 'syllabus' && subs.length === 2 &&
+            sis?.semester === 3 &&
+            sis.literature.filter((l) => l.required).length === 2 &&
+            sis.literature.some((l) => !l.required && /Haykin/.test(l.authors ?? l.title)) &&
+            sis.topics.length >= 6 && sis.topics[0].week === 1 &&
+            g(sis, 'partial', 1)?.points === 20 && g(sis, 'partial', 1)?.pass_points === 10 &&
+            g(sis, 'final')?.points === 40 && g(sis, 'attendance')?.points === 10 &&
+            g(sis, 'assignment')?.points === 10 &&
+            /Numeri/.test(num?.subject_name ?? '') && g(num, 'integral')?.points === 50 &&
+            g(num, 'partial', 2)?.points === 25
   - description: rulebook is a document, no periods or exams
     vars: { kind: auto, fixture: rules.txt }
     assert:

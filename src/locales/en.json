@@ -1495,7 +1495,8 @@
         "academic_calendar": "Academic calendar",
         "exam_schedule": "Exam schedule",
         "document": "Rules, syllabus, notice",
-        "timetable": "Class timetable"
+        "timetable": "Class timetable",
+        "syllabus": "Syllabus"
       },
       "textLabel": "Text",
       "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
@@ -1628,6 +1629,40 @@
       "contents": "Add contents or questions",
       "contentsFor": "Add contents · {{subject}}",
       "giveDocument": "Give a document"
+    },
+    "syllabus": {
+      "books_one": "{{count}} book",
+      "books_other": "{{count}} books",
+      "topics_one": "{{count}} topic",
+      "topics_other": "{{count}} topics",
+      "exams_one": "{{count}} exam",
+      "exams_other": "{{count}} exams",
+      "newSubject": "not one of your subjects · offered as new",
+      "section": "Syllabus",
+      "addTitle": "Not one of your subjects — add it?",
+      "addSub": "It gets the current semester; exams and points from the syllabus.",
+      "add": "Add subject",
+      "match": "Match with…",
+      "skip": "Skip",
+      "literature": "Literature → sources",
+      "required": "required · rough size until you import the contents",
+      "extra": "extra · not in the plan",
+      "have": "you have it",
+      "topicsTitle": "Topics",
+      "week": "week {{n}}",
+      "grading": "Grading → exams",
+      "points": "{{points}} pts",
+      "pass": "pass {{points}} pts",
+      "was": "was {{points}} pts",
+      "manual": "manual",
+      "manualSub": "your change stays ({{points}} pts)",
+      "onlyTotal": "only in the point total",
+      "newExamSub": "date from the academic calendar (tentative)",
+      "total": "Total points: {{points}}",
+      "totalWas": "was {{points}}",
+      "hint": "Subjects are matched by name and new ones are offered. Your own changes are never overwritten.",
+      "fromWeb": "From the web: {{host}}",
+      "checkYear": "Check it is for {{year}}: the document comes from the web, not from you."
     }
   },
   "offline": {
@@ -2507,6 +2542,31 @@
       "title": "Where do you study?",
       "sub": "Hoot looks up the academic calendar and syllabus online, and you review what it finds.",
       "privacy": "Only the faculty, program and year go online. What is found waits in the next step."
+    },
+    "found": {
+      "title": "Found on the web",
+      "crumb": "Found",
+      "year": "year {{n}}",
+      "searching": "Looking for the academic calendar and syllabus…",
+      "kind": {
+        "academic_calendar": "Academic calendar",
+        "syllabus": "Syllabus",
+        "other": "Document"
+      },
+      "checkYear": "{{year}} · check the year",
+      "noYear": "no year given",
+      "import": "Import",
+      "importing": "Downloading…",
+      "warning": "These documents come from the web: check they are for {{year}} and your programme. Nothing is saved without a review.",
+      "none": "I found no calendar or syllabus for {{year}}.",
+      "noneSub": "If you have it as a PDF or image (Moodle, notice board), give it to me and I'll read it the same way.",
+      "addPdf": "Add a PDF",
+      "search": "Search the web",
+      "searchButton": "Look up the calendar and syllabus online",
+      "privacy": "Only the faculty, programme and year go online. The same search is not repeated until you change the faculty, programme or year.",
+      "cardTitle_one": "{{count}} document from the web",
+      "cardTitle_other": "{{count}} documents from the web",
+      "cardSub": "Academic calendar and syllabus · you review before saving"
     }
   }
 }

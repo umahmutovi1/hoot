@@ -9,6 +9,7 @@ import { useToast } from '@/components/toast-store'
 import { PageTitle } from '@/components/PageTitle'
 import { subjectTerm, useAcademicTerm, useAddAcademicYear } from '@/features/academic/api'
 import { usePlanUi } from '@/features/plan/ui'
+import { useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { groupSubjects, isWinter, newYearOffer, type SubjectGroup } from '@/lib/academic'
 import { addDays } from '@/lib/day'
@@ -185,6 +186,7 @@ function NewYearCard() {
   const add = useAddAcademicYear()
   const { snoozed, snooze } = usePlanUi()
   const show = useToast((s) => s.show)
+  const institution = useProfile().data?.institution
   const offer = newYearOffer(term.years, term.today)
   if (!offer) return null
   const key = `new-year:${offer.label}`
@@ -231,6 +233,14 @@ function NewYearCard() {
           {t('suggestions.later')}
         </button>
       </div>
+      {institution && offer.yearOfStudy && (
+        <Link
+          to="/settings/academic/found?search=1"
+          className="text-[13px] font-semibold text-brand"
+        >
+          {t('academic.newYear.search', { year: offer.yearOfStudy })}
+        </Link>
+      )}
     </div>
   )
 }

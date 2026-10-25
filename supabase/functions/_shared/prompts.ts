@@ -8,6 +8,7 @@ import {
   calendarParseSchema,
   documentParseSchema,
   examScheduleParseSchema,
+  syllabusParseSchema,
   timetableParseSchema,
 } from './schemas.ts'
 import type {
@@ -16,6 +17,7 @@ import type {
   ImportKind,
   ParseDocumentRequest,
   ParsedClass,
+  ParsedSyllabusSubject,
   ParseResult,
 } from './schemas.ts'
 
@@ -56,6 +58,22 @@ const TIMETABLE_RULES = `Weekly class timetable -> "entries", one per class slot
 - note: any other remark for that class (a group, "online"), else null.
 - If the student's note names a year, group or study programme, keep only those classes.`
 
+const SYLLABUS_RULES = `Syllabus ("Plan i program", "silabus", course plan) -> "subjects", one per
+subject described (a whole study programme can describe many):
+- subject_id: the id of the matching subject from the given list (match by meaning:
+  abbreviations, missing diacritics, typos). null if none matches; keep subject_name as written.
+- semester: the semester number if written ("III semestar" = 3), else null.
+- literature: each book or script as written; required = true for "obavezna" (required, basic),
+  false for "dopunska" / "preporučena" (extra, recommended). If not marked, required = true.
+- topics: the weekly plan of lectures in order, one short topic per week; week = the week
+  number when written, else null. Merge lab/exercise lines into the lecture topic of that week.
+- grading: every item that gives points: partial exams (kind partial, number "II" = 2),
+  final ("završni"), integral ("integralni"), makeup ("popravni"), attendance ("prisustvo",
+  "aktivnost"), assignment ("zadaća", "domaća"), seminar ("seminarski rad", "projekat"), other.
+  points = maximum points, pass_points = minimum to pass that item; null when not written.
+  Percentages of the grade are points out of 100.
+- If the student's note names a year, semester or subject, keep only those subjects.`
+
 const DOCUMENT_RULES = `Document kind: academic_calendar, exam_schedule, rules (rulebook,
 "pravilnik"), syllabus ("silabus", course plan), notice ("obavještenje"), other.`
 
@@ -81,6 +99,7 @@ const VARIANTS: Record<ImportKind, ParseVariant> = {
     schema: timetableParseSchema,
     rules: TIMETABLE_RULES,
   },
+  syllabus: { task: 'parse_syllabus', schema: syllabusParseSchema, rules: SYLLABUS_RULES },
   document: { task: 'parse_document', schema: documentParseSchema, rules: DOCUMENT_RULES },
   auto: {
     task: 'parse_document',
@@ -101,7 +120,10 @@ export function parseRequest(
   const variant = VARIANTS[req.kind]
   const lines = [`Today: ${req.today}`, `User language: ${LANGUAGE[req.locale]}`]
   const matchesSubjects =
-    req.kind === 'exam_schedule' || req.kind === 'auto' || req.kind === 'timetable'
+    req.kind === 'exam_schedule' ||
+    req.kind === 'auto' ||
+    req.kind === 'timetable' ||
+    req.kind === 'syllabus'
   if (matchesSubjects && req.subjects.length > 0) {
     lines.push('Subjects (id: name):', ...req.subjects.map((s) => `${s.id}: ${s.name}`))
   }
@@ -126,7 +148,8 @@ export function parseRequest(
     files,
     schema: variant.schema as z.ZodType<Record<string, unknown>>,
     // A transcription of a scanned file needs room; extraction alone stays small.
-    maxTokens: req.text ? 8000 : 16000,
+    // A whole programme's syllabus lists many subjects; it gets the larger budget too.
+    maxTokens: req.text && req.kind !== 'syllabus' ? 8000 : 16000,
   }
 }
 
@@ -136,7 +159,7 @@ type AnyParse = Partial<z.infer<typeof autoParseSchema>>
 export function normalizeParse(req: ParseDocumentRequest, data: AnyParse): ParseResult {
   // A timetable is kept as an "other" document; its classes come as `entries`.
   const kind =
-    req.kind === 'academic_calendar' || req.kind === 'exam_schedule'
+    req.kind === 'academic_calendar' || req.kind === 'exam_schedule' || req.kind === 'syllabus'
       ? req.kind
       : req.kind === 'timetable'
         ? 'other'
@@ -170,6 +193,21 @@ export function normalizeParse(req: ParseDocumentRequest, data: AnyParse): Parse
               ],
         )
       : []
+  const syllabus =
+    req.kind === 'syllabus'
+      ? ((data as { subjects?: ParsedSyllabusSubject[] }).subjects ?? []).map((x) => ({
+          ...x,
+          subject_id: x.subject_id && subjectIds.has(x.subject_id) ? x.subject_id : null,
+          // A pass mark above the maximum is a misread: keep the maximum, drop the mark.
+          grading: x.grading.map((g) => ({
+            ...g,
+            pass_points:
+              g.points !== null && g.pass_points !== null && g.pass_points > g.points
+                ? null
+                : g.pass_points,
+          })),
+        }))
+      : []
   return {
     kind,
     title: data.title ?? '',
@@ -177,6 +215,7 @@ export function normalizeParse(req: ParseDocumentRequest, data: AnyParse): Parse
     periods,
     exams,
     entries,
+    syllabus,
     warnings: data.warnings ?? [],
   }
 }

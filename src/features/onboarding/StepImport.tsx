@@ -6,6 +6,7 @@ import { useCalendarFeeds } from '@/features/calendars/api'
 import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
 import { useOwlStore } from '@/features/owl/store'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
+import { useAcademicSearch } from '@/features/academic/search'
 import { StepTitle, type StepProps } from './OnboardingPage'
 
 /**
@@ -19,10 +20,27 @@ export function StepImport(_props: StepProps) {
   const openSheet = useOwlStore((s) => s.openSheet)
   const { periodRows, timetableRows } = useScheduleData()
   const feeds = useCalendarFeeds().data ?? []
+  const found = useAcademicSearch()
 
   return (
     <>
       <StepTitle title={t('onboarding.import.title')} sub={t('onboarding.import.sub')} />
+      {found && found.documents.length > 0 && (
+        // What step 1b found on the web (AkademskaGodina.dc.html 5); reviewed before saving.
+        <button
+          type="button"
+          onClick={() => navigate('/settings/academic/found')}
+          className="glass-tint flex flex-col gap-2 rounded-card p-4 text-left"
+        >
+          <span className="text-xs font-semibold tracking-[0.6px] text-white/88 uppercase">
+            {t('academic.found.title')}
+          </span>
+          <span className="text-[17px] leading-snug font-semibold">
+            {t('academic.found.cardTitle', { count: found.documents.length })}
+          </span>
+          <span className="text-[13px] text-white/85">{t('academic.found.cardSub')}</span>
+        </button>
+      )}
       <div className="flex flex-col gap-2">
         <ImportCard
           icon={<CalendarIcon size={22} />}

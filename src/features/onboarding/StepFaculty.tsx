@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FacultyFields } from '@/features/academic/FacultyFields'
 import { useFacultyValue, useSaveFaculty, type FacultyValue } from '@/features/academic/faculty'
+import { useFindAcademicInfo } from '@/features/academic/search'
+import { yearLabelOn } from '@/lib/academic'
+import { localDay } from '@/lib/day'
 import { StepTitle, type StepProps } from './OnboardingPage'
 
 /**
@@ -15,8 +18,14 @@ export function StepFaculty({ setSave }: StepProps) {
   const current = value ?? initial
   const save = useSaveFaculty()
 
+  const find = useFindAcademicInfo()
+
   useEffect(() => {
-    setSave(() => save(current))
+    setSave(async () => {
+      await save(current)
+      // "Fakultet s interneta" runs in the background; what it finds waits in the next step.
+      if (current.institution.trim()) find.mutate(yearLabelOn(localDay(new Date())))
+    })
   }, [current, save]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

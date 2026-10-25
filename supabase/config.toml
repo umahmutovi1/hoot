@@ -469,3 +469,7 @@ import_map = "./functions/deno.json"
 [functions.push-action]
 verify_jwt = false
 import_map = "./functions/deno.json"
+
+[functions.find-academic-info]
+verify_jwt = false
+import_map = "./functions/deno.json"

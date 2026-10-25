@@ -14,6 +14,7 @@ export const IMPORT_KINDS = [
   'academic_calendar',
   'exam_schedule',
   'timetable',
+  'syllabus',
   'document',
 ] as const
 export const importKindSchema = z.enum(IMPORT_KINDS)
@@ -93,6 +94,62 @@ export const parsedClassSchema = z.object({
 })
 export type ParsedClass = z.infer<typeof parsedClassSchema>
 
+/** One subject of a syllabus ("Plan i program", task parse_syllabus, Stage 10c). */
+export const parsedSyllabusSubjectSchema = z.object({
+  subject_name: z.string().min(1).describe('Subject name exactly as written in the document'),
+  subject_id: z
+    .string()
+    .nullable()
+    .describe('id of the matching subject from the given list, null if none matches'),
+  semester: z.int().min(1).max(12).nullable().describe('Semester number if written, else null'),
+  literature: z.array(
+    z.object({
+      title: z.string().min(1),
+      authors: z.string().nullable(),
+      required: z.boolean().describe('true = obavezna (required), false = dopunska (extra)'),
+    }),
+  ),
+  topics: z
+    .array(
+      z.object({
+        week: z.int().min(1).max(20).nullable().describe('Teaching week, null if not given'),
+        name: z.string().min(1).describe('Topic of that week, short'),
+      }),
+    )
+    .describe('Weekly plan of lectures, in order'),
+  grading: z
+    .array(
+      z.object({
+        kind: z.enum([
+          'partial',
+          'final',
+          'integral',
+          'makeup',
+          'attendance',
+          'assignment',
+          'seminar',
+          'other',
+        ]),
+        number: z.int().min(1).max(9).nullable().describe('Ordinal of a partial: "II" = 2'),
+        title: z.string().min(1).describe('As written, e.g. "I parcijalni ispit", "Prisustvo"'),
+        points: z
+          .number()
+          .min(0)
+          .max(1000)
+          .nullable()
+          .describe('Maximum points, null if not given'),
+        pass_points: z
+          .number()
+          .min(0)
+          .max(1000)
+          .nullable()
+          .describe('Points needed to pass this item, null if not given'),
+      }),
+    )
+    .describe('How the grade is made: exams and other point items'),
+})
+export type ParsedSyllabusSubject = z.infer<typeof parsedSyllabusSubjectSchema>
+
 const parseBase = {
   title: z.string().min(1).describe('Short document title, in the document language'),
   pages: z
@@ -114,6 +171,11 @@ export const examScheduleParseSchema = z.object({
 export const timetableParseSchema = z.object({
   ...parseBase,
   entries: z.array(parsedClassSchema),
+})
+
+export const syllabusParseSchema = z.object({
+  ...parseBase,
+  subjects: z.array(parsedSyllabusSubjectSchema),
 })
 
 export const documentParseSchema = z.object({
@@ -138,6 +200,8 @@ export interface ParseResult {
   exams: ParsedExam[]
   /** Weekly classes; only for kind `timetable` (stored as an `other` document). */
   entries: ParsedClass[]
+  /** Per subject; only for kind `syllabus` (Stage 10c). */
+  syllabus: ParsedSyllabusSubject[]
   warnings: string[]
 }
 
@@ -179,6 +243,49 @@ export const parseDocumentRequestSchema = z
     message: 'text too long',
   })
 export type ParseDocumentRequest = z.infer<typeof parseDocumentRequestSchema>
+
+// ---------------------------------------------------------------------------
+// find-academic-info (Stage 10c): web search for the academic calendar and syllabus
+// ---------------------------------------------------------------------------
+
+export const FOUND_KINDS = ['academic_calendar', 'syllabus', 'other'] as const
+
+export const foundDocumentSchema = z.object({
+  kind: z.enum(FOUND_KINDS),
+  title: z.string().min(1).describe('Title of the page or document as shown'),
+  url: z.string().describe('Full https URL of the document or page, exactly as found'),
+  academic_year: z
+    .string()
+    .nullable()
+    .describe('Academic year it is for, as "2026/27", null if not stated'),
+})
+export type FoundDocument = z.infer<typeof foundDocumentSchema>
+
+export const findAcademicInfoOutputSchema = z.object({
+  documents: z.array(foundDocumentSchema).max(10),
+})
+
+/** Only the faculty, the programme and the year go to the web search (PRD). */
+export const findAcademicInfoRequestSchema = z.discriminatedUnion('op', [
+  z.object({
+    op: z.literal('search'),
+    institution: z.string().trim().min(2).max(120),
+    program: z.string().trim().max(120).nullable(),
+    year_of_study: z.int().min(1).max(6).nullable(),
+    academic_year: z.string().regex(/^\d{4}\/\d{2}$/),
+    locale: localeSchema,
+  }),
+  /** Downloads one found document for parse-document; only a URL from the last search. */
+  z.object({ op: z.literal('fetch'), url: z.url() }),
+])
+export type FindAcademicInfoRequest = z.infer<typeof findAcademicInfoRequestSchema>
+
+/** What `profiles.academic_search` keeps: the search key and what was found (checked links). */
+export interface AcademicSearch {
+  key: string
+  searched_at: string
+  documents: FoundDocument[]
+}
 
 // ---------------------------------------------------------------------------
 // documents (chunks + embeddings, no LLM)

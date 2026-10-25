@@ -1533,7 +1533,8 @@
         "academic_calendar": "Akademski kalendar",
         "exam_schedule": "Raspored ispita",
         "document": "Pravilnik, silabus, obavještenje",
-        "timetable": "Raspored nastave"
+        "timetable": "Raspored nastave",
+        "syllabus": "Plan i program"
       },
       "textLabel": "Tekst",
       "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
@@ -1672,6 +1673,43 @@
       "contents": "Dodaj sadržaj ili pitanja",
       "contentsFor": "Dodaj sadržaj · {{subject}}",
       "giveDocument": "Daj dokument"
+    },
+    "syllabus": {
+      "books_one": "{{count}} knjiga",
+      "books_few": "{{count}} knjige",
+      "books_other": "{{count}} knjiga",
+      "topics_one": "{{count}} tema",
+      "topics_few": "{{count}} teme",
+      "topics_other": "{{count}} tema",
+      "exams_one": "{{count}} ispit",
+      "exams_few": "{{count}} ispita",
+      "exams_other": "{{count}} ispita",
+      "newSubject": "nemaš ovaj predmet · ponuda za novi",
+      "section": "Plan i program",
+      "addTitle": "Nemaš ovaj predmet — dodati ga?",
+      "addSub": "Dobija trenutni semestar; ispiti i bodovi iz plana i programa.",
+      "add": "Dodaj predmet",
+      "match": "Upari sa…",
+      "skip": "Preskoči",
+      "literature": "Literatura → izvori",
+      "required": "obavezna · gruba veličina dok ne uvezeš sadržaj",
+      "extra": "dopunska · ne ulazi u plan",
+      "have": "već imaš",
+      "topicsTitle": "Teme",
+      "week": "{{n}}. sed.",
+      "grading": "Bodovanje → ispiti",
+      "points": "{{points}} b",
+      "pass": "prag {{points}} b",
+      "was": "bilo {{points}} b",
+      "manual": "ručno",
+      "manualSub": "tvoja izmjena ostaje ({{points}} b)",
+      "onlyTotal": "samo u zbiru bodova",
+      "newExamSub": "datum iz akademskog kalendara (okvirno)",
+      "total": "Ukupno bodova: {{points}}",
+      "totalWas": "bilo {{points}}",
+      "hint": "Predmeti se uparuju po nazivu, a novi se nude. Tvoje ručne izmjene se ne prepisuju.",
+      "fromWeb": "Sa interneta: {{host}}",
+      "checkYear": "Provjeri da je za {{year}}: dokument je sa interneta, a ne od tebe."
     }
   },
   "offline": {
@@ -2572,6 +2610,32 @@
       "title": "Gdje studiraš?",
       "sub": "Hoot potraži akademski kalendar i plan i program na internetu, a ti pregledaš šta je našao.",
       "privacy": "Na internet ide samo naziv fakulteta, programa i godina. Nađeno te čeka u sljedećem koraku."
+    },
+    "found": {
+      "title": "Nađeno na internetu",
+      "crumb": "Nađeno",
+      "year": "{{n}}. godina",
+      "searching": "Tražim akademski kalendar i plan i program…",
+      "kind": {
+        "academic_calendar": "Akademski kalendar",
+        "syllabus": "Plan i program",
+        "other": "Dokument"
+      },
+      "checkYear": "{{year}} · provjeri godinu",
+      "noYear": "godina nije navedena",
+      "import": "Uvezi",
+      "importing": "Preuzimam…",
+      "warning": "Dokumenti su sa interneta: provjeri da su za {{year}} i tvoj program. Ništa se ne spašava bez pregleda.",
+      "none": "Nisam našla kalendar ni plan i program za {{year}}.",
+      "noneSub": "Ako ga imaš kao PDF ili sliku (Moodle, oglasna ploča), daj mi ga i pročitat ću ga isto.",
+      "addPdf": "Dodaj PDF",
+      "search": "Potraži na internetu",
+      "searchButton": "Potraži kalendar i plan i program na internetu",
+      "privacy": "Na internet ide samo naziv fakulteta, programa i godina. Ista pretraga se ne ponavlja dok ne promijeniš fakultet, program ili godinu.",
+      "cardTitle_one": "{{count}} dokument sa interneta",
+      "cardTitle_few": "{{count}} dokumenta sa interneta",
+      "cardTitle_other": "{{count}} dokumenata sa interneta",
+      "cardSub": "Akademski kalendar i plan i program · pregledaš prije spašavanja"
     }
   }
 }
