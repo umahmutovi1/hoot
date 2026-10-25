@@ -77,6 +77,20 @@ export function SettingsPage() {
           <span className="text-[15px]">{t('settings.language')}</span>
           <LocaleToggle value={locale} onChange={setLocale} className="bg-canvas" />
         </div>
+        <Link to="/settings/academic" className={row}>
+          <span className="flex flex-col gap-0.5">
+            <span className="text-[15px]">{t('academic.faculty.row')}</span>
+            <span className="text-xs text-ink-muted">
+              {profile?.institution && profile.year_of_study
+                ? t('academic.faculty.rowValue', {
+                    institution: profile.institution,
+                    n: profile.year_of_study,
+                  })
+                : t('academic.faculty.rowEmpty')}
+            </span>
+          </span>
+          <span className="text-sm text-ink-muted">›</span>
+        </Link>
         <Link to="/settings/appearance" className={row}>
           <span className="flex flex-col gap-0.5">
             <span className="text-[15px]">{t('appearance.row')}</span>

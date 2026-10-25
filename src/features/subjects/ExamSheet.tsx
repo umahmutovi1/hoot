@@ -63,6 +63,9 @@ export function ExamSheet({ subjectId, exam, open, onOpenChange }: ExamSheetProp
   )
 }
 
+/** "uto, 27. okt" at the start of a sentence. */
+const upperFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
 function ExamForm({
   subjectId,
   exam,
@@ -484,9 +487,11 @@ function ExamForm({
             <span className="text-xs leading-[1.4] text-ink-muted">
               {eveDay
                 ? t('exams.eve.sub', {
-                    day: format(toDisplayDate(eveDay), 'EEE, d. MMM', {
-                      locale: dateFnsLocales[locale],
-                    }),
+                    day: upperFirst(
+                      format(toDisplayDate(eveDay), 'EEE, d. MMM', {
+                        locale: dateFnsLocales[locale],
+                      }),
+                    ),
                     subject: subject?.name ?? '',
                   })
                 : t('exams.eve.subGeneric')}

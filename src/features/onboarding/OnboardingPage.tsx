@@ -8,6 +8,7 @@ import { useProfile, useUpdateProfile } from '@/features/settings/profile'
 import { cn } from '@/lib/utils'
 import { ONBOARDING_STEPS } from './steps'
 import { StepDays } from './StepDays'
+import { StepFaculty } from './StepFaculty'
 import { StepImport } from './StepImport'
 import { StepMax } from './StepMax'
 import { StepName } from './StepName'
@@ -25,7 +26,8 @@ export interface StepProps {
 }
 
 /**
- * Onboarding (PRD "Onboarding", Onboarding*.dc.html): 8 steps as states of one screen. Every
+ * Onboarding (PRD "Onboarding", Onboarding*.dc.html): 9 steps (1b "Gdje studiraš?" is the
+ * second, Stage 10c) as states of one screen. Every
  * step can be skipped; progress is kept in `profiles.onboarding_step`, so it continues later.
  * "Završi kasnije" ends it (`onboarded_at`); what is missing stays as a checklist on Today.
  */
@@ -71,13 +73,14 @@ export function OnboardingPage() {
   const props: StepProps = { setSave, setReady }
   const body: Record<number, ReactNode> = {
     1: <StepName {...props} />,
-    2: <StepImport {...props} />,
-    3: <StepRhythm {...props} />,
-    4: <StepDays {...props} />,
-    5: <StepMax {...props} />,
-    6: <StepPresets {...props} />,
-    7: <StepSubject {...props} />,
-    8: (
+    2: <StepFaculty {...props} />,
+    3: <StepImport {...props} />,
+    4: <StepRhythm {...props} />,
+    5: <StepDays {...props} />,
+    6: <StepMax {...props} />,
+    7: <StepPresets {...props} />,
+    8: <StepSubject {...props} />,
+    9: (
       <StepWeek
         onStart={() => {
           useSessionUi.getState().openStart()

@@ -20,10 +20,10 @@ export function SetupChecklist() {
   if (!profile) return null
 
   const items = [
-    { id: 'rhythm', step: 3, done: Boolean(profile.name_confirmed_at && profile.wake_min) },
-    { id: 'calendar', step: 2, done: periodRows.length > 0 },
-    { id: 'days', step: 4, done: rules.length > 0 && !isDefaultTemplate(rules) },
-    { id: 'timetable', step: 2, done: timetableRows.length > 0 || feeds.length > 0 },
+    { id: 'rhythm', step: 4, done: Boolean(profile.name_confirmed_at && profile.wake_min) },
+    { id: 'calendar', step: 3, done: periodRows.length > 0 },
+    { id: 'days', step: 5, done: rules.length > 0 && !isDefaultTemplate(rules) },
+    { id: 'timetable', step: 3, done: timetableRows.length > 0 || feeds.length > 0 },
   ] as const
   const open = items.filter((i) => !i.done).length
   if (open === 0) return null

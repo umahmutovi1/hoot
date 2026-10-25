@@ -2344,6 +2344,11 @@
         "title": "Appearance",
         "sub": "Settings › General · theme",
         "syn": "theme, colour, color, look, lavender, graphite, sand, sage, ocean"
+      },
+      "faculty": {
+        "title": "Faculty and year",
+        "sub": "Settings › General · faculty, program, academic years",
+        "syn": "faculty, university, program, year of study, semester, academic year"
       }
     }
   },
@@ -2376,6 +2381,67 @@
         "name": "Ocean",
         "sub": "cool · blue"
       }
+    }
+  },
+  "academic": {
+    "semester": {
+      "label": "Semester",
+      "winter": "{{n}} · winter",
+      "summer": "{{n}} · summer",
+      "ofYear": "{{n}} · {{year}}",
+      "none": "No semester",
+      "hint": "The current semester is picked for you ({{year}}). Other years are in Settings → Faculty and year."
+    },
+    "group": {
+      "current": "Semester {{n}} · {{season}} · {{year}}",
+      "row": "Semester {{n}}",
+      "rowNoSemester": "No semester in the year",
+      "rowSub_one": "{{year}} · {{count}} subject",
+      "rowSub_other": "{{year}} · {{count}} subjects",
+      "none": "No semester",
+      "noneSub_one": "{{count}} subject",
+      "noneSub_other": "{{count}} subjects",
+      "earlier": "Earlier",
+      "later": "Next semester",
+      "carried": "carried over"
+    },
+    "season": {
+      "winter": "winter",
+      "summer": "summer"
+    },
+    "subtitle": "{{active}} · semester {{n}} · {{year}}",
+    "newYear": {
+      "title": "New academic year — add {{label}}?",
+      "sub": "Subjects from {{previous}} fold away; unpassed ones stay on top as “carried over”.",
+      "add": "Add {{label}}",
+      "added": "Academic year {{label}} added.",
+      "search": "Look up the calendar and syllabus for year {{year}}"
+    },
+    "faculty": {
+      "title": "Faculty and year",
+      "row": "Faculty and year",
+      "rowEmpty": "For subjects by semester and finding the calendar",
+      "rowValue": "{{institution}} · year {{n}}",
+      "institution": "Faculty",
+      "institutionPlaceholder": "e.g. Faculty of Electrical Engineering Sarajevo",
+      "program": "Study program",
+      "programPlaceholder": "e.g. Computer Science",
+      "yearOfStudy": "Year of study",
+      "saved": "Saved."
+    },
+    "years": {
+      "title": "Academic years",
+      "row": "{{label}} · year {{n}}",
+      "sub_one": "{{from}} – {{to}} · {{count}} subject",
+      "sub_other": "{{from}} – {{to}} · {{count}} subjects",
+      "current": "current",
+      "add": "Add academic year",
+      "empty": "Pick the year of study and save: the current academic year is added and subjects are grouped by semester."
+    },
+    "onboarding": {
+      "title": "Where do you study?",
+      "sub": "Hoot looks up the academic calendar and syllabus online, and you review what it finds.",
+      "privacy": "Only the faculty, program and year go online. What is found waits in the next step."
     }
   }
 }

@@ -23,6 +23,7 @@ export const STATIC_ITEMS = [
   { id: 'documents', group: 'screens', to: '/settings/documents' },
   { id: 'availability', group: 'settings', to: '/plan/availability' },
   { id: 'appearance', group: 'settings', to: '/settings/appearance' },
+  { id: 'faculty', group: 'settings', to: '/settings/academic' },
   { id: 'language', group: 'settings', to: '/settings#general' },
   { id: 'presets', group: 'settings', to: '/settings#session' },
   { id: 'notifications', group: 'settings', to: '/settings#notify' },

@@ -132,6 +132,11 @@ export function useUpdateProfile() {
           | 'notify_first_block'
           | 'notify_break_end'
           | 'theme'
+          | 'institution'
+          | 'study_program'
+          | 'year_of_study'
+          | 'reminder_offsets_min'
+          | 'academic_search'
         >
       >,
     ) => {
