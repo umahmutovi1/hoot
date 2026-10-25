@@ -148,7 +148,8 @@
       "toToday": "Moved to today at {{time}}",
       "toTomorrow": "No room today: first block tomorrow at {{time}}",
       "toLater": "Moved to the first free day at {{time}}",
-      "carried": "moved"
+      "carried": "moved",
+      "fromNotification": "Skipped from a notification: {{title}}"
     },
     "start": {
       "title": "Start a session now?",
@@ -1718,10 +1719,12 @@
       "reserve": "The plan keeps a reserve, so realistic beats ideal."
     },
     "presets": {
-      "title": "How do you like breaks?",
+      "title": "Breaks and reminders",
       "sub": "Only a reminder. You always tap the break yourself, and each session can use another one.",
       "recommended": "recommended",
-      "own": "Build your own sequence (e.g. 45 → 10 → 45 → 20) in Settings."
+      "own": "Build your own sequence (e.g. 45 → 10 → 45 → 20) in Settings.",
+      "reminders": "Reminder before a block",
+      "remindersHint": "Pick one or more. Tapping the notification starts the session; “Skip” works without opening the app."
     },
     "subject": {
       "title": "First subject",
@@ -2128,8 +2131,6 @@
   },
   "notify": {
     "title": "Notifications",
-    "firstBlock": "First block of the day",
-    "firstBlockSub": "10 min before",
     "breakEnd": "End of break",
     "breakEndSub": "also when the screen is locked",
     "enable": "Turn on notifications on this device",
@@ -2142,13 +2143,32 @@
     "testSent": "The test notification arrives within a minute",
     "failed": "Could not turn them on. Try again.",
     "push": {
-      "firstBlockTitle": "In 10 min: {{subject}}",
-      "firstBlockBody": "{{title}} · {{time}}",
       "breakEndTitle": "Break is over",
       "breakEndBody": "Time for the next interval.",
       "testTitle": "Hoot",
-      "testBody": "Notifications work."
-    }
+      "testBody": "Notifications work.",
+      "reminderTitle": "In {{minutes}} min: {{subject}}",
+      "reminderTitleHours": "In {{hours}} h: {{subject}}",
+      "reminderBody": "{{title}} · {{minutes}} min · {{time}}",
+      "lateTitle": "15 min late for {{subject}}",
+      "lateBody": "{{title}} · was at {{time}}",
+      "start": "Start",
+      "skip": "Skip",
+      "skippedTitle": "Skipped: {{subject}} · {{title}}",
+      "skippedBody": "The material stays in the plan. Hoot places it when it opens."
+    },
+    "reminders": "Reminder before a block",
+    "remindersSub": "Pick one or more. None means no reminders.",
+    "offset": {
+      "120": "2 h",
+      "60": "1 h",
+      "30": "30 min",
+      "15": "15 min",
+      "5": "5 min"
+    },
+    "remindersHint": "If you don't start a block, “15 min late” comes 15 min later, once per block. Nothing comes between {{from}} and {{to}} (your rhythm).",
+    "remindersHintNoRhythm": "If you don't start a block, “15 min late” comes 15 min later, once per block.",
+    "offsetsLabel": "Reminder before a block"
   },
   "sessionEnd": {
     "saveAndTest": "Save and test yourself",

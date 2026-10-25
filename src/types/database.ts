@@ -1207,6 +1207,7 @@ export type Database = {
         Row: {
           action_token_hash: string | null
           action_used_at: string | null
+          actions: Json | null
           block_id: string | null
           body: string
           created_at: string
@@ -1223,6 +1224,7 @@ export type Database = {
         Insert: {
           action_token_hash?: string | null
           action_used_at?: string | null
+          actions?: Json | null
           block_id?: string | null
           body: string
           created_at?: string
@@ -1239,6 +1241,7 @@ export type Database = {
         Update: {
           action_token_hash?: string | null
           action_used_at?: string | null
+          actions?: Json | null
           block_id?: string | null
           body?: string
           created_at?: string

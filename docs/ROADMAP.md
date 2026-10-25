@@ -305,14 +305,15 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
   - `0027_academic_structure_reminders.sql`; uz plan još `profiles.academic_search` (zadnja pretraga fakulteta čeka pregled), `plan_blocks.skip_requested_at` (Preskoči iz notifikacije bilježi server, app primijeni `skipBlock()` pri otvaranju) i `push_jobs.block_id` / `action_token_hash` / `action_used_at`
 - [x] Predmeti grupisani po godini i semestru (trenutni otvoren, ostali sklopljeni, „prenesen“ za nepoložene), default semestar za novi predmet, kartica „Nova akademska godina“
   - `src/lib/academic/` (godina od 1. oktobra, semestar iz perioda nastave godine ili mjeseca, grupe, „prenesen“, ponuda nove godine); Postavke → Fakultet i godina (`/settings/academic`): podaci, akademske godine. Prva akademska godina uzme aktivne predmete bez godine (trenutni semestar); istekla godina nije trenutna, pa se njeni semestri sklope ispod „Ranije“ dok se ne doda nova
-- [ ] Onboarding korak 1b „Fakultet i godina“ (preskočiv) i podsjetnici u koraku 6
+- [x] Onboarding korak 1b „Fakultet i godina“ (preskočiv) i podsjetnici u koraku 6
 - [ ] `find-academic-info`: web search kroz wrapper (Gemini grounding / Anthropic web search), lista dokumenata → `parse-document` pregled sa linkom na izvor
 - [ ] Plan i program (`syllabus`) u `parse-document`: literatura → izvori, sedmične teme → teme i tempo predavanja, bodovanje → ispiti i bodovi; pregled po predmetu
 - [ ] PDF s uređaja: outline + broj stranica preko `pdf.js` → pregled kao `parse-toc`; AI samo za stranice sadržaja kad nema outline-a
 - [ ] Google Drive Picker (`drive.file`): fajl ili folder → isti tok, izvor pamti `drive_file_id` i link; SETUP.md
 - [x] Dan pred ispit: kartica 3 dana prije, prekidač u ExamSheetu, `plan()` pravilo (samo taj predmet, ponavljanja drugih se pomjeraju, dva ispita zaredom → bliži), `input_hash` + testovi i property test (rezervisan dan nema blok drugog predmeta)
   - `src/lib/scheduler/eve.ts` (`reservedDays`, `eveCandidate`): zadnji dan sa slobodnim vremenom prije ispita, najviše 7 dana unazad; rezervisan dan ponavlja cijeli obim (i već ponovljeno), slabije jedinice prve; kartica „Dan pred ispit“ na Danas, prekidač u ExamSheetu, traka sa „Ukloni“ u Plan → Dan
-- [ ] Podsjetnici prije svakog bloka (pomaci, preskok samo iza započetog bloka, tihi sati), „kasniš 15 min“, akcije Započni (deep link) i Preskoči (`push-action`, jednokratni token); zamjenjuje `first_block` 10 min
+- [x] Podsjetnici prije svakog bloka (pomaci, preskok samo iza započetog bloka, tihi sati), „kasniš 15 min“, akcije Započni (deep link) i Preskoči (`push-action`, jednokratni token); zamjenjuje `first_block` 10 min
+  - Onboarding ima 9 koraka (1b je drugi; podsjetnici u koraku 7 „Pauze i podsjetnici“). Migracija `0028_push_job_actions.sql` (`push_jobs.actions`: tekstovi dugmadi i „Preskočeno“ na jeziku korisnika). `notify` prije slanja provjeri blok (nije započet, preskočen ni u toku prethodni), pa napravi jednokratni token (čuva se hash); `push-action` upiše `skip_requested_at`, a `PendingSkipRunner` u appu primijeni `skipBlock()`. Započni / tap: `/?block=<id>` otvara „Započeti sesiju sada?“
 - **DoD** (uz opći DoD): plan i program sa interneta ili PDF-a → izvori, teme i bodovi kroz pregled; PDF sa outline-om → jedinice bez AI poziva; rezervisan dan pred ispit u planu; podsjetnik i Preskoči iz notifikacije na Androidu → `v0.10.2`
 
 ## Etapa 11 — Napredak
