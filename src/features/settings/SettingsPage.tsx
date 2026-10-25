@@ -15,6 +15,8 @@ import { localDay } from '@/lib/day'
 import { cn } from '@/lib/utils'
 import { DisplayNameForm } from './DisplayNameForm'
 import { NotifySettings } from '@/features/notify/NotifySettings'
+import { ThemeSwatch } from './AppearancePage'
+import { isTheme } from './theme'
 import { AnkiExport } from './AnkiExport'
 import { PresetSettings } from './PresetSettings'
 import { useDayBoundary, useProfile } from './profile'
@@ -23,6 +25,7 @@ import { useLocale } from './useLocale'
 export function SettingsPage() {
   const { t } = useTranslation()
   const { data: profile } = useProfile()
+  const theme = isTheme(profile?.theme) ? profile.theme : 'lavender'
   const { locale, setLocale } = useLocale()
   const name = profile?.display_name ?? ''
   const [editingName, setEditingName] = useState(false)
@@ -63,7 +66,10 @@ export function SettingsPage() {
         </button>
       )}
 
-      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+      <h2
+        id="general"
+        className="scroll-mt-[calc(84px+env(safe-area-inset-top))] px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase"
+      >
         {t('settings.general')}
       </h2>
       <div className="flex flex-col rounded-card glass px-4 py-1.5">
@@ -71,6 +77,16 @@ export function SettingsPage() {
           <span className="text-[15px]">{t('settings.language')}</span>
           <LocaleToggle value={locale} onChange={setLocale} className="bg-canvas" />
         </div>
+        <Link to="/settings/appearance" className={row}>
+          <span className="flex flex-col gap-0.5">
+            <span className="text-[15px]">{t('appearance.row')}</span>
+            <span className="text-xs text-ink-muted">{t('appearance.rowSub')}</span>
+          </span>
+          <span className="flex items-center gap-2 text-sm text-ink-muted">
+            <ThemeSwatch theme={theme} size={22} />
+            {t(`appearance.theme.${theme}.name`)} ›
+          </span>
+        </Link>
         <Link to="/plan/availability" className={row}>
           <span className="text-[15px]">{t('availability.title')}</span>
           <span className="text-sm text-ink-muted">
@@ -110,17 +126,26 @@ export function SettingsPage() {
         </div>
       </div>
 
-      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+      <h2
+        id="session"
+        className="scroll-mt-[calc(84px+env(safe-area-inset-top))] px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase"
+      >
         {t('settings.session')}
       </h2>
       <PresetSettings />
 
-      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+      <h2
+        id="notify"
+        className="scroll-mt-[calc(84px+env(safe-area-inset-top))] px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase"
+      >
         {t('notify.title')}
       </h2>
       <NotifySettings />
 
-      <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
+      <h2
+        id="data"
+        className="scroll-mt-[calc(84px+env(safe-area-inset-top))] px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase"
+      >
         {t('settings.data')}
       </h2>
       <div className="flex flex-col rounded-card glass px-4">

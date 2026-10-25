@@ -4,8 +4,9 @@ import { inputHash, plan } from '@/lib/scheduler'
 import type { DayInput } from '@/lib/schedule'
 import { assessmentRow, subjectRow } from '@/features/subjects/fixtures'
 import type { SourceWithUnits, Unit } from '@/features/sources/model'
-import { applyReplace, reasonOf, replaceArgs } from './save'
+import { applyReplace, reasonOf, replaceArgs, todayMoves } from './save'
 import {
+  gainedToday,
   buildPlanState,
   historyOf,
   isActiveExam,
@@ -44,6 +45,7 @@ const profile = (patch: Partial<Profile> = {}): Profile => ({
   onboarding_step: 0,
   sleep_min: null,
   wake_min: null,
+  theme: 'lavender',
   review_cap_pct: 40,
   fsrs_params: null,
   notify_first_block: true,
@@ -82,6 +84,7 @@ const unit = (id: string, position: number, patch: Partial<Unit> = {}): Unit => 
   fsrs_reps: 0,
   fsrs_lapses: 0,
   review_streak: 0,
+  read_amount: null,
   last_review_at: null,
   created_at: '',
   updated_at: '',
@@ -95,6 +98,7 @@ const roughSource = (parts: number): SourceWithUnits => ({
   subject_id: 's',
   kind: 'other',
   title: '~',
+  archived_at: null,
   author: null,
   measure: 'items',
   base_min_per_unit: 60,
@@ -256,6 +260,44 @@ describe('buildPlanState', () => {
     expect(built.state.from).toBe(TODAY)
   })
 
+  it('today’s free time is in the slots key; a changed day re-places today’s AI blocks from now', () => {
+    const first = buildPlanState(inputs(), { now: NOW, boundary })
+    const blocks = applyReplace([], replaceArgs(first, plan(first.state), 'h', 'r', TZ), 'u')
+    const todays = blocks.filter((b) => b.on_date === TODAY)
+    expect(todays.length).toBeGreaterThan(0)
+    // Free from 15:00 today only (a class until then).
+    const later = () => ({
+      ...dayInput(),
+      exceptions: [{ onDate: TODAY, startMin: 9 * 60, endMin: 15 * 60, isBusy: true }],
+    })
+    const kept = buildPlanState(inputs({ blocks, dayInput: later }), { now: NOW, boundary })
+    expect(kept.keepToday).toBe(true)
+    expect(kept.todaySlotsKey).not.toBe(
+      buildPlanState(inputs({ blocks }), { now: NOW, boundary }).todaySlotsKey,
+    )
+    expect(kept.replaceFrom).toBe(addDays(TODAY, 1))
+
+    const re = buildPlanState(inputs({ blocks, dayInput: later }), {
+      now: NOW,
+      boundary,
+      replaceToday: true,
+    })
+    expect(re.replacedToday).toBe(true)
+    expect(re.state.from).toBe(TODAY)
+    expect(re.replaceFrom).toBe(addDays(TODAY, 1))
+    const result = plan(re.state)
+    // Nothing new today: the day only moves.
+    expect(result.blocks.filter((b) => b.onDate === TODAY)).toEqual([])
+    const moves = todayMoves(re, result, blocks)
+    expect(moves.length).toBeGreaterThan(0)
+    for (const m of moves) expect(m.startMin).toBeGreaterThanOrEqual(15 * 60)
+    // A block that was not moved still fits: every today block now starts at 15:00 or later.
+    for (const b of todays)
+      expect(
+        moves.find((m) => m.block.id === b.id)?.startMin ?? b.start_min!,
+      ).toBeGreaterThanOrEqual(15 * 60)
+  })
+
   it('a manual block is fixed; the hash changes when any input changes', () => {
     const manual: PlanBlockRow = {
       id: 'm1',
@@ -316,6 +358,17 @@ describe('buildPlanState', () => {
 })
 
 describe('plan state helpers', () => {
+  it('gainedToday: free minutes from now that today gained', () => {
+    const key = (slots: [number, number][], on = TODAY) => JSON.stringify({ on, slots, manual: [] })
+    // 17–19 → 16–19 at 10:00: one hour more.
+    expect(gainedToday(key([[1020, 1140]]), key([[960, 1140]]), 600)).toBe(60)
+    // The gained hour is already past at 17:00.
+    expect(gainedToday(key([[1020, 1140]]), key([[960, 1140]]), 1020)).toBe(0)
+    expect(gainedToday(key([[960, 1140]]), key([[1020, 1140]]), 600)).toBe(0)
+    expect(gainedToday(key([[1020, 1140]], '2026-10-20'), key([[960, 1140]]), 600)).toBe(0)
+    expect(gainedToday('x', key([[960, 1140]]), 600)).toBe(0)
+  })
+
   it('a makeup is active only when its exam failed', () => {
     const first = assessmentRow({
       id: 'a',

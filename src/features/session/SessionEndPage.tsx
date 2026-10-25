@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils'
 import { useSession, useSessionUnits, useSessionWriter, type SessionUnitRow } from './api'
 import {
   coveredUnits,
+  readAfter,
   defaultLevel,
   endLevels,
   planEnd,
@@ -74,7 +75,11 @@ function initialRanges(sources: SessionSource[], unitIds: (string | null)[]): Ra
     out.push({
       sourceId: s.source.id,
       fromUnit: from.id,
-      fromPage: from.page_start,
+      // A partly read unit continues after the pages already read (decision after 10b).
+      fromPage:
+        from.page_start !== null && from.level === 0 && Number(from.read_amount ?? 0) > 0
+          ? Math.min(from.page_end ?? from.page_start, from.page_start + Number(from.read_amount))
+          : from.page_start,
       toUnit: to.id,
       toPage: to.page_end ?? to.page_start,
     })
@@ -341,7 +346,10 @@ function EndForm({
         <h2 className="mt-1 text-lg font-semibold">{t('session.end.difficulty')}</h2>
       )}
       {cards.map(({ unit }) => {
-        const level = levels[unit.id] ?? defaultLevel(unit, covered.get(unit.id))
+        // Reading over several sessions adds up; a chapter not finished yet shows "Djelimično".
+        const progress = { ...unit, readAmount: Number(unit.read_amount ?? 0) }
+        const level = levels[unit.id] ?? defaultLevel(progress, covered.get(unit.id))
+        const readNow = readAfter(progress, covered.get(unit.id))
         const options = endLevels(unit.level)
         return (
           <div key={unit.id} className="flex flex-col gap-3 rounded-[24px] glass p-4">
@@ -371,7 +379,7 @@ function EndForm({
                   STATUS_CHIP[level],
                 )}
               >
-                {statusLabel(t, unit.kind, level)}
+                {statusLabel(t, unit.kind, level, { amount: unit.amount, read_amount: readNow })}
               </button>
             </div>
             <div

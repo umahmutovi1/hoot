@@ -41,6 +41,8 @@ export function useAllSources() {
       const { data, error } = await supabase
         .from('sources')
         .select('*, units(*)')
+        // An archived source is out of the plan, progress and scope (Stage 10b).
+        .is('archived_at', null)
         .order('created_at')
       if (error) throw error
       return data
@@ -132,6 +134,8 @@ export interface PlanRun {
   input_hash: string
   deficit: unknown
   created_at: string
+  /** `todaySlotsKey` of the run (Stage 10b); null for older runs. */
+  today_slots: string | null
 }
 
 export function usePlanRun() {
@@ -142,7 +146,7 @@ export function usePlanRun() {
     queryFn: async (): Promise<PlanRun | null> => {
       const { data, error } = await supabase
         .from('plan_runs')
-        .select('id, input_hash, deficit, created_at')
+        .select('id, input_hash, deficit, created_at, today_slots')
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()

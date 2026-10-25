@@ -18,8 +18,8 @@ interface Sub {
 interface Section {
   id: string
   label: string
-  /** A section without subpages is a plain link. */
-  to?: string
+  /** The section's main page; the name links there, the chevron only opens the subpages. */
+  to: string
   subs?: Sub[]
   /** Routes that belong to the section (for the highlight and the open accordion). */
   match: (path: string) => boolean
@@ -27,18 +27,30 @@ interface Section {
 
 /**
  * The menu (docs/design/NavMeni.html): the first row grows into a glass panel over the screen.
- * Main pages are plain text; pages with subpages open as an accordion (the section of the current
- * page starts open; opening another keeps it open). At the bottom only "Odjavi se". Closes on ×, a tap outside, Escape and on
+ * Section names link to their main page; sections with subpages have a separate 44 px chevron
+ * that opens them as an animated accordion (the section of the current page starts open; opening
+ * another keeps it open). At the bottom only "Odjavi se". Closes on ×, a tap outside, Escape and on
  * every navigation.
  */
 export function NavMenu({
   open,
   onOpenChange,
+  onSearch,
 }: {
   open: boolean
   onOpenChange: (o: boolean) => void
+  onSearch: () => void
 }) {
   const { t } = useTranslation()
+  const { pathname } = useLocation()
+  // The menu shows the page it was opened on, also while it fades out after a tap on a section:
+  // the new page's section must not expand on the way out.
+  const [openedOn, setOpenedOn] = useState(pathname)
+  const [wasOpen, setWasOpen] = useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) setOpenedOn(pathname)
+  }
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -52,19 +64,22 @@ export function NavMenu({
             <TopBar
               menuOpen
               onMenu={() => onOpenChange(false)}
+              onSearch={() => {
+                onOpenChange(false)
+                onSearch()
+              }}
               onLeave={() => onOpenChange(false)}
             />
           </div>
-          <MenuBody onNavigate={() => onOpenChange(false)} />
+          <MenuBody pathname={openedOn} onNavigate={() => onOpenChange(false)} />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
   )
 }
 
-function MenuBody({ onNavigate }: { onNavigate: () => void }) {
+function MenuBody({ pathname, onNavigate }: { pathname: string; onNavigate: () => void }) {
   const { t } = useTranslation()
-  const { pathname } = useLocation()
   const { data: subjects } = useSubjects()
   const active = (subjects ?? []).filter((s) => !s.archived)
 
@@ -72,6 +87,7 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
     { id: 'today', label: t('nav.today'), to: '/', match: (p) => p === '/' },
     {
       id: 'plan',
+      to: '/plan',
       label: t('nav.plan'),
       match: (p) => p.startsWith('/plan'),
       subs: [
@@ -82,6 +98,7 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
     },
     {
       id: 'subjects',
+      to: '/subjects',
       label: t('nav.subjects'),
       match: (p) => p.startsWith('/subjects'),
       subs: [
@@ -95,6 +112,7 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
     },
     {
       id: 'progress',
+      to: '/progress',
       label: t('nav.progress'),
       match: (p) => p.startsWith('/progress') || p.startsWith('/sessions'),
       subs: [
@@ -104,6 +122,7 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
     },
     {
       id: 'settings',
+      to: '/settings',
       label: t('menu.settings'),
       match: (p) => p.startsWith('/settings'),
       subs: [
@@ -127,40 +146,49 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
         {sections.map((s) => {
           const on = s === current
           const rowClass = cn(
-            'flex h-12 w-full items-center justify-between rounded-[14px] px-2 text-[17px]',
+            'flex h-12 w-full items-center rounded-[14px] px-2 text-[17px]',
             on ? 'font-semibold text-brand' : 'font-medium text-ink-secondary',
           )
-          if (!s.subs)
-            return (
-              <Link
-                key={s.id}
-                to={s.to!}
-                onClick={onNavigate}
-                aria-current={on ? 'page' : undefined}
-                className={rowClass}
-              >
-                {s.label}
-              </Link>
-            )
+          const link = (
+            <Link
+              to={s.to}
+              onClick={onNavigate}
+              aria-current={pathname === s.to ? 'page' : undefined}
+              className={cn(rowClass, 'flex-1')}
+            >
+              {s.label}
+            </Link>
+          )
+          if (!s.subs) return <div key={s.id}>{link}</div>
           const isOpen = expanded.includes(s.id)
           return (
             <div key={s.id} className="flex flex-col">
-              <button
-                type="button"
-                aria-expanded={isOpen}
-                onClick={() =>
-                  setExpanded(isOpen ? expanded.filter((id) => id !== s.id) : [...expanded, s.id])
-                }
-                className={rowClass}
+              <div className="flex items-center">
+                {link}
+                <button
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-label={t('menu.subpages', { section: s.label })}
+                  onClick={() =>
+                    setExpanded(isOpen ? expanded.filter((id) => id !== s.id) : [...expanded, s.id])
+                  }
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full text-ink-muted"
+                >
+                  <ChevronDownIcon
+                    size={18}
+                    className={cn('transition-transform duration-200', isOpen && 'rotate-180')}
+                  />
+                </button>
+              </div>
+              {/* Height animates through the grid row (0fr → 1fr); closed subpages are inert. */}
+              <div
+                inert={!isOpen}
+                className={cn(
+                  'grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none',
+                  isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+                )}
               >
-                {s.label}
-                <ChevronDownIcon
-                  size={18}
-                  className={cn('text-ink-muted transition-transform', isOpen && 'rotate-180')}
-                />
-              </button>
-              {isOpen && (
-                <div className="flex flex-col pb-1.5 pl-5">
+                <div className="flex min-h-0 flex-col overflow-hidden pl-5">
                   {s.subs.map((sub) => {
                     const here = pathname === sub.to
                     return (
@@ -183,8 +211,9 @@ function MenuBody({ onNavigate }: { onNavigate: () => void }) {
                       </Link>
                     )
                   })}
+                  <span className="h-1.5 shrink-0" />
                 </div>
-              )}
+              </div>
             </div>
           )
         })}

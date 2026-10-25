@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { BottomSheet } from '@/components/BottomSheet'
 import { EmptyCard } from '@/components/EmptyCard'
-import { PlusIcon } from '@/components/icons'
+import { PlusIcon, TrashIcon } from '@/components/icons'
+import { SwipeRow } from '@/components/SwipeRow'
 import { useDayBoundary } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { paletteOf } from '@/features/subjects/colors'
@@ -18,9 +20,13 @@ import { sessionMinutes, STUDY_MODES } from './model'
 import { hhmm } from './segmentDrafts'
 import { SessionHeader } from './SessionHeader'
 import { useNow } from './useNow'
+import { useSessionUi } from './store'
 import type { StudyMode } from '@/lib/estimates/calibration'
 
-/** History of finished sessions by day, filtered by subject; "+ Dodaj sesiju" adds one afterwards. */
+/**
+ * History of finished sessions by day, filtered by subject; "+ Dodaj sesiju" adds one afterwards.
+ * Swipe left deletes a session (with undo; the calibration is recomputed).
+ */
 export function SessionsPage() {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -30,6 +36,9 @@ export function SessionsPage() {
   const { data: sessions, isPending } = useSessions()
   const { data: subjects } = useSubjects()
   const [adding, setAdding] = useState(false)
+  const writer = useSessionWriter()
+  const queryClient = useQueryClient()
+  const needsRecalibration = useSessionUi((s) => s.needsRecalibration)
 
   const list = (sessions ?? []).filter((s) => !subjectId || s.subject_id === subjectId)
   const days = new Map<LocalDate, SessionListItem[]>()
@@ -90,42 +99,61 @@ export function SessionsPage() {
               })}
             </span>
           </div>
-          <div className="flex flex-col gap-0.5 rounded-[24px] glass p-1.5">
+          {/* Rows reach the card's edges, so a swiped row's button is flush (like Raspored). */}
+          <div className="flex flex-col overflow-hidden rounded-[24px] glass">
             {items.map((s) => {
               const subject = subjects?.find((x) => x.id === s.subject_id)
               return (
-                <Link
+                <SwipeRow
                   key={s.id}
-                  to={`/sessions/${s.id}`}
-                  className="flex min-h-14 items-center gap-3 rounded-[18px] p-3"
+                  actions={[
+                    {
+                      id: 'delete',
+                      label: t('swipe.delete'),
+                      tone: 'danger',
+                      icon: <TrashIcon size={18} />,
+                      deferred: t('swipe.sessionDeleted'),
+                      // The calibration is recomputed without it (as on the session screen).
+                      run: async () => {
+                        await writer.remove(s)
+                        if (s.origin === 'timer') needsRecalibration(s.subject_id)
+                        void queryClient.invalidateQueries({ queryKey: ['session', 'list'] })
+                      },
+                    },
+                  ]}
                 >
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'h-9 w-1.5 shrink-0 rounded-full',
-                      paletteOf(subject?.color ?? null).bar,
+                  <Link
+                    to={`/sessions/${s.id}`}
+                    className="flex min-h-14 items-center gap-3 px-4 py-3"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'h-9 w-1.5 shrink-0 rounded-full',
+                        paletteOf(subject?.color ?? null).bar,
+                      )}
+                    />
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="truncate text-[15px] font-semibold">{subject?.name}</span>
+                      <span className="text-xs text-ink-muted">
+                        {[
+                          `${hhmm(new Date(s.started_at), boundary.timeZone)}–${hhmm(new Date(s.ended_at!), boundary.timeZone)}`,
+                          s.mode ? t(`session.mode.${s.mode}`) : null,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </span>
+                    </span>
+                    {s.origin === 'manual' && (
+                      <span className="rounded-lg bg-canvas px-2 py-1 text-[11px] font-semibold text-ink-muted">
+                        {t('session.history.manual')}
+                      </span>
                     )}
-                  />
-                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <span className="truncate text-[15px] font-semibold">{subject?.name}</span>
-                    <span className="text-xs text-ink-muted">
-                      {[
-                        `${hhmm(new Date(s.started_at), boundary.timeZone)}–${hhmm(new Date(s.ended_at!), boundary.timeZone)}`,
-                        s.mode ? t(`session.mode.${s.mode}`) : null,
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
+                    <span className="text-[13px] font-semibold text-brand">
+                      {t('time.minutes', { m: Math.round(sessionMinutes(s)) })}
                     </span>
-                  </span>
-                  {s.origin === 'manual' && (
-                    <span className="rounded-lg bg-canvas px-2 py-1 text-[11px] font-semibold text-ink-muted">
-                      {t('session.history.manual')}
-                    </span>
-                  )}
-                  <span className="text-[13px] font-semibold text-brand">
-                    {t('time.minutes', { m: Math.round(sessionMinutes(s)) })}
-                  </span>
-                </Link>
+                  </Link>
+                </SwipeRow>
               )
             })}
           </div>

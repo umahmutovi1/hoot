@@ -3,6 +3,9 @@ import { create } from 'zustand'
 // One toast at a time (undo after "Danas ne mogu" or a block change), above the bottom edge and
 // the keyboard (--vv-bottom).
 
+/** How long a toast stays; a deferred delete commits after it (SwipeRow). */
+export const TOAST_MS = 6000
+
 interface ToastState {
   toast: { id: number; message: string; action?: { label: string; run: () => void } } | null
   show: (message: string, action?: { label: string; run: () => void }) => void

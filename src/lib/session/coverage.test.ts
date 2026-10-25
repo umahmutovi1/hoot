@@ -10,21 +10,21 @@ const units = [
 describe('coverage', () => {
   it('covers whole units between the start and the reached point', () => {
     expect(coverage(units, { unitId: 'a', offset: 0 }, { unitId: 'c', offset: 3 })).toEqual([
-      { unitId: 'a', amountDone: 10, complete: true },
-      { unitId: 'b', amountDone: 10, complete: true },
-      { unitId: 'c', amountDone: 3, complete: false },
+      { unitId: 'a', amountDone: 10, complete: true, end: 10 },
+      { unitId: 'b', amountDone: 10, complete: true, end: 10 },
+      { unitId: 'c', amountDone: 3, complete: false, end: 3 },
     ])
   })
 
   it('starts mid-unit and ends inside the same unit', () => {
     expect(coverage(units, { unitId: 'b', offset: 4 }, { unitId: 'b', offset: 9 })).toEqual([
-      { unitId: 'b', amountDone: 5, complete: false },
+      { unitId: 'b', amountDone: 5, complete: false, end: 9 },
     ])
   })
 
   it('clamps offsets and marks the end of a unit as complete', () => {
     expect(coverage(units, { unitId: 'b', offset: -3 }, { unitId: 'b', offset: 99 })).toEqual([
-      { unitId: 'b', amountDone: 10, complete: true },
+      { unitId: 'b', amountDone: 10, complete: true, end: 10 },
     ])
   })
 

@@ -26,6 +26,8 @@ export interface EndUnit {
   nextReviewOn: string | null
   /** Last test; a unit tested during this session is not offered the gate again. */
   lastReviewAt: string | null
+  /** Read so far before this session (`units.read_amount`), in the unit's measure. */
+  readAmount?: number
 }
 
 export interface EndSource {
@@ -76,9 +78,29 @@ export function endLevels(level: number): number[] {
   return level > 1 ? [0, 1, level] : [0, 1]
 }
 
-/** A chapter read to its end becomes "Pročitano" if it was not started (PRD decision, Stage 7). */
-export function defaultLevel(unit: Pick<EndUnit, 'kind' | 'level'>, covered: Covered | undefined) {
-  if (unit.kind === 'chapter' && unit.level === 0 && covered?.complete) return 1
+/**
+ * How far a unit is read after this session: what earlier sessions read and the point reached now
+ * (decision after Stage 10b: reading across sessions adds up; partial reading counts).
+ */
+export function readAfter(
+  unit: Pick<EndUnit, 'amount' | 'readAmount'>,
+  covered: Covered | undefined,
+) {
+  return Math.min(unit.amount, Math.max(unit.readAmount ?? 0, covered?.end ?? 0))
+}
+
+/**
+ * A chapter read to its end becomes "Pročitano" if it was not started (PRD decision, Stage 7),
+ * also when its pages were read over several sessions.
+ */
+export function defaultLevel(
+  unit: Pick<EndUnit, 'kind' | 'level' | 'amount' | 'readAmount'>,
+  covered: Covered | undefined,
+) {
+  const complete =
+    covered?.complete ||
+    (covered !== undefined && unit.amount > 0 && readAfter(unit, covered) >= unit.amount)
+  if (unit.kind === 'chapter' && unit.level === 0 && complete) return 1
   return unit.level
 }
 
@@ -167,7 +189,12 @@ export function planEnd(
     const min = minutes.get(id) ?? 0
     const levelAfter = answers.levels[id] ?? defaultLevel(unit, covered.get(id))
     const testedNow = unit.lastReviewAt !== null && unit.lastReviewAt >= session.started_at
-    const read = covered.get(id)?.complete === true && levelAfter >= 1 && !testedNow
+    const coveredNow = covered.get(id)
+    const readNow = readAfter(unit, coveredNow)
+    const finished =
+      coveredNow !== undefined &&
+      (coveredNow.complete || (unit.amount > 0 && readNow >= unit.amount))
+    const read = finished && levelAfter >= 1 && !testedNow
     if (read) gate.push(id)
     const rating = answers.ratings[id] ?? null
     sessionUnits.push({
@@ -192,6 +219,10 @@ export function planEnd(
       if (levelAfter >= 1 && !unit.completedAt) patch.completed_at = t
     }
     if (rating !== null) patch.user_difficulty = rating
+    // Partial reading is kept while the unit is not read yet, so the plan and the next session
+    // continue from there; once read (or set back by hand) it is cleared.
+    const keepRead = levelAfter === 0 && readNow > 0 && readNow < unit.amount ? readNow : null
+    if (coveredNow && (keepRead ?? 0) !== (unit.readAmount ?? 0)) patch.read_amount = keepRead
     if (Object.keys(patch).length > 0)
       unitOps.push({ kind: 'update', table: 'units', match: { id }, patch })
   }

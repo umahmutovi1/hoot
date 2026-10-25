@@ -32,9 +32,12 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `npx supabase functions serve` / `npx supabase functions deploy <name>`
 - `npm run eval` (promptfoo evals for `parse-document`; needs `GEMINI_API_KEY` in the shell)
 
+## Product principle
+- Hoot exists to reduce the cognitive load of planning. For every open question pick, in order: a sensible default with no question, a suggestion the user approves with one tap, and only then a setting. A feature that adds more decisions than it removes does not ship.
+
 ## Architectural rules
 - Scheduling is deterministic code (`plan()`, `placeTimes()` in `src/lib/scheduler/`), never an LLM. AI only explains and proposes input changes.
-- Subject priority, study mode (regular/campaign), manual campaign start, lecture logs, manual blocks, busy time from connected calendars, the realization factor, slot scores and the default session preset are scheduler inputs; campaign start dates are computed in `plan()`, never by AI. Include every scheduler input in `input_hash`.
+- Subject priority, study mode (regular/campaign), manual campaign start, lecture logs, manual blocks, reserved exam-eve days (`assessments.eve_reserved`), busy time from connected calendars, the realization factor, slot scores and the default session preset are scheduler inputs; campaign start dates are computed in `plan()`, never by AI. Include every scheduler input in `input_hash`.
 - Pure logic in `src/lib/` has no React/Supabase imports and is unit-tested (scheduler, estimates, srs, progress, pace, schedule, grades, day boundary, merge). Scheduler invariants also get property tests (`fast-check`).
 - Timer time is computed from segment timestamps, never from `setInterval` ticks. One active session per user.
 - "Day" starts at `profiles.day_start_min` in `profiles.timezone`; all `on_date` columns are local dates via `src/lib/day.ts`. Timestamps stay UTC.
@@ -50,7 +53,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - Regenerate `src/types/database.ts` after every migration.
 
 ## Design implementation
-- Tokens (colors, font stack, radii) and the glass utilities (`glass`, `glass-strong`, `glass-sheet`, `glass-tint`, `btn-primary`) live in `src/index.css`; use token classes and utilities, not raw hex values or inline `backdrop-filter`.
+- Tokens (colors, font stack, radii) and the glass utilities (`glass`, `glass-strong`, `glass-sheet`, `glass-tint`, `btn-primary`) live in `src/index.css`; use token classes and utilities, not raw hex values or inline `backdrop-filter`. Color themes (`[data-theme]`, `profiles.theme`) override tokens only, so utilities never hardcode brand rgba values.
 - Target 390 px width first; touch targets ≥ 44 px; stroke icons 1.8 px.
 - Prefer shadcn/ui primitives (Dialog, Sheet, Tabs) styled to match the mockups.
 - No mascot or illustrations: empty states are text and a button. The assistant is called "AI" / "asistent" in the UI, never "sova".

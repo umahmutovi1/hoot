@@ -193,6 +193,34 @@ export const TextIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const SkipIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 6l8 6-8 6z" />
+    <path d="M18 6v12" />
+  </Icon>
+)
+
+export const CircleMinusIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M8.5 12h7" />
+  </Icon>
+)
+
+export const ArchiveIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5" />
+    <path d="M5.5 9v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V9M10 13h4" />
+  </Icon>
+)
+
+export const SearchIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-3.5-3.5" />
+  </Icon>
+)
+
 export const TrashIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13" />

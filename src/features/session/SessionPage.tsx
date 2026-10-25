@@ -27,7 +27,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useActiveSession, useSessionWriter } from './api'
 import { Chip } from './Chip'
-import { ACCIDENTAL_MS, EndEarlySheet } from './EndEarlySheet'
+import { EndEarlySheet } from './EndEarlySheet'
 import { ForgottenSheet } from './ForgottenSheet'
 import { findUnit, nextLeaves, sessionSources, unitTitle, type SessionSource } from './material'
 import { bySegmentStart, formatClock, STUDY_MODES, toSegment } from './model'
@@ -65,7 +65,6 @@ export function SessionPage() {
   const [picker, setPicker] = useState(false)
   const [endSheet, setEndSheet] = useState(false)
   const vibrated = useRef<string | null>(null)
-
   const segments = data ? [...data.segments].sort(bySegmentStart) : []
   const list = segments.map(toSegment)
   const open = openSegment(list)
@@ -125,10 +124,6 @@ export function SessionPage() {
     navigate(`/session/${session.id}/end`, { replace: true })
   }
 
-  // Ending before the planned time (or right after starting) asks first.
-  const endsEarly =
-    active < ACCIDENTAL_MS ||
-    (session.planned_minutes !== null && active < (session.planned_minutes - 1) * MINUTE)
   const progress = session.planned_minutes
     ? active / (session.planned_minutes * MINUTE)
     : reminder?.phase === 'work'
@@ -239,7 +234,8 @@ export function SessionPage() {
           </button>
           <button
             type="button"
-            onClick={() => (endsEarly ? setEndSheet(true) : void finish())}
+            // Finishing or discarding only happens here, and never on one stray tap (10b).
+            onClick={() => setEndSheet(true)}
             className="flex h-14 items-center gap-2 rounded-full btn-primary px-[26px] text-base font-semibold"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

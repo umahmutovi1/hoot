@@ -1,6 +1,6 @@
 # Hoot — Roadmap
 
-Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md), dizajn u [design/](design/README.md), ručna podešavanja servisa u [SETUP.md](SETUP.md). Etape 1–12 prate redoslijed iz PRD sekcije „Roadmap i odluke"; poslije svake etape app radi i deployan je.
+Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md), dizajn u [design/](design/README.md), ručna podešavanja servisa u [SETUP.md](SETUP.md). Etape 1–12 prate redoslijed iz PRD sekcije „Roadmap i odluke" (10b i 10c su dodane nakon Etape 10, tag `v0.10.1` / `v0.10.2`); poslije svake etape app radi i deployan je.
 
 ## Konvencije
 
@@ -266,6 +266,49 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - [x] Dorada poslije e2e: veze s poglavljima čekaju spašena pitanja i šire teme (#168), triger embeddinga (#169), ispitno pitanje testirano samo sebe u gate-u (#170), liste u prijedlogu odgovora (#171), favicon na iOS-u (#166)
 - [x] **DoD** (uz opći DoD): uvoz sadržaja slikom i pitanja tekstom kroz AI s pregledom, merge po oznaci, teme i veze pitanje ↔ poglavlje; AI pitanja i kviz idu u `review_logs` i FSRS; asistent koristi alate bez direktnog pisanja; Moodle rokovi i raspored nastave kroz pregled → `v0.10.0` (browser e2e na previewu sa privremenim korisnikom, 390 px: slika sadržaja → 18 jedinica sa težinom, izvedenim stranicama i temama, slika obrisana; zalijepljena pitanja → „Veze s poglavljima“ 6/6 tačno → ObimIspita sa AI redovima; kviz iz bilješki → level 2, FSRS i `review_logs.source = notes`, „Spasi kao karticu“; ispitno pitanje → „Predloži odgovor“ → `answer_origin = 'ai'`, „Znam“; chat „gdje sam pisala o …“ → kartica bilješki, raspored nastave iz teksta → 2 termina u periodu nastave; Moodle feed → rok upisan i uparen, preskočen događaj ignorisan, pomjeren datum → „izmijenjeno“ → ažuriran; uvoz kartica, Anki CSV i Quizlet tekst. Web Share Target je u manifestu i service workeru, a dijeljenje s Android telefona ostaje za ručnu provjeru. 18 AI poziva ukupno; korisnik, fajlovi i lokalni ključevi obrisani)
 
+## Etapa 10b — UX dorada i sigurnost
+
+Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, teme i geste“, „Pregled“ (vodeći princip: manje odluka), design README „Odluke nakon v0.10.0“. Mockupi za Pretragu i Izgled (teme) prvo.
+
+- [x] AI dugme samo ikona: bez labela i podvlake; isključeno `bg-white/30` + ikona `brand-accent`, uključeno `glass-tint` + bijela ikona; `aria-label` „AI asistent“
+- [x] Sticky gornji red (`TopBar` u `AppShell`): `sticky top-0` + safe-area, sadržaj ispod se zamuti (`backdrop-filter` blur, maska za meku donju ivicu), fallback platno 0.92
+- [x] Meni: naziv sekcije je link na glavnu stranicu (Plan, Predmeti, Napredak, Postavke), chevron je zasebno dugme 44 px; animirano otvaranje podstranica
+- [x] Sheetovi: `BottomSheet` na shadcn Drawer (`vaul`), povlačenje nadolje zatvara, kriva `cubic-bezier(0.32, 0.72, 0, 1)` ~400 ms, `prefers-reduced-motion` → fade
+  - Povlači se samo ručka (`handleOnly`): forme, označavanje teksta i scroll unutar sheeta ostaju kao prije; tastatura ide preko `--vv-bottom` (vaul `repositionInputs` isključen)
+- [x] Exam kartice na Danas po mockupu: datum → ime → % → traka; dani do ispita desno u redu datuma; % i traka uvijek (bez izvora „—“), jednaka visina; traka 3 px radijus, track 0.65
+- [x] Swipe ulijevo na listama (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): arhiviraj / obriši / preskoči, toast Poništi, iste akcije u „⋯“ / dugom pritisku
+  - Odluka (Etapa 10b): izvor dobija arhiviranje (`sources.archived_at`, migracija `0025_source_archive.sql`): arhiviran izvor ispada iz plana, napretka i obima, jedinice i historija ostaju; „Arhivirani izvori“ na predmetu ga vraćaju. Brisanje koje se ne može vratiti poslije (sesija, termin, rok, dokument) sakrije red odmah, a briše se tek kad toast Poništi istekne. Iste radnje: dugi pritisak, desni klik i skriveno dugme „Radnje“ (tastatura)
+- [x] Pretraga: ikona u gornjem redu, indeks ekrana i postavki sa sinonimima + podaci iz keša, `fuse.js`, offline, nedavne
+- [x] Teme boja: tokeni po `[data-theme]` (brand, `glass-tint`, `btn-primary`, magla, `theme-color`), bez hardkodirane rgba u utility-jima; Lavanda, Grafit, Pijesak, Kadulja, Okean; Postavke → Izgled; migracija `profiles.theme`
+- [x] „Više vremena ovaj dan“ na Plan → Dan i u pretrazi (model `availability_days` postoji)
+  - Jedan tap podiže maksimum tog dana (`availability_days.cap_min`: +30 min / +1 h / +2 h / +3 h) uz Poništi; ako je maksimum već koliko i slobodnog vremena, sheet upućuje na Dostupnost
+- [x] Fokus kartica na Danas sa dva prstena po mockupu (`Danas.dc.html:35-46`): vanjski plan danas (`brand-accent`), unutrašnji sedmica (pink), 80 px; sada je jedan prsten u `FocusBar.tsx`
+- [x] Blok na listi Danas: tap otvara “Započeti sesiju sada?” (Počni, Uredi, Preskoči, Obriši / Izbaci iz plana); “+ Dodaj blok” na listi; “Počni” na kartici Sljedeće ostaje direktan; “Odradila sam bez timera” (ručna sesija vezana za blok) i “Drugi predmet u ovo vrijeme” u “Obriši blok?”; postavka “Početak dana” se zove “Granica dana”
+  - Granica dana nije red u Postavkama (predlaže je onboarding iz vremena lijeganja), pa nema šta preimenovati u appu; naslov sheeta nazad iz sesije je “Završi sesiju?” (odluka korisnice)
+- [x] Nazad dok sesija radi (strelica, browser, Android gest): sheet Nastavi / Izađi, timer radi dalje / Završi ranije / Odbaci sesiju
+- [x] BlockSheet: prekidač “Zadrži ovo vrijeme” (default uključen = ručni blok; isključen = AI blok koji replan smije presložiti) + “Vrati planu” na pojedinačnom ručnom bloku
+- [x] Današnji dan se preslaže: današnji slobodni termini u `input_hash`, promjena dostupnosti / nastave / zauzetosti ponovo smjesti današnje nezapočete AI blokove od sada (toast + Poništi); više slobodnog vremena → kartica “Imaš X min više danas”; testovi u `state.ts` / `plan()`
+  - Odluka (Etapa 10b): na svaku promjenu današnjih termina (ne samo kad blok više ne stane) današnji nezapočeti AI blokovi dobiju nova vremena; potpis termina je u `plan_runs.today_slots` (migracija `0024_theme_and_today_slots.sql`, uz `profiles.theme`), pa svaki uređaj zna šta se promijenilo. Danas se pri tome ne dodaje posao (kapacitet 0); dobijeno vrijeme nudi kartica
+- [x] Sigurnost u CI: CodeQL, Dependabot, `npm audit --audit-level=high`, gitleaks, `supabase db lint` / advisors; RLS testovi (drugi korisnik i `anon`); `public/_headers` sa CSP-om
+  - Odluka (Etapa 10b): repo postaje javan (CodeQL na privatnom ličnom repou ne radi bez plaćenog Code Security); prije toga gitleaks preko cijele historije mora biti zelen. RLS testovi su pgTAP (`supabase/tests/database/rls.test.sql`) u CI jobu `db` sa lokalnim Supabaseom (`auto_expose_new_tables = false` kao na hostovanom projektu). GitHub koraci u SETUP.md 2a
+- [x] Dorada poslije pregleda na previewu: nazad iz sesije bez pitanja i „Završi“ uvijek sa sheetom, „Dodaj blok“ sa prijedlogom plana (spojeno „Imam još vremena“) i „Započeti odmah?“, djelimično pročitane jedinice (`units.read_amount`), arhiviranje ispita i popravni skriven dok ne zatreba (`0026`), Raspored sa zauzetošću iz kalendara i stvarnim vremenom odrađenih blokova, kvadratne kartice ispita, kalendar 00–24 sa pilulom mjeseca, teme i za sheetove i meni, sheetovi skrolaju na dodir (#179–#198)
+- [x] **DoD** (uz opći DoD): svaka stavka provjerena na 390 px na telefonu, sigurnosni koraci zeleni u CI → `v0.10.1` (pregled na previewu potvrdila korisnica; CI: check, db, secrets, CodeQL zeleni; migracije 0024–0026 primijenjene)
+
+## Etapa 10c — Akademska struktura, materijali i podsjetnici
+
+PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s interneta, raspored predavanja/vjezbi), „Povezani kalendari i integracije“ (materijali), „Scheduler“ (dan pred ispit), „Podsjetnici i notifikacije“, „Onboarding“ (1b, 6). 
+
+- [ ] Migracija: `academic_years`, `academic_periods.academic_year_id`, `subjects.academic_year_id` + `semester_no`, `profiles.institution` / `study_program` / `year_of_study` / `reminder_offsets_min`, `assessments.eve_reserved`, `sources.file_name` / `drive_file_id` / `external_url`, nove vrste `push_jobs` i `ai_task`; regenerisan `database.ts`
+- [ ] Predmeti grupisani po godini i semestru (trenutni otvoren, ostali sklopljeni, „prenesen“ za nepoložene), default semestar za novi predmet, kartica „Nova akademska godina“
+- [ ] Onboarding korak 1b „Fakultet i godina“ (preskočiv) i podsjetnici u koraku 6
+- [ ] `find-academic-info`: web search kroz wrapper (Gemini grounding / Anthropic web search), lista dokumenata → `parse-document` pregled sa linkom na izvor
+- [ ] Plan i program (`syllabus`) u `parse-document`: literatura → izvori, sedmične teme → teme i tempo predavanja, bodovanje → ispiti i bodovi; pregled po predmetu
+- [ ] PDF s uređaja: outline + broj stranica preko `pdf.js` → pregled kao `parse-toc`; AI samo za stranice sadržaja kad nema outline-a
+- [ ] Google Drive Picker (`drive.file`): fajl ili folder → isti tok, izvor pamti `drive_file_id` i link; SETUP.md
+- [ ] Dan pred ispit: kartica 3 dana prije, prekidač u ExamSheetu, `plan()` pravilo (samo taj predmet, ponavljanja drugih se pomjeraju, dva ispita zaredom → bliži), `input_hash` + testovi i property test (rezervisan dan nema blok drugog predmeta)
+- [ ] Podsjetnici prije svakog bloka (pomaci, preskok samo iza započetog bloka, tihi sati), „kasniš 15 min“, akcije Započni (deep link) i Preskoči (`push-action`, jednokratni token); zamjenjuje `first_block` 10 min
+- **DoD** (uz opći DoD): plan i program sa interneta ili PDF-a → izvori, teme i bodovi kroz pregled; PDF sa outline-om → jedinice bez AI poziva; rezervisan dan pred ispit u planu; podsjetnik i Preskoči iz notifikacije na Androidu → `v0.10.2`
+
 ## Etapa 11 — Napredak
 
 - [ ] Progres po izvoru, ispitu, predmetu i temi; jačina po temama (`recharts`)
@@ -277,22 +320,28 @@ Wrapper, `ai_runs`, rate limit, `image.ts` i pgvector su iz Etape 6.
 - [ ] `src/lib/strategist/`: kandidati akcija iz pravila sa izračunatim efektom + testovi
 - [ ] `strategist` edge funkcija (sedmično / na dugme): bira najviše 3 kandidata i objašnjava (Zod: `candidate_id`), bez refleksija dok je Gemini free tier; odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`, `avoid_slot`, `add_slot`; zaostatak po predavanjima i jačina po temama u ulazu
 - [ ] Sedmični check-in (nedjelja): izuzeci za sljedeću sedmicu, prognoza, do 3 akcije; radi i bez AI-ja
+- [ ] Uvidi na Napretku (PRD „Termini učenja“ → Uvidi): najproduktivniji termini, ometanja (`visibilitychange` + „Ometena sam“, migracija `study_sessions.app_leaves` / `app_away_sec`), ritam sesije, savjeti iz tabele Tehnike; svaki uvid sa jednom akcijom
+- [ ] Ritam sesije (PRD „Timer, pauza i rekalibracija“): medijan do prve pauze, stvarne pauze, rano završene sesije → kartica „prebaci na 40/10?“ + testovi
 - **DoD** → `v0.11.0`
 
 ## Etapa 12 — Notifikacije i dorada
 
-- [ ] Ostale notifikacije (Web Push temelj je iz Etape 9): propušten blok, ponavljanje, „Dokle ste stigli?“ nakon termina, kampanja počinje za 3 dana
+- [ ] Ostale notifikacije (Web Push temelj je iz Etape 9, podsjetnici prije bloka i kašnjenje iz Etape 10c): propušten blok, ponavljanje, „Dokle ste stigli?“ nakon termina, kampanja počinje za 3 dana
 - [ ] ICS izvoz plana: `calendar-feed` edge funkcija, `ics_token` (uključi / obnovi u Postavkama), ispiti, rokovi i opcionalno blokovi uz napomenu o kašnjenju Google-a
 - [ ] Izvoz podataka (JSON) u Postavkama
 - [ ] Postavke kompletne (plan, timer i predlošci, povezani kalendari, jezik, potrošnja AI iz `ai_runs`)
 - [ ] Pristupačnost: touch ≥ 44 px, kontrast, aria, fokus
 - [ ] Playwright E2E: onboarding, novi predmet, dodaj izvor, sesija, replan
+- [ ] Eval suite (PRD „AI integracija“ → Eval suite): sve AI funkcije, Zod stopa, rubrike, budžet cijene/latencije, red-team prompt injection; CI na PR-ovima koji diraju `supabase/functions/**` ili `evals/**`, puni skup noćno
 - [ ] `.github/workflows/backup.yml` (sedmični `db dump`, DB lozinka u Secrets)
 - [ ] Lighthouse PWA i performanse
 - **DoD** → `v1.0.0`
 
 ## Kasnije
 
+- **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a).
+- Tamni režim (teme iz Etape 10b su svijetle).
+- Puni sadržaj materijala za asistenta, opt-in po izvoru (PRD „Materijali“, faza 3).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
 - Lični FSRS parametri (`@open-spaced-repetition/binding` optimizer) kad bude ~100+ ponavljanja u `review_logs`.

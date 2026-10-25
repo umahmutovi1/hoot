@@ -1,7 +1,7 @@
 import { MoodleCard } from '@/features/calendars/MoodleCard'
 import { useDeadlineProposals } from '@/features/calendars/moodle'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { SparkleIcon } from '@/components/icons'
@@ -24,8 +24,11 @@ import { calendarStatus, formatClock } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
 import { SetupChecklist } from '@/features/onboarding/SetupChecklist'
 import { ExamTiles } from './ExamTiles'
+import { BlockSheet } from '@/features/plan/BlockSheet'
 import { FactCard } from './FactCard'
 import { FocusBar } from './FocusBar'
+import { GainedCard } from './GainedCard'
+import { useGainedCard } from './useGainedCard'
 import { DayOffCard, NextCard } from './NextCard'
 import { QuickActions } from './QuickActions'
 import { TodaySchedule } from './TodaySchedule'
@@ -47,6 +50,8 @@ export function TodayPage() {
   const { locale } = useLocale()
   const { data: profile } = useProfile()
   const plan = usePlanToday()
+  // `?extra=1` (search: "Imam još vremena") opens that sheet.
+  const [params, setParams] = useSearchParams()
   const name = profile?.display_name ?? ''
   const { periods, dayRows } = useScheduleData()
   const status = calendarStatus(plan.today, periods)
@@ -98,10 +103,17 @@ export function TodayPage() {
           <div className="mt-3 empty:hidden">
             <QuickActions plan={plan} dayOff={dayOff} />
           </div>
-          <ActionCards />
+          <ActionCards plan={plan} />
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />
-          <ExamTiles now={plan.now} today={plan.today} />
+          <ExamTiles now={plan.now} />
+          <BlockSheet
+            open={params.get('extra') === '1'}
+            onOpenChange={(o) => !o && setParams({}, { replace: true })}
+            block={null}
+            date={plan.today}
+            today={plan.today}
+          />
         </>
       ) : firstRun ? (
         <section className="mt-16 flex flex-col items-center gap-3.5 px-3 text-center">
@@ -174,8 +186,9 @@ function MovedCard({ plan }: { plan: PlanToday }) {
 }
 
 /** At most one action card above the schedule; the rest open under "Još N prijedloga". */
-function ActionCards() {
+function ActionCards({ plan }: { plan: PlanToday }) {
   const { t } = useTranslation()
+  const gained = useGainedCard(plan)
   const lectures = usePendingLectures()
   const suggestions = useSuggestions()
   const [more, setMore] = useState(false)
@@ -184,6 +197,7 @@ function ActionCards() {
   const moodle = useDeadlineProposals()
   const cards = [
     ...urgent.map((s) => <SuggestionCard key={s.key} suggestion={s} />),
+    ...(gained ? [<GainedCard key="gained" plan={plan} />] : []),
     ...lectures.pending.map((l) => (
       <LecturePromptCard
         key={l.entry.id}

@@ -5,6 +5,9 @@ import './index.css'
 import './app/i18n'
 import { Providers } from './app/providers'
 import { router } from './app/router'
+import { applyCachedTheme } from './features/settings/theme'
+
+applyCachedTheme()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

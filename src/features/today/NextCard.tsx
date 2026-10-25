@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
+import { ChevronRightIcon, PlusIcon } from '@/components/icons'
+import { BlockSheet } from '@/features/plan/BlockSheet'
+import { cn } from '@/lib/utils'
 import { useStartBlock } from '@/features/plan/actions'
 import { useAllSources } from '@/features/plan/api'
 import {
@@ -26,7 +29,6 @@ import { dateFnsLocales } from '@/lib/locale'
 import { LATE_AFTER_MIN } from '@/lib/scheduler'
 import { activeMs, MINUTE, openSegment } from '@/lib/session/timer'
 import type { ActiveSession } from '@/features/session/model'
-import { ExtraTimeSheet } from './ExtraTimeSheet'
 import { SkipSheet } from './SkipSheet'
 import type { PlanToday } from './usePlanToday'
 
@@ -202,30 +204,43 @@ function FreeCard({ plan }: { plan: PlanToday }) {
         <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">{title}</span>
         <span className="text-[13px] text-white/84">{sub}</span>
       </div>
-      <div className="flex flex-wrap items-center justify-end gap-2">
+      {/* Side by side (feedback after 10b): "Dodaj blok" (the plan's suggestion, as "Imam još
+          vremena" was) left of the free session. */}
+      <div className="flex items-center gap-2">
         {!noMaterial && (
           <button
             type="button"
             onClick={() => setExtra(true)}
-            className="flex h-12 items-center rounded-full bg-white/18 px-5 text-base font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]"
+            className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-full bg-white/18 px-3 text-[15px] font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]"
           >
-            {t('today.extra.button')}
+            <PlusIcon size={16} />
+            {t('blockSheet.add')}
           </button>
         )}
         {noMaterial && (
           <Link
             to="/subjects"
-            className="flex h-12 items-center rounded-full bg-white/18 px-5 text-base font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]"
+            className="flex h-12 flex-1 items-center justify-center rounded-full bg-white/18 px-3 text-[15px] font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]"
           >
             {t('today.free.addMaterial')}
           </Link>
         )}
-        <button type="button" onClick={openStart} className={action}>
+        <button
+          type="button"
+          onClick={openStart}
+          className={cn(action, 'flex-1 justify-center px-3 text-[15px]')}
+        >
           <PlayIcon />
           {t('today.next.freeTitle')}
         </button>
       </div>
-      <ExtraTimeSheet open={extra} onOpenChange={setExtra} plan={plan} />
+      <BlockSheet
+        open={extra}
+        onOpenChange={setExtra}
+        block={null}
+        date={plan.today}
+        today={plan.today}
+      />
     </section>
   )
 }
@@ -236,8 +251,13 @@ function RunningCard({ data }: { data: ActiveSession }) {
   const { data: subject } = useSubject(data.session.subject_id)
   const list = data.segments.map(toSegment)
   const running = Boolean(openSegment(list))
+  // The whole card opens the session; finishing or discarding happens there (decision, 10b).
   return (
-    <section className="glass-tint flex flex-col gap-4 rounded-card-lg p-5">
+    <Link
+      to="/session"
+      aria-label={t('today.next.open')}
+      className="glass-tint flex flex-col gap-4 rounded-card-lg p-5 active:scale-[0.99]"
+    >
       <span className={label}>{running ? t('today.next.running') : t('today.next.paused')}</span>
       <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">
         {subject?.name ?? t('session.title')}
@@ -246,11 +266,10 @@ function RunningCard({ data }: { data: ActiveSession }) {
         <span className="text-[40px] font-semibold tracking-[-1.2px] tabular-nums">
           {formatClock(activeMs(list, now))}
         </span>
-        <Link to="/session" className={action}>
-          <PlayIcon />
-          {t('today.next.resume')}
-        </Link>
+        <span className="flex size-12 items-center justify-center rounded-full bg-white/18">
+          <ChevronRightIcon size={22} />
+        </span>
       </div>
-    </section>
+    </Link>
   )
 }

@@ -30,8 +30,8 @@ export function toPickBlock(b: PlanBlockRow): PickBlock {
   }
 }
 
-/** `pickForTime()` over today's plan, the checks due and the next blocks. */
-export function pickFor(plan: PlanToday, minutes: number): Pick | null {
+/** `pickForTime()` over today's plan, the checks due and the next blocks (optionally one subject). */
+export function pickFor(plan: PlanToday, minutes: number, subjectId?: string): Pick | null {
   const sourceOf = new Map([...plan.units.values()].map((i) => [i.unit.id, i.source]))
   const dueReviews = dueUnits(
     [...plan.units.values()].map((i) => i.unit),
@@ -54,6 +54,7 @@ export function pickFor(plan: PlanToday, minutes: number): Pick | null {
     todayBlocks: plan.todayBlocks.filter(isOpen).map(toPickBlock),
     dueReviews,
     laterBlocks: plan.blocks.filter((b) => b.on_date > plan.today && isOpen(b)).map(toPickBlock),
+    subjectId,
   })
 }
 

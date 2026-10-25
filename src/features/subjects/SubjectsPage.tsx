@@ -3,17 +3,22 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { differenceInCalendarDays } from 'date-fns'
 import { EmptyCard } from '@/components/EmptyCard'
-import { PlusIcon } from '@/components/icons'
+import { ArchiveIcon, PlusIcon } from '@/components/icons'
+import { SwipeRow } from '@/components/SwipeRow'
+import { useToast } from '@/components/toast-store'
 import { PageTitle } from '@/components/PageTitle'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
-import { useSubjects } from './api'
+import { useArchiveSubject, useSubjects } from './api'
 import { paletteOf } from './colors'
 import { examDateLabel, relativeDays } from './format'
 import { nextAssessment, type SubjectWithAssessments } from './model'
 
-/** Predmeti: active subjects with their next exam; archived ones behind a toggle. */
+/**
+ * Predmeti: active subjects with their next exam; archived ones behind a toggle. Swipe left
+ * archives an active subject (Stage 10b), with undo.
+ */
 export function SubjectsPage() {
   const { t } = useTranslation()
   const { data: subjects = [], isPending } = useSubjects()
@@ -21,6 +26,8 @@ export function SubjectsPage() {
   const [now] = useState(() => new Date())
   const active = subjects.filter((s) => !s.archived)
   const archived = subjects.filter((s) => s.archived)
+  const archive = useArchiveSubject()
+  const show = useToast((s) => s.show)
 
   return (
     <div className="flex flex-col">
@@ -44,7 +51,27 @@ export function SubjectsPage() {
       <div className="flex flex-col gap-3">
         {!isPending && active.length === 0 && <EmptyCard>{t('subjects.empty')}</EmptyCard>}
         {active.map((s) => (
-          <SubjectCard key={s.id} subject={s} now={now} />
+          <SwipeRow
+            key={s.id}
+            className="rounded-card-lg"
+            actions={[
+              {
+                id: 'archive',
+                label: t('swipe.archive'),
+                tone: 'archive',
+                icon: <ArchiveIcon size={18} />,
+                run: () => {
+                  archive.mutate({ id: s.id, archived: true })
+                  show(t('swipe.subjectArchived'), {
+                    label: t('today.cant.undo'),
+                    run: () => archive.mutate({ id: s.id, archived: false }),
+                  })
+                },
+              },
+            ]}
+          >
+            <SubjectCard subject={s} now={now} />
+          </SwipeRow>
         ))}
         {archived.length > 0 && (
           <button

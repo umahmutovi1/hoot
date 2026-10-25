@@ -220,7 +220,9 @@ function buildWorks(state: PlanState): Work[] {
     const required = requiredUnits(own, coverageOf(subject))
     for (const unit of own) {
       const left = Math.round(
-        unit.minutes * workShare(unit.kind, unit.level) - (reserved.get(unit.id) ?? 0),
+        // A partly read unit only needs the rest (Stage 10b: reading continues where it stopped).
+        unit.minutes * workShare(unit.kind, unit.level) * (1 - readOf(unit)) -
+          (reserved.get(unit.id) ?? 0),
       )
       if (left <= 0) continue
       const regular = subject.mode === 'regular'
@@ -262,14 +264,21 @@ export function remainingWork(state: PlanState): RemainingWork[] {
   }))
 }
 
+/** Share of a not yet read unit that is already read (0 for a unit past "Pročitano"). */
+function readOf(unit: PlanUnit): number {
+  return unit.level === 0 ? Math.min(1, Math.max(0, unit.readShare ?? 0)) : 0
+}
+
 /** Page range of `minutes` of a unit's work, starting after what earlier blocks took. */
 function pagesOf(work: Work, minutes: number): Pick<BlockUnit, 'pageFrom' | 'pageTo'> {
   const u = work.unit
   if (!u || u.pageStart === null || u.pageEnd === null || u.pageEnd < u.pageStart || u.level > 0)
     return { pageFrom: u?.pageStart ?? null, pageTo: u?.pageEnd ?? null }
   const pages = u.pageEnd - u.pageStart + 1
-  const before = (work.total - work.left) / work.total
-  const after = (work.total - work.left + minutes) / work.total
+  // Pages already read come first; the work covers the rest of the unit.
+  const read = readOf(u)
+  const before = read + ((1 - read) * (work.total - work.left)) / work.total
+  const after = read + ((1 - read) * (work.total - work.left + minutes)) / work.total
   const from = u.pageStart + Math.min(pages - 1, Math.floor(before * pages + 1e-9))
   const to = u.pageStart + Math.max(0, Math.ceil(after * pages - 1e-9) - 1)
   return { pageFrom: from, pageTo: Math.max(from, Math.min(u.pageEnd, to)) }

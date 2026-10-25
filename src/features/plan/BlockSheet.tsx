@@ -14,11 +14,20 @@ import { dateFnsLocales } from '@/lib/locale'
 import { leavesOf } from '@/lib/progress'
 import { formatClock, parseClock } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
-import { useDeleteBlock, useSaveBlock, useSkipBlock, type BlockDraft } from './actions'
+import {
+  useAddExtraTime,
+  useDeleteBlock,
+  useSaveBlock,
+  useSkipBlock,
+  useStartBlock,
+  type BlockDraft,
+} from './actions'
 import { blockMode, blockTitle, useUnitIndex } from './model'
 import { reasonOf } from './save'
 import type { PlanBlockRow } from './state'
 import { usePlanStore } from './store'
+import { fillPick, pickFor, pickTitle } from '@/features/today/pick'
+import { usePlanToday } from '@/features/today/usePlanToday'
 
 const TYPES = [
   { id: 'reading', kind: 'learn' },
@@ -44,6 +53,8 @@ export function BlockSheet({
   block,
   date,
   today,
+  startDeleting = false,
+  initialMinutes,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -52,11 +63,18 @@ export function BlockSheet({
   /** Day of a new block. */
   date: LocalDate
   today: LocalDate
+  /**
+   * Open straight on the delete question ("Izbaci iz plana" on Danas); Odustani then closes the
+   * sheet instead of going back to the form. Remount (key) to switch.
+   */
+  startDeleting?: boolean
+  /** A new block's length to start from ("Imaš X min više danas"). */
+  initialMinutes?: number
 }) {
   const { t } = useTranslation()
-  const [deleting, setDeleting] = useState(false)
+  const [deleting, setDeleting] = useState(startDeleting)
   const close = (o: boolean) => {
-    if (!o) setDeleting(false)
+    if (!o) setDeleting(startDeleting)
     onOpenChange(o)
   }
   return (
@@ -74,7 +92,8 @@ export function BlockSheet({
           date={date}
           today={today}
           deleting={deleting}
-          setDeleting={setDeleting}
+          setDeleting={startDeleting ? () => close(false) : setDeleting}
+          initialMinutes={initialMinutes}
           onDone={() => close(false)}
         />
       )}
@@ -89,6 +108,7 @@ function BlockForm({
   deleting,
   setDeleting,
   onDone,
+  initialMinutes,
 }: {
   block: PlanBlockRow | null
   date: LocalDate
@@ -96,6 +116,7 @@ function BlockForm({
   deleting: boolean
   setDeleting: (d: boolean) => void
   onDone: () => void
+  initialMinutes?: number
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -124,10 +145,22 @@ function BlockForm({
     block?.plan_block_units.map((u) => u.unit_id) ?? [],
   )
   const [day, setDay] = useState<LocalDate>(block?.on_date ?? date)
-  const [minutes, setMinutes] = useState(block?.planned_minutes ?? 45)
+  const [minutes, setMinutes] = useState(block?.planned_minutes ?? initialMinutes ?? 45)
+  // A new block starts as the plan's suggestion (decision after 10b): only day, length and time
+  // are chosen; "Ručno" shows subject, type and units.
+  const [suggesting, setSuggesting] = useState(!block)
+  // After adding a block for today: "Započeti odmah?"
+  const [added, setAdded] = useState<PlanBlockRow | null>(null)
+  const addExtra = useAddExtraTime()
+  const start = useStartBlock()
   const [timeOn, setTimeOn] = useState(block?.start_min !== null && block?.start_min !== undefined)
+  // "Zadrži ovo vrijeme" (Stage 10b): on by default, as before (the block becomes manual).
+  const [keepTime, setKeepTime] = useState(true)
   const [time, setTime] = useState(formatClock(block?.start_min ?? 9 * 60))
-  const [drop, setDrop] = useState(false)
+  // Delete question: move the material, drop it from the exam, or give the slot to another subject.
+  const [choice, setChoice] = useState<'move' | 'drop' | 'other'>('move')
+  const [otherId, setOtherId] = useState<string | null>(null)
+  const planToday = usePlanToday()
   const [showAll, setShowAll] = useState(false)
 
   const subjectUnits = useMemo(() => {
@@ -169,14 +202,20 @@ function BlockForm({
   if (!days.includes(day)) days.push(day)
   const dayTop = (d: LocalDate) => {
     const n = diffDays(today, d)
+    // "Sutra" did not fit the chip; tomorrow is named by its weekday like the other days.
     if (n === 0) return t('blockSheet.today')
-    if (n === 1) return t('blockSheet.tomorrow')
     return format(toDisplayDate(d), 'EEE', { locale: dateFnsLocales[locale] })
   }
 
   const wasAi = block?.origin === 'ai'
   const edited = wasAi || (block ? reasonOf(block)?.edited === true : false)
   const subjectName = active.find((s) => s.id === subjectId)?.name ?? ''
+  const startMin = timeOn ? (parseClock(time) ?? null) : null
+  // An AI block whose day or time changed asks whether to keep that time.
+  const moved = Boolean(block && wasAi && (day !== block.on_date || startMin !== block.start_min))
+  const asAi = moved && !keepTime
+  // A manual block that came from the plan can go back to it.
+  const fromPlan = block?.origin === 'user' && reasonOf(block)?.edited === true
 
   const submit = async () => {
     if (!subjectId) return
@@ -199,26 +238,89 @@ function BlockForm({
         kind === 'deadline' ? null : ((covering ?? nextExam)?.id ?? block?.assessment_id ?? null),
       deadlineId: kind === 'deadline' ? (deadline?.id ?? block?.deadline_id ?? null) : null,
       onDate: day,
-      startMin: timeOn ? (parseClock(time) ?? null) : null,
+      startMin,
       minutes,
       kind,
       mode: type,
       unitIds: kind === 'deadline' ? [] : unitIds,
       title: block?.title ?? null,
       edited,
+      ...(asAi && block
+        ? {
+            asAi: {
+              planRunId: block.plan_run_id,
+              reason: block.reason,
+              units: sameUnits(block, unitIds)
+                ? block.plan_block_units.map(({ user_id: _u, ...u }) => u)
+                : null,
+            },
+          }
+        : {}),
     }
     const undo = await save(draft)
-    show(wasAi ? t('blockSheet.lockedToast') : t('blockSheet.savedToast'), {
-      label: t('today.cant.undo'),
-      run: () => void undo(),
-    })
+    show(
+      asAi
+        ? t('blockSheet.movedAiToast')
+        : wasAi
+          ? t('blockSheet.lockedToast')
+          : t('blockSheet.savedToast'),
+      {
+        label: t('today.cant.undo'),
+        run: () => void undo(),
+      },
+    )
+    onDone()
+  }
+
+  const backToPlan = async () => {
+    if (!block) return
+    const undo = await remove(block, false)
+    show(t('blockSheet.backToPlanToast'), { label: t('today.cant.undo'), run: () => void undo() })
     onDone()
   }
 
   const confirmDelete = async () => {
     if (!block) return
-    const undo = await remove(block, drop)
+    const undo = await remove(block, choice === 'drop')
     show(t('blockSheet.deletedToast'), { label: t('today.cant.undo'), run: () => void undo() })
+    onDone()
+  }
+
+  /**
+   * "Drugi predmet u ovo vrijeme" (decision, Stage 10b): the slot becomes a manual block of the
+   * other subject, same day, time and length, with the material `pickForTime()` picks for it; the
+   * deleted block's material goes back to the plan from tomorrow.
+   */
+  const giveSlot = async (other: string) => {
+    if (!block) return
+    const pick = pickFor(planToday, block.planned_minutes, other)
+    const kind = pick?.kind === 'review' || pick?.kind === 'questions' ? pick.kind : 'learn'
+    const unitIds = pick?.units.map((u) => u.unitId) ?? []
+    const goals = model?.built.state.goals ?? []
+    const exam =
+      goals.find(
+        (g) =>
+          g.kind === 'exam' && g.subjectId === other && unitIds.some((u) => g.unitIds.includes(u)),
+      ) ?? goals.find((g) => g.kind === 'exam' && g.subjectId === other)
+    const undoDelete = await remove(block, false, true)
+    const undoSave = await save({
+      id: crypto.randomUUID(),
+      subjectId: other,
+      assessmentId: exam?.id ?? null,
+      deadlineId: null,
+      onDate: block.on_date,
+      startMin: block.start_min,
+      minutes: block.planned_minutes,
+      kind,
+      mode: kind === 'learn' ? 'reading' : kind,
+      unitIds,
+      title: null,
+      edited: false,
+    })
+    show(t('blockSheet.otherToast', { subject: active.find((x) => x.id === other)?.name ?? '' }), {
+      label: t('today.cant.undo'),
+      run: () => void undoSave().then(() => undoDelete()),
+    })
     onDone()
   }
 
@@ -228,6 +330,8 @@ function BlockForm({
     const exam = model?.built.state.goals.find((g) => g.id === block.assessment_id)
     const examTitle =
       subjects.flatMap((s) => s.assessments).find((a) => a.id === exam?.id)?.title ?? ''
+    const others = active.filter((s) => s.id !== block.subject_id)
+    const pickedOther = otherId ?? others[0]?.id ?? null
     return (
       <div className="flex flex-col gap-3.5">
         <p className="-mt-2 text-sm text-ink-muted">
@@ -237,33 +341,79 @@ function BlockForm({
             formatDuration(t, block.planned_minutes),
           ].join(' · ')}
         </p>
-        {canDrop && (
-          <div
-            role="radiogroup"
-            aria-label={t('blockSheet.deleteTitle')}
-            className="flex flex-col gap-2"
-          >
+        <div
+          role="radiogroup"
+          aria-label={t('blockSheet.deleteTitle')}
+          className="flex flex-col gap-2"
+        >
+          <RadioCard
+            checked={choice === 'move'}
+            onSelect={() => setChoice('move')}
+            title={t('blockSheet.move')}
+            subtitle={t('blockSheet.moveSub')}
+          />
+          {canDrop && (
             <RadioCard
-              checked={!drop}
-              onSelect={() => setDrop(false)}
-              title={t('blockSheet.move')}
-              subtitle={t('blockSheet.moveSub')}
-            />
-            <RadioCard
-              checked={drop}
-              onSelect={() => setDrop(true)}
+              checked={choice === 'drop'}
+              onSelect={() => setChoice('drop')}
               title={t('blockSheet.drop')}
               subtitle={t('blockSheet.dropSub', { title, exam: examTitle })}
             />
+          )}
+          {others.length > 0 && (
+            <RadioCard
+              checked={choice === 'other'}
+              onSelect={() => setChoice('other')}
+              title={t('blockSheet.other')}
+              subtitle={t('blockSheet.otherSub')}
+            />
+          )}
+        </div>
+        {choice === 'other' && (
+          <div
+            role="radiogroup"
+            aria-label={t('blockSheet.subject')}
+            className="flex flex-wrap gap-2"
+          >
+            {others.map((s) => {
+              const on = s.id === pickedOther
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setOtherId(s.id)}
+                  className={cn(
+                    'flex h-11 items-center gap-2 rounded-full px-4 text-[15px] font-semibold',
+                    on ? 'bg-ink text-white' : 'glass',
+                  )}
+                >
+                  <span className={cn('size-2 rounded-full', paletteOf(s.color).bar)} />
+                  {s.name.split(' ')[0]}
+                </button>
+              )
+            })}
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => void confirmDelete()}
-          className="flex h-14 items-center justify-center rounded-full bg-danger text-base font-semibold text-white"
-        >
-          {t('blockSheet.delete')}
-        </button>
+        {choice === 'other' ? (
+          <button
+            type="button"
+            disabled={!pickedOther}
+            onClick={() => pickedOther && void giveSlot(pickedOther)}
+            className="btn-primary flex h-14 items-center justify-center rounded-full text-base font-semibold"
+          >
+            {t('blockSheet.save')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => void confirmDelete()}
+            className="flex h-14 items-center justify-center rounded-full bg-danger text-base font-semibold text-white"
+          >
+            {t('blockSheet.delete')}
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setDeleting(false)}
@@ -274,6 +424,105 @@ function BlockForm({
       </div>
     )
   }
+
+  // The plan's suggestion for the chosen length (`pickForTime()`, filled up like "Imam još
+  // vremena"); the block takes its goal from the block the material comes from.
+  const firstPick = suggesting ? pickFor(planToday, minutes) : null
+  const pick = firstPick ? fillPick(planToday, firstPick, minutes) : null
+  const pickSubject = active.find((s) => s.id === pick?.subjectId)
+
+  const addSuggested = async () => {
+    if (!pick) return
+    const source = planToday.blocks.find((b) =>
+      b.plan_block_units.some((u) => u.unit_id === pick.units[0]?.unitId),
+    )
+    const kind = pick.kind
+    const mode =
+      kind === 'review' || kind === 'recap'
+        ? 'review'
+        : kind === 'questions'
+          ? 'questions'
+          : 'reading'
+    const unitIds = pick.units.map((u) => u.unitId)
+    // Today without a time: from now, as "Imam još vremena" (free time for that slot, may pass the
+    // day's maximum). Otherwise a manual block on the chosen day and time.
+    const { id, undo } =
+      day === today && !timeOn
+        ? await addExtra({
+            subjectId: pick.subjectId,
+            kind,
+            minutes: pick.minutes,
+            unitIds,
+            assessmentId: source?.assessment_id ?? null,
+            deadlineId: source?.deadline_id ?? null,
+            mode,
+          }).then((r) => ({ id: r.draft.id, undo: r.undo }))
+        : await (async () => {
+            const blockId = crypto.randomUUID()
+            const undoSave = await save({
+              id: blockId,
+              subjectId: pick.subjectId,
+              assessmentId: source?.assessment_id ?? null,
+              deadlineId: source?.deadline_id ?? null,
+              onDate: day,
+              startMin,
+              minutes: pick.minutes,
+              kind,
+              mode,
+              unitIds,
+              title: null,
+              edited: false,
+            })
+            return { id: blockId, undo: undoSave }
+          })()
+    show(t('blockSheet.addedToast'), { label: t('today.cant.undo'), run: () => void undo() })
+    if (day !== today) {
+      onDone()
+      return
+    }
+    setAdded({
+      id,
+      subject_id: pick.subjectId,
+      kind,
+      planned_minutes: pick.minutes,
+      plan_block_units: pick.units.map((u) => ({
+        block_id: id,
+        unit_id: u.unitId,
+        page_from: null,
+        page_to: null,
+        planned_minutes: u.minutes,
+        user_id: '',
+      })),
+    } as PlanBlockRow)
+  }
+
+  if (added)
+    return (
+      <div className="flex flex-col gap-3.5">
+        <p className="-mt-1 text-[15px] leading-[1.45] text-ink-secondary">
+          {t('blockSheet.startNow', {
+            title: pick ? pickTitle(t, pick, units, pickSubject?.name.split(' ')[0] ?? '') : '',
+          })}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            onDone()
+            void start(added, units)
+          }}
+          className="btn-primary flex h-14 items-center justify-center rounded-full text-base font-semibold"
+        >
+          {t('today.start.begin')}
+        </button>
+        <button
+          type="button"
+          onClick={onDone}
+          className="flex h-12 items-center justify-center rounded-full text-[15px] font-semibold text-brand"
+        >
+          {t('blockSheet.later')}
+        </button>
+      </div>
+    )
 
   const label = 'text-[13px] font-semibold tracking-[0.3px] text-ink-secondary uppercase'
   return (
@@ -289,103 +538,140 @@ function BlockForm({
             .join(' · ')}
         </p>
       )}
-      <div className="flex flex-col gap-2">
-        <span className={label}>{t('blockSheet.subject')}</span>
+      {!block && (
         <div
-          role="radiogroup"
-          aria-label={t('blockSheet.subject')}
-          className="flex flex-wrap gap-2"
+          role="tablist"
+          aria-label={t('blockSheet.mode')}
+          className="flex rounded-full bg-canvas p-1"
         >
-          {active.map((s) => {
-            const on = s.id === subjectId
-            const palette = paletteOf(s.color)
-            return (
-              <button
-                key={s.id}
-                type="button"
-                role="radio"
-                aria-checked={on}
-                onClick={() => {
-                  setSubjectId(s.id)
-                  setUnitIds([])
-                  setShowAll(false)
-                }}
-                className={cn(
-                  'flex h-11 items-center gap-2 rounded-full border-2 px-3.5 text-sm font-semibold',
-                  on ? cn(palette.border, palette.soft) : 'border-hairline bg-white/55',
-                )}
-              >
-                <span className={cn('size-2.5 rounded-full', palette.bar)} />
-                {s.name.split(' ')[0]}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <span className={label}>{t('blockSheet.type')}</span>
-        <div role="radiogroup" aria-label={t('blockSheet.type')} className="flex flex-wrap gap-1.5">
-          {TYPES.map((x) => (
+          {([true, false] as const).map((on) => (
             <button
-              key={x.id}
+              key={String(on)}
               type="button"
-              role="radio"
-              aria-checked={type === x.id}
-              onClick={() => setType(x.id)}
+              role="tab"
+              aria-selected={suggesting === on}
+              onClick={() => setSuggesting(on)}
               className={cn(
-                'flex h-10 items-center rounded-full px-3.5 text-[13px] font-semibold',
-                type === x.id ? 'bg-brand text-white' : 'bg-canvas text-ink',
+                'h-9 flex-1 rounded-full text-[13px] font-semibold',
+                suggesting === on ? 'bg-white/80 text-ink shadow-sm' : 'text-ink-secondary',
               )}
             >
-              {t(`planBlocks.mode.${x.id === 'reading' ? 'reading' : x.id}`)}
+              {on ? t('blockSheet.suggested') : t('blockSheet.manual')}
             </button>
           ))}
         </div>
-      </div>
+      )}
+      {!suggesting && (
+        <>
+          <div className="flex flex-col gap-2">
+            <span className={label}>{t('blockSheet.subject')}</span>
+            <div
+              role="radiogroup"
+              aria-label={t('blockSheet.subject')}
+              className="flex flex-wrap gap-2"
+            >
+              {active.map((s) => {
+                const on = s.id === subjectId
+                const palette = paletteOf(s.color)
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    onClick={() => {
+                      setSubjectId(s.id)
+                      setUnitIds([])
+                      setShowAll(false)
+                    }}
+                    className={cn(
+                      'flex h-11 items-center gap-2 rounded-full border-2 px-3.5 text-sm font-semibold',
+                      on ? cn(palette.border, palette.soft) : 'border-hairline bg-white/55',
+                    )}
+                  >
+                    <span className={cn('size-2.5 rounded-full', palette.bar)} />
+                    {s.name.split(' ')[0]}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
 
-      {type !== 'deadline' && shown.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <span className={label}>
-            {t('blockSheet.units')}{' '}
-            <span className="font-normal tracking-normal normal-case">
-              {t('blockSheet.optional')}
-            </span>
-          </span>
-          <div role="group" aria-label={t('blockSheet.units')} className="flex flex-wrap gap-1.5">
-            {shown.map((i) => {
-              const on = unitIds.includes(i.unit.id)
-              return (
+          <div className="flex flex-col gap-2">
+            <span className={label}>{t('blockSheet.type')}</span>
+            <div
+              role="radiogroup"
+              aria-label={t('blockSheet.type')}
+              className="flex flex-wrap gap-1.5"
+            >
+              {TYPES.map((x) => (
                 <button
-                  key={i.unit.id}
+                  key={x.id}
                   type="button"
-                  role="checkbox"
-                  aria-checked={on}
-                  onClick={() =>
-                    setUnitIds(
-                      on ? unitIds.filter((x) => x !== i.unit.id) : [...unitIds, i.unit.id],
-                    )
-                  }
+                  role="radio"
+                  aria-checked={type === x.id}
+                  onClick={() => setType(x.id)}
                   className={cn(
-                    'flex h-10 max-w-full items-center truncate rounded-full border px-3.5 text-[13px] font-semibold',
-                    on ? 'border-brand bg-brand-hero text-brand-strong' : 'border-line bg-white/55',
+                    'flex h-10 items-center rounded-full px-3.5 text-[13px] font-semibold',
+                    type === x.id ? 'bg-brand text-white' : 'bg-canvas text-ink',
                   )}
                 >
-                  {unitLabel(i)}
+                  {t(`planBlocks.mode.${x.id === 'reading' ? 'reading' : x.id}`)}
                 </button>
-              )
-            })}
-            {!showAll && open.length > shown.length && (
-              <button
-                type="button"
-                onClick={() => setShowAll(true)}
-                className="h-10 px-2 text-[13px] font-semibold text-brand"
-              >
-                {t('blockSheet.allUnits', { count: open.length })}
-              </button>
-            )}
+              ))}
+            </div>
           </div>
-        </div>
+
+          {type !== 'deadline' && shown.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <span className={label}>
+                {t('blockSheet.units')}{' '}
+                <span className="font-normal tracking-normal normal-case">
+                  {t('blockSheet.optional')}
+                </span>
+              </span>
+              <div
+                role="group"
+                aria-label={t('blockSheet.units')}
+                className="flex flex-wrap gap-1.5"
+              >
+                {shown.map((i) => {
+                  const on = unitIds.includes(i.unit.id)
+                  return (
+                    <button
+                      key={i.unit.id}
+                      type="button"
+                      role="checkbox"
+                      aria-checked={on}
+                      onClick={() =>
+                        setUnitIds(
+                          on ? unitIds.filter((x) => x !== i.unit.id) : [...unitIds, i.unit.id],
+                        )
+                      }
+                      className={cn(
+                        'flex h-10 max-w-full items-center truncate rounded-full border px-3.5 text-[13px] font-semibold',
+                        on
+                          ? 'border-brand bg-brand-hero text-brand-strong'
+                          : 'border-line bg-white/55',
+                      )}
+                    >
+                      {unitLabel(i)}
+                    </button>
+                  )
+                })}
+                {!showAll && open.length > shown.length && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAll(true)}
+                    className="h-10 px-2 text-[13px] font-semibold text-brand"
+                  >
+                    {t('blockSheet.allUnits', { count: open.length })}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <div className="flex flex-col gap-2">
@@ -468,20 +754,76 @@ function BlockForm({
         </span>
       </div>
 
-      {wasAi && (
-        <p className="rounded-[18px] bg-canvas px-3.5 py-3 text-[13px] text-ink-secondary">
-          {t('blockSheet.lockNote')}
-        </p>
+      {suggesting && (
+        <div className="glass flex flex-col gap-1 rounded-[20px] px-4 py-3.5">
+          <span className="text-xs font-semibold tracking-[0.4px] text-ink-secondary uppercase">
+            {t('blockSheet.suggestion')}
+          </span>
+          {pick ? (
+            <>
+              <span className="flex items-center gap-2 text-[15px] font-semibold">
+                <span
+                  className={cn(
+                    'size-2.5 shrink-0 rounded-full',
+                    paletteOf(pickSubject?.color ?? null).bar,
+                  )}
+                />
+                <span className="truncate">
+                  {pickTitle(t, pick, units, pickSubject?.name.split(' ')[0] ?? '')}
+                </span>
+              </span>
+              <span className="text-[13px] text-ink-muted">
+                {t(`planBlocks.mode.${pick.kind === 'learn' ? 'reading' : pick.kind}`)} ·{' '}
+                {t('time.minutes', { m: pick.minutes })}
+              </span>
+            </>
+          ) : (
+            <span className="text-[13px] text-ink-muted">{t('blockSheet.noSuggestion')}</span>
+          )}
+        </div>
+      )}
+
+      {moved ? (
+        <div className="glass flex items-center gap-3 rounded-[20px] px-3.5 py-3">
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('blockSheet.keepTime')}</span>
+            <span className="text-xs leading-[1.35] text-ink-muted">
+              {keepTime ? t('blockSheet.keepTimeOn') : t('blockSheet.keepTimeOff')}
+            </span>
+          </span>
+          <Switch
+            checked={keepTime}
+            onChange={setKeepTime}
+            label={t('blockSheet.keepTime')}
+            hideLabel
+          />
+        </div>
+      ) : (
+        wasAi && (
+          <p className="rounded-[18px] bg-canvas px-3.5 py-3 text-[13px] text-ink-secondary">
+            {t('blockSheet.lockNote')}
+          </p>
+        )
       )}
 
       <button
         type="button"
-        onClick={() => void submit()}
-        disabled={!subjectId}
+        onClick={() => void (suggesting ? addSuggested() : submit())}
+        disabled={suggesting ? !pick : !subjectId}
         className="btn-primary flex h-14 items-center justify-center rounded-full text-base font-semibold"
       >
-        {t('blockSheet.save')}
+        {suggesting ? t('blockSheet.addOne') : t('blockSheet.save')}
       </button>
+      {fromPlan && (
+        <button
+          type="button"
+          onClick={() => void backToPlan()}
+          className="flex min-h-12 flex-col items-center justify-center gap-0.5 py-1"
+        >
+          <span className="text-[15px] font-semibold text-brand">{t('blockSheet.backToPlan')}</span>
+          <span className="text-xs text-ink-muted">{t('blockSheet.backToPlanSub')}</span>
+        </button>
+      )}
       {block && block.on_date === today && block.status === 'planned' && (
         <button
           type="button"
@@ -505,4 +847,11 @@ function BlockForm({
       )}
     </div>
   )
+}
+
+/** The sheet left the block's units as they were (keep their page ranges and minutes). */
+function sameUnits(block: PlanBlockRow, unitIds: string[]) {
+  const before = block.plan_block_units.map((u) => u.unit_id).sort()
+  const after = [...unitIds].sort()
+  return before.length === after.length && before.every((id, i) => id === after[i])
 }

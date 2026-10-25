@@ -19,7 +19,6 @@
     "subjects": "Subjects",
     "progress": "Progress",
     "aiLabel": "AI assistant",
-    "ai": "AI",
     "aiClose": "Close the assistant",
     "home": "Hoot, go to Today"
   },
@@ -73,10 +72,10 @@
       "start": "Start",
       "running": "Running",
       "paused": "Paused",
-      "resume": "Resume",
       "labelAt": "Next · {{time}}",
       "allDone": "Today's plan is done",
-      "allDoneSub": "If you still have time, a free session counts towards calibration."
+      "allDoneSub": "If you still have time, a free session counts towards calibration.",
+      "open": "Open the running session"
     },
     "exams": "Exams",
     "examsAll": "All",
@@ -129,26 +128,14 @@
     },
     "schedule": {
       "title": "Schedule",
-      "classUntil": "until {{time}}"
+      "classUntil": "until {{time}}",
+      "busy": "Busy",
+      "busyUntil": "until {{time}} · {{source}}"
     },
-    "examIn_one": "in {{count}} day",
-    "examIn_other": "in {{count}} days",
-    "examToday": "today",
-    "examTomorrow": "tomorrow",
     "late": {
       "shifted": "{{min}} min late: the rest of the day moved",
       "shiftedOverflow_one": "{{min}} min late: the rest of the day moved, {{count}} block goes to the plan from tomorrow",
       "shiftedOverflow_other": "{{min}} min late: the rest of the day moved, {{count}} blocks go to the plan from tomorrow"
-    },
-    "extra": {
-      "button": "I have more time",
-      "title": "I have more time",
-      "sub": "One more block today, over the daily maximum if needed (today only). The other days rearrange around it.",
-      "whyReview": "A check that is due: memory strength is dropping.",
-      "whyNext": "The most urgent next material, {{minutes}} today instead of later.",
-      "addStart": "Add and start",
-      "add": "Only add to today's plan",
-      "added": "Added to today's plan: {{minutes}}"
     },
     "skip": {
       "button": "Skip",
@@ -162,6 +149,29 @@
       "toTomorrow": "No room today: first block tomorrow at {{time}}",
       "toLater": "Moved to the first free day at {{time}}",
       "carried": "moved"
+    },
+    "start": {
+      "title": "Start a session now?",
+      "pauses": "Breaks: {{preset}}",
+      "begin": "Start",
+      "edit": "Edit",
+      "skip": "Skip",
+      "drop": "Drop from plan",
+      "delete": "Delete"
+    },
+    "noTimer": {
+      "link": "I did it without the timer",
+      "title": "Studied without the timer?",
+      "body": "{{title}}. The block is marked done; the time counts toward progress but not calibration.",
+      "howLong": "How long did you study?",
+      "next": "Next"
+    },
+    "replaced": "Today was rearranged: {{subject}} now at {{time}}",
+    "gained": {
+      "title": "You have {{minutes}} more today",
+      "sub": "Add {{title}}?",
+      "add": "Add",
+      "later": "Not now"
     }
   },
   "plan": {
@@ -187,15 +197,9 @@
       "deadline_one": "{{count}} deadline",
       "deadline_other": "{{count}} deadlines"
     },
-    "view": {
-      "month": "Month",
-      "day": "Day"
-    },
-    "viewLabel": "Calendar view",
     "prevWeek": "Previous week",
     "nextWeek": "Next week",
     "cancelled": "cancelled",
-    "noClasses": "No classes this day.",
     "timetableButton": "Timetable",
     "legendPlanned": "Planned study",
     "schedule": {
@@ -203,6 +207,14 @@
       "moved": "A moved block becomes manual",
       "revert": "Restore the plan",
       "reverted": "The plan's suggestion is back"
+    },
+    "openMonth": "Show the month, {{month}}",
+    "more": {
+      "title": "More time this day",
+      "sub": "{{day}} · maximum {{cap}}",
+      "done": "{{day}}: maximum is {{cap}}",
+      "fullDay": "The maximum already equals the free time; add hours in Availability for more.",
+      "button": "More time"
     }
   },
   "subjects": {
@@ -645,8 +657,15 @@
       "accidentalTitle": "The session has just started",
       "accidental": "{{time}} studied so far. If the timer was started by accident, discard the session and nothing counts.",
       "keepGoing": "Keep studying",
-      "finish": "End now",
-      "discard": "Discard the session (nothing counts)"
+      "finish": "End now"
+    },
+    "leave": {
+      "title": "End the session?",
+      "body": "{{time}} studied so far.",
+      "discard": "Discard session",
+      "discardSub": "The session is deleted as if it never started; nothing counts",
+      "discarded": "Session discarded",
+      "finishNow": "End session"
     }
   },
   "settings": {
@@ -956,7 +975,8 @@
         "0": "Don't know",
         "1": "Partly",
         "3": "Know"
-      }
+      },
+      "partial": "Partly read · {{done}}/{{total}}"
     },
     "sheet": {
       "newTitle": "New unit",
@@ -1575,7 +1595,8 @@
     "settings": "Settings",
     "allSettings": "All settings",
     "academicCalendar": "Academic calendar",
-    "documents": "Documents"
+    "documents": "Documents",
+    "subpages": "Pages in {{section}}"
   },
   "feeds": {
     "title": "Connected calendars",
@@ -1860,7 +1881,6 @@
     "allUnits": "All ({{count}})",
     "day": "Day",
     "today": "Today",
-    "tomorrow": "Tomorrow",
     "duration": "Duration",
     "durationMin": "at least 15 min",
     "shorter": "Shorter",
@@ -1881,7 +1901,26 @@
     "savedToast": "Block saved",
     "lockedToast": "The block is manual now, the plan won't move it",
     "deletedToast": "Block deleted",
-    "add": "Add block"
+    "add": "Add block",
+    "other": "Another subject in this slot",
+    "otherSub": "Same time and length; this block's material goes back to the plan from tomorrow",
+    "otherToast": "This slot is now for {{subject}}",
+    "keepTime": "Keep this time",
+    "keepTimeOn": "The plan will not move it.",
+    "keepTimeOff": "The plan may move it when something changes.",
+    "movedAiToast": "Block moved. The plan may rearrange it.",
+    "backToPlan": "Return to plan",
+    "backToPlanSub": "The plan arranges it again.",
+    "backToPlanToast": "Block returned to the plan",
+    "addedToast": "Block added",
+    "startNow": "Added to today's plan: {{title}}. Start right away?",
+    "later": "Later",
+    "mode": "How to pick the block",
+    "suggested": "Plan suggestion",
+    "manual": "Manual",
+    "suggestion": "The plan suggests",
+    "noSuggestion": "The plan has nothing to suggest right now. Pick manually.",
+    "addOne": "Add"
   },
   "crumbs": {
     "label": "Breadcrumb",
@@ -2134,5 +2173,188 @@
     "apply_one": "Apply {{count}} change",
     "apply_other": "Apply {{count}} changes",
     "skipAll": "Skip all"
+  },
+  "swipe": {
+    "actions": "Actions",
+    "delete": "Delete",
+    "archive": "Archive",
+    "skip": "Skip",
+    "restore": "Restore",
+    "sessionDeleted": "Session deleted",
+    "classDeleted": "Class deleted",
+    "deadlineDeleted": "Deadline deleted",
+    "documentDeleted": "Document deleted",
+    "subjectArchived": "Subject archived",
+    "sourceArchived": "Source archived",
+    "sourceRestored": "Source restored",
+    "archivedSources": "Archived sources",
+    "examArchived": "Exam archived",
+    "examRestored": "Exam restored",
+    "archivedExams": "Archived exams"
+  },
+  "search": {
+    "placeholder": "Search Hoot",
+    "cancel": "Cancel",
+    "clear": "Clear query",
+    "recent": "Recent",
+    "clearRecent": "Clear",
+    "offline": "Search works offline too.",
+    "none": "No results for “{{query}}”",
+    "noneSub": "Search covers screens, settings and what is already in the app: subjects, exams, sources, units and documents.",
+    "all": "All ({{count}})",
+    "open": "Search",
+    "group": {
+      "actions": "Actions",
+      "screens": "Screens",
+      "settings": "Settings",
+      "subjects": "Subjects",
+      "exams": "Exams",
+      "sources": "Sources",
+      "units": "Units",
+      "documents": "Documents"
+    },
+    "items": {
+      "moreTime": {
+        "title": "More time this day",
+        "sub": "Plan › Day · a higher maximum for one day",
+        "syn": "more time, extra time, longer day, more hours, day maximum"
+      },
+      "extraTime": {
+        "title": "I have more time",
+        "sub": "Today · 30 / 60 / 90 min",
+        "syn": "more time, free time, add study"
+      },
+      "newSubject": {
+        "title": "New subject",
+        "sub": "Subjects · name and exam date",
+        "syn": "add subject, course, class"
+      },
+      "today": {
+        "title": "Today",
+        "sub": "What to study today",
+        "syn": "home, today, day plan"
+      },
+      "plan": {
+        "title": "Plan · Day",
+        "sub": "Day calendar with blocks",
+        "syn": "calendar, schedule, blocks"
+      },
+      "month": {
+        "title": "Plan · Month",
+        "sub": "Month calendar",
+        "syn": "month, calendar, exams this month"
+      },
+      "timetable": {
+        "title": "Class timetable",
+        "sub": "Plan › Class timetable",
+        "syn": "classes, lectures, labs"
+      },
+      "subjects": {
+        "title": "Subjects",
+        "sub": "All subjects and exams",
+        "syn": "courses, classes"
+      },
+      "progress": {
+        "title": "Progress",
+        "sub": "Hours, forecast, memory strength",
+        "syn": "statistics, forecast, readiness, grade"
+      },
+      "sessions": {
+        "title": "Sessions",
+        "sub": "Progress › Sessions",
+        "syn": "history, study, timer"
+      },
+      "chat": {
+        "title": "Assistant",
+        "sub": "AI assistant",
+        "syn": "ai, chat, ask"
+      },
+      "settings": {
+        "title": "Settings",
+        "sub": "All settings",
+        "syn": "preferences, options"
+      },
+      "academic": {
+        "title": "Academic calendar",
+        "sub": "Settings › Academic calendar",
+        "syn": "semester, exam period, holidays"
+      },
+      "feeds": {
+        "title": "Connected calendars",
+        "sub": "Settings › Connected calendars",
+        "syn": "google calendar, ical, moodle, busy"
+      },
+      "documents": {
+        "title": "Documents",
+        "sub": "Settings › Documents",
+        "syn": "notes, pdf, files"
+      },
+      "availability": {
+        "title": "Availability",
+        "sub": "Plan › Availability · hours and daily maximum",
+        "syn": "more time, hours, when I study, daily maximum, free time"
+      },
+      "language": {
+        "title": "Language",
+        "sub": "Settings › General",
+        "syn": "bosnian, english"
+      },
+      "presets": {
+        "title": "Session presets",
+        "sub": "Settings › Session",
+        "syn": "breaks, pomodoro, preset, 50/15, timer"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "sub": "Settings › Notifications",
+        "syn": "reminders, push, bell"
+      },
+      "grades": {
+        "title": "Points and grades",
+        "sub": "Settings › General",
+        "syn": "grade scale, points, grade"
+      },
+      "export": {
+        "title": "Export data",
+        "sub": "Settings › Data",
+        "syn": "anki, csv, json, ics, export, backup"
+      },
+      "appearance": {
+        "title": "Appearance",
+        "sub": "Settings › General · theme",
+        "syn": "theme, colour, color, look, lavender, graphite, sand, sage, ocean"
+      }
+    }
+  },
+  "appearance": {
+    "title": "Appearance",
+    "intro": "A theme changes the app colours. Subject colours stay the same.",
+    "themes": "Theme",
+    "note": "Applies at once on all your devices. Dark mode comes later.",
+    "changed": "Theme: {{name}}",
+    "row": "Appearance",
+    "rowSub": "colour theme",
+    "theme": {
+      "lavender": {
+        "name": "Lavender",
+        "sub": "default · purple mist"
+      },
+      "graphite": {
+        "name": "Graphite",
+        "sub": "neutral · warm grey"
+      },
+      "sand": {
+        "name": "Sand",
+        "sub": "warm · beige"
+      },
+      "sage": {
+        "name": "Sage",
+        "sub": "calm · green"
+      },
+      "ocean": {
+        "name": "Ocean",
+        "sub": "cool · blue"
+      }
+    }
   }
 }

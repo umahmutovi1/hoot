@@ -216,6 +216,46 @@ describe('plan invariants', () => {
     )
   })
 
+  it('re-placing today: AI blocks never before now, manual blocks keep their time, nothing added', () => {
+    const replaced = fc
+      .tuple(
+        stateArb,
+        fc.integer({ min: 6 * 60, max: 22 * 60 }),
+        fc.array(fc.integer({ min: 15, max: 100 }), { minLength: 1, maxLength: 3 }),
+      )
+      .map(([s, now, minutes]): PlanState => {
+        const ai: FixedBlock[] = minutes.map((m, i) => ({
+          id: `ai${i}`,
+          subjectId: s.subjects[0]!.id,
+          goalId: null,
+          onDate: FROM,
+          startMin: null,
+          minutes: m,
+          kind: 'learn',
+          origin: 'ai',
+          units: [],
+        }))
+        return {
+          ...s,
+          nowMin: Math.round(now / 5) * 5,
+          fixed: [...s.fixed, ...ai],
+          days: s.days.map((d, k) => (k === 0 ? { ...d, cap: 0 } : d)),
+        }
+      })
+    fc.assert(
+      fc.property(replaced, (s) => {
+        const r = plan(s)
+        expect(r.blocks.filter((b) => b.onDate === FROM)).toEqual([])
+        for (const f of s.fixed) {
+          const at = r.fixedTimes[f.id]
+          if (f.origin === 'ai' && at !== undefined) expect(at).toBeGreaterThanOrEqual(s.nowMin!)
+          if (f.startMin !== null && f.onDate === FROM) expect(at).toBe(f.startMin)
+        }
+      }),
+      RUNS,
+    )
+  })
+
   it('the same input gives the same plan and the same times, in any input order', () => {
     fc.assert(
       fc.property(stateArb, (s) => {

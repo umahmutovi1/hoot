@@ -44,6 +44,7 @@ const unit = (id: string, extra: Partial<Unit> = {}): Unit => ({
   fsrs_reps: 0,
   fsrs_lapses: 0,
   review_streak: 0,
+  read_amount: null,
   last_review_at: null,
   next_review_on: null,
   archived_at: null,
@@ -55,6 +56,7 @@ const unit = (id: string, extra: Partial<Unit> = {}): Unit => ({
 const source = (units: Unit[], extra: Partial<SourceWithUnits> = {}): SourceWithUnits => ({
   id: 's',
   user_id: 'u',
+  archived_at: null,
   subject_id: SUBJECT,
   kind: 'book',
   title: 'Oppenheim',

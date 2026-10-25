@@ -19,7 +19,6 @@
     "subjects": "Predmeti",
     "progress": "Napredak",
     "aiLabel": "AI asistent",
-    "ai": "AI",
     "aiClose": "Zatvori asistenta",
     "home": "Hoot, idi na Danas"
   },
@@ -73,10 +72,10 @@
       "start": "Počni",
       "running": "U toku",
       "paused": "Pauza",
-      "resume": "Nastavi",
       "labelAt": "Sljedeće · {{time}}",
       "allDone": "Današnji plan je odrađen",
-      "allDoneSub": "Ako ipak imaš vremena, slobodna sesija ulazi u kalibraciju."
+      "allDoneSub": "Ako ipak imaš vremena, slobodna sesija ulazi u kalibraciju.",
+      "open": "Otvori sesiju u toku"
     },
     "exams": "Ispiti",
     "examsAll": "Sve",
@@ -132,28 +131,15 @@
     },
     "schedule": {
       "title": "Raspored",
-      "classUntil": "do {{time}}"
+      "classUntil": "do {{time}}",
+      "busy": "Zauzeto",
+      "busyUntil": "do {{time}} · {{source}}"
     },
-    "examIn_one": "za {{count}} dan",
-    "examIn_few": "za {{count}} dana",
-    "examIn_other": "za {{count}} dana",
-    "examToday": "danas",
-    "examTomorrow": "sutra",
     "late": {
       "shifted": "Kasniš {{min}} min, ostatak dana je pomjeren",
       "shiftedOverflow_one": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} blok ide u plan od sutra",
       "shiftedOverflow_few": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} bloka idu u plan od sutra",
       "shiftedOverflow_other": "Kasniš {{min}} min: ostatak dana je pomjeren, {{count}} blokova ide u plan od sutra"
-    },
-    "extra": {
-      "button": "Imam još vremena",
-      "title": "Imam još vremena",
-      "sub": "Danas dodajem još jedan blok, i preko dnevnog maksimuma (samo danas). Ostali dani se preslože prema tome.",
-      "whyReview": "Provjera koja je na redu: jačina znanja pada.",
-      "whyNext": "Najhitnije sljedeće gradivo, {{minutes}} danas umjesto kasnije.",
-      "addStart": "Dodaj i počni",
-      "add": "Samo dodaj u današnji plan",
-      "added": "Dodano u današnji plan: {{minutes}}"
     },
     "skip": {
       "button": "Preskoči",
@@ -167,6 +153,29 @@
       "toTomorrow": "Danas nema mjesta: prvi blok sutra u {{time}}",
       "toLater": "Prebačeno na prvi slobodan dan u {{time}}",
       "carried": "prebačeno"
+    },
+    "start": {
+      "title": "Započeti sesiju sada?",
+      "pauses": "Pauze: {{preset}}",
+      "begin": "Počni",
+      "edit": "Uredi",
+      "skip": "Preskoči",
+      "drop": "Izbaci iz plana",
+      "delete": "Obriši"
+    },
+    "noTimer": {
+      "link": "Odradila sam bez timera",
+      "title": "Odradila si bez timera?",
+      "body": "{{title}}. Blok se označi kao odrađen; vrijeme ide u napredak, ali ne u kalibraciju.",
+      "howLong": "Koliko si učila?",
+      "next": "Dalje"
+    },
+    "replaced": "Danas je presložen: {{subject}} sad u {{time}}",
+    "gained": {
+      "title": "Imaš {{minutes}} više danas",
+      "sub": "Dodati {{title}}?",
+      "add": "Dodaj",
+      "later": "Ne sad"
     }
   },
   "plan": {
@@ -195,15 +204,9 @@
       "deadline_few": "{{count}} roka",
       "deadline_other": "{{count}} rokova"
     },
-    "view": {
-      "month": "Mjesec",
-      "day": "Dan"
-    },
-    "viewLabel": "Prikaz kalendara",
     "prevWeek": "Prethodna sedmica",
     "nextWeek": "Sljedeća sedmica",
     "cancelled": "otkazano",
-    "noClasses": "Nema nastave ovaj dan.",
     "timetableButton": "Raspored",
     "legendPlanned": "Planirano učenje",
     "schedule": {
@@ -211,6 +214,14 @@
       "moved": "Pomjeren blok postaje ručni",
       "revert": "Vrati predloženo",
       "reverted": "Vraćen je prijedlog plana"
+    },
+    "openMonth": "Prikaži mjesec, {{month}}",
+    "more": {
+      "title": "Više vremena ovaj dan",
+      "sub": "{{day}} · maksimum {{cap}}",
+      "done": "{{day}}: maksimum je {{cap}}",
+      "fullDay": "Maksimum je već koliko i slobodnog vremena; za više dodaj termine u Dostupnosti.",
+      "button": "Više vremena"
     }
   },
   "subjects": {
@@ -667,8 +678,15 @@
       "accidentalTitle": "Sesija je tek počela",
       "accidental": "Do sad je {{time}} učenja. Ako je timer pokrenut slučajno, odbaci sesiju i ništa se ne računa.",
       "keepGoing": "Nastavi učiti",
-      "finish": "Završi sad",
-      "discard": "Odbaci sesiju (ništa se ne računa)"
+      "finish": "Završi sad"
+    },
+    "leave": {
+      "title": "Završiti sesiju?",
+      "body": "Do sad je {{time}} učenja.",
+      "discard": "Odbaci sesiju",
+      "discardSub": "Sesija se briše kao da nije ni počela; ništa se ne računa",
+      "discarded": "Sesija je odbačena",
+      "finishNow": "Završi sesiju"
     }
   },
   "settings": {
@@ -988,7 +1006,8 @@
         "0": "Ne znam",
         "1": "Djelimično",
         "3": "Znam"
-      }
+      },
+      "partial": "Djelimično · {{done}}/{{total}}"
     },
     "sheet": {
       "newTitle": "Nova jedinica",
@@ -1619,7 +1638,8 @@
     "settings": "Postavke",
     "allSettings": "Sve postavke",
     "academicCalendar": "Akademski kalendar",
-    "documents": "Dokumenti"
+    "documents": "Dokumenti",
+    "subpages": "Podstranice: {{section}}"
   },
   "feeds": {
     "title": "Povezani kalendari",
@@ -1912,7 +1932,6 @@
     "allUnits": "Sve ({{count}})",
     "day": "Dan",
     "today": "Danas",
-    "tomorrow": "Sutra",
     "duration": "Trajanje",
     "durationMin": "najmanje 15 min",
     "shorter": "Kraće",
@@ -1933,7 +1952,26 @@
     "savedToast": "Blok je spašen",
     "lockedToast": "Blok je sad ručni, plan ga ne pomjera",
     "deletedToast": "Blok je obrisan",
-    "add": "Dodaj blok"
+    "add": "Dodaj blok",
+    "other": "Drugi predmet u ovo vrijeme",
+    "otherSub": "Isto vrijeme i trajanje; gradivo ovog bloka ide u plan od sutra",
+    "otherToast": "Termin je sad za {{subject}}",
+    "keepTime": "Zadrži ovo vrijeme",
+    "keepTimeOn": "Plan ga više neće pomjerati.",
+    "keepTimeOff": "Plan ga smije pomjeriti kad se nešto promijeni.",
+    "movedAiToast": "Blok je pomjeren. Plan ga može presložiti.",
+    "backToPlan": "Vrati planu",
+    "backToPlanSub": "Plan ga opet slaže sam.",
+    "backToPlanToast": "Blok je vraćen planu",
+    "addedToast": "Blok je dodan",
+    "startNow": "Dodano u današnji plan: {{title}}. Započeti odmah?",
+    "later": "Kasnije",
+    "mode": "Kako birati blok",
+    "suggested": "Prijedlog plana",
+    "manual": "Ručno",
+    "suggestion": "Plan predlaže",
+    "noSuggestion": "Plan sad nema šta predložiti. Izaberi ručno.",
+    "addOne": "Dodaj"
   },
   "crumbs": {
     "label": "Putanja",
@@ -2196,5 +2234,188 @@
     "apply_few": "Primijeni {{count}} izmjene",
     "apply_other": "Primijeni {{count}} izmjena",
     "skipAll": "Preskoči sve"
+  },
+  "swipe": {
+    "actions": "Radnje",
+    "delete": "Obriši",
+    "archive": "Arhiviraj",
+    "skip": "Preskoči",
+    "restore": "Vrati",
+    "sessionDeleted": "Sesija je obrisana",
+    "classDeleted": "Termin je obrisan",
+    "deadlineDeleted": "Rok je obrisan",
+    "documentDeleted": "Dokument je obrisan",
+    "subjectArchived": "Predmet je arhiviran",
+    "sourceArchived": "Izvor je arhiviran",
+    "sourceRestored": "Izvor je vraćen",
+    "archivedSources": "Arhivirani izvori",
+    "examArchived": "Ispit je arhiviran",
+    "examRestored": "Ispit je vraćen",
+    "archivedExams": "Arhivirani ispiti"
+  },
+  "search": {
+    "placeholder": "Pretraži Hoot",
+    "cancel": "Otkaži",
+    "clear": "Obriši upit",
+    "recent": "Nedavno",
+    "clearRecent": "Obriši",
+    "offline": "Pretraga radi i bez interneta.",
+    "none": "Nema rezultata za „{{query}}“",
+    "noneSub": "Pretražuju se ekrani, postavke i ono što je već u appu: predmeti, ispiti, izvori, jedinice i dokumenti.",
+    "all": "Sve ({{count}})",
+    "open": "Pretraga",
+    "group": {
+      "actions": "Akcije",
+      "screens": "Ekrani",
+      "settings": "Postavke",
+      "subjects": "Predmeti",
+      "exams": "Ispiti",
+      "sources": "Izvori",
+      "units": "Jedinice",
+      "documents": "Dokumenti"
+    },
+    "items": {
+      "moreTime": {
+        "title": "Više vremena ovaj dan",
+        "sub": "Plan › Dan · veći maksimum za jedan dan",
+        "syn": "više vremena, dodatno vrijeme, produži dan, više sati, maksimum dana"
+      },
+      "extraTime": {
+        "title": "Imam još vremena",
+        "sub": "Danas · 30 / 60 / 90 min",
+        "syn": "više vremena, slobodno, dodaj učenje, imam vremena"
+      },
+      "newSubject": {
+        "title": "Novi predmet",
+        "sub": "Predmeti · naziv i datum ispita",
+        "syn": "dodaj predmet, kolegij, novi kurs"
+      },
+      "today": {
+        "title": "Danas",
+        "sub": "Šta učiti danas",
+        "syn": "početna, danas, plan dana"
+      },
+      "plan": {
+        "title": "Plan · Dan",
+        "sub": "Kalendar dana sa blokovima",
+        "syn": "kalendar, satnica, raspored učenja, blokovi"
+      },
+      "month": {
+        "title": "Plan · Mjesec",
+        "sub": "Mjesečni kalendar",
+        "syn": "mjesec, kalendar, ispiti u mjesecu"
+      },
+      "timetable": {
+        "title": "Raspored nastave",
+        "sub": "Plan › Raspored nastave",
+        "syn": "nastava, predavanja, vježbe, termini"
+      },
+      "subjects": {
+        "title": "Predmeti",
+        "sub": "Svi predmeti i ispiti",
+        "syn": "kolegiji, kursevi"
+      },
+      "progress": {
+        "title": "Napredak",
+        "sub": "Sati, prognoza, jačina znanja",
+        "syn": "statistika, prognoza, spremnost, ocjena"
+      },
+      "sessions": {
+        "title": "Sesije",
+        "sub": "Napredak › Sesije",
+        "syn": "historija, istorija, učenje, timer"
+      },
+      "chat": {
+        "title": "Asistent",
+        "sub": "AI asistent",
+        "syn": "ai, chat, pitaj, razgovor"
+      },
+      "settings": {
+        "title": "Postavke",
+        "sub": "Sve postavke",
+        "syn": "podešavanja, opcije"
+      },
+      "academic": {
+        "title": "Akademski kalendar",
+        "sub": "Postavke › Akademski kalendar",
+        "syn": "semestar, ispitni rok, neradni dani, praznici"
+      },
+      "feeds": {
+        "title": "Povezani kalendari",
+        "sub": "Postavke › Povezani kalendari",
+        "syn": "google kalendar, ical, moodle, zauzeto"
+      },
+      "documents": {
+        "title": "Dokumenti",
+        "sub": "Postavke › Dokumenti",
+        "syn": "bilješke, pdf, fajlovi, skripte"
+      },
+      "availability": {
+        "title": "Dostupnost",
+        "sub": "Plan › Dostupnost · sati i dnevni maksimum",
+        "syn": "više vremena, sati, kad učim, dnevni maksimum, slobodno vrijeme"
+      },
+      "language": {
+        "title": "Jezik",
+        "sub": "Postavke › Opće",
+        "syn": "bosanski, engleski, english"
+      },
+      "presets": {
+        "title": "Predlošci sesije",
+        "sub": "Postavke › Sesija",
+        "syn": "pauze, pomodoro, predložak, 50/15, timer"
+      },
+      "notifications": {
+        "title": "Notifikacije",
+        "sub": "Postavke › Notifikacije",
+        "syn": "obavještenja, podsjetnik, push, zvono"
+      },
+      "grades": {
+        "title": "Bodovi i ocjene",
+        "sub": "Postavke › Opće",
+        "syn": "skala ocjena, bodovi, ocjena"
+      },
+      "export": {
+        "title": "Izvoz podataka",
+        "sub": "Postavke › Podaci",
+        "syn": "anki, csv, json, ics, izvoz, backup"
+      },
+      "appearance": {
+        "title": "Izgled",
+        "sub": "Postavke › Opće · tema",
+        "syn": "tema, boja, boje, izgled, lavanda, grafit, pijesak, kadulja, okean"
+      }
+    }
+  },
+  "appearance": {
+    "title": "Izgled",
+    "intro": "Tema mijenja boje appa. Boje predmeta ostaju iste.",
+    "themes": "Tema",
+    "note": "Mijenja se odmah i važi na svim tvojim uređajima. Tamni režim stiže kasnije.",
+    "changed": "Tema: {{name}}",
+    "row": "Izgled",
+    "rowSub": "tema boja",
+    "theme": {
+      "lavender": {
+        "name": "Lavanda",
+        "sub": "zadana · ljubičasta magla"
+      },
+      "graphite": {
+        "name": "Grafit",
+        "sub": "neutralna · topla siva"
+      },
+      "sand": {
+        "name": "Pijesak",
+        "sub": "topla · bež"
+      },
+      "sage": {
+        "name": "Kadulja",
+        "sub": "smirena · zelena"
+      },
+      "ocean": {
+        "name": "Okean",
+        "sub": "hladna · plava"
+      }
+    }
   }
 }

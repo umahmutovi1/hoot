@@ -7,6 +7,141 @@
 /* While the on-screen keyboard is open (set by src/app/ViewportInsets.tsx). */
 @custom-variant keyboard (html[data-keyboard] &);
 
+/* Colour themes (PRD "Teme boja", values and contrast in docs/design/Izgled.dc.html): only these
+   tokens change per `<html data-theme>`; text, glass, status and subject colours stay. Lavanda is
+   the default. */
+:root,
+[data-theme='lavender'] {
+  --hoot-brand: #4c4892;
+  --hoot-brand-rgb: 76 72 146;
+  --hoot-brand-strong: #36336e;
+  --hoot-brand-muted: #5853a0;
+  --hoot-accent: #6a64b8;
+  --hoot-accent-rgb: 106 100 184;
+  --hoot-level-1: #bdb8e0;
+  --hoot-btn-from: #6e67be;
+  --hoot-btn-to: #4c4892;
+  --hoot-tint-from: 100 93 180;
+  --hoot-tint-to: 76 72 146;
+  --hoot-tile-from: #7f78cc;
+  --hoot-canvas-top: #ece9f4;
+  --hoot-canvas-rgb: 236 233 244;
+  --hoot-canvas-bottom: #e8e5f1;
+  --hoot-edge: #dcd8ee;
+  --hoot-edge-rgb: 220 216 238;
+  --hoot-mist-1: 150 141 222;
+  --hoot-mist-2: 229 182 206;
+  --hoot-mist-3: 168 196 234;
+  --hoot-mist-4: 160 148 226;
+  --hoot-shade-rgb: 58 51 96;
+  --hoot-scrim-rgb: 40 34 80;
+  --hoot-sheet-rgb: 250 249 253;
+}
+[data-theme='graphite'] {
+  --hoot-brand: #4a4a55;
+  --hoot-brand-rgb: 74 74 85;
+  --hoot-brand-strong: #303039;
+  --hoot-brand-muted: #55545f;
+  --hoot-accent: #5e5d6a;
+  --hoot-accent-rgb: 94 93 106;
+  --hoot-level-1: #c3c2cb;
+  --hoot-btn-from: #6a6975;
+  --hoot-btn-to: #42414c;
+  --hoot-tint-from: 100 99 111;
+  --hoot-tint-to: 62 61 72;
+  --hoot-tile-from: #7a7986;
+  --hoot-canvas-top: #eeece9;
+  --hoot-canvas-rgb: 238 236 233;
+  --hoot-canvas-bottom: #eae7e3;
+  --hoot-edge: #dedad5;
+  --hoot-edge-rgb: 222 218 213;
+  --hoot-mist-1: 189 183 176;
+  --hoot-mist-2: 217 203 192;
+  --hoot-mist-3: 191 194 200;
+  --hoot-mist-4: 179 174 182;
+  --hoot-shade-rgb: 52 52 58;
+  --hoot-scrim-rgb: 36 36 42;
+  --hoot-sheet-rgb: 250 250 249;
+}
+[data-theme='sand'] {
+  --hoot-brand: #76593a;
+  --hoot-brand-rgb: 118 89 58;
+  --hoot-brand-strong: #563f27;
+  --hoot-brand-muted: #6e5338;
+  --hoot-accent: #876843;
+  --hoot-accent-rgb: 135 104 67;
+  --hoot-level-1: #d9c6ac;
+  --hoot-btn-from: #906e48;
+  --hoot-btn-to: #6b5034;
+  --hoot-tint-from: 131 99 63;
+  --hoot-tint-to: 99 74 48;
+  --hoot-tile-from: #a3825a;
+  --hoot-canvas-top: #f3eee6;
+  --hoot-canvas-rgb: 243 238 230;
+  --hoot-canvas-bottom: #efe9df;
+  --hoot-edge: #e8dfd0;
+  --hoot-edge-rgb: 232 223 208;
+  --hoot-mist-1: 227 201 163;
+  --hoot-mist-2: 237 201 181;
+  --hoot-mist-3: 220 211 188;
+  --hoot-mist-4: 217 190 150;
+  --hoot-shade-rgb: 74 60 44;
+  --hoot-scrim-rgb: 58 44 30;
+  --hoot-sheet-rgb: 252 250 246;
+}
+[data-theme='sage'] {
+  --hoot-brand: #41664f;
+  --hoot-brand-rgb: 65 102 79;
+  --hoot-brand-strong: #2e4a39;
+  --hoot-brand-muted: #4a6f58;
+  --hoot-accent: #4d7760;
+  --hoot-accent-rgb: 77 119 96;
+  --hoot-level-1: #b5ccbe;
+  --hoot-btn-from: #527e64;
+  --hoot-btn-to: #3a5d48;
+  --hoot-tint-from: 72 112 90;
+  --hoot-tint-to: 54 86 67;
+  --hoot-tile-from: #65927a;
+  --hoot-canvas-top: #ecf1ec;
+  --hoot-canvas-rgb: 236 241 236;
+  --hoot-canvas-bottom: #e7ede7;
+  --hoot-edge: #dae4da;
+  --hoot-edge-rgb: 218 228 218;
+  --hoot-mist-1: 174 205 182;
+  --hoot-mist-2: 216 210 186;
+  --hoot-mist-3: 174 202 202;
+  --hoot-mist-4: 165 196 172;
+  --hoot-shade-rgb: 44 62 52;
+  --hoot-scrim-rgb: 30 46 38;
+  --hoot-sheet-rgb: 249 251 249;
+}
+[data-theme='ocean'] {
+  --hoot-brand: #3a5d86;
+  --hoot-brand-rgb: 58 93 134;
+  --hoot-brand-strong: #2b4767;
+  --hoot-brand-muted: #436890;
+  --hoot-accent: #46709f;
+  --hoot-accent-rgb: 70 112 159;
+  --hoot-level-1: #b3c6dc;
+  --hoot-btn-from: #4e78a9;
+  --hoot-btn-to: #365a82;
+  --hoot-tint-from: 66 106 152;
+  --hoot-tint-to: 48 82 122;
+  --hoot-tile-from: #6189b8;
+  --hoot-canvas-top: #eaeff5;
+  --hoot-canvas-rgb: 234 239 245;
+  --hoot-canvas-bottom: #e5ebf2;
+  --hoot-edge: #d7e1ee;
+  --hoot-edge-rgb: 215 225 238;
+  --hoot-mist-1: 156 187 224;
+  --hoot-mist-2: 190 214 228;
+  --hoot-mist-3: 168 204 218;
+  --hoot-mist-4: 152 175 220;
+  --hoot-shade-rgb: 44 58 82;
+  --hoot-scrim-rgb: 28 40 62;
+  --hoot-sheet-rgb: 248 250 253;
+}
+
 @theme {
   /* SF Pro on Apple devices, Geist (served locally, works offline) elsewhere. */
   --font-sans:
@@ -15,27 +150,27 @@
 
   /* Surfaces and text. `canvas` is a tinted fill for wells, segmented tracks and secondary
      buttons on glass; the screen background is the gradient on body. */
-  --color-canvas: rgba(106, 100, 184, 0.1);
-  --color-mist: #e8e5f1;
-  --color-scrim: rgba(40, 34, 80, 0.2);
+  --color-canvas: rgb(var(--hoot-accent-rgb) / 0.1);
+  --color-mist: var(--hoot-canvas-bottom);
+  --color-scrim: rgb(var(--hoot-scrim-rgb) / 0.2);
   --color-surface: rgba(255, 255, 255, 0.36);
   --color-ink: #14121c;
   --color-ink-secondary: #3f3b4e;
   --color-ink-muted: #55516a;
   --color-ink-subtle: #6e6a80;
   --color-ink-placeholder: #6e6a80;
-  --color-line: rgba(58, 51, 96, 0.16);
+  --color-line: rgb(var(--hoot-shade-rgb) / 0.16);
   --color-track: rgba(255, 255, 255, 0.6);
-  --color-hairline: rgba(106, 100, 184, 0.12);
+  --color-hairline: rgb(var(--hoot-accent-rgb) / 0.12);
   --color-canvas-soft: rgba(255, 255, 255, 0.32);
   --color-radio-ring: #afaac4;
 
   /* Brand */
-  --color-brand: #4c4892;
-  --color-brand-strong: #36336e;
-  --color-brand-accent: #6a64b8;
-  --color-brand-soft: rgba(106, 100, 184, 0.12);
-  --color-brand-hero: rgba(106, 100, 184, 0.16);
+  --color-brand: var(--hoot-brand);
+  --color-brand-strong: var(--hoot-brand-strong);
+  --color-brand-accent: var(--hoot-accent);
+  --color-brand-soft: rgb(var(--hoot-accent-rgb) / 0.12);
+  --color-brand-hero: rgb(var(--hoot-accent-rgb) / 0.16);
   --color-avatar: rgba(255, 255, 255, 0.36);
   --color-avatar-ink: #14121c;
 
@@ -75,9 +210,9 @@
 
   /* Unit levels in progress bars: 3 brand, 2 brand-accent, 1 below, 0 hairline.
      Question sources use the blue scale: 3 subject-blue, 1 below, 0 track. */
-  --color-level-1: #bdb8e0;
+  --color-level-1: var(--hoot-level-1);
   --color-question-1: #a9c0db;
-  --color-brand-muted: #5853a0;
+  --color-brand-muted: var(--hoot-brand-muted);
 
   /* Status */
   --color-success: #5e9c72;
@@ -116,8 +251,8 @@
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.55),
     inset 0 1px 1px rgba(255, 255, 255, 0.85),
-    inset 0 -1px 1px rgba(58, 51, 96, 0.05),
-    0 8px 28px rgba(58, 51, 96, 0.07);
+    inset 0 -1px 1px rgb(var(--hoot-shade-rgb) / 0.05),
+    0 8px 28px rgb(var(--hoot-shade-rgb) / 0.07);
 }
 /* Glass without the drop shadow, for chips inside horizontal scrollers: a scroller clips
    overflow on both axes, so a drop shadow would end in a hard line under the row. */
@@ -126,7 +261,7 @@
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.6),
     inset 0 1px 1px rgba(255, 255, 255, 0.85),
-    inset 0 -1px 1px rgba(58, 51, 96, 0.05);
+    inset 0 -1px 1px rgb(var(--hoot-shade-rgb) / 0.05);
 }
 @utility glass-strong {
   background-color: rgba(255, 255, 255, 0.52);
@@ -135,16 +270,16 @@
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.55),
     inset 0 1px 1px rgba(255, 255, 255, 0.85),
-    inset 0 -1px 1px rgba(58, 51, 96, 0.05),
-    0 12px 36px rgba(58, 51, 96, 0.12);
+    inset 0 -1px 1px rgb(var(--hoot-shade-rgb) / 0.05),
+    0 12px 36px rgb(var(--hoot-shade-rgb) / 0.12);
 }
 @utility glass-sheet {
-  background-color: rgba(250, 249, 253, 0.8);
+  background-color: rgb(var(--hoot-sheet-rgb) / 0.8);
   backdrop-filter: blur(36px) saturate(180%);
   -webkit-backdrop-filter: blur(36px) saturate(180%);
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.9),
-    0 -10px 40px rgba(40, 34, 80, 0.12);
+    0 -10px 40px rgb(var(--hoot-scrim-rgb) / 0.12);
 }
 @utility glass-bar {
   /* Sticky headers: content scrolls under them. The frosted layer is a pseudo-element whose
@@ -156,27 +291,32 @@
     inset: 0 0 -14px;
     z-index: -1;
     pointer-events: none;
-    background-color: rgba(236, 233, 244, 0.72);
-    backdrop-filter: blur(24px) saturate(170%);
-    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    /* iOS-like: content behind is strongly blurred and keeps its colour; only a faint tint. */
+    background-color: rgb(var(--hoot-canvas-rgb) / 0.22);
+    backdrop-filter: blur(40px) saturate(190%);
+    -webkit-backdrop-filter: blur(40px) saturate(190%);
     mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent);
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent);
   }
 }
 @utility glass-tint {
   color: #ffffff;
-  background: linear-gradient(160deg, rgba(110, 103, 190, 0.9), rgba(76, 72, 146, 0.94));
+  background: linear-gradient(
+    160deg,
+    rgb(var(--hoot-tint-from) / 0.9),
+    rgb(var(--hoot-tint-to) / 0.94)
+  );
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.3),
     inset 0 1px 1px rgba(255, 255, 255, 0.45),
-    0 14px 34px rgba(76, 72, 146, 0.24);
+    0 14px 34px rgb(var(--hoot-brand-rgb) / 0.24);
 }
 @utility btn-primary {
   color: #ffffff;
-  background: linear-gradient(160deg, #6e67be, #4c4892);
+  background: linear-gradient(160deg, var(--hoot-btn-from), var(--hoot-btn-to));
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 6px 16px rgba(76, 72, 146, 0.22);
+    0 6px 16px rgb(var(--hoot-brand-rgb) / 0.22);
   &:disabled {
     background: #afaac4;
     box-shadow: none;
@@ -192,11 +332,39 @@
 /* Indigo tile with a white line icon next to card titles (session end, strategist). */
 @utility icon-tile {
   color: #ffffff;
-  background: linear-gradient(160deg, #7f78cc, #4c4892);
+  background: linear-gradient(160deg, var(--hoot-tile-from), var(--hoot-btn-to));
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.3),
     inset 0 1px 1px rgba(255, 255, 255, 0.5),
-    0 10px 26px rgba(76, 72, 146, 0.22);
+    0 10px 26px rgb(var(--hoot-brand-rgb) / 0.22);
+}
+
+/* Sheets (vaul): in on the iOS curve in ~400 ms, out in ~250 ms; the scrim fades with them and
+   follows the drag. `html` outranks vaul's injected styles. Reduced motion: a 150 ms fade only. */
+html [data-vaul-drawer] {
+  /* vaul sets `touch-action: none`, which stops a long sheet from scrolling on touch screens;
+     only the handle drags (handleOnly), so the content may pan. */
+  touch-action: pan-y;
+  animation-duration: 0.4s;
+  transition-duration: 0.4s;
+  user-select: auto;
+}
+html [data-vaul-drawer][data-state='closed'],
+html [data-vaul-overlay][data-state='closed'] {
+  animation-duration: 0.25s;
+}
+html [data-vaul-overlay] {
+  animation-duration: 0.4s;
+}
+@media (prefers-reduced-motion: reduce) {
+  html [data-vaul-drawer][data-state='open'],
+  html [data-vaul-overlay][data-state='open'] {
+    animation: fadeIn 0.15s linear;
+  }
+  html [data-vaul-drawer][data-state='closed'],
+  html [data-vaul-overlay][data-state='closed'] {
+    animation: fadeOut 0.15s linear;
+  }
 }
 
 /* No backdrop-filter, or the user asked for less transparency: opaque surfaces, no blur. */
@@ -248,24 +416,24 @@
 }
 
 :root {
-  --background: #ece9f4;
+  --background: var(--hoot-canvas-top);
   --foreground: #14121c;
   --card: rgba(255, 255, 255, 0.36);
   --card-foreground: #14121c;
-  --popover: rgba(250, 249, 253, 0.95);
+  --popover: rgb(var(--hoot-sheet-rgb) / 0.95);
   --popover-foreground: #14121c;
-  --primary: #4c4892;
+  --primary: var(--hoot-brand);
   --primary-foreground: #ffffff;
-  --secondary: rgba(106, 100, 184, 0.12);
-  --secondary-foreground: #4c4892;
-  --muted: rgba(106, 100, 184, 0.1);
+  --secondary: rgb(var(--hoot-accent-rgb) / 0.12);
+  --secondary-foreground: var(--hoot-brand);
+  --muted: rgb(var(--hoot-accent-rgb) / 0.1);
   --muted-foreground: #55516a;
-  --accent: rgba(106, 100, 184, 0.12);
-  --accent-foreground: #4c4892;
+  --accent: rgb(var(--hoot-accent-rgb) / 0.12);
+  --accent-foreground: var(--hoot-brand);
   --destructive: #b0413e;
-  --border: rgba(58, 51, 96, 0.16);
-  --input: rgba(58, 51, 96, 0.16);
-  --ring: #6a64b8;
+  --border: rgb(var(--hoot-shade-rgb) / 0.16);
+  --input: rgb(var(--hoot-shade-rgb) / 0.16);
+  --ring: var(--hoot-accent);
   --radius: 1rem;
 }
 
@@ -277,14 +445,14 @@
     @apply font-sans antialiased;
     letter-spacing: -0.2px;
     -webkit-tap-highlight-color: transparent;
-    /* Safari paints its status bar and toolbar areas with this color, so it is the lavender
-       the page edges fade into (see body::before), not the paler base of the gradient. */
-    background-color: #dcd8ee;
+    /* Safari paints its status bar and toolbar areas with this color, so it is the theme's edge
+       color the page edges fade into (see body::before), not the paler base of the gradient. */
+    background-color: var(--hoot-edge);
   }
   body {
     @apply text-ink;
   }
-  /* Lavender mist: fixed layer behind everything (iOS ignores background-attachment: fixed).
+  /* Theme mist: fixed layer behind everything (iOS ignores background-attachment: fixed).
      It overdraws the large viewport by 100 px at both ends, so Safari's translucent, collapsing
      toolbars and the keyboard never uncover a band of plain background at the top or bottom. */
   body::before {
@@ -300,13 +468,29 @@
     /* The top and bottom edges fade into the <html> color that Safari uses for its bars, so
        the page runs under them without a seam (the layer starts 100 px above the viewport). */
     background:
-      linear-gradient(180deg, #dcd8ee 100px, rgba(220, 216, 238, 0) 220px),
-      linear-gradient(0deg, #dcd8ee 100px, rgba(220, 216, 238, 0) 200px),
-      radial-gradient(120% 55% at 0% 0%, rgba(150, 141, 222, 0.62), rgba(150, 141, 222, 0) 62%),
-      radial-gradient(90% 45% at 100% 22%, rgba(229, 182, 206, 0.62), rgba(229, 182, 206, 0) 62%),
-      radial-gradient(110% 50% at 0% 68%, rgba(168, 196, 234, 0.6), rgba(168, 196, 234, 0) 62%),
-      radial-gradient(95% 45% at 100% 100%, rgba(160, 148, 226, 0.55), rgba(160, 148, 226, 0) 62%),
-      linear-gradient(180deg, #ece9f4 0%, #e8e5f1 100%);
+      linear-gradient(180deg, var(--hoot-edge) 100px, rgb(var(--hoot-edge-rgb) / 0) 220px),
+      linear-gradient(0deg, var(--hoot-edge) 100px, rgb(var(--hoot-edge-rgb) / 0) 200px),
+      radial-gradient(
+        120% 55% at 0% 0%,
+        rgb(var(--hoot-mist-1) / 0.62),
+        rgb(var(--hoot-mist-1) / 0) 62%
+      ),
+      radial-gradient(
+        90% 45% at 100% 22%,
+        rgb(var(--hoot-mist-2) / 0.62),
+        rgb(var(--hoot-mist-2) / 0) 62%
+      ),
+      radial-gradient(
+        110% 50% at 0% 68%,
+        rgb(var(--hoot-mist-3) / 0.6),
+        rgb(var(--hoot-mist-3) / 0) 62%
+      ),
+      radial-gradient(
+        95% 45% at 100% 100%,
+        rgb(var(--hoot-mist-4) / 0.55),
+        rgb(var(--hoot-mist-4) / 0) 62%
+      ),
+      linear-gradient(180deg, var(--hoot-canvas-top) 0%, var(--hoot-canvas-bottom) 100%);
   }
   input::placeholder {
     @apply text-ink-placeholder;

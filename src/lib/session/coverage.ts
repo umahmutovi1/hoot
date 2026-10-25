@@ -21,6 +21,8 @@ export interface Covered {
   amountDone: number
   /** The reached point is at or past the unit's end. */
   complete: boolean
+  /** Offset reached in the unit (where the next session continues). */
+  end: number
 }
 
 function clamp(x: number, lo: number, hi: number): number {
@@ -41,7 +43,7 @@ export function coverage(units: OrderedUnit[], from: Point, to: Point): Covered[
     const start = i === a ? clamp(from.offset, 0, u.amount) : 0
     const end = i === b ? clamp(to.offset, 0, u.amount) : u.amount
     const amountDone = Math.max(0, end - start)
-    if (amountDone > 0) out.push({ unitId: u.id, amountDone, complete: end >= u.amount })
+    if (amountDone > 0) out.push({ unitId: u.id, amountDone, complete: end >= u.amount, end })
   }
   return out
 }

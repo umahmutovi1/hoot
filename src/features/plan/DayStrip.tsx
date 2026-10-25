@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addDays, addWeeks, format, isSameDay, startOfWeek } from 'date-fns'
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons'
@@ -7,15 +8,20 @@ import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { DayDots } from './DayDots'
 
-/** The week around `selected` as day pills (Satnica mockup / day-view inspiration). */
+/**
+ * The week around `selected` as day pills (Satnica mockup / day-view inspiration). `title` replaces
+ * the month heading (Plan puts the "‹ Oktobar 2026" pill there, iOS calendar style).
+ */
 export function DayStrip({
   selected,
   today,
   onSelect,
+  title,
 }: {
   selected: Date
   today: Date
   onSelect: (date: Date) => void
+  title?: ReactNode
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -27,9 +33,11 @@ export function DayStrip({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between">
-        <h2 className="pl-1 text-lg font-semibold first-letter:uppercase" aria-live="polite">
-          {format(selected, 'LLLL yyyy', { locale: dfLocale })}
-        </h2>
+        {title ?? (
+          <h2 className="pl-1 text-lg font-semibold first-letter:uppercase" aria-live="polite">
+            {format(selected, 'LLLL yyyy', { locale: dfLocale })}
+          </h2>
+        )}
         <div className="flex gap-1.5">
           <button
             type="button"

@@ -161,6 +161,7 @@ export type Database = {
       }
       assessments: {
         Row: {
+          archived_at: string | null
           at: string
           at_latest: string | null
           contingent: boolean
@@ -187,6 +188,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
           at: string
           at_latest?: string | null
           contingent?: boolean
@@ -213,6 +215,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          archived_at?: string | null
           at?: string
           at_latest?: string | null
           contingent?: boolean
@@ -1009,6 +1012,7 @@ export type Database = {
           deficit: Json | null
           id: string
           input_hash: string
+          today_slots: string | null
           user_id: string
           with_times: boolean
         }
@@ -1017,6 +1021,7 @@ export type Database = {
           deficit?: Json | null
           id?: string
           input_hash: string
+          today_slots?: string | null
           user_id?: string
           with_times?: boolean
         }
@@ -1025,6 +1030,7 @@ export type Database = {
           deficit?: Json | null
           id?: string
           input_hash?: string
+          today_slots?: string | null
           user_id?: string
           with_times?: boolean
         }
@@ -1058,6 +1064,7 @@ export type Database = {
           review_cap_pct: number
           session_presets: Json
           sleep_min: number[] | null
+          theme: string
           timer_mode: string
           timezone: string
           updated_at: string
@@ -1090,6 +1097,7 @@ export type Database = {
           review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
+          theme?: string
           timer_mode?: string
           timezone?: string
           updated_at?: string
@@ -1122,6 +1130,7 @@ export type Database = {
           review_cap_pct?: number
           session_presets?: Json
           sleep_min?: number[] | null
+          theme?: string
           timer_mode?: string
           timezone?: string
           updated_at?: string
@@ -1400,6 +1409,7 @@ export type Database = {
       }
       sources: {
         Row: {
+          archived_at: string | null
           author: string | null
           base_min_per_unit: number
           created_at: string
@@ -1417,6 +1427,7 @@ export type Database = {
           weight: number | null
         }
         Insert: {
+          archived_at?: string | null
           author?: string | null
           base_min_per_unit: number
           created_at?: string
@@ -1434,6 +1445,7 @@ export type Database = {
           weight?: number | null
         }
         Update: {
+          archived_at?: string | null
           author?: string | null
           base_min_per_unit?: number
           created_at?: string
@@ -1847,6 +1859,7 @@ export type Database = {
           page_start: number | null
           parent_id: string | null
           position: number
+          read_amount: number | null
           review_streak: number
           source_id: string
           title: string
@@ -1880,6 +1893,7 @@ export type Database = {
           page_start?: number | null
           parent_id?: string | null
           position: number
+          read_amount?: number | null
           review_streak?: number
           source_id: string
           title: string
@@ -1913,6 +1927,7 @@ export type Database = {
           page_start?: number | null
           parent_id?: string | null
           position?: number
+          read_amount?: number | null
           review_streak?: number
           source_id?: string
           title?: string

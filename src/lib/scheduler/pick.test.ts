@@ -65,6 +65,21 @@ describe('pickForTime', () => {
     expect(r!.units.map((u) => u.unitId)).toEqual(['c1-1', 'c1-2'])
   })
 
+  it('keeps to one subject when asked', () => {
+    const r = pickForTime(
+      input({
+        subjectId: 'b',
+        todayBlocks: [block('b1', { daysToGoal: 2 })],
+        dueReviews: [
+          { unitId: 'u1', subjectId: 'a', minutes: 10, retrievability: 0.5, nextReviewOn: TODAY },
+        ],
+        laterBlocks: [block('c1', { subjectId: 'b', onDate: '2026-10-23' })],
+      }),
+    )
+    expect(r).toMatchObject({ from: 'next', subjectId: 'b' })
+    expect(pickForTime(input({ subjectId: 'z', todayBlocks: [block('b1')] }))).toBeNull()
+  })
+
   it('is null without anything to do', () => {
     expect(pickForTime(input())).toBeNull()
     expect(pickForTime(input({ minutes: 0, todayBlocks: [block('b')] }))).toBeNull()
