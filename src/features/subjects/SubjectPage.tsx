@@ -238,20 +238,20 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
           {t('subjects.detail.noExams')}
         </p>
       ) : (
-        <div className="flex flex-col rounded-card glass p-1.5">
+        <div className="flex flex-col overflow-hidden rounded-card glass">
           {exams
             .filter((e) => !isNested(e))
             .map((exam, i) => (
               <div key={exam.id}>
                 {i > 0 && <div className="mx-3 h-px bg-hairline" />}
-                <SwipeRow className="rounded-[18px]" actions={[archiveRow(exam)]}>
-                  {examRow(exam)}
+                <SwipeRow actions={[archiveRow(exam)]}>
+                  <div className="px-1.5">{examRow(exam)}</div>
                 </SwipeRow>
                 {exams
                   .filter((m) => m.kind === 'makeup' && m.retake_of === exam.id)
                   .map((m) => (
-                    <SwipeRow key={m.id} className="rounded-[18px]" actions={[archiveRow(m)]}>
-                      {examRow(m, true)}
+                    <SwipeRow key={m.id} actions={[archiveRow(m)]}>
+                      <div className="px-1.5">{examRow(m, true)}</div>
                     </SwipeRow>
                   ))}
               </div>
@@ -288,12 +288,11 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
       {deadlines.length === 0 ? (
         <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('deadlines.none')}</p>
       ) : (
-        <div className="flex flex-col rounded-card glass p-1.5">
+        <div className="flex flex-col overflow-hidden rounded-card glass">
           {deadlines.map((d, i) => (
             <div key={d.id}>
               {i > 0 && <div className="mx-3 h-px bg-hairline" />}
               <SwipeRow
-                className="rounded-[18px]"
                 actions={[
                   {
                     id: 'delete',
@@ -305,20 +304,22 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
                   },
                 ]}
               >
-                <DeadlineRow
-                  deadline={d}
-                  now={now}
-                  worth={worth(d.id)}
-                  onOpen={() => setDeadlineSheet({ open: true, id: d.id })}
-                  result={
-                    <ResultChip
-                      item={itemOf(d.id)}
-                      worth={worth(d.id)}
-                      due={d.done || isDue(d.due_at)}
-                      onOpen={() => setResultSheet({ open: true, kind: 'deadline', id: d.id })}
-                    />
-                  }
-                />
+                <div className="px-1.5">
+                  <DeadlineRow
+                    deadline={d}
+                    now={now}
+                    worth={worth(d.id)}
+                    onOpen={() => setDeadlineSheet({ open: true, id: d.id })}
+                    result={
+                      <ResultChip
+                        item={itemOf(d.id)}
+                        worth={worth(d.id)}
+                        due={d.done || isDue(d.due_at)}
+                        onOpen={() => setResultSheet({ open: true, kind: 'deadline', id: d.id })}
+                      />
+                    }
+                  />
+                </div>
               </SwipeRow>
             </div>
           ))}
