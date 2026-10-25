@@ -215,6 +215,11 @@
       "done": "{{day}}: maximum is {{cap}}",
       "fullDay": "The maximum already equals the free time; add hours in Availability for more.",
       "button": "More time"
+    },
+    "eve": {
+      "band": "Only for {{subject}} · exam {{when}}",
+      "remove": "Remove",
+      "removed": "The day is no longer kept. The plan is updated."
     }
   },
   "subjects": {
@@ -797,6 +802,11 @@
       "2": "2 · What's on it",
       "next": "Next: what's on it",
       "back": "Back"
+    },
+    "eve": {
+      "label": "Day before only for this subject",
+      "sub": "{{day}}: only {{subject}}; everything else moves",
+      "subGeneric": "Last study day before the exam: only this subject; everything else moves"
     }
   },
   "deadlines": {
@@ -1836,6 +1846,17 @@
       "sub_other": "In {{count}} days",
       "now": "Start now",
       "done": "The campaign starts today. The plan is recomputed."
+    },
+    "eve": {
+      "title": "Keep {{day}} only for {{subject}}? Everything else moves.",
+      "sub": "That day: review, questions and weak topics. Reviews of other subjects move a day earlier or later.",
+      "takenTitle": "{{taken}} is already for {{other}}. Keep {{day}} for {{subject}}?",
+      "takenSub": "The day before belongs to the closer exam.",
+      "raiseCap": "and raise that day's maximum to {{time}}",
+      "reserve": "Keep it",
+      "reserveDay": "Keep {{day}}",
+      "no": "No",
+      "done": "{{day}} is only for {{subject}}. The plan is updated."
     }
   },
   "replan": {

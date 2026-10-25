@@ -211,3 +211,61 @@ describe('suggestions: knowledge check', () => {
     expect(suggestions(input({ state: s })).some((x) => x.kind === 'check')).toBe(false)
   })
 })
+
+describe('exam eve card', () => {
+  const twoExams = (eveA = false) => {
+    const a = units('a', 4, 60, { level: 1 })
+    const b = units('b', 4, 60, { level: 1 })
+    return state({
+      days: days(28, [{ startMin: 9 * 60, endMin: 21 * 60 }], 240),
+      subjects: [subject('a'), subject('b')],
+      units: [...a, ...b],
+      goals: [
+        {
+          ...exam(
+            'ea',
+            'a',
+            day(3),
+            a.map((u) => u.id),
+          ),
+          ...(eveA ? { eveReserved: true, atMin: 540 } : { atMin: 540 }),
+        },
+        {
+          ...exam(
+            'eb',
+            'b',
+            day(3),
+            b.map((u) => u.id),
+          ),
+          atMin: 840,
+        },
+      ],
+    })
+  }
+  const eves = (over: Partial<SuggestionInput>) =>
+    suggestions(input(over)).filter((x) => x.kind === 'exam_eve')
+
+  it('asks 3 days before, with a higher cap for the day when there is room', () => {
+    const s = twoExams()
+    expect(eves({ state: s, today: day(0) })).toEqual([
+      expect.objectContaining({ goalId: 'ea', day: day(2), takenBy: null, capMin: 360 }),
+      expect.objectContaining({ goalId: 'eb', day: day(2), takenBy: null }),
+    ])
+    // More than 3 days before: no card yet.
+    expect(eves({ state: s, today: addDays(FROM, -1) })).toEqual([])
+  })
+
+  it('says when a closer exam already holds the day and offers the day before', () => {
+    expect(eves({ state: twoExams(true), today: day(0) })).toEqual([
+      expect.objectContaining({
+        goalId: 'eb',
+        day: day(1),
+        takenBy: { goalId: 'ea', subjectId: 'a', day: day(2) },
+      }),
+    ])
+  })
+
+  it('an answered exam (yes or no) gets no card', () => {
+    expect(eves({ state: twoExams(), today: day(0), eveAnswered: ['ea', 'eb'] })).toEqual([])
+  })
+})

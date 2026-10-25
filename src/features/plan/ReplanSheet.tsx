@@ -249,6 +249,7 @@ function usePlanStoreBlocks(): PlanBlockRow[] {
     plan_run_id: null,
     origin: 'ai',
     title: null,
+    skip_requested_at: null,
     created_at: '',
     updated_at: '',
     plan_block_units: b.units.map((u) => ({

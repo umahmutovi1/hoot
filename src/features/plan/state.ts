@@ -370,6 +370,10 @@ export function buildPlanState(
         on,
         unitIds: [...scope].filter((id) => subjectOfUnit.get(id) === subject.id).sort(),
         minutes: 0,
+        // Only set when reserved, so plans without a reservation keep their input hash.
+        ...(a.eve_reserved
+          ? { eveReserved: true, atMin: wallClock(new Date(a.at), boundary.timeZone).minutes }
+          : {}),
       })
       if (on > lastGoal) lastGoal = on
     }

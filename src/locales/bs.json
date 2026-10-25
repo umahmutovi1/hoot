@@ -222,6 +222,11 @@
       "done": "{{day}}: maksimum je {{cap}}",
       "fullDay": "Maksimum je već koliko i slobodnog vremena; za više dodaj termine u Dostupnosti.",
       "button": "Više vremena"
+    },
+    "eve": {
+      "band": "Samo za {{subject}} · ispit {{when}}",
+      "remove": "Ukloni",
+      "removed": "Dan više nije rezervisan. Plan je preračunat."
     }
   },
   "subjects": {
@@ -822,6 +827,11 @@
       "2": "2 · Šta ulazi",
       "next": "Dalje: šta ulazi",
       "back": "Nazad"
+    },
+    "eve": {
+      "label": "Dan prije samo za ovaj predmet",
+      "sub": "{{day}}: samo {{subject}}; ostalo se pomjera",
+      "subGeneric": "Zadnji dan učenja prije ispita: samo ovaj predmet; ostalo se pomjera"
     }
   },
   "deadlines": {
@@ -1886,6 +1896,17 @@
       "sub_other": "Za {{count}} dana",
       "now": "Počni odmah",
       "done": "Kampanja kreće danas. Plan je preračunat."
+    },
+    "eve": {
+      "title": "Rezervisati {{day}} samo za {{subject}}? Ostalo se pomjera.",
+      "sub": "Taj dan: ponavljanje, pitanja i slabe teme. Ponavljanja drugih predmeta idu dan ranije ili poslije.",
+      "takenTitle": "{{taken}} je već za {{other}}. Rezervisati {{day}} za {{subject}}?",
+      "takenSub": "Dan pred ispit pripada bližem ispitu.",
+      "raiseCap": "i povećaj maksimum tog dana na {{time}}",
+      "reserve": "Rezerviši",
+      "reserveDay": "Rezerviši {{day}}",
+      "no": "Ne",
+      "done": "{{day}} je samo za {{subject}}. Plan je preračunat."
     }
   },
   "replan": {

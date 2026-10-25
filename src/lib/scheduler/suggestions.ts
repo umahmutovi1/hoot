@@ -1,6 +1,8 @@
 import { addDays, diffDays, type LocalDate } from '@/lib/day'
 import type { PaceAction } from '@/lib/pace'
+import { slotMinutes } from '@/lib/schedule'
 import { priorityRule, RESERVE, reviewMinutes } from './constants'
+import { eveCandidate } from './eve'
 import { plan, remainingWork } from './plan'
 import type { PlanResult, PlanState } from './types'
 
@@ -46,6 +48,19 @@ export type Suggestion =
   | { kind: 'target_grade'; key: string; subjectId: string; priority: number }
   | { kind: 'exam_period'; key: string; periodId: string; until: LocalDate; capMin: number }
   | { kind: 'campaign_soon'; key: string; subjectId: string; start: LocalDate; days: number }
+  /**
+   * "Dan pred ispit": reserve `day` only for the exam's subject. `takenBy` = the closer exam that
+   * holds the last study day; `capMin` = raise that day's cap to this ("i povećaj maksimum").
+   */
+  | {
+      kind: 'exam_eve'
+      key: string
+      goalId: string
+      subjectId: string
+      day: LocalDate
+      takenBy: { goalId: string; subjectId: string; day: LocalDate } | null
+      capMin: number | null
+    }
   /** "Znanje slabi": checks due today that are not in today's plan (over the review cap). */
   | { kind: 'check'; key: string; unitIds: string[]; minutes: number }
 
@@ -75,11 +90,15 @@ export interface SuggestionInput {
   missedStreak: number
   /** Total deficit of the previous plan; null when there was none to compare. */
   previousDeficit: number | null
+  /** Exams whose "Dan pred ispit" was answered (`eve_reserved` not null): no card. */
+  eveAnswered?: string[]
 }
 
 /** Exam-period cap suggested on Danas ("povećati maksimum na 6 h"). */
 export const EXAM_PERIOD_CAP = 360
 const SOON_DAYS = 3
+/** "Dan pred ispit" card: from this many days before the exam. */
+export const EVE_CARD_DAYS = 3
 /** Deficit grew by more than this since the last plan: fresh start instead of deficit cards. */
 const DEFICIT_GROWTH_MIN = 60
 
@@ -284,6 +303,34 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
       })
   }
 
+  const answered = new Set(input.eveAnswered ?? [])
+  for (const g of [...state.goals].sort((a, b) => (a.on < b.on ? -1 : a.on > b.on ? 1 : 0))) {
+    if (g.kind !== 'exam' || g.eveReserved || answered.has(g.id)) continue
+    const days = diffDays(today, g.on)
+    if (days <= 0 || days > EVE_CARD_DAYS) continue
+    const candidate = eveCandidate(state, g.id)
+    if (!candidate.day || candidate.day < today) continue
+    const info = state.days.find((d) => d.date === candidate.day)
+    const free = info ? Math.floor(slotMinutes(info.slots) / 30) * 30 : 0
+    const target = Math.min(free, EXAM_PERIOD_CAP)
+    out.push({
+      kind: 'exam_eve',
+      key: `eve:${g.id}`,
+      goalId: g.id,
+      subjectId: g.subjectId,
+      day: candidate.day,
+      takenBy:
+        candidate.takenBy && candidate.lastStudyDay
+          ? {
+              goalId: candidate.takenBy.id,
+              subjectId: candidate.takenBy.subjectId,
+              day: candidate.lastStudyDay,
+            }
+          : null,
+      capMin: info && target > info.cap ? target : null,
+    })
+  }
+
   // Checks due but not in today's blocks: over the review share, or due since the plan was made.
   const planned = new Set(
     [...result.blocks, ...state.fixed]
@@ -312,11 +359,12 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
   const rank: Record<Suggestion['kind'], number> = {
     fresh_start: 0,
     deficit: 1,
-    behind: 2,
-    target_grade: 3,
-    exam_period: 4,
-    campaign_soon: 5,
-    check: 6,
+    exam_eve: 2,
+    behind: 3,
+    target_grade: 4,
+    exam_period: 5,
+    campaign_soon: 6,
+    check: 7,
   }
   const goalOn = (s: Suggestion) => (s.kind === 'deficit' ? (goals.get(s.goalId)?.on ?? '') : '')
   const weight = (s: Suggestion) =>

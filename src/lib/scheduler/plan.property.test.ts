@@ -3,7 +3,15 @@ import { describe, expect, it } from 'vitest'
 import { addDays } from '@/lib/day'
 import { mergeSlots } from '@/lib/schedule'
 import { BUILT_IN_PRESETS, breakAfterBlock } from '@/lib/session/timer'
-import { aiCapacity, growthLimit, plan, spanOf, type FixedBlock, type PlanState } from '.'
+import {
+  aiCapacity,
+  growthLimit,
+  plan,
+  reservedDays,
+  spanOf,
+  type FixedBlock,
+  type PlanState,
+} from '.'
 import { FROM, state, subject } from './fixtures'
 
 const DAYS = 21
@@ -32,6 +40,8 @@ const stateArb: fc.Arbitrary<PlanState> = fc
         s: fc.integer({ min: 0, max: 3 }),
         on: fc.integer({ min: 0, max: DAYS - 1 }),
         scope: fc.integer({ min: 1, max: 0xffff }),
+        eve: fc.boolean(),
+        atMin: fc.integer({ min: 8 * 60, max: 18 * 60 }),
       }),
       { minLength: 1, maxLength: 5 },
     ),
@@ -101,6 +111,7 @@ const stateArb: fc.Arbitrary<PlanState> = fc
         .filter((u, j) => u.subjectId === sid(e.s) && (e.scope >> (j % 16)) & 1)
         .map((u) => u.id),
       minutes: 0,
+      ...(e.eve ? { eveReserved: true, atMin: e.atMin } : {}),
     }))
     const fixed: FixedBlock[] = r.fixed.map((f, i) => ({
       id: `m${i}`,
@@ -195,6 +206,36 @@ describe('plan invariants', () => {
           for (const a of spans)
             for (const f of fixed) expect(a.end <= f.start || a.start >= f.end).toBe(true)
         })
+      }),
+      RUNS,
+    )
+  })
+
+  it('a reserved day before an exam has no AI block of another subject', () => {
+    fc.assert(
+      fc.property(stateArb, (s) => {
+        const reserved = reservedDays(s)
+        const r = plan(s)
+        for (const [day, goal] of reserved) {
+          expect(day < goal.on).toBe(true)
+          for (const b of r.blocks.filter((x) => x.onDate === day))
+            expect(b.subjectId).toBe(goal.subjectId)
+        }
+        // One exam per reserved day, one day per exam.
+        expect(new Set([...reserved.values()].map((g) => g.id)).size).toBe(reserved.size)
+      }),
+      RUNS,
+    )
+  })
+
+  it('reviews never fall on or after their own exam', () => {
+    fc.assert(
+      fc.property(stateArb, (s) => {
+        const r = plan(s)
+        for (const b of r.blocks.filter((x) => x.kind === 'review' && x.goalId)) {
+          const goal = s.goals.find((g) => g.id === b.goalId)!
+          expect(b.onDate < goal.on).toBe(true)
+        }
       }),
       RUNS,
     )

@@ -55,6 +55,13 @@ export interface PlanGoal {
   unitIds: string[]
   /** Deadline: minutes of work left. */
   minutes: number
+  /**
+   * Exam: its last study day is only for this subject ("Dan pred ispit", `assessments.eve_reserved`);
+   * absent when not reserved.
+   */
+  eveReserved?: boolean
+  /** Exam: wall-clock minute, set with `eveReserved` (two exams on one day: the earlier is closer). */
+  atMin?: number
 }
 
 /** A leaf unit with its estimate (minutes already include calibration and speed factor). */

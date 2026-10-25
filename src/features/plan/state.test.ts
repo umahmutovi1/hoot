@@ -50,6 +50,11 @@ const profile = (patch: Partial<Profile> = {}): Profile => ({
   fsrs_params: null,
   notify_first_block: true,
   notify_break_end: true,
+  reminder_offsets_min: [30],
+  institution: null,
+  study_program: null,
+  year_of_study: null,
+  academic_search: null,
   timer_mode: 'standard',
   created_at: '',
   updated_at: '',
@@ -107,6 +112,9 @@ const roughSource = (parts: number): SourceWithUnits => ({
   measured_sessions: 0,
   weight: null,
   is_rough: true,
+  file_name: null,
+  drive_file_id: null,
+  external_url: null,
   created_at: '',
   updated_at: '',
   units: Array.from({ length: parts }, (_, i) => unit(`p${i}`, i)),
@@ -315,6 +323,7 @@ describe('buildPlanState', () => {
       plan_run_id: null,
       origin: 'user',
       title: 'Vježbe',
+      skip_requested_at: null,
       created_at: '',
       updated_at: '',
       plan_block_units: [],
@@ -328,6 +337,30 @@ describe('buildPlanState', () => {
       { now: NOW, boundary },
     )
     expect(inputHash(a.state)).not.toBe(inputHash(b.state))
+  })
+
+  it('a reserved exam eve is a scheduler input (goal and input hash)', () => {
+    const plain = buildPlanState(inputs(), { now: NOW, boundary })
+    const reserved = inputs()
+    reserved.subjects[0]!.assessments[0] = {
+      ...reserved.subjects[0]!.assessments[0]!,
+      eve_reserved: true,
+    }
+    const built = buildPlanState(reserved, { now: NOW, boundary })
+    expect(built.state.goals.find((g) => g.id === 'e1')).toMatchObject({
+      eveReserved: true,
+      atMin: 540,
+    })
+    expect(inputHash(built.state)).not.toBe(inputHash(plain.state))
+    // Declined (false) is the same plan as never asked.
+    const declined = inputs()
+    declined.subjects[0]!.assessments[0] = {
+      ...declined.subjects[0]!.assessments[0]!,
+      eve_reserved: false,
+    }
+    expect(inputHash(buildPlanState(declined, { now: NOW, boundary }).state)).toBe(
+      inputHash(plain.state),
+    )
   })
 
   it('soft deadlines come from lecture logs', () => {
