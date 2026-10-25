@@ -132,22 +132,10 @@
       "busy": "Busy",
       "busyUntil": "until {{time}} · {{source}}"
     },
-    "examToday": "today",
-    "examTomorrow": "tomorrow",
     "late": {
       "shifted": "{{min}} min late: the rest of the day moved",
       "shiftedOverflow_one": "{{min}} min late: the rest of the day moved, {{count}} block goes to the plan from tomorrow",
       "shiftedOverflow_other": "{{min}} min late: the rest of the day moved, {{count}} blocks go to the plan from tomorrow"
-    },
-    "extra": {
-      "button": "I have more time",
-      "title": "I have more time",
-      "sub": "One more block today, over the daily maximum if needed (today only). The other days rearrange around it.",
-      "whyReview": "A check that is due: memory strength is dropping.",
-      "whyNext": "The most urgent next material, {{minutes}} today instead of later.",
-      "addStart": "Add and start",
-      "add": "Only add to today's plan",
-      "added": "Added to today's plan: {{minutes}}"
     },
     "skip": {
       "button": "Skip",
@@ -162,7 +150,6 @@
       "toLater": "Moved to the first free day at {{time}}",
       "carried": "moved"
     },
-    "examInShort": "{{count}} d",
     "start": {
       "title": "Start a session now?",
       "pauses": "Breaks: {{preset}}",
@@ -1923,7 +1910,16 @@
     "movedAiToast": "Block moved. The plan may rearrange it.",
     "backToPlan": "Return to plan",
     "backToPlanSub": "The plan arranges it again.",
-    "backToPlanToast": "Block returned to the plan"
+    "backToPlanToast": "Block returned to the plan",
+    "addedToast": "Block added",
+    "startNow": "Added to today's plan: {{title}}. Start right away?",
+    "later": "Later",
+    "mode": "How to pick the block",
+    "suggested": "Plan suggestion",
+    "manual": "Manual",
+    "suggestion": "The plan suggests",
+    "noSuggestion": "The plan has nothing to suggest right now. Pick manually.",
+    "addOne": "Add"
   },
   "crumbs": {
     "label": "Breadcrumb",

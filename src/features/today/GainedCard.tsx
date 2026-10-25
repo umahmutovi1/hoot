@@ -4,7 +4,7 @@ import { ClockIcon } from '@/components/icons'
 import { usePlanStore } from '@/features/plan/store'
 import { formatDuration } from '@/features/sources/format'
 import { useSubjects } from '@/features/subjects/api'
-import { ExtraTimeSheet } from './ExtraTimeSheet'
+import { BlockSheet } from '@/features/plan/BlockSheet'
 import { pickTitle } from './pick'
 import { useGainedCard } from './useGainedCard'
 import type { PlanToday } from './usePlanToday'
@@ -62,13 +62,15 @@ export function GainedCard({ plan }: { plan: PlanToday }) {
           </div>
         </div>
       )}
-      <ExtraTimeSheet
+      <BlockSheet
         open={open}
         onOpenChange={(o) => {
           setOpen(o)
           if (!o) setExtraToday(null)
         }}
-        plan={plan}
+        block={null}
+        date={plan.today}
+        today={plan.today}
         initialMinutes={gained?.minutes ?? 60}
       />
     </>
