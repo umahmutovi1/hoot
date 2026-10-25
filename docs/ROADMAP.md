@@ -296,7 +296,10 @@ Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, t
 
 ## Etapa 10c — Akademska struktura, materijali i podsjetnici
 
-PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s interneta, raspored predavanja/vjezbi), „Povezani kalendari i integracije“ (materijali), „Scheduler“ (dan pred ispit), „Podsjetnici i notifikacije“, „Onboarding“ (1b, 6). 
+PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s interneta, raspored predavanja/vjezbi), „Povezani kalendari i integracije“ (materijali), „Scheduler“ (dan pred ispit), „Podsjetnici i notifikacije“, „Onboarding“ (1b, 6).
+
+- [x] Mockupi: `AkademskaGodina`, `PlanIProgram`, `Materijali`, `DanPredIspit`, `Podsjetnici` (`.dc.html`, design README „Etapa 10c“)
+  - Odluke uz mockupe: Predmeti po semestru; Drive folder = jedan izvor, PDF = jedinica; „Kasniš 15 min“ bez prekidača
 
 - [ ] Migracija: `academic_years`, `academic_periods.academic_year_id`, `subjects.academic_year_id` + `semester_no`, `profiles.institution` / `study_program` / `year_of_study` / `reminder_offsets_min`, `assessments.eve_reserved`, `sources.file_name` / `drive_file_id` / `external_url`, nove vrste `push_jobs` i `ai_task`; regenerisan `database.ts`
 - [ ] Predmeti grupisani po godini i semestru (trenutni otvoren, ostali sklopljeni, „prenesen“ za nepoložene), default semestar za novi predmet, kartica „Nova akademska godina“
