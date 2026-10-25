@@ -361,6 +361,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Eval suite (PRD „AI integracija“ → Eval suite): sve AI funkcije, Zod stopa, rubrike, budžet cijene/latencije, red-team prompt injection; CI na PR-ovima koji diraju `supabase/functions/**` ili `evals/**`, puni skup noćno
 - [ ] `.github/workflows/backup.yml` (sedmični `db dump`, DB lozinka u Secrets)
 - [ ] Lighthouse PWA i performanse
+- [ ] Prečice u manifestu (`shortcuts` u `vite.config.ts`, uz `share_target`): „Počni sljedeći blok“, „Danas“, „Imam samo 30 min“; dug pritisak na ikonu na Androidu (iOS ih ne podržava). Zamjena za widget dok je app PWA ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2)
 - **DoD** → `v1.0.0`
 
 ## Kasnije
@@ -378,6 +379,8 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - Strategist kroz Message Batches API (−50%) kad bude više korisnika.
 - Admin pregled (read-only): oznaka `role: admin` u `app_metadata`, funkcija `is_admin()` i dodatna `select` RLS politika po tabeli, ekran `/admin`.
 - Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#6-otvaranje-aplikacije-za-više-korisnika)).
+- Prvo plan, pa prijava (uz otvaranje za više korisnika): Supabase anonimna prijava (`signInAnonymously()`), onboarding i prvi plan bez emaila, pa „Spasi svoj plan“ → email preko `updateUser` (isti `user_id`, RLS bez izmjena). Uslovi: AI edge funkcije odbijaju ili ograničavaju `is_anonymous`, CAPTCHA (Turnstile) na anonimnoj prijavi, čišćenje starih anonimnih naloga. Razlog: ekran za prijavu na startu tjera nove korisnike ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2).
+- Native widgeti na početnom ekranu („sljedeći blok“, brzo dodavanje): PWA ih nema ni na iOS-u ni u Chromeu na Androidu, pa traže native omotač (Capacitor) i widget extension (Swift WidgetKit, Kotlin). Poslije v1; do tad prečice u manifestu i notifikacije sa akcijama.
 
 ---
 
