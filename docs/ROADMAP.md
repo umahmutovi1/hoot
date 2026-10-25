@@ -289,7 +289,8 @@ Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, t
 - [x] BlockSheet: prekidač “Zadrži ovo vrijeme” (default uključen = ručni blok; isključen = AI blok koji replan smije presložiti) + “Vrati planu” na pojedinačnom ručnom bloku
 - [x] Današnji dan se preslaže: današnji slobodni termini u `input_hash`, promjena dostupnosti / nastave / zauzetosti ponovo smjesti današnje nezapočete AI blokove od sada (toast + Poništi); više slobodnog vremena → kartica “Imaš X min više danas”; testovi u `state.ts` / `plan()`
   - Odluka (Etapa 10b): na svaku promjenu današnjih termina (ne samo kad blok više ne stane) današnji nezapočeti AI blokovi dobiju nova vremena; potpis termina je u `plan_runs.today_slots` (migracija `0024_theme_and_today_slots.sql`, uz `profiles.theme`), pa svaki uređaj zna šta se promijenilo. Danas se pri tome ne dodaje posao (kapacitet 0); dobijeno vrijeme nudi kartica
-- [ ] Sigurnost u CI: CodeQL, Dependabot, `npm audit --audit-level=high`, gitleaks, `supabase db lint` / advisors; RLS testovi (drugi korisnik i `anon`); `public/_headers` sa CSP-om
+- [x] Sigurnost u CI: CodeQL, Dependabot, `npm audit --audit-level=high`, gitleaks, `supabase db lint` / advisors; RLS testovi (drugi korisnik i `anon`); `public/_headers` sa CSP-om
+  - Odluka (Etapa 10b): repo postaje javan (CodeQL na privatnom ličnom repou ne radi bez plaćenog Code Security); prije toga gitleaks preko cijele historije mora biti zelen. RLS testovi su pgTAP (`supabase/tests/database/rls.test.sql`) u CI jobu `db` sa lokalnim Supabaseom (`auto_expose_new_tables = false` kao na hostovanom projektu). GitHub koraci u SETUP.md 2a
 - **DoD** (uz opći DoD): svaka stavka provjerena na 390 px na telefonu, sigurnosni koraci zeleni u CI → `v0.10.1`
 
 ## Etapa 10c — Akademska struktura, materijali i podsjetnici
