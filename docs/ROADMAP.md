@@ -291,7 +291,8 @@ Odluke iz pregleda nakon Etape 10 (oktobar 2026): PRD „Navigacija, pretraga, t
   - Odluka (Etapa 10b): na svaku promjenu današnjih termina (ne samo kad blok više ne stane) današnji nezapočeti AI blokovi dobiju nova vremena; potpis termina je u `plan_runs.today_slots` (migracija `0024_theme_and_today_slots.sql`, uz `profiles.theme`), pa svaki uređaj zna šta se promijenilo. Danas se pri tome ne dodaje posao (kapacitet 0); dobijeno vrijeme nudi kartica
 - [x] Sigurnost u CI: CodeQL, Dependabot, `npm audit --audit-level=high`, gitleaks, `supabase db lint` / advisors; RLS testovi (drugi korisnik i `anon`); `public/_headers` sa CSP-om
   - Odluka (Etapa 10b): repo postaje javan (CodeQL na privatnom ličnom repou ne radi bez plaćenog Code Security); prije toga gitleaks preko cijele historije mora biti zelen. RLS testovi su pgTAP (`supabase/tests/database/rls.test.sql`) u CI jobu `db` sa lokalnim Supabaseom (`auto_expose_new_tables = false` kao na hostovanom projektu). GitHub koraci u SETUP.md 2a
-- **DoD** (uz opći DoD): svaka stavka provjerena na 390 px na telefonu, sigurnosni koraci zeleni u CI → `v0.10.1`
+- [x] Dorada poslije pregleda na previewu: nazad iz sesije bez pitanja i „Završi“ uvijek sa sheetom, „Dodaj blok“ sa prijedlogom plana (spojeno „Imam još vremena“) i „Započeti odmah?“, djelimično pročitane jedinice (`units.read_amount`), arhiviranje ispita i popravni skriven dok ne zatreba (`0026`), Raspored sa zauzetošću iz kalendara i stvarnim vremenom odrađenih blokova, kvadratne kartice ispita, kalendar 00–24 sa pilulom mjeseca, teme i za sheetove i meni, sheetovi skrolaju na dodir (#179–#198)
+- [x] **DoD** (uz opći DoD): svaka stavka provjerena na 390 px na telefonu, sigurnosni koraci zeleni u CI → `v0.10.1` (pregled na previewu potvrdila korisnica; CI: check, db, secrets, CodeQL zeleni; migracije 0024–0026 primijenjene)
 
 ## Etapa 10c — Akademska struktura, materijali i podsjetnici
 
