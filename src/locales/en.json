@@ -1035,7 +1035,9 @@
       },
       "subUnits": "Sub-units",
       "subUnitsHint": "Status is set on the sub-units; the chapter is computed from them.",
-      "aiAnswer": "AI suggestion · check it"
+      "aiAnswer": "AI suggestion · check it",
+      "yoursOnly": "your rating",
+      "defaultDifficulty": "default · tap to change"
     },
     "topics": {
       "title": "Topics",
@@ -2122,12 +2124,17 @@
     "nextReview": "Next review",
     "step": "step {{n}} of 4",
     "unitStrength": "strength {{pct}} · {{band}}",
-    "notInReview": "not in review yet",
     "unlock": "“Understood” unlocks through a",
     "unlockLink": "memory test",
     "unlockQuestion": "“Know it” unlocks through a",
     "test": "Test yourself on this chapter",
-    "testQuestion": "Test yourself"
+    "testQuestion": "Test yourself",
+    "notRead": "Not read yet",
+    "notReadSub": "Strength appears once you read the chapter and take a test.",
+    "notTested": "Not tested yet",
+    "notTestedSub": "Strength is known after the first recall test.",
+    "nextAfterRead": "After reading",
+    "nextAfterTest": "After the first test"
   },
   "notify": {
     "title": "Notifications",

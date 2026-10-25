@@ -168,12 +168,6 @@ function UnitDetail({
                     current ? 'bg-brand text-white' : done ? 'bg-brand-soft' : 'bg-canvas-soft',
                   )}
                 >
-                  <span
-                    className={cn(
-                      'h-1 w-[18px] rounded-full',
-                      current ? 'bg-white' : done ? 'bg-brand-accent' : 'bg-line',
-                    )}
-                  />
                   {statusLabel(t, unit.kind, level, unit)}
                 </button>
               )
@@ -198,12 +192,17 @@ function UnitDetail({
           <span className="text-xs text-ink-muted">{t('units.detail.difficulty')}</span>
           <span className="flex items-baseline gap-1.5">
             <span className="text-[22px] font-bold">
-              {unit.user_difficulty ?? unit.ai_difficulty ?? '–'}
+              {/* Without a rating the plan counts 3, so that is shown instead of a dash. */}
+              {unit.user_difficulty ?? unit.ai_difficulty ?? 3}
             </span>
             <span className="text-xs text-ink-muted">
               {unit.user_difficulty !== null
-                ? t('units.detail.yours', { prior: unit.ai_difficulty ?? '–' })
-                : t('units.detail.prior')}
+                ? unit.ai_difficulty !== null
+                  ? t('units.detail.yours', { prior: unit.ai_difficulty })
+                  : t('units.detail.yoursOnly')
+                : unit.ai_difficulty !== null
+                  ? t('units.detail.prior')
+                  : t('units.detail.defaultDifficulty')}
             </span>
           </span>
           <span className="flex gap-[3px]">
@@ -212,7 +211,7 @@ function UnitDetail({
                 key={n}
                 className={cn(
                   'h-1.5 flex-1 rounded-full',
-                  n <= (unit.user_difficulty ?? unit.ai_difficulty ?? 0)
+                  n <= (unit.user_difficulty ?? unit.ai_difficulty ?? 3)
                     ? 'bg-subject-pink'
                     : 'bg-hairline',
                 )}
