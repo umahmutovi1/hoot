@@ -67,7 +67,6 @@
     "todayInCalendar": "Danas u kalendaru",
     "next": {
       "label": "Sljedeće",
-      "freeTitle": "Slobodna sesija",
       "freeSub": "Izaberi predmet i koliko vremena imaš",
       "start": "Počni",
       "running": "U toku",
@@ -119,7 +118,8 @@
       "noMaterialBody": "Dodaj predmetu izvor ili grubu veličinu gradiva, pa plan rasporedi učenje do ispita.",
       "addMaterial": "Predmeti",
       "tomorrow": "sutra",
-      "next": "Sljedeći blok: {{when}} {{time}} · {{subject}}"
+      "next": "Sljedeći blok: {{when}} {{time}} · {{subject}}",
+      "addSession": "Dodaj sesiju"
     },
     "more_one": "Još {{count}} prijedlog",
     "more_few": "Još {{count}} prijedloga",

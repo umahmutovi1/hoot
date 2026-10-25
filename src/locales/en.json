@@ -67,7 +67,6 @@
     "todayInCalendar": "Today in the calendar",
     "next": {
       "label": "Next",
-      "freeTitle": "Free session",
       "freeSub": "Pick a subject and how much time you have",
       "start": "Start",
       "running": "Running",
@@ -117,7 +116,8 @@
       "noMaterialBody": "Add a source or a rough size of the material to a subject, and the plan spreads the studying until the exam.",
       "addMaterial": "Subjects",
       "tomorrow": "tomorrow",
-      "next": "Next block: {{when}} {{time}} · {{subject}}"
+      "next": "Next block: {{when}} {{time}} · {{subject}}",
+      "addSession": "Add session"
     },
     "more_one": "{{count}} more suggestion",
     "more_other": "{{count}} more suggestions",
