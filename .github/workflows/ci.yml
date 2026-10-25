@@ -41,6 +41,10 @@ jobs:
   # Committed secrets, over the whole history (PRD "Sigurnosno skeniranje").
   secrets:
     runs-on: ubuntu-latest
+    # The action lists the PR's commits through the API.
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v5
         with:

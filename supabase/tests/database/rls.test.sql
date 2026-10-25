@@ -27,15 +27,15 @@ select is_empty(
 select is_empty(
   $$ select c.relname::text from pg_class c join pg_namespace n on n.oid = c.relnamespace
      where n.nspname = 'public' and c.relkind = 'r'
-       and not has_table_privilege('authenticated', c.oid, 'select') $$,
-  'signed-in users can read every table (explicit grant)'
+       and not has_any_column_privilege('authenticated', c.oid, 'select') $$,
+  'signed-in users can read every table (explicit grant; per column where a secret is hidden)'
 );
 select is_empty(
   $$ select c.relname::text from pg_class c join pg_namespace n on n.oid = c.relnamespace
      where n.nspname = 'public' and c.relkind = 'r'
-       and (has_table_privilege('anon', c.oid, 'select')
-         or has_table_privilege('anon', c.oid, 'insert')
-         or has_table_privilege('anon', c.oid, 'update')
+       and (has_any_column_privilege('anon', c.oid, 'select')
+         or has_any_column_privilege('anon', c.oid, 'insert')
+         or has_any_column_privilege('anon', c.oid, 'update')
          or has_table_privilege('anon', c.oid, 'delete')) $$,
   'anon has no privilege on any table'
 );
