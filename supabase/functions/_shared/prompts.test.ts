@@ -219,3 +219,45 @@ describe('toBase64', () => {
     expect(atob(toBase64(bytes))).toBe('Hoot'.repeat(20_000))
   })
 })
+
+describe('syllabus', () => {
+  it('is its own task with the subject list and the large budget', () => {
+    const req = parseRequest(request({ kind: 'syllabus' }), [])
+    expect(req.task).toBe('parse_syllabus')
+    expect(req.text).toContain(`${SIGNALI}: Signali i sistemi`)
+    expect(req.maxTokens).toBe(16000)
+  })
+
+  it('keeps known subject ids only and drops a pass mark above the maximum', () => {
+    const out = normalizeParse(request({ kind: 'syllabus' }), {
+      title: 'Plan i program',
+      pages: [],
+      warnings: [],
+      subjects: [
+        {
+          subject_name: 'Signali',
+          subject_id: SIGNALI,
+          semester: 3,
+          literature: [{ title: 'Signals & Systems', authors: 'Oppenheim', required: true }],
+          topics: [{ week: 1, name: 'Klasifikacija signala' }],
+          grading: [
+            { kind: 'partial', number: 1, title: 'I parcijala', points: 20, pass_points: 10 },
+            { kind: 'final', number: null, title: 'Završni', points: 40, pass_points: 60 },
+          ],
+        },
+        {
+          subject_name: 'Numerika',
+          subject_id: 'not-ours',
+          semester: null,
+          literature: [],
+          topics: [],
+          grading: [],
+        },
+      ],
+    } as never)
+    expect(out.kind).toBe('syllabus')
+    expect(out.syllabus.map((s) => s.subject_id)).toEqual([SIGNALI, null])
+    expect(out.syllabus[0]!.grading.map((g) => g.pass_points)).toEqual([10, null])
+    expect(out.periods).toEqual([])
+  })
+})

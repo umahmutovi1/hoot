@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { ScreenTitle } from '@/components/ScreenTitle'
@@ -10,6 +11,7 @@ import { newYearOffer, yearLabelOn, yearRange } from '@/lib/academic'
 import { addDays, toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { useAcademicTerm, useAddAcademicYear } from './api'
+import { useFindAcademicInfo } from './search'
 import { FacultyFields } from './FacultyFields'
 import { useFacultyValue, useSaveFaculty, type FacultyValue } from './faculty'
 
@@ -27,6 +29,7 @@ export function FacultyPage() {
   const show = useToast((s) => s.show)
   const { years, current: term, today } = useAcademicTerm()
   const add = useAddAcademicYear()
+  const find = useFindAcademicInfo()
   const subjects = useSubjects().data ?? []
   const date = (d: string) =>
     format(toDisplayDate(d), 'd. MMM yyyy', { locale: dateFnsLocales[locale] })
@@ -66,11 +69,22 @@ export function FacultyPage() {
             void save(current).then(() => {
               setValue(null)
               show(t('academic.faculty.saved'))
+              // A new faculty, programme or year: look for its documents in the background.
+              if (current.institution.trim()) find.mutate(term?.year.label ?? yearLabelOn(today))
             })
           }
         >
           {t('common.save')}
         </Button>
+      )}
+
+      {(current.institution.trim() || initial.institution) && (
+        <Link
+          to="/settings/academic/found?search=1"
+          className="flex h-11 items-center gap-2 self-start rounded-full glass px-4 text-sm font-semibold text-brand"
+        >
+          {t('academic.found.searchButton')}
+        </Link>
       )}
 
       <h2 className="px-1 pt-2 text-[13px] font-semibold text-ink-muted uppercase">

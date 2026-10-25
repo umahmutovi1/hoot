@@ -301,7 +301,7 @@ Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove
 7. Bez sve tri varijable app ne nudi opciju „Google Drive“ (ostaju PDF s uređaja, slika i kucanje). CSP u `public/_headers` već dozvoljava `apis.google.com`, `accounts.google.com/gsi`, `docs.google.com` (Picker iframe) i `www.googleapis.com` (preuzimanje); poslije dodavanja varijabli treba novi deploy (Retry deployment ili novi commit), jer Vite ih ugrađuje pri buildu.
 8. Provjera: Predmet → + Izvor → Google Drive → izaberi PDF → „Pregledaj jedinice“; na izvoru je „Otvori u Drive-u“.
 
-**Web pretraga za „Fakultet s interneta“ (Etapa 10c).** Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
+**Web pretraga za „Fakultet s interneta“ (Etapa 10c).** Poslije mergea: `npx supabase functions deploy find-academic-info` i ponovo `parse-document` (nova vrsta „Plan i program“); novih secreta nema, koristi `LLM_PROVIDER` / `LLM_MODEL` / ključ kao ostale AI funkcije. Eval za plan i program: `GEMINI_API_KEY=... npm run eval` (slučaj „syllabus of a programme“). Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
 
 ## 6. Otvaranje aplikacije za više korisnika
 

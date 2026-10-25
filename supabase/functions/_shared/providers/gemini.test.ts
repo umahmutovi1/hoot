@@ -276,3 +276,35 @@ describe('explicit prompt cache', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('web search (Google Search grounding)', () => {
+  const search = { ...req, files: [], webSearch: { maxUses: 4 } }
+  it('adds the search tool and asks for the JSON in the prompt instead of a response schema', () => {
+    const body = buildGeminiBody('gemini-3.5-flash-lite', search) as Record<string, unknown>
+    expect(body.tools).toEqual([{ google_search: {} }])
+    const config = body.generationConfig as Record<string, unknown>
+    expect(config.responseJsonSchema).toBeUndefined()
+    expect(config.responseMimeType).toBeUndefined()
+    const system = (body.systemInstruction as { parts: { text: string }[] }).parts[0]!.text
+    expect(system).toContain('Answer with only one JSON object')
+  })
+
+  it('reads the JSON from the text and the grounding sources', () => {
+    const out = readGeminiResponse(
+      {
+        candidates: [
+          {
+            content: { parts: [{ text: '```json\n{"title":"T","note":null}\n```' }] },
+            groundingMetadata: {
+              groundingChunks: [{ web: { uri: 'https://redirect/x', title: 'etf.unsa.ba' } }, {}],
+            },
+          },
+        ],
+        usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
+      },
+      true,
+    )
+    expect(out.json).toEqual({ title: 'T', note: null })
+    expect(out.sources).toEqual([{ url: 'https://redirect/x', title: 'etf.unsa.ba' }])
+  })
+})

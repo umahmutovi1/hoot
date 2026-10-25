@@ -1,6 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
-import { DAILY_AI_LIMIT, generate, getProvider, isAiConfigured, LlmError } from './llm.ts'
+import {
+  DAILY_AI_LIMIT,
+  generate,
+  getProvider,
+  isAiConfigured,
+  jsonFromText,
+  LlmError,
+} from './llm.ts'
 import type { AiRunLog, LlmDeps, LlmProvider, LlmRawResult } from './llm.ts'
 
 const schema = z.object({ answer: z.string() })
@@ -126,5 +133,14 @@ describe('getProvider', () => {
     expect(isAiConfigured(env({ LLM_PROVIDER: 'anthropic', GEMINI_API_KEY: 'k' }))).toBe(false)
     expect(isAiConfigured(env({ LLM_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'k' }))).toBe(true)
     expect(await getProvider(env({ LLM_PROVIDER: 'other', GEMINI_API_KEY: 'k' }))).toBeNull()
+  })
+})
+
+describe('jsonFromText', () => {
+  it('reads a fenced or bare JSON object, null otherwise', () => {
+    expect(jsonFromText('Evo:\n```json\n{"documents":[]}\n```')).toEqual({ documents: [] })
+    expect(jsonFromText('Rezultat {"a": 1} kraj')).toEqual({ a: 1 })
+    expect(jsonFromText('nema ništa')).toBeNull()
+    expect(jsonFromText('{"a": ')).toBeNull()
   })
 })

@@ -6,9 +6,17 @@ import { toPeriod } from '@/features/schedule/model'
 import { useDayBoundary } from '@/features/settings/profile'
 import { subjectsKey } from '@/features/subjects/api'
 import { examAtFromDate, examKindDefaults, localDateAt } from '@/features/subjects/model'
-import { localDay } from '@/lib/day'
+import { addDays, localDay } from '@/lib/day'
+import { useAcademicTerm } from '@/features/academic/api'
+import { createRoughSource } from '@/features/sources/api'
+import { useRoughTexts } from '@/features/subjects/roughTexts'
+import {
+  syllabusSaveCount,
+  type GradingProposal,
+  type SyllabusProposal,
+} from '@/lib/import/syllabus'
 import { clockToMin, toSave, type ExamProposal, type PeriodProposal } from '@/lib/import'
-import { currentTeachingPeriod } from '@/lib/schedule'
+import { currentTeachingPeriod, suggestExamPeriod } from '@/lib/schedule'
 import { supabase } from '@/lib/supabase'
 import type { ImportProposal } from './store'
 
@@ -34,8 +42,16 @@ export function saveCount(proposal: ImportProposal) {
   return (
     toSave(proposal.periods).length +
     toSave(proposal.exams).filter((e) => e.subjectId).length +
-    toSave(proposal.classes ?? []).filter((c) => c.subjectId).length
+    toSave(proposal.classes ?? []).filter((c) => c.subjectId).length +
+    syllabusSaveCount(proposal.syllabus ?? [])
   )
+}
+
+/** "II parcijala" for a numbered partial of a syllabus, else the title as written. */
+function gradingTitle(t: TFunction, g: GradingProposal) {
+  if (g.examKind === 'partial' && g.number)
+    return examTitle(t, { kind: 'partial', number: g.number })
+  return g.title
 }
 
 /** Thrown when timetable classes have no teaching period to go into. */
@@ -48,6 +64,115 @@ export function useSaveImport(t: TFunction) {
   const savePeriod = useSavePeriod()
   const { data: periodRows = [] } = usePeriods()
   const boundary = useDayBoundary()
+  const { defaultTerm } = useAcademicTerm()
+  const roughTexts = useRoughTexts()
+  /**
+   * Syllabus (Stage 10c): a new subject when asked (current semester), required books as rough
+   * sources until their contents come, topics, exam points (only where none were entered) and the
+   * subject's point total (only over the default). New exams take the matching period of the
+   * academic calendar as a tentative date, else the end of the teaching period.
+   */
+  const saveSyllabus = async (items: SyllabusProposal[]) => {
+    const pick = <T extends { include: boolean; status: string }>(xs: T[]) =>
+      xs.filter((x) => x.include && (x.status === 'new' || x.status === 'changed'))
+    const today = localDay(new Date(), boundary)
+    const periods = periodRows.map(toPeriod)
+    const teaching = currentTeachingPeriod(today, periods)
+    let count = 0
+    for (const item of items) {
+      let subjectId = item.subjectId
+      if (!subjectId) {
+        if (!item.addSubject) continue
+        subjectId = crypto.randomUUID()
+        const { error } = await supabase.from('subjects').insert({
+          id: subjectId,
+          name: item.subjectName.slice(0, 80),
+          color: 'lavender',
+          ...(defaultTerm
+            ? { academic_year_id: defaultTerm.academicYearId, semester_no: defaultTerm.semesterNo }
+            : {}),
+        })
+        if (error) throw error
+        count++
+      }
+      for (const l of pick(item.literature)) {
+        const title = (l.authors ? `${l.authors} — ${l.title}` : l.title).slice(0, 120)
+        await createRoughSource({
+          subjectId,
+          size: 'medium',
+          title,
+          partTitle: roughTexts('medium').partTitle,
+        })
+        count++
+      }
+      const topics = pick(item.topics)
+      if (topics.length > 0) {
+        const { error } = await supabase.from('topics').insert(
+          topics.map((x) => ({
+            id: crypto.randomUUID(),
+            subject_id: subjectId!,
+            name: x.name.slice(0, 80),
+          })),
+        )
+        if (error) throw error
+        count += topics.length
+      }
+      let partial = 0
+      for (const g of pick(item.grading.filter((x) => x.examKind))) {
+        const passMinPct =
+          g.points && g.passPoints !== null ? Math.round((g.passPoints / g.points) * 100) : null
+        if (g.existingId) {
+          const { error } = await supabase
+            .from('assessments')
+            .update({
+              points_max: g.points,
+              ...(passMinPct !== null ? { pass_min_pct: passMinPct } : {}),
+            })
+            .eq('id', g.existingId)
+          if (error) throw error
+        } else {
+          const kind = g.examKind!
+          const period =
+            kind === 'partial'
+              ? periods
+                  .filter(
+                    (x) => x.kind === 'exam' && x.examSession === 'partial' && x.endsOn >= today,
+                  )
+                  .sort((a, b) => a.startsOn.localeCompare(b.startsOn))[partial++]
+              : suggestExamPeriod(kind, periods, today)
+          const start = period?.startsOn ?? teaching?.endsOn ?? addDays(today, 60)
+          const end = period?.endsOn ?? addDays(start, 30)
+          const defaults = examKindDefaults(kind)
+          const { error } = await supabase.from('assessments').insert({
+            id: crypto.randomUUID(),
+            subject_id: subjectId,
+            kind,
+            title: gradingTitle(t, g).slice(0, 60),
+            at: examAtFromDate(start),
+            date_tentative: true,
+            at_latest: examAtFromDate(end),
+            exam_period_id: period?.id ?? null,
+            scope_all: defaults.scopeAll,
+            contingent: defaults.contingent,
+            points_max: g.points,
+            pass_min_pct: passMinPct,
+          })
+          if (error) throw error
+        }
+        count++
+      }
+      if (item.pointsTotal && item.pointsTotal.status !== 'unchanged') {
+        const { error } = await supabase
+          .from('subjects')
+          .update({ points_total: item.pointsTotal.value })
+          .eq('id', subjectId)
+        if (error) throw error
+        count++
+      }
+    }
+    return count
+  }
+
   return useMutation({
     mutationFn: async (proposal: ImportProposal) => {
       // Classes go into the current teaching period (PRD "Semestar"); check before writing.
@@ -115,10 +240,14 @@ export function useSaveImport(t: TFunction) {
             })
         if (error) throw error
       }
-      return periods.length + exams.length + classes.length
+      const syllabusCount = await saveSyllabus(proposal.syllabus ?? [])
+      return periods.length + exams.length + classes.length + syllabusCount
     },
     onSettled: () =>
       Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['sources', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['topics', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['plan', userId] }),
         queryClient.invalidateQueries({ queryKey: subjectsKey(userId) }),
         queryClient.invalidateQueries({ queryKey: scheduleKey('timetable_entries', userId) }),
       ]),
