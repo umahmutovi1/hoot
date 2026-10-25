@@ -317,18 +317,34 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
   - Onboarding ima 9 koraka (1b je drugi; podsjetnici u koraku 7 „Pauze i podsjetnici“). Migracija `0028_push_job_actions.sql` (`push_jobs.actions`: tekstovi dugmadi i „Preskočeno“ na jeziku korisnika). `notify` prije slanja provjeri blok (nije započet, preskočen ni u toku prethodni), pa napravi jednokratni token (čuva se hash); `push-action` upiše `skip_requested_at`, a `PendingSkipRunner` u appu primijeni `skipBlock()`. Započni / tap: `/?block=<id>` otvara „Započeti sesiju sada?“
 - **DoD** (uz opći DoD): plan i program sa interneta ili PDF-a → izvori, teme i bodovi kroz pregled; PDF sa outline-om → jedinice bez AI poziva; rezervisan dan pred ispit u planu; podsjetnik i Preskoči iz notifikacije na Androidu → `v0.10.2`
 
+## Etapa 11a — ML temelj
+
+Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md). Python (`ml/`) trenira, TS (`src/lib/`) izvršava; artefakti su JSON sa `version` u `input_hash`. Higijena podataka ide prva, jer se podaci skupljaju od danas.
+
+- [x] Istraživanje: adaptivni scheduling, ML i diskretna optimizacija (`docs/RESEARCH-ML-2026-10.md`)
+- [ ] Migracija `ml_signals`: `review_logs.rating` (1–4), `state_before`, `difficulty_before`, `retrievability_before`; `plan_blocks` snimak featura pri planu (`day_load_min`, `days_to_goal`, `demand`, dio dana) i opcionalni `skip_reason`; `study_sessions.app_leaves` / `app_away_sec` (pomjereno iz Etape 11); upis u `review/apply.ts` i pri kreiranju blokova; `db:types`
+- [ ] `ml/` (uv, numpy, pandas, scipy, scikit-learn, NumPyro, jupyter): izvoz podataka kao korisnik (RLS, parquet, bez slobodnog teksta), EDA notebook
+- [ ] Simulator `scripts/sim/` (TS): pravi `plan()` + `placeTimes()` i model studenta (log-normalno trajanje uz planning fallacy, odrađenost po terminu i opterećenju, FSRS zaboravljanje, „Danas ne mogu“), seed; baseline metrike (R na ispitu × bodovi, deficit, propušteni blokovi, promjena plana, varijansa opterećenja)
+- [ ] `src/lib/scheduler/feasibility.ts`: EDF / max-flow test izvodljivosti + property test „izvodljivo ⇒ `plan()` bez deficita“; LP (HiGHS wasm) samo ako test nađe propuste
+- [ ] Model trajanja: hijerarhijski log-normalni (`src/lib/estimates/model.ts`, `priors.json`) umjesto `k/(k+5)`, `n/(n+3)`, `j/(j+2)`; P50/P80, plan po P80 za prioritet 4–5; backtest notebook (MAE log-minuta, pokrivenost P80) + test TS = Python
+- [ ] Model odrađenosti bloka: Bayesovska logistička regresija (`src/lib/slots/`, prior iz Pythona, lični Laplace update); kapacitet po terminu umjesto jednog ρ; ulaz u ocjene termina i Thompson (Etapa 11) sa sigurnim istraživanjem (ε od najboljeg, ≤ 1 istraživački blok sedmično)
+- [ ] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash`
+- [ ] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad
+- [ ] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio)
+- **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.3`
+
 ## Etapa 11 — Napredak
 
 - [ ] Progres po izvoru, ispitu, predmetu i temi; jačina po temama (`recharts`)
 - [ ] Statistika: sati vs plan, ispunjenost i ρ, fokus, efikasnost po dobu dana, poređenje predložaka sesije (SQL view / RPC)
 - [ ] `src/lib/slots/`: signali po terminu (fokus uz razloge, brzina normalizovana težinom, odrađenost Beta, kašnjenje starta, ometanja), ocjena termina sa shrinkage-om i polu-životom 6 sedmica, Thompson uzorkovanje sa seedom + testovi; ulaz u `placeTimes()` i `input_hash`
 - [ ] Kartice `avoid_slot` / `add_slot` (≥ 6 mjerenja), mapa termina na Napretku („Uči se… još N sesija“)
-- [ ] `forecast()` Monte Carlo (bootstrap dnevnih minuta, seed) + testovi; prognoza spremnosti kao raspon + vjerovatnoća na Danas i Napredak; procjena ocjene iz prognoze × R na dan ispita (PRD „Prognoza spremnosti“, „Projekcija ocjene“)
+- [ ] `forecast()` Monte Carlo (uzorci iz posteriora trajanja i odrađenosti bloka iz Etape 11a; bootstrap dnevnih minuta dok modela nema, seed) + testovi; prognoza spremnosti kao raspon + vjerovatnoća na Danas i Napredak; procjena ocjene iz prognoze × R na dan ispita (PRD „Prognoza spremnosti“, „Projekcija ocjene“)
 - [ ] Spremnost dan prije ispita (`readiness_before`, bodovi su iz Etape 5), signal precjenjivanja; `celebrating` 120 px u toastu/modalu za položen ispit
 - [ ] `src/lib/strategist/`: kandidati akcija iz pravila sa izračunatim efektom + testovi
 - [ ] `strategist` edge funkcija (sedmično / na dugme): bira najviše 3 kandidata i objašnjava (Zod: `candidate_id`), bez refleksija dok je Gemini free tier; odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`, `avoid_slot`, `add_slot`; zaostatak po predavanjima i jačina po temama u ulazu
 - [ ] Sedmični check-in (nedjelja): izuzeci za sljedeću sedmicu, prognoza, do 3 akcije; radi i bez AI-ja
-- [ ] Uvidi na Napretku (PRD „Termini učenja“ → Uvidi): najproduktivniji termini, ometanja (`visibilitychange` + „Ometena sam“, migracija `study_sessions.app_leaves` / `app_away_sec`), ritam sesije, savjeti iz tabele Tehnike; svaki uvid sa jednom akcijom
+- [ ] Uvidi na Napretku (PRD „Termini učenja“ → Uvidi): najproduktivniji termini, ometanja (`visibilitychange` + „Ometena sam“; kolone `app_leaves` / `app_away_sec` iz Etape 11a), ritam sesije, savjeti iz tabele Tehnike; svaki uvid sa jednom akcijom
 - [ ] Ritam sesije (PRD „Timer, pauza i rekalibracija“): medijan do prve pauze, stvarne pauze, rano završene sesije → kartica „prebaci na 40/10?“ + testovi
 - **DoD** → `v0.11.0`
 
@@ -352,7 +368,6 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 - Puni sadržaj materijala za asistenta, opt-in po izvoru (PRD „Materijali“, faza 3).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
-- Lični FSRS parametri (`@open-spaced-repetition/binding` optimizer) kad bude ~100+ ponavljanja u `review_logs`.
 - Prijedlog obima parcijale iz onoga što je pređeno na predavanjima do datuma parcijale.
 - Google Calendar API (upis blokova odmah, OAuth; traži Google verifikaciju jer Testing režim daje token od 7 dana) kad se app otvori za više korisnika.
 - Notion javna integracija (baza rokova → `deadlines`) samo ako paste kroz sovu ne bude dovoljan.
