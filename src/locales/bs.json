@@ -152,7 +152,8 @@
       "toToday": "Prebačeno na danas u {{time}}",
       "toTomorrow": "Danas nema mjesta: prvi blok sutra u {{time}}",
       "toLater": "Prebačeno na prvi slobodan dan u {{time}}",
-      "carried": "prebačeno"
+      "carried": "prebačeno",
+      "fromNotification": "Preskočeno iz notifikacije: {{title}}"
     },
     "start": {
       "title": "Započeti sesiju sada?",
@@ -1761,10 +1762,12 @@
       "reserve": "Plan ostavlja rezervu, bolje realno nego idealno."
     },
     "presets": {
-      "title": "Kako voliš pauze?",
+      "title": "Pauze i podsjetnici",
       "sub": "Ovo je samo podsjetnik. Pauzu uvijek tapneš sama, a za svaku sesiju možeš izabrati drugi.",
       "recommended": "preporučeno",
-      "own": "Vlastiti niz (npr. 45 → 10 → 45 → 20) složiš u Postavkama."
+      "own": "Vlastiti niz (npr. 45 → 10 → 45 → 20) složiš u Postavkama.",
+      "reminders": "Podsjetnik prije bloka",
+      "remindersHint": "Može više izbora. Tap na notifikaciju pokreće sesiju; „Preskoči“ radi i bez otvaranja appa."
     },
     "subject": {
       "title": "Prvi predmet",
@@ -2185,8 +2188,6 @@
   },
   "notify": {
     "title": "Notifikacije",
-    "firstBlock": "Prvi blok dana",
-    "firstBlockSub": "10 min prije",
     "breakEnd": "Kraj pauze",
     "breakEndSub": "i kad je ekran zaključan",
     "enable": "Uključi obavještenja na ovom uređaju",
@@ -2199,13 +2200,32 @@
     "testSent": "Probno obavještenje stiže za najviše minut",
     "failed": "Uključivanje nije uspjelo. Pokušaj ponovo.",
     "push": {
-      "firstBlockTitle": "Za 10 min: {{subject}}",
-      "firstBlockBody": "{{title}} · {{time}}",
       "breakEndTitle": "Pauza je gotova",
       "breakEndBody": "Vrijeme je za sljedeći interval.",
       "testTitle": "Hoot",
-      "testBody": "Obavještenja rade."
-    }
+      "testBody": "Obavještenja rade.",
+      "reminderTitle": "Za {{minutes}} min: {{subject}}",
+      "reminderTitleHours": "Za {{hours}} h: {{subject}}",
+      "reminderBody": "{{title}} · {{minutes}} min · {{time}}",
+      "lateTitle": "Kasniš 15 min na {{subject}}",
+      "lateBody": "{{title}} · bilo je za {{time}}",
+      "start": "Započni",
+      "skip": "Preskoči",
+      "skippedTitle": "Preskočeno: {{subject}} · {{title}}",
+      "skippedBody": "Gradivo ostaje u planu. Hoot ga smjesti kad se otvori."
+    },
+    "reminders": "Podsjetnik prije bloka",
+    "remindersSub": "Može više izbora. Bez izbora nema podsjetnika.",
+    "offset": {
+      "120": "2 h",
+      "60": "1 h",
+      "30": "30 min",
+      "15": "15 min",
+      "5": "5 min"
+    },
+    "remindersHint": "Ako blok ne započneš, 15 min poslije stiže „Kasniš 15 min“, jednom po bloku. Između {{from}} i {{to}} (tvoj ritam) ništa ne stiže.",
+    "remindersHintNoRhythm": "Ako blok ne započneš, 15 min poslije stiže „Kasniš 15 min“, jednom po bloku.",
+    "offsetsLabel": "Podsjetnik prije bloka"
   },
   "sessionEnd": {
     "saveAndTest": "Spasi i testiraj se",

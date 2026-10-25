@@ -18,7 +18,7 @@ import type { PlanBlockRow } from '@/features/plan/state'
 import { useActiveSession, useSessions } from '@/features/session/api'
 import { useAgenda } from '@/features/plan/agenda'
 import { useActualTimes } from '@/features/plan/useActualTimes'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useSubjects } from '@/features/subjects/api'
 import { classesOn, formatClock } from '@/lib/schedule'
@@ -55,6 +55,15 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
     (b.status === 'done' ? actual.get(b.id)?.startMin : undefined) ?? b.start_min
   const { data: active } = useActiveSession()
   const [picked, setPicked] = useState<PlanBlockRow | null>(null)
+  // "Započni" / tap on a block reminder (Stage 10c): `/?block=<id>` opens its start sheet.
+  const [params, setParams] = useSearchParams()
+  const linkedId = params.get('block')
+  const linked = linkedId ? plan.todayBlocks.find((b) => b.id === linkedId && isOpen(b)) : undefined
+  const shown = picked ?? linked ?? null
+  const close = () => {
+    setPicked(null)
+    if (linkedId) setParams({}, { replace: true })
+  }
   const remove = useDeleteBlock()
   const show = useToast((s) => s.show)
   const [skipping, setSkipping] = useState<PlanBlockRow | null>(null)
@@ -282,24 +291,24 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
         </button>
       </div>
       <BlockStartSheet
-        block={picked}
+        block={shown}
         plan={plan}
         canStart={!active}
-        onClose={() => setPicked(null)}
+        onClose={() => close()}
         onEdit={(b) => {
-          setPicked(null)
+          close()
           setEditing({ open: true, block: b, deleting: false })
         }}
         onSkip={(b) => {
-          setPicked(null)
+          close()
           setSkipping(b)
         }}
         onDrop={(b) => {
-          setPicked(null)
+          close()
           setEditing({ open: true, block: b, deleting: true })
         }}
         onNoTimer={(b) => {
-          setPicked(null)
+          close()
           setNoTimer(b)
         }}
       />

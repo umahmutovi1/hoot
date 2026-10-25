@@ -1,4 +1,4 @@
-import { addDays, type LocalDate } from '@/lib/day'
+import { addDays, wallClock, type LocalDate } from '@/lib/day'
 
 /**
  * Web Push jobs (PRD "Timer, pauza" → kraj pauze, decision Stage 9): the app knows when a
@@ -6,22 +6,28 @@ import { addDays, type LocalDate } from '@/lib/day'
  * minute) sends the due ones. Pure: what the jobs should be, and what to change to get there.
  */
 
-export type JobKind = 'first_block' | 'break_end' | 'test'
+export type JobKind = 'first_block' | 'break_end' | 'test' | 'block_reminder' | 'block_late'
+
+/** Texts for the notification's buttons and the "Preskočeno" that replaces it (Stage 10c). */
+export interface JobActions {
+  start: string
+  skip: string
+  skippedTitle: string
+  skippedBody: string
+}
 
 export interface PushJob {
   kind: JobKind
-  /** First block: its local date. Break end: the session id. */
+  /** First block: its local date. Break end: the session id. Block reminder: block id + offset. */
   ref: string
   send_at: string
   title: string
   body: string
   url: string | null
+  /** Reminder and "Kasniš": the block (notify checks it is still not started before sending). */
+  block_id?: string | null
+  actions?: JobActions | null
 }
-
-/** Days ahead that get a "first block" notification (recomputed with every plan). */
-export const FIRST_BLOCK_DAYS = 7
-/** "Prvi blok dana": 10 min before it. */
-export const FIRST_BLOCK_LEAD_MIN = 10
 
 export interface JobBlock {
   id: string
@@ -30,29 +36,83 @@ export interface JobBlock {
   planned_start: string | null
 }
 
+/** Reminder offsets the user can pick (`profiles.reminder_offsets_min`), longest first. */
+export const REMINDER_OFFSETS = [120, 60, 30, 15, 5] as const
+/** "Kasniš 15 min": this long after the planned start of a block not started or skipped. */
+export const LATE_REMINDER_MIN = 15
+/** Days ahead that get block reminders (recomputed with every plan). */
+export const REMINDER_DAYS = 7
+
+export interface ReminderBlock extends JobBlock {
+  planned_minutes: number
+}
+
 /**
- * One job per day from today on: the first planned block with a time, 10 min before it, only
- * when that moment is still ahead.
+ * Quiet hours (PRD "Podsjetnici"): nothing between going to bed and getting up, from the rhythm
+ * step (`sleep_min` / `wake_min`: [weekday, weekend], wall-clock minutes). Unknown rhythm = never.
  */
-export function firstBlockJobs<B extends JobBlock>(
+export function isQuiet(
+  instant: Date,
+  timeZone: string,
+  sleep: number[] | null,
+  wake: number[] | null,
+): boolean {
+  if (!sleep || !wake) return false
+  const clock = wallClock(instant, timeZone)
+  const weekday = new Date(Date.UTC(clock.year, clock.month - 1, clock.day)).getUTCDay()
+  const i = weekday === 0 || weekday === 6 ? 1 : 0
+  const s = (sleep[i] ?? sleep[0]!) % 1440
+  const w = (wake[i] ?? wake[0]!) % 1440
+  const m = clock.minutes
+  return s > w ? m >= s || m < w : m >= s && m < w
+}
+
+/**
+ * Reminders before every timed planned block from today on (Stage 10c): one job per offset, and
+ * "Kasniš 15 min" once per block, only when that moment is ahead and outside quiet hours. Whether
+ * the block (or the one before it) has started is checked by `notify` when it is due.
+ */
+export function blockJobs<B extends ReminderBlock>(
   blocks: B[],
   today: LocalDate,
   now: Date,
-  text: (block: B) => { title: string; body: string },
+  input: {
+    offsets: number[]
+    quiet: (at: Date) => boolean
+    text: (block: B, offset: number | null) => { title: string; body: string }
+    url: (block: B) => string
+    actions: (block: B) => JobActions
+  },
 ): PushJob[] {
-  const last = addDays(today, FIRST_BLOCK_DAYS - 1)
-  const firstOf = new Map<string, B>()
-  for (const b of blocks) {
-    if (b.status !== 'planned' || b.planned_start === null) continue
-    if (b.on_date < today || b.on_date > last) continue
-    const prev = firstOf.get(b.on_date)
-    if (!prev || b.planned_start < prev.planned_start!) firstOf.set(b.on_date, b)
-  }
+  if (input.offsets.length === 0) return []
+  const last = addDays(today, REMINDER_DAYS - 1)
   const out: PushJob[] = []
-  for (const [date, b] of [...firstOf].sort(([a], [c]) => (a < c ? -1 : 1))) {
-    const at = new Date(Date.parse(b.planned_start!) - FIRST_BLOCK_LEAD_MIN * 60_000)
-    if (at <= now) continue
-    out.push({ kind: 'first_block', ref: date, send_at: at.toISOString(), url: '/', ...text(b) })
+  const timed = blocks
+    .filter(
+      (b) =>
+        b.status === 'planned' &&
+        b.planned_start !== null &&
+        b.on_date >= today &&
+        b.on_date <= last,
+    )
+    .sort((a, b) => (a.planned_start! < b.planned_start! ? -1 : 1))
+  for (const b of timed) {
+    const start = Date.parse(b.planned_start!)
+    const push = (kind: JobKind, ref: string, at: Date, offset: number | null) => {
+      if (at <= now || input.quiet(at)) return
+      out.push({
+        kind,
+        ref,
+        send_at: at.toISOString(),
+        url: input.url(b),
+        block_id: b.id,
+        actions: input.actions(b),
+        ...input.text(b, offset),
+      })
+    }
+    for (const offset of [...new Set(input.offsets)].sort((x, y) => y - x))
+      push('block_reminder', `${b.id}:${offset}`, new Date(start - offset * 60_000), offset)
+    push('block_late', b.id, new Date(start + LATE_REMINDER_MIN * 60_000), null)
   }
   return out
 }
@@ -64,31 +124,36 @@ export interface SavedJob {
   send_at: string
   title: string
   body: string
+  url?: string | null
   sent_at: string | null
 }
 
+/** Kinds the app keeps in step with the plan (the rest are written once: break end, test). */
+export const PLAN_JOB_KINDS: JobKind[] = ['first_block', 'block_reminder', 'block_late']
+
 /**
- * From the saved "first block" jobs to the wanted ones: rows to upsert (new or changed) and ids
- * to delete (a day without a block any more, or notifications switched off). A day already
- * notified is left alone.
+ * From the saved plan jobs to the wanted ones: rows to upsert (new or changed) and ids to delete
+ * (a block gone or moved, or notifications switched off). A job already sent is left alone.
  */
-export function diffJobs(saved: SavedJob[], wanted: PushJob[]) {
-  const mine = saved.filter((j) => j.kind === 'first_block')
-  const sent = new Set(mine.filter((j) => j.sent_at !== null).map((j) => j.ref))
+export function diffJobs(saved: SavedJob[], wanted: PushJob[], kinds: JobKind[] = ['first_block']) {
+  const id = (j: { kind: string; ref: string }) => `${j.kind}|${j.ref}`
+  const mine = saved.filter((j) => (kinds as string[]).includes(j.kind))
+  const sent = new Set(mine.filter((j) => j.sent_at !== null).map(id))
   const open = mine.filter((j) => j.sent_at === null)
-  const byRef = new Map(open.map((j) => [j.ref, j]))
+  const byRef = new Map(open.map((j) => [id(j), j]))
   const upsert = wanted.filter((w) => {
-    if (sent.has(w.ref)) return false
-    const s = byRef.get(w.ref)
+    if (sent.has(id(w))) return false
+    const s = byRef.get(id(w))
     return (
       !s ||
       Date.parse(s.send_at) !== Date.parse(w.send_at) ||
       s.title !== w.title ||
-      s.body !== w.body
+      s.body !== w.body ||
+      (s.url !== undefined && s.url !== w.url)
     )
   })
-  const keep = new Set(wanted.map((w) => w.ref))
-  const remove = open.filter((j) => !keep.has(j.ref)).map((j) => j.id)
+  const keep = new Set(wanted.map(id))
+  const remove = open.filter((j) => !keep.has(id(j))).map((j) => j.id)
   return { upsert, remove }
 }
 

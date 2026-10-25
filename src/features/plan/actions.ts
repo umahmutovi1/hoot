@@ -286,6 +286,23 @@ export function useStartBlock() {
 /** How many days ahead "Preskoči" looks for a study day with room for the skipped block. */
 const CARRY_DAYS = 14
 
+/** A skip asked for from a notification that can no longer apply (the day has passed). */
+export function useClearSkipRequest() {
+  const write = useQueueWrite()
+  return useCallback(
+    (blockId: string) =>
+      write([
+        {
+          kind: 'update',
+          table: 'plan_blocks',
+          match: { id: blockId },
+          patch: { skip_requested_at: null },
+        },
+      ]),
+    [write],
+  )
+}
+
 /**
  * "Preskoči" (decision after 8b): the block is not done now, but its material keeps priority.
  * With `startNext` the next block starts right away and the rest of the day is pulled earlier
@@ -401,6 +418,8 @@ export function useSkipBlock() {
           planned_start: b.planned_start,
           origin: b.origin,
           reason: b.reason,
+          // A skip asked for from a notification is now applied.
+          ...(b.id === block.id ? { skip_requested_at: null } : {}),
         },
       })
       const changed = [skippedRow, ...shifted]
