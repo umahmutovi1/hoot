@@ -18,6 +18,16 @@ describe('unitFraction', () => {
   })
 })
 
+describe('partial reading', () => {
+  it('a partly read unit counts its read share of "Pročitano"', () => {
+    const p = progressOf([{ id: 'a', parentId: null, level: 0, minutes: 90, read: 2 / 9 }])
+    expect(p.fraction).toBeCloseTo((2 / 9) * (1 / 3))
+    expect(levelMinutes([{ id: 'a', parentId: null, level: 0, minutes: 90, read: 2 / 9 }])).toEqual(
+      [70, 20, 0, 0],
+    )
+  })
+})
+
 describe('progressOf', () => {
   it('weights by minutes, not by count', () => {
     // a short chapter done, a long one not started

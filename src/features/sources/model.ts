@@ -123,7 +123,15 @@ export function speedOf(source: Source, all: Source[]): number {
 }
 
 export function asProgress(units: (Unit & { minutes: number })[]): ProgressUnit[] {
-  return units.map((u) => ({ id: u.id, parentId: u.parent_id, level: u.level, minutes: u.minutes }))
+  return units.map((u) => ({
+    id: u.id,
+    parentId: u.parent_id,
+    level: u.level,
+    minutes: u.minutes,
+    ...(u.level === 0 && u.read_amount && u.amount > 0 && Number(u.read_amount) < u.amount
+      ? { read: Number(u.read_amount) / u.amount }
+      : {}),
+  }))
 }
 
 /** Progress of a unit; a parent's comes from its sub-units. */

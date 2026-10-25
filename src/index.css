@@ -33,6 +33,9 @@
   --hoot-mist-2: 229 182 206;
   --hoot-mist-3: 168 196 234;
   --hoot-mist-4: 160 148 226;
+  --hoot-shade-rgb: 58 51 96;
+  --hoot-scrim-rgb: 40 34 80;
+  --hoot-sheet-rgb: 250 249 253;
 }
 [data-theme='graphite'] {
   --hoot-brand: #4a4a55;
@@ -56,6 +59,9 @@
   --hoot-mist-2: 217 203 192;
   --hoot-mist-3: 191 194 200;
   --hoot-mist-4: 179 174 182;
+  --hoot-shade-rgb: 52 52 58;
+  --hoot-scrim-rgb: 36 36 42;
+  --hoot-sheet-rgb: 250 250 249;
 }
 [data-theme='sand'] {
   --hoot-brand: #76593a;
@@ -79,6 +85,9 @@
   --hoot-mist-2: 237 201 181;
   --hoot-mist-3: 220 211 188;
   --hoot-mist-4: 217 190 150;
+  --hoot-shade-rgb: 74 60 44;
+  --hoot-scrim-rgb: 58 44 30;
+  --hoot-sheet-rgb: 252 250 246;
 }
 [data-theme='sage'] {
   --hoot-brand: #41664f;
@@ -102,6 +111,9 @@
   --hoot-mist-2: 216 210 186;
   --hoot-mist-3: 174 202 202;
   --hoot-mist-4: 165 196 172;
+  --hoot-shade-rgb: 44 62 52;
+  --hoot-scrim-rgb: 30 46 38;
+  --hoot-sheet-rgb: 249 251 249;
 }
 [data-theme='ocean'] {
   --hoot-brand: #3a5d86;
@@ -125,6 +137,9 @@
   --hoot-mist-2: 190 214 228;
   --hoot-mist-3: 168 204 218;
   --hoot-mist-4: 152 175 220;
+  --hoot-shade-rgb: 44 58 82;
+  --hoot-scrim-rgb: 28 40 62;
+  --hoot-sheet-rgb: 248 250 253;
 }
 
 @theme {
@@ -137,14 +152,14 @@
      buttons on glass; the screen background is the gradient on body. */
   --color-canvas: rgb(var(--hoot-accent-rgb) / 0.1);
   --color-mist: var(--hoot-canvas-bottom);
-  --color-scrim: rgba(40, 34, 80, 0.2);
+  --color-scrim: rgb(var(--hoot-scrim-rgb) / 0.2);
   --color-surface: rgba(255, 255, 255, 0.36);
   --color-ink: #14121c;
   --color-ink-secondary: #3f3b4e;
   --color-ink-muted: #55516a;
   --color-ink-subtle: #6e6a80;
   --color-ink-placeholder: #6e6a80;
-  --color-line: rgba(58, 51, 96, 0.16);
+  --color-line: rgb(var(--hoot-shade-rgb) / 0.16);
   --color-track: rgba(255, 255, 255, 0.6);
   --color-hairline: rgb(var(--hoot-accent-rgb) / 0.12);
   --color-canvas-soft: rgba(255, 255, 255, 0.32);
@@ -236,8 +251,8 @@
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.55),
     inset 0 1px 1px rgba(255, 255, 255, 0.85),
-    inset 0 -1px 1px rgba(58, 51, 96, 0.05),
-    0 8px 28px rgba(58, 51, 96, 0.07);
+    inset 0 -1px 1px rgb(var(--hoot-shade-rgb) / 0.05),
+    0 8px 28px rgb(var(--hoot-shade-rgb) / 0.07);
 }
 /* Glass without the drop shadow, for chips inside horizontal scrollers: a scroller clips
    overflow on both axes, so a drop shadow would end in a hard line under the row. */
@@ -246,7 +261,7 @@
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.6),
     inset 0 1px 1px rgba(255, 255, 255, 0.85),
-    inset 0 -1px 1px rgba(58, 51, 96, 0.05);
+    inset 0 -1px 1px rgb(var(--hoot-shade-rgb) / 0.05);
 }
 @utility glass-strong {
   background-color: rgba(255, 255, 255, 0.52);
@@ -255,16 +270,16 @@
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.55),
     inset 0 1px 1px rgba(255, 255, 255, 0.85),
-    inset 0 -1px 1px rgba(58, 51, 96, 0.05),
-    0 12px 36px rgba(58, 51, 96, 0.12);
+    inset 0 -1px 1px rgb(var(--hoot-shade-rgb) / 0.05),
+    0 12px 36px rgb(var(--hoot-shade-rgb) / 0.12);
 }
 @utility glass-sheet {
-  background-color: rgba(250, 249, 253, 0.8);
+  background-color: rgb(var(--hoot-sheet-rgb) / 0.8);
   backdrop-filter: blur(36px) saturate(180%);
   -webkit-backdrop-filter: blur(36px) saturate(180%);
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.9),
-    0 -10px 40px rgba(40, 34, 80, 0.12);
+    0 -10px 40px rgb(var(--hoot-scrim-rgb) / 0.12);
 }
 @utility glass-bar {
   /* Sticky headers: content scrolls under them. The frosted layer is a pseudo-element whose
@@ -402,7 +417,7 @@ html [data-vaul-overlay] {
   --foreground: #14121c;
   --card: rgba(255, 255, 255, 0.36);
   --card-foreground: #14121c;
-  --popover: rgba(250, 249, 253, 0.95);
+  --popover: rgb(var(--hoot-sheet-rgb) / 0.95);
   --popover-foreground: #14121c;
   --primary: var(--hoot-brand);
   --primary-foreground: #ffffff;
@@ -413,8 +428,8 @@ html [data-vaul-overlay] {
   --accent: rgb(var(--hoot-accent-rgb) / 0.12);
   --accent-foreground: var(--hoot-brand);
   --destructive: #b0413e;
-  --border: rgba(58, 51, 96, 0.16);
-  --input: rgba(58, 51, 96, 0.16);
+  --border: rgb(var(--hoot-shade-rgb) / 0.16);
+  --input: rgb(var(--hoot-shade-rgb) / 0.16);
   --ring: var(--hoot-accent);
   --radius: 1rem;
 }

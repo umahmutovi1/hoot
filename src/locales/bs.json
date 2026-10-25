@@ -1006,7 +1006,8 @@
         "0": "Ne znam",
         "1": "Djelimično",
         "3": "Znam"
-      }
+      },
+      "partial": "Djelimično · {{done}}/{{total}}"
     },
     "sheet": {
       "newTitle": "Nova jedinica",
@@ -2247,7 +2248,10 @@
     "subjectArchived": "Predmet je arhiviran",
     "sourceArchived": "Izvor je arhiviran",
     "sourceRestored": "Izvor je vraćen",
-    "archivedSources": "Arhivirani izvori"
+    "archivedSources": "Arhivirani izvori",
+    "examArchived": "Ispit je arhiviran",
+    "examRestored": "Ispit je vraćen",
+    "archivedExams": "Arhivirani ispiti"
   },
   "search": {
     "placeholder": "Pretraži Hoot",

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { addDays } from '@/lib/day'
 import { BUILT_IN_PRESETS, breaksWithin } from '@/lib/session/timer'
-import { aiCapacity, coverageOf, inputHash, plan, type PlanState } from '.'
+import { aiCapacity, coverageOf, inputHash, plan, remainingWork, type PlanState } from '.'
 import { dayTotal, days, exam, FROM, minutesBy, state, subject, units } from './fixtures'
 
 const day = (n: number) => addDays(FROM, n)
@@ -22,6 +22,23 @@ function oneSubject(over: Partial<PlanState> = {}, count = 6, minutes = 60, exam
     ...over,
   })
 }
+
+describe('plan: partial reading', () => {
+  it('a partly read unit only needs the rest, and its pages start after the read ones', () => {
+    const s = oneSubject({}, 1, 60)
+    const page = { ...s.units[0]!, pageStart: 1, pageEnd: 9 }
+    const full = remainingWork({ ...s, units: [page] })[0]!.minutes
+    const half = { ...s, units: [{ ...page, readShare: 2 / 9 }] }
+    expect(remainingWork(half)[0]!.minutes).toBe(Math.round(full * (7 / 9)))
+    const block = plan(half).blocks.find((b) => b.units.length > 0)!
+    expect(block.units[0]!.pageFrom).toBe(3)
+    // A read unit (level 1) ignores the share.
+    const read = { ...s, units: [{ ...page, level: 1, readShare: 0.5 }] }
+    expect(remainingWork(read)[0]!.minutes).toBe(
+      remainingWork({ ...s, units: [{ ...page, level: 1 }] })[0]!.minutes,
+    )
+  })
+})
 
 describe('plan: capacity', () => {
   it('plans nothing without free time and reports the whole work as deficit', () => {

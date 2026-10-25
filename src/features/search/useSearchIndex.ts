@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useDocuments } from '@/features/owl/api'
 import { useAllSources } from '@/features/plan/api'
 import { useSubjects } from '@/features/subjects/api'
+import { shownExams } from '@/features/subjects/model'
 import { STATIC_ITEMS } from './items'
 import type { SearchEntry } from './search'
 
@@ -39,7 +40,7 @@ export function useSearchIndex(): SearchEntry[] {
         to: `/subjects/${s.id}`,
         color: s.color,
       })
-      for (const a of s.assessments)
+      for (const a of shownExams(s.assessments))
         entries.push({
           id: `exam:${a.id}`,
           group: 'exams',

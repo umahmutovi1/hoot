@@ -192,6 +192,10 @@ p_u = \frac{level_u}{3} \qquad P_{izvor} = \frac{\sum_u p_u \, m_u}{\sum_u m_u} 
 
 **Rokovi u planu.** Rok (seminarski, zadaća) može imati procjenu sati. Tada ga scheduler tretira kao mali ispit sa jednim zadatkom tog trajanja i pravi blokove tipa `deadline`. Rok bez procjene se samo prikazuje.
 
+
+**Djelimično pročitano (odluka poslije pregleda 10b).** Kraj sesije pamti dokle je jedinica pročitana (`units.read_amount`, u mjeri izvora), i preko više sesija: intro od 9 stranica pročitan do str. 2 je „Djelimično · 2/9“. Sljedeća sesija u formi kraja nastavlja od str. 3, plan računa samo ostatak jedinice (i stranice planira od str. 3), a progres broji pročitani dio kao „Pročitano“ srazmjerno. Kad se dođe do kraja (zbirno), jedinica postaje „Pročitano“ i nudi se recall gate; tada se `read_amount` briše. Ručno vraćanje na „Nije počelo“ također ga briše.
+
+**Arhiviran ispit i popravni (odluka poslije pregleda 10b).** Swipe ulijevo na ispitu (Predmet) ga arhivira (`assessments.archived_at`): nestaje sa Danas, iz kalendara, pretrage, plana i ocjena; „Arhivirani ispiti“ na predmetu ga vraćaju. Popravni se ne prikazuje nigdje dok nije utvrđeno da redovni ispit nije položen (rezultat koji ne prolazi ili poništen); do tad živi u sheetu svog ispita.
 ## Procjena težine i vremena
 
 Procjena minuta po jedinici kreće od heuristike i AI težine, a zatim je tvoje ocjene i timer postepeno preuzimaju. Umjesto fiksnih faza koristi se “shrinkage”: što više podataka, to više vjeruješ podacima.

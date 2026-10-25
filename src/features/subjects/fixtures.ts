@@ -22,6 +22,7 @@ export const assessmentRow = (patch: Partial<Assessment> = {}): Assessment => ({
   result_points: null,
   result_max: null,
   result_annulled: false,
+  archived_at: null,
   points_max: null,
   points_unit: 'points',
   pass_min_pct: null,

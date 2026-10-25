@@ -161,6 +161,7 @@ export type Database = {
       }
       assessments: {
         Row: {
+          archived_at: string | null
           at: string
           at_latest: string | null
           contingent: boolean
@@ -187,6 +188,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
           at: string
           at_latest?: string | null
           contingent?: boolean
@@ -213,6 +215,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          archived_at?: string | null
           at?: string
           at_latest?: string | null
           contingent?: boolean
@@ -1856,6 +1859,7 @@ export type Database = {
           page_start: number | null
           parent_id: string | null
           position: number
+          read_amount: number | null
           review_streak: number
           source_id: string
           title: string
@@ -1889,6 +1893,7 @@ export type Database = {
           page_start?: number | null
           parent_id?: string | null
           position: number
+          read_amount?: number | null
           review_streak?: number
           source_id: string
           title: string
@@ -1922,6 +1927,7 @@ export type Database = {
           page_start?: number | null
           parent_id?: string | null
           position?: number
+          read_amount?: number | null
           review_streak?: number
           source_id?: string
           title?: string

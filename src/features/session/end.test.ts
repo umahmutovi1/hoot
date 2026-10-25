@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Op } from '@/lib/sync'
 import {
   defaultLevel,
+  readAfter,
   endLevels,
   planEnd,
   reallocate,
@@ -110,8 +111,10 @@ describe('planEnd', () => {
       expect.objectContaining({ unit_id: 'b', amount_done: 5, level_before: 0, level_after: 0 }),
     ])
     const updates = opOf(ops, 'units', 'update')
-    expect(updates).toHaveLength(1)
+    expect(updates).toHaveLength(2)
     expect(updates[0]).toMatchObject({ match: { id: 'a' }, patch: { level: 1 } })
+    // Half of b is read: kept, so the next session and the plan continue there.
+    expect(updates[1]).toMatchObject({ match: { id: 'b' }, patch: { read_amount: 5 } })
   })
 
   it('leaves speed calibration to the recompute from all sessions', () => {
@@ -143,7 +146,10 @@ describe('planEnd', () => {
         expect.objectContaining({ unit_id: 'a', level_before: 0, level_after: 1 }),
       ]),
     })
-    expect(opOf(ops, 'units', 'update')).toEqual([])
+    // Only b's partial reading is written; a keeps its status.
+    expect(opOf(ops, 'units', 'update')).toEqual([
+      { kind: 'update', table: 'units', match: { id: 'b' }, patch: { read_amount: 5 } },
+    ])
   })
 
   it('uses the rating for difficulty and stores it on the unit', () => {
@@ -242,11 +248,25 @@ describe('endLevels', () => {
 
 describe('defaultLevel', () => {
   it('only an unstarted chapter read to its end becomes read', () => {
-    const done = { unitId: 'x', amountDone: 3, complete: true }
-    expect(defaultLevel({ kind: 'chapter', level: 0 }, done)).toBe(1)
-    expect(defaultLevel({ kind: 'chapter', level: 2 }, done)).toBe(2)
-    expect(defaultLevel({ kind: 'chapter', level: 0 }, { ...done, complete: false })).toBe(0)
-    expect(defaultLevel({ kind: 'question', level: 0 }, done)).toBe(0)
+    const done = { unitId: 'x', amountDone: 3, complete: true, end: 9 }
+    const chapter = { kind: 'chapter' as const, amount: 9 }
+    expect(defaultLevel({ ...chapter, level: 0 }, done)).toBe(1)
+    expect(defaultLevel({ ...chapter, level: 2 }, done)).toBe(2)
+    expect(defaultLevel({ ...chapter, level: 0 }, { ...done, complete: false, end: 3 })).toBe(0)
+    expect(defaultLevel({ kind: 'question', level: 0, amount: 1 }, done)).toBe(0)
+  })
+
+  it('reading over several sessions adds up to "Pročitano"', () => {
+    // Pages 1–2 earlier, now 3–9 of a 9-page unit.
+    const now = { unitId: 'x', amountDone: 7, complete: true, end: 9 }
+    expect(readAfter({ amount: 9, readAmount: 2 }, now)).toBe(9)
+    expect(defaultLevel({ kind: 'chapter', level: 0, amount: 9, readAmount: 2 }, now)).toBe(1)
+    // Pages 1–2 only: partial, still "Nije".
+    const part = { unitId: 'x', amountDone: 2, complete: false, end: 2 }
+    expect(readAfter({ amount: 9, readAmount: 0 }, part)).toBe(2)
+    expect(defaultLevel({ kind: 'chapter', level: 0, amount: 9, readAmount: 0 }, part)).toBe(0)
+    // Reading earlier pages again never lowers what was read.
+    expect(readAfter({ amount: 9, readAmount: 6 }, part)).toBe(6)
   })
 })
 

@@ -289,6 +289,7 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     ...NO_MEMORY,
     next_review_on: null,
     archived_at: null,
+    read_amount: null,
   } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title'>
 }
 

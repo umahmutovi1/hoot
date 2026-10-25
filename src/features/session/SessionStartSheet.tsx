@@ -269,7 +269,7 @@ function StartForm() {
                   title={unitTitle(u)}
                   meta={[
                     pagesLabel(t, source.measure, u),
-                    statusLabel(t, u.kind, u.level),
+                    statusLabel(t, u.kind, u.level, u),
                     source.measured ? formatDuration(t, u.minutes) : null,
                   ]
                     .filter(Boolean)

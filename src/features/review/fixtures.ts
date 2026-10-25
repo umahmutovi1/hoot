@@ -12,6 +12,7 @@ export const unit = (id: string, extra: Partial<Unit> = {}): Unit => ({
   label: id,
   title: id,
   page_start: null,
+  read_amount: null,
   page_end: null,
   amount: 1,
   ai_difficulty: null,

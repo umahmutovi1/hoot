@@ -324,6 +324,7 @@ export function buildPlanState(
         memory: memoryRef(memoryOf(u, boundary)),
         coveredOn: coveredOn.get(u.id) ?? null,
         tracked,
+        ...readShareOf(u),
       })
     }
   }
@@ -550,4 +551,11 @@ export function gainedToday(previous: string, current: string, nowMin: number): 
   const free = (slots: [number, number][]) =>
     slots.reduce((sum, [start, end]) => sum + Math.max(0, end - Math.max(start, nowMin)), 0)
   return Math.max(0, free(b.slots) - free(a.slots))
+}
+
+/** Partial reading (Stage 10b) as a rounded share; nothing when unread, so the hash stays put. */
+function readShareOf(u: { level: number; amount: number; read_amount: number | null }) {
+  const read = Number(u.read_amount ?? 0)
+  if (u.level !== 0 || read <= 0 || u.amount <= 0 || read >= u.amount) return {}
+  return { readShare: Math.round(Math.min(1, read / u.amount) * 1000) / 1000 }
 }
