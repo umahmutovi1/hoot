@@ -855,7 +855,9 @@
       "titlePlaceholder": "e.g. Oppenheim — Signals & Systems",
       "mode": {
         "photo": "Photograph contents",
-        "text": "Type"
+        "text": "Type",
+        "pdf": "PDF from this device",
+        "drive": "Google Drive"
       },
       "outline": "Contents",
       "placeholder": {
@@ -872,7 +874,14 @@
       },
       "review": "Review units",
       "delete": "Delete source",
-      "confirmDelete": "Sure? Units and notes are deleted too. Tap again"
+      "confirmDelete": "Sure? Units and notes are deleted too. Tap again",
+      "from": "Where is the content from?",
+      "modeSub": {
+        "pdf": "Chapters and pages from the file · the file stays with you",
+        "drive": "One or more PDFs · the source keeps the Drive link",
+        "photo": "Contents pages, up to 4",
+        "text": "One chapter per line"
+      }
     },
     "section": "Sources",
     "add": "+ Source",
@@ -967,6 +976,34 @@
       "rate": "Estimate difficulty with AI",
       "rating": "Estimating…",
       "removeTopic": "Remove topic {{name}}"
+    },
+    "pdf": {
+      "pick": "Choose a PDF",
+      "pickDrive": "Choose on Google Drive",
+      "reading": "Reading the PDF…",
+      "failed": "The PDF could not be read. Try another file or type the contents.",
+      "onDevice": "{{pages}} pages · read on this device",
+      "fromDrive": "{{pages}} pages · Google Drive",
+      "change": "Change",
+      "severalName_one": "{{count}} PDF",
+      "severalName_other": "{{count}} PDFs",
+      "severalSub": "Google Drive · one source",
+      "perFile": "Each file is one unit (pages or slides from the file), in name order.",
+      "outlineFound": "The contents come from the PDF's bookmarks ({{count}} items). No AI call.",
+      "pagesLabel": "Book pages",
+      "asInPdf": "As in the PDF",
+      "shift": "Shift −{{n}}",
+      "shiftHint": "The PDF has {{n}} pages before “1”. The shift gives the book's page numbers.",
+      "noOutline": "The PDF has no bookmarks. The assistant can read only the contents pages, not the whole file.",
+      "tocPages": "Contents pages",
+      "tocFrom": "From page",
+      "tocTo": "To page",
+      "tocHint": "Found by the word “Contents”; fix it if needed. Only the text of these pages is sent (at most 8).",
+      "typeInstead": "Type it instead",
+      "privacy": "The file is not uploaded; the source keeps its name and page count.",
+      "originDrive": "PDF · Google Drive",
+      "originDevice": "PDF from your device · the file stays with you",
+      "openDrive": "Open in Drive"
     }
   },
   "time": {

@@ -298,6 +298,8 @@ Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove
 4. Credentials → Create credentials → **API key** → Restrict key: HTTP referrers (isti originsi) i API restrictions: samo Google Picker API.
 5. Cloudflare Pages → `hoot` → Settings → Environment variables (Production i Preview): `VITE_GOOGLE_CLIENT_ID`, `VITE_GOOGLE_PICKER_API_KEY`, `VITE_GOOGLE_APP_ID` (broj projekta). Javni su po dizajnu (kao `VITE_SUPABASE_PUBLISHABLE_KEY`), ograničeni originom.
 6. Prije otvaranja za više korisnika: consent screen → Publish app (za `drive.file` bez verifikacije osim brendiranja).
+7. Bez sve tri varijable app ne nudi opciju „Google Drive“ (ostaju PDF s uređaja, slika i kucanje). CSP u `public/_headers` već dozvoljava `apis.google.com`, `accounts.google.com/gsi`, `docs.google.com` (Picker iframe) i `www.googleapis.com` (preuzimanje); poslije dodavanja varijabli treba novi deploy (Retry deployment ili novi commit), jer Vite ih ugrađuje pri buildu.
+8. Provjera: Predmet → + Izvor → Google Drive → izaberi PDF → „Pregledaj jedinice“; na izvoru je „Otvori u Drive-u“.
 
 **Web pretraga za „Fakultet s interneta“ (Etapa 10c).** Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
 
