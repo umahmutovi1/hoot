@@ -72,10 +72,10 @@
       "start": "Počni",
       "running": "U toku",
       "paused": "Pauza",
-      "resume": "Nastavi",
       "labelAt": "Sljedeće · {{time}}",
       "allDone": "Današnji plan je odrađen",
-      "allDoneSub": "Ako ipak imaš vremena, slobodna sesija ulazi u kalibraciju."
+      "allDoneSub": "Ako ipak imaš vremena, slobodna sesija ulazi u kalibraciju.",
+      "open": "Otvori sesiju u toku"
     },
     "exams": "Ispiti",
     "examsAll": "Sve",
@@ -131,7 +131,9 @@
     },
     "schedule": {
       "title": "Raspored",
-      "classUntil": "do {{time}}"
+      "classUntil": "do {{time}}",
+      "busy": "Zauzeto",
+      "busyUntil": "do {{time}} · {{source}}"
     },
     "examToday": "danas",
     "examTomorrow": "sutra",
@@ -689,20 +691,15 @@
       "accidentalTitle": "Sesija je tek počela",
       "accidental": "Do sad je {{time}} učenja. Ako je timer pokrenut slučajno, odbaci sesiju i ništa se ne računa.",
       "keepGoing": "Nastavi učiti",
-      "finish": "Završi sad",
-      "discard": "Odbaci sesiju (ništa se ne računa)"
+      "finish": "Završi sad"
     },
     "leave": {
-      "title": "Završi sesiju?",
-      "body": "Do sad je {{time}} učenja. Timer ne staje dok ne izabereš.",
-      "bodyPlanned": "Do sad je {{time}} od planiranih {{planned}}. Timer ne staje dok ne izabereš.",
-      "exit": "Izađi, timer radi dalje",
-      "exitSub": "Sesija ostaje na Danas, vratiš se jednim tapom",
-      "finish": "Završi ranije",
-      "finishSub": "Spasi {{time}} i idi na kraj sesije",
+      "title": "Završiti sesiju?",
+      "body": "Do sad je {{time}} učenja.",
       "discard": "Odbaci sesiju",
       "discardSub": "Sesija se briše kao da nije ni počela; ništa se ne računa",
-      "discarded": "Sesija je odbačena"
+      "discarded": "Sesija je odbačena",
+      "finishNow": "Završi sesiju"
     }
   },
   "settings": {
@@ -1947,7 +1944,6 @@
     "allUnits": "Sve ({{count}})",
     "day": "Dan",
     "today": "Danas",
-    "tomorrow": "Sutra",
     "duration": "Trajanje",
     "durationMin": "najmanje 15 min",
     "shorter": "Kraće",

@@ -276,9 +276,10 @@
     inset: 0 0 -14px;
     z-index: -1;
     pointer-events: none;
-    background-color: rgb(var(--hoot-canvas-rgb) / 0.72);
-    backdrop-filter: blur(24px) saturate(170%);
-    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    /* iOS-like: content behind is strongly blurred and keeps its colour; only a faint tint. */
+    background-color: rgb(var(--hoot-canvas-rgb) / 0.22);
+    backdrop-filter: blur(40px) saturate(190%);
+    -webkit-backdrop-filter: blur(40px) saturate(190%);
     mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent);
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent);
   }

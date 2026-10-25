@@ -72,10 +72,10 @@
       "start": "Start",
       "running": "Running",
       "paused": "Paused",
-      "resume": "Resume",
       "labelAt": "Next · {{time}}",
       "allDone": "Today's plan is done",
-      "allDoneSub": "If you still have time, a free session counts towards calibration."
+      "allDoneSub": "If you still have time, a free session counts towards calibration.",
+      "open": "Open the running session"
     },
     "exams": "Exams",
     "examsAll": "All",
@@ -128,7 +128,9 @@
     },
     "schedule": {
       "title": "Schedule",
-      "classUntil": "until {{time}}"
+      "classUntil": "until {{time}}",
+      "busy": "Busy",
+      "busyUntil": "until {{time}} · {{source}}"
     },
     "examToday": "today",
     "examTomorrow": "tomorrow",
@@ -668,20 +670,15 @@
       "accidentalTitle": "The session has just started",
       "accidental": "{{time}} studied so far. If the timer was started by accident, discard the session and nothing counts.",
       "keepGoing": "Keep studying",
-      "finish": "End now",
-      "discard": "Discard the session (nothing counts)"
+      "finish": "End now"
     },
     "leave": {
       "title": "End the session?",
-      "body": "{{time}} studied so far. The timer keeps going until you choose.",
-      "bodyPlanned": "{{time}} of the planned {{planned}} so far. The timer keeps going until you choose.",
-      "exit": "Leave, timer keeps running",
-      "exitSub": "The session stays on Today, one tap to come back",
-      "finish": "Finish early",
-      "finishSub": "Save {{time}} and go to the session summary",
+      "body": "{{time}} studied so far.",
       "discard": "Discard session",
       "discardSub": "The session is deleted as if it never started; nothing counts",
-      "discarded": "Session discarded"
+      "discarded": "Session discarded",
+      "finishNow": "End session"
     }
   },
   "settings": {
@@ -1896,7 +1893,6 @@
     "allUnits": "All ({{count}})",
     "day": "Day",
     "today": "Today",
-    "tomorrow": "Tomorrow",
     "duration": "Duration",
     "durationMin": "at least 15 min",
     "shorter": "Shorter",
