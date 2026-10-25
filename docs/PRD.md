@@ -242,6 +242,8 @@ f = \frac{j}{j+2} \cdot \overline{\left(\frac{baza_{izmjereno}}{baza_{tip}}\righ
 
 `baza_{tip}'` zamjenjuje `baza_{tip}` u formuli iznad (i u priorima para izvor × način). f se računa iz istih podataka kao kalibracija (ne snima se zasebno) i ulazi u `input_hash` preko kalibrisanih brzina. Jezik izvora (`sources.language`, `bs` / `en` / ostalo) je opcionalni dodatni ključ grupisanja kad ima dovoljno izvora po jeziku (Kasnije).
 
+**Model (odluka, oktobar 2026, Etapa 11a).** Formule 3–5 su posebni slučajevi hijerarhijskog log-normalnog modela, `log(min po jedinici) = μ[tip, mjera] + b_korisnik + b_izvor + β_način + β_d·(d − 3) + ε`, gdje su konstante 5, 3 i 2 omjeri varijansi. Etapa 11a ih fituje u Pythonu (`ml/`, prior populacije, kasnije iz svih korisnika) i isporučuje kao `src/lib/estimates/priors.json` (verzija u `input_hash`); update po korisniku i izvoru ostaje u TS-u, u zatvorenom obliku. Model daje raspon (P50/P80): plan koristi P50, a za prioritet 4–5 P80, pa rezerva sama opada kako mjerenja rastu. Obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 5.1.
+
 **Podjela uloga.** Timer određuje koliko vremena treba (satnica). Ocjena određuje koliko je bilo teško shvatiti (prioritet ponavljanja i korekcija težine). Ne spajaju se u jedan broj.
 
 **Način učenja.** Svaka sesija ima `mode` (čitanje, zadaci, ponavljanje, pitanja). Kalibracija se vodi po paru izvor × način: blok čitanja koristi izmjerenu brzinu čitanja, a blok ponavljanja onu iz ponavljanja. Dok par nema bar 3 mjerenja, koristi se vrijednost izvora za sve načine.
@@ -560,6 +562,8 @@ App uči u kojim terminima ti učenje stvarno ide i koristi to u satnici i u pri
 
 **Ocjena termina** = ponderisan zbir standardizovanih signala, svaki ublažen prema prioru brojem mjerenja (`k/(k+6)`, isti obrazac kao kalibracija). Prior dolazi iz onboardinga (“kad ti je najlakše učiti”). Za odrađenost se pri slaganju satnice uzorkuje iz Beta raspodjele (Thompson sampling sa seedom iz `input_hash`), da app povremeno isproba i termine koje ne bi izabrala, umjesto da zauvijek ostane u prvim izborima.
 
+**Odrađenost kao model (odluka, oktobar 2026, Etapa 11a).** Beta po terminu postaje poseban slučaj Bayesovske logističke regresije `P(blok odrađen | dio dana, vikend, vrsta bloka, zahtjevnost, opterećenje dana, dani do ispita, prethodni blok kasnio)`. Prior koeficijenata dolazi iz `ml/` (`src/lib/slots/priors.json`), lični update je u TS-u. Isti model daje očekivani rad po terminu (`Σ P(odrađen) · minute`) umjesto jednog ρ za sve termine. Thompson istražuje samo među terminima blizu najboljeg i najviše jednim blokom sedmično. Obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 5.2.
+
 **Upotreba.**
 
 - `placeTimes()`: teško gradivo i prvo učenje u bolje termine, ponavljanja i lakši sadržaj u slabije (vidi Lista vs satnica).
@@ -579,6 +583,8 @@ Prognoza je raspon i vjerovatnoća, ne jedan broj. Čista funkcija `forecast()` 
 1. Za svaki preostali dan do ispita uzorkuje se odrađeni rad iz vlastite historije (bootstrap dnevnih odrađenih minuta zadnjih 28 dana, po radnom danu / vikendu; dok nema 7 dana historije, kapacitet × ρ uz ±30% šuma).
 2. Rad se troši redom iz plana (isti redoslijed kao `plan()`).
 3. Rezultat po ispitu: raspon pokrivenosti (10.–90. percentil) i P(obavezan rad pokriven do ispita).
+
+**Odluka (oktobar 2026, Etapa 11a):** kad postoje modeli trajanja i odrađenosti bloka, korak 1 uzorkuje iz njih po bloku (trajanje iz P50/P80 raspodjele, odrađen ili ne iz `P(odrađen)`) umjesto bootstrapa dnevnih minuta. Bootstrap ostaje rezerva dok modela nema. Kalibracija se mjeri Brier skorom nakon ispita.
 
 Prikaz: “Vjerovatno 75–90% · 70% šanse da stigneš obavezno”. Procjena ocjene (vidi Projekcija ocjene) koristi istu simulaciju × R na dan ispita i prikazuje se kao raspon ocjena; `readiness_before` i rezultati pokazuju da li se korisnik sistematski precjenjuje (“obično se procijeniš za 1 ocjenu više”).
 
