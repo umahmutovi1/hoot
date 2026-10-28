@@ -2,8 +2,9 @@ import { useEffect, useRef, useState, type ChangeEvent, type ComponentType } fro
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
-import { CameraIcon, DocIcon, ImageIcon, TextIcon } from '@/components/icons'
+import { CameraIcon, DocIcon, ImageIcon, LinkIcon, TextIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { documentFromLink } from '@/features/academic/search'
 import { cn } from '@/lib/utils'
 import {
   IMPORT_KINDS,
@@ -11,6 +12,7 @@ import {
   MAX_NOTE_CHARS,
   type ImportKind,
 } from '@shared/schemas.ts'
+import { AiCallError } from './api'
 import type { DocumentInput } from './actions'
 import { useOwlStore } from './store'
 import { useOwl } from './useOwl'
@@ -29,7 +31,7 @@ const ACCEPT: Record<Source, string> = {
  */
 export function GiveDocumentSheet() {
   const { t } = useTranslation()
-  const { open, kind, nonce, shared } = useOwlStore((s) => s.sheet)
+  const { open, kind, nonce, shared, link } = useOwlStore((s) => s.sheet)
   const closeSheet = useOwlStore((s) => s.closeSheet)
   return (
     <BottomSheet
@@ -39,18 +41,28 @@ export function GiveDocumentSheet() {
       subtitle={t('owl.sheet.subtitle')}
     >
       {/* Keyed per opening, so a suggestion's kind and an empty text start fresh. */}
-      <SheetBody key={nonce} initialKind={kind} shared={shared ?? null} />
+      <SheetBody key={nonce} initialKind={kind} shared={shared ?? null} startOnLink={!!link} />
     </BottomSheet>
   )
+}
+
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
 }
 
 function SheetBody({
   initialKind,
   shared,
+  startOnLink,
 }: {
   initialKind: ImportKind
   /** Shared from another app: start on the confirm step with it. */
   shared: DocumentInput | null
+  startOnLink: boolean
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -59,8 +71,15 @@ function SheetBody({
   const newConversation = useOwlStore((s) => s.newConversation)
   const owl = useOwl()
   const [kind, setKind] = useState<ImportKind>(initialKind)
-  const [step, setStep] = useState<'choose' | 'paste' | 'confirm'>(shared ? 'confirm' : 'choose')
+  const [step, setStep] = useState<'choose' | 'paste' | 'link' | 'confirm'>(
+    shared ? 'confirm' : startOnLink ? 'link' : 'choose',
+  )
   const [text, setText] = useState('')
+  const [url, setUrl] = useState('')
+  // A link the server downloaded: the document keeps it as its origin ("Sa interneta").
+  const [fromLink, setFromLink] = useState<{ url: string; title: string } | null>(null)
+  const [fetching, setFetching] = useState(false)
+  const [linkError, setLinkError] = useState<string | null>(null)
   const [picked, setPicked] = useState<DocumentInput | null>(shared)
   const [note, setNote] = useState('')
   // Thumbnail of a picked image; made when the file is picked, revoked when it goes away.
@@ -86,7 +105,49 @@ function SheetBody({
       newConversation()
       navigate('/chat')
     }
-    void owl.giveDocument(picked, kind, note.trim() || null)
+    void owl.giveDocument(
+      picked,
+      kind,
+      note.trim() || null,
+      fromLink ? { url: fromLink.url, academicYear: null } : null,
+    )
+  }
+
+  // "https://" is added when the link is pasted without it ("etf.unsa.ba/…").
+  const linkUrl = (() => {
+    const raw = url.trim()
+    if (!raw) return null
+    try {
+      const u = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`)
+      return u.hostname.includes('.') ? u.toString() : null
+    } catch {
+      return null
+    }
+  })()
+
+  const fetchLink = async () => {
+    if (!linkUrl || fetching) return
+    setFetching(true)
+    setLinkError(null)
+    try {
+      const got = await documentFromLink(linkUrl)
+      setPreviewUrl(
+        got.input.type === 'file' && got.input.file.type.startsWith('image/')
+          ? URL.createObjectURL(got.input.file)
+          : null,
+      )
+      setPicked(got.input)
+      setFromLink({ url: linkUrl, title: got.title })
+      setStep('confirm')
+    } catch (err) {
+      setLinkError(
+        err instanceof AiCallError && err.code !== 'failed'
+          ? t(`owl.error.${err.code}`)
+          : t('owl.sheet.linkFailed'),
+      )
+    } finally {
+      setFetching(false)
+    }
   }
 
   const onFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -95,11 +156,12 @@ function SheetBody({
     if (!file) return
     setPreviewUrl(file.type.startsWith('image/') ? URL.createObjectURL(file) : null)
     setPicked({ type: 'file', file })
+    setFromLink(null)
     setStep('confirm')
   }
 
   const options: {
-    source: Source | 'text'
+    source: Source | 'text' | 'link'
     label: string
     Icon: ComponentType<{ size?: number }>
   }[] = [
@@ -107,6 +169,7 @@ function SheetBody({
     { source: 'image', label: t('owl.sheet.image'), Icon: ImageIcon },
     { source: 'pdf', label: t('owl.sheet.pdf'), Icon: DocIcon },
     { source: 'text', label: t('owl.sheet.text'), Icon: TextIcon },
+    { source: 'link', label: t('owl.sheet.link'), Icon: LinkIcon },
   ]
 
   return (
@@ -141,6 +204,7 @@ function SheetBody({
               disabled={!text.trim()}
               onClick={() => {
                 setPicked({ type: 'text', text })
+                setFromLink(null)
                 setStep('confirm')
               }}
             >
@@ -150,6 +214,57 @@ function SheetBody({
         </div>
       )}
 
+      {step === 'link' && (
+        <form
+          className="flex flex-col gap-3"
+          onSubmit={(e) => {
+            e.preventDefault()
+            void fetchLink()
+          }}
+        >
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-semibold">{t('owl.sheet.linkLabel')}</span>
+            <input
+              type="url"
+              inputMode="url"
+              autoComplete="url"
+              autoCapitalize="off"
+              spellCheck={false}
+              value={url}
+              onChange={(e) => {
+                setUrl(e.target.value)
+                setLinkError(null)
+              }}
+              maxLength={2048}
+              placeholder="https://"
+              className="h-[54px] rounded-input bg-canvas px-4 text-base outline-none placeholder:text-ink-placeholder"
+            />
+            <span className="px-1 text-xs leading-[1.4] text-ink-muted">
+              {t('owl.sheet.linkHint')}
+            </span>
+          </label>
+          {linkError && (
+            <span role="alert" className="text-sm text-danger">
+              {linkError}
+            </span>
+          )}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="pill-sm"
+              className="flex-1 bg-brand-soft text-brand"
+              onClick={() => setStep('choose')}
+            >
+              {t('owl.sheet.back')}
+            </Button>
+            <Button type="submit" size="pill-sm" className="flex-1" disabled={!linkUrl || fetching}>
+              {fetching ? t('owl.sheet.linkFetching') : t('owl.sheet.next')}
+            </Button>
+          </div>
+        </form>
+      )}
+
       {step === 'choose' && (
         <div className="grid grid-cols-2 gap-2">
           {options.map(({ source, label, Icon }) => (
@@ -157,7 +272,9 @@ function SheetBody({
               key={source}
               type="button"
               onClick={() =>
-                source === 'text' ? setStep('paste') : inputs.current[source]?.click()
+                source === 'text' || source === 'link'
+                  ? setStep(source === 'text' ? 'paste' : 'link')
+                  : inputs.current[source]?.click()
               }
               className="flex items-center gap-3 rounded-[18px] bg-canvas p-3 text-left"
             >
@@ -191,10 +308,11 @@ function SheetBody({
           <AttachmentCard
             input={picked}
             preview={preview}
+            link={fromLink}
             onChange={() => {
               setPreviewUrl(null)
               setPicked(null)
-              setStep(picked.type === 'text' ? 'paste' : 'choose')
+              setStep(fromLink ? 'link' : picked.type === 'text' ? 'paste' : 'choose')
             }}
           />
           <label className="flex flex-col gap-1.5">
@@ -257,22 +375,36 @@ function formatSize(bytes: number) {
 function AttachmentCard({
   input,
   preview,
+  link,
   onChange,
 }: {
   input: DocumentInput
   preview: string | null
+  /** Downloaded from a link: its title and host instead of the file name. */
+  link: { url: string; title: string } | null
   onChange: () => void
 }) {
   const { t } = useTranslation()
   const isImage = input.type === 'file' && input.file.type.startsWith('image/')
 
-  const title =
-    input.type === 'file' ? input.file.name : input.text.trim().split('\n')[0]!.slice(0, 60)
-  const detail =
+  const title = link
+    ? link.title
+    : input.type === 'file'
+      ? input.file.name
+      : input.text.trim().split('\n')[0]!.slice(0, 60)
+  const size =
     input.type === 'file'
       ? formatSize(input.file.size)
       : t('owl.sheet.chars', { count: input.text.trim().length })
-  const Icon = input.type === 'text' ? TextIcon : isImage ? ImageIcon : DocIcon
+  const detail = link ? `${hostOf(link.url)} · ${size}` : size
+  const Icon =
+    link && input.type === 'text'
+      ? LinkIcon
+      : input.type === 'text'
+        ? TextIcon
+        : isImage
+          ? ImageIcon
+          : DocIcon
 
   return (
     <div className="flex items-center gap-3 rounded-[18px] bg-canvas p-2.5">

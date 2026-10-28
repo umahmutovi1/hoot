@@ -275,8 +275,8 @@ export const findAcademicInfoRequestSchema = z.discriminatedUnion('op', [
     academic_year: z.string().regex(/^\d{4}\/\d{2}$/),
     locale: localeSchema,
   }),
-  /** Downloads one found document for parse-document; only a URL from the last search. */
-  z.object({ op: z.literal('fetch'), url: z.url() }),
+  /** Downloads a found document, or a public link the user pasted, for parse-document. */
+  z.object({ op: z.literal('fetch'), url: z.url().max(2048) }),
 ])
 export type FindAcademicInfoRequest = z.infer<typeof findAcademicInfoRequestSchema>
 

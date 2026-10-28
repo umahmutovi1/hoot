@@ -3,9 +3,11 @@ import {
   academicSearchRequest,
   htmlToPages,
   isPublicHttps,
+  isPublicLink,
   keepFound,
   normalizeYear,
   searchKey,
+  titleFromUrl,
 } from './academicSearch'
 
 const search = {
@@ -28,7 +30,7 @@ describe('academic search', () => {
   it('sends only the faculty, programme and year, with web search on', () => {
     const req = academicSearchRequest(search)
     expect(req.task).toBe('find_academic_info')
-    expect(req.webSearch).toEqual({ maxUses: 4 })
+    expect(req.webSearch).toEqual({ maxUses: 6 })
     expect(req.text).toContain('Faculty: Elektrotehnički fakultet  Sarajevo')
     expect(req.text).toContain('Academic year: 2026/27')
     expect(req.text.split('\n')).toHaveLength(5)
@@ -82,5 +84,22 @@ describe('academic search', () => {
       '<html><head><title>x</title><script>var a=1</script></head><body><h1>Plan</h1><p>Signali&nbsp;i sistemi &amp; Baze</p><table><tr><td>I parcijala</td><td>20</td></tr></table></body></html>',
     )
     expect(pages).toEqual([{ page: 1, text: 'Plan\nSignali i sistemi & Baze\nI parcijala | 20 |' }])
+  })
+
+  it('accepts a pasted public link over https or http, never a local address', () => {
+    expect(isPublicLink('http://pmf.unsa.ba/plan.pdf')).toBe(true)
+    expect(isPublicLink('https://etf.unsa.ba/uploads/x.pdf')).toBe(true)
+    expect(isPublicLink('http://127.0.0.1/x')).toBe(false)
+    expect(isPublicLink('http://[::1]/x')).toBe(false)
+    expect(isPublicLink('ftp://etf.unsa.ba/x')).toBe(false)
+    expect(isPublicHttps('http://etf.unsa.ba/x')).toBe(false)
+  })
+
+  it('titles a pasted link by its file name, or its host when the name is a hash', () => {
+    expect(titleFromUrl('https://etf.unsa.ba/files/Nastavni_plan-RI.pdf')).toBe('Nastavni plan RI')
+    expect(titleFromUrl('https://etf.unsa.ba/uploads/d0937793ed9bdd70032558e470669f9b.pdf')).toBe(
+      'etf.unsa.ba',
+    )
+    expect(titleFromUrl('https://www.pmf.unsa.ba/')).toBe('www.pmf.unsa.ba')
   })
 })

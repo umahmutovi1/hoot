@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FacultyFields } from '@/features/academic/FacultyFields'
 import { useFacultyValue, useSaveFaculty, type FacultyValue } from '@/features/academic/faculty'
@@ -20,13 +20,21 @@ export function StepFaculty({ setSave }: StepProps) {
 
   const find = useFindAcademicInfo()
 
+  // `current`, `save` and `find` are new objects on every render; registering the save on each
+  // change re-rendered the shell, which rendered this step again, in a loop that froze the screen.
+  // The save is registered once and reads the latest values from a ref.
+  const latest = useRef({ current, save, find })
+  useEffect(() => {
+    latest.current = { current, save, find }
+  })
   useEffect(() => {
     setSave(async () => {
+      const { current, save, find } = latest.current
       await save(current)
       // "Fakultet s interneta" runs in the background; what it finds waits in the next step.
       if (current.institution.trim()) find.mutate(yearLabelOn(localDay(new Date())))
     })
-  }, [current, save]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

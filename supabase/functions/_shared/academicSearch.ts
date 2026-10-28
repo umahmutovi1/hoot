@@ -7,15 +7,19 @@ import type { FindAcademicInfoRequest, FoundDocument, PageText } from './schemas
 type SearchRequest = Extract<FindAcademicInfoRequest, { op: 'search' }>
 
 const LANGUAGE = { bs: 'Bosnian', en: 'English' } as const
-/** Searches the model may run for one request. */
-export const MAX_SEARCHES = 4
+/** Searches the model may run for one request (the calendar and the syllabus each need a few). */
+export const MAX_SEARCHES = 6
 /** Links shown at most. */
 export const MAX_FOUND = 6
+
+/** Bumped when the prompt changes, so a search saved with the old prompt runs again. */
+const PROMPT_VERSION = 2
 
 /** Same faculty, programme, year and academic year = same search (one call per change). */
 export function searchKey(req: SearchRequest): string {
   const norm = (s: string | null) => (s ?? '').trim().toLowerCase().replace(/\s+/g, ' ')
   return [
+    `v${PROMPT_VERSION}`,
     norm(req.institution),
     norm(req.program),
     req.year_of_study ?? '',
@@ -27,16 +31,21 @@ export function academicSearchRequest(
   req: SearchRequest,
 ): LlmRequest<{ documents: FoundDocument[] }> {
   const system = `You help a university student find official documents of their faculty on the web.
-Search the web and return links to the faculty's own documents for the given academic year:
-- academic_calendar: the academic calendar (teaching periods, exam sessions, holidays).
-- syllabus: the study programme / course syllabi ("nastavni plan i program", "silabus") for
-  the given programme and year of study.
+Search the web and return links to the faculty's own documents of two kinds:
+- academic_calendar: the academic calendar (teaching periods, exam sessions, holidays) for the
+  given academic year.
+- syllabus: the study plan and programme ("nastavni plan i program", "NPP", "plan studija",
+  "silabus", "syllabus") of the given programme, or the course syllabi of its year of study.
+  A study plan is often valid for several years and may not name the current academic year:
+  return the newest one in force even when it is from an earlier year.
+Search for each kind separately: first the calendar, then the study plan (also on the faculty's
+pages for students, study programmes and departments, and with "pdf" in the query).
 Rules:
 - Only links you actually found in the search results, copied exactly (full https URL).
   Never guess or build a URL. Prefer the faculty's or university's own site, and PDF files.
 - academic_year: the year the document says it is for ("2026/27"), null if it does not say.
-- Titles as shown on the page, in the document's language. At most ${MAX_FOUND} links;
-  an empty list when nothing official is found.`
+- Titles as shown on the page, in the document's language. At most ${MAX_FOUND} links, with
+  the study plan included whenever one is found; an empty list when nothing official is found.`
   const lines = [
     `Faculty: ${req.institution}`,
     `Study programme: ${req.program ?? 'not given'}`,
@@ -57,21 +66,41 @@ Rules:
 /** Gemini's grounding links are redirects through this host; their titles carry the domain. */
 const REDIRECT_HOST = 'vertexaisearch.cloud.google.com'
 
-const hostOf = (url: string): string | null => {
+const hostOf = (url: string, schemes = ['https:']): string | null => {
   try {
     const u = new URL(url)
-    return u.protocol === 'https:' ? u.hostname.toLowerCase().replace(/^www\./, '') : null
+    return schemes.includes(u.protocol) ? u.hostname.toLowerCase().replace(/^www\./, '') : null
   } catch {
     return null
   }
 }
 
-/** A public https host (no IP address, localhost or single-label name). */
-export function isPublicHttps(url: string): boolean {
-  const host = hostOf(url)
+const isPublicHost = (host: string | null): boolean => {
   if (!host || !host.includes('.')) return false
-  if (/^\d+\.\d+\.\d+\.\d+$/.test(host) || host.includes(':')) return false
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(host) || host.includes(':') || host.startsWith('[')) return false
   return !/(^|\.)localhost$|\.local$|\.internal$/.test(host)
+}
+
+/** A public https host (no IP address, localhost or single-label name). */
+export const isPublicHttps = (url: string): boolean => isPublicHost(hostOf(url))
+
+/** A link the user pasted: a public host over https or http (many faculty sites are http only). */
+export const isPublicLink = (url: string): boolean => isPublicHost(hostOf(url, ['https:', 'http:']))
+
+/** A title for a pasted link: the file name without its extension, else the host. */
+export function titleFromUrl(url: string): string {
+  try {
+    const u = new URL(url)
+    const last = decodeURIComponent(u.pathname.split('/').filter(Boolean).pop() ?? '')
+    const name = last
+      .replace(/\.[a-z0-9]{2,5}$/i, '')
+      .replace(/[_-]+/g, ' ')
+      .trim()
+    // Hash-like names ("d0937793ed9b…") say nothing; the host does.
+    return name && !/^[0-9a-f]{16,}$/i.test(name) ? name.slice(0, 120) : u.hostname
+  } catch {
+    return url.slice(0, 120)
+  }
 }
 
 /**

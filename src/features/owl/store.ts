@@ -84,7 +84,14 @@ interface OwlState {
   conversationId: string | null
   messages: OwlMessage[]
   /** Kind preselected when the "give a document" sheet opens from a suggestion. */
-  sheet: { open: boolean; kind: ImportKind; nonce: number; shared?: SharedInput | null }
+  sheet: {
+    open: boolean
+    kind: ImportKind
+    nonce: number
+    shared?: SharedInput | null
+    /** Opens straight on "Link" (Nađeno na internetu: "Imaš link?"). */
+    link?: boolean
+  }
   busy: boolean
   /** Forgets the open conversation when another user signs in. */
   ensureUser: (userId: string) => void
@@ -96,7 +103,7 @@ interface OwlState {
   replace: (id: string, message: OwlMessage) => void
   updateProposal: (id: string, update: (p: ImportProposal) => ImportProposal) => void
   setBusy: (busy: boolean) => void
-  openSheet: (kind?: ImportKind) => void
+  openSheet: (kind?: ImportKind, opts?: { link?: boolean }) => void
   /** Android "Podijeli" → Hoot: the sheet opens on its confirm step with the shared item. */
   openShared: (input: SharedInput) => void
   closeSheet: () => void
@@ -180,8 +187,8 @@ export const useOwlStore = create<OwlState>()(
         if (conversationId && updated) saveMessage(conversationId, updated)
       },
       setBusy: (busy) => set({ busy }),
-      openSheet: (kind = 'auto') =>
-        set((s) => ({ sheet: { open: true, kind, nonce: s.sheet.nonce + 1 } })),
+      openSheet: (kind = 'auto', opts) =>
+        set((s) => ({ sheet: { open: true, kind, nonce: s.sheet.nonce + 1, link: opts?.link } })),
       openShared: (shared) =>
         set((s) => ({ sheet: { open: true, kind: 'auto', nonce: s.sheet.nonce + 1, shared } })),
       closeSheet: () => set((s) => ({ sheet: { ...s.sheet, open: false, shared: null } })),
