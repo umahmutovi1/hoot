@@ -1517,7 +1517,13 @@
       "notePlaceholder": "e.g. only 2nd year, group B",
       "chars_one": "{{count}} character",
       "chars_other": "{{count}} characters",
-      "shareHint": "The document stays in Documents until you delete it. On Android you can also “Share” it to Hoot from Viber or Gmail."
+      "shareHint": "The document stays in Documents until you delete it. On Android you can also “Share” it to Hoot from Viber or Gmail.",
+      "working": "Reading the document… This takes up to half a minute.",
+      "found_one": "I found {{count}} item in “{{title}}”. Review it before saving.",
+      "found_other": "I found {{count}} items in “{{title}}”. Review them before saving.",
+      "foundNone": "“{{title}}” is in Documents and I can answer from it. I found no dates, exams or subjects to import.",
+      "review": "Review and save",
+      "close": "Close"
     },
     "pending": {
       "thinking": "Thinking…",
@@ -1534,6 +1540,7 @@
       "unauthorized": "Your session expired. Sign in again.",
       "failed": "Something went wrong. Try again.",
       "file": "I can't read this. Send an image, a PDF or text.",
+      "link": "This link could not be opened. Check that it is public (no sign-in) and leads to a PDF, an image or a page.",
       "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET)."
     },
     "document": {
@@ -1591,7 +1598,8 @@
     },
     "documents": {
       "title": "Documents",
-      "intro": "The assistant answers from these and names the document and page. Give it new ones in the AI tab (+).",
+      "intro": "The assistant answers from these and names the document and page. Add a file, an image or a link, or send it in the chat.",
+      "add": "Add a document",
       "empty": "No documents yet.",
       "pages_one": "{{count}} page",
       "pages_other": "{{count}} pages",
@@ -1763,6 +1771,8 @@
       "timetableSub": "by hand, one class at a time",
       "feed": "Connected calendar",
       "feedSub": "Google, Apple or Outlook (iCal link)",
+      "link": "Link to a document",
+      "linkSub": "Study plan, calendar or timetable from the web",
       "none": "Nothing yet? Just continue; you can add all of this later in Settings.",
       "added": "Added"
     },
@@ -2564,6 +2574,8 @@
       "noYear": "no year given",
       "import": "Import",
       "importing": "Downloading…",
+      "review": "Review",
+      "nothing": "Nothing found",
       "warning": "These documents come from the web: check they are for {{year}} and your programme. Nothing is saved without a review.",
       "none": "I found no calendar or syllabus for {{year}}.",
       "noneSub": "If you have it as a PDF or image (Moodle, notice board), give it to me and I'll read it the same way.",

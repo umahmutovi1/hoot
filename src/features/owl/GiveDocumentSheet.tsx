@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { CameraIcon, DocIcon, ImageIcon, LinkIcon, TextIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import { documentFromLink } from '@/features/academic/search'
+import { normalizeLink } from '@/lib/documents/link'
 import { cn } from '@/lib/utils'
 import {
   IMPORT_KINDS,
@@ -13,7 +13,8 @@ import {
   type ImportKind,
 } from '@shared/schemas.ts'
 import { AiCallError } from './api'
-import type { DocumentInput } from './actions'
+import type { DocumentInput, GiveResult } from './actions'
+import { documentFromLink } from './link'
 import { useOwlStore } from './store'
 import { useOwl } from './useOwl'
 
@@ -71,7 +72,7 @@ function SheetBody({
   const newConversation = useOwlStore((s) => s.newConversation)
   const owl = useOwl()
   const [kind, setKind] = useState<ImportKind>(initialKind)
-  const [step, setStep] = useState<'choose' | 'paste' | 'link' | 'confirm'>(
+  const [step, setStep] = useState<'choose' | 'paste' | 'link' | 'confirm' | 'working' | 'done'>(
     shared ? 'confirm' : startOnLink ? 'link' : 'choose',
   )
   const [text, setText] = useState('')
@@ -82,6 +83,8 @@ function SheetBody({
   const [linkError, setLinkError] = useState<string | null>(null)
   const [picked, setPicked] = useState<DocumentInput | null>(shared)
   const [note, setNote] = useState('')
+  // Outside the chat the sheet stays open and shows how it ended, so the page is not left.
+  const [result, setResult] = useState<GiveResult | null>(null)
   // Thumbnail of a picked image; made when the file is picked, revoked when it goes away.
   const [preview, setPreview] = useState<string | null>(null)
   const previewRef = useRef<string | null>(null)
@@ -98,32 +101,23 @@ function SheetBody({
   })
 
   // Nothing goes to the owl until "Daj sovi" on the confirm step.
-  const send = () => {
+  const send = async () => {
     if (!picked) return
-    closeSheet()
-    if (location.pathname !== '/chat') {
-      newConversation()
-      navigate('/chat')
+    const origin = fromLink ? { url: fromLink.url, academicYear: null } : null
+    if (location.pathname === '/chat') {
+      closeSheet()
+      void owl.giveDocument(picked, kind, note.trim() || null, origin)
+      return
     }
-    void owl.giveDocument(
-      picked,
-      kind,
-      note.trim() || null,
-      fromLink ? { url: fromLink.url, academicYear: null } : null,
-    )
+    // Elsewhere (onboarding, Dokumenti, Nađeno) the reading happens here; the conversation keeps
+    // a record of it, and the review opens from the result and comes back to this page.
+    newConversation()
+    setStep('working')
+    setResult(await owl.giveDocument(picked, kind, note.trim() || null, origin))
+    setStep('done')
   }
 
-  // "https://" is added when the link is pasted without it ("etf.unsa.ba/…").
-  const linkUrl = (() => {
-    const raw = url.trim()
-    if (!raw) return null
-    try {
-      const u = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`)
-      return u.hostname.includes('.') ? u.toString() : null
-    } catch {
-      return null
-    }
-  })()
+  const linkUrl = normalizeLink(url)
 
   const fetchLink = async () => {
     if (!linkUrl || fetching) return
@@ -332,31 +326,82 @@ function SheetBody({
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <span className="text-sm font-semibold">
-          {t('owl.sheet.kindLabel')}{' '}
-          <span className="font-normal text-ink-muted">{t('owl.sheet.kindHint')}</span>
-        </span>
-        <div className="flex flex-wrap gap-1.5" role="radiogroup">
-          {IMPORT_KINDS.map((k) => (
-            <button
-              key={k}
+      {step === 'working' && (
+        <p className="rounded-[18px] bg-canvas p-4 text-sm leading-[1.4] text-ink-secondary">
+          {t('owl.sheet.working')}
+        </p>
+      )}
+
+      {step === 'done' && result && (
+        <div className="flex flex-col gap-3">
+          <p
+            role={result.ok ? undefined : 'alert'}
+            className={cn(
+              'rounded-[18px] p-4 text-sm leading-[1.4]',
+              result.ok ? 'bg-success-soft text-success-ink' : 'bg-canvas text-danger',
+            )}
+          >
+            {result.ok
+              ? result.found > 0
+                ? t('owl.sheet.found', { count: result.found, title: result.title })
+                : t('owl.sheet.foundNone', { title: result.title })
+              : t(`owl.error.${result.code}`)}
+          </p>
+          {result.ok && result.proposalId ? (
+            <Button
               type="button"
-              role="radio"
-              aria-checked={kind === k}
-              onClick={() => setKind(k)}
-              className={cn(
-                'h-[38px] rounded-full px-3 text-xs font-semibold',
-                kind === k ? 'bg-ink text-white' : 'bg-white/50 text-ink',
-              )}
+              size="pill"
+              onClick={() => {
+                closeSheet()
+                navigate(`/chat/import/${result.proposalId}`)
+              }}
             >
-              {t(`owl.sheet.kind.${k}`)}
-            </button>
-          ))}
+              {t('owl.sheet.review')}
+            </Button>
+          ) : !result.ok ? (
+            <Button type="button" size="pill" onClick={() => setStep('confirm')}>
+              {t('owl.sheet.back')}
+            </Button>
+          ) : null}
+          <Button
+            type="button"
+            variant="secondary"
+            size="pill"
+            className="bg-brand-soft text-brand"
+            onClick={closeSheet}
+          >
+            {t('owl.sheet.close')}
+          </Button>
         </div>
-      </div>
+      )}
+
+      {step !== 'working' && step !== 'done' && (
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-semibold">
+            {t('owl.sheet.kindLabel')}{' '}
+            <span className="font-normal text-ink-muted">{t('owl.sheet.kindHint')}</span>
+          </span>
+          <div className="flex flex-wrap gap-1.5" role="radiogroup">
+            {IMPORT_KINDS.map((k) => (
+              <button
+                key={k}
+                type="button"
+                role="radio"
+                aria-checked={kind === k}
+                onClick={() => setKind(k)}
+                className={cn(
+                  'h-[38px] rounded-full px-3 text-xs font-semibold',
+                  kind === k ? 'bg-ink text-white' : 'bg-white/50 text-ink',
+                )}
+              >
+                {t(`owl.sheet.kind.${k}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       {step === 'confirm' && (
-        <Button type="button" size="pill" onClick={send}>
+        <Button type="button" size="pill" onClick={() => void send()}>
           {t('owl.sheet.textSend')}
         </Button>
       )}

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CalendarIcon, CapIcon, ChevronRightIcon } from '@/components/icons'
+import { CalendarIcon, CapIcon, ChevronRightIcon, DocIcon, LinkIcon } from '@/components/icons'
 import { useCalendarFeeds } from '@/features/calendars/api'
 import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
 import { useOwlStore } from '@/features/owl/store'
@@ -59,26 +59,18 @@ export function StepImport(_props: StepProps) {
           onClick={() => navigate('/plan/timetable')}
         />
         <ImportCard
-          icon={
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
-              <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
-            </svg>
-          }
+          icon={<LinkIcon size={22} />}
           title={t('onboarding.import.feed')}
           sub={t('onboarding.import.feedSub')}
           done={feeds.length > 0}
           onClick={() => navigate('/settings/feeds')}
+        />
+        <ImportCard
+          icon={<DocIcon size={22} />}
+          title={t('onboarding.import.link')}
+          sub={t('onboarding.import.linkSub')}
+          done={false}
+          onClick={() => openSheet('auto', { link: true })}
         />
       </div>
       <span className="px-1 text-xs leading-[1.45] text-ink-muted">
