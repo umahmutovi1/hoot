@@ -290,6 +290,8 @@ App sama upisuje kad je obavještenje na redu (`push_jobs`: podsjetnik prije blo
 
 ## 5c. Google Drive Picker (Etapa 10c)
 
+> **Trenutno isključeno** (`DRIVE_ENABLED = false` u `src/features/sources/drive.ts`): `drive.file` ne daje pristup fajlovima u izabranom folderu, a `drive.readonly` traži Google-ovu sigurnosnu procjenu. Opcija „Google Drive“ se ne nudi dok se to ne odluči; podešavanje ispod ostaje za kasnije.
+
 Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove koje korisnik izabere), pa Google ne traži sigurnosnu procjenu, a token se ne čuva.
 
 1. console.cloud.google.com → isti projekat kao Gemini ključ (`hoot`) → APIs & Services → Library → uključi **Google Drive API** i **Google Picker API**.

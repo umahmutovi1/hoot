@@ -2,16 +2,18 @@
 // Google Search grounding / Anthropic web search through the LLM wrapper) for the faculty's
 // academic calendar and syllabus; only the faculty, programme and year go into it. One call per
 // change: the same search returns the saved result without an AI call. Links are kept only when
-// they come from a site the search returned and open. `fetch`: downloads one of those links for
-// parse-document (the browser cannot, CORS). Nothing is written to the plan here.
+// they come from a site the search returned and open. `fetch`: downloads a found link, or any
+// public link the user pasted, for parse-document (the browser cannot, CORS): a PDF or an image
+// as a file, a web page as text. Nothing is written to the plan here.
 import { json } from '../_shared/cors.ts'
 import {
   academicSearchRequest,
   htmlToPages,
-  isPublicHttps,
+  isPublicLink,
   keepFound,
   normalizeYear,
   searchKey,
+  titleFromUrl,
 } from '../_shared/academicSearch.ts'
 import { llmDeps, readJson, serve } from '../_shared/edge.ts'
 import { generate } from '../_shared/llm.ts'
@@ -21,6 +23,26 @@ import type { AcademicSearch, FoundDocument } from '../_shared/schemas.ts'
 const CHECK_TIMEOUT_MS = 6000
 const FETCH_TIMEOUT_MS = 20000
 const MAX_FILE_BYTES = 15 * 1024 * 1024
+const MAX_REDIRECTS = 5
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
+
+/** Follows redirects by hand, so every hop is checked to be a public host. */
+async function fetchPublic(url: string): Promise<Response | null> {
+  let next = url
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    if (!isPublicLink(next)) return null
+    const res = await fetch(next, {
+      redirect: 'manual',
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      headers: { 'user-agent': 'Mozilla/5.0 (compatible; Hoot)' },
+    })
+    const location = res.headers.get('location')
+    if (res.status < 300 || res.status >= 400 || !location) return res
+    await res.body?.cancel()
+    next = new URL(location, next).toString()
+  }
+  return null
+}
 
 async function opens(url: string): Promise<boolean> {
   const attempt = async (method: 'HEAD' | 'GET') => {
@@ -70,35 +92,39 @@ Deno.serve(
       return json({ documents, cached: false })
     }
 
-    // fetch: only a link from the last search, never an arbitrary URL.
+    // fetch: a link from the last search (it has a title and a kind) or one the user pasted.
     const found = saved?.documents.find((d) => d.url === body.url)
-    if (!found || !isPublicHttps(found.url)) return json({ error: 'bad_request' }, 400)
-    let res: Response
+    const url = found?.url ?? body.url
+    const title = found?.title ?? titleFromUrl(url)
+    let res: Response | null
     try {
-      res = await fetch(found.url, {
-        redirect: 'follow',
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      })
+      res = await fetchPublic(url)
     } catch {
       return json({ error: 'failed' }, 502)
     }
+    if (!res) return json({ error: 'bad_request' }, 400)
     if (!res.ok) return json({ error: 'failed' }, 502)
     const length = Number(res.headers.get('content-length') ?? 0)
     if (length > MAX_FILE_BYTES) return json({ error: 'bad_request' }, 413)
     const bytes = new Uint8Array(await res.arrayBuffer())
     if (bytes.byteLength > MAX_FILE_BYTES) return json({ error: 'bad_request' }, 413)
-    const type = res.headers.get('content-type') ?? ''
+    const type = (res.headers.get('content-type') ?? '').split(';')[0]!.trim().toLowerCase()
     const isPdf = type.includes('pdf') || String.fromCharCode(...bytes.slice(0, 4)) === '%PDF'
-    if (isPdf) {
-      const path = `${ctx.userId}/documents/${crypto.randomUUID()}.pdf`
+    const image = IMAGE_TYPES.find((t) => t === type)
+    if (isPdf || image) {
+      const mediaType = isPdf ? 'application/pdf' : image!
+      const ext = isPdf ? 'pdf' : mediaType.split('/')[1]
+      const path = `${ctx.userId}/documents/${crypto.randomUUID()}.${ext}`
       const { error: upError } = await ctx.db.storage
         .from('uploads')
-        .upload(path, bytes, { contentType: 'application/pdf' })
+        .upload(path, bytes, { contentType: mediaType })
       if (upError) return json({ error: 'failed' }, 500)
-      return json({ kind: 'file', path, media_type: 'application/pdf', title: found.title })
+      return json({ kind: 'file', path, media_type: mediaType, title })
     }
+    if (type && !type.startsWith('text/') && !type.includes('html') && !type.includes('xml'))
+      return json({ error: 'bad_request' }, 415)
     const pages = htmlToPages(new TextDecoder().decode(bytes))
     if (pages.length === 0) return json({ error: 'bad_request' }, 422)
-    return json({ kind: 'text', pages, title: found.title })
+    return json({ kind: 'text', pages, title })
   }),
 )

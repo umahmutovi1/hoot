@@ -9,11 +9,10 @@ import { useOwlStore } from '@/features/owl/store'
 import { useOwl } from '@/features/owl/useOwl'
 import { useProfile } from '@/features/settings/profile'
 import { yearLabelOn } from '@/lib/academic'
-import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import type { FoundDocument } from '@shared/schemas'
 import { useAcademicTerm } from './api'
-import { fetchFoundDocument, useAcademicSearch, useFindAcademicInfo } from './search'
+import { documentFromLink, useAcademicSearch, useFindAcademicInfo } from './search'
 
 const hostOf = (url: string) => {
   try {
@@ -65,25 +64,18 @@ export function FoundPage() {
     setBusy(doc.url)
     setError(null)
     try {
-      const got = await fetchFoundDocument(doc.url)
+      const got = await documentFromLink(doc.url)
       const kind =
         doc.kind === 'academic_calendar'
           ? 'academic_calendar'
           : doc.kind === 'syllabus'
             ? 'syllabus'
             : 'auto'
-      const origin = { url: doc.url, academicYear: doc.academic_year }
       navigate('/chat')
-      if (got.kind === 'file') {
-        const { data } = await supabase.storage.from('uploads').download(got.path)
-        await supabase.storage.from('uploads').remove([got.path])
-        if (!data) throw new AiCallError('failed')
-        const file = new File([data], `${got.title.slice(0, 80)}.pdf`, { type: 'application/pdf' })
-        await owl.giveDocument({ type: 'file', file }, kind, null, origin)
-      } else {
-        const text = got.pages.map((p) => p.text).join('\n\n')
-        await owl.giveDocument({ type: 'text', text }, kind, null, origin)
-      }
+      await owl.giveDocument(got.input, kind, null, {
+        url: doc.url,
+        academicYear: doc.academic_year,
+      })
     } catch (err) {
       setError(t(`owl.error.${err instanceof AiCallError ? err.code : 'failed'}`))
     } finally {
@@ -190,6 +182,22 @@ export function FoundPage() {
             {t('academic.found.addPdf')}
           </Button>
         </div>
+      )}
+
+      {!find.isPending && (
+        <p className="px-1 text-sm leading-[1.4] text-ink-secondary">
+          {t('academic.found.haveLink')}{' '}
+          <button
+            type="button"
+            onClick={() => {
+              openSheet('auto', { link: true })
+              navigate('/chat')
+            }}
+            className="inline-flex min-h-11 items-center font-semibold text-brand"
+          >
+            {t('academic.found.pasteLink')}
+          </button>
+        </p>
       )}
 
       {!find.isPending && !search && (
