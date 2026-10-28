@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { goBack } from '@/app/navigation'
 import { useTranslation } from 'react-i18next'
 import { ScreenTitle } from '@/components/ScreenTitle'
 import { Switch } from '@/components/Switch'
@@ -79,7 +80,8 @@ export function ImportReviewPage() {
     save.mutate(proposal, {
       onSuccess: (n) => {
         updateProposal(id, (p) => ({ ...p, savedCount: n }))
-        navigate('/chat')
+        // Back where the review was opened from (the chat, onboarding, Dokumenti).
+        goBack(navigate, '/chat')
       },
     })
 

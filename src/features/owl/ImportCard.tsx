@@ -127,7 +127,7 @@ export function ImportCard({
             size="pill-sm"
             className="h-12 flex-1 bg-brand-soft text-brand"
           >
-            <Link to={`/owl/import/${messageId}`}>{t('owl.review')}</Link>
+            <Link to={`/chat/import/${messageId}`}>{t('owl.review')}</Link>
           </Button>
           <Button
             type="button"

@@ -12,6 +12,8 @@ import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { supabase } from '@/lib/supabase'
 import { useDeleteDocument, useDocumentFileUrl, useDocuments, type DocumentRow } from './api'
+import { GiveDocumentSheet } from './GiveDocumentSheet'
+import { useOwlStore } from './store'
 
 /** Documents the owl answers from (Postavke → Dokumenti); swipe left deletes one, with undo. */
 export function DocumentsPage() {
@@ -19,11 +21,16 @@ export function DocumentsPage() {
   const { locale } = useLocale()
   const { data: documents } = useDocuments()
   const remove = useDeleteDocument()
+  const openSheet = useOwlStore((s) => s.openSheet)
 
   return (
     <div className="flex flex-col gap-3.5">
       <ScreenTitle title={t('owl.documents.title')} />
+      <GiveDocumentSheet />
       <p className="px-1 text-sm leading-[1.45] text-ink-muted">{t('owl.documents.intro')}</p>
+      <Button type="button" size="pill" className="btn-primary" onClick={() => openSheet()}>
+        {t('owl.documents.add')}
+      </Button>
       {documents && documents.length === 0 && (
         <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('owl.documents.empty')}</p>
       )}

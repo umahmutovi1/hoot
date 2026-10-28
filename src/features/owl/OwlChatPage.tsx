@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AiSparkIcon, ClockIcon, DocIcon, PencilIcon, PlusIcon, SendIcon } from '@/components/icons'
 import { useSubjects } from '@/features/subjects/api'
+import { splitLink } from '@/lib/documents/link'
 import { cn } from '@/lib/utils'
 import type { Citation } from '@shared/schemas.ts'
 import { useAiAvailability, useDocumentFileUrl, useDocuments } from './api'
@@ -34,7 +35,11 @@ export function OwlChatPage() {
   const submit = (e: FormEvent) => {
     e.preventDefault()
     if (!question.trim() || busy || !enabled) return
-    void owl.ask(question)
+    // A link in the message: the assistant opens it and reads it like a given document; the
+    // rest of the message is the note ("samo 2. godina").
+    const link = splitLink(question)
+    if (link) void owl.giveDocument({ type: 'link', url: link.url }, 'auto', link.rest || null)
+    else void owl.ask(question)
     setQuestion('')
   }
 

@@ -1556,7 +1556,14 @@
       "chars_one": "{{count}} znak",
       "chars_few": "{{count}} znaka",
       "chars_other": "{{count}} znakova",
-      "shareHint": "Dokument se čuva u Dokumentima dok ga ne obrišeš. Na Androidu ga možeš i „Podijeliti” u Hoot iz Vibera ili Gmaila."
+      "shareHint": "Dokument se čuva u Dokumentima dok ga ne obrišeš. Na Androidu ga možeš i „Podijeliti” u Hoot iz Vibera ili Gmaila.",
+      "working": "Čitam dokument… Ovo traje do pola minute.",
+      "found_one": "U „{{title}}” sam našla {{count}} stavku. Pregledaj je prije spašavanja.",
+      "found_few": "U „{{title}}” sam našla {{count}} stavke. Pregledaj ih prije spašavanja.",
+      "found_other": "U „{{title}}” sam našla {{count}} stavki. Pregledaj ih prije spašavanja.",
+      "foundNone": "„{{title}}” je u Dokumentima i mogu odgovarati iz njega. Nisam našla datume, ispite ni predmete za uvoz.",
+      "review": "Pregledaj i spasi",
+      "close": "Zatvori"
     },
     "pending": {
       "thinking": "Razmišljam…",
@@ -1573,6 +1580,7 @@
       "unauthorized": "Prijava je istekla. Prijavi se ponovo.",
       "failed": "Nešto nije uspjelo. Pokušaj ponovo.",
       "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
+      "link": "Ovaj link ne mogu otvoriti. Provjeri da je javan (bez prijave) i da vodi do PDF-a, slike ili stranice.",
       "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h)."
     },
     "document": {
@@ -1632,7 +1640,8 @@
     },
     "documents": {
       "title": "Dokumenti",
-      "intro": "Asistent iz njih odgovara na pitanja i navodi dokument i stranicu. Nove daješ u AI tabu (+).",
+      "intro": "Asistent iz njih odgovara na pitanja i navodi dokument i stranicu. Dodaj fajl, sliku ili link, ili ga pošalji u chatu.",
+      "add": "Dodaj dokument",
       "empty": "Još nema dokumenata.",
       "pages_one": "{{count}} str.",
       "pages_few": "{{count}} str.",
@@ -1810,6 +1819,8 @@
       "timetableSub": "ručno, termin po termin",
       "feed": "Povezani kalendar",
       "feedSub": "Google, Apple ili Outlook (iCal link)",
+      "link": "Link do dokumenta",
+      "linkSub": "Plan i program, kalendar ili raspored sa weba",
       "none": "Nemaš ništa sad? Samo nastavi; sve ovo možeš dodati kasnije u Postavkama.",
       "added": "Dodano"
     },
@@ -2632,6 +2643,8 @@
       "noYear": "godina nije navedena",
       "import": "Uvezi",
       "importing": "Preuzimam…",
+      "review": "Pregledaj",
+      "nothing": "Nema stavki",
       "warning": "Dokumenti su sa interneta: provjeri da su za {{year}} i tvoj program. Ništa se ne spašava bez pregleda.",
       "none": "Nisam našla kalendar ni plan i program za {{year}}.",
       "noneSub": "Ako ga imaš kao PDF ili sliku (Moodle, oglasna ploča), daj mi ga i pročitat ću ga isto.",

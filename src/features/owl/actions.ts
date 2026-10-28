@@ -26,7 +26,9 @@ import {
 import { supabase } from '@/lib/supabase'
 import { proposeSyllabus, type SyllabusExisting } from '@/lib/import/syllabus'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
+import type { AiErrorCode } from '@shared/schemas.ts'
 import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
+import { documentFromLink } from './link'
 import { pdfText } from './pdfText'
 import { searchNotes } from './embeddings'
 import {
@@ -39,6 +41,8 @@ import {
 } from './store'
 
 export type DocumentInput = { type: 'file'; file: File } | { type: 'text'; text: string }
+/** A link the assistant opens itself (a link sent in the chat). */
+export type LinkInput = { type: 'link'; url: string }
 
 /** A document found on the web ("Fakultet s interneta"): its link and the year it says. */
 export interface DocumentOrigin {
@@ -67,9 +71,18 @@ export interface OwlContext {
 const id = () => crypto.randomUUID()
 const store = () => useOwlStore.getState()
 
-function fail(pendingId: string, err: unknown) {
-  const code = err instanceof AiCallError ? err.code : 'failed'
+/** How giving a document ended, for a sheet that stays on its page (onboarding, Dokumenti). */
+export type GiveResult =
+  | { ok: true; title: string; found: number; proposalId: string | null }
+  | { ok: false; code: AiErrorCode | 'offline' | 'file' | 'link' }
+
+/** A link that could not be opened (not public, not a PDF, image or page). */
+class LinkError extends Error {}
+
+function fail(pendingId: string, err: unknown): GiveResult {
+  const code = err instanceof LinkError ? 'link' : err instanceof AiCallError ? err.code : 'failed'
   store().replace(pendingId, { id: pendingId, role: 'owl', type: 'error', code })
+  return { ok: false, code }
 }
 
 /** Local date and HH:MM of a stored exam, in the device's time zone like the rest of the app. */
@@ -118,16 +131,21 @@ const EXTENSIONS: Record<string, string> = {
  * for a calendar or exam schedule add a proposal that waits for "Spasi".
  */
 export async function giveDocument(
-  input: DocumentInput,
+  given: DocumentInput | LinkInput,
   kind: ImportKind,
   note: string | null,
   ctx: OwlContext,
   origin: DocumentOrigin | null = null,
-) {
+): Promise<GiveResult> {
   const s = store()
-  if (s.busy) return
+  if (s.busy) return { ok: false, code: 'failed' }
   s.setBusy(true)
-  const name = input.type === 'file' ? input.file.name : input.text.split('\n')[0]!.slice(0, 60)
+  const name =
+    given.type === 'link'
+      ? given.url
+      : given.type === 'file'
+        ? given.file.name
+        : given.text.split('\n')[0]!.slice(0, 60)
   s.push({ id: id(), role: 'user', type: 'file', name, ...(note ? { note } : {}) })
   const pendingId = id()
   s.push({ id: pendingId, role: 'owl', type: 'pending', stage: 'reading' })
@@ -136,6 +154,18 @@ export async function giveDocument(
   let storagePath: string | null = null
   try {
     if (!navigator.onLine) throw new AiCallError('offline')
+
+    // 0. A link: the server downloads it, then it is read like a given file or text.
+    let input: DocumentInput
+    if (given.type === 'link') {
+      const got = await documentFromLink(given.url).catch((err: unknown) => {
+        throw err instanceof AiCallError && err.code !== 'failed' ? err : new LinkError()
+      })
+      input = got.input
+      origin = { url: given.url, academicYear: null }
+    } else {
+      input = given
+    }
 
     // 1. Text we can read locally; the file itself only when there is no text layer.
     let file: File | null = null
@@ -213,10 +243,12 @@ export async function giveDocument(
       found,
     }
     store().replace(pendingId, done)
-    if (found > 0) store().push({ id: id(), role: 'owl', type: 'proposal', proposal })
+    const proposalId = found > 0 ? id() : null
+    if (proposalId) store().push({ id: proposalId, role: 'owl', type: 'proposal', proposal })
+    return { ok: true, title, found, proposalId }
   } catch (err) {
     await removeDocument(documentId, storagePath)
-    fail(pendingId, err)
+    return fail(pendingId, err)
   } finally {
     store().setBusy(false)
   }

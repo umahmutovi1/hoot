@@ -13,6 +13,8 @@ import {
   ask,
   giveDocument,
   type DocumentInput,
+  type GiveResult,
+  type LinkInput,
   type DocumentOrigin,
   type OwlContext,
 } from './actions'
@@ -68,11 +70,14 @@ export function useOwl() {
       ready: ctx !== null && subjects !== undefined && periods !== undefined,
       classes,
       giveDocument: (
-        input: DocumentInput,
+        input: DocumentInput | LinkInput,
         kind: ImportKind,
         note: string | null = null,
         origin: DocumentOrigin | null = null,
-      ) => (ctx ? giveDocument(input, kind, note, ctx, origin) : Promise.resolve()),
+      ): Promise<GiveResult> =>
+        ctx
+          ? giveDocument(input, kind, note, ctx, origin)
+          : Promise.resolve({ ok: false, code: 'failed' }),
       ask: (question: string) =>
         ctx
           ? ask(

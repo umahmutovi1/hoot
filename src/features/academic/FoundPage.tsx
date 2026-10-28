@@ -5,6 +5,9 @@ import { DocIcon } from '@/components/icons'
 import { ScreenTitle } from '@/components/ScreenTitle'
 import { Button } from '@/components/ui/button'
 import { AiCallError } from '@/features/owl/api'
+import { documentFromLink } from '@/features/owl/link'
+import type { GiveResult } from '@/features/owl/actions'
+import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
 import { useOwlStore } from '@/features/owl/store'
 import { useOwl } from '@/features/owl/useOwl'
 import { useProfile } from '@/features/settings/profile'
@@ -12,7 +15,7 @@ import { yearLabelOn } from '@/lib/academic'
 import { cn } from '@/lib/utils'
 import type { FoundDocument } from '@shared/schemas'
 import { useAcademicTerm } from './api'
-import { documentFromLink, useAcademicSearch, useFindAcademicInfo } from './search'
+import { useAcademicSearch, useFindAcademicInfo } from './search'
 
 const hostOf = (url: string) => {
   try {
@@ -40,6 +43,8 @@ export function FoundPage() {
   const openSheet = useOwlStore((s) => s.openSheet)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [done, setDone] = useState<Record<string, Extract<GiveResult, { ok: true }>>>({})
+  const newConversation = useOwlStore((s) => s.newConversation)
   // The year the documents should be for: the current academic year, else today's label.
   const academicYear =
     years.find((y) => y.startsOn <= today && today <= y.endsOn)?.label ?? yearLabelOn(today)
@@ -60,6 +65,7 @@ export function FoundPage() {
     .filter(Boolean)
     .join(' · ')
 
+  // "Uvezi" reads the document here; the row then opens its review, which comes back here.
   const importDoc = async (doc: FoundDocument) => {
     setBusy(doc.url)
     setError(null)
@@ -71,11 +77,13 @@ export function FoundPage() {
           : doc.kind === 'syllabus'
             ? 'syllabus'
             : 'auto'
-      navigate('/chat')
-      await owl.giveDocument(got.input, kind, null, {
+      newConversation()
+      const result = await owl.giveDocument(got.input, kind, null, {
         url: doc.url,
         academicYear: doc.academic_year,
       })
+      if (result.ok) setDone((d) => ({ ...d, [doc.url]: result }))
+      else setError(t(`owl.error.${result.code}`))
     } catch (err) {
       setError(t(`owl.error.${err instanceof AiCallError ? err.code : 'failed'}`))
     } finally {
@@ -86,6 +94,7 @@ export function FoundPage() {
   return (
     <div className="flex flex-col gap-3.5">
       <ScreenTitle title={t('academic.found.title')} />
+      <GiveDocumentSheet />
       {subtitle && (
         <p className="-mt-1.5 px-1 text-sm leading-[1.4] text-ink-secondary">{subtitle}</p>
       )}
@@ -146,11 +155,21 @@ export function FoundPage() {
                   </span>
                   <button
                     type="button"
-                    disabled={busy !== null}
-                    onClick={() => void importDoc(d)}
+                    disabled={busy !== null || (done[d.url] && !done[d.url]!.proposalId)}
+                    onClick={() => {
+                      const result = done[d.url]
+                      if (result?.proposalId) navigate(`/chat/import/${result.proposalId}`)
+                      else void importDoc(d)
+                    }}
                     className="flex h-11 shrink-0 items-center rounded-full bg-canvas px-3.5 text-[13px] font-semibold text-brand disabled:opacity-50"
                   >
-                    {busy === d.url ? t('academic.found.importing') : t('academic.found.import')}
+                    {busy === d.url
+                      ? t('academic.found.importing')
+                      : done[d.url]
+                        ? done[d.url]!.proposalId
+                          ? t('academic.found.review')
+                          : t('academic.found.nothing')
+                        : t('academic.found.import')}
                   </button>
                 </div>
               )
@@ -174,10 +193,7 @@ export function FoundPage() {
             type="button"
             size="pill"
             className="btn-primary"
-            onClick={() => {
-              openSheet('syllabus')
-              navigate('/chat')
-            }}
+            onClick={() => openSheet('syllabus')}
           >
             {t('academic.found.addPdf')}
           </Button>
@@ -189,10 +205,7 @@ export function FoundPage() {
           {t('academic.found.haveLink')}{' '}
           <button
             type="button"
-            onClick={() => {
-              openSheet('auto', { link: true })
-              navigate('/chat')
-            }}
+            onClick={() => openSheet('auto', { link: true })}
             className="inline-flex min-h-11 items-center font-semibold text-brand"
           >
             {t('academic.found.pasteLink')}

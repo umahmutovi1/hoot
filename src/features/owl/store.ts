@@ -61,7 +61,7 @@ export type OwlMessage =
       action?: OwlAction
     }
   | { id: string; role: 'owl'; type: 'pending'; stage: 'thinking' | 'reading' | 'storing' }
-  | { id: string; role: 'owl'; type: 'error'; code: AiErrorCode | 'offline' | 'file' }
+  | { id: string; role: 'owl'; type: 'error'; code: AiErrorCode | 'offline' | 'file' | 'link' }
   | {
       id: string
       role: 'owl'
