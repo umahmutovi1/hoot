@@ -24,10 +24,13 @@ export function SyllabusReview({
   items,
   saved,
   onChange,
+  onPickElective,
 }: {
   items: SyllabusProposal[]
   saved: boolean
   onChange: (key: string, update: (p: SyllabusProposal) => SyllabusProposal) => void
+  /** "Koji slušaš?": adds this option of its elective slot, not the others. */
+  onPickElective: (key: string) => void
 }) {
   const { t } = useTranslation()
   const subjects = (useSubjects().data ?? []).filter((s) => !s.archived)
@@ -50,6 +53,22 @@ export function SyllabusReview({
       ),
     }))
   const disabled = saved || (!item.subjectId && !item.addSubject)
+  // An elective slot is one tab: its picked option, else the slot's name.
+  const tabs: { key: string; label: string; group: string | null }[] = []
+  for (const x of items) {
+    const group = !x.subjectId ? x.electiveGroup : null
+    if (!group) {
+      tabs.push({ key: x.key, label: x.subjectId ? nameOf(x) : `+ ${x.subjectName}`, group: null })
+      continue
+    }
+    if (tabs.some((tab) => tab.group === group)) continue
+    const picked = items.find((o) => o.electiveGroup === group && !o.subjectId && o.addSubject)
+    tabs.push({
+      key: (picked ?? x).key,
+      label: picked ? `+ ${picked.subjectName}` : group,
+      group,
+    })
+  }
 
   const match = async (subjectId: string) => {
     const subject = subjects.find((s) => s.id === subjectId)
@@ -62,28 +81,70 @@ export function SyllabusReview({
   return (
     <section className="flex flex-col gap-3">
       <h2 className={sectionTitle}>{t('owl.syllabus.section')}</h2>
-      {items.length > 1 && (
+      {tabs.length > 1 && (
         <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 pb-1" role="tablist">
-          {items.map((x) => (
-            <button
-              key={x.key}
-              type="button"
-              role="tab"
-              aria-selected={x.key === item.key}
-              onClick={() => {
-                setOpen(x.key)
-                setMatching(false)
-              }}
-              className={cn(chip, x.key === item.key ? 'bg-ink text-white' : 'bg-white/50')}
-            >
-              {x.subjectId ? nameOf(x) : `+ ${x.subjectName}`}
-            </button>
-          ))}
+          {tabs.map((x) => {
+            const on = x.group
+              ? item.electiveGroup === x.group && !item.subjectId
+              : x.key === item.key
+            return (
+              <button
+                key={x.key}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => {
+                  setOpen(x.key)
+                  setMatching(false)
+                }}
+                className={cn(chip, on ? 'bg-ink text-white' : 'bg-white/50')}
+              >
+                {x.label}
+              </button>
+            )
+          })}
         </div>
       )}
       <h3 className="px-1 text-[22px] leading-tight font-bold">{nameOf(item)}</h3>
 
-      {!item.subjectId && (
+      {!item.subjectId && item.electiveGroup && (
+        <div className="flex flex-col gap-3 rounded-card glass p-4">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">
+              {t('owl.syllabus.electiveTitle', { group: item.electiveGroup })}
+            </span>
+            <span className="text-[13px] leading-[1.4] text-ink-muted">
+              {t('owl.syllabus.electiveSub')}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5" role="radiogroup">
+            {items
+              .filter((x) => x.electiveGroup === item.electiveGroup && !x.subjectId)
+              .map((x) => (
+                <button
+                  key={x.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={x.addSubject}
+                  disabled={saved}
+                  onClick={() => {
+                    onPickElective(x.key)
+                    setOpen(x.key)
+                  }}
+                  className={cn(
+                    chip,
+                    'h-auto min-h-[38px] py-1.5 text-left',
+                    x.addSubject ? 'bg-ink text-white' : 'bg-white/50',
+                  )}
+                >
+                  {x.subjectName}
+                </button>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {!item.subjectId && !item.electiveGroup && (
         <div className="flex flex-col gap-3 rounded-card glass p-4">
           <div className="flex flex-col gap-0.5">
             <span className="text-[15px] font-semibold">{t('owl.syllabus.addTitle')}</span>
@@ -160,6 +221,28 @@ export function SyllabusReview({
               onInclude={(on) => toggle('topics', x.key, on)}
             />
           ))}
+        </List>
+      )}
+
+      {item.chapters && (
+        <List title={t('owl.syllabus.chaptersTitle')}>
+          <Row
+            title={t('owl.syllabus.chaptersRow', {
+              count: item.chapters.parts.length,
+              chapters: new Set(item.chapters.parts.map((x) => x.chapter)).size,
+            })}
+            sub={t(
+              item.chapters.replacesRough
+                ? 'owl.syllabus.chaptersReplaces'
+                : 'owl.syllabus.chaptersSub',
+            )}
+            status={item.chapters.include ? 'new' : 'skipped'}
+            include={item.chapters.include}
+            disabled={disabled}
+            onInclude={(on) =>
+              set((p) => (p.chapters ? { ...p, chapters: { ...p.chapters, include: on } } : p))
+            }
+          />
         </List>
       )}
 

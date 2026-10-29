@@ -63,6 +63,7 @@ export function useOwl() {
           subjects: subjects ?? [],
           periods: periods ?? [],
           classes,
+          yearOfStudy: profile?.year_of_study ?? null,
           queryClient,
         }
       : null

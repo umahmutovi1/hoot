@@ -21,6 +21,7 @@ import { StatusChip } from './ImportCard'
 import { NoTeachingPeriod, saveCount, useSaveImport } from './saveImport'
 import { findProposal, useOwlStore } from './store'
 import { SyllabusReview } from './SyllabusReview'
+import { pickElective } from '@/lib/import/syllabus'
 import { yearLabelOn } from '@/lib/academic'
 import { localDay } from '@/lib/day'
 
@@ -286,6 +287,9 @@ export function ImportReviewPage() {
               ...p,
               syllabus: (p.syllabus ?? []).map((x) => (x.key === key ? update(x) : x)),
             }))
+          }
+          onPickElective={(key) =>
+            updateProposal(id, (p) => ({ ...p, syllabus: pickElective(p.syllabus ?? [], key) }))
           }
         />
       )}
