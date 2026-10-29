@@ -225,7 +225,7 @@ describe('syllabus', () => {
     const req = parseRequest(request({ kind: 'syllabus' }), [])
     expect(req.task).toBe('parse_syllabus')
     expect(req.text).toContain(`${SIGNALI}: Signali i sistemi`)
-    expect(req.maxTokens).toBe(16000)
+    expect(req.maxTokens).toBe(20000)
   })
 
   it('keeps known subject ids only and drops a pass mark above the maximum', () => {

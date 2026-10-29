@@ -227,6 +227,12 @@ function Message({ message: m }: { message: OwlMessage }) {
             <span>{t('owl.document.found', { count: m.found })}</span>
           ) : m.again ? (
             <span>{t('owl.document.nothingAgain')}</span>
+          ) : m.kind === 'syllabus' ? (
+            <span>
+              {m.year
+                ? t('owl.document.noSubjectsYear', { year: m.year })
+                : t('owl.document.noSubjects')}
+            </span>
           ) : (
             (m.kind === 'academic_calendar' || m.kind === 'exam_schedule') && (
               <span>{t('owl.document.noDates')}</span>

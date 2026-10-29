@@ -369,6 +369,60 @@ export function mergeSyllabi<T extends ParsedSyllabus>(parts: readonly T[][]): T
   return [...out.values()]
 }
 
+const SYLLABUS_MARKERS = [
+  /nastavni plan/i,
+  /plan i program/i,
+  /\bsilabus|\bsyllabus/i,
+  /sadržaj (modula|predmeta|kursa)|sadrzaj (modula|predmeta)/i,
+  /ishodi (učenja|modula|predmeta)/i,
+  /naziv (modula|predmeta)/i,
+]
+
+/**
+ * A study plan or syllabus by its words, without an AI call: ECTS several times and at least two
+ * syllabus headings ("Nastavni plan", "Sadržaj modula", "Ishodi učenja"…). "Pogodi sama" then
+ * reads it as a syllabus right away.
+ */
+export function looksLikeSyllabus(pages: readonly { text: string }[]): boolean {
+  const text = pages.map((p) => p.text).join('\n')
+  const ects = text.match(/\bECTS\b/g)?.length ?? 0
+  const headings = SYLLABUS_MARKERS.filter((m) => m.test(text)).length
+  return ects >= 3 && headings >= 2
+}
+
+const YEAR_WORDS: Record<string, number> = {
+  prva: 1,
+  druga: 2,
+  treca: 3,
+  cetvrta: 4,
+  peta: 5,
+  sesta: 6,
+}
+
+/** The year of study a page starts describing ("Godina studija 2", "Godina: Druga godina"). */
+function pageYear(text: string): number | null {
+  const n = /godina studija\s*:?\s*(\d)\b|year of study\s*:?\s*(\d)\b/i.exec(text)
+  if (n) return Number(n[1] ?? n[2])
+  const w =
+    /godina\s*:?\s*(prva|druga|treća|treca|četvrta|cetvrta|peta|šesta|sesta)\s+godina/i.exec(text)
+  return w ? (YEAR_WORDS[norm(w[1]!)] ?? null) : null
+}
+
+/**
+ * A whole programme's pages for one year of study, without an AI call: a page that names a year
+ * starts that year's part, the pages after it belong to it until another year is named; pages
+ * before any year (title, contents) stay. Unchanged when the document names fewer than two years.
+ */
+export function pagesForYear<T extends { text: string }>(pages: readonly T[], year: number): T[] {
+  const years = pages.map((p) => pageYear(p.text))
+  if (new Set(years.filter((y) => y !== null)).size < 2) return [...pages]
+  let current: number | null = null
+  return pages.filter((_, i) => {
+    current = years[i] ?? current
+    return current === null || current === year
+  })
+}
+
 /** "Upari sa…": the same subject of the syllabus proposed again for one of ours. */
 export function assignSyllabusSubject(
   proposal: SyllabusProposal,

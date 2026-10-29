@@ -75,6 +75,8 @@ export type OwlMessage =
       found: number
       /** Read again from the chat ("ubaci mi ovo"), not newly given. */
       again?: boolean
+      /** A syllabus: the year of study it was read for (no subjects found → say which). */
+      year?: number | null
     }
   | { id: string; role: 'owl'; type: 'proposal'; proposal: ImportProposal }
 

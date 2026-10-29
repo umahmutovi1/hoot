@@ -66,8 +66,9 @@ const SYLLABUS_RULES = `Syllabus ("Plan i program", "nastavni plan", "silabus", 
 - elective_group: when the subject is one option of an elective slot ("Izborni predmet 4.1",
   "izborni modul"), the slot's name as written; null for a required subject. Never return the
   slot itself ("Izborni predmet 4.1") as a subject, only its options.
-- literature: each book or script as written; required = true for "obavezna", "osnovna",
-  "preporučena" (the main list), false for "dodatna", "dopunska" (extra). If not marked, true.
+- literature: each book or script as written, at most 6 per subject (the main list first);
+  required = true for "obavezna", "osnovna", "preporučena" (the main list), false for
+  "dodatna", "dopunska" (extra). If not marked, true. Title and authors only, no publisher.
 - topics: the weekly plan of lectures in order, one short topic per week (week = the week number
   when written); without a weekly plan, the numbered chapters of the content ("Sadržaj modula",
   "Sadržaj predmeta") in order, the chapter heading only, week = null. Merge lab/exercise lines
@@ -82,7 +83,9 @@ const SYLLABUS_RULES = `Syllabus ("Plan i program", "nastavni plan", "silabus", 
 - If the student's note names a year, semester or subject, keep only those subjects.`
 
 const DOCUMENT_RULES = `Document kind: academic_calendar, exam_schedule, rules (rulebook,
-"pravilnik"), syllabus ("silabus", course plan), notice ("obavještenje"), other.`
+"pravilnik"), syllabus (a course syllabus or a whole study plan: "silabus", "nastavni plan",
+"plan i program", "plan studija", module descriptions with ECTS, content and literature),
+notice ("obavještenje"), other.`
 
 interface ParseVariant {
   task: AiTask
@@ -159,7 +162,9 @@ export function parseRequest(
     schema: variant.schema as z.ZodType<Record<string, unknown>>,
     // A transcription of a scanned file needs room; extraction alone stays small.
     // A whole programme's syllabus lists many subjects; it gets the larger budget too.
-    maxTokens: req.text && req.kind !== 'syllabus' ? 8000 : 16000,
+    // A syllabus answer (books, chapters, grading for each subject) gets the most room; above
+    // ~21 000 the Anthropic SDK requires streaming.
+    maxTokens: req.kind === 'syllabus' ? 20000 : req.text ? 8000 : 16000,
   }
 }
 
