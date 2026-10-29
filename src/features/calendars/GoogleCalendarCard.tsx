@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { formatDistanceToNowStrict } from 'date-fns'
 import { Switch } from '@/components/Switch'
@@ -152,6 +152,14 @@ export function GoogleCalendarCard({ online }: { online: boolean }) {
           />
         </div>
       ))}
+
+      <Link
+        to="/today/calendar"
+        state={{ back: '/settings/feeds' }}
+        className="flex h-11 items-center justify-center rounded-full bg-canvas text-[13px] font-semibold text-brand"
+      >
+        {t('googleCalendar.review')}
+      </Link>
 
       {confirm ? (
         <div className="flex flex-col gap-2 rounded-[20px] bg-warning-soft p-4">

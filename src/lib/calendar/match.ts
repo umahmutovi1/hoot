@@ -250,3 +250,52 @@ export function inGoogleAlready(matches: MatchRow[], googleFeedIds: ReadonlySet<
   }
   return { entries, exams }
 }
+
+export interface UnknownSeries {
+  key: string
+  feedId: string
+  matchKey: string
+  title: string
+  weekday: number
+  startMin: number
+  endMin: number
+  eventIds: string[]
+}
+
+/**
+ * Upcoming weekly series counted as plain busy time that nobody decided about: maybe a lecture the
+ * rules and the AI did not recognize ("Mat A2"). Asked once; "Nije predavanje" is remembered.
+ */
+export function unknownSeries(input: {
+  events: MatchEvent[]
+  matches: MatchRow[]
+  timeZone: string
+  now: Date
+}): UnknownSeries[] {
+  const decided = new Set(input.matches.map((m) => `${m.feed_id}|${m.match_key}`))
+  const out = new Map<string, UnknownSeries>()
+  for (const e of [...input.events].sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())) {
+    if (e.kind !== 'busy' || !e.inSeries || !e.title) continue
+    if (e.endsAt.getTime() <= input.now.getTime()) continue
+    const matchKey = seriesKey(e, input.timeZone)
+    const key = `${e.feedId}|${matchKey}`
+    if (decided.has(key)) continue
+    const known = out.get(key)
+    if (known) {
+      known.eventIds.push(e.id)
+      continue
+    }
+    const start = local(e.startsAt, input.timeZone)
+    out.set(key, {
+      key,
+      feedId: e.feedId,
+      matchKey,
+      title: e.title,
+      weekday: weekdayOf(start.date),
+      startMin: start.minutes,
+      endMin: start.minutes + Math.round((e.endsAt.getTime() - e.startsAt.getTime()) / 60_000),
+      eventIds: [e.id],
+    })
+  }
+  return [...out.values()]
+}

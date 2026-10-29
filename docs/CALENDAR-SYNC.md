@@ -174,7 +174,8 @@ Ekran „Iz kalendara“ (`/today/calendar`, kartica „Iz tvog kalendara“ na 
 - Spojeno predavanje se ne računa dvaput kao zauzetost (događaj postaje „slobodan“, termin rasporeda drži vrijeme).
 - Spojena stavka iz tvog Google kalendara se ne upisuje u kalendar „Hoot“ (`inGoogleAlready`), pa svaka stvar postoji tačno jednom.
 - Rokovi idu kao i ranije kroz „Rokovi iz kalendara“ (`external_events.deadline_id`).
-- Kasnije: kad uvoz rasporeda ili ispita iz slike / PDF-a nađe isto što je već povezano iz kalendara, prikazati „već imaš“.
+- Uvoz rasporeda i ispita iz slike ili PDF-a već uparuje postojeće termine i ispite (`existingId`). Ono što je uvezeno iz kalendara je zato „izmijenjeno / već imaš“ u PDF uvozu, a ono što prvo dođe iz PDF-a, „Iz kalendara“ nudi kao Spoji.
+- Ulaz: kartica na Danas, onboarding i „Predavanja i ispiti iz kalendara“ na Google kartici u Postavkama.
 
 ### Onboarding (korak 2 „Šta već imaš?“)
 
@@ -182,7 +183,7 @@ Ekran „Iz kalendara“ (`/today/calendar`, kartica „Iz tvog kalendara“ na 
 - Kad prepoznavanje nađe predavanja ili ispite: „U kalendaru već imaš: 6 predavanja · 2 ispita · pregledaj“ → „Iz kalendara“ → nazad na korak.
 - Kartica „Raspored nastave“ bez termina, a sa predavanjima u Google-u: „Već u Google kalendaru: N predavanja · uvezi“ (isti pregled, ne ručni unos).
 - iCal je „Drugi kalendar (link)“ za Outlook i Moodle.
-- Kasnije: pitanje „Imaš li raspored u Google kalendaru?“ kad se ponavljajući događaji ne prepoznaju kao predavanja (označavanje cijele serije).
+- Sedmična serija koju ni pravila ni AI nisu prepoznali kao predavanje („Mat A2“) dobija „Je li predavanje?“ na ekranu „Iz kalendara“: Predavanje je (svi događaji serije postaju `lecture`, vrsta korisnice, pa se nude kao predavanje) / Nije (pamti se). U onboardingu se kartica rasporeda poziva na to samo kad ništa drugo nije nađeno.
 
 ### Pouzdanost
 

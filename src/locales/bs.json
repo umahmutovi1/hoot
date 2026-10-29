@@ -1884,7 +1884,8 @@
       "googleFound": "U kalendaru već imaš: {{found}} · pregledaj",
       "timetableInGoogle_one": "Već u Google kalendaru: {{count}} predavanje · uvezi",
       "timetableInGoogle_few": "Već u Google kalendaru: {{count}} predavanja · uvezi",
-      "timetableInGoogle_other": "Već u Google kalendaru: {{count}} predavanja · uvezi"
+      "timetableInGoogle_other": "Već u Google kalendaru: {{count}} predavanja · uvezi",
+      "timetableAsk": "U Google kalendaru ima sedmičnih događaja: jesu li neki predavanja? · pogledaj"
     },
     "rhythm": {
       "title": "Tvoj ritam",
@@ -2758,7 +2759,8 @@
     "tag": {
       "synced": "u Google-u",
       "pending": "čeka Google"
-    }
+    },
+    "review": "Predavanja i ispiti iz kalendara"
   },
   "calendarImport": {
     "title": "Iz kalendara",
@@ -2802,6 +2804,9 @@
     "cardLectures_other": "{{count}} predavanja",
     "cardExams_one": "{{count}} ispit",
     "cardExams_few": "{{count}} ispita",
-    "cardExams_other": "{{count}} ispita"
+    "cardExams_other": "{{count}} ispita",
+    "unknown": "Ponavlja se svake sedmice: je li predavanje?",
+    "isLecture": "Predavanje je",
+    "notLecture": "Nije"
   }
 }

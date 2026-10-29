@@ -336,10 +336,10 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 - [x] Dva moda bloka: Automatski / Fiksno (BlockSheet „Način bloka“ umjesto „Zadrži ovo vrijeme“ i „Vrati planu“, oznaka „fiksno“), svaki Fiksni blok se vraća na Automatski
 - [x] Pomjeren ispit u tvom kalendaru → „Promijenjeno u kalendaru“ (Uzmi novi datum / Zadrži stari); ispit pomjeren u kalendaru „Hoot“ se vraća na Hoot-ovu verziju
 - [x] Duplikati: `calendar_matches` (`0032`), `src/lib/calendar/match.ts` + testovi, „Iz kalendara“ (Dodaj / Spoji / Google zamjenjuje / Hoot zamjenjuje / Zadrži oba / Preskoči), uvoz predavanja i ispita povezano, bez dvostruke zauzetosti i bez kopije u kalendaru „Hoot“
-- [ ] „Već imaš“ u uvozu rasporeda i ispita iz slike / PDF-a kad je isto povezano iz kalendara
+- [x] „Već imaš“ u uvozu rasporeda i ispita iz slike / PDF-a: postojeće uparivanje (`existingId`) to već pokriva, u oba smjera
 - [x] Status u Planu: badge u zaglavlju (Google: sinhronizovano prije X / čeka / nije povezano → Povezani kalendari), na bloku oznaka sinhronizovan / čeka (`calendar_links`), na događaju iz Google-a oznaka „iz Google kalendara“
 - [x] Onboarding korak 2: „Poveži Google kalendar“ prvi (povratak na korak), nađena predavanja i ispiti → „Iz kalendara“, raspored iz Google-a umjesto ručnog unosa
-- [ ] Pitanje „Imaš li raspored u Google kalendaru?“ kad se serije ne prepoznaju kao predavanja
+- [x] „Je li predavanje?“ za neprepoznate sedmične serije („Iz kalendara“, onboarding samo kad ništa drugo nije nađeno)
 - **DoD:** blok promijenjen u app-u je u Google kalendaru za par sekundi i obratno; link iz događaja otvara „Započeti sesiju sada?“; predavanje koje je i u Google-u i u Hoot-u postoji jednom; nijedan token ni link u logovima → `v0.10.5`
 
 ## Etapa 11a — ML temelj

@@ -1833,7 +1833,8 @@
       "googleSub": "Busy time, lectures and exams from the calendar, and the plan goes back into Google",
       "googleFound": "Already in your calendar: {{found}} · review",
       "timetableInGoogle_one": "Already in Google Calendar: {{count}} lecture · import",
-      "timetableInGoogle_other": "Already in Google Calendar: {{count}} lectures · import"
+      "timetableInGoogle_other": "Already in Google Calendar: {{count}} lectures · import",
+      "timetableAsk": "Your Google Calendar has weekly events: are any of them lectures? · review"
     },
     "rhythm": {
       "title": "Your rhythm",
@@ -2685,7 +2686,8 @@
     "tag": {
       "synced": "in Google",
       "pending": "waiting for Google"
-    }
+    },
+    "review": "Lectures and exams from calendars"
   },
   "calendarImport": {
     "title": "From your calendars",
@@ -2726,6 +2728,9 @@
     "cardLectures_one": "{{count}} lecture",
     "cardLectures_other": "{{count}} lectures",
     "cardExams_one": "{{count}} exam",
-    "cardExams_other": "{{count}} exams"
+    "cardExams_other": "{{count}} exams",
+    "unknown": "Repeats every week: is it a lecture?",
+    "isLecture": "It's a lecture",
+    "notLecture": "No"
   }
 }

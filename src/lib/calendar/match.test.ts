@@ -5,6 +5,7 @@ import {
   inGoogleAlready,
   linkedLectureEvents,
   seriesKey,
+  unknownSeries,
   type MatchEvent,
 } from './match'
 
@@ -130,5 +131,29 @@ describe('linked items', () => {
   it('lists Hoot items that are already in Google only for Google feeds', () => {
     expect(inGoogleAlready([linked], new Set(['g'])).entries.has('e1')).toBe(true)
     expect(inGoogleAlready([linked], new Set(['other'])).entries.size).toBe(0)
+  })
+})
+
+describe('unknownSeries', () => {
+  const busy = lectures.map((e) => ({ ...e, kind: 'busy' as const, title: 'Mat A2' }))
+
+  it('offers a weekly busy series once until it is decided', () => {
+    const out = unknownSeries({ events: busy, matches: [], timeZone: tz, now })
+    expect(out).toHaveLength(1)
+    expect(out[0]).toMatchObject({
+      title: 'Mat A2',
+      weekday: 1,
+      startMin: 540,
+      eventIds: ['l1', 'l2', 'l3'],
+    })
+    const skipped = {
+      feed_id: 'g',
+      match_key: seriesKey(busy[0]!, tz),
+      kind: 'lecture',
+      target_id: null,
+      decision: 'skipped',
+      seen_start: null,
+    }
+    expect(unknownSeries({ events: busy, matches: [skipped], timeZone: tz, now })).toEqual([])
   })
 })

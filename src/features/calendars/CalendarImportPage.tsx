@@ -15,6 +15,7 @@ import { useCalendarFeeds } from './api'
 import {
   actionsFor,
   NoTeachingPeriod,
+  useAnswerSeries,
   useApplyCalendarProposals,
   useCalendarProposals,
   type MatchAction,
@@ -38,7 +39,8 @@ export function CalendarImportPage() {
   const back = (useLocation().state as { back?: string } | null)?.back ?? '/'
   const { locale } = useLocale()
   const weekdays = useWeekdayNames('short')
-  const { lectures, exams } = useCalendarProposals()
+  const { lectures, exams, unknown } = useCalendarProposals()
+  const answer = useAnswerSeries()
   const subjects = (useSubjects().data ?? []).filter((s) => !s.archived)
   const feeds = useCalendarFeeds().data ?? []
   const apply = useApplyCalendarProposals()
@@ -122,7 +124,51 @@ export function CalendarImportPage() {
       <ScreenTitle title={t('calendarImport.title')} />
       <span className="text-[13px] text-ink-muted">{t('calendarImport.lead')}</span>
 
-      {total === 0 && (
+      {unknown.length > 0 && (
+        <>
+          <span className="px-1 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+            {t('calendarImport.unknown')}
+          </span>
+          <div className="flex flex-col rounded-card glass p-1.5">
+            {unknown.map((u) => (
+              <div
+                key={u.key}
+                className="flex flex-col gap-2 border-b border-canvas px-2.5 py-3 last:border-0"
+              >
+                <span className="flex min-w-0 flex-col gap-0.5">
+                  <span className="text-sm leading-[1.3] font-semibold">{u.title}</span>
+                  <span className="text-xs text-ink-muted">
+                    {t('calendarImport.weekly', {
+                      day: weekdays[u.weekday],
+                      from: formatClock(u.startMin),
+                      to: formatClock(u.endMin),
+                    })}
+                  </span>
+                </span>
+                <div className="flex gap-1.5">
+                  <button
+                    type="button"
+                    disabled={answer.isPending}
+                    onClick={() => answer.mutate({ series: u, lecture: true })}
+                    className="h-11 flex-1 rounded-full bg-white/50 text-[13px] font-semibold text-brand"
+                  >
+                    {t('calendarImport.isLecture')}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={answer.isPending}
+                    onClick={() => answer.mutate({ series: u, lecture: false })}
+                    className="h-11 flex-1 rounded-full bg-white/50 text-[13px] font-semibold"
+                  >
+                    {t('calendarImport.notLecture')}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      {total === 0 && unknown.length === 0 && (
         <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('calendarImport.none')}</p>
       )}
       {lectures.length > 0 && (

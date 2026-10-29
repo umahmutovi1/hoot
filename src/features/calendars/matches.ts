@@ -10,6 +10,8 @@ import { examKindDefaults, type AssessmentKind } from '@/features/subjects/model
 import { fold } from '@/lib/calendar/classify'
 import {
   calendarProposals,
+  unknownSeries,
+  type UnknownSeries,
   type ExamProposal,
   type LectureProposal,
   type MatchEvent,
@@ -61,9 +63,10 @@ export function useCalendarProposals() {
   // The moment the screen opened: what is upcoming does not move while it is open.
   const [now] = useState(() => new Date())
   return useMemo(() => {
-    if (!matches || !subjects || !timetable) return { lectures: [], exams: [] }
+    if (!matches || !subjects || !timetable) return { lectures: [], exams: [], unknown: [] }
     const active = subjects.filter((s) => !s.archived)
-    return calendarProposals({
+    const unknown = unknownSeries({ events, matches, timeZone, now })
+    const found = calendarProposals({
       events,
       matches,
       entries: timetable.map((e) => ({
@@ -82,6 +85,7 @@ export function useCalendarProposals() {
       timeZone,
       now,
     })
+    return { ...found, unknown }
   }, [events, matches, subjects, timetable, timeZone, now])
 }
 
@@ -251,6 +255,45 @@ export function useApplyCalendarProposals() {
           eventsKey(userId),
           ['plan', userId],
         ].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+      ),
+  })
+}
+
+/**
+ * "Je li ovo predavanje?" for a weekly series the rules and the AI took for busy time: yes marks
+ * its events as lectures (the user's kind), so the series is offered as a lecture; no is kept.
+ */
+export function useAnswerSeries() {
+  const userId = useAuth().session?.user.id
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ series, lecture }: { series: UnknownSeries; lecture: boolean }) => {
+      if (lecture) {
+        const { error } = await supabase
+          .from('external_events')
+          .update({ kind: 'lecture', kind_by: 'user' })
+          .in('id', series.eventIds.slice(0, 200))
+        if (error) throw error
+        return
+      }
+      const { error } = await supabase.from('calendar_matches').upsert(
+        {
+          feed_id: series.feedId,
+          match_key: series.matchKey,
+          kind: 'lecture',
+          target_id: null,
+          decision: 'skipped',
+          seen_start: null,
+        },
+        { onConflict: 'feed_id,match_key' },
+      )
+      if (error) throw error
+    },
+    onSettled: () =>
+      Promise.all(
+        [eventsKey(userId), matchesKey(userId)].map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
       ),
   })
 }

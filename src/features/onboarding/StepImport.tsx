@@ -34,6 +34,12 @@ export function StepImport(_props: StepProps) {
   const review = () => navigate('/today/calendar', { state: { back: '/onboarding' } })
   const lectures = fromCalendar.lectures.length
   const exams = fromCalendar.exams.length
+  // Weekly events that were not read as lectures: asked only when nothing else was found.
+  const askSeries =
+    Boolean(google) &&
+    lectures === 0 &&
+    timetableRows.length === 0 &&
+    fromCalendar.unknown.length > 0
 
   // Back from Google's consent screen.
   const result = params.get('google')
@@ -107,11 +113,15 @@ export function StepImport(_props: StepProps) {
           sub={
             timetableRows.length === 0 && lectures > 0
               ? t('onboarding.import.timetableInGoogle', { count: lectures })
-              : t('onboarding.import.timetableSub')
+              : askSeries
+                ? t('onboarding.import.timetableAsk')
+                : t('onboarding.import.timetableSub')
           }
           done={timetableRows.length > 0}
           onClick={() =>
-            timetableRows.length === 0 && lectures > 0 ? review() : navigate('/plan/timetable')
+            timetableRows.length === 0 && (lectures > 0 || askSeries)
+              ? review()
+              : navigate('/plan/timetable')
           }
         />
         <ImportCard
