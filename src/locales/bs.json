@@ -239,6 +239,10 @@
       "weekSub": "Šablon termina za cijelu sedmicu",
       "timetable": "Raspored nastave",
       "timetableSub": "Predavanja i vježbe po sedmicama"
+    },
+    "timeline": {
+      "edit": "Uredi",
+      "details": "Detalji"
     }
   },
   "subjects": {
@@ -1839,7 +1843,7 @@
       "deadlines": "Prepoznala sam Moodle: događaji su rokovi koje ti nudim za uvoz, ne zauzeto vrijeme."
     },
     "kindOf": {
-      "title": "Šta je ovo?",
+      "title": "Vrsta događaja",
       "busy": "Zauzeto",
       "lecture": "Nastava",
       "exam": "Ispit",
@@ -1852,7 +1856,8 @@
         "deadline": "Rok ne zauzima vrijeme; nudim ga za uvoz u rokove.",
         "free": "Samo se prikazuje, vrijeme je slobodno."
       },
-      "byAi": "procjena AI-ja"
+      "byAi": "procjena AI-ja",
+      "change": "Promijeni vrstu"
     }
   },
   "onboarding": {
@@ -2751,10 +2756,10 @@
     "examTitle": "Ispit: {{subject}} · {{exam}}",
     "deadlineTitle": "Rok: {{title}}",
     "badge": {
-      "synced": "Google ✓",
-      "pending": "Google · čeka {{count}}",
-      "reconnect": "Poveži Google ponovo",
-      "off": "Nije u Google-u"
+      "synced": "Sinhronizovano sa Google-om",
+      "pending": "Šaljem u Google…",
+      "reconnect": "Google treba ponovo povezati",
+      "off": "Nije sinhronizovano sa Google-om"
     },
     "tag": {
       "synced": "u Google-u",

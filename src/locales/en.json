@@ -232,6 +232,10 @@
       "weekSub": "The slot template for the whole week",
       "timetable": "Class timetable",
       "timetableSub": "Lectures and exercises by week"
+    },
+    "timeline": {
+      "edit": "Edit",
+      "details": "Details"
     }
   },
   "subjects": {
@@ -1789,7 +1793,7 @@
       "deadlines": "Recognized as Moodle: events are due dates offered for import, not busy time."
     },
     "kindOf": {
-      "title": "What is this?",
+      "title": "Event type",
       "busy": "Busy",
       "lecture": "Class",
       "exam": "Exam",
@@ -1802,7 +1806,8 @@
         "deadline": "A due date takes no time; it is offered as a deadline.",
         "free": "Only shown, the time stays free."
       },
-      "byAi": "AI's guess"
+      "byAi": "AI's guess",
+      "change": "Change type"
     }
   },
   "onboarding": {
@@ -2678,10 +2683,10 @@
     "examTitle": "Exam: {{subject}} · {{exam}}",
     "deadlineTitle": "Due: {{title}}",
     "badge": {
-      "synced": "Google ✓",
-      "pending": "Google · {{count}} waiting",
+      "synced": "Synced with Google",
+      "pending": "Sending to Google…",
       "reconnect": "Reconnect Google",
-      "off": "Not in Google"
+      "off": "Not synced with Google"
     },
     "tag": {
       "synced": "in Google",
