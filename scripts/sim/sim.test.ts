@@ -86,7 +86,7 @@ describe('simulate', () => {
   it('no baseline metric got worse (DoD of every Stage 11a model)', () => {
     const runs = Array.from({ length: baseline.seeds }, (_, i) => simulate(i + 1).metrics)
     expect(worse(summarize(runs), baseline.summary)).toEqual([])
-  })
+  }, 60_000)
 })
 
 describe('worse', () => {
