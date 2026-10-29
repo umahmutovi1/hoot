@@ -21,7 +21,7 @@ Ciljevi:
 | Apple iCloud | Isključen skroz. Nema API-ja sa push obavještenjima. CalDAV traži app-specific lozinku koja daje pristup cijelom iCloud kalendaru, a brzina je moguća samo pollingom. Postojeći iCloud linkovi rade dalje kao obični iCal, ali se Apple više ne nudi. |
 | Klasifikacija | Prvo pravila u kodu, a AI samo za nejasne naslove. Rezultat je prijedlog jednim tapom, nikad automatski upis. |
 | Hoot blok obrisan u Google-u | Isto kao „Preskoči“: blok je preskočen, gradivo ide u plan od sutra. |
-| Hoot blok pomjeren u Google-u | Postaje ručni blok (`origin = 'user'`), kao pomjeranje u app-u; replan ga ne dira. |
+| Hoot blok pomjeren u Google-u | Postaje Fiksni blok (`origin = 'user'`, zaključan), kao zadani izbor pri pomjeranju u app-u; vraća se na Automatski u BlockSheetu. |
 | Ispit ili rok pomjeren u Google-u | Prijedlog „Promijenjeno u Google kalendaru“ jednim tapom; datum ispita se ne mijenja bez potvrde. |
 | Duplikati | Prepoznaju se sami. Kartica nudi Spoji (default), Hoot zamjenjuje, Google zamjenjuje, Zadrži oba. |
 | ICS izvoz plana (`calendar-feed`) | Zamijenjen Google dvosmjernim sync-om; ne pravi se. |
@@ -138,7 +138,7 @@ Odluka pri implementaciji: app računa šta treba biti u Google-u, a server samo
 - Webhook `google-calendar-sync` (`verify_jwt = false`) provjeri `X-Goog-Channel-Token`, odmah vrati 204 i posao uradi poslije odgovora (`EdgeRuntime.waitUntil`): pročita taj kalendar u prozoru 7 dana nazad / 120 naprijed. Odluka pri implementaciji: prozor umjesto `syncToken`-a. `syncToken` ne radi zajedno sa `timeMin`/`timeMax`, a cijela historija kalendara bez prozora može biti ogromna. Prozor je par poziva po promjeni, što je daleko ispod Google kvote.
 - Kalendari zauzetosti: isti upis kao iCal (`_shared/externalEvents.ts`, `replaceFeedEvents`).
 - Kalendar „Hoot“, događaj čiji se `etag` razlikuje od spremljenog (promjena korisnice):
-  - pomjeren blok → ručni blok (`origin = 'user'`) sa novim danom i vremenom. AI blok dobija `edited`, pa radi „Vrati predloženo“;
+  - pomjeren blok → **Fiksni** blok (`origin = 'user'`, zaključan: replan ga ne pomjera) sa novim danom i vremenom, kao zadani izbor pri pomjeranju u app-u. AI blok dobija `edited`, pa radi „Vrati predloženo“, a u BlockSheetu se bilo kad vraća na **Automatski**;
   - obrisan blok → `skip_requested_at`, isti put kao „Preskoči“ iz notifikacije: app primijeni `skipBlock()`, a link je `deleted`, pa se događaj ne vraća;
   - ispit, rok, nastava ili promijenjen naslov → Hoot-ova verzija se upiše nazad pri sljedećem push-u. Prijedlog „Datum ispita promijenjen u Google-u?“ dolazi uz duplikate;
   - događaj koji je korisnica sama dodala u kalendar „Hoot“ se ignoriše.

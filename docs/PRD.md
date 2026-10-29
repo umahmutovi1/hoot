@@ -390,6 +390,8 @@ Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash
 
 **Pomjeren blok: zaključaj ili ne (odluka, oktobar 2026, Etapa 10b).** Izmjena vremena ili dana bloka u BlockSheetu ima prekidač “Zadrži ovo vrijeme” (uključen po defaultu, kao do sad): uključen → blok postaje ručni (`origin = 'user'`) i replan ga ne pomjera; isključen → blok ostaje AI blok sa novim vremenom samo dok se plan ne promijeni (replan ga smije presložiti, toast to kaže). Ručni blok koji je nastao iz AI bloka ima “Vrati planu” (pojedinačno, uz postojeće “Vrati predloženo” za cijeli dan).
 
+**Dva moda bloka: Automatski i Fiksno (odluka, oktobar 2026, Etapa 10d).** „Ručni“ blok je u stvari zaključan, pa se u UI-ju zove **Fiksno** (ikona katanca, oznaka „fiksno“), a AI blok je **Automatski**. U bazi je to i dalje `plan_blocks.origin` (`user` = Fiksno, `ai` = Automatski). BlockSheet za postojeći blok ima jedan izbor „Način bloka: Automatski / Fiksno“ umjesto prekidača „Zadrži ovo vrijeme“ i dugmeta „Vrati planu“. Pomjeranje AI bloka predloži Fiksno (kao ranije default); Automatski uz izmjenu zadrži blok kao AI blok sa novim vremenom, koji replan smije presložiti. Svaki Fiksni blok (i onaj koji je korisnica sama dodala) se bilo kad vraća na Automatski: blok ide, a plan sam slaže njegovo gradivo. Blok pomjeren u Google kalendaru postaje Fiksni ([CALENDAR-SYNC.md](CALENDAR-SYNC.md)).
+
 **Ručni blokovi.** Blok sa `plan_blocks.origin = 'user'` napravio je ili izmijenio korisnik (vidi tok 7). Nema `plan_run_id`, troši kapacitet svog dana i njegove jedinice se računaju kao planirane. Replan ga nikad ne briše ni pomjera (pomjera ga samo kašnjenje na Počni, vidi Brze akcije dana); kad prođe, postaje odrađen ili propušten kao svaki drugi blok.
 
 **Replan je idempotentan.** Brišu se samo budući nezapočeti blokovi sa `origin = 'ai'`; odrađeni, propušteni i ručni ostaju. Isti ulaz uvijek daje isti plan, pa se može pokretati koliko god puta.
@@ -1801,6 +1803,6 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio; prstenovi i izazovi
 | Materijali | PDF na uređaju (outline, bez tokena) → Google Drive Picker (`drive.file`) → puni sadržaj Kasnije, opt-in |
 | Podsjetnici | Svaki blok, pomaci 2 h–5 min (default 30), preskače se samo iza započetog bloka; kašnjenje 15 min; Započni / Preskoči |
 | Teme boja | 5 svijetlih tema, boje predmeta ostaju; tamni režim Kasnije |
-| Pomjeren blok | Prekidač “Zadrži ovo vrijeme” (default: ručni, zaključan); isključen = replan smije presložiti |
+| Pomjeren blok | Način bloka Automatski / Fiksno (pomjeranje predloži Fiksno); Fiksno se bilo kad vraća na Automatski |
 | Današnji dan | Promjena dostupnosti, nastave ili zauzetosti preslaže vremena današnjih nezapočetih AI blokova; dodatni posao samo kroz karticu |
 | Start iz liste | Tap na blok → “Započeti sesiju sada?”; nazad u sesiji → Nastavi / Izađi / Završi ranije / Odbaci |

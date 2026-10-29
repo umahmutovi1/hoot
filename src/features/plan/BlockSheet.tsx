@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { BottomSheet } from '@/components/BottomSheet'
+import { LockIcon } from '@/components/icons'
 import { RadioCard } from '@/components/RadioCard'
 import { Switch } from '@/components/Switch'
 import { useToast } from '@/components/toast-store'
@@ -154,8 +155,9 @@ function BlockForm({
   const addExtra = useAddExtraTime()
   const start = useStartBlock()
   const [timeOn, setTimeOn] = useState(block?.start_min !== null && block?.start_min !== undefined)
-  // "Zadrži ovo vrijeme" (Stage 10b): on by default, as before (the block becomes manual).
-  const [keepTime, setKeepTime] = useState(true)
+  // Block mode (decision, October 2026): Automatski (the plan arranges it) or Fiksno (locked: the
+  // replan never moves it). Null until the user picks one; a moved AI block defaults to Fiksno.
+  const [pickedMode, setPickedMode] = useState<'auto' | 'fixed' | null>(null)
   const [time, setTime] = useState(formatClock(block?.start_min ?? 9 * 60))
   // Delete question: move the material, drop it from the exam, or give the slot to another subject.
   const [choice, setChoice] = useState<'move' | 'drop' | 'other'>('move')
@@ -213,12 +215,14 @@ function BlockForm({
   const startMin = timeOn ? (parseClock(time) ?? null) : null
   // An AI block whose day or time changed asks whether to keep that time.
   const moved = Boolean(block && wasAi && (day !== block.on_date || startMin !== block.start_min))
-  const asAi = moved && !keepTime
-  // A manual block that came from the plan can go back to it.
-  const fromPlan = block?.origin === 'user' && reasonOf(block)?.edited === true
+  const mode = pickedMode ?? (block?.origin === 'user' || moved || !block ? 'fixed' : 'auto')
+  const asAi = wasAi && mode === 'auto'
+  // A fixed block set to Automatski goes back to the plan (any fixed block, not only edited ones).
+  const toAuto = block?.origin === 'user' && mode === 'auto'
 
   const submit = async () => {
     if (!subjectId) return
+    if (toAuto) return backToPlan()
     const kind = TYPES.find((x) => x.id === type)!.kind
     const goals = model?.built.state.goals ?? []
     const covering = goals.find(
@@ -260,7 +264,9 @@ function BlockForm({
     const undo = await save(draft)
     show(
       asAi
-        ? t('blockSheet.movedAiToast')
+        ? moved
+          ? t('blockSheet.movedAiToast')
+          : t('blockSheet.savedToast')
         : wasAi
           ? t('blockSheet.lockedToast')
           : t('blockSheet.savedToast'),
@@ -783,27 +789,31 @@ function BlockForm({
         </div>
       )}
 
-      {moved ? (
-        <div className="glass flex items-center gap-3 rounded-[20px] px-3.5 py-3">
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="text-[15px] font-semibold">{t('blockSheet.keepTime')}</span>
-            <span className="text-xs leading-[1.35] text-ink-muted">
-              {keepTime ? t('blockSheet.keepTimeOn') : t('blockSheet.keepTimeOff')}
-            </span>
+      {block && !suggesting && (
+        <div className="glass flex flex-col gap-2 rounded-[20px] px-3.5 py-3">
+          <span className="text-[15px] font-semibold">{t('blockSheet.modeTitle')}</span>
+          <div role="radiogroup" aria-label={t('blockSheet.modeTitle')} className="flex gap-1.5">
+            {(['auto', 'fixed'] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="radio"
+                aria-checked={mode === m}
+                onClick={() => setPickedMode(m)}
+                className={cn(
+                  'flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold',
+                  mode === m ? 'bg-ink text-white' : 'bg-white/50 text-ink',
+                )}
+              >
+                {m === 'fixed' && <LockIcon size={14} />}
+                {t(`blockSheet.mode${m === 'auto' ? 'Auto' : 'Fixed'}`)}
+              </button>
+            ))}
+          </div>
+          <span className="text-xs leading-[1.35] text-ink-muted">
+            {t(`blockSheet.mode${mode === 'auto' ? 'Auto' : 'Fixed'}Sub`)}
           </span>
-          <Switch
-            checked={keepTime}
-            onChange={setKeepTime}
-            label={t('blockSheet.keepTime')}
-            hideLabel
-          />
         </div>
-      ) : (
-        wasAi && (
-          <p className="rounded-[18px] bg-canvas px-3.5 py-3 text-[13px] text-ink-secondary">
-            {t('blockSheet.lockNote')}
-          </p>
-        )
       )}
 
       <button
@@ -814,16 +824,6 @@ function BlockForm({
       >
         {suggesting ? t('blockSheet.addOne') : t('blockSheet.save')}
       </button>
-      {fromPlan && (
-        <button
-          type="button"
-          onClick={() => void backToPlan()}
-          className="flex min-h-12 flex-col items-center justify-center gap-0.5 py-1"
-        >
-          <span className="text-[15px] font-semibold text-brand">{t('blockSheet.backToPlan')}</span>
-          <span className="text-xs text-ink-muted">{t('blockSheet.backToPlanSub')}</span>
-        </button>
-      )}
       {block && block.on_date === today && block.status === 'planned' && (
         <button
           type="button"
