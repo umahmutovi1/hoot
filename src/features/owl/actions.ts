@@ -25,7 +25,13 @@ import {
   type ExistingPeriod,
 } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
-import { mergeSyllabi, proposeSyllabus, type SyllabusExisting } from '@/lib/import/syllabus'
+import {
+  looksLikeSyllabus,
+  mergeSyllabi,
+  pagesForYear,
+  proposeSyllabus,
+  type SyllabusExisting,
+} from '@/lib/import/syllabus'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
 import type { AiErrorCode } from '@shared/schemas.ts'
 import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
@@ -122,20 +128,38 @@ function capText(pages: PageText[]): PageText[] {
   return out
 }
 
-/** Parts of a long syllabus read at most (each one AI call): about 300 000 characters. */
+/** Parts of a long syllabus read at most (each one AI call). */
 const MAX_SYLLABUS_PARTS = 5
+/**
+ * Characters per syllabus part: smaller than one request allows, so the answer for the subjects
+ * in it (books, chapters, grading) fits the model's output and is not cut off.
+ */
+const SYLLABUS_PART_CHARS = 40_000
 
 /**
- * A syllabus longer than one request (a whole programme, ETF: ~220 000 characters) is read in
- * parts cut between pages, in parallel; the subjects of all parts are merged.
+ * A syllabus: a whole programme keeps only the pages of the student's year (no AI call), and what
+ * is still longer than one part is read in parts cut between pages, in parallel; the subjects of
+ * all parts are merged. A part that fails is left out while another one was read.
  */
-async function readSyllabus(request: ParseDocumentRequest, text: PageText[] | null) {
-  const total = text?.reduce((n, p) => n + p.text.length, 0) ?? 0
-  if (!text || total <= MAX_DOCUMENT_CHARS) return invokeAi<ParseResult>('parse-document', request)
-  const parts = splitPages(text, MAX_DOCUMENT_CHARS, MAX_SYLLABUS_PARTS)
-  const results = await Promise.all(
+async function readSyllabus(
+  request: ParseDocumentRequest,
+  text: PageText[] | null,
+  year: number | null,
+) {
+  const pages = text && year ? pagesForYear(text, year) : text
+  const total = pages?.reduce((n, p) => n + p.text.length, 0) ?? 0
+  if (!pages || total <= SYLLABUS_PART_CHARS)
+    return invokeAi<ParseResult>('parse-document', {
+      ...request,
+      text: pages ? capText(pages) : request.text,
+    })
+  const parts = splitPages(pages, SYLLABUS_PART_CHARS, MAX_SYLLABUS_PARTS)
+  const settled = await Promise.allSettled(
     parts.map((part) => invokeAi<ParseResult>('parse-document', { ...request, text: part })),
   )
+  const results = settled.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
+  const failed = settled.find((r) => r.status === 'rejected')
+  if (results.length === 0) throw (failed as PromiseRejectedResult).reason
   const first = results[0]!
   return {
     ...first,
@@ -216,9 +240,12 @@ export async function giveDocument(
     }
 
     // 2. The owl reads it (one AI call, also for "Pogodi sama"; a syllabus can take more).
+    // A study plan is known by its words: read it as one without asking the model first.
+    const readAs: ImportKind =
+      kind === 'auto' && text && looksLikeSyllabus(text) ? 'syllabus' : kind
     const request: ParseDocumentRequest = {
       document_id: documentId,
-      kind,
+      kind: readAs,
       locale: ctx.locale,
       today: ctx.today,
       text: text ? capText(text) : null,
@@ -229,13 +256,13 @@ export async function giveDocument(
       year_of_study: ctx.yearOfStudy,
     }
     let result =
-      kind === 'syllabus'
-        ? await readSyllabus(request, text)
+      readAs === 'syllabus'
+        ? await readSyllabus(request, text, ctx.yearOfStudy)
         : await invokeAi<ParseResult>('parse-document', request)
     // "Pogodi sama" only recognizes a syllabus; its subjects, books and topics need the
     // syllabus reading.
-    if (kind === 'auto' && result.kind === 'syllabus') {
-      const syllabus = await readSyllabus({ ...request, kind: 'syllabus' }, text)
+    if (readAs === 'auto' && result.kind === 'syllabus') {
+      const syllabus = await readSyllabus({ ...request, kind: 'syllabus' }, text, ctx.yearOfStudy)
       result = { ...syllabus, pages: result.pages.length ? result.pages : syllabus.pages }
     }
     void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
@@ -276,6 +303,7 @@ export async function giveDocument(
       documentId,
       stored,
       found,
+      ...(docKind === 'syllabus' ? { year: ctx.yearOfStudy } : {}),
     }
     store().replace(pendingId, done)
     const proposalId = found > 0 ? id() : null

@@ -1535,7 +1535,7 @@
       "rate_limited": "That's enough for today: all 30 AI calls are used. More tomorrow.",
       "provider_busy": "The AI service is busy. Try again in a minute.",
       "no_key": "AI is not set up yet.",
-      "invalid_output": "I couldn't read this. Try a clearer photo or the text.",
+      "invalid_output": "I could not read this document. Try again; if it is a photo, send a clearer one.",
       "bad_request": "I can't read this. Send an image, a PDF or text.",
       "unauthorized": "Your session expired. Sign in again.",
       "failed": "Something went wrong. Try again.",
@@ -1550,7 +1550,9 @@
       "noDates": "I found no dates, but I keep the document for questions.",
       "notStored": "I couldn’t save “{{title}}” to Documents, so I can’t answer from it. Send it again later.",
       "again": "I read “{{title}}” again.",
-      "nothingAgain": "I found nothing of that kind to import."
+      "nothingAgain": "I found nothing of that kind to import.",
+      "noSubjectsYear": "I found no year {{year}} subjects in this syllabus. Check your year of study in Settings → Faculty and year, or send the link again with a note like “3rd year”.",
+      "noSubjects": "I found no subjects in this syllabus. Send it again with a note saying which year or subject to take."
     },
     "kind": {
       "academic_calendar": "Academic calendar",

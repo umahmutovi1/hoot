@@ -1575,7 +1575,7 @@
       "rate_limited": "Za danas je dosta: iskorišteno je 30 AI poziva. Sutra nastavljamo.",
       "provider_busy": "AI servis je trenutno zauzet. Pokušaj za minut.",
       "no_key": "AI još nije podešen.",
-      "invalid_output": "Nisam uspjela pročitati ovo. Probaj jasniju sliku ili tekst.",
+      "invalid_output": "Nisam uspjela pročitati ovaj dokument. Probaj ponovo; ako je slika, pošalji jasniju.",
       "bad_request": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
       "unauthorized": "Prijava je istekla. Prijavi se ponovo.",
       "failed": "Nešto nije uspjelo. Pokušaj ponovo.",
@@ -1591,7 +1591,9 @@
       "noDates": "Datume nisam našla, ali dokument čuvam za pitanja.",
       "notStored": "„{{title}}“ nisam uspjela spremiti u Dokumente, pa iz njega ne mogu odgovarati. Pošalji ga ponovo kasnije.",
       "again": "Pročitala sam ponovo „{{title}}”.",
-      "nothingAgain": "Nisam našla ništa za uvoz te vrste."
+      "nothingAgain": "Nisam našla ništa za uvoz te vrste.",
+      "noSubjectsYear": "U ovom planu i programu nisam našla predmete {{year}}. godine. Provjeri godinu studija u Postavkama → Fakultet i godina, ili pošalji link ponovo uz poruku npr. „3. godina“.",
+      "noSubjects": "U ovom planu i programu nisam našla predmete. Pošalji ga ponovo uz poruku koju godinu ili predmet da uzmem."
     },
     "kind": {
       "academic_calendar": "Akademski kalendar",
