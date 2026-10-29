@@ -2678,10 +2678,10 @@
     "examTitle": "Exam: {{subject}} · {{exam}}",
     "deadlineTitle": "Due: {{title}}",
     "badge": {
-      "synced": "Google ✓",
-      "pending": "Google · {{count}} waiting",
+      "synced": "Synced with Google",
+      "pending": "Sending to Google…",
       "reconnect": "Reconnect Google",
-      "off": "Not in Google"
+      "off": "Not synced with Google"
     },
     "tag": {
       "synced": "in Google",

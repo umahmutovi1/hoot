@@ -12,7 +12,7 @@ export function PlanPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <PageTitle actions={<GoogleSyncBadge />}>{t('plan.title')}</PageTitle>
+      <PageTitle tag={<GoogleSyncBadge />}>{t('plan.title')}</PageTitle>
       <CalendarView />
     </div>
   )

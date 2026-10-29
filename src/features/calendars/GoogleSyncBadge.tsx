@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CheckIcon, ClockIcon, WarningIcon } from '@/components/icons'
 import { cn } from '@/lib/utils'
 import { useGoogleSyncStatus } from './google'
 
 /**
- * Plan header: is the plan in Google Calendar? "Google ✓", "Google · čeka 3", "Poveži ponovo" or
- * "Nije u Google-u"; a tap opens Povezani kalendari.
+ * Next to the Plan title: is the plan in Google Calendar? A soft brand tag when it is (or is being
+ * sent), a warning tag when not; a tap opens Povezani kalendari.
  */
 export function GoogleSyncBadge() {
   const { t } = useTranslation()
@@ -20,19 +19,15 @@ export function GoogleSyncBadge() {
         : pending > 0
           ? 'pending'
           : 'synced'
-  const Icon = state === 'synced' ? CheckIcon : state === 'pending' ? ClockIcon : WarningIcon
+  const warn = state === 'off' || state === 'reconnect'
   return (
     <Link
       to="/settings/feeds"
       className={cn(
-        'flex h-11 items-center gap-1.5 rounded-full glass px-3.5 text-[13px] font-semibold',
-        state === 'synced' && 'text-brand',
-        state === 'pending' && 'text-ink-secondary',
-        (state === 'off' || state === 'reconnect') && 'text-ink-muted',
-        state === 'reconnect' && 'text-warning-ink',
+        'flex min-h-7 shrink-0 items-center rounded-full px-2.5 text-xs font-semibold',
+        warn ? 'bg-warning-soft text-warning-ink' : 'bg-brand-soft text-brand',
       )}
     >
-      <Icon size={16} />
       {t(`googleCalendar.badge.${state}`, { count: pending })}
     </Link>
   )

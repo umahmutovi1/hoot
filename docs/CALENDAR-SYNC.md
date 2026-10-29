@@ -205,7 +205,7 @@ Greška upisuje samo kod u `calendar_accounts.last_error`. `invalid_grant` (u �
 
 ### UI
 
-- Plan (zaglavlje): badge „Google ✓“, „Google · čeka N“, „Poveži Google ponovo“ ili „Nije u Google-u“; tap vodi na Povezane kalendare.
+- Plan: tag odmah do naslova, samo tekst: „Sinhronizovano sa Google-om“ i „Šaljem u Google…“ (blijedo ljubičast, `brand-soft`), „Nije sinhronizovano sa Google-om“ i „Google treba ponovo povezati“ (`warning-soft`); tap vodi na Povezane kalendare.
 - Plan → Dan: blok ima „u Google-u“ ili „čeka Google“ (veza postoji i `pushed_hash` je aktuelan); događaj iz Google kalendara ima „iz Google kalendara · <kalendar>“.
 - Postavke → Povezani kalendari (`GoogleCalendarCard`):
   - „Poveži Google kalendar“ (bez linka);

@@ -2751,10 +2751,10 @@
     "examTitle": "Ispit: {{subject}} · {{exam}}",
     "deadlineTitle": "Rok: {{title}}",
     "badge": {
-      "synced": "Google ✓",
-      "pending": "Google · čeka {{count}}",
-      "reconnect": "Poveži Google ponovo",
-      "off": "Nije u Google-u"
+      "synced": "Sinhronizovano sa Google-om",
+      "pending": "Šaljem u Google…",
+      "reconnect": "Google treba ponovo povezati",
+      "off": "Nije sinhronizovano sa Google-om"
     },
     "tag": {
       "synced": "u Google-u",
