@@ -15,6 +15,8 @@ dependencies = [
 dev = ["pytest>=8.3", "ruff>=0.8"]
 models = ["numpyro>=0.16", "scikit-learn>=1.6", "scipy>=1.14"]
 notebooks = ["jupyter>=1.1", "matplotlib>=3.9"]
+# srs-benchmark reproduction (ml/fsrs/), not a default group: torch is large.
+fsrs = ["fsrs-rs-python>=0.9.3", "huggingface-hub>=1.0", "torch>=2.9"]
 
 [tool.uv]
 default-groups = ["dev", "models", "notebooks"]
