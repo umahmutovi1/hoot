@@ -30,3 +30,15 @@ updates:
         patterns: ['*']
     commit-message:
       prefix: ci
+  - package-ecosystem: uv
+    directory: /ml
+    target-branch: dev
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      ml:
+        patterns: ['*']
+    commit-message:
+      prefix: chore
+      include: scope
