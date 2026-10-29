@@ -104,11 +104,12 @@ export function clientFor(admin: SupabaseClient, account: AccountRow, creds: Goo
 }
 
 async function profileOf(admin: SupabaseClient, userId: string): Promise<Profile> {
-  const { data } = await admin
+  const { data, error } = await admin
     .from('profiles')
     .select('timezone, day_start_min')
     .eq('id', userId)
     .maybeSingle()
+  if (error) console.error('google sync: profile not readable', error.code)
   return {
     timezone: (data?.timezone as string | undefined) ?? 'Europe/Sarajevo',
     day_start_min: (data?.day_start_min as number | undefined) ?? 240,
@@ -194,18 +195,26 @@ export async function pullHootCalendar(
       await onDeleted(admin, link)
       continue
     }
-    if (event.etag && event.etag === link.etag) continue
+    // A block whose time differs from what Hoot wrote moved, even with a known etag (a failed
+    // write earlier must not hide the move for good).
+    const startsElsewhere =
+      link.kind === 'block' &&
+      event.start?.dateTime !== undefined &&
+      Date.parse(event.start.dateTime) !== Date.parse(link.pushed_start ?? '')
+    if (event.etag && event.etag === link.etag && !startsElsewhere) continue
     await onChanged(admin, link, event, boundary)
   }
 }
 
 async function onDeleted(admin: SupabaseClient, link: CalendarLink & { ref_id: string | null }) {
-  if (link.kind === 'block' && link.ref_id)
-    await admin
+  if (link.kind === 'block' && link.ref_id) {
+    const { error } = await admin
       .from('plan_blocks')
       .update({ skip_requested_at: new Date().toISOString() })
       .eq('id', link.ref_id)
       .eq('status', 'planned')
+    if (error) throw new Error('block_update_failed')
+  }
   if (link.kind === 'block')
     await admin.from('calendar_links').update({ state: 'deleted' }).eq('id', link.id)
   // Exams, deadlines, classes: forget the event, the next push writes it again.
@@ -239,7 +248,7 @@ async function onChanged(
       } catch {
         // an AI reason without a mode
       }
-      await admin
+      const { error } = await admin
         .from('plan_blocks')
         .update({
           ...times,
@@ -252,6 +261,8 @@ async function onChanged(
               : block.reason,
         })
         .eq('id', link.ref_id)
+      // The link keeps its old etag, so the next pull tries again (and last_error shows it).
+      if (error) throw new Error('block_update_failed')
     }
     await admin
       .from('calendar_links')
@@ -490,6 +501,7 @@ export async function pullAccount(
 export function errorCode(err: unknown): string {
   if (err instanceof GoogleAuthError) return err.code
   if (err instanceof GoogleApiError) return `google_${err.status}`
+  if (err instanceof Error && err.message === 'block_update_failed') return err.message
   return 'failed'
 }
 
