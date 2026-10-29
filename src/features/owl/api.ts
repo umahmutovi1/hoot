@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FunctionsHttpError } from '@supabase/supabase-js'
 import { AI_ERRORS, type AiErrorCode, type AiStatus } from '@shared/schemas.ts'
 import { useAuth } from '@/features/auth/auth-context'
+import { env } from '@/lib/env'
+import { sseParser } from '@/lib/sse'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
 import type { OwlMessage } from './store'
@@ -33,6 +35,65 @@ export async function invokeAi<T>(name: string, body?: unknown): Promise<T> {
     )
   }
   throw new AiCallError(navigator.onLine ? 'failed' : 'offline')
+}
+
+/**
+ * An AI Edge Function that answers as server-sent events (the chat): `onDelta` gets the answer
+ * text as it is written, the promise the whole response from the "done" event. Errors become
+ * an AiCallError like with `invokeAi`.
+ */
+export async function streamAi<T>(
+  name: string,
+  body: unknown,
+  onDelta: (text: string) => void,
+): Promise<T> {
+  if (!navigator.onLine) throw new AiCallError('offline')
+  const known = (code: unknown): AiErrorCode =>
+    AI_ERRORS.includes(code as AiErrorCode) ? (code as AiErrorCode) : 'failed'
+  const { data } = await supabase.auth.getSession()
+  let res: Response
+  try {
+    res = await fetch(`${env.VITE_SUPABASE_URL}/functions/v1/${name}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${data.session?.access_token ?? env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        apikey: env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ ...(body as object), stream: true }),
+    })
+  } catch {
+    throw new AiCallError(navigator.onLine ? 'failed' : 'offline')
+  }
+  if (!res.ok || !res.body) {
+    const payload: unknown = await res.json().catch(() => null)
+    throw new AiCallError(known((payload as { error?: string } | null)?.error))
+  }
+  // Set by the "done" or "error" event.
+  const outcome: { end: { ok: true; data: T } | { ok: false; code: AiErrorCode } | null } = {
+    end: null,
+  }
+  const parser = sseParser((event, raw) => {
+    const value = JSON.parse(raw) as { text?: string; error?: string }
+    if (event === 'delta' && value.text) onDelta(value.text)
+    else if (event === 'done') outcome.end = { ok: true, data: value as T }
+    else if (event === 'error') outcome.end = { ok: false, code: known(value.error) }
+  })
+  const reader = res.body.pipeThrough(new TextDecoderStream()).getReader()
+  try {
+    for (;;) {
+      const { value, done } = await reader.read()
+      if (done) break
+      parser.push(value)
+    }
+  } catch {
+    throw new AiCallError(navigator.onLine ? 'failed' : 'offline')
+  }
+  parser.end()
+  const { end } = outcome
+  if (!end) throw new AiCallError('failed')
+  if (!end.ok) throw new AiCallError(end.code)
+  return end.data
 }
 
 export function useOnline() {

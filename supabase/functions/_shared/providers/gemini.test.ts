@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
-import { buildGeminiBody, geminiProvider, readGeminiResponse } from './gemini.ts'
+import { buildGeminiBody, geminiProvider, readGeminiResponse, readGeminiStream } from './gemini.ts'
 
 const schema = z.object({ title: z.string(), note: z.string().nullable() })
 const req = {
@@ -306,5 +306,60 @@ describe('web search (Google Search grounding)', () => {
     )
     expect(out.json).toEqual({ title: 'T', note: null })
     expect(out.sources).toEqual([{ url: 'https://redirect/x', title: 'etf.unsa.ba' }])
+  })
+})
+
+describe('streaming', () => {
+  const sse = (chunks: string[]) =>
+    new Response(
+      new ReadableStream({
+        start(c) {
+          // Cut in odd places, like the network does.
+          const all = chunks.map((x) => `data: ${x}\r\n\r\n`).join('')
+          for (let i = 0; i < all.length; i += 7)
+            c.enqueue(new TextEncoder().encode(all.slice(i, i + 7)))
+          c.close()
+        },
+      }),
+      { status: 200 },
+    )
+  const part = (text: string) =>
+    JSON.stringify({ candidates: [{ content: { parts: [{ text }] } }] })
+
+  it('hands over the text as it comes and joins it into one response', async () => {
+    const seen: string[] = []
+    const body = await readGeminiStream(
+      sse([
+        part('{"answer":"Ispit '),
+        part('je u petak."}'),
+        JSON.stringify({
+          candidates: [{ content: { parts: [{ text: '' }] }, finishReason: 'STOP' }],
+          usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
+        }),
+      ]),
+      (d) => seen.push(d),
+    )
+    expect(seen.join('')).toBe('{"answer":"Ispit je u petak."}')
+    const out = readGeminiResponse(body)
+    expect(out.json).toEqual({ answer: 'Ispit je u petak.' })
+    expect(out.inputTokens).toBe(10)
+    expect(out.outputTokens).toBe(5)
+  })
+
+  it('the provider streams from streamGenerateContent', async () => {
+    const calls: string[] = []
+    const provider = geminiProvider({
+      apiKey: 'k',
+      model: 'gemini-2.5-flash',
+      fetch: (async (url: string) => {
+        calls.push(url)
+        return sse([part('{"answer":"ok"}')])
+      }) as unknown as typeof fetch,
+    })
+    const seen: string[] = []
+    const out = await provider.stream!({ ...req, files: [] }, (d) => seen.push(d))
+    expect(calls[0]).toContain(':streamGenerateContent?alt=sse')
+    expect(seen).toEqual(['{"answer":"ok"}'])
+    expect(out.json).toEqual({ answer: 'ok' })
   })
 })

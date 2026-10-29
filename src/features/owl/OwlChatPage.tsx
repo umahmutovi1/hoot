@@ -213,7 +213,16 @@ function Message({ message: m }: { message: OwlMessage }) {
     case 'answer':
       return (
         <OwlBubble>
-          <span className="whitespace-pre-wrap">{m.text}</span>
+          <span className="whitespace-pre-wrap">
+            {m.text}
+            {m.streaming && (
+              // The answer is still being written.
+              <span
+                aria-hidden="true"
+                className="ml-0.5 inline-block h-4 w-[2px] translate-y-[3px] animate-pulse bg-ink-muted"
+              />
+            )}
+          </span>
           {m.citations.map((c) => (
             <CitationChip key={`${c.document_id}:${c.page}`} citation={c} />
           ))}
