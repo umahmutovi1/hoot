@@ -236,6 +236,29 @@ describe('buildPlanState', () => {
     expect(again).toEqual([])
   })
 
+  it('saves what the plan knew about each block (block completion features)', () => {
+    const built = buildPlanState(inputs(), { now: NOW, boundary })
+    const result = plan(built.state)
+    const args = replaceArgs(built, result, 'h', 'r', TZ)
+    const goalOn = new Map(built.state.goals.map((g) => [g.id, g.on]))
+    for (const [i, b] of result.blocks.entries()) {
+      const row = args.p_blocks[i]!
+      const load = result.blocks
+        .filter((x) => x.onDate === b.onDate)
+        .reduce((s, x) => s + x.minutes, 0)
+      expect(row.day_load_min).toBe(Math.round(load))
+      expect(row.days_to_goal).toBe(
+        b.goalId
+          ? Math.round((Date.parse(goalOn.get(b.goalId)!) - Date.parse(b.onDate)) / 864e5)
+          : null,
+      )
+      expect(row.demand).toBeCloseTo(b.demand, 3)
+    }
+    expect(args.p_blocks.some((b) => b.days_to_goal !== null && b.days_to_goal > 0)).toBe(true)
+    const [saved] = applyReplace([], args, 'u')
+    expect(saved!.plan_start_min).toBe(saved!.start_min)
+  })
+
   it('keeps today after its only block was skipped to tomorrow ("Preskoči")', () => {
     const first = buildPlanState(inputs(), { now: NOW, boundary })
     const blocks = applyReplace([], replaceArgs(first, plan(first.state), 'h', 'r', TZ), 'u')
@@ -324,6 +347,10 @@ describe('buildPlanState', () => {
       origin: 'user',
       title: 'Vježbe',
       skip_requested_at: null,
+      plan_start_min: null,
+      day_load_min: null,
+      days_to_goal: null,
+      demand: null,
       created_at: '',
       updated_at: '',
       plan_block_units: [],

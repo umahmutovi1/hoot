@@ -802,6 +802,7 @@ function run(
           optional: x.optional,
           units: mergeUnits(blockUnits),
           reason: x.reason,
+          demand: x.demand,
         })
       }
     }
