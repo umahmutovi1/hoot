@@ -1,6 +1,13 @@
 import { useMemo } from 'react'
 import type { LocalDate } from '@/lib/day'
-import { toEvent, toFeed, useCalendarFeeds, useExternalEvents } from '@/features/calendars/api'
+import {
+  toEvent,
+  toFeed,
+  useCalendarFeeds,
+  useCalendarMatches,
+  useExternalEvents,
+} from '@/features/calendars/api'
+import { linkedLectureEvents } from '@/lib/calendar/match'
 import { eventKinds } from '@/features/calendars/kinds'
 import { useSubjects } from '@/features/subjects/api'
 import { useProfile } from '@/features/settings/profile'
@@ -29,6 +36,7 @@ export function useScheduleData() {
   const feedRows = useCalendarFeeds().data
   const eventRows = useExternalEvents().data
   const subjectRows = useSubjects().data
+  const matchRows = useCalendarMatches().data
 
   return useMemo(() => {
     const periods = (periodRows ?? []).map(toPeriod)
@@ -46,9 +54,24 @@ export function useScheduleData() {
       (subjectRows ?? []).filter((x) => !x.archived).map((x) => x.name),
       timeZone,
     )
+    // A lecture linked to a timetable entry is the class itself: not busy a second time.
+    const covered = linkedLectureEvents(
+      (eventRows ?? []).map((r) => ({
+        id: r.id,
+        feedId: r.feed_id,
+        uid: r.uid,
+        title: r.title,
+        startsAt: new Date(r.starts_at),
+        endsAt: new Date(r.ends_at),
+        kind: kinds.kindOf.get(r.id) ?? 'busy',
+        inSeries: kinds.series.has(r.id),
+      })),
+      matchRows ?? [],
+      timeZone,
+    )
     const events = (eventRows ?? []).map((row) => ({
       ...toEvent(row),
-      kind: kinds.kindOf.get(row.id),
+      kind: covered.has(row.id) ? ('free' as const) : kinds.kindOf.get(row.id),
     }))
     /** Everything `freeSlotsOn()` needs for one date. */
     const dayInput = (date: LocalDate): DayInput => ({
@@ -97,5 +120,6 @@ export function useScheduleData() {
     feedRows,
     eventRows,
     subjectRows,
+    matchRows,
   ])
 }

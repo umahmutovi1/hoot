@@ -17,7 +17,9 @@ import {
 } from '@/lib/calendar/items'
 import { addDays, dayStartInstant, localDay, zonedInstant } from '@/lib/day'
 import { supabase } from '@/lib/supabase'
+import { useCalendarFeeds, useCalendarMatches } from './api'
 import { calendarItemsKey, googleCall, useGoogleAccount, useStoredItems } from './google'
+import { inGoogleAlready } from '@/lib/calendar/match'
 
 /** Serial edits (a replan writes many blocks) settle before Google gets them. */
 const DEBOUNCE_MS = 2000
@@ -46,11 +48,18 @@ function Pusher() {
   const { data: subjects } = useSubjects()
   const { data: deadlines } = useDeadlines()
   const stored = useStoredItems(true)
+  const { data: matches } = useCalendarMatches()
+  const { data: feeds } = useCalendarFeeds()
   const running = useRef(false)
   const today = localDay(new Date(), boundary)
 
   const wanted = useMemo(() => {
-    if (!subjects || !deadlines) return null
+    if (!subjects || !deadlines || !matches || !feeds) return null
+    // Linked to the user's own Google event: already in Google, not written into "Hoot" again.
+    const already = inGoogleAlready(
+      matches,
+      new Set(feeds.filter((f) => f.source === 'google').map((f) => f.id)),
+    )
     const colorOf = (subjectId: string | null | undefined) => {
       const color = subjects.find((s) => s.id === subjectId)?.color ?? null
       return color ? paletteOf(color).hex : null
@@ -72,7 +81,7 @@ function Pusher() {
         })
       }
       for (const c of agenda.classesFor(date)) {
-        if (c.cancelled) continue
+        if (c.cancelled || already.entries.has(c.entry.id)) continue
         classes.push({
           entryId: c.entry.id,
           date,
@@ -87,14 +96,16 @@ function Pusher() {
     const exams = subjects
       .filter((s) => !s.archived)
       .flatMap((s) =>
-        shownExams(s.assessments).map((e) => ({
-          id: e.id,
-          subjectId: s.id,
-          from: localDateOf(e.at),
-          to: localDateOf(e.date_tentative && e.at_latest ? e.at_latest : e.at),
-          title: t('googleCalendar.examTitle', { subject: s.name, exam: e.title }),
-          color: colorOf(s.id),
-        })),
+        shownExams(s.assessments)
+          .filter((e) => !already.exams.has(e.id))
+          .map((e) => ({
+            id: e.id,
+            subjectId: s.id,
+            from: localDateOf(e.at),
+            to: localDateOf(e.date_tentative && e.at_latest ? e.at_latest : e.at),
+            title: t('googleCalendar.examTitle', { subject: s.name, exam: e.title }),
+            color: colorOf(s.id),
+          })),
       )
     const open = deadlines
       .filter((d) => !d.done)
@@ -106,7 +117,7 @@ function Pusher() {
         color: colorOf(d.subject_id),
       }))
     return calendarItems({ blocks, exams, deadlines: open, classes })
-  }, [t, today, boundary.timeZone, dayBlocks, agenda, subjects, deadlines])
+  }, [t, today, boundary.timeZone, dayBlocks, agenda, subjects, deadlines, matches, feeds])
 
   const signature = wanted?.map((w) => `${w.key}:${w.hash}`).join('|') ?? null
   const storedRows = stored.data

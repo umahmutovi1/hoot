@@ -334,10 +334,12 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 - [x] Hoot → Google: app računa `calendar_items` (`src/lib/calendar/items.ts`, `GooglePush`: blokovi i nastava 14 dana, ispiti, rokovi) → `google-calendar` push, `reconcile()` sa ponovnim korištenjem događaja bloka, `hootKey`, `etag`, `pushed_hash`, link „Započni“ (`/?block=<id>`); odluka: bez outbox triggera (replan mijenja ID-jeve blokova)
 - [x] Google → Hoot: `events.watch` + `google-calendar-sync` (prozor 7/120 dana umjesto `syncToken`), zajednički upis sa ICS-om (`_shared/externalEvents.ts`); pomjeren blok = ručni, obrisan = preskočen (`skip_requested_at`); cron 15 min i obnova kanala
 - [x] Dva moda bloka: Automatski / Fiksno (BlockSheet „Način bloka“ umjesto „Zadrži ovo vrijeme“ i „Vrati planu“, oznaka „fiksno“), svaki Fiksni blok se vraća na Automatski
-- [ ] Pomjeren ispit ili rok u Google-u → prijedlog jednim tapom (sada se vraća Hoot-ova verzija)
-- [ ] Duplikati: `src/lib/calendar/match.ts` + testovi, kartica Spoji / Hoot zamjenjuje / Google zamjenjuje / Zadrži oba, uvoz predavanja, ispita i rokova iz Google-a povezano, „već imaš“ u ostalim uvozima
+- [x] Pomjeren ispit u tvom kalendaru → „Promijenjeno u kalendaru“ (Uzmi novi datum / Zadrži stari); ispit pomjeren u kalendaru „Hoot“ se vraća na Hoot-ovu verziju
+- [x] Duplikati: `calendar_matches` (`0032`), `src/lib/calendar/match.ts` + testovi, „Iz kalendara“ (Dodaj / Spoji / Google zamjenjuje / Hoot zamjenjuje / Zadrži oba / Preskoči), uvoz predavanja i ispita povezano, bez dvostruke zauzetosti i bez kopije u kalendaru „Hoot“
+- [ ] „Već imaš“ u uvozu rasporeda i ispita iz slike / PDF-a kad je isto povezano iz kalendara
 - [x] Status u Planu: badge u zaglavlju (Google: sinhronizovano prije X / čeka / nije povezano → Povezani kalendari), na bloku oznaka sinhronizovan / čeka (`calendar_links`), na događaju iz Google-a oznaka „iz Google kalendara“
-- [ ] Onboarding korak 2: „Poveži Google kalendar“ prvi, preskakanje rasporeda i rokova koji su već u kalendaru
+- [x] Onboarding korak 2: „Poveži Google kalendar“ prvi (povratak na korak), nađena predavanja i ispiti → „Iz kalendara“, raspored iz Google-a umjesto ručnog unosa
+- [ ] Pitanje „Imaš li raspored u Google kalendaru?“ kad se serije ne prepoznaju kao predavanja
 - **DoD:** blok promijenjen u app-u je u Google kalendaru za par sekundi i obratno; link iz događaja otvara „Započeti sesiju sada?“; predavanje koje je i u Google-u i u Hoot-u postoji jednom; nijedan token ni link u logovima → `v0.10.5`
 
 ## Etapa 11a — ML temelj

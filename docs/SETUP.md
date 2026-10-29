@@ -265,7 +265,7 @@ Detalji u [CALENDAR-SYNC.md](CALENDAR-SYNC.md). Koristi isti OAuth Web client ka
    npx supabase secrets set GOOGLE_CLIENT_ID="$GCID" GOOGLE_CLIENT_SECRET="$GCS"
    unset GCID GCS
    ```
-5. **Baza i deploy:** `npx supabase db push` (0029, 0030, 0031), `npx supabase functions deploy classify-events` (klasifikacija, AI), pa `npx supabase functions deploy google-calendar` i `npx supabase functions deploy google-calendar-sync` (obje imaju `verify_jwt = false` u `config.toml`: callback dolazi od Google-a bez JWT-a, webhook takođe; funkcije same provjeravaju korisnika, potpisan `state`, token kanala ili `x-cron-secret`).
+5. **Baza i deploy:** `npx supabase db push` (0029–0032), `npx supabase functions deploy classify-events` (klasifikacija, AI), pa `npx supabase functions deploy google-calendar` i `npx supabase functions deploy google-calendar-sync` (obje imaju `verify_jwt = false` u `config.toml`: callback dolazi od Google-a bez JWT-a, webhook takođe; funkcije same provjeravaju korisnika, potpisan `state`, token kanala ili `x-cron-secret`).
 6. **Raspored** (SQL Editor; `pg_cron`, `pg_net` i vault tajna su iz 5a):
    ```sql
    select cron.schedule(

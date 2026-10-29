@@ -1873,12 +1873,18 @@
       "calendarSub": "PDF, slika ili tekst · nastava, rokovi, neradni dani",
       "timetable": "Raspored nastave",
       "timetableSub": "ručno, termin po termin",
-      "feed": "Povezani kalendar",
-      "feedSub": "Google jednim tapom, Outlook ili Moodle preko linka",
+      "feed": "Drugi kalendar (link)",
+      "feedSub": "Outlook ili Moodle (iCal link)",
       "link": "Link do dokumenta",
       "linkSub": "Plan i program, kalendar ili raspored sa weba",
       "none": "Nemaš ništa sad? Samo nastavi; sve ovo možeš dodati kasnije u Postavkama.",
-      "added": "Dodano"
+      "added": "Dodano",
+      "google": "Poveži Google kalendar",
+      "googleSub": "Zauzetost, predavanja i ispiti iz kalendara, a plan ide nazad u Google",
+      "googleFound": "U kalendaru već imaš: {{found}} · pregledaj",
+      "timetableInGoogle_one": "Već u Google kalendaru: {{count}} predavanje · uvezi",
+      "timetableInGoogle_few": "Već u Google kalendaru: {{count}} predavanja · uvezi",
+      "timetableInGoogle_other": "Već u Google kalendaru: {{count}} predavanja · uvezi"
     },
     "rhythm": {
       "title": "Tvoj ritam",
@@ -2753,5 +2759,49 @@
       "synced": "u Google-u",
       "pending": "čeka Google"
     }
+  },
+  "calendarImport": {
+    "title": "Iz kalendara",
+    "lead": "Predavanja i ispiti iz tvojih kalendara. Novo ulazi u Hoot povezano, a ono što već imaš ne dupliram. Ništa se ne spašava dok ne primijeniš.",
+    "none": "Nema novih predavanja ni ispita iz kalendara.",
+    "lectures": "Predavanja",
+    "exams": "Ispiti",
+    "weekly": "Svaki {{day}} {{from}}–{{to}}",
+    "tag": {
+      "new": "Novo",
+      "same": "Već imaš u Hoot-u",
+      "changed": "Promijenjeno u kalendaru"
+    },
+    "action": {
+      "add": "Dodaj u Hoot",
+      "skip": "Preskoči",
+      "link": "Spoji",
+      "google": "Google zamjenjuje",
+      "hoot": "Hoot zamjenjuje",
+      "distinct": "Zadrži oba",
+      "accept": "Uzmi novi datum",
+      "keep": "Zadrži stari"
+    },
+    "actionHint": {
+      "add": "Ulazi u Hoot i ostaje povezano sa kalendarom, bez duplikata.",
+      "skip": "Ne ulazi u Hoot i više se ne nudi.",
+      "link": "Isto je: jedna stavka u Hoot-u, a događaj ostaje u kalendaru. Hoot ga ne upisuje ponovo.",
+      "google": "Hoot uzima vrijeme iz kalendara i povezuje ih.",
+      "hoot": "Događaj se briše iz tvog Google kalendara; ostaje Hoot-ov u kalendaru „Hoot“.",
+      "distinct": "Dvije različite stvari: obje ostaju i više ne pitam.",
+      "accept": "Ispit u Hoot-u dobija datum iz kalendara.",
+      "keep": "Datum u Hoot-u ostaje; ovu promjenu više ne nudim."
+    },
+    "apply_one": "Primijeni {{count}}",
+    "apply_few": "Primijeni {{count}}",
+    "apply_other": "Primijeni {{count}}",
+    "noTeaching": "Za predavanja treba period nastave: dodaj ga u Akademskom kalendaru, pa pokušaj ponovo.",
+    "cardTitle": "Iz tvog kalendara",
+    "cardLectures_one": "{{count}} predavanje",
+    "cardLectures_few": "{{count}} predavanja",
+    "cardLectures_other": "{{count}} predavanja",
+    "cardExams_one": "{{count}} ispit",
+    "cardExams_few": "{{count}} ispita",
+    "cardExams_other": "{{count}} ispita"
   }
 }

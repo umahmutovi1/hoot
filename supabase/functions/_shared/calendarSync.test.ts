@@ -10,7 +10,7 @@ import {
   type CalendarItem,
   type CalendarLink,
 } from './calendarSync.ts'
-import { allowedOrigin, signState, verifyState } from './google.ts'
+import { allowedOrigin, allowedPath, signState, verifyState } from './google.ts'
 
 function item(key: string, start: string, extra: Partial<CalendarItem> = {}): CalendarItem {
   const base = {
@@ -220,5 +220,13 @@ describe('OAuth state', () => {
     expect(allowedOrigin('http://localhost:5173')).toBe(true)
     expect(allowedOrigin('http://evil.example')).toBe(false)
     expect(allowedOrigin('https://hoot.app/path')).toBe(false)
+  })
+
+  it('allows only paths inside the app', () => {
+    expect(allowedPath('/onboarding')).toBe(true)
+    expect(allowedPath('/settings/feeds')).toBe(true)
+    expect(allowedPath('//evil.example')).toBe(false)
+    expect(allowedPath('https://evil.example')).toBe(false)
+    expect(allowedPath('/a?b=c')).toBe(false)
   })
 })

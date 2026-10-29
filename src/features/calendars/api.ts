@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/auth-context'
 import type { EventKind } from '@/lib/calendar/classify'
+import type { MatchRow } from '@/lib/calendar/match'
 import type { CalendarEvent, CalendarFeed } from '@/lib/schedule'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
@@ -254,5 +255,23 @@ export function useSetEventKind() {
       )
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: eventsKey(userId) }),
+  })
+}
+
+// Decisions about lectures and exams that are in a calendar and in Hoot (calendar_matches).
+export const matchesKey = (userId: string | undefined) => ['calendar_matches', userId] as const
+
+export function useCalendarMatches() {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: matchesKey(userId),
+    enabled: Boolean(userId),
+    queryFn: async (): Promise<MatchRow[]> => {
+      const { data, error } = await supabase
+        .from('calendar_matches')
+        .select('feed_id, match_key, kind, target_id, decision, seen_start')
+      if (error) throw error
+      return data
+    },
   })
 }

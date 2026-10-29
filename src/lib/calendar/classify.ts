@@ -16,7 +16,7 @@ export interface ClassifiedEvent {
   allDay: boolean
 }
 
-const fold = (s: string) =>
+export const fold = (s: string) =>
   s
     .toLowerCase()
     .normalize('NFD')

@@ -92,12 +92,13 @@ export function useCalendarLinks(enabled: boolean) {
 }
 
 export type GoogleOp =
-  | { op: 'auth_url'; origin: string }
+  | { op: 'auth_url'; origin: string; path?: string }
   | { op: 'calendars' }
   | { op: 'select'; calendar_id: string; busy: boolean }
   | { op: 'push' }
   | { op: 'sync' }
   | { op: 'disconnect'; delete_calendar: boolean }
+  | { op: 'delete_events'; event_ids: string[] }
 
 export async function googleCall<T = unknown>(body: GoogleOp): Promise<T> {
   const { data, error } = await supabase.functions.invoke<T>('google-calendar', {
@@ -108,11 +109,12 @@ export async function googleCall<T = unknown>(body: GoogleOp): Promise<T> {
   return data as T
 }
 
-/** "Poveži Google kalendar": Google's consent screen, then back to /settings/feeds. */
-export async function connectGoogle() {
+/** "Poveži Google kalendar": Google's consent screen, then back to `path` (default /settings/feeds). */
+export async function connectGoogle(path?: string) {
   const { url } = await googleCall<{ url: string }>({
     op: 'auth_url',
     origin: window.location.origin,
+    path,
   })
   window.location.assign(url)
 }

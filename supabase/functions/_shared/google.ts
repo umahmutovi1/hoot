@@ -67,6 +67,8 @@ async function hmac(secret: string, data: string): Promise<string> {
 export interface OAuthState {
   userId: string
   origin: string
+  /** Where the app continues after connecting (/settings/feeds or /onboarding). */
+  path?: string
   /** Expiry, ms since epoch. */
   exp: number
 }
@@ -92,6 +94,9 @@ export async function verifyState(
     return null
   }
 }
+
+/** A path inside the app the callback may return to ("/onboarding"), never another host. */
+export const allowedPath = (path: string) => /^\/[a-z0-9/_-]{0,60}$/i.test(path) && !path.startsWith('//')
 
 /** Origins the callback may return to: https, or localhost for development. */
 export function allowedOrigin(origin: string): boolean {

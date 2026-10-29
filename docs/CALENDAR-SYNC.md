@@ -153,40 +153,36 @@ Odluka pri implementaciji: app računa šta treba biti u Google-u, a server samo
   - replan ne pomjera ručne blokove;
   - isti `hash` ne pravi poziv.
 
-### Duplikati i uvoz iz Google-a
+### Duplikati i uvoz iz kalendara
 
-Prepoznavanje je u `src/lib/calendar/match.ts` (čista logika, testovi). Kandidat za duplikat je par Hoot stavka ↔ Google događaj kad važi oboje:
+Odluka pri implementaciji (`0032_calendar_matches.sql`): odluka se pamti po **seriji predavanja** (ključ `series:<naslov>|<dan>|<početak>`) ili po **ispitu** (ključ `event:<uid>`, pa pomjeren ispit ostaje isti ispit), u `calendar_matches` (`linked`, `distinct`, `skipped`, `hoot`, `seen_start`). Ne pamti se po redu u `external_events`, jer nove sedmice serije dolaze kao novi redovi.
 
-- vrijeme se poklapa:
-  - termin nastave: isti dan u sedmici i početak ±15 min kroz više sedmica;
-  - ispit i rok: isti dan;
-- naslov liči na predmet, ili je događaj klasifikovan kao ista vrsta.
+Prepoznavanje (`src/lib/calendar/match.ts`, čista logika, testovi), samo za buduće događaje:
 
-Kartica „Isto u Google kalendaru i u Hoot-u“ nudi:
+- **Predavanje:** događaj vrste `lecture` u sedmičnoj seriji. Isto je kao termin u rasporedu sa istim danom, početkom ±15 min i istim predmetom (ili bez predmeta). Predmet se čita iz naslova (cijelo ime, prva duža riječ, pa `fuse.js`), a vrsta iz riječi (vježbe, lab).
+- **Ispit:** događaj vrste `exam`. Isto je kao ispit u Hoot-u istog dana (i istog predmeta kad je poznat). Spojeni ispit čiji se početak u kalendaru promijenio je „Promijenjeno u kalendaru“.
 
-| Akcija | Šta se desi |
+Ekran „Iz kalendara“ (`/today/calendar`, kartica „Iz tvog kalendara“ na Danas):
+
+| Stanje | Akcije (prva je zadana) |
 | --- | --- |
-| **Spoji** (default) | Jedna stavka, povezana (`owner = 'google'`). Hoot stavka ostaje za plan, Google događaj ostaje kakav jeste i ne kopira se u kalendar „Hoot“; zauzetost se ne računa dvaput. |
-| Hoot zamjenjuje | Google kopija se briše, Hoot upiše svoju u kalendar „Hoot“. |
-| Google zamjenjuje | Hoot stavka se arhivira (gdje postoji `archived_at`) ili briše; podaci se uzimaju iz Google događaja i ostaju povezani. |
-| Zadrži oba | Par se pamti kao `distinct` i više se ne pita. |
+| Novo | **Dodaj u Hoot** (termin u tekući period nastave ili ispit, odmah povezano) · Preskoči |
+| Već imaš u Hoot-u | **Spoji** · Google zamjenjuje (Hoot uzima vrijeme iz kalendara) · Hoot zamjenjuje (samo Google: događaj, i cijela serija, se briše iz tvog kalendara; ostaje Hoot-ov) · Zadrži oba |
+| Promijenjeno u kalendaru | **Uzmi novi datum** · Zadrži stari |
 
-- Ništa se ne spaja ni briše bez tapa.
-- Google događaji bez para se nude kao uvoz kroz pregled novo / izmijenjeno / preskačem:
-  - serija predavanja → termin u rasporedu;
-  - ispit → ispit;
-  - rok → rok.
-  Uvezena stavka je odmah povezana, pa nema duplikata.
-- Kasniji uvoz rasporeda ili ispita (slika, PDF, AI) prolazi kroz isto prepoznavanje: postojeće je „već imaš“.
-- Promjena povezanog događaja (novo vrijeme, otkazano) → prijedlog jednim tapom; ručne izmjene (`assigned_by = 'user'`) se ne prepisuju.
-- Isto važi za iCal feedove.
+- Ništa se ne spašava ni briše prije „Primijeni“. iCal linkovi su samo za čitanje, pa kod njih nema „Hoot zamjenjuje“.
+- Spojeno predavanje se ne računa dvaput kao zauzetost (događaj postaje „slobodan“, termin rasporeda drži vrijeme).
+- Spojena stavka iz tvog Google kalendara se ne upisuje u kalendar „Hoot“ (`inGoogleAlready`), pa svaka stvar postoji tačno jednom.
+- Rokovi idu kao i ranije kroz „Rokovi iz kalendara“ (`external_events.deadline_id`).
+- Kasnije: kad uvoz rasporeda ili ispita iz slike / PDF-a nađe isto što je već povezano iz kalendara, prikazati „već imaš“.
 
 ### Onboarding (korak 2 „Šta već imaš?“)
 
-- Prva kartica je „Poveži Google kalendar“. Poslije sinhronizacije: „U tvom kalendaru već su: 8 predavanja, 2 ispita, 3 roka“, sa „Uvezi povezano“ (jedan tap) i pregledom.
-- Ako su raspored i rokovi nađeni, kartice „Raspored nastave“ i ispiti su „Već imaš iz Google kalendara“ i preskaču se; ostaje „Dodaj još“.
-- Pitanje „Imaš li raspored i rokove već u Google kalendaru?“ ide samo kad prepoznavanje ne nađe ništa, a kalendar ima ponavljajuće događaje.
-- iCal link ostaje kao „Drugi kalendar (link)“.
+- Prva kartica je „Poveži Google kalendar“. Poslije Google-a (`state.path = /onboarding`) se app vraća na isti korak.
+- Kad prepoznavanje nađe predavanja ili ispite: „U kalendaru već imaš: 6 predavanja · 2 ispita · pregledaj“ → „Iz kalendara“ → nazad na korak.
+- Kartica „Raspored nastave“ bez termina, a sa predavanjima u Google-u: „Već u Google kalendaru: N predavanja · uvezi“ (isti pregled, ne ručni unos).
+- iCal je „Drugi kalendar (link)“ za Outlook i Moodle.
+- Kasnije: pitanje „Imaš li raspored u Google kalendaru?“ kad se ponavljajući događaji ne prepoznaju kao predavanja (označavanje cijele serije).
 
 ### Pouzdanost
 

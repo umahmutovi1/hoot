@@ -10,6 +10,7 @@ import { corsHeaders, json } from '../_shared/cors.ts'
 import { readJson } from '../_shared/edge.ts'
 import {
   allowedOrigin,
+  allowedPath,
   authUrl,
   exchangeCode,
   GoogleCalendar,
@@ -37,15 +38,28 @@ import {
 const STATE_TTL_MS = 10 * 60_000
 
 const requestSchema = z.discriminatedUnion('op', [
-  z.object({ op: z.literal('auth_url'), origin: z.string().max(200) }),
+  z.object({
+    op: z.literal('auth_url'),
+    origin: z.string().max(200),
+    path: z.string().max(80).optional(),
+  }),
   z.object({ op: z.literal('calendars') }),
   z.object({ op: z.literal('select'), calendar_id: z.string().min(1).max(300), busy: z.boolean() }),
   z.object({ op: z.literal('push') }),
   z.object({ op: z.literal('sync') }),
   z.object({ op: z.literal('disconnect'), delete_calendar: z.boolean() }),
+  z.object({ op: z.literal('delete_events'), event_ids: z.array(z.uuid()).min(1).max(200) }),
 ])
 
 const env = { get: (name: string) => Deno.env.get(name) }
+
+/** An instance of a recurring event ("<id>_20261103T080000Z") belongs to the series "<id>". */
+function seriesId(eventId: string): string {
+  const cut = eventId.lastIndexOf('_')
+  return cut > 0 && /^\d{8}(T\d{6}Z)?$/.test(eventId.slice(cut + 1))
+    ? eventId.slice(0, cut)
+    : eventId
+}
 
 function redirect(to: string) {
   return new Response(null, { status: 302, headers: { location: to } })
@@ -66,7 +80,7 @@ async function callback(req: Request, admin: SupabaseClient, supabaseUrl: string
   const state = creds ? await verifyState(params.get('state') ?? '', creds.clientSecret) : null
   if (!creds || !state) return json({ error: 'bad_request' }, 400)
   const back = (result: 'connected' | 'error' | 'denied') =>
-    redirect(`${state.origin}/settings/feeds?google=${result}`)
+    redirect(`${state.origin}${state.path ?? '/settings/feeds'}?google=${result}`)
   const code = params.get('code')
   if (!code) return back('denied')
 
@@ -155,9 +169,10 @@ Deno.serve(async (req) => {
   const op = body.data
 
   if (op.op === 'auth_url') {
-    if (!allowedOrigin(op.origin)) return json({ error: 'bad_request' }, 400)
+    if (!allowedOrigin(op.origin) || (op.path !== undefined && !allowedPath(op.path)))
+      return json({ error: 'bad_request' }, 400)
     const state = await signState(
-      { userId, origin: op.origin, exp: Date.now() + STATE_TTL_MS },
+      { userId, origin: op.origin, path: op.path, exp: Date.now() + STATE_TTL_MS },
       creds.clientSecret,
     )
     return json({ url: authUrl(creds, state) })
@@ -227,6 +242,34 @@ Deno.serve(async (req) => {
         await ensureChannels(admin, gc, account, webhookAddress(url))
         await pullAccount(admin, gc, account)
         return json({ result: await pushWithLock(admin, gc, account) })
+      case 'delete_events': {
+        // "Hoot zamjenjuje": the user's own Google event goes (a recurring one as a whole series).
+        const { data: rows } = await admin
+          .from('external_events')
+          .select('feed_id, uid')
+          .eq('user_id', userId)
+          .in('id', op.event_ids)
+        const { data: feeds } = await admin
+          .from('calendar_feeds')
+          .select('id, user_id, kind, busy_only, google_calendar_id')
+          .eq('account_id', account.id)
+          .eq('source', 'google')
+        const byId = new Map((feeds ?? []).map((f) => [f.id as string, f]))
+        const targets = new Map<string, { calendarId: string; eventId: string }>()
+        for (const r of rows ?? []) {
+          const feed = byId.get(r.feed_id as string)
+          if (!feed) continue
+          const eventId = seriesId(r.uid as string)
+          targets.set(`${feed.google_calendar_id}|${eventId}`, {
+            calendarId: feed.google_calendar_id as string,
+            eventId,
+          })
+        }
+        for (const t of targets.values()) await gc.deleteEvent(t.calendarId, t.eventId)
+        for (const feed of feeds ?? [])
+          await pullFeed(admin, gc, feed as Parameters<typeof pullFeed>[2])
+        return json({ deleted: targets.size })
+      }
       case 'disconnect': {
         const { data: channels } = await admin
           .from('calendar_channels')

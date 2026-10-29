@@ -1823,12 +1823,17 @@
       "calendarSub": "PDF, photo or text · classes, exam periods, holidays",
       "timetable": "Class timetable",
       "timetableSub": "by hand, one class at a time",
-      "feed": "Connected calendar",
-      "feedSub": "Google with one tap, Outlook or Moodle by link",
+      "feed": "Another calendar (link)",
+      "feedSub": "Outlook or Moodle (iCal link)",
       "link": "Link to a document",
       "linkSub": "Study plan, calendar or timetable from the web",
       "none": "Nothing yet? Just continue; you can add all of this later in Settings.",
-      "added": "Added"
+      "added": "Added",
+      "google": "Connect Google Calendar",
+      "googleSub": "Busy time, lectures and exams from the calendar, and the plan goes back into Google",
+      "googleFound": "Already in your calendar: {{found}} · review",
+      "timetableInGoogle_one": "Already in Google Calendar: {{count}} lecture · import",
+      "timetableInGoogle_other": "Already in Google Calendar: {{count}} lectures · import"
     },
     "rhythm": {
       "title": "Your rhythm",
@@ -2681,5 +2686,46 @@
       "synced": "in Google",
       "pending": "waiting for Google"
     }
+  },
+  "calendarImport": {
+    "title": "From your calendars",
+    "lead": "Lectures and exams from your calendars. New ones go into Hoot linked, and what you already have is not duplicated. Nothing is saved until you apply.",
+    "none": "No new lectures or exams from calendars.",
+    "lectures": "Lectures",
+    "exams": "Exams",
+    "weekly": "Every {{day}} {{from}}–{{to}}",
+    "tag": {
+      "new": "New",
+      "same": "Already in Hoot",
+      "changed": "Changed in the calendar"
+    },
+    "action": {
+      "add": "Add to Hoot",
+      "skip": "Skip",
+      "link": "Merge",
+      "google": "Google wins",
+      "hoot": "Hoot wins",
+      "distinct": "Keep both",
+      "accept": "Take the new date",
+      "keep": "Keep the old one"
+    },
+    "actionHint": {
+      "add": "Goes into Hoot and stays linked to the calendar, without duplicates.",
+      "skip": "Stays out of Hoot and is not offered again.",
+      "link": "The same thing: one item in Hoot, the event stays in the calendar. Hoot doesn't write it again.",
+      "google": "Hoot takes the calendar's time and links them.",
+      "hoot": "The event is deleted from your Google calendar; Hoot's stays in the “Hoot” calendar.",
+      "distinct": "Two different things: both stay and I won't ask again.",
+      "accept": "The exam in Hoot takes the calendar's date.",
+      "keep": "Hoot's date stays; this change is not offered again."
+    },
+    "apply_one": "Apply {{count}}",
+    "apply_other": "Apply {{count}}",
+    "noTeaching": "Lectures need a teaching period: add it in the Academic calendar and try again.",
+    "cardTitle": "From your calendar",
+    "cardLectures_one": "{{count}} lecture",
+    "cardLectures_other": "{{count}} lectures",
+    "cardExams_one": "{{count}} exam",
+    "cardExams_other": "{{count}} exams"
   }
 }
