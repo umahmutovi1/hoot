@@ -1,4 +1,4 @@
-import { zonedInstant } from '@/lib/day'
+import { diffDays, zonedInstant } from '@/lib/day'
 import type { PlanResult, Reason } from '@/lib/scheduler'
 import type { Realization } from '@/lib/scheduler'
 import type { BuiltState, PlanBlockRow } from './state'
@@ -31,6 +31,10 @@ export interface ReplaceArgs {
     planned_minutes: number
     kind: PlanBlockRow['kind']
     reason: string
+    /** Features at plan time (block completion model, Stage 11a). */
+    day_load_min: number
+    days_to_goal: number | null
+    demand: number
   }[]
   p_units: {
     block_id: string
@@ -51,6 +55,10 @@ export function replaceArgs(
   newId: () => string = () => crypto.randomUUID(),
 ): ReplaceArgs {
   const kinds = new Map(built.state.goals.map((g) => [g.id, g.kind]))
+  const goalOn = new Map(built.state.goals.map((g) => [g.id, g.on]))
+  const load = new Map<string, number>()
+  for (const b of [...result.blocks, ...built.state.fixed])
+    load.set(b.onDate, (load.get(b.onDate) ?? 0) + b.minutes)
   const blocks: ReplaceArgs['p_blocks'] = []
   const units: ReplaceArgs['p_units'] = []
   for (const b of result.blocks) {
@@ -68,6 +76,10 @@ export function replaceArgs(
       planned_minutes: b.minutes,
       kind: b.kind,
       reason: JSON.stringify(b.reason),
+      day_load_min: Math.round(load.get(b.onDate) ?? 0),
+      days_to_goal:
+        b.goalId && goalOn.has(b.goalId) ? diffDays(b.onDate, goalOn.get(b.goalId)!) : null,
+      demand: Math.round(b.demand * 1000) / 1000,
     })
     for (const u of b.units)
       units.push({
@@ -132,6 +144,7 @@ export function applyReplace(
     )
   const fresh: PlanBlockRow[] = args.p_blocks.map((b) => ({
     ...b,
+    plan_start_min: b.start_min,
     user_id: userId,
     status: 'planned',
     origin: 'ai',

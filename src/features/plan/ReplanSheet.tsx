@@ -250,6 +250,10 @@ function usePlanStoreBlocks(): PlanBlockRow[] {
     origin: 'ai',
     title: null,
     skip_requested_at: null,
+    plan_start_min: b.startMin,
+    day_load_min: null,
+    days_to_goal: null,
+    demand: b.demand,
     created_at: '',
     updated_at: '',
     plan_block_units: b.units.map((u) => ({

@@ -197,6 +197,8 @@ export interface PlannedBlock {
   optional: boolean
   units: BlockUnit[]
   reason: Reason
+  /** Placement demand (first pass, difficulty); kept as a block completion feature. */
+  demand: number
 }
 
 export interface Deficit {

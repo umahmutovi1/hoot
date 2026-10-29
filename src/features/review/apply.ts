@@ -2,6 +2,7 @@ import { addDays, diffDays, type DayBoundary, type LocalDate } from '@/lib/day'
 import {
   combineRecall,
   levelAfter,
+  ratingOf,
   READ_CHECK_DAYS,
   retrievabilityOn,
   review,
@@ -195,6 +196,11 @@ function logRow(
     reviewed_at: ctx.at,
     source,
     recall,
+    // FSRS rating and the state before it, for personal FSRS parameters (Stage 11a).
+    rating: ratingOf(recall),
+    state_before: before ? before.state : null,
+    difficulty_before: before ? round(before.difficulty) : null,
+    retrievability_before: r.retrievabilityBefore === null ? null : round(r.retrievabilityBefore),
     // Due for a check (the plan put it there) vs. tested right after reading or on demand.
     was_scheduled: dueOn !== null && dueOn <= ctx.today,
     interval_before:

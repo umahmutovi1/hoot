@@ -54,6 +54,10 @@ describe('planReviews', () => {
       was_scheduled: false,
       elapsed_days: 0,
       stability_before: null,
+      rating: 3,
+      state_before: null,
+      difficulty_before: null,
+      retrievability_before: null,
     })
     expect(plan.outcomes[0]).toMatchObject({ levelBefore: 1, levelAfter: 2, relearn: false })
   })
@@ -113,6 +117,9 @@ describe('planReviews', () => {
     const [log] = logsOf(plan)
     expect(log).toMatchObject({ was_scheduled: true, elapsed_days: 10, interval_before: 10 })
     expect(log!.stability_before).toBe(8)
+    // "Ne" is FSRS Again; the state, difficulty and strength just before the review.
+    expect(log).toMatchObject({ rating: 1, state_before: 2, difficulty_before: 5 })
+    expect(log!.retrievability_before).toBeCloseTo(plan.outcomes[0]!.strengthBefore!, 4)
     expect(plan.outcomes[0]!.relearn).toBe(true)
     expect(plan.outcomes[0]!.strengthBefore).toBeLessThan(0.9)
   })

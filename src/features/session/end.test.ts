@@ -30,6 +30,8 @@ const session: SessionRow = {
   distractions: 0,
   break_ends_at: null,
   reflection: null,
+  app_leaves: 0,
+  app_away_sec: 0,
   updated_at: iso(50),
 }
 
