@@ -309,44 +309,68 @@ export async function pushAccount(
     state: 'ok',
   })
 
-  for (const { link, remote } of plan.remove) {
-    if (remote) await gc.deleteEvent(calendarId, link.google_event_id)
-    await admin.from('calendar_links').delete().eq('id', link.id)
-  }
-  for (const { item, link } of plan.patch) {
+  // One item Google refuses must not hold back the others: each is written on its own, the
+  // first failure is kept as the account's error, an expired token stops everything.
+  let failed: unknown = null
+  const each = async (work: () => Promise<void>) => {
     try {
-      const event = await gc.patchEvent(
-        calendarId,
-        link.google_event_id,
-        toEventBody(item, account.app_origin, timezone),
-      )
-      await admin.from('calendar_links').update(pushed(item, event)).eq('id', link.id)
+      await work()
     } catch (err) {
-      // Deleted in Google meanwhile: write it as a new event.
-      if (!(err instanceof GoogleApiError) || (err.status !== 404 && err.status !== 410)) throw err
-      await admin.from('calendar_links').delete().eq('id', link.id)
-      plan.insert.push(item)
+      if (err instanceof GoogleAuthError) throw err
+      failed ??= err
+      console.error('google push item failed', errorCode(err))
     }
   }
-  for (const item of plan.insert) {
-    // A link that was 'deleted' for this key goes first (unique item_key).
-    await admin
-      .from('calendar_links')
-      .delete()
-      .eq('account_id', account.id)
-      .eq('item_key', item.key)
-    const event = await gc.insertEvent(calendarId, toEventBody(item, account.app_origin, timezone))
-    await admin.from('calendar_links').insert({
-      user_id: account.user_id,
-      account_id: account.id,
-      google_calendar_id: calendarId,
-      google_event_id: event.id,
-      ...pushed(item, event),
+
+  for (const { link, remote } of plan.remove)
+    await each(async () => {
+      if (remote) await gc.deleteEvent(calendarId, link.google_event_id)
+      await admin.from('calendar_links').delete().eq('id', link.id)
     })
-  }
+  for (const { item, link } of plan.patch)
+    await each(async () => {
+      try {
+        const event = await gc.patchEvent(
+          calendarId,
+          link.google_event_id,
+          toEventBody(item, account.app_origin, timezone),
+        )
+        await admin.from('calendar_links').update(pushed(item, event)).eq('id', link.id)
+      } catch (err) {
+        // Deleted in Google meanwhile: write it as a new event.
+        if (!(err instanceof GoogleApiError) || (err.status !== 404 && err.status !== 410))
+          throw err
+        await admin.from('calendar_links').delete().eq('id', link.id)
+        plan.insert.push(item)
+      }
+    })
+  for (const item of plan.insert)
+    await each(async () => {
+      // A link that was 'deleted' for this key goes first (unique item_key).
+      await admin
+        .from('calendar_links')
+        .delete()
+        .eq('account_id', account.id)
+        .eq('item_key', item.key)
+      const event = await gc.insertEvent(
+        calendarId,
+        toEventBody(item, account.app_origin, timezone),
+      )
+      const { error } = await admin.from('calendar_links').insert({
+        user_id: account.user_id,
+        account_id: account.id,
+        google_calendar_id: calendarId,
+        google_event_id: event.id,
+        ...pushed(item, event),
+      })
+      if (error) throw new Error('link_save_failed')
+    })
   await admin
     .from('calendar_accounts')
-    .update({ last_pushed_at: new Date().toISOString(), last_error: null })
+    .update({
+      last_pushed_at: new Date().toISOString(),
+      last_error: failed ? errorCode(failed) : null,
+    })
     .eq('id', account.id)
 }
 
@@ -501,7 +525,8 @@ export async function pullAccount(
 export function errorCode(err: unknown): string {
   if (err instanceof GoogleAuthError) return err.code
   if (err instanceof GoogleApiError) return `google_${err.status}`
-  if (err instanceof Error && err.message === 'block_update_failed') return err.message
+  if (err instanceof Error && ['block_update_failed', 'link_save_failed'].includes(err.message))
+    return err.message
   return 'failed'
 }
 

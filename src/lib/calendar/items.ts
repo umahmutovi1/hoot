@@ -2,6 +2,8 @@ import { itemHash, type CalendarItem } from '@shared/calendarSync.ts'
 
 /** Blocks and classes go into Google this many days ahead; exams and deadlines all of them. */
 export const PUSH_HORIZON_DAYS = 14
+/** A deadline in Google: the last 15 minutes before it is due. */
+const DEADLINE_MINUTES = 15
 
 export interface BlockInput {
   id: string
@@ -99,7 +101,8 @@ export function calendarItems(input: {
         key: `deadline:${d.id}`,
         kind: 'deadline',
         ref_id: d.id,
-        starts_at: d.due.toISOString(),
+        // A short event ending at the due time: Google's end is exclusive, so zero length is empty.
+        starts_at: new Date(d.due.getTime() - DEADLINE_MINUTES * 60_000).toISOString(),
         ends_at: d.due.toISOString(),
         all_day: false,
         title: d.title,
