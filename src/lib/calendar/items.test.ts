@@ -64,6 +64,10 @@ describe('calendarItems', () => {
       url_path: '/subjects/s1',
     })
     expect(items[2]!.url_path).toBeNull()
+    expect(items[2]).toMatchObject({
+      starts_at: '2026-11-20T22:44:00.000Z',
+      ends_at: '2026-11-20T22:59:00.000Z',
+    })
   })
 
   it('keeps the hash for the same input', () => {
