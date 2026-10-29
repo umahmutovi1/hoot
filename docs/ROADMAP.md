@@ -318,6 +318,7 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
   - Onboarding ima 9 koraka (1b je drugi; podsjetnici u koraku 7 „Pauze i podsjetnici“). Migracija `0028_push_job_actions.sql` (`push_jobs.actions`: tekstovi dugmadi i „Preskočeno“ na jeziku korisnika). `notify` prije slanja provjeri blok (nije započet, preskočen ni u toku prethodni), pa napravi jednokratni token (čuva se hash); `push-action` upiše `skip_requested_at`, a `PendingSkipRunner` u appu primijeni `skipBlock()`. Započni / tap: `/?block=<id>` otvara „Započeti sesiju sada?“
 - [x] Dorada poslije pregleda na previewu: jedno dugme „Dodaj sesiju“ na praznoj kartici „Sljedeće“, sheetovi više ne skrolaju u prazno (vaul `::after`), stranica jedinice bez crtica bez značenja, `PendingSkipRunner` unutar routera (#205, #209)
 - [x] **DoD** (uz opći DoD): plan i program sa interneta ili PDF-a → izvori, teme i bodovi kroz pregled; PDF sa outline-om → jedinice bez AI poziva; rezervisan dan pred ispit u planu; podsjetnik i Preskoči iz notifikacije na Androidu → `v0.10.2` (release na zahtjev korisnice; CI: check, db, secrets, CodeQL zeleni; migracije 0027–0028 primijenjene; `notify`, `push-action`, `find-academic-info`, `parse-document` deployane. PDF sa outline-om provjeren pravim PDF-om u harnessu; web pretraga, plan i program kroz AI i Preskoči na Androidu se provjeravaju na produkciji; Google Drive čeka `VITE_GOOGLE_*` iz SETUP 5c)
+- [x] Dorada poslije v0.10.2 → `v0.10.3` (#215–#222): onboarding 1b se više ne zamrzava; „Fakultet s interneta“ traži i plan i program iz ranijih godina; dokument sa linka (Daj dokument, Nađeno, onboarding, Dokumenti i link poslan u chatu) uz provjeru svakog preusmjerenja; dokument se čita bez napuštanja stranice; plan i program cijelog studija samo za tvoju godinu (stranice godine bez AI-ja, dijelovi od 40 000 znakova), izborni predmeti jednim tapom, poglavlja kao teme i privremeni izvor „Predavanja“, literatura se samo nudi; čitanje u pozadini sa bannerom i obavještenjem; streaming odgovora asistenta (`answer` SSE); boja statusne trake na iOS-u po temi; Google Drive privremeno isključen (`DRIVE_ENABLED`). `parse-document`, `find-academic-info` i `answer` deployane
 
 ## Etapa 11a — ML temelj
 
@@ -333,7 +334,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash`
 - [ ] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad
 - [ ] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio)
-- **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.3`
+- **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.4`
 
 ## Etapa 11 — Napredak
 
