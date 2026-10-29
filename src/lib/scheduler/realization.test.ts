@@ -45,12 +45,33 @@ describe('realization', () => {
 
 describe('growth limit', () => {
   it('has no limit without a planned day in the last 7 days (new user)', () => {
-    expect(growthBase([day(1, { plannedMin: 0 })], TODAY)).toBeNull()
+    expect(growthBase([day(1, { plannedMin: 0 })], TODAY, 1)).toBeNull()
     expect(growthLimit(null, 0)).toBe(Infinity)
   })
 
-  it('averages studied minutes over 7 days, zeros included', () => {
-    expect(growthBase([day(1, { studiedMin: 140 }), day(2, { studiedMin: 70 })], TODAY)).toBe(30)
+  it('averages studied minutes from the first planned day, days without a session as zeros', () => {
+    expect(growthBase([day(1, { studiedMin: 140 }), day(2, { studiedMin: 70 })], TODAY, 1)).toBe(
+      105,
+    )
+    // Day 3 had no history row: a zero, since day 4 already had a plan.
+    expect(growthBase([day(1, { studiedMin: 90 }), day(4, { studiedMin: 30 })], TODAY, 1)).toBe(30)
+  })
+
+  it('days before the first plan are not zeros (a new user)', () => {
+    expect(growthBase([day(1, { studiedMin: 150 })], TODAY, 1)).toBe(150)
+  })
+
+  it('"Danas ne mogu" days do not count', () => {
+    const history = [day(1, { studiedMin: 120 }), day(2, { studiedMin: 0, skipped: true })]
+    expect(growthBase(history, TODAY, 1)).toBe(120)
+  })
+
+  it('is divided by ρ: ρ already shrinks the capacity', () => {
+    expect(growthBase([day(1, { studiedMin: 80 })], TODAY, 0.8)).toBe(100)
+  })
+
+  it('only the last 7 days count', () => {
+    expect(growthBase([day(1, { studiedMin: 70 }), day(8, { studiedMin: 700 })], TODAY, 1)).toBe(70)
   })
 
   it('ramps from 1.25 × the average (at least 60), 1.25× a day', () => {

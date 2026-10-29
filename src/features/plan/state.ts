@@ -496,7 +496,7 @@ export function buildPlanState(
     },
     preset: resolvePreset(profile.default_preset, presetsOf(profile)),
     rho: rho.rho,
-    growthBase: growthBase(history, today),
+    growthBase: growthBase(history, today, rho.rho),
     preferredParts: [...parts].sort(),
   }
   const behind: SubjectBehindInput[] = []

@@ -33,12 +33,12 @@
     "unmarkedDoneP": 0.08
   },
   "summary": {
-    "examScore": 0.238,
-    "deficitMin": 1353.129,
-    "missedShare": 0.239,
-    "planChurn": 0.367,
-    "loadSd": 20.034,
-    "completionAvoided": 0.614,
-    "completionNeutral": 0.83
+    "examScore": 0.529,
+    "deficitMin": 433.049,
+    "missedShare": 0.309,
+    "planChurn": 0.153,
+    "loadSd": 37.446,
+    "completionAvoided": 0.514,
+    "completionNeutral": 0.77
   }
 }
