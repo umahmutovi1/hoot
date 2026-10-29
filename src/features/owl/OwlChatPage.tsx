@@ -20,6 +20,11 @@ export function OwlChatPage() {
   const { t } = useTranslation()
   const messages = useOwlStore((s) => s.messages)
   const busy = useOwlStore((s) => s.busy)
+  // The chat shows how a reading ended, so the banner outside it has nothing left to say.
+  const jobEnded = useOwlStore((s) => s.job !== null && s.job.status !== 'running')
+  useEffect(() => {
+    if (jobEnded) useOwlStore.getState().setJob(null)
+  }, [jobEnded])
   const openSheet = useOwlStore((s) => s.openSheet)
   const newConversation = useOwlStore((s) => s.newConversation)
   const { state } = useAiAvailability()
@@ -192,6 +197,11 @@ function Message({ message: m }: { message: OwlMessage }) {
       return (
         <OwlBubble>
           <span className="animate-pulse text-ink-muted">{t(`owl.pending.${m.stage}`)}</span>
+          {m.long && (
+            <span className="text-[13px] leading-[1.4] text-ink-muted">
+              {t('owl.pending.longHint')}
+            </span>
+          )}
         </OwlBubble>
       )
     case 'error':

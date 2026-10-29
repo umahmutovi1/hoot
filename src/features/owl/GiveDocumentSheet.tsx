@@ -115,6 +115,8 @@ function SheetBody({
     setStep('working')
     setResult(await owl.giveDocument(picked, kind, note.trim() || null, origin))
     setStep('done')
+    // Shown here; the banner is for a sheet that was closed while reading.
+    if (useOwlStore.getState().sheet.open) useOwlStore.getState().setJob(null)
   }
 
   const linkUrl = normalizeLink(url)
@@ -327,9 +329,21 @@ function SheetBody({
       )}
 
       {step === 'working' && (
-        <p className="rounded-[18px] bg-canvas p-4 text-sm leading-[1.4] text-ink-secondary">
-          {t('owl.sheet.working')}
-        </p>
+        <div className="flex flex-col gap-3">
+          <p className="flex flex-col gap-1 rounded-[18px] bg-canvas p-4 text-sm leading-[1.4] text-ink-secondary">
+            <span className="animate-pulse">{t('owl.sheet.working')}</span>
+            <span className="text-[13px] text-ink-muted">{t('owl.sheet.workingHint')}</span>
+          </p>
+          <Button
+            type="button"
+            variant="secondary"
+            size="pill"
+            className="bg-brand-soft text-brand"
+            onClick={closeSheet}
+          >
+            {t('owl.sheet.close')}
+          </Button>
+        </div>
       )}
 
       {step === 'done' && result && (
