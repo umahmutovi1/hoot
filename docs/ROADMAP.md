@@ -320,6 +320,23 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 - [x] **DoD** (uz opći DoD): plan i program sa interneta ili PDF-a → izvori, teme i bodovi kroz pregled; PDF sa outline-om → jedinice bez AI poziva; rezervisan dan pred ispit u planu; podsjetnik i Preskoči iz notifikacije na Androidu → `v0.10.2` (release na zahtjev korisnice; CI: check, db, secrets, CodeQL zeleni; migracije 0027–0028 primijenjene; `notify`, `push-action`, `find-academic-info`, `parse-document` deployane. PDF sa outline-om provjeren pravim PDF-om u harnessu; web pretraga, plan i program kroz AI i Preskoči na Androidu se provjeravaju na produkciji; Google Drive čeka `VITE_GOOGLE_*` iz SETUP 5c)
 - [x] Dorada poslije v0.10.2 → `v0.10.3` (#215–#222): onboarding 1b se više ne zamrzava; „Fakultet s interneta“ traži i plan i program iz ranijih godina; dokument sa linka (Daj dokument, Nađeno, onboarding, Dokumenti i link poslan u chatu) uz provjeru svakog preusmjerenja; dokument se čita bez napuštanja stranice; plan i program cijelog studija samo za tvoju godinu (stranice godine bez AI-ja, dijelovi od 40 000 znakova), izborni predmeti jednim tapom, poglavlja kao teme i privremeni izvor „Predavanja“, literatura se samo nudi; čitanje u pozadini sa bannerom i obavještenjem; streaming odgovora asistenta (`answer` SSE); boja statusne trake na iOS-u po temi; Google Drive privremeno isključen (`DRIVE_ENABLED`). `parse-document`, `find-academic-info` i `answer` deployane
 
+## Etapa 10d — Povezani kalendari: klasifikacija i Google dvosmjerno
+
+[CALENDAR-SYNC.md](CALENDAR-SYNC.md) (arhitektura i odluke), PRD „Povezani kalendari i integracije“. Zamjenjuje ICS izvoz plana (bio u Etapi 12) i Google Calendar API iz „Kasnije“.
+
+- [x] Plan i odluke: `docs/CALENDAR-SYNC.md`; Apple iCloud isključen, ICS izvoz zamijenjen
+- [x] Sync pri otvaranju i povratku u app za svaki feed (i samo-Moodle), Realtime na `external_events` i `plan_blocks` (`0029_calendar_realtime.sql`) → refetch i replan bez reloada
+- [x] Plan → Dan: pilula „Uredi dan“ i tap na prazno vrijeme (`EditDaySheet`: kad učim ovaj dan, više vremena, dodaj blok, Dostupnost, Raspored) umjesto dugmadi Raspored i Dostupnost u zaglavlju
+- [x] Vrsta feeda iz linka (`src/lib/calendar/feedKind.ts`: Moodle = rokovi), promjena vrste na feedu; servisi Google, Outlook, Moodle
+- [ ] Klasifikacija događaja: `external_events.kind` / `kind_by`, pravila u `src/lib/calendar/classify.ts` + testovi, `classify-events` (AI samo za nejasne, `ai_runs`), `eventBlocks` po vrsti i `kind` u `input_hash`, prijedlozi ispita i rokova iz bilo kojeg feeda
+- [ ] Google OAuth (`google-calendar`, refresh token samo za service role), izbor kalendara zauzetosti, kalendar „Hoot“; provjera da token važi > 7 dana u neverifikovanom „In production“ režimu; SETUP.md
+- [ ] Hoot → Google: `calendar_outbox` + trigger + `pg_net` → `calendar-push` (blokovi +14 dana, ispiti, rokovi, nastava kao RRULE), `hootRef`, `etag`, `pushed_hash`, link „Započni“ (`/?block=<id>`)
+- [ ] Google → Hoot: `events.watch` + `google-calendar-webhook` (`syncToken`), zajednički upsert sa ICS-om (`_shared/externalEvents.ts`); pomjeren blok = ručni, obrisan = preskočen, pomjeren ispit = prijedlog; cron 15 min i obnova kanala
+- [ ] Duplikati: `src/lib/calendar/match.ts` + testovi, kartica Spoji / Hoot zamjenjuje / Google zamjenjuje / Zadrži oba, uvoz predavanja, ispita i rokova iz Google-a povezano, „već imaš“ u ostalim uvozima
+- [ ] Status u Planu: badge u zaglavlju (Google: sinhronizovano prije X / čeka / nije povezano → Povezani kalendari), na bloku oznaka sinhronizovan / čeka (`calendar_links`), na događaju iz Google-a oznaka „iz Google kalendara“
+- [ ] Onboarding korak 2: „Poveži Google kalendar“ prvi, preskakanje rasporeda i rokova koji su već u kalendaru
+- **DoD:** blok promijenjen u app-u je u Google kalendaru za par sekundi i obratno; link iz događaja otvara „Započeti sesiju sada?“; predavanje koje je i u Google-u i u Hoot-u postoji jednom; nijedan token ni link u logovima → `v0.10.5`
+
 ## Etapa 11a — ML temelj
 
 Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md). Python (`ml/`) trenira, TS (`src/lib/`) izvršava; artefakti su JSON sa `version` u `input_hash`. Higijena podataka ide prva, jer se podaci skupljaju od danas.
@@ -354,7 +371,6 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 ## Etapa 12 — Notifikacije i dorada
 
 - [ ] Ostale notifikacije (Web Push temelj je iz Etape 9, podsjetnici prije bloka i kašnjenje iz Etape 10c): propušten blok, ponavljanje, „Dokle ste stigli?“ nakon termina, kampanja počinje za 3 dana
-- [ ] ICS izvoz plana: `calendar-feed` edge funkcija, `ics_token` (uključi / obnovi u Postavkama), ispiti, rokovi i opcionalno blokovi uz napomenu o kašnjenju Google-a
 - [ ] Izvoz podataka (JSON) u Postavkama
 - [ ] Postavke kompletne (plan, timer i predlošci, povezani kalendari, jezik, potrošnja AI iz `ai_runs`)
 - [ ] Pristupačnost: touch ≥ 44 px, kontrast, aria, fokus
@@ -373,7 +389,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
 - Prijedlog obima parcijale iz onoga što je pređeno na predavanjima do datuma parcijale.
-- Google Calendar API (upis blokova odmah, OAuth; traži Google verifikaciju jer Testing režim daje token od 7 dana) kad se app otvori za više korisnika.
+- Outlook dvosmjerno (Microsoft Graph, subscriptions) i replan na serveru ([CALENDAR-SYNC.md](CALENDAR-SYNC.md) „Kasnije“).
 - Notion javna integracija (baza rokova → `deadlines`) samo ako paste kroz sovu ne bude dovoljan.
 - Lični faktor brzine po jeziku izvora (`sources.language`).
 - Opcionalno mjesto bloka („biblioteka“, „kuća“) uz predloženo vrijeme (namjera „kad i gdje“).

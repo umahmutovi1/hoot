@@ -215,7 +215,9 @@ unset GEMINI_API_KEY
 
 ## 5a. Povezani kalendari: `sync-calendar` i `pg_cron` (Etapa 8)
 
-`sync-calendar` povlači iCal linkove (Google, Outlook, iCloud, a od Etape 10 i Moodle „Rokovi“) u `external_events`. App je zove pri otvaranju (najviše jednom u 30 min); `pg_cron` je zove svaka 3 h da plan ima svježu zauzetost i kad app nije otvoren. Bez LLM-a, ne troši AI limit. Tajni iCal link se nikad ne loguje; u `calendar_feeds.last_error` ide samo kod greške.
+`sync-calendar` povlači iCal linkove (Google, Outlook, iCloud, a od Etape 10 i Moodle „Rokovi“) u `external_events`. App je zove pri otvaranju i povratku u app (najviše jednom u 30 min, za svaki feed); `pg_cron` je zove svaka 3 h da plan ima svježu zauzetost i kad app nije otvoren. Bez LLM-a, ne troši AI limit. Tajni iCal link se nikad ne loguje; u `calendar_feeds.last_error` ide samo kod greške.
+
+**Realtime (Etapa 10d).** Migracija `0029_calendar_realtime.sql` dodaje `external_events` i `plan_blocks` u publikaciju `supabase_realtime`, pa upis sa servera stiže u otvoren app bez reloada. Provjera: Database → Publications → `supabase_realtime` sadrži obje tabele. Ništa se ne podešava ručno; Google Calendar API (OAuth klijent, scope-ovi, režim consent screena) dolazi uz PR 3 iz [CALENDAR-SYNC.md](CALENDAR-SYNC.md).
 
 1. **Tajna za cron** (terminal, vrijednost ne ide u repo ni chat):
    ```sh

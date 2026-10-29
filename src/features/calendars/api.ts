@@ -165,7 +165,10 @@ export function useUpdateFeed() {
       patch,
     }: {
       id: string
-      patch: Partial<Pick<FeedRow, 'title' | 'busy_only' | 'all_day_busy'>> & { url?: string }
+      patch: Partial<Pick<FeedRow, 'title' | 'busy_only' | 'all_day_busy'>> & {
+        url?: string
+        kind?: 'busy' | 'deadlines'
+      }
     }) => {
       const { error } = await supabase.from('calendar_feeds').update(patch).eq('id', id)
       if (error) throw new Error('save_failed')

@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Switch } from '@/components/Switch'
+import { feedKindFromUrl, type FeedKind } from '@/lib/calendar/feedKind'
 import { cn } from '@/lib/utils'
 import { useAddFeed, useDeleteFeed, useUpdateFeed, type FeedRow } from './api'
 
-const SERVICES = ['google', 'apple', 'outlook'] as const
+const SERVICES = ['google', 'outlook', 'moodle'] as const
+const KINDS: FeedKind[] = ['busy', 'deadlines']
 type Service = (typeof SERVICES)[number]
 
 /** A link the sync can fetch: https or webcal, nothing else. */
@@ -45,17 +47,22 @@ function NewFeedForm({ onDone }: { onDone: () => void }) {
   const [allDay, setAllDay] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const valid = isFeedUrl(url)
+  // The kind comes from the link (a Moodle export holds due dates), so a new feed asks nothing.
+  const kind: FeedKind =
+    service === 'moodle' || (valid && feedKindFromUrl(url) === 'deadlines') ? 'deadlines' : 'busy'
+  const titleService: Service = kind === 'deadlines' ? 'moodle' : service
 
   const submit = async () => {
     if (!valid || add.isPending) return
     setError(null)
     try {
       const result = await add.mutateAsync({
-        title: t(`feeds.service.${service}`),
+        title: t(`feeds.service.${titleService}`),
         url: url.trim(),
-        kind: 'busy',
-        busy_only: busyOnly,
-        all_day_busy: allDay,
+        kind,
+        // Deadlines need the title and course name (CATEGORIES) to match a subject.
+        busy_only: kind === 'busy' && busyOnly,
+        all_day_busy: kind === 'busy' && allDay,
       })
       const failed = result?.results.find((r) => r.error)
       // The feed is saved either way; a sync error shows on its row.
@@ -103,18 +110,24 @@ function NewFeedForm({ onDone }: { onDone: () => void }) {
         />
         <span className="text-xs leading-[1.45] text-ink-muted">{t(`feeds.howto.${service}`)}</span>
       </label>
-      <SwitchRow
-        checked={busyOnly}
-        onChange={setBusyOnly}
-        title={t('feeds.busyOnly')}
-        sub={t('feeds.busyOnlySub')}
-      />
-      <SwitchRow
-        checked={allDay}
-        onChange={setAllDay}
-        title={t('feeds.allDay')}
-        sub={t('feeds.allDaySub')}
-      />
+      {kind === 'deadlines' ? (
+        <p className="text-xs leading-[1.45] text-ink-muted">{t('feeds.kindHint.deadlines')}</p>
+      ) : (
+        <>
+          <SwitchRow
+            checked={busyOnly}
+            onChange={setBusyOnly}
+            title={t('feeds.busyOnly')}
+            sub={t('feeds.busyOnlySub')}
+          />
+          <SwitchRow
+            checked={allDay}
+            onChange={setAllDay}
+            title={t('feeds.allDay')}
+            sub={t('feeds.allDaySub')}
+          />
+        </>
+      )}
       <p className="text-xs leading-[1.45] text-ink-muted">{t('feeds.secret')}</p>
       {error && <p className="text-sm text-warning-ink">{error}</p>}
       <button
@@ -156,6 +169,29 @@ function EditFeedForm({ feed, onDone }: { feed: FeedRow; onDone: () => void }) {
           className="h-12 rounded-input bg-canvas px-4 text-[15px] outline-none"
         />
       </label>
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[13px] font-semibold text-ink-secondary">{t('feeds.kindLabel')}</span>
+        <div role="radiogroup" aria-label={t('feeds.kindLabel')} className="flex gap-1.5">
+          {KINDS.map((k) => (
+            <button
+              key={k}
+              type="button"
+              role="radio"
+              aria-checked={feed.kind === k}
+              onClick={() => feed.kind !== k && update.mutate({ id: feed.id, patch: { kind: k } })}
+              className={cn(
+                'h-11 rounded-full px-4 text-[13px] font-semibold',
+                feed.kind === k ? 'bg-ink text-white' : 'bg-white/50 text-ink',
+              )}
+            >
+              {t(`feeds.kind.${k}`)}
+            </button>
+          ))}
+        </div>
+        <span className="text-xs leading-[1.45] text-ink-muted">
+          {t(`feeds.kindHint.${feed.kind as FeedKind}`)}
+        </span>
+      </div>
       <SwitchRow
         checked={feed.busy_only}
         onChange={(v) => update.mutate({ id: feed.id, patch: { busy_only: v } })}

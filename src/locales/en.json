@@ -201,7 +201,6 @@
     "prevWeek": "Previous week",
     "nextWeek": "Next week",
     "cancelled": "cancelled",
-    "timetableButton": "Timetable",
     "legendPlanned": "Planned study",
     "schedule": {
       "note": "The plan suggests the times, with breaks",
@@ -214,13 +213,25 @@
       "title": "More time this day",
       "sub": "{{day}} · maximum {{cap}}",
       "done": "{{day}}: maximum is {{cap}}",
-      "fullDay": "The maximum already equals the free time; add hours in Availability for more.",
-      "button": "More time"
+      "fullDay": "The maximum already equals the free time; add hours in Availability for more."
     },
     "eve": {
       "band": "Only for {{subject}} · exam {{when}}",
       "remove": "Remove",
       "removed": "The day is no longer kept. The plan is updated."
+    },
+    "editDay": {
+      "button": "Edit day",
+      "title": "Edit: {{day}}",
+      "slots": "When I study this day",
+      "slotsSub": "Slots and the cap, just this day or every such weekday",
+      "moreSub": "Raise the cap for this day only",
+      "block": "Add block",
+      "blockSub": "A manual block at an exact time",
+      "always": "Every week",
+      "weekSub": "The slot template for the whole week",
+      "timetable": "Class timetable",
+      "timetableSub": "Lectures and exercises by week"
     }
   },
   "subjects": {
@@ -1725,21 +1736,21 @@
   },
   "feeds": {
     "title": "Connected calendars",
-    "intro": "Paste a secret iCal link. Busy time from the calendar counts like classes in the plan.",
+    "intro": "Paste a secret iCal link. Busy time from the calendar goes into the plan like classes, and Moodle due dates are offered for import.",
     "add": "Add calendar",
     "newTitle": "New calendar",
-    "newSub": "Google, Apple or Outlook (iCal link)",
+    "newSub": "Google, Outlook or Moodle (iCal link)",
     "serviceLabel": "Service",
     "service": {
       "google": "Google",
-      "apple": "Apple",
-      "outlook": "Outlook"
+      "outlook": "Outlook",
+      "moodle": "Moodle"
     },
     "link": "iCal link",
     "howto": {
       "google": "Google Calendar → Calendar settings → “Secret address in iCal format”.",
-      "apple": "iCloud → Calendar → Share → Public calendar → copy the link.",
-      "outlook": "Outlook → Settings → Calendar → Shared calendars → Publish a calendar → ICS."
+      "outlook": "Outlook → Settings → Calendar → Shared calendars → Publish a calendar → ICS.",
+      "moodle": "Moodle → Calendar → Export calendar → “Get calendar URL”."
     },
     "busyOnly": "Keep busy time only",
     "busyOnlySub": "Titles and locations are not stored",
@@ -1773,7 +1784,12 @@
     "busyHint": "This time is not planned for study. If it does not matter, ignore it.",
     "ignoredHint": "Ignored: the plan counts this time as free.",
     "ignore": "Ignore",
-    "unignore": "Count as busy again"
+    "unignore": "Count as busy again",
+    "kindLabel": "Type",
+    "kindHint": {
+      "busy": "Events are busy time: the plan doesn't put studying over them.",
+      "deadlines": "Recognized as Moodle: events are due dates offered for import, not busy time."
+    }
   },
   "onboarding": {
     "skip": "Skip",
@@ -1794,7 +1810,7 @@
       "timetable": "Class timetable",
       "timetableSub": "by hand, one class at a time",
       "feed": "Connected calendar",
-      "feedSub": "Google, Apple or Outlook (iCal link)",
+      "feedSub": "Google, Outlook or Moodle (iCal link)",
       "link": "Link to a document",
       "linkSub": "Study plan, calendar or timetable from the web",
       "none": "Nothing yet? Just continue; you can add all of this later in Settings.",

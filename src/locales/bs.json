@@ -208,7 +208,6 @@
     "prevWeek": "Prethodna sedmica",
     "nextWeek": "Sljedeća sedmica",
     "cancelled": "otkazano",
-    "timetableButton": "Raspored",
     "legendPlanned": "Planirano učenje",
     "schedule": {
       "note": "Vremena predlaže plan, uz pauze",
@@ -221,13 +220,25 @@
       "title": "Više vremena ovaj dan",
       "sub": "{{day}} · maksimum {{cap}}",
       "done": "{{day}}: maksimum je {{cap}}",
-      "fullDay": "Maksimum je već koliko i slobodnog vremena; za više dodaj termine u Dostupnosti.",
-      "button": "Više vremena"
+      "fullDay": "Maksimum je već koliko i slobodnog vremena; za više dodaj termine u Dostupnosti."
     },
     "eve": {
       "band": "Samo za {{subject}} · ispit {{when}}",
       "remove": "Ukloni",
       "removed": "Dan više nije rezervisan. Plan je preračunat."
+    },
+    "editDay": {
+      "button": "Uredi dan",
+      "title": "Uredi: {{day}}",
+      "slots": "Kad učim ovaj dan",
+      "slotsSub": "Termini i maksimum, samo danas ili svaki taj dan",
+      "moreSub": "Podigni maksimum samo za ovaj dan",
+      "block": "Dodaj blok",
+      "blockSub": "Ručni blok u tačno vrijeme",
+      "always": "Svake sedmice",
+      "weekSub": "Šablon termina za cijelu sedmicu",
+      "timetable": "Raspored nastave",
+      "timetableSub": "Predavanja i vježbe po sedmicama"
     }
   },
   "subjects": {
@@ -1775,21 +1786,21 @@
   },
   "feeds": {
     "title": "Povezani kalendari",
-    "intro": "Zalijepi tajni iCal link. Zauzetost iz kalendara ulazi u plan kao nastava.",
+    "intro": "Zalijepi tajni iCal link. Zauzetost iz kalendara ulazi u plan kao nastava, a rokovi iz Moodlea se nude za uvoz.",
     "add": "Dodaj kalendar",
     "newTitle": "Novi kalendar",
-    "newSub": "Google, Apple ili Outlook (iCal link)",
+    "newSub": "Google, Outlook ili Moodle (iCal link)",
     "serviceLabel": "Servis",
     "service": {
       "google": "Google",
-      "apple": "Apple",
-      "outlook": "Outlook"
+      "outlook": "Outlook",
+      "moodle": "Moodle"
     },
     "link": "iCal link",
     "howto": {
       "google": "Google Kalendar → Postavke kalendara → „Tajna adresa u iCal formatu“.",
-      "apple": "iCloud → Kalendar → Dijeli → Javni kalendar → kopiraj link.",
-      "outlook": "Outlook → Postavke → Kalendar → Dijeljeni kalendari → Objavi kalendar → ICS."
+      "outlook": "Outlook → Postavke → Kalendar → Dijeljeni kalendari → Objavi kalendar → ICS.",
+      "moodle": "Moodle → Kalendar → Izvoz kalendara → „Dobij URL kalendara“."
     },
     "busyOnly": "Spremaj samo zauzeto",
     "busyOnlySub": "Naslov i lokacija se ne spremaju",
@@ -1823,7 +1834,12 @@
     "busyHint": "Ovo vrijeme se ne planira za učenje. Ako ti ne smeta, ignoriši ga.",
     "ignoredHint": "Ignorisano: plan ovo vrijeme računa kao slobodno.",
     "ignore": "Ignoriši",
-    "unignore": "Vrati kao zauzeto"
+    "unignore": "Vrati kao zauzeto",
+    "kindLabel": "Vrsta",
+    "kindHint": {
+      "busy": "Događaji su zauzeto vrijeme: plan ne stavlja učenje preko njih.",
+      "deadlines": "Prepoznala sam Moodle: događaji su rokovi koje ti nudim za uvoz, ne zauzeto vrijeme."
+    }
   },
   "onboarding": {
     "skip": "Preskoči",
@@ -1844,7 +1860,7 @@
       "timetable": "Raspored nastave",
       "timetableSub": "ručno, termin po termin",
       "feed": "Povezani kalendar",
-      "feedSub": "Google, Apple ili Outlook (iCal link)",
+      "feedSub": "Google, Outlook ili Moodle (iCal link)",
       "link": "Link do dokumenta",
       "linkSub": "Plan i program, kalendar ili raspored sa weba",
       "none": "Nemaš ništa sad? Samo nastavi; sve ovo možeš dodati kasnije u Postavkama.",
