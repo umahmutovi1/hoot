@@ -340,7 +340,9 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 - [x] Status u Planu: badge u zaglavlju (Google: sinhronizovano prije X / čeka / nije povezano → Povezani kalendari), na bloku oznaka sinhronizovan / čeka (`calendar_links`), na događaju iz Google-a oznaka „iz Google kalendara“
 - [x] Onboarding korak 2: „Poveži Google kalendar“ prvi (povratak na korak), nađena predavanja i ispiti → „Iz kalendara“, raspored iz Google-a umjesto ručnog unosa
 - [x] „Je li predavanje?“ za neprepoznate sedmične serije („Iz kalendara“, onboarding samo kad ništa drugo nije nađeno)
-- **DoD:** blok promijenjen u app-u je u Google kalendaru za par sekundi i obratno; link iz događaja otvara „Započeti sesiju sada?“; predavanje koje je i u Google-u i u Hoot-u postoji jednom; nijedan token ni link u logovima → `v0.10.5`
+- [x] Dorada poslije testa na dev-u (#226–#228): blok pomjeren u Google-u se primijeni (`0034`, prava `service_role`), tag „Sinhronizovano sa Google-om“ pored naslova Plana, kartice dana koje se šire (Uredi / Detalji / Promijeni vrstu), „Vrati predloženi plan“ sa pregledom u „Uredi dan“, jedan odbijen događaj ne zaustavlja push, rok u Google-u kao 15 min prije roka
+  - iPhone Kalendar povlači Google račun periodično (Preuzimanje, najmanje 15 min), pa promjena iz Hoot-a kasni samo tamo; Google Calendar je pokazuje odmah
+- [x] **DoD** (uz opći DoD): blok promijenjen u app-u je u Google kalendaru za par sekundi i obratno; link iz događaja otvara „Započeti sesiju sada?“; predavanje koje je i u Google-u i u Hoot-u postoji jednom; nijedan token ni link u logovima → `v0.10.4` (migracije 0029–0034 primijenjene; `google-calendar`, `google-calendar-sync`, `classify-events`, `sync-calendar` deployane; cron `google-calendar-sync` svakih 15 min; provjereno na dev-u sa Google kalendarom i iPhoneom)
 
 ## Etapa 11a — ML temelj
 
@@ -356,7 +358,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash`
 - [ ] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad
 - [ ] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio)
-- **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.4`
+- **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.5`
 
 ## Etapa 11 — Napredak
 
