@@ -1,5 +1,5 @@
 import { addDays, diffDays, weekdayOf, type LocalDate } from '@/lib/day'
-import { retrievabilityOn } from '@/lib/srs'
+import { examGain, retrievabilityOn } from '@/lib/srs'
 import { slotMinutes, type Slot } from '@/lib/schedule'
 import { PART_RANGES, SLOT_PARTS } from '@/lib/schedule/rhythm'
 import { planIntervalMin } from '@/lib/session/timer'
@@ -447,6 +447,13 @@ function run(
     dueOn.set(u.id, last !== null && u.nextReviewOn > last ? last : u.nextReviewOn)
   }
 
+  // Exams without known points count as the median of the known ones (all equal without any).
+  const known = goals
+    .filter((g) => g.kind === 'exam' && g.points !== undefined && g.points > 0)
+    .map((g) => g.points!)
+    .sort((a, b) => a - b)
+  const fallbackPoints = known.length > 0 ? known[Math.floor(known.length / 2)]! : 1
+
   const reviewed = new Set<string>()
   const blocks: PlannedBlock[] = []
   const used = new Map<LocalDate, number>()
@@ -464,11 +471,18 @@ function run(
       ...(s.boostUntil && d <= s.boostUntil ? { boost: true as const } : {}),
     })
 
-    // 2. Reviews due and recaps, within the review share of the day. Over the cap, the closer
-    // exam and then the lower strength go first; the rest moves to the next day.
+    // 2. Reviews due and recaps, within the review share of the day. Over the cap, the reviews
+    // worth the most exam points per minute go first (the expected gain in strength on the exam
+    // day × the unit's share of the exam's points); the rest moves to the next day.
     let reviewBudget = Math.min(Math.floor((cap * settings.reviewCapPct) / 100), limit)
     const strength = (u: PlanUnit) =>
       u.memory ? retrievabilityOn(u.memory, d, state.fsrsParams) : 0
+    const worth = (u: PlanUnit) => {
+      const goal = goalsOfUnit.get(u.id)!.find((g) => g.on > d)!
+      const points = (goal.points ?? fallbackPoints) / Math.max(1, goal.unitIds.length)
+      const gain = examGain(u.memory ?? null, d, goal.on, state.fsrsParams)
+      return (gain * points) / reviewMinutes(u.kind, u.minutes)
+    }
     const due = state.units
       .filter((u) => {
         const on = dueOn.get(u.id)
@@ -480,7 +494,10 @@ function run(
           (goalsOfUnit.get(u.id) ?? []).some((g) => g.on > d)
         )
       })
-      .sort((a, b) => {
+      .map((u) => ({ u, worth: worth(u) }))
+      .sort((x, y) => {
+        if (Math.abs(x.worth - y.worth) > 1e-12) return y.worth - x.worth
+        const [a, b] = [x.u, y.u]
         const ga = goalsOfUnit.get(a.id)!.find((g) => g.on > d)!.on
         const gb = goalsOfUnit.get(b.id)!.find((g) => g.on > d)!.on
         if (ga !== gb) return ga < gb ? -1 : 1
@@ -491,6 +508,7 @@ function run(
         const db = dueOn.get(b.id)!
         return da < db ? -1 : da > db ? 1 : a.order - b.order || byId(a, b)
       })
+      .map((x) => x.u)
     const reviewDrafts = new Map<string, Draft>()
     for (const u of due) {
       const m = reviewMinutes(u.kind, u.minutes)

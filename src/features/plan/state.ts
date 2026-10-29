@@ -375,6 +375,7 @@ export function buildPlanState(
         on,
         unitIds: [...scope].filter((id) => subjectOfUnit.get(id) === subject.id).sort(),
         minutes: 0,
+        ...(a.points_max ? { points: a.points_max } : {}),
         // Only set when reserved, so plans without a reservation keep their input hash.
         ...(a.eve_reserved
           ? { eveReserved: true, atMin: wallClock(new Date(a.at), boundary.timeZone).minutes }
@@ -537,7 +538,11 @@ export function buildPlanState(
 /** Only what the plan uses (strength on a day), so other memory fields do not change the hash. */
 function memoryRef(m: ReturnType<typeof memoryOf>): PlanUnit['memory'] {
   return m
-    ? { stability: Math.round(m.stability * 1000) / 1000, lastReviewOn: m.lastReviewOn }
+    ? {
+        stability: Math.round(m.stability * 1000) / 1000,
+        difficulty: Math.round(m.difficulty * 1000) / 1000,
+        lastReviewOn: m.lastReviewOn,
+      }
     : null
 }
 

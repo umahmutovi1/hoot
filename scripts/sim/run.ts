@@ -223,7 +223,7 @@ export function simulate(
         return { date, slots: world.slots(date), cap: world.cap(date), lectureSubjectIds: [] }
       }),
       subjects: world.subjects.filter((s) => open.has(s.id)),
-      goals,
+      goals: goals.map((g) => ({ ...g, points: world.points[g.id] })),
       units: [...units.values()]
         .filter((u) => open.has(u.unit.subjectId))
         .map((u) => ({
@@ -231,6 +231,7 @@ export function simulate(
           minutes: Math.max(1, Math.round(u.unit.minutes * (rates.get(u.unit.subjectId) ?? 1))),
           memory: u.memory && {
             stability: u.memory.stability,
+            difficulty: u.memory.difficulty,
             lastReviewOn: u.memory.lastReviewOn,
           },
         })),

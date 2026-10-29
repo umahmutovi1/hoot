@@ -14,6 +14,7 @@ import {
   weightedStrength,
   type Memory,
   type Recall,
+  examGain,
 } from '.'
 
 const TODAY = '2026-10-22'
@@ -242,5 +243,22 @@ describe('properties', () => {
         },
       ),
     )
+  })
+})
+
+describe('examGain', () => {
+  const memory = { stability: 5, difficulty: 5, lastReviewOn: '2026-10-20' }
+  it('a review today raises strength on the exam day; more for a weaker memory', () => {
+    const gain = examGain(memory, '2026-10-29', '2026-11-05')
+    expect(gain).toBeGreaterThan(0)
+    expect(examGain({ ...memory, stability: 30 }, '2026-10-29', '2026-11-05')).toBeLessThan(gain)
+  })
+  it('a far exam gains less from a review today than a near one', () => {
+    expect(examGain(memory, '2026-10-29', '2026-12-29')).toBeLessThan(
+      examGain(memory, '2026-10-29', '2026-11-02'),
+    )
+  })
+  it('a unit never tested counts as learned today', () => {
+    expect(examGain(null, '2026-10-29', '2026-11-05')).toBeGreaterThan(0.5)
   })
 })

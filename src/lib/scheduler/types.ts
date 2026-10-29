@@ -62,6 +62,8 @@ export interface PlanGoal {
   eveReserved?: boolean
   /** Exam: wall-clock minute, set with `eveReserved` (two exams on one day: the earlier is closer). */
   atMin?: number
+  /** Exam: its points (`assessments.points_max`); absent when unknown. */
+  points?: number
 }
 
 /** A leaf unit with its estimate (minutes already include calibration and speed factor). */
@@ -88,7 +90,7 @@ export interface PlanUnit {
    */
   nextReviewOn: LocalDate | null
   /** FSRS memory of the unit, for its strength on a day; null before the first test. */
-  memory?: { stability: number; lastReviewOn: LocalDate } | null
+  memory?: { stability: number; difficulty?: number; lastReviewOn: LocalDate } | null
   /** Covered in class on this day (latest lecture log), null = not covered or not tracked. */
   coveredOn: LocalDate | null
   /** The subject has lecture logs for this unit's source: uncovered units are not pushed ahead. */
