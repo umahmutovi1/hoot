@@ -14,6 +14,8 @@ import {
 import { blendedRate } from '@/lib/estimates'
 import { sourceRate, type SourceStats } from '@/lib/estimates/model'
 import { BUILT_IN_PRESETS } from '@/lib/session/timer'
+import { fitCompletion, type CompletionExample } from '@/lib/slots/completion'
+import { exploreDays, slotCompletion, slotScores } from '@/lib/slots/score'
 import {
   levelAfter,
   READ_CHECK_DAYS,
@@ -23,7 +25,7 @@ import {
   type Memory,
   type Recall,
 } from '@/lib/srs'
-import { rng, type Rng } from './random'
+import { rng, rngFor, type Rng } from './random'
 import {
   DEFAULT_STUDENT,
   simulateBlock,
@@ -53,6 +55,19 @@ export interface BlockExample {
   done: boolean
   delayMin: number
 }
+
+const asCompletion = (e: BlockExample): CompletionExample => ({
+  subjectId: e.subjectId,
+  onDate: e.onDate,
+  label: e.label,
+  part: e.part,
+  weekend: e.weekend,
+  kind: e.kind,
+  demand: e.demand,
+  dayLoadMin: e.dayLoadMin,
+  daysToGoal: e.daysToGoal,
+  prevLate: e.prevLate,
+})
 
 export interface RunMetrics {
   /** Σ points × mean R of the exam's units on exam day / Σ points (0–1). */
@@ -123,12 +138,19 @@ export function rateFor(estimator: Estimator, own: SourceStats, all: SourceStats
   return sourceRate(own, all).mean
 }
 
+/**
+ * Capacity and slot scores: `model` = the block completion model fitted every morning on the
+ * blocks so far (capacity per slot, slot scores, weekly exploration), `off` = one ρ.
+ */
+export type SlotMode = 'model' | 'off'
+
 /** One run: plan every morning with the real `plan()`, then live the day as the student. */
 export function simulate(
   seed: number,
   params: StudentParams = DEFAULT_STUDENT,
   worldOf: (r: Rng) => World = makeWorld,
   estimator: Estimator = 'model',
+  slots: SlotMode = 'model',
 ): RunResult {
   const r = rng(seed)
   const world = worldOf(r)
@@ -181,13 +203,14 @@ export function simulate(
     const goals = world.goals.filter((g) => g.on > day)
     if (goals.length === 0) break
     const open = new Set(goals.map((g) => g.subjectId))
-    const cantToday = r.chance(params.cantTodayP)
+    const cantToday = rngFor(seed, day).chance(params.cantTodayP)
 
     const all = world.subjects.map((s) => statsOf(s.id))
     const rates = new Map(
       world.subjects.map((s) => [s.id, rateFor(estimator, statsOf(s.id), all)] as const),
     )
     const rho = realization(history, day).rho
+    const completion = slots === 'model' ? fitCompletion(examples.map(asCompletion), day) : null
     const horizon = diffDays(
       day,
       goals.reduce((m, g) => (g.on > m ? g.on : m), day),
@@ -217,6 +240,9 @@ export function simulate(
       rho,
       growthBase: growthBase(history, day, rho),
       preferredParts: [],
+      slotCompletion: completion && slotCompletion(completion),
+      slotScores: completion && slotScores(completion),
+      explore: completion ? exploreDays(completion, day, lastExam, `sim${seed}`) : [],
     }
     const result = plan(state)
     const today = result.blocks
@@ -241,7 +267,10 @@ export function simulate(
 
     let prevLate = false
     let doneMin = 0
+    const ordinal = new Map<string, number>()
     for (const b of today) {
+      const nth = ordinal.get(b.subjectId) ?? 0
+      ordinal.set(b.subjectId, nth + 1)
       const goal = b.goalId ? world.goals.find((g) => g.id === b.goalId) : undefined
       const context: BlockContext = {
         subjectIndex: index.get(b.subjectId)!,
@@ -255,7 +284,7 @@ export function simulate(
       }
       const outcome: BlockOutcome = cantToday
         ? { done: false, label: 'skipped' as const, delayMin: 0, realFactor: 1 }
-        : simulateBlock(params, context, r)
+        : simulateBlock(params, context, rngFor(seed, day, b.subjectId, nth))
       examples.push({
         run: seed,
         subjectId: b.subjectId,
@@ -286,7 +315,7 @@ export function simulate(
         const retention = targetRetention(priority.get(u.unit.subjectId)!, 'chapter')
         const lastDay = addDays(g.on, -1)
         const test = () => {
-          const recall = drawRecall(u.memory, day, r)
+          const recall = drawRecall(u.memory, day, rngFor(seed, day, bu.unitId))
           const next = review({ memory: u.memory, recall, today: day, retention, lastDay })
           u.memory = next.memory
           u.unit.level = levelAfter('chapter', u.unit.level, recall, next.memory.streak)

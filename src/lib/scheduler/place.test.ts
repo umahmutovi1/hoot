@@ -108,4 +108,41 @@ describe('placeTimes', () => {
     expect(r.placements.find((p) => p.key === 'l')!.startMin).toBe(19 * 60)
     expect(r.placements.find((p) => p.key === 'r')!.startMin).toBe(480)
   })
+
+  describe('slot scores from the completion model', () => {
+    // 08–10 and 16–22: morning, afternoon and evening starts.
+    const day = {
+      slots: [
+        { startMin: 480, endMin: 600 },
+        { startMin: 960, endMin: 1320 },
+      ],
+    }
+    const scores = { morning: 0.6, midday: 0.6, afternoon: 0.6, evening: 0.6, night: 0.5 }
+    const learn = [{ key: 'a', minutes: 50, kind: 'learn' as const, demand: 1 }]
+
+    it('a clearly better part of the day wins', () => {
+      const r = placeTimes(learn, input({ ...day, scores: { ...scores, evening: 0.7 } }))
+      expect(r.placements[0]!.startMin).toBe(1140)
+    })
+
+    it('a difference within SLOT_GAP is noise: the earliest start wins', () => {
+      const r = placeTimes(learn, input({ ...day, scores: { ...scores, evening: 0.64 } }))
+      expect(r.placements[0]!.startMin).toBe(480)
+    })
+
+    it('the exploring block takes the best draw among starts within SLOT_GAP', () => {
+      const explore = { ...scores, afternoon: 0.9 }
+      const r = placeTimes(
+        [...learn, { key: 'b', minutes: 50, kind: 'learn', demand: 0.5 }],
+        input({ ...day, scores: { ...scores, evening: 0.62 }, explore }),
+      )
+      const at = new Map(r.placements.map((p) => [p.key, p.startMin]))
+      expect(at.get('a')).toBe(960)
+      // Only the first learning block explores.
+      expect(at.get('b')).toBe(480)
+      // A draw never takes a start outside the gap.
+      const far = placeTimes(learn, input({ ...day, scores: { ...scores, morning: 0.8 }, explore }))
+      expect(far.placements[0]!.startMin).toBe(480)
+    })
+  })
 })

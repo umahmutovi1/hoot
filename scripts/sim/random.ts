@@ -1,6 +1,6 @@
-import { seededRandom } from '@/lib/scheduler'
+import { hashString, seededRandom } from '@/lib/scheduler'
 
-/** Seeded draws for the simulator; one stream per run, so a seed always gives the same run. */
+/** Seeded draws for the simulator; a seed always gives the same run. */
 export interface Rng {
   next: () => number
   normal: (mean?: number, sd?: number) => number
@@ -35,5 +35,13 @@ export function rng(seed: number): Rng {
     pick: (items) => items[Math.floor(next() * items.length)]!,
   }
 }
+
+/**
+ * A stream for one event (a day, a block, a recall), keyed by what it is rather than by how many
+ * draws came before (common random numbers): when a change moves one block, the other blocks of
+ * the run keep their outcomes, so two configurations differ by what they changed, not by noise.
+ */
+export const rngFor = (...key: (string | number)[]) =>
+  rng(Number.parseInt(hashString(key.join(':')).slice(0, 8), 16))
 
 export const sigmoid = (x: number) => 1 / (1 + Math.exp(-x))

@@ -35,9 +35,15 @@ Pravilo je isto kao u `src/lib/ml/labels.ts`, a oba testa čitaju iste primjere 
 - **preskočen:** „Danas ne mogu“ (status `skipped`) i svaki red u `block_skips` („Preskoči“ za termin koji je blok napustio)
 - **nepotvrđen:** dan je prošao, a ništa nije označeno. `missed` spada ovdje i ne znači neuspjeh. Proteklo vrijeme nikad ne daje „odrađen“.
 
+`prev_late`: prethodni AI blok tog dana (po planiranom početku) je počeo više od 5 min nakon `planned_start` (prva sesija na njemu), kao `completionExamples()` u `src/lib/slots/examples.ts`.
+
 ## Notebooks
 
 `notebooks/eda.ipynb`: oznake po dijelu dana, opterećenju i danu u sedmici, stvarno trajanje prema planiranom, ometanja i kalibracija R prije ponavljanja.
+
+`notebooks/duration_backtest.ipynb`: model trajanja prema starom blendu (MAE log-minuta, pokrivenost P80).
+
+`notebooks/completion_backtest.ipynb`: model odrađenosti bloka sa predmetom, bez predmeta i konstanta (Brier, log-loss), efekti predmeta. Bez izvoza radi na primjerima simulatora (`npm run sim -- --seeds 30 --examples ml/data/sim_blocks.json`) ili sintetičkim primjerima. Primjeri TS = Python: `src/lib/slots/completion.cases.json`.
 
 ```sh
 uv run jupyter lab notebooks/

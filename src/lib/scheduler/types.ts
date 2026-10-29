@@ -148,8 +148,24 @@ export interface PlanState {
   rho: number
   /** Average studied minutes of the last 7 days for the growth limit; null = no limit. */
   growthBase: number | null
-  /** Onboarding "kad ti je najlakše učiti" (prior for slot scores until Stage 11). */
+  /** Onboarding "kad ti je najlakše učiti" (prior for slot scores without `slotCompletion`). */
   preferredParts: SlotPart[]
+  /**
+   * Expected done share of a learning block per part of the day (block completion model,
+   * `src/lib/slots/`): capacity per slot instead of one ρ. Absent = ρ.
+   */
+  slotCompletion?: SlotCompletion | null
+  /** Slot scores of `placeTimes()` from the same model (cautious); absent = onboarding prior. */
+  slotScores?: SlotCompletion | null
+  /** Exploring days (at most one a week) with their posterior draw of the expected share. */
+  explore?: ExploreDay[]
+}
+
+export type SlotCompletion = Record<'weekday' | 'weekend', Record<SlotPart, number>>
+
+export interface ExploreDay {
+  date: LocalDate
+  scores: Record<SlotPart, number>
 }
 
 /**

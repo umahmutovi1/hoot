@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { addDays, zonedInstant } from '@/lib/day'
 import { inputHash, plan } from '@/lib/scheduler'
 import type { DayInput } from '@/lib/schedule'
+import { fitCompletion } from '@/lib/slots/completion'
 import { assessmentRow, subjectRow } from '@/features/subjects/fixtures'
 import type { SourceWithUnits, Unit } from '@/features/sources/model'
 import { applyReplace, reasonOf, replaceArgs, todayMoves } from './save'
@@ -157,6 +158,7 @@ function inputs(patch: Partial<PlanInputs> = {}): PlanInputs {
     logs: [],
     blocks: [],
     sessions: [],
+    completion: fitCompletion([], '2026-10-29'),
     globalScale: undefined,
     dayInput,
     ...patch,
@@ -296,10 +298,11 @@ describe('buildPlanState', () => {
     const blocks = applyReplace([], replaceArgs(first, plan(first.state), 'h', 'r', TZ), 'u')
     const todays = blocks.filter((b) => b.on_date === TODAY)
     expect(todays.length).toBeGreaterThan(0)
-    // Free from 15:00 today only (a class until then).
+    // Free from 16:00 today only (a class until then); today may be the week's exploring day, so
+    // its first block may already sit in the afternoon.
     const later = () => ({
       ...dayInput(),
-      exceptions: [{ onDate: TODAY, startMin: 9 * 60, endMin: 15 * 60, isBusy: true }],
+      exceptions: [{ onDate: TODAY, startMin: 9 * 60, endMin: 16 * 60, isBusy: true }],
     })
     const kept = buildPlanState(inputs({ blocks, dayInput: later }), { now: NOW, boundary })
     expect(kept.keepToday).toBe(true)
@@ -321,12 +324,12 @@ describe('buildPlanState', () => {
     expect(result.blocks.filter((b) => b.onDate === TODAY)).toEqual([])
     const moves = todayMoves(re, result, blocks)
     expect(moves.length).toBeGreaterThan(0)
-    for (const m of moves) expect(m.startMin).toBeGreaterThanOrEqual(15 * 60)
-    // A block that was not moved still fits: every today block now starts at 15:00 or later.
+    for (const m of moves) expect(m.startMin).toBeGreaterThanOrEqual(16 * 60)
+    // A block that was not moved still fits: every today block now starts at 16:00 or later.
     for (const b of todays)
       expect(
         moves.find((m) => m.block.id === b.id)?.startMin ?? b.start_min!,
-      ).toBeGreaterThanOrEqual(15 * 60)
+      ).toBeGreaterThanOrEqual(16 * 60)
   })
 
   it('a manual block is fixed; the hash changes when any input changes', () => {

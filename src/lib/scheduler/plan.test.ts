@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { addDays } from '@/lib/day'
 import { BUILT_IN_PRESETS, breaksWithin } from '@/lib/session/timer'
 import { aiCapacity, coverageOf, inputHash, plan, remainingWork, type PlanState } from '.'
+import { dayRealization } from './plan'
 import { dayTotal, days, exam, FROM, minutesBy, state, subject, units } from './fixtures'
 
 const day = (n: number) => addDays(FROM, n)
@@ -58,6 +59,29 @@ describe('plan: capacity', () => {
     expect(aiCapacity(s)[0]).toBe(cap)
     for (let i = 0; i < 20; i++) expect(dayTotal(r.blocks, day(i))).toBeLessThanOrEqual(cap)
     expect(dayTotal(r.blocks, day(0))).toBeGreaterThan(0)
+  })
+
+  it('capacity per slot: ρ keeps the level, the completion model shapes it per day', () => {
+    const flat = { morning: 0.8, midday: 0.8, afternoon: 0.8, evening: 0.8, night: 0.8 }
+    // Weekends go worse; the mean over the horizon stays ρ.
+    const s = state({
+      rho: 0.8,
+      slotCompletion: {
+        weekday: flat,
+        weekend: { ...flat, morning: 0.5, midday: 0.5, afternoon: 0.5, evening: 0.5 },
+      },
+    })
+    const share = dayRealization(s)
+    const mean = share.reduce((a, b) => a + b, 0) / share.length
+    expect(mean).toBeCloseTo(0.8, 2)
+    expect(share[5]).toBeLessThan(share[0]!) // Saturday vs Monday
+    expect(aiCapacity(s)[0]).toBeGreaterThan(aiCapacity(state({ rho: 0.8 }))[0]!)
+    // Without the model (or with equal slots) it is ρ for every day.
+    expect(dayRealization(state({ rho: 0.8 }))).toEqual(s.days.map(() => 0.8))
+    const even = dayRealization(
+      state({ rho: 0.7, slotCompletion: { weekday: flat, weekend: flat } }),
+    )
+    for (const x of even) expect(x).toBeCloseTo(0.7, 10)
   })
 
   it('subtracts classes and calendar busy time (net free slots) from the day', () => {
