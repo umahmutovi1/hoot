@@ -232,6 +232,10 @@
       "weekSub": "The slot template for the whole week",
       "timetable": "Class timetable",
       "timetableSub": "Lectures and exercises by week"
+    },
+    "timeline": {
+      "edit": "Edit",
+      "details": "Details"
     }
   },
   "subjects": {

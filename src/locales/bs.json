@@ -239,6 +239,10 @@
       "weekSub": "Šablon termina za cijelu sedmicu",
       "timetable": "Raspored nastave",
       "timetableSub": "Predavanja i vježbe po sedmicama"
+    },
+    "timeline": {
+      "edit": "Uredi",
+      "details": "Detalji"
     }
   },
   "subjects": {
