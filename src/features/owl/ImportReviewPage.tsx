@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { goBack } from '@/app/navigation'
 import { useTranslation } from 'react-i18next'
 import { ScreenTitle } from '@/components/ScreenTitle'
 import { Switch } from '@/components/Switch'
@@ -20,6 +21,7 @@ import { StatusChip } from './ImportCard'
 import { NoTeachingPeriod, saveCount, useSaveImport } from './saveImport'
 import { findProposal, useOwlStore } from './store'
 import { SyllabusReview } from './SyllabusReview'
+import { pickElective } from '@/lib/import/syllabus'
 import { yearLabelOn } from '@/lib/academic'
 import { localDay } from '@/lib/day'
 
@@ -79,7 +81,8 @@ export function ImportReviewPage() {
     save.mutate(proposal, {
       onSuccess: (n) => {
         updateProposal(id, (p) => ({ ...p, savedCount: n }))
-        navigate('/chat')
+        // Back where the review was opened from (the chat, onboarding, Dokumenti).
+        goBack(navigate, '/chat')
       },
     })
 
@@ -284,6 +287,9 @@ export function ImportReviewPage() {
               ...p,
               syllabus: (p.syllabus ?? []).map((x) => (x.key === key ? update(x) : x)),
             }))
+          }
+          onPickElective={(key) =>
+            updateProposal(id, (p) => ({ ...p, syllabus: pickElective(p.syllabus ?? [], key) }))
           }
         />
       )}

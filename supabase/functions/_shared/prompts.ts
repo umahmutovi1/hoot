@@ -58,24 +58,34 @@ const TIMETABLE_RULES = `Weekly class timetable -> "entries", one per class slot
 - note: any other remark for that class (a group, "online"), else null.
 - If the student's note names a year, group or study programme, keep only those classes.`
 
-const SYLLABUS_RULES = `Syllabus ("Plan i program", "silabus", course plan) -> "subjects", one per
-subject described (a whole study programme can describe many):
+const SYLLABUS_RULES = `Syllabus ("Plan i program", "nastavni plan", "silabus", course plan) ->
+"subjects", one per subject described (a whole study programme can describe many):
 - subject_id: the id of the matching subject from the given list (match by meaning:
   abbreviations, missing diacritics, typos). null if none matches; keep subject_name as written.
-- semester: the semester number if written ("III semestar" = 3), else null.
-- literature: each book or script as written; required = true for "obavezna" (required, basic),
-  false for "dopunska" / "preporučena" (extra, recommended). If not marked, required = true.
-- topics: the weekly plan of lectures in order, one short topic per week; week = the week
-  number when written, else null. Merge lab/exercise lines into the lecture topic of that week.
+- semester: the semester number if written ("III semestar", "Semestar 3" = 3), else null.
+- elective_group: when the subject is one option of an elective slot ("Izborni predmet 4.1",
+  "izborni modul"), the slot's name as written; null for a required subject. Never return the
+  slot itself ("Izborni predmet 4.1") as a subject, only its options.
+- literature: each book or script as written, at most 6 per subject (the main list first);
+  required = true for "obavezna", "osnovna", "preporučena" (the main list), false for
+  "dodatna", "dopunska" (extra). If not marked, true. Title and authors only, no publisher.
+- topics: the weekly plan of lectures in order, one short topic per week (week = the week number
+  when written); without a weekly plan, the numbered chapters of the content ("Sadržaj modula",
+  "Sadržaj predmeta") in order, the chapter heading only, week = null. Merge lab/exercise lines
+  into the lecture topic of that week.
 - grading: every item that gives points: partial exams (kind partial, number "II" = 2),
   final ("završni"), integral ("integralni"), makeup ("popravni"), attendance ("prisustvo",
   "aktivnost"), assignment ("zadaća", "domaća"), seminar ("seminarski rad", "projekat"), other.
   points = maximum points, pass_points = minimum to pass that item; null when not written.
   Percentages of the grade are points out of 100.
+- If the student's year of study is given, keep only subjects of that year (its two semesters:
+  year 2 = semesters 3 and 4); return an empty list when this text has none of them.
 - If the student's note names a year, semester or subject, keep only those subjects.`
 
 const DOCUMENT_RULES = `Document kind: academic_calendar, exam_schedule, rules (rulebook,
-"pravilnik"), syllabus ("silabus", course plan), notice ("obavještenje"), other.`
+"pravilnik"), syllabus (a course syllabus or a whole study plan: "silabus", "nastavni plan",
+"plan i program", "plan studija", module descriptions with ECTS, content and literature),
+notice ("obavještenje"), other.`
 
 interface ParseVariant {
   task: AiTask
@@ -127,6 +137,9 @@ export function parseRequest(
   if (matchesSubjects && req.subjects.length > 0) {
     lines.push('Subjects (id: name):', ...req.subjects.map((s) => `${s.id}: ${s.name}`))
   }
+  if (req.kind === 'syllabus' && req.year_of_study) {
+    lines.push(`Student's year of study: ${req.year_of_study}`)
+  }
   if (req.note) {
     // The student's own hint narrows what to extract; it never replaces what the document says.
     lines.push(
@@ -149,7 +162,9 @@ export function parseRequest(
     schema: variant.schema as z.ZodType<Record<string, unknown>>,
     // A transcription of a scanned file needs room; extraction alone stays small.
     // A whole programme's syllabus lists many subjects; it gets the larger budget too.
-    maxTokens: req.text && req.kind !== 'syllabus' ? 8000 : 16000,
+    // A syllabus answer (books, chapters, grading for each subject) gets the most room; above
+    // ~21 000 the Anthropic SDK requires streaming.
+    maxTokens: req.kind === 'syllabus' ? 20000 : req.text ? 8000 : 16000,
   }
 }
 

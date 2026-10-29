@@ -14,6 +14,7 @@ import {
   type UploadMediaType,
 } from '@shared/schemas.ts'
 import { chunkPages, type PageText } from '@/lib/documents/chunk'
+import { splitPages } from '@/lib/documents/split'
 import { compressImage } from '@/lib/image'
 import {
   proposeClasses,
@@ -24,9 +25,18 @@ import {
   type ExistingPeriod,
 } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
-import { proposeSyllabus, type SyllabusExisting } from '@/lib/import/syllabus'
+import {
+  looksLikeSyllabus,
+  mergeSyllabi,
+  pagesForYear,
+  proposeSyllabus,
+  type SyllabusExisting,
+} from '@/lib/import/syllabus'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
-import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
+import type { AiErrorCode } from '@shared/schemas.ts'
+import i18n from '@/app/i18n'
+import { AiCallError, aiStatusKey, documentsKey, invokeAi, streamAi } from './api'
+import { documentFromLink } from './link'
 import { pdfText } from './pdfText'
 import { searchNotes } from './embeddings'
 import {
@@ -39,6 +49,8 @@ import {
 } from './store'
 
 export type DocumentInput = { type: 'file'; file: File } | { type: 'text'; text: string }
+/** A link the assistant opens itself (a link sent in the chat). */
+export type LinkInput = { type: 'link'; url: string }
 
 /** A document found on the web ("Fakultet s interneta"): its link and the year it says. */
 export interface DocumentOrigin {
@@ -61,15 +73,51 @@ export interface OwlContext {
   }[]
   /** Classes of the current teaching period, for a timetable import. */
   classes: ExistingClass[]
+  /** `profiles.year_of_study`: a whole programme's syllabus keeps only this year's subjects. */
+  yearOfStudy: number | null
   queryClient: QueryClient
 }
 
 const id = () => crypto.randomUUID()
 const store = () => useOwlStore.getState()
 
-function fail(pendingId: string, err: unknown) {
-  const code = err instanceof AiCallError ? err.code : 'failed'
+/** How giving a document ended, for a sheet that stays on its page (onboarding, Dokumenti). */
+export type GiveResult =
+  | { ok: true; title: string; found: number; proposalId: string | null }
+  | { ok: false; code: AiErrorCode | 'offline' | 'file' | 'link' }
+
+/**
+ * A system notification when the reading ends while the app is in the background; tapping it
+ * opens the review (or the chat). Nothing when notifications were not allowed.
+ */
+async function notifyDone(result: GiveResult) {
+  try {
+    if (document.visibilityState === 'visible') return
+    if (!('Notification' in window) || Notification.permission !== 'granted') return
+    const reg = await navigator.serviceWorker?.ready
+    if (!reg) return
+    const t = i18n.t.bind(i18n)
+    await reg.showNotification(t(result.ok ? 'owl.job.doneTitle' : 'owl.job.errorTitle'), {
+      body: result.ok
+        ? result.found > 0
+          ? t('owl.job.doneBody', { count: result.found, title: result.title })
+          : t('owl.job.doneNothing', { title: result.title })
+        : t(`owl.error.${result.code}`),
+      tag: 'hoot-import',
+      data: { url: result.ok && result.proposalId ? `/chat/import/${result.proposalId}` : '/chat' },
+    })
+  } catch {
+    // A notification is a courtesy; the banner and the chat still show the result.
+  }
+}
+
+/** A link that could not be opened (not public, not a PDF, image or page). */
+class LinkError extends Error {}
+
+function fail(pendingId: string, err: unknown): GiveResult {
+  const code = err instanceof LinkError ? 'link' : err instanceof AiCallError ? err.code : 'failed'
   store().replace(pendingId, { id: pendingId, role: 'owl', type: 'error', code })
+  return { ok: false, code }
 }
 
 /** Local date and HH:MM of a stored exam, in the device's time zone like the rest of the app. */
@@ -106,6 +154,46 @@ function capText(pages: PageText[]): PageText[] {
   return out
 }
 
+/** Parts of a long syllabus read at most (each one AI call). */
+const MAX_SYLLABUS_PARTS = 5
+/**
+ * Characters per syllabus part: smaller than one request allows, so the answer for the subjects
+ * in it (books, chapters, grading) fits the model's output and is not cut off.
+ */
+const SYLLABUS_PART_CHARS = 40_000
+
+/**
+ * A syllabus: a whole programme keeps only the pages of the student's year (no AI call), and what
+ * is still longer than one part is read in parts cut between pages, in parallel; the subjects of
+ * all parts are merged. A part that fails is left out while another one was read.
+ */
+async function readSyllabus(
+  request: ParseDocumentRequest,
+  text: PageText[] | null,
+  year: number | null,
+) {
+  const pages = text && year ? pagesForYear(text, year) : text
+  const total = pages?.reduce((n, p) => n + p.text.length, 0) ?? 0
+  if (!pages || total <= SYLLABUS_PART_CHARS)
+    return invokeAi<ParseResult>('parse-document', {
+      ...request,
+      text: pages ? capText(pages) : request.text,
+    })
+  const parts = splitPages(pages, SYLLABUS_PART_CHARS, MAX_SYLLABUS_PARTS)
+  const settled = await Promise.allSettled(
+    parts.map((part) => invokeAi<ParseResult>('parse-document', { ...request, text: part })),
+  )
+  const results = settled.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
+  const failed = settled.find((r) => r.status === 'rejected')
+  if (results.length === 0) throw (failed as PromiseRejectedResult).reason
+  const first = results[0]!
+  return {
+    ...first,
+    syllabus: mergeSyllabi(results.map((r) => r.syllabus)),
+    warnings: [...new Set(results.flatMap((r) => r.warnings))],
+  }
+}
+
 const EXTENSIONS: Record<string, string> = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -117,17 +205,59 @@ const EXTENSIONS: Record<string, string> = {
  * Give the owl a document: keep it in Documents (file + passages for answers) right away, and
  * for a calendar or exam schedule add a proposal that waits for "Spasi".
  */
+const linkHost = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
+}
+
+/**
+ * Reads a document and keeps how it went in `job`, so the reading goes on while the user moves
+ * around the app: a banner outside the chat, and a system notification when the app is in the
+ * background (only with the permission given for reminders, never asked for here).
+ */
 export async function giveDocument(
-  input: DocumentInput,
+  given: DocumentInput | LinkInput,
   kind: ImportKind,
   note: string | null,
   ctx: OwlContext,
   origin: DocumentOrigin | null = null,
-) {
+): Promise<GiveResult> {
+  if (store().busy) return { ok: false, code: 'failed' }
+  const title =
+    given.type === 'link'
+      ? linkHost(given.url)
+      : given.type === 'file'
+        ? given.file.name
+        : given.text.split('\n')[0]!.slice(0, 60)
+  store().setJob({ status: 'running', title, long: false })
+  const result = await readDocument(given, kind, note, ctx, origin)
+  store().setJob(
+    result.ok
+      ? { status: 'done', title: result.title, found: result.found, proposalId: result.proposalId }
+      : { status: 'error', title, code: result.code },
+  )
+  void notifyDone(result)
+  return result
+}
+
+async function readDocument(
+  given: DocumentInput | LinkInput,
+  kind: ImportKind,
+  note: string | null,
+  ctx: OwlContext,
+  origin: DocumentOrigin | null,
+): Promise<GiveResult> {
   const s = store()
-  if (s.busy) return
   s.setBusy(true)
-  const name = input.type === 'file' ? input.file.name : input.text.split('\n')[0]!.slice(0, 60)
+  const name =
+    given.type === 'link'
+      ? given.url
+      : given.type === 'file'
+        ? given.file.name
+        : given.text.split('\n')[0]!.slice(0, 60)
   s.push({ id: id(), role: 'user', type: 'file', name, ...(note ? { note } : {}) })
   const pendingId = id()
   s.push({ id: pendingId, role: 'owl', type: 'pending', stage: 'reading' })
@@ -136,6 +266,18 @@ export async function giveDocument(
   let storagePath: string | null = null
   try {
     if (!navigator.onLine) throw new AiCallError('offline')
+
+    // 0. A link: the server downloads it, then it is read like a given file or text.
+    let input: DocumentInput
+    if (given.type === 'link') {
+      const got = await documentFromLink(given.url).catch((err: unknown) => {
+        throw err instanceof AiCallError && err.code !== 'failed' ? err : new LinkError()
+      })
+      input = got.input
+      origin = { url: given.url, academicYear: null }
+    } else {
+      input = given
+    }
 
     // 1. Text we can read locally; the file itself only when there is no text layer.
     let file: File | null = null
@@ -160,10 +302,26 @@ export async function giveDocument(
       if (error) throw error
     }
 
-    // 2. The owl reads it (one AI call, also for "Pogodi sama").
+    // 2. The owl reads it (one AI call, also for "Pogodi sama"; a syllabus can take more).
+    // A study plan is known by its words: read it as one without asking the model first.
+    const readAs: ImportKind =
+      kind === 'auto' && text && looksLikeSyllabus(text) ? 'syllabus' : kind
+    // A whole study plan or a scan takes minutes: say so, the user can leave meanwhile.
+    const chars = text?.reduce((n, p) => n + p.text.length, 0) ?? 0
+    if (readAs === 'syllabus' || !text || chars > SYLLABUS_PART_CHARS) {
+      store().replace(pendingId, {
+        id: pendingId,
+        role: 'owl',
+        type: 'pending',
+        stage: 'reading',
+        long: true,
+      })
+      const job = store().job
+      if (job?.status === 'running') store().setJob({ ...job, long: true })
+    }
     const request: ParseDocumentRequest = {
       document_id: documentId,
-      kind,
+      kind: readAs,
       locale: ctx.locale,
       today: ctx.today,
       text: text ? capText(text) : null,
@@ -171,8 +329,18 @@ export async function giveDocument(
         text || !storagePath || !mediaType ? null : { path: storagePath, media_type: mediaType },
       subjects: ctx.subjects.filter((x) => !x.archived).map((x) => ({ id: x.id, name: x.name })),
       note,
+      year_of_study: ctx.yearOfStudy,
     }
-    const result = await invokeAi<ParseResult>('parse-document', request)
+    let result =
+      readAs === 'syllabus'
+        ? await readSyllabus(request, text, ctx.yearOfStudy)
+        : await invokeAi<ParseResult>('parse-document', request)
+    // "Pogodi sama" only recognizes a syllabus; its subjects, books and topics need the
+    // syllabus reading.
+    if (readAs === 'auto' && result.kind === 'syllabus') {
+      const syllabus = await readSyllabus({ ...request, kind: 'syllabus' }, text, ctx.yearOfStudy)
+      result = { ...syllabus, pages: result.pages.length ? result.pages : syllabus.pages }
+    }
     void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
 
     // 3. Kept in Documents with its passages.
@@ -211,12 +379,15 @@ export async function giveDocument(
       documentId,
       stored,
       found,
+      ...(docKind === 'syllabus' ? { year: ctx.yearOfStudy } : {}),
     }
     store().replace(pendingId, done)
-    if (found > 0) store().push({ id: id(), role: 'owl', type: 'proposal', proposal })
+    const proposalId = found > 0 ? id() : null
+    if (proposalId) store().push({ id: proposalId, role: 'owl', type: 'proposal', proposal })
+    return { ok: true, title, found, proposalId }
   } catch (err) {
     await removeDocument(documentId, storagePath)
-    fail(pendingId, err)
+    return fail(pendingId, err)
   } finally {
     store().setBusy(false)
   }
@@ -232,11 +403,15 @@ export async function syllabusExisting(
   ctx: Pick<OwlContext, 'subjects'>,
 ): Promise<SyllabusExisting> {
   const [sources, topics] = await Promise.all([
-    supabase.from('sources').select('subject_id, title').is('archived_at', null),
+    supabase.from('sources').select('subject_id, title, is_rough').is('archived_at', null),
     supabase.from('topics').select('subject_id, name'),
   ])
   return {
-    sources: (sources.data ?? []).map((x) => ({ subjectId: x.subject_id, title: x.title })),
+    sources: (sources.data ?? []).map((x) => ({
+      subjectId: x.subject_id,
+      title: x.title,
+      rough: x.is_rough,
+    })),
     topics: (topics.data ?? []).map((x) => ({ subjectId: x.subject_id, name: x.name })),
     exams: ctx.subjects.flatMap((x) =>
       x.assessments.map((a) => ({
@@ -459,7 +634,20 @@ export async function ask(question: string, state: string, ctx: OwlContext) {
       locale: ctx.locale,
       today: ctx.today,
     }
-    const res = await invokeAi<AnswerResponse>('answer', request)
+    // The answer appears while it is written; citations and the action come with the end.
+    let text = ''
+    const res = await streamAi<AnswerResponse>('answer', request, (delta) => {
+      text += delta
+      store().replace(pendingId, {
+        id: pendingId,
+        role: 'owl',
+        type: 'answer',
+        text,
+        citations: [],
+        stateRefs: [],
+        streaming: true,
+      })
+    })
     void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
     const action = await actionFor(res)
     store().replace(pendingId, {

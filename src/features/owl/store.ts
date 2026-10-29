@@ -48,6 +48,12 @@ export interface ImportProposal {
   savedCount: number | null
 }
 
+/** A document read in the background (the banner and the system notification). */
+export type ImportJob =
+  | { status: 'running'; title: string; long: boolean }
+  | { status: 'done'; title: string; found: number; proposalId: string | null }
+  | { status: 'error'; title: string; code: AiErrorCode | 'offline' | 'file' | 'link' }
+
 export type OwlMessage =
   | { id: string; role: 'user'; type: 'text'; text: string }
   | { id: string; role: 'user'; type: 'file'; name: string; note?: string }
@@ -59,9 +65,18 @@ export type OwlMessage =
       citations: Citation[]
       stateRefs: StateRef[]
       action?: OwlAction
+      /** Still being written (streamed); not saved to the history until it ends. */
+      streaming?: boolean
     }
-  | { id: string; role: 'owl'; type: 'pending'; stage: 'thinking' | 'reading' | 'storing' }
-  | { id: string; role: 'owl'; type: 'error'; code: AiErrorCode | 'offline' | 'file' }
+  | {
+      id: string
+      role: 'owl'
+      type: 'pending'
+      stage: 'thinking' | 'reading' | 'storing'
+      /** A long read (a whole study plan, a scan): "you can leave, I'll let you know". */
+      long?: boolean
+    }
+  | { id: string; role: 'owl'; type: 'error'; code: AiErrorCode | 'offline' | 'file' | 'link' }
   | {
       id: string
       role: 'owl'
@@ -75,6 +90,8 @@ export type OwlMessage =
       found: number
       /** Read again from the chat ("ubaci mi ovo"), not newly given. */
       again?: boolean
+      /** A syllabus: the year of study it was read for (no subjects found → say which). */
+      year?: number | null
     }
   | { id: string; role: 'owl'; type: 'proposal'; proposal: ImportProposal }
 
@@ -84,8 +101,21 @@ interface OwlState {
   conversationId: string | null
   messages: OwlMessage[]
   /** Kind preselected when the "give a document" sheet opens from a suggestion. */
-  sheet: { open: boolean; kind: ImportKind; nonce: number; shared?: SharedInput | null }
+  sheet: {
+    open: boolean
+    kind: ImportKind
+    nonce: number
+    shared?: SharedInput | null
+    /** Opens straight on "Link" (Nađeno na internetu: "Imaš link?"). */
+    link?: boolean
+  }
   busy: boolean
+  /**
+   * The document being read, or how the last one ended, for the banner outside the chat: the
+   * reading keeps going while the user moves around the app.
+   */
+  job: ImportJob | null
+  setJob: (job: ImportJob | null) => void
   /** Forgets the open conversation when another user signs in. */
   ensureUser: (userId: string) => void
   /** An empty conversation; the previous one stays in the history. */
@@ -96,7 +126,7 @@ interface OwlState {
   replace: (id: string, message: OwlMessage) => void
   updateProposal: (id: string, update: (p: ImportProposal) => ImportProposal) => void
   setBusy: (busy: boolean) => void
-  openSheet: (kind?: ImportKind) => void
+  openSheet: (kind?: ImportKind, opts?: { link?: boolean }) => void
   /** Android "Podijeli" → Hoot: the sheet opens on its confirm step with the shared item. */
   openShared: (input: SharedInput) => void
   closeSheet: () => void
@@ -119,7 +149,7 @@ function titleOf(m: OwlMessage) {
 }
 
 function saveMessage(conversationId: string, m: OwlMessage) {
-  if (m.type === 'pending') return
+  if (m.type === 'pending' || (m.type === 'answer' && m.streaming)) return
   enqueue(() =>
     supabase.from('owl_messages').upsert({
       id: m.id,
@@ -145,6 +175,8 @@ export const useOwlStore = create<OwlState>()(
       messages: [],
       sheet: { open: false, kind: 'auto', nonce: 0 },
       busy: false,
+      job: null,
+      setJob: (job) => set({ job }),
       ensureUser: (userId) => {
         if (get().userId !== userId)
           set({ userId, conversationId: null, messages: [], busy: false })
@@ -180,8 +212,8 @@ export const useOwlStore = create<OwlState>()(
         if (conversationId && updated) saveMessage(conversationId, updated)
       },
       setBusy: (busy) => set({ busy }),
-      openSheet: (kind = 'auto') =>
-        set((s) => ({ sheet: { open: true, kind, nonce: s.sheet.nonce + 1 } })),
+      openSheet: (kind = 'auto', opts) =>
+        set((s) => ({ sheet: { open: true, kind, nonce: s.sheet.nonce + 1, link: opts?.link } })),
       openShared: (shared) =>
         set((s) => ({ sheet: { open: true, kind: 'auto', nonce: s.sheet.nonce + 1, shared } })),
       closeSheet: () => set((s) => ({ sheet: { ...s.sheet, open: false, shared: null } })),
@@ -194,7 +226,10 @@ export const useOwlStore = create<OwlState>()(
       partialize: (s) => ({
         userId: s.userId,
         conversationId: s.conversationId,
-        messages: s.messages.filter((m) => m.type !== 'pending'),
+        // A reply still pending or being written would never finish after a reload.
+        messages: s.messages.filter(
+          (m) => m.type !== 'pending' && !(m.type === 'answer' && m.streaming),
+        ),
       }),
       // Stage 6 kept one device-only chat per day; it is not in the database, start fresh.
       migrate: () => ({ userId: null, conversationId: null, messages: [] }),

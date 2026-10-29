@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AiSparkIcon, ClockIcon, DocIcon, PencilIcon, PlusIcon, SendIcon } from '@/components/icons'
 import { useSubjects } from '@/features/subjects/api'
+import { splitLink } from '@/lib/documents/link'
 import { cn } from '@/lib/utils'
 import type { Citation } from '@shared/schemas.ts'
 import { useAiAvailability, useDocumentFileUrl, useDocuments } from './api'
@@ -19,6 +20,11 @@ export function OwlChatPage() {
   const { t } = useTranslation()
   const messages = useOwlStore((s) => s.messages)
   const busy = useOwlStore((s) => s.busy)
+  // The chat shows how a reading ended, so the banner outside it has nothing left to say.
+  const jobEnded = useOwlStore((s) => s.job !== null && s.job.status !== 'running')
+  useEffect(() => {
+    if (jobEnded) useOwlStore.getState().setJob(null)
+  }, [jobEnded])
   const openSheet = useOwlStore((s) => s.openSheet)
   const newConversation = useOwlStore((s) => s.newConversation)
   const { state } = useAiAvailability()
@@ -34,7 +40,11 @@ export function OwlChatPage() {
   const submit = (e: FormEvent) => {
     e.preventDefault()
     if (!question.trim() || busy || !enabled) return
-    void owl.ask(question)
+    // A link in the message: the assistant opens it and reads it like a given document; the
+    // rest of the message is the note ("samo 2. godina").
+    const link = splitLink(question)
+    if (link) void owl.giveDocument({ type: 'link', url: link.url }, 'auto', link.rest || null)
+    else void owl.ask(question)
     setQuestion('')
   }
 
@@ -187,6 +197,11 @@ function Message({ message: m }: { message: OwlMessage }) {
       return (
         <OwlBubble>
           <span className="animate-pulse text-ink-muted">{t(`owl.pending.${m.stage}`)}</span>
+          {m.long && (
+            <span className="text-[13px] leading-[1.4] text-ink-muted">
+              {t('owl.pending.longHint')}
+            </span>
+          )}
         </OwlBubble>
       )
     case 'error':
@@ -198,7 +213,16 @@ function Message({ message: m }: { message: OwlMessage }) {
     case 'answer':
       return (
         <OwlBubble>
-          <span className="whitespace-pre-wrap">{m.text}</span>
+          <span className="whitespace-pre-wrap">
+            {m.text}
+            {m.streaming && (
+              // The answer is still being written.
+              <span
+                aria-hidden="true"
+                className="ml-0.5 inline-block h-4 w-[2px] translate-y-[3px] animate-pulse bg-ink-muted"
+              />
+            )}
+          </span>
           {m.citations.map((c) => (
             <CitationChip key={`${c.document_id}:${c.page}`} citation={c} />
           ))}
@@ -222,6 +246,12 @@ function Message({ message: m }: { message: OwlMessage }) {
             <span>{t('owl.document.found', { count: m.found })}</span>
           ) : m.again ? (
             <span>{t('owl.document.nothingAgain')}</span>
+          ) : m.kind === 'syllabus' ? (
+            <span>
+              {m.year
+                ? t('owl.document.noSubjectsYear', { year: m.year })
+                : t('owl.document.noSubjects')}
+            </span>
           ) : (
             (m.kind === 'academic_calendar' || m.kind === 'exam_schedule') && (
               <span>{t('owl.document.noDates')}</span>

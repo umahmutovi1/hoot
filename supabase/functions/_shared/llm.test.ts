@@ -3,6 +3,7 @@ import { z } from 'zod'
 import {
   DAILY_AI_LIMIT,
   generate,
+  generateStream,
   getProvider,
   isAiConfigured,
   jsonFromText,
@@ -142,5 +143,49 @@ describe('jsonFromText', () => {
     expect(jsonFromText('Rezultat {"a": 1} kraj')).toEqual({ a: 1 })
     expect(jsonFromText('nema ništa')).toBeNull()
     expect(jsonFromText('{"a": ')).toBeNull()
+  })
+})
+
+describe('generateStream', () => {
+  const raw = (json: unknown): LlmRawResult => ({ json, inputTokens: 10, outputTokens: 5 })
+
+  it('streams the text and validates the end like generate', async () => {
+    const provider: LlmProvider = {
+      ...fakeProvider([]),
+      stream: vi.fn(async (_req, onText) => {
+        onText('{"answer":"Is')
+        onText('pit."}')
+        return raw({ answer: 'Ispit.' })
+      }),
+    }
+    const { d, runs } = deps(provider)
+    const seen: string[] = []
+    const out = await generateStream(d, req, (t) => seen.push(t))
+    expect(out.data).toEqual({ answer: 'Ispit.' })
+    expect(seen.join('')).toBe('{"answer":"Ispit."}')
+    expect(runs).toHaveLength(1)
+    expect(runs[0]!.ok).toBe(true)
+  })
+
+  it('an invalid streamed answer is retried once as a normal call', async () => {
+    const provider: LlmProvider = {
+      ...fakeProvider([raw({ answer: 'Drugi put.' })]),
+      stream: vi.fn(async () => raw({ wrong: true })),
+    }
+    const { d } = deps(provider)
+    const out = await generateStream(d, req, () => {})
+    expect(out.data).toEqual({ answer: 'Drugi put.' })
+    expect(out.inputTokens).toBe(20)
+    expect(provider.generate).toHaveBeenCalledTimes(1)
+  })
+
+  it('a provider without streaming answers in one piece', async () => {
+    const { d } = deps(fakeProvider([raw({ answer: 'ok' })]))
+    expect((await generateStream(d, req, () => {})).data).toEqual({ answer: 'ok' })
+  })
+
+  it('keeps the daily limit', async () => {
+    const { d } = deps(fakeProvider([]), DAILY_AI_LIMIT)
+    await expect(generateStream(d, req, () => {})).rejects.toMatchObject({ code: 'rate_limited' })
   })
 })

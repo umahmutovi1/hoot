@@ -3,7 +3,7 @@ import { useAuth } from '@/features/auth/auth-context'
 import { invokeAi } from '@/features/owl/api'
 import { profileKey, useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
-import type { AcademicSearch, FoundDocument, PageText } from '@shared/schemas'
+import type { AcademicSearch, FoundDocument } from '@shared/schemas'
 
 /** The last web search kept on the profile (`profiles.academic_search`), if any. */
 export function useAcademicSearch(): AcademicSearch | null {
@@ -36,11 +36,3 @@ export function useFindAcademicInfo() {
     onSettled: () => queryClient.invalidateQueries({ queryKey: profileKey(userId) }),
   })
 }
-
-export type FetchedDocument =
-  | { kind: 'file'; path: string; media_type: 'application/pdf'; title: string }
-  | { kind: 'text'; pages: PageText[]; title: string }
-
-/** Downloads a found document on the server (the browser cannot, CORS). */
-export const fetchFoundDocument = (url: string) =>
-  invokeAi<FetchedDocument>('find-academic-info', { op: 'fetch', url })

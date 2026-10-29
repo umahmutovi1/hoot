@@ -16,12 +16,29 @@ export function applyTheme(theme: Theme) {
   if (theme === 'lavender') delete root.dataset.theme
   else root.dataset.theme = theme
   const edge = getComputedStyle(root).getPropertyValue('--hoot-edge').trim()
-  if (edge) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', edge)
+  if (edge) setBarColor(edge)
   try {
     localStorage.setItem(CACHE_KEY, theme)
   } catch {
     // The profile is the source of truth; the cache only avoids a flash on start.
   }
+}
+
+/**
+ * iOS Safari and the home-screen app keep the first `theme-color` they saw when the existing tag's
+ * `content` is edited, so the bar behind the Dynamic Island stays lavender. A fresh tag is read
+ * again. The `html` background (the bar colour on iOS 26) is re-set to force a repaint.
+ */
+function setBarColor(color: string) {
+  const old = document.querySelectorAll('meta[name="theme-color"]')
+  const meta = document.createElement('meta')
+  meta.name = 'theme-color'
+  meta.content = color
+  document.head.appendChild(meta)
+  old.forEach((el) => el.remove())
+  const root = document.documentElement
+  root.style.backgroundColor = color
+  requestAnimationFrame(() => root.style.removeProperty('background-color'))
 }
 
 /** The theme of the last session, applied before the profile loads (no lavender flash). */

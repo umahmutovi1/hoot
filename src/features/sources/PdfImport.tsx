@@ -7,7 +7,7 @@ import { fromAi, type AiOutline } from '@/lib/outline/ai'
 import type { Measure } from '@/lib/outline/parse'
 import { filesAsUnits, findTocPages, offsetFromLabels, pdfOutlineUnits } from '@/lib/outline/pdf'
 import { cn } from '@/lib/utils'
-import { downloadDriveFile, pickDriveFiles } from './drive'
+import { downloadDriveFile, DriveError, pickDriveFiles } from './drive'
 import { readPdf, type PdfInfo } from './pdfRead'
 
 /** Where the units came from, kept on the source. */
@@ -85,8 +85,17 @@ export function PdfImport({
     setError(null)
     try {
       await work()
-    } catch {
-      setError(t('sources.pdf.failed'))
+    } catch (err) {
+      console.error('PDF import failed', err)
+      setError(
+        t(
+          err instanceof DriveError
+            ? err.code === 'auth'
+              ? 'sources.pdf.driveAuth'
+              : 'sources.pdf.driveDownload'
+            : 'sources.pdf.failed',
+        ),
+      )
     } finally {
       setReading(false)
     }

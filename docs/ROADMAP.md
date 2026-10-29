@@ -310,7 +310,7 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 - [x] Plan i program (`syllabus`) u `parse-document`: literatura → izvori, sedmične teme → teme i tempo predavanja, bodovanje → ispiti i bodovi; pregled po predmetu
   - `_shared/academicSearch.ts`, `find-academic-info` (`search` / `fetch`), web search u `_shared/llm.ts` (Gemini grounding, Anthropic `web_search_20250305`), `src/lib/import/syllabus.ts` (prijedlog po predmetu, uparivanje knjiga po naslovu i autoru, „Upari sa…“), ekran „Nađeno na internetu“ (`/settings/academic/found`), kartica u onboardingu, pretraga poslije spašavanja fakulteta; promptfoo eval `syllabus.txt`
 - [x] PDF s uređaja: outline + broj stranica preko `pdf.js` → pregled kao `parse-toc`; AI samo za stranice sadržaja kad nema outline-a
-- [x] Google Drive Picker (`drive.file`): fajl ili folder → isti tok, izvor pamti `drive_file_id` i link; SETUP.md
+- [x] Google Drive Picker (`drive.file`): fajl ili folder → isti tok, izvor pamti `drive_file_id` i link; SETUP.md — **privremeno isključeno** (folder ne radi sa `drive.file`, odluka o scope-u otvorena)
   - `src/lib/outline/pdf.ts` (outline → jedinice preko istog parsera kao `parse-toc`, pomak iz oznaka stranica, stranice sadržaja, fajl = jedinica), `pdfRead.ts` (pdf.js), `drive.ts` (GIS token + Picker, preuzimanje u browser). Odluka: u Pickeru se biraju PDF-ovi (više odjednom, folder se otvori i označe svi), jer `drive.file` za izabran folder ne daje pouzdano pristup fajlovima u njemu; više fajlova = jedan izvor, fajl = jedinica. Prezentacije: svaki PDF je jedna jedinica sa brojem slajdova. CSP dozvoljava samo Google prijavu, Picker i Drive API
 - [x] Dan pred ispit: kartica 3 dana prije, prekidač u ExamSheetu, `plan()` pravilo (samo taj predmet, ponavljanja drugih se pomjeraju, dva ispita zaredom → bliži), `input_hash` + testovi i property test (rezervisan dan nema blok drugog predmeta)
   - `src/lib/scheduler/eve.ts` (`reservedDays`, `eveCandidate`): zadnji dan sa slobodnim vremenom prije ispita, najviše 7 dana unazad; rezervisan dan ponavlja cijeli obim (i već ponovljeno), slabije jedinice prve; kartica „Dan pred ispit“ na Danas, prekidač u ExamSheetu, traka sa „Ukloni“ u Plan → Dan
@@ -318,13 +318,14 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
   - Onboarding ima 9 koraka (1b je drugi; podsjetnici u koraku 7 „Pauze i podsjetnici“). Migracija `0028_push_job_actions.sql` (`push_jobs.actions`: tekstovi dugmadi i „Preskočeno“ na jeziku korisnika). `notify` prije slanja provjeri blok (nije započet, preskočen ni u toku prethodni), pa napravi jednokratni token (čuva se hash); `push-action` upiše `skip_requested_at`, a `PendingSkipRunner` u appu primijeni `skipBlock()`. Započni / tap: `/?block=<id>` otvara „Započeti sesiju sada?“
 - [x] Dorada poslije pregleda na previewu: jedno dugme „Dodaj sesiju“ na praznoj kartici „Sljedeće“, sheetovi više ne skrolaju u prazno (vaul `::after`), stranica jedinice bez crtica bez značenja, `PendingSkipRunner` unutar routera (#205, #209)
 - [x] **DoD** (uz opći DoD): plan i program sa interneta ili PDF-a → izvori, teme i bodovi kroz pregled; PDF sa outline-om → jedinice bez AI poziva; rezervisan dan pred ispit u planu; podsjetnik i Preskoči iz notifikacije na Androidu → `v0.10.2` (release na zahtjev korisnice; CI: check, db, secrets, CodeQL zeleni; migracije 0027–0028 primijenjene; `notify`, `push-action`, `find-academic-info`, `parse-document` deployane. PDF sa outline-om provjeren pravim PDF-om u harnessu; web pretraga, plan i program kroz AI i Preskoči na Androidu se provjeravaju na produkciji; Google Drive čeka `VITE_GOOGLE_*` iz SETUP 5c)
+- [x] Dorada poslije v0.10.2 → `v0.10.3` (#215–#222): onboarding 1b se više ne zamrzava; „Fakultet s interneta“ traži i plan i program iz ranijih godina; dokument sa linka (Daj dokument, Nađeno, onboarding, Dokumenti i link poslan u chatu) uz provjeru svakog preusmjerenja; dokument se čita bez napuštanja stranice; plan i program cijelog studija samo za tvoju godinu (stranice godine bez AI-ja, dijelovi od 40 000 znakova), izborni predmeti jednim tapom, poglavlja kao teme i privremeni izvor „Predavanja“, literatura se samo nudi; čitanje u pozadini sa bannerom i obavještenjem; streaming odgovora asistenta (`answer` SSE); boja statusne trake na iOS-u po temi; Google Drive privremeno isključen (`DRIVE_ENABLED`). `parse-document`, `find-academic-info` i `answer` deployane
 
 ## Etapa 11a — ML temelj
 
 Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md). Python (`ml/`) trenira, TS (`src/lib/`) izvršava; artefakti su JSON sa `version` u `input_hash`. Higijena podataka ide prva, jer se podaci skupljaju od danas.
 
 - [x] Istraživanje: adaptivni scheduling, ML i diskretna optimizacija (`docs/RESEARCH-ML-2026-10.md`)
-- [ ] Migracija `ml_signals`: `review_logs.rating` (1–4), `state_before`, `difficulty_before`, `retrievability_before`; `plan_blocks` snimak featura pri planu (`day_load_min`, `days_to_goal`, `demand`, dio dana) i opcionalni `skip_reason`; `study_sessions.app_leaves` / `app_away_sec` (pomjereno iz Etape 11); upis u `review/apply.ts` i pri kreiranju blokova; `db:types`
+- [ ] Migracija `ml_signals`: `review_logs.rating` (1–4), `state_before`, `difficulty_before`, `retrievability_before`; `plan_blocks` snimak featura pri planu (`day_load_min`, `days_to_goal`, `demand`, dio dana) i opcionalni `skip_reason`; `study_sessions.app_leaves` / `app_away_sec` (pomjereno iz Etape 11); upis u `review/apply.ts` i pri kreiranju blokova; `db:types`. Oznake za model: odrađen / eksplicitno preskočen / nepotvrđen (prošao bez oznake), nikad „odrađen“ iz proteklog vremena (RESEARCH-ML 1.2)
 - [ ] `ml/` (uv, numpy, pandas, scipy, scikit-learn, NumPyro, jupyter): izvoz podataka kao korisnik (RLS, parquet, bez slobodnog teksta), EDA notebook
 - [ ] Simulator `scripts/sim/` (TS): pravi `plan()` + `placeTimes()` i model studenta (log-normalno trajanje uz planning fallacy, odrađenost po terminu i opterećenju, FSRS zaboravljanje, „Danas ne mogu“), seed; baseline metrike (R na ispitu × bodovi, deficit, propušteni blokovi, promjena plana, varijansa opterećenja)
 - [ ] `src/lib/scheduler/feasibility.ts`: EDF / max-flow test izvodljivosti + property test „izvodljivo ⇒ `plan()` bez deficita“; LP (HiGHS wasm) samo ako test nađe propuste
@@ -333,7 +334,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash`
 - [ ] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad
 - [ ] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio)
-- **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.3`
+- **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.4`
 
 ## Etapa 11 — Napredak
 
@@ -361,6 +362,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Eval suite (PRD „AI integracija“ → Eval suite): sve AI funkcije, Zod stopa, rubrike, budžet cijene/latencije, red-team prompt injection; CI na PR-ovima koji diraju `supabase/functions/**` ili `evals/**`, puni skup noćno
 - [ ] `.github/workflows/backup.yml` (sedmični `db dump`, DB lozinka u Secrets)
 - [ ] Lighthouse PWA i performanse
+- [ ] Prečice u manifestu (`shortcuts` u `vite.config.ts`, uz `share_target`): „Počni sljedeći blok“, „Danas“, „Imam samo 30 min“; dug pritisak na ikonu na Androidu (iOS ih ne podržava). Zamjena za widget dok je app PWA ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2)
 - **DoD** → `v1.0.0`
 
 ## Kasnije
@@ -378,6 +380,8 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - Strategist kroz Message Batches API (−50%) kad bude više korisnika.
 - Admin pregled (read-only): oznaka `role: admin` u `app_metadata`, funkcija `is_admin()` i dodatna `select` RLS politika po tabeli, ekran `/admin`.
 - Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#6-otvaranje-aplikacije-za-više-korisnika)).
+- Prvo plan, pa prijava (uz otvaranje za više korisnika): Supabase anonimna prijava (`signInAnonymously()`), onboarding i prvi plan bez emaila, pa „Spasi svoj plan“ → email preko `updateUser` (isti `user_id`, RLS bez izmjena). Uslovi: AI edge funkcije odbijaju ili ograničavaju `is_anonymous`, CAPTCHA (Turnstile) na anonimnoj prijavi, čišćenje starih anonimnih naloga. Razlog: ekran za prijavu na startu tjera nove korisnike ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2).
+- Native widgeti na početnom ekranu („sljedeći blok“, brzo dodavanje): PWA ih nema ni na iOS-u ni u Chromeu na Androidu, pa traže native omotač (Capacitor) i widget extension (Swift WidgetKit, Kotlin). Poslije v1; do tad prečice u manifestu i notifikacije sa akcijama.
 
 ---
 

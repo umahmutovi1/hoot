@@ -102,6 +102,12 @@ export const parsedSyllabusSubjectSchema = z.object({
     .nullable()
     .describe('id of the matching subject from the given list, null if none matches'),
   semester: z.int().min(1).max(12).nullable().describe('Semester number if written, else null'),
+  elective_group: z
+    .string()
+    .nullable()
+    .describe(
+      'Elective slot this subject is an option of ("Izborni predmet 4.1"), null if required',
+    ),
   literature: z.array(
     z.object({
       title: z.string().min(1),
@@ -113,10 +119,10 @@ export const parsedSyllabusSubjectSchema = z.object({
     .array(
       z.object({
         week: z.int().min(1).max(20).nullable().describe('Teaching week, null if not given'),
-        name: z.string().min(1).describe('Topic of that week, short'),
+        name: z.string().min(1).describe('Topic or chapter heading, short'),
       }),
     )
-    .describe('Weekly plan of lectures, in order'),
+    .describe('Weekly plan of lectures, or the numbered chapters of the content, in order'),
   grading: z
     .array(
       z.object({
@@ -237,6 +243,8 @@ export const parseDocumentRequestSchema = z
     subjects: z.array(z.object({ id: z.uuid(), name: z.string() })).max(60),
     /** What the student says about the document, e.g. "only 2nd year, group B". */
     note: z.string().trim().max(MAX_NOTE_CHARS).nullable().optional(),
+    /** Syllabus of a whole programme: only the subjects of this year of study (profile). */
+    year_of_study: z.int().min(1).max(6).nullable().optional(),
   })
   .refine((r) => r.text !== null || r.file !== null, { message: 'text or file is required' })
   .refine((r) => !r.text || r.text.reduce((n, p) => n + p.text.length, 0) <= MAX_DOCUMENT_CHARS, {
@@ -275,8 +283,8 @@ export const findAcademicInfoRequestSchema = z.discriminatedUnion('op', [
     academic_year: z.string().regex(/^\d{4}\/\d{2}$/),
     locale: localeSchema,
   }),
-  /** Downloads one found document for parse-document; only a URL from the last search. */
-  z.object({ op: z.literal('fetch'), url: z.url() }),
+  /** Downloads a found document, or a public link the user pasted, for parse-document. */
+  z.object({ op: z.literal('fetch'), url: z.url().max(2048) }),
 ])
 export type FindAcademicInfoRequest = z.infer<typeof findAcademicInfoRequestSchema>
 
@@ -625,6 +633,8 @@ export const answerRequestSchema = z.object({
   today: isoDate,
   /** Conversation the question belongs to; keeps its prompt cache. */
   conversation_id: z.uuid().nullable().optional(),
+  /** Server-sent events: the answer text as it is written, then the whole response. */
+  stream: z.boolean().optional(),
 })
 export type AnswerRequest = z.infer<typeof answerRequestSchema>
 

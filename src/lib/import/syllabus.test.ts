@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { proposeSyllabus, syllabusSaveCount, type ParsedSyllabus } from './syllabus'
+import {
+  chapterParts,
+  looksLikeSyllabus,
+  pagesForYear,
+  mergeSyllabi,
+  pickElective,
+  proposeSyllabus,
+  syllabusSaveCount,
+  type ParsedSyllabus,
+} from './syllabus'
 
 const SIG = 's1'
 const parsed = (over: Partial<ParsedSyllabus> = {}): ParsedSyllabus => ({
@@ -87,7 +96,10 @@ describe('proposeSyllabus', () => {
     expect(p!.addSubject).toBe(true)
     expect(p!.grading.filter((g) => g.examKind).every((g) => g.status === 'new')).toBe(true)
     expect(p!.pointsTotal).toEqual({ value: 90, previous: null, status: 'new' })
-    // subject + 1 required book + 3 topics... (2 after dedupe) + 3 exams + total
+    // Books are offered but off; the chapters become one "Predavanja" source.
+    expect(p!.literature.every((l) => !l.include)).toBe(true)
+    expect(p!.chapters?.include).toBe(true)
+    // subject + chapters source + 2 topics (after dedupe) + 3 exams + total
     expect(syllabusSaveCount([p!])).toBe(1 + 1 + 2 + 3 + 1)
     expect(syllabusSaveCount([{ ...p!, addSubject: false }])).toBe(0)
   })
@@ -116,5 +128,103 @@ describe('same title, other author', () => {
       existing,
     )
     expect(p!.literature.map((l) => l.status)).toEqual(['unchanged', 'new'])
+  })
+})
+
+describe('chapters, electives and parts', () => {
+  it('spreads ~25 hour-long parts over the chapters in order', () => {
+    const parts = chapterParts(['A', 'B', 'C', 'D'])
+    expect(parts).toHaveLength(25)
+    expect(parts.filter((x) => x.chapter === 0)).toHaveLength(7)
+    expect(parts.filter((x) => x.chapter === 3)).toHaveLength(6)
+    expect(parts[0]).toEqual({ chapter: 0, name: 'A', k: 1, n: 7 })
+    // More chapters than parts: one each.
+    expect(chapterParts(Array.from({ length: 30 }, (_, i) => `T${i}`))).toHaveLength(30)
+  })
+
+  it('offers chapters only while the subject has no real source, replacing a rough one', () => {
+    const subjects = [{ id: SIG, name: 'Signali i sistemi' }]
+    const rough = { ...existing, sources: [{ subjectId: SIG, title: '~25 h', rough: true }] }
+    const [p] = proposeSyllabus([parsed()], subjects, rough)
+    expect(p!.chapters).toMatchObject({ replacesRough: true, include: true })
+    const [q] = proposeSyllabus([parsed()], subjects, existing)
+    expect(q!.chapters).toBeNull()
+  })
+
+  it('elective options wait for a pick, and one pick per slot', () => {
+    const opts = proposeSyllabus(
+      [
+        parsed({ subject_name: 'Razvoj mobilnih aplikacija', elective_group: 'Izborni 4.1' }),
+        parsed({ subject_name: 'Ugradbeni sistemi', elective_group: 'Izborni 4.1' }),
+        parsed({ subject_name: 'Računarske arhitekture' }),
+      ],
+      [],
+      existing,
+    )
+    expect(opts.map((p) => p.addSubject)).toEqual([false, false, true])
+    const once = pickElective(opts, opts[0]!.key)
+    expect(once.map((p) => p.addSubject)).toEqual([true, false, true])
+    const other = pickElective(once, opts[1]!.key)
+    expect(other.map((p) => p.addSubject)).toEqual([false, true, true])
+  })
+
+  it('merges a subject read in two parts', () => {
+    const a = parsed({ topics: [{ week: null, name: 'Uvod' }], grading: [] })
+    const b = parsed({
+      subject_name: 'SIGNALI I SISTEMI',
+      topics: [
+        { week: null, name: 'Uvod' },
+        { week: null, name: 'Fourier' },
+      ],
+    })
+    const [m, ...rest] = mergeSyllabi([[a], [b, parsed({ subject_name: 'Baze podataka' })]])
+    expect(rest).toHaveLength(1)
+    expect(m!.topics.map((x) => x.name)).toEqual(['Uvod', 'Fourier'])
+    expect(m!.grading).toHaveLength(4)
+    expect(m!.literature).toHaveLength(2)
+  })
+})
+
+describe('looksLikeSyllabus', () => {
+  it('knows a study plan by its words', () => {
+    const plan = [
+      { text: 'NASTAVNI PLAN TROGODIŠNJEG STUDIJA\nPredmeti N Naziv Šifra ECTS H/S' },
+      { text: 'Naziv modula Inženjerska matematika 1\nECTS 7\nSadržaj modula\n1. Brojevi' },
+      { text: 'Naziv modula Fizika\nECTS 5\nIshodi modula' },
+    ]
+    expect(looksLikeSyllabus(plan)).toBe(true)
+  })
+
+  it('a calendar or a single ECTS mention is not one', () => {
+    expect(looksLikeSyllabus([{ text: 'Akademski kalendar 2026/27, zimski semestar, ECTS' }])).toBe(
+      false,
+    )
+  })
+})
+
+describe('pagesForYear', () => {
+  const page = (text: string) => ({ text })
+  const pages = [
+    page('NASTAVNI PLAN'),
+    page('Godina   Prva godina\nSemestar Prvi'),
+    page('Godina   Druga godina\nSemestar Treći'),
+    page('Naziv modula Matematika\nGodina studija   1'),
+    page('nastavak matematike'),
+    page('Naziv modula Arhitekture\nGodina studija   2'),
+    page('nastavak arhitektura'),
+    page('Naziv modula Grafika\nGodina studija 3'),
+  ]
+
+  it("keeps the title pages and the year's pages, with their continuations", () => {
+    expect(pagesForYear(pages, 2).map((p) => p.text.split('\n')[0])).toEqual([
+      'NASTAVNI PLAN',
+      'Godina   Druga godina',
+      'Naziv modula Arhitekture',
+      'nastavak arhitektura',
+    ])
+  })
+
+  it('leaves a document with one year or none as it is', () => {
+    expect(pagesForYear([page('Silabus'), page('Godina studija 2')], 1)).toHaveLength(2)
   })
 })
