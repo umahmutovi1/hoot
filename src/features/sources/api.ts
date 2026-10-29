@@ -259,6 +259,71 @@ export async function createRoughSource({ subjectId, size, title, partTitle }: R
   return id
 }
 
+/**
+ * A syllabus's content chapters as a temporary source (`is_rough`, like a rough size): hour-long
+ * parts in chapter order, each linked to its chapter's topic. It replaces the subject's earlier
+ * rough sources (their parts are archived) and is itself replaced by real content.
+ */
+export async function createChapterSource({
+  subjectId,
+  title,
+  parts,
+}: {
+  subjectId: string
+  title: string
+  parts: { title: string; topicId: string | null }[]
+}) {
+  const { data: old, error: oldError } = await supabase
+    .from('sources')
+    .select('id')
+    .eq('subject_id', subjectId)
+    .eq('is_rough', true)
+  if (oldError) throw oldError
+  if (old && old.length > 0) {
+    const { error } = await supabase
+      .from('units')
+      .update({ archived_at: now() })
+      .in(
+        'source_id',
+        old.map((r) => r.id),
+      )
+      .is('archived_at', null)
+    if (error) throw error
+  }
+  const plan = roughSource('medium')
+  const id = crypto.randomUUID()
+  const { error } = await supabase.from('sources').insert({
+    id,
+    subject_id: subjectId,
+    kind: plan.kind,
+    measure: plan.measure,
+    title,
+    base_min_per_unit: plan.baseMinPerUnit,
+    is_rough: true,
+  })
+  if (error) throw error
+  const units = parts.map((p, i) => ({
+    id: crypto.randomUUID(),
+    source_id: id,
+    kind: 'chapter' as const,
+    position: i,
+    title: p.title.slice(0, 120),
+    amount: 1,
+  }))
+  const { error: uError } = await supabase.from('units').insert(units)
+  if (uError) throw uError
+  const links = units.flatMap((u, i) =>
+    parts[i]!.topicId
+      ? [{ unit_id: u.id, topic_id: parts[i]!.topicId!, assigned_by: 'ai' as const }]
+      : [],
+  )
+  if (links.length > 0) {
+    const { error: lError } = await supabase.from('unit_topics').insert(links)
+    if (lError) throw lError
+  }
+  return id
+}
+
 export function useCreateRoughSource() {
   const userId = useUserId()
   const queryClient = useQueryClient()

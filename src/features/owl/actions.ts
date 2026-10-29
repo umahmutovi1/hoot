@@ -14,6 +14,7 @@ import {
   type UploadMediaType,
 } from '@shared/schemas.ts'
 import { chunkPages, type PageText } from '@/lib/documents/chunk'
+import { splitPages } from '@/lib/documents/split'
 import { compressImage } from '@/lib/image'
 import {
   proposeClasses,
@@ -24,7 +25,7 @@ import {
   type ExistingPeriod,
 } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
-import { proposeSyllabus, type SyllabusExisting } from '@/lib/import/syllabus'
+import { mergeSyllabi, proposeSyllabus, type SyllabusExisting } from '@/lib/import/syllabus'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
 import type { AiErrorCode } from '@shared/schemas.ts'
 import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
@@ -65,6 +66,8 @@ export interface OwlContext {
   }[]
   /** Classes of the current teaching period, for a timetable import. */
   classes: ExistingClass[]
+  /** `profiles.year_of_study`: a whole programme's syllabus keeps only this year's subjects. */
+  yearOfStudy: number | null
   queryClient: QueryClient
 }
 
@@ -117,6 +120,28 @@ function capText(pages: PageText[]): PageText[] {
     left -= text.length
   }
   return out
+}
+
+/** Parts of a long syllabus read at most (each one AI call): about 300 000 characters. */
+const MAX_SYLLABUS_PARTS = 5
+
+/**
+ * A syllabus longer than one request (a whole programme, ETF: ~220 000 characters) is read in
+ * parts cut between pages, in parallel; the subjects of all parts are merged.
+ */
+async function readSyllabus(request: ParseDocumentRequest, text: PageText[] | null) {
+  const total = text?.reduce((n, p) => n + p.text.length, 0) ?? 0
+  if (!text || total <= MAX_DOCUMENT_CHARS) return invokeAi<ParseResult>('parse-document', request)
+  const parts = splitPages(text, MAX_DOCUMENT_CHARS, MAX_SYLLABUS_PARTS)
+  const results = await Promise.all(
+    parts.map((part) => invokeAi<ParseResult>('parse-document', { ...request, text: part })),
+  )
+  const first = results[0]!
+  return {
+    ...first,
+    syllabus: mergeSyllabi(results.map((r) => r.syllabus)),
+    warnings: [...new Set(results.flatMap((r) => r.warnings))],
+  }
 }
 
 const EXTENSIONS: Record<string, string> = {
@@ -190,7 +215,7 @@ export async function giveDocument(
       if (error) throw error
     }
 
-    // 2. The owl reads it (one AI call, also for "Pogodi sama").
+    // 2. The owl reads it (one AI call, also for "Pogodi sama"; a syllabus can take more).
     const request: ParseDocumentRequest = {
       document_id: documentId,
       kind,
@@ -201,8 +226,18 @@ export async function giveDocument(
         text || !storagePath || !mediaType ? null : { path: storagePath, media_type: mediaType },
       subjects: ctx.subjects.filter((x) => !x.archived).map((x) => ({ id: x.id, name: x.name })),
       note,
+      year_of_study: ctx.yearOfStudy,
     }
-    const result = await invokeAi<ParseResult>('parse-document', request)
+    let result =
+      kind === 'syllabus'
+        ? await readSyllabus(request, text)
+        : await invokeAi<ParseResult>('parse-document', request)
+    // "Pogodi sama" only recognizes a syllabus; its subjects, books and topics need the
+    // syllabus reading.
+    if (kind === 'auto' && result.kind === 'syllabus') {
+      const syllabus = await readSyllabus({ ...request, kind: 'syllabus' }, text)
+      result = { ...syllabus, pages: result.pages.length ? result.pages : syllabus.pages }
+    }
     void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
 
     // 3. Kept in Documents with its passages.
@@ -264,11 +299,15 @@ export async function syllabusExisting(
   ctx: Pick<OwlContext, 'subjects'>,
 ): Promise<SyllabusExisting> {
   const [sources, topics] = await Promise.all([
-    supabase.from('sources').select('subject_id, title').is('archived_at', null),
+    supabase.from('sources').select('subject_id, title, is_rough').is('archived_at', null),
     supabase.from('topics').select('subject_id, name'),
   ])
   return {
-    sources: (sources.data ?? []).map((x) => ({ subjectId: x.subject_id, title: x.title })),
+    sources: (sources.data ?? []).map((x) => ({
+      subjectId: x.subject_id,
+      title: x.title,
+      rough: x.is_rough,
+    })),
     topics: (topics.data ?? []).map((x) => ({ subjectId: x.subject_id, name: x.name })),
     exams: ctx.subjects.flatMap((x) =>
       x.assessments.map((a) => ({

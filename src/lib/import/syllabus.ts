@@ -1,8 +1,11 @@
 // Syllabus ("Plan i program", PRD "AI uvoz", Stage 10c) → a reviewable proposal per subject:
-// literature → sources, weekly topics → topics, grading → exams and points. Existing values the
-// user entered are never overwritten (they show as "ostaje"). Nothing is written here.
+// literature → sources (offered, never preselected), topics or content chapters → topics and a
+// temporary "Predavanja" source with hour-long parts per chapter, grading → exams and points.
+// Elective options wait for the user's pick. Existing values the user entered are never
+// overwritten (they show as "ostaje"). Nothing is written here.
 import Fuse from 'fuse.js'
 import { matchSubject, type ExamKind, type ImportSubject, type ProposalStatus } from '.'
+import { ROUGH_HOURS, ROUGH_PART_MINUTES } from '@/lib/estimates/rough'
 
 export type GradingKind =
   'partial' | 'final' | 'integral' | 'makeup' | 'attendance' | 'assignment' | 'seminar' | 'other'
@@ -11,6 +14,8 @@ export interface ParsedSyllabus {
   subject_name: string
   subject_id: string | null
   semester: number | null
+  /** The elective slot this subject is an option of ("Izborni predmet 4.1"); null = required. */
+  elective_group?: string | null
   literature: { title: string; authors: string | null; required: boolean }[]
   topics: { week: number | null; name: string }[]
   grading: {
@@ -23,7 +28,8 @@ export interface ParsedSyllabus {
 }
 
 export interface SyllabusExisting {
-  sources: { subjectId: string; title: string }[]
+  /** Active sources; `rough` = a temporary source (rough size or earlier syllabus chapters). */
+  sources: { subjectId: string; title: string; rough?: boolean }[]
   topics: { subjectId: string; name: string }[]
   exams: {
     id: string
@@ -72,6 +78,27 @@ export interface GradingProposal {
   include: boolean
 }
 
+/** One hour-long part of the "Predavanja" source: chapter `chapter` (0-based), part k of n. */
+export interface ChapterPart {
+  chapter: number
+  name: string
+  k: number
+  n: number
+}
+
+/**
+ * The content chapters as a temporary source until a real one comes (`sources.is_rough`): the
+ * same hour-long parts as a rough size ("Srednje", ~25 h), spread over the chapters in order and
+ * linked to their topics. Offered only while the subject has no real source; it replaces an
+ * earlier rough source.
+ */
+export interface ChaptersProposal {
+  parts: ChapterPart[]
+  /** The subject already has a rough source this one replaces. */
+  replacesRough: boolean
+  include: boolean
+}
+
 export interface SyllabusProposal {
   key: string
   subjectName: string
@@ -79,9 +106,12 @@ export interface SyllabusProposal {
   subjectId: string | null
   /** For an unmatched subject: create it (default on). */
   addSubject: boolean
+  /** Elective slot; its options are offered as one choice ("Koji slušaš?"). */
+  electiveGroup: string | null
   semester: number | null
   literature: LiteratureProposal[]
   topics: TopicProposal[]
+  chapters: ChaptersProposal | null
   grading: GradingProposal[]
   /** Sum of the points; written to the subject only when it still has the default 100. */
   pointsTotal: { value: number; previous: number | null; status: ProposalStatus } | null
@@ -149,8 +179,8 @@ export function proposeSyllabus(
         authors: l.authors,
         required: l.required,
         status: have ? 'unchanged' : 'new',
-        // Extra reading is offered, not added by default.
-        include: !have && l.required,
+        // Books are offered, never added by default: the user picks what becomes a source.
+        include: false,
       }
     })
 
@@ -238,19 +268,105 @@ export function proposeSyllabus(
             : 'unchanged'
     const pointsTotal = sum > 0 ? { value: sum, previous, status: totalStatus } : null
 
+    const own = existing.sources.filter((s) => s.subjectId === subjectId)
+    const hasReal = subjectId !== null && own.some((s) => !s.rough)
+    const chapterNames = topics.map((x) => x.name)
+    const chapters: ChaptersProposal | null =
+      hasReal || chapterNames.length === 0
+        ? null
+        : {
+            parts: chapterParts(chapterNames),
+            replacesRough: own.some((s) => s.rough),
+            include: true,
+          }
+    const electiveGroup = p.elective_group?.trim() || null
+
     return {
       key,
       subjectName: p.subject_name,
       subjectId,
-      addSubject: subjectId === null,
+      // An elective option is added only when picked.
+      addSubject: subjectId === null && !electiveGroup,
+      electiveGroup,
       semester: p.semester,
       literature,
       topics,
+      chapters,
       grading,
       pointsTotal,
       parsed: p,
     }
   })
+}
+
+/**
+ * Hour-long parts of a rough size ("Srednje") spread over the chapters in order: every chapter
+ * gets at least one, the rest go one by one from the first chapter.
+ */
+export function chapterParts(names: readonly string[]): ChapterPart[] {
+  if (names.length === 0) return []
+  const total = Math.max(names.length, Math.round((ROUGH_HOURS.medium * 60) / ROUGH_PART_MINUTES))
+  const base = Math.floor(total / names.length)
+  const extra = total % names.length
+  return names.flatMap((name, chapter) => {
+    const n = base + (chapter < extra ? 1 : 0)
+    return Array.from({ length: n }, (_, i) => ({ chapter, name, k: i + 1, n }))
+  })
+}
+
+/**
+ * "Koji slušaš?": the picked option of an elective slot is added, the other options of that slot
+ * are not (an option already matched to one of the user's subjects stays as it is).
+ */
+export function pickElective(
+  proposals: readonly SyllabusProposal[],
+  key: string,
+): SyllabusProposal[] {
+  const picked = proposals.find((p) => p.key === key)
+  if (!picked?.electiveGroup) return [...proposals]
+  return proposals.map((p) =>
+    p.electiveGroup !== picked.electiveGroup || p.subjectId
+      ? p
+      : { ...p, addSubject: p.key === key ? !picked.addSubject : false },
+  )
+}
+
+/**
+ * One syllabus read in parts (a long programme): the same subject from two parts (a page that
+ * overlaps) is merged, keeping every topic, book and grading item once.
+ */
+export function mergeSyllabi<T extends ParsedSyllabus>(parts: readonly T[][]): T[] {
+  const out = new Map<string, T>()
+  const uniq = <T>(xs: T[], key: (x: T) => string) => {
+    const seen = new Set<string>()
+    return xs.filter((x) => {
+      const k = key(x)
+      if (seen.has(k)) return false
+      seen.add(k)
+      return true
+    })
+  }
+  for (const p of parts.flat()) {
+    const k = norm(p.subject_name)
+    const had = out.get(k)
+    if (!had) {
+      out.set(k, p)
+      continue
+    }
+    out.set(k, {
+      ...had,
+      subject_id: had.subject_id ?? p.subject_id,
+      semester: had.semester ?? p.semester,
+      elective_group: had.elective_group ?? p.elective_group ?? null,
+      literature: uniq([...had.literature, ...p.literature], (l) => norm(l.title)),
+      topics: uniq([...had.topics, ...p.topics], (x) => norm(x.name)),
+      grading: uniq(
+        [...had.grading, ...p.grading],
+        (g) => `${g.kind}|${g.number}|${norm(g.title)}`,
+      ),
+    })
+  }
+  return [...out.values()]
 }
 
 /** "Upari sa…": the same subject of the syllabus proposed again for one of ours. */
@@ -278,6 +394,7 @@ export function syllabusSaveCount(proposals: readonly SyllabusProposal[]): numbe
       (p.subjectId ? 0 : 1) +
       pick(p.literature) +
       pick(p.topics) +
+      (p.chapters?.include ? 1 : 0) +
       pick(p.grading.filter((g) => g.examKind)) +
       (p.pointsTotal && p.pointsTotal.status !== 'unchanged' ? 1 : 0)
     )

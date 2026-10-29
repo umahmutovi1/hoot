@@ -8,7 +8,7 @@ import { subjectsKey } from '@/features/subjects/api'
 import { examAtFromDate, examKindDefaults, localDateAt } from '@/features/subjects/model'
 import { addDays, localDay } from '@/lib/day'
 import { useAcademicTerm } from '@/features/academic/api'
-import { createRoughSource } from '@/features/sources/api'
+import { createChapterSource, createRoughSource } from '@/features/sources/api'
 import { useRoughTexts } from '@/features/subjects/roughTexts'
 import {
   syllabusSaveCount,
@@ -67,8 +67,9 @@ export function useSaveImport(t: TFunction) {
   const { defaultTerm } = useAcademicTerm()
   const roughTexts = useRoughTexts()
   /**
-   * Syllabus (Stage 10c): a new subject when asked (current semester), required books as rough
-   * sources until their contents come, topics, exam points (only where none were entered) and the
+   * Syllabus (Stage 10c): a new subject when asked (the syllabus's semester, else the current
+   * one), picked books as rough sources until their contents come, topics, the chapters as a
+   * temporary "Predavanja" source, exam points (only where none were entered) and the
    * subject's point total (only over the default). New exams take the matching period of the
    * academic calendar as a tentative date, else the end of the teaching period.
    */
@@ -88,8 +89,12 @@ export function useSaveImport(t: TFunction) {
           id: subjectId,
           name: item.subjectName.slice(0, 80),
           color: 'lavender',
+          // The semester the syllabus names (a whole year's syllabus has both), else today's.
           ...(defaultTerm
-            ? { academic_year_id: defaultTerm.academicYearId, semester_no: defaultTerm.semesterNo }
+            ? {
+                academic_year_id: defaultTerm.academicYearId,
+                semester_no: item.semester ?? defaultTerm.semesterNo,
+              }
             : {}),
         })
         if (error) throw error
@@ -116,6 +121,24 @@ export function useSaveImport(t: TFunction) {
         )
         if (error) throw error
         count += topics.length
+      }
+      if (item.chapters?.include) {
+        // Chapters link to their topics: the ones just added and the ones the subject had.
+        const { data: rows, error } = await supabase
+          .from('topics')
+          .select('id, name')
+          .eq('subject_id', subjectId)
+        if (error) throw error
+        const idOf = new Map((rows ?? []).map((r) => [r.name.trim().toLowerCase(), r.id]))
+        await createChapterSource({
+          subjectId,
+          title: t('owl.syllabus.chaptersSource'),
+          parts: item.chapters.parts.map((x) => ({
+            title: x.n > 1 ? `${x.name} (${x.k}/${x.n})` : x.name,
+            topicId: idOf.get(x.name.slice(0, 80).trim().toLowerCase()) ?? null,
+          })),
+        })
+        count++
       }
       let partial = 0
       for (const g of pick(item.grading.filter((x) => x.examKind))) {

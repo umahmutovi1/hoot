@@ -1655,13 +1655,13 @@
       "newSubject": "not one of your subjects · offered as new",
       "section": "Syllabus",
       "addTitle": "Not one of your subjects — add it?",
-      "addSub": "It gets the current semester; exams and points from the syllabus.",
+      "addSub": "Gets the semester from the syllabus (or the current one); exams and points from the grading.",
       "add": "Add subject",
       "match": "Match with…",
       "skip": "Skip",
       "literature": "Literature → sources",
-      "required": "required · rough size until you import the contents",
-      "extra": "extra · not in the plan",
+      "required": "main · turn on to make it a source (rough size)",
+      "extra": "extra · turn on to make it a source",
       "have": "you have it",
       "topicsTitle": "Topics",
       "week": "week {{n}}",
@@ -1677,7 +1677,15 @@
       "totalWas": "was {{points}}",
       "hint": "Subjects are matched by name and new ones are offered. Your own changes are never overwritten.",
       "fromWeb": "From the web: {{host}}",
-      "checkYear": "Check it is for {{year}}: the document comes from the web, not from you."
+      "checkYear": "Check it is for {{year}}: the document comes from the web, not from you.",
+      "electiveTitle": "{{group}} · which one do you take?",
+      "electiveSub": "Pick one; the other electives of this slot are not added.",
+      "chaptersTitle": "Units from the chapters",
+      "chaptersRow_one": "{{count}} part of ~1 h from {{chapters}} chapters",
+      "chaptersRow_other": "{{count}} parts of ~1 h from {{chapters}} chapters",
+      "chaptersSub": "A temporary “Lectures” source until you add a book or notes.",
+      "chaptersReplaces": "Replaces the rough size; a real source replaces it later.",
+      "chaptersSource": "Lectures (syllabus)"
     }
   },
   "offline": {
