@@ -38,6 +38,24 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  # ml/ (Stage 11a): export, labels and their parity with src/lib/ml. Only the dev group: the
+  # model and notebook libraries are not needed for the tests.
+  ml:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ml
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: ml/uv.lock
+      - run: uv sync --locked --no-default-groups --group dev
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync pytest -q
+
   # Committed secrets, over the whole history (PRD "Sigurnosno skeniranje").
   secrets:
     runs-on: ubuntu-latest
