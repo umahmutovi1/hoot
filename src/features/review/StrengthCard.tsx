@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useCardReviews } from '@/features/plan/api'
-import { useDayBoundary } from '@/features/settings/profile'
+import { useDayBoundary, useFsrsParams } from '@/features/settings/profile'
 import type { SourceMaterial } from '@/features/sources/model'
 import type { LocalDate } from '@/lib/day'
 import { leavesOf } from '@/lib/progress'
@@ -25,6 +25,7 @@ export function StrengthCard({
 }) {
   const { t } = useTranslation()
   const boundary = useDayBoundary()
+  const params = useFsrsParams()
   const { data: cards = [] } = useCardReviews()
   const startCheck = useStartCheck()
   const leaves = materials.flatMap((m) =>
@@ -39,6 +40,7 @@ export function StrengthCard({
     cards.filter((c) => ids.has(c.unit_id)),
     today,
     boundary,
+    params,
   )
   if (summary.average === null && summary.needCheck.length === 0) {
     if (!leaves.some((l) => l.unit.level >= 1)) return null

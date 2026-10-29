@@ -52,6 +52,8 @@ export interface ReviewContext {
   at: string
   boundary: DayBoundary
   limits: Map<string, ReviewLimit>
+  /** Personal FSRS weights (`profiles.fsrs_params`); undefined = defaults. */
+  params?: readonly number[]
 }
 
 export interface Outcome {
@@ -104,6 +106,7 @@ export function planReviews(
       today: ctx.today,
       retention: targetRetention(limit.priority, kind),
       lastDay: limit.lastDay,
+      params: ctx.params,
     })
     let level = levelAfter(kind, unit.level, recall, r.memory.streak)
     // General knowledge may differ from the lectures: it moves a chapter up only together with
@@ -134,7 +137,7 @@ export function planReviews(
       levelBefore: unit.level,
       levelAfter: level,
       strengthBefore: r.retrievabilityBefore,
-      strengthAfter: retrievabilityOn(r.memory, tomorrow),
+      strengthAfter: retrievabilityOn(r.memory, tomorrow, ctx.params),
       nextReviewOn,
       relearn,
     })
@@ -149,6 +152,7 @@ export function planReviews(
       today: ctx.today,
       retention: targetRetention(limit.priority, 'card'),
       lastDay: limit.lastDay,
+      params: ctx.params,
     })
     ops.push({
       kind: 'update',
@@ -169,7 +173,7 @@ export function planReviews(
       levelBefore: unit.level,
       levelAfter: unit.level,
       strengthBefore: r.retrievabilityBefore,
-      strengthAfter: retrievabilityOn(r.memory, tomorrow),
+      strengthAfter: retrievabilityOn(r.memory, tomorrow, ctx.params),
       nextReviewOn: r.nextReviewOn,
       relearn: false,
     })

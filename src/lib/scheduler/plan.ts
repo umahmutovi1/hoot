@@ -467,7 +467,8 @@ function run(
     // 2. Reviews due and recaps, within the review share of the day. Over the cap, the closer
     // exam and then the lower strength go first; the rest moves to the next day.
     let reviewBudget = Math.min(Math.floor((cap * settings.reviewCapPct) / 100), limit)
-    const strength = (u: PlanUnit) => (u.memory ? retrievabilityOn(u.memory, d) : 0)
+    const strength = (u: PlanUnit) =>
+      u.memory ? retrievabilityOn(u.memory, d, state.fsrsParams) : 0
     const due = state.units
       .filter((u) => {
         const on = dueOn.get(u.id)

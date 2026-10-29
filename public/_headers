@@ -3,8 +3,10 @@
 # backend (REST, Storage signed URLs, Realtime). Inline styles stay allowed for React style props.
 # Google Drive Picker (Stage 10c): Google sign-in and Picker scripts and frames, Drive API
 # downloads (which may redirect to googleusercontent.com).
+# 'wasm-unsafe-eval' (Stage 11a): the FSRS optimizer worker compiles WebAssembly; it allows wasm
+# compilation only, not eval of JavaScript.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://apis.google.com https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: blob: https://*.supabase.co; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googleapis.com https://*.googleusercontent.com https://accounts.google.com/gsi/; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob:; frame-src https://docs.google.com https://accounts.google.com https://content.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://apis.google.com https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: blob: https://*.supabase.co; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googleapis.com https://*.googleusercontent.com https://accounts.google.com/gsi/; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob:; frame-src https://docs.google.com https://accounts.google.com https://content.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin

@@ -4,7 +4,7 @@ import { syncQueueFor } from '@/app/sync'
 import { useAuth } from '@/features/auth/auth-context'
 import { cardReviewsKey, invalidatePlanInputs, usePlanInputs } from '@/features/plan/api'
 import { buildPlanState } from '@/features/plan/state'
-import { useDayBoundary } from '@/features/settings/profile'
+import { useDayBoundary, useFsrsParams } from '@/features/settings/profile'
 import type { Card, SourceWithUnits } from '@/features/sources/model'
 import { localDay } from '@/lib/day'
 import { supabase } from '@/lib/supabase'
@@ -73,6 +73,7 @@ export function useReviewWriter() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   const boundary = useDayBoundary()
+  const params = useFsrsParams()
   const limits = useReviewLimits()
 
   const write = useCallback(
@@ -104,11 +105,12 @@ export function useReviewWriter() {
         at: now.toISOString(),
         boundary,
         limits: limits ?? new Map(),
+        params,
       })
       await write(plan.ops)
       return plan.outcomes
     },
-    [boundary, limits, write],
+    [boundary, limits, params, write],
   )
 
   return { save, write, ready: limits !== null }

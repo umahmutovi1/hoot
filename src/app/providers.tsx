@@ -3,6 +3,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import type { ReactNode } from 'react'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { Recalibrator } from '@/features/session/Recalibrator'
+import { FsrsOptimizer } from '@/features/review/FsrsOptimizer'
 import { queryPersister } from './queryPersister'
 import { CalendarSync } from '@/features/calendars/CalendarSync'
 import { EventClassifier } from '@/features/calendars/EventClassifier'
@@ -43,6 +44,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <GooglePush />
         <EventClassifier />
         <Recalibrator />
+        <FsrsOptimizer />
         <ReplanRunner />
         <PushJobsRunner />
         <EmbedRunner />

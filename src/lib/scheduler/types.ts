@@ -159,6 +159,8 @@ export interface PlanState {
   slotScores?: SlotCompletion | null
   /** Exploring days (at most one a week) with their posterior draw of the expected share. */
   explore?: ExploreDay[]
+  /** Personal FSRS weights (`profiles.fsrs_params`); absent = defaults. */
+  fsrsParams?: number[]
 }
 
 export type SlotCompletion = Record<'weekday' | 'weekend', Record<SlotPart, number>>
