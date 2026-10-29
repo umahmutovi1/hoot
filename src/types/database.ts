@@ -701,6 +701,53 @@ export type Database = {
           },
         ]
       }
+      calendar_matches: {
+        Row: {
+          created_at: string
+          decision: string
+          feed_id: string
+          id: string
+          kind: string
+          match_key: string
+          seen_start: string | null
+          target_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          decision: string
+          feed_id: string
+          id?: string
+          kind: string
+          match_key: string
+          seen_start?: string | null
+          target_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          decision?: string
+          feed_id?: string
+          id?: string
+          kind?: string
+          match_key?: string
+          seen_start?: string | null
+          target_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_matches_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_feeds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       card_embeddings: {
         Row: {
           card_id: string
