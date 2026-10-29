@@ -76,4 +76,4 @@ export function reviewMinutes(kind: 'chapter' | 'question', minutes: number): nu
 }
 
 /** Bump when the algorithm changes, so an old plan is not reused for the same input. */
-export const SCHEDULER_VERSION = 4
+export const SCHEDULER_VERSION = 5

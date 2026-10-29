@@ -200,7 +200,7 @@ describe('buildPlanState', () => {
     )
     const u = state.units.find((x) => x.id === 'p0')!
     expect(u.nextReviewOn).toBe('2026-10-25')
-    expect(u.memory).toEqual({ stability: 12.346, lastReviewOn: '2026-10-20' })
+    expect(u.memory).toEqual({ stability: 12.346, difficulty: 5, lastReviewOn: '2026-10-20' })
     expect(state.units.find((x) => x.id === 'p1')!.memory).toBeNull()
     expect(state.settings.reviewCapPct).toBe(25)
   })

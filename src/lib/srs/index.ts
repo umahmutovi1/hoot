@@ -265,3 +265,28 @@ export function weightedStrength(items: StrengthItem[]): number | null {
   }
   return w > 0 ? sum / w : null
 }
+
+/**
+ * Expected gain in strength on the exam day from a review today (RESEARCH-ML 5.3 "Ponavljanja
+ * ciljana na ispit"): the review succeeds with probability R today (Good) or fails (Again), and
+ * either new stability decays until the exam; minus the strength the exam day gets without it.
+ * A unit never tested counts as learned today (initial stability for Good). Difficulty defaults
+ * to the middle of the scale when it is not known.
+ */
+export function examGain(
+  memory: { stability: number; difficulty?: number; lastReviewOn: LocalDate } | null,
+  today: LocalDate,
+  examDay: LocalDate,
+  params: readonly number[] = default_w,
+): number {
+  const days = Math.max(0, diffDays(today, examDay))
+  const f = schedulerFor(0.9, params)
+  if (!memory || memory.stability <= 0) return forgetting_curve(params, days, params[2]!)
+  const r = retrievabilityOn(memory, today, params)
+  const d = memory.difficulty ?? 5
+  const good = f.next_recall_stability(d, memory.stability, r, Rating.Good)
+  const again = f.next_forget_stability(d, memory.stability, r)
+  const after =
+    r * forgetting_curve(params, days, good) + (1 - r) * forgetting_curve(params, days, again)
+  return Math.max(0, after - retrievabilityOn(memory, examDay, params))
+}
