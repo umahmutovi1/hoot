@@ -5,7 +5,6 @@ import {
   difficultyCorrection,
   difficultyMultiplier,
   estimateUnits,
-  speedFactor,
 } from '.'
 
 describe('baseMinPerUnit', () => {
@@ -89,37 +88,5 @@ describe('estimateUnits', () => {
     expect(out.get('a')!.difficulty).toBe(5)
     // correction = 1/4 · 3 = 0.75
     expect(out.get('b')!.difficulty).toBeCloseTo(3.75)
-  })
-})
-
-describe('speedFactor', () => {
-  const src = (
-    id: string,
-    kind: 'book' | 'script',
-    base: number,
-    learned: number | null,
-    samples = 5,
-  ) => ({ id, kind, base, learned, samples })
-
-  it('is 1 without measured sources', () => {
-    expect(speedFactor([], 'book')).toBe(1)
-    expect(speedFactor([src('a', 'book', 4, 8, 2)], 'book')).toBe(1)
-  })
-
-  it('shrinks the mean ratio by the number of sources', () => {
-    // one book measured at 2× the heuristic: 1/3 · 2 + 2/3 = 4/3
-    expect(speedFactor([src('a', 'book', 4, 8)], 'book')).toBeCloseTo(4 / 3)
-    // two books at 2× and 1.5×: 2/4 · 1.75 + 2/4 = 1.375
-    expect(speedFactor([src('a', 'book', 4, 8), src('b', 'book', 4, 6)], 'book')).toBeCloseTo(1.375)
-  })
-
-  it('prefers the same kind and falls back to every kind', () => {
-    const list = [src('a', 'book', 4, 8), src('b', 'script', 6, 3)]
-    expect(speedFactor(list, 'script')).toBeCloseTo((1 / 3) * 0.5 + 2 / 3)
-    expect(speedFactor([src('b', 'script', 6, 3)], 'book')).toBeCloseTo((1 / 3) * 0.5 + 2 / 3)
-  })
-
-  it('leaves the source itself out', () => {
-    expect(speedFactor([src('a', 'book', 4, 8)], 'book', 'a')).toBe(1)
   })
 })

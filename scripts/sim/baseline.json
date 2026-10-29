@@ -1,5 +1,6 @@
 {
   "seeds": 100,
+  "estimator": "old",
   "student": {
     "base": 1.6,
     "part": {
@@ -20,7 +21,9 @@
     "nearGoal": 0.6,
     "nearGoalDays": 3,
     "prevLate": -0.4,
-    "avoided": [0],
+    "avoided": [
+      0
+    ],
     "avoidLogit": -1.2,
     "avoidDelayMin": 20,
     "delayMedianMin": 3,
@@ -33,12 +36,12 @@
     "unmarkedDoneP": 0.08
   },
   "summary": {
-    "examScore": 0.496,
-    "deficitMin": 459.187,
-    "missedShare": 0.309,
-    "planChurn": 0.15,
-    "loadSd": 36.071,
-    "completionAvoided": 0.52,
-    "completionNeutral": 0.768
+    "examScore": 0.556,
+    "deficitMin": 623.556,
+    "missedShare": 0.305,
+    "planChurn": 0.136,
+    "loadSd": 31.721,
+    "completionAvoided": 0.531,
+    "completionNeutral": 0.765
   }
 }

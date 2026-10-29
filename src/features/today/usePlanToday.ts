@@ -6,7 +6,7 @@ import { useActiveSession, useSessions } from '@/features/session/api'
 import { toSegment } from '@/features/session/model'
 import { useNow } from '@/features/session/useNow'
 import { useDayBoundary } from '@/features/settings/profile'
-import { materialOf, speedOf, subjectMaterialProgress } from '@/features/sources/model'
+import { materialOf, rateOf, subjectMaterialProgress } from '@/features/sources/model'
 import { useSubjects } from '@/features/subjects/api'
 import { addDays, diffDays, localDay, startOfWeek, wallClock } from '@/lib/day'
 import { activeMs, MINUTE } from '@/lib/session/timer'
@@ -68,8 +68,9 @@ export function usePlanToday() {
     const readiness =
       subjectSources.length > 0
         ? Math.round(
-            subjectMaterialProgress(subjectSources.map((s) => materialOf(s, speedOf(s, sources)))) *
-              100,
+            subjectMaterialProgress(
+              subjectSources.map((s) => materialOf(s, rateOf(s, sources).mean)),
+            ) * 100,
           )
         : null
 

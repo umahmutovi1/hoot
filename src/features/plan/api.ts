@@ -6,7 +6,7 @@ import { useSessions } from '@/features/session/api'
 import { toSegment } from '@/features/session/model'
 import { useGlobalScale, useProfile } from '@/features/settings/profile'
 import { useDeadlines, useSubjects } from '@/features/subjects/api'
-import { speedOf, type AssessmentUnit, type SourceWithUnits } from '@/features/sources/model'
+import { rateOf, type AssessmentUnit, type SourceWithUnits } from '@/features/sources/model'
 import { addDays, localDay, type DayBoundary } from '@/lib/day'
 import { activeMs, MINUTE } from '@/lib/session/timer'
 import { supabase } from '@/lib/supabase'
@@ -246,11 +246,11 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
   ])
 }
 
-/** Personal speed factor of every source (PRD "Procjena" → 5), for estimates on screens. */
-export function useSpeeds(): Map<string, number> {
+/** Minutes per unit of measure of every source (duration model), for estimates on screens. */
+export function useRates(): Map<string, number> {
   const sources = useAllSources().data
   return useMemo(
-    () => new Map((sources ?? []).map((s) => [s.id, speedOf(s, sources ?? [])])),
+    () => new Map((sources ?? []).map((s) => [s.id, rateOf(s, sources ?? []).mean])),
     [sources],
   )
 }

@@ -11,6 +11,8 @@ import {
   type PlanUnit,
   type PlannedBlock,
 } from '@/lib/scheduler'
+import { blendedRate } from '@/lib/estimates'
+import { sourceRate, type SourceStats } from '@/lib/estimates/model'
 import { BUILT_IN_PRESETS } from '@/lib/session/timer'
 import {
   levelAfter,
@@ -99,11 +101,34 @@ function drawRecall(memory: Memory | null, on: LocalDate, r: Rng): Recall {
   return r.chance(0.5) ? 1 : 0
 }
 
+/**
+ * How the plan estimates minutes from what it measured (one source per subject, rates relative
+ * to the world's estimate): `old` = the blend k/(k+5) with the speed factor j/(j+2) the app used
+ * before the duration model, `model` = the duration model's expected rate.
+ */
+export type Estimator = 'old' | 'model'
+
+/** The old speed factor: mean measured / base over other sources with 3+ samples, j/(j+2). */
+function oldSpeed(stats: SourceStats[], exceptId: string): number {
+  const group = stats.filter((s) => s.id !== exceptId && s.learned !== null && s.samples >= 3)
+  const j = group.length
+  if (j === 0) return 1
+  const mean = group.reduce((sum, s) => sum + s.learned! / s.base, 0) / j
+  return (j / (j + 2)) * mean + 2 / (j + 2)
+}
+
+export function rateFor(estimator: Estimator, own: SourceStats, all: SourceStats[]): number {
+  if (estimator === 'old')
+    return blendedRate(own.base * oldSpeed(all, own.id), own.learned, own.samples)
+  return sourceRate(own, all).mean
+}
+
 /** One run: plan every morning with the real `plan()`, then live the day as the student. */
 export function simulate(
   seed: number,
   params: StudentParams = DEFAULT_STUDENT,
   worldOf: (r: Rng) => World = makeWorld,
+  estimator: Estimator = 'model',
 ): RunResult {
   const r = rng(seed)
   const world = worldOf(r)
@@ -116,6 +141,19 @@ export function simulate(
   )
   const goalOf = new Map(world.goals.flatMap((g) => g.unitIds.map((id) => [id, g] as const)))
   const priority = new Map(world.subjects.map((s) => [s.id, s.priority] as const))
+  // Measured rate per subject (one source each), relative to the world's estimates.
+  const measured = new Map(world.subjects.map((s) => [s.id, [] as number[]]))
+  const statsOf = (id: string): SourceStats => {
+    const rates = measured.get(id)!
+    return {
+      id,
+      kind: 'book',
+      base: 1,
+      learned: rates.length ? rates.reduce((a, b) => a + b, 0) / rates.length : null,
+      samples: rates.length,
+      given: null,
+    }
+  }
   const lastExam = world.goals.reduce((m, g) => (g.on > m ? g.on : m), world.start)
 
   const history: DayHistory[] = []
@@ -145,6 +183,10 @@ export function simulate(
     const open = new Set(goals.map((g) => g.subjectId))
     const cantToday = r.chance(params.cantTodayP)
 
+    const all = world.subjects.map((s) => statsOf(s.id))
+    const rates = new Map(
+      world.subjects.map((s) => [s.id, rateFor(estimator, statsOf(s.id), all)] as const),
+    )
     const rho = realization(history, day).rho
     const horizon = diffDays(
       day,
@@ -163,6 +205,7 @@ export function simulate(
         .filter((u) => open.has(u.unit.subjectId))
         .map((u) => ({
           ...u.unit,
+          minutes: Math.max(1, Math.round(u.unit.minutes * (rates.get(u.unit.subjectId) ?? 1))),
           memory: u.memory && {
             stability: u.memory.stability,
             lastReviewOn: u.memory.lastReviewOn,
@@ -235,6 +278,7 @@ export function simulate(
       if (!outcome.done) continue
       doneMin += b.minutes
       const factor = outcome.realFactor * speed.get(b.subjectId)!
+      if (b.kind !== 'review') measured.get(b.subjectId)!.push(factor)
       for (const bu of b.units) {
         const u = units.get(bu.unitId)
         if (!u) continue
@@ -252,6 +296,7 @@ export function simulate(
           if (u.unit.nextReviewOn !== null && u.unit.nextReviewOn <= day) test()
           continue
         }
+        // Planned minutes buy real work at the student's pace (estimate minutes = base × factor).
         const work = bu.minutes / factor
         if (u.unit.level === 0) {
           const share = (u.unit.readShare ?? 0) + work / u.unit.minutes

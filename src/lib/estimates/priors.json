@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "fittedFrom": "heuristics: BASE_MINUTES as the mean, shrinkage matching k/(k+5) and j/(j+2); refit by ml/ from >= 30 sessions",
+  "sigma": 0.45,
+  "tauSource": 0.2,
+  "tauUser": 0.23,
+  "tauGiven": 0.3,
+  "optimismShrink": 2,
+  "difficultyShrink": 3,
+  "z80": 0.8416
+}
