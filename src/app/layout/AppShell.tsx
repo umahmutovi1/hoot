@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom'
 import { Toast } from '@/components/Toast'
+import { ImportJobBanner } from '@/features/owl/ImportJobBanner'
 import { ContinueOnboarding } from '@/features/onboarding/ContinueOnboarding'
 import { PendingSkipRunner } from '@/features/notify/PendingSkipRunner'
 import { ForgottenGuard } from '@/features/session/ForgottenGuard'
@@ -48,6 +49,7 @@ export function AppShell() {
       {/* Inside the router: applying a skip can start the next block (navigation). */}
       <PendingSkipRunner />
       <ForgottenGuard />
+      <ImportJobBanner />
       <Toast />
       {/* A new screen starts at the top; back restores where you were. */}
       <ScrollRestoration />

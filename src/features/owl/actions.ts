@@ -34,6 +34,7 @@ import {
 } from '@/lib/import/syllabus'
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
 import type { AiErrorCode } from '@shared/schemas.ts'
+import i18n from '@/app/i18n'
 import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
 import { documentFromLink } from './link'
 import { pdfText } from './pdfText'
@@ -84,6 +85,31 @@ const store = () => useOwlStore.getState()
 export type GiveResult =
   | { ok: true; title: string; found: number; proposalId: string | null }
   | { ok: false; code: AiErrorCode | 'offline' | 'file' | 'link' }
+
+/**
+ * A system notification when the reading ends while the app is in the background; tapping it
+ * opens the review (or the chat). Nothing when notifications were not allowed.
+ */
+async function notifyDone(result: GiveResult) {
+  try {
+    if (document.visibilityState === 'visible') return
+    if (!('Notification' in window) || Notification.permission !== 'granted') return
+    const reg = await navigator.serviceWorker?.ready
+    if (!reg) return
+    const t = i18n.t.bind(i18n)
+    await reg.showNotification(t(result.ok ? 'owl.job.doneTitle' : 'owl.job.errorTitle'), {
+      body: result.ok
+        ? result.found > 0
+          ? t('owl.job.doneBody', { count: result.found, title: result.title })
+          : t('owl.job.doneNothing', { title: result.title })
+        : t(`owl.error.${result.code}`),
+      tag: 'hoot-import',
+      data: { url: result.ok && result.proposalId ? `/chat/import/${result.proposalId}` : '/chat' },
+    })
+  } catch {
+    // A notification is a courtesy; the banner and the chat still show the result.
+  }
+}
 
 /** A link that could not be opened (not public, not a PDF, image or page). */
 class LinkError extends Error {}
@@ -179,6 +205,19 @@ const EXTENSIONS: Record<string, string> = {
  * Give the owl a document: keep it in Documents (file + passages for answers) right away, and
  * for a calendar or exam schedule add a proposal that waits for "Spasi".
  */
+const linkHost = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
+}
+
+/**
+ * Reads a document and keeps how it went in `job`, so the reading goes on while the user moves
+ * around the app: a banner outside the chat, and a system notification when the app is in the
+ * background (only with the permission given for reminders, never asked for here).
+ */
 export async function giveDocument(
   given: DocumentInput | LinkInput,
   kind: ImportKind,
@@ -186,8 +225,32 @@ export async function giveDocument(
   ctx: OwlContext,
   origin: DocumentOrigin | null = null,
 ): Promise<GiveResult> {
+  if (store().busy) return { ok: false, code: 'failed' }
+  const title =
+    given.type === 'link'
+      ? linkHost(given.url)
+      : given.type === 'file'
+        ? given.file.name
+        : given.text.split('\n')[0]!.slice(0, 60)
+  store().setJob({ status: 'running', title, long: false })
+  const result = await readDocument(given, kind, note, ctx, origin)
+  store().setJob(
+    result.ok
+      ? { status: 'done', title: result.title, found: result.found, proposalId: result.proposalId }
+      : { status: 'error', title, code: result.code },
+  )
+  void notifyDone(result)
+  return result
+}
+
+async function readDocument(
+  given: DocumentInput | LinkInput,
+  kind: ImportKind,
+  note: string | null,
+  ctx: OwlContext,
+  origin: DocumentOrigin | null,
+): Promise<GiveResult> {
   const s = store()
-  if (s.busy) return { ok: false, code: 'failed' }
   s.setBusy(true)
   const name =
     given.type === 'link'
@@ -243,6 +306,19 @@ export async function giveDocument(
     // A study plan is known by its words: read it as one without asking the model first.
     const readAs: ImportKind =
       kind === 'auto' && text && looksLikeSyllabus(text) ? 'syllabus' : kind
+    // A whole study plan or a scan takes minutes: say so, the user can leave meanwhile.
+    const chars = text?.reduce((n, p) => n + p.text.length, 0) ?? 0
+    if (readAs === 'syllabus' || !text || chars > SYLLABUS_PART_CHARS) {
+      store().replace(pendingId, {
+        id: pendingId,
+        role: 'owl',
+        type: 'pending',
+        stage: 'reading',
+        long: true,
+      })
+      const job = store().job
+      if (job?.status === 'running') store().setJob({ ...job, long: true })
+    }
     const request: ParseDocumentRequest = {
       document_id: documentId,
       kind: readAs,

@@ -48,6 +48,12 @@ export interface ImportProposal {
   savedCount: number | null
 }
 
+/** A document read in the background (the banner and the system notification). */
+export type ImportJob =
+  | { status: 'running'; title: string; long: boolean }
+  | { status: 'done'; title: string; found: number; proposalId: string | null }
+  | { status: 'error'; title: string; code: AiErrorCode | 'offline' | 'file' | 'link' }
+
 export type OwlMessage =
   | { id: string; role: 'user'; type: 'text'; text: string }
   | { id: string; role: 'user'; type: 'file'; name: string; note?: string }
@@ -60,7 +66,14 @@ export type OwlMessage =
       stateRefs: StateRef[]
       action?: OwlAction
     }
-  | { id: string; role: 'owl'; type: 'pending'; stage: 'thinking' | 'reading' | 'storing' }
+  | {
+      id: string
+      role: 'owl'
+      type: 'pending'
+      stage: 'thinking' | 'reading' | 'storing'
+      /** A long read (a whole study plan, a scan): "you can leave, I'll let you know". */
+      long?: boolean
+    }
   | { id: string; role: 'owl'; type: 'error'; code: AiErrorCode | 'offline' | 'file' | 'link' }
   | {
       id: string
@@ -95,6 +108,12 @@ interface OwlState {
     link?: boolean
   }
   busy: boolean
+  /**
+   * The document being read, or how the last one ended, for the banner outside the chat: the
+   * reading keeps going while the user moves around the app.
+   */
+  job: ImportJob | null
+  setJob: (job: ImportJob | null) => void
   /** Forgets the open conversation when another user signs in. */
   ensureUser: (userId: string) => void
   /** An empty conversation; the previous one stays in the history. */
@@ -154,6 +173,8 @@ export const useOwlStore = create<OwlState>()(
       messages: [],
       sheet: { open: false, kind: 'auto', nonce: 0 },
       busy: false,
+      job: null,
+      setJob: (job) => set({ job }),
       ensureUser: (userId) => {
         if (get().userId !== userId)
           set({ userId, conversationId: null, messages: [], busy: false })

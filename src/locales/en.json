@@ -1523,12 +1523,14 @@
       "found_other": "I found {{count}} items in “{{title}}”. Review them before saving.",
       "foundNone": "“{{title}}” is in Documents and I can answer from it. I found no dates, exams or subjects to import.",
       "review": "Review and save",
-      "close": "Close"
+      "close": "Close",
+      "workingHint": "A long document can take a few minutes. You can close this; I’ll let you know when it’s done."
     },
     "pending": {
       "thinking": "Thinking…",
       "reading": "Reading the document…",
-      "storing": "Saving to Documents…"
+      "storing": "Saving to Documents…",
+      "longHint": "This may take a few minutes. You can leave the chat; I’ll let you know when it’s done."
     },
     "error": {
       "offline": "No internet. Try again when you're online.",
@@ -1688,6 +1690,18 @@
       "chaptersSub": "A temporary “Lectures” source until you add a book or notes.",
       "chaptersReplaces": "Replaces the rough size; a real source replaces it later.",
       "chaptersSource": "Lectures (syllabus)"
+    },
+    "job": {
+      "doneTitle": "The document is read",
+      "errorTitle": "The document was not read",
+      "doneBody_one": "I found {{count}} item in “{{title}}”. Review it before saving.",
+      "doneBody_other": "I found {{count}} items in “{{title}}”. Review them before saving.",
+      "doneNothing": "“{{title}}” is in Documents; I found nothing to import.",
+      "running": "Reading “{{title}}”…",
+      "runningLong": "This may take a few minutes. Feel free to do something else, I’ll let you know when it’s done.",
+      "review": "Review",
+      "open": "Open chat",
+      "dismiss": "Close"
     }
   },
   "offline": {

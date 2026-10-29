@@ -1563,12 +1563,14 @@
       "found_other": "U „{{title}}” sam našla {{count}} stavki. Pregledaj ih prije spašavanja.",
       "foundNone": "„{{title}}” je u Dokumentima i mogu odgovarati iz njega. Nisam našla datume, ispite ni predmete za uvoz.",
       "review": "Pregledaj i spasi",
-      "close": "Zatvori"
+      "close": "Zatvori",
+      "workingHint": "Ako je dugačak dokument, može potrajati par minuta. Možeš zatvoriti ovaj prozor; javit ću kad bude gotovo."
     },
     "pending": {
       "thinking": "Razmišljam…",
       "reading": "Čitam dokument…",
-      "storing": "Spremam u Dokumente…"
+      "storing": "Spremam u Dokumente…",
+      "longHint": "Ovo može potrajati par minuta. Možeš izaći iz chata, javit ću kad bude gotovo."
     },
     "error": {
       "offline": "Nema interneta. Pokušaj kad se povežeš.",
@@ -1737,6 +1739,19 @@
       "chaptersSub": "Privremeni izvor „Predavanja“ dok ne dodaš knjigu ili skripte.",
       "chaptersReplaces": "Zamjenjuje grubu procjenu; pravi izvor ga kasnije zamijeni.",
       "chaptersSource": "Predavanja (plan i program)"
+    },
+    "job": {
+      "doneTitle": "Dokument je pročitan",
+      "errorTitle": "Dokument nije pročitan",
+      "doneBody_one": "U „{{title}}” sam našla {{count}} stavku. Pregledaj je prije spašavanja.",
+      "doneBody_few": "U „{{title}}” sam našla {{count}} stavke. Pregledaj ih prije spašavanja.",
+      "doneBody_other": "U „{{title}}” sam našla {{count}} stavki. Pregledaj ih prije spašavanja.",
+      "doneNothing": "„{{title}}” je u Dokumentima; nisam našla ništa za uvoz.",
+      "running": "Čitam „{{title}}”…",
+      "runningLong": "Može potrajati par minuta. Slobodno radi nešto drugo, javit ću kad bude gotovo.",
+      "review": "Pregledaj",
+      "open": "Otvori chat",
+      "dismiss": "Zatvori"
     }
   },
   "offline": {
