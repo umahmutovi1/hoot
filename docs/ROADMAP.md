@@ -358,7 +358,26 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash`
 - [ ] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad
 - [ ] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio)
+- [ ] MLOps (PRD „Dopune“ → MLOps): `.github/workflows/train.yml` (ručno + mjesečno) izvoz → trening → backtest → simulator; PR sa novim artefaktom samo bez pogoršanja prema `baseline.json`; praćenje pokrivenosti P80, Brier odrađenosti i FSRS kalibracije po sedmici
 - **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.5`
+
+## Etapa 11b — Doživljaj, prijava i energija
+
+Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj i prijava, (2) učenje i AI.
+
+- [ ] Toastovi i potvrde: jedan sistem (uspjeh, greška, Poništi) za sve upise; dijalog samo za nepovratne radnje
+- [ ] Čestitke: završen blok, dan, „Ponovljeno“, sedmica u planu (poruka, animacija prstena, vibracija); bez maskote
+- [ ] Skeleton učitavanje po ekranima (Danas, Plan, Predmeti, Predmet, Izvor, Napredak); spinner samo u dugmadi
+- [ ] Landing stranica `/` za neprijavljene (mockup u `docs/design/` prije koda), bs i en
+- [ ] Email šablon prijave u Liquid Glass izgledu (SETUP.md 3)
+- [ ] Prijava: lozinka poslije prve prijave kodom; Google i Apple OAuth (provjera redirecta u iOS PWA; Apple uz Apple Developer Program, inače uz Capacitor); passkey ako Supabase ima podršku; SETUP.md za svaki provajder
+- [ ] Energija dana: brze akcije „Nemam energije“ / „Pun/a sam energije“; `day_energy` po datumu kao ulaz u `plan()` i `input_hash`; property testovi (low ne prelazi ~60% kapaciteta, high ne prelazi limit rasta); ML signal uz blokove
+- [ ] Ručno „Razumijem“ uz napomenu o iskrenosti: nivo 2, bez FSRS memorije, provjera za `READ_CHECK_DAYS`; `units.level_source`
+- [ ] `recall-questions` prima zalijepljeni tekst (gate i kviz)
+- [ ] Rotacija besplatnih AI-eva: `LLM_CHAIN` u `_shared/llm.ts`, prelaz na 429/kvotu, iscrpljeni do reseta; zadaci označeni javni / privatni (privatni nikad na free tier); eval prije uključivanja modela
+- [ ] Kraj semestra: kartica na Danas (rezultati, prenos, „Dodaj sljedeći semestar“); gotovo prije januara 2027
+- [ ] Studijski program odjednom: `parse-document` vrsta `study_program` → godine, semestri, predmeti; pregled prije snimanja
+- **DoD** → `v0.10.6`
 
 ## Etapa 11 — Napredak
 
@@ -377,6 +396,18 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Ritam sesije (PRD „Timer, pauza i rekalibracija“): medijan do prve pauze, stvarne pauze, rano završene sesije → kartica „prebaci na 40/10?“ + testovi
 - **DoD** → `v0.11.0`
 
+## Etapa 11c — Tekst izvora i AI tutor
+
+PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model (Haiku) za privatni tekst; ElevenLabs nalog (free tier).
+
+- [ ] Tekst izvora: PDF (uređaj ili Drive) → tekst po jedinici prema rasponu stranica, `source_chunks` sa embeddings; original se ne čuva; poruka za skenirani PDF
+- [ ] Sažetak jedinice / poglavlja (keš po hashu teksta); opcija „sažetak umjesto čitanja“ kod deficita za prioritet 1–2
+- [ ] Kartice iz gradiva: AI prijedlog 5–15 kartica iz teksta, bilješki ili zalijepljenog teksta → pregled → FSRS kartice
+- [ ] Tutor: ulazi iz bloka, sesije i jedinice; načini Objasni (citat stranice), Ispitaj me, Usmeni, Feynman; isti izbor pitanja kao recall gate; ocjene u `review_logs` i `levelAfter()`; vrijeme kao sesija (način `tutor`); mockup prije koda
+- [ ] Glas: edge funkcija `voice` (ElevenLabs TTS bs/en, Scribe STT), budžet free tiera iz `ai_runs`, rezerva Web Speech API
+- [ ] Asistent na Danas ostaje za plan i dokumente; pitanja o gradivu vode u tutora
+- **DoD** → `v0.11.1`
+
 ## Etapa 12 — Notifikacije i dorada
 
 - [ ] Ostale notifikacije (Web Push temelj je iz Etape 9, podsjetnici prije bloka i kašnjenje iz Etape 10c): propušten blok, ponavljanje, „Dokle ste stigli?“ nakon termina, kampanja počinje za 3 dana
@@ -393,10 +424,11 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 
 ## Kasnije
 
-- **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a).
+- **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a): dijeljenje sesija i kartica, prijatelj za odgovornost (dopuna 29. okt 2026).
+- Study with me uz timer: lofi muzika ili stream (YouTube embed), samo dok je app otvoren na iOS-u (PRD „Dopune“).
+- OCR skeniranih PDF-ova za tekst izvora; ElevenLabs plaćeni plan uz Pretplatu.
 - Uvoz gotovog plana učenja (PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja): `study_plan` u `parse-document`, tri sloja (sadržaj, sidra, tempo), tvrd redoslijed modula, kartica „ispred / iza plana“; etapa još nije dodijeljena.
 - Tamni režim (teme iz Etape 10b su svijetle).
-- Puni sadržaj materijala za asistenta, opt-in po izvoru (PRD „Materijali“, faza 3).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
 - Prijedlog obima parcijale iz onoga što je pređeno na predavanjima do datuma parcijale.

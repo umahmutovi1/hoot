@@ -84,8 +84,20 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju, osim stavki označenih
 | Uvoz | Materijali | PDF s uređaja ili Google Drive → poglavlja i broj stranica bez ručnog unosa |
 | Plan | Dan pred ispit | Kartica 3 dana prije: rezervisati dan pred ispit samo za taj predmet |
 | Napredak | Uvidi | Najproduktivniji termini, ometanja, ritam sesije, savjeti sa izvorom |
+| Plan | Energija dana | „Nemam energije“ / „Pun/a sam energije“ jednim tapom: obim i sadržaj dana se prilagode, ostatak ide replanom |
+| Učenje | Ručno „Razumijem“ | Uz napomenu o iskrenosti; nivo 2 bez FSRS memorije, provjera za 2 dana |
+| Učenje | Pitanja iz teksta | Recall pitanja i kviz i iz zalijepljenog teksta poglavlja, ne samo sa slike |
+| Učenje | AI tutor | Objašnjava, ispituje (i usmeno, glasom) i piše rezultat u FSRS; pokreće se iz bloka, sesije ili jedinice |
+| Učenje | Kartice iz gradiva | AI predloži kartice iz teksta jedinice, bilješki ili zalijepljenog teksta; pregled prije snimanja |
+| Uvoz | Tekst izvora | PDF izvora → tekst po jedinici (rasponi stranica) + embeddings; original se ne čuva |
+| Uvoz | Sažetak gradiva | Sažetak jedinice ili poglavlja iz teksta izvora; prijedlog kod deficita za gradivo nižeg prioriteta |
+| Raspored | Kraj semestra | Kartica kad se semestar završi: pregled, prenos nepoloženog i podaci za sljedeći semestar |
+| Uvoz | Studijski program | Cijeli studijski program odjednom (sve godine i semestri) iz PDF-a, slike ili s interneta; pregled prije snimanja |
+| Opće | Prijava | Kod iz emaila, lozinka, Google, Apple, passkey; sesija ostaje i u PWA na početnom ekranu |
+| Opće | Doživljaj | Toastovi, potvrde, čestitke, skeleton učitavanje; landing stranica i email u stilu appa |
 | Napredak | Prstenovi i izazovi (v2) | Dnevni prstenovi kao Apple Fitness i sedmični izazovi, bez kazne za propušten dan |
-| Opće | Social (v2) | Poslije otvaranja za više korisnika |
+| Opće | Social (v2) | Poslije otvaranja za više korisnika: dijeljenje sesija i kartica, prijatelj za odgovornost |
+| Učenje | Study with me (Kasnije) | Lofi muzika i „uči sa mnom“ uz timer |
 
 ## Ključni tokovi
 
@@ -893,6 +905,84 @@ Odluke, oktobar 2026 (Etapa 10b). Izgled je u design/README.md.
 - **Swipe ulijevo** na stavci liste (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): kratki swipe otkriva dugmad, puni izvršava prvu akciju; uvijek toast Poništi, bez dijaloga potvrde. Arhiviraj: predmet, izvor (ništa na čemu stoje jedinice se ne briše). Obriši: sesija (kalibracija se preračuna), termin nastave, ručni blok, rok, dokument. Preskoči: AI blok (isto kao Preskoči na kartici). Iste akcije su i u “⋯” / dugom pritisku (pristupačnost, desktop).
 - **Teme boja.** Lavanda (default), Grafit (neutralna), Pijesak, Kadulja, Okean, u Postavkama → Općenito → Izgled (`profiles.theme`, sinhronizuje se). Mijenjaju brand boje, ljubičastu karticu sesije, dugmad i pozadinsku maglu; boje predmeta ostaju. Tamni režim je Kasnije.
 - **Više vremena za određeni dan.** Model postoji (`availability_days`); akcija “Više vremena ovaj dan” je na Plan → Dan, u kartici Dan pred ispit i u pretrazi.
+
+## Dopune, 29. okt 2026: energija, tutor, prijava i doživljaj
+
+Odluke iz poređenja sa Stride (Product Hunt), Notilo i Gizmo. Raspored po etapama je u ROADMAP.md (11b, 11c, Kasnije).
+
+### Energija dana (Etapa 11b)
+
+Brza akcija dana uz “Danas ne mogu” i “Imam samo 30 min”, jedan tap, bez postavke.
+
+- **Nemam energije.** Današnji kapacitet ~60% (`LOW_ENERGY_FACTOR`, kod). Prvo ostaju ponavljanja na redu, kartice i lakše jedinice (niža procijenjena težina), pa novo gradivo; blokovi kraći (predložak 25/5 za taj dan). Ostatak ide replanom od sutra uz postojeći limit rasta.
+- **Pun/a sam energije.** Povuče posao sa narednih dana do limita rasta (1.25×) i stavi najteže gradivo u prvi blok.
+- Energija je ulaz u `plan()` po datumu (`day_energy`: `low` / `normal` / `high`), dio `input_hash`. Važi samo za taj dan; ništa se ne pamti kao navika. Bilježi se uz blokove kao ML signal (Etapa 11a).
+
+### Ručno “Razumijem” (Etapa 11b)
+
+Danas “Razumijem” i “Ponovljeno” dolaze samo iz recall gatea (`UnitPage`, `levelAfter()`). Dodaje se ručna oznaka:
+
+- Tap na “Razumijem” nudi “Provjeri se” (recall gate, preporučeno) ili “Označi bez provjere” uz napomenu: “Iskrena ocjena drži plan tačnim. Ako precijeniš, plan će misliti da si spremnija/spremniji nego što jesi.”
+- Ručna oznaka postavi nivo 2 bez FSRS memorije i zakaže provjeru za `READ_CHECK_DAYS` (2) dana, kao “Pročitano”. Provjera je prvi pravi FSRS review; “Ne” vraća na nivo 1. “Ponovljeno” ostaje samo kroz provjere.
+- `units.level_source` (`gate` / `manual`) za kalibraciju samoprocjene (uvid “Kalibracija”, Etapa 11).
+
+### Pitanja iz zalijepljenog teksta (Etapa 11b)
+
+`recall-questions` (recall gate i kviz) prima i tekst: paste poglavlja ili odlomka uz sliku stranice i bilješke. Isti Zod izlaz, isti pregled.
+
+### Tekst izvora, sažetak i kartice (Etapa 11c)
+
+Zamjenjuje “Puni sadržaj materijala za asistenta” (Materijali, faza 3).
+
+- **Upload.** PDF izvora (s uređaja ili Drive) se čita na uređaju (`pdfText.ts`); u bazu ide samo tekst po jedinici prema rasponu stranica i embeddings po odlomku (`source_chunks`). Original se ne čuva (Supabase free 1 GB). Skenirani PDF bez teksta: poruka, OCR je Kasnije.
+- **Sažetak.** Po jedinici ili poglavlju, na zahtjev, keširan po hashu teksta. Kod deficita, za gradivo prioriteta 1–2, opcija “sažetak umjesto čitanja” uz manju procjenu vremena.
+- **Kartice iz gradiva.** AI predloži 5–15 kartica iz teksta jedinice, bilješki ili zalijepljenog teksta; pregled (zadrži / izmijeni / izbaci) pa postaju FSRS kartice jedinice (Etapa 9).
+- Tekst knjige je privatan sadržaj: ne ide na besplatne tierove (vidi Rotacija). Uslov: plaćeni model (Haiku) za ove zadatke.
+
+### AI tutor (Etapa 11c)
+
+Po uzoru na Notilo i Gizmo, ali nije poseban kutak: tutor je način učenja u postojećem toku.
+
+- **Ulazi.** Iz bloka (“Uči sa tutorom”), iz sesije (dugme uz timer) i sa jedinice. Asistent na Danas ostaje za plan i dokumente; razgovor o gradivu vodi tutor.
+- **Načini.** Objasni (iz teksta izvora, sa citatom stranice), Ispitaj me (pitanja iz ispitnih pitanja, kartica i teksta), Usmeni (tutor pita glasom, student odgovara glasom, tutor ocijeni), Feynman (student objasni, tutor nađe rupe).
+- **Veza sa FSRS-om.** Odgovori u Ispitaj me i Usmenom su recall: ocjena 0/1/2 ide u `review_logs` i `levelAfter()` kao u recall gateu. Tutor koristi isti izbor pitanja kao gate (jedinice na redu, slabe teme, obim ispita). Vrijeme sa tutorom je vrijeme sesije (segmenti, način `tutor`).
+- **Glas.** TTS i STT kroz edge funkciju (`voice`): ElevenLabs (bs i en; Scribe za STT) do free tiera (~10k znakova mjesečno, broji se iz `ai_runs`), pa Web Speech API iz preglednika. Ključ samo u Supabase secrets. Plaćeni plan tek uz Pretplatu.
+- Svaki poziv kroz `_shared/llm.ts`, Zod izlaz, `ai_runs` (i znakovi glasa).
+
+### Prijava (Etapa 11b)
+
+Problem: instalirana PWA na iOS-u ima svoju memoriju, pa se kod iz emaila traži nakon dodavanja na početni ekran.
+
+- **Email + lozinka** (Supabase): lozinka se postavi poslije prve prijave kodom; kod ostaje za prvu prijavu i zaboravljenu lozinku.
+- **Google** i **Apple** (Supabase OAuth). Provjeriti redirect u iOS PWA (ne smije završiti u Safariju). Apple traži Apple Developer Program ($99/god); ako ga nema, Apple ide uz Capacitor (App Store ga ionako traži uz druge društvene prijave).
+- **Passkey** (Face ID / Touch ID): ako Supabase ima podršku, ide u 11b; inače Kasnije.
+- Sesija se ne gasi sama (refresh token); odjava samo ručno.
+
+### Doživljaj (Etapa 11b)
+
+- **Toastovi i potvrde.** Jedan sistem toastova (uspjeh, greška, Poništi) za sve upise; dijalog potvrde samo za nepovratne radnje, ostalo toast Poništi.
+- **Čestitke (emotional design).** Završen blok, cijeli dan, “Ponovljeno”, položen ispit, sedmica u planu: kratka poruka, animacija prstena, vibracija gdje postoji. Bez maskote i ilustracija; bez kazne za propušteno.
+- **Učitavanje.** Skeleton po obliku ekrana umjesto spinnera; spinner samo u dugmetu; AI poslovi sa stanjem koraka.
+- **Landing stranica.** Javna `/` za neprijavljene: šta Hoot radi, snimci ekrana, “Počni”; Liquid Glass, bs i en. Mockup prije koda.
+- **Email šablon** prijave u novom izgledu (SETUP.md 3).
+
+### Rotacija besplatnih AI-eva (Etapa 11b)
+
+Kad provajder vrati 429 / kvotu, `_shared/llm.ts` prelazi na sljedeći u lancu (`LLM_CHAIN`, npr. Gemini Flash → Groq → OpenRouter free modeli), uz pamćenje iscrpljenih do reseta. Vlastiti lanac u wrapperu, bez LiteLLM proxyja (Python, treba hosting). Samo za zadatke sa javnim sadržajem (uvoz kalendara, rasporeda, plana i programa, web pretraga); privatni tekst (bilješke, refleksije, tekst knjige, tutor) ide samo na plaćeni model ili čeka. Svaki model iz lanca prolazi eval (`npm run eval`) prije uključivanja.
+
+### Kraj semestra i studijski program (Etapa 11b)
+
+- **Kraj semestra.** Kad prođe zadnji ispitni rok semestra, kartica na Danas: rezultati, prenos nepoloženih (postojeće), pa “Dodaj sljedeći semestar”: predmeti iz plana i programa ako postoje, inače uvoz. Mora raditi prije kraja zimskog semestra (januar 2027).
+- **Studijski program odjednom.** PDF, slika ili fakultet s interneta → sve godine i semestri sa predmetima (`academic_years`, predmeti bez ispita dok ne dođe njihov semestar); pregled prije snimanja; `parse-document` vrsta `study_program`.
+
+### MLOps (Etapa 11a)
+
+Modeli iz 11a su JSON artefakti sa verzijom. Dodaje se: GitHub Actions posao (ručno i mjesečno) koji izvozi podatke, trenira, pokreće backtest i simulator i otvara PR sa novim artefaktom samo ako nema pogoršanja u odnosu na `scripts/sim/baseline.json`; praćenje u radu (pokrivenost P80 trajanja, Brier odrađenosti, kalibracija FSRS-a po sedmici); vraćanje na prethodnu verziju artefakta jednim revertom.
+
+### v2 i Kasnije
+
+- **Social (v2).** Dijeljenje kartica (deck) i sesija sa prijateljima, prijatelj za odgovornost (vidi da li je drugi učio danas, bez detalja gradiva). Traži dijeljenje mimo owner-only RLS-a.
+- **Study with me (Kasnije).** Uz timer opcionalna lofi muzika ili “study with me” stream (YouTube embed); iOS PWA ne pušta zvuk u pozadini, pa radi dok je app otvoren.
 
 ## Tech stack
 
@@ -1808,10 +1898,13 @@ Sve je u prvoj verziji; ovo je samo redoslijed gradnje, tako da poslije svakog k
 10. **AI sadržaj i asistent.** Uvoz sadržaja, pitanja i rasporeda nastave, merge pri ponovnom uvozu, recall pitanja, embeddings bilješki, chat asistent, Moodle rokovi, Web Share Target, CSV kartica.
    - **10b. UX dorada i sigurnost (odluka, oktobar 2026).** Sticky gornji red, AI dugme kao ikona, meni (naziv vodi, chevron otvara), sheetovi sa povlačenjem, exam kartice po mockupu, swipe akcije, pretraga, teme boja, “Više vremena ovaj dan”, sigurnosno skeniranje u CI i RLS testovi.
    - **10c. Akademska struktura, materijali i podsjetnici.** Akademska godina i semestar, fakultet s interneta, plan i program, PDF i Google Drive, dan pred ispit, podsjetnici prije bloka i kašnjenje.
+   - **11a. ML temelj.** Signali, simulator, modeli trajanja i odrađenosti, lični FSRS, MLOps.
+   - **11b. Doživljaj, prijava i energija (29. okt 2026).** Toastovi, čestitke, skeletoni, landing, email šablon, prijava bez koda, energija dana, ručno “Razumijem”, pitanja iz teksta, rotacija besplatnih AI-eva, kraj semestra i studijski program.
 11. **Napredak.** Statistika, termini učenja, Monte Carlo prognoza spremnosti i procjena ocjene, spremnost dan prije ispita, strategist (pravila + LLM), sedmični check-in, uvidi i ritam sesije.
+   - **11c. Tekst izvora i AI tutor (29. okt 2026).** Upload teksta izvora, sažetak, kartice iz gradiva, tutor sa glasom vezan za FSRS.
 12. **Notifikacije i dorada.** Ostale notifikacije, ICS izvoz plana, izvoz podataka, pristupačnost, testovi end-to-end, eval suite u CI.
 
-Kasnije: read-only demo nalog sa seed podacima za portfolio; prstenovi i izazovi (v2), social (v2), tamni režim, puni sadržaj materijala za asistenta.
+Kasnije: read-only demo nalog sa seed podacima za portfolio; prstenovi i izazovi (v2), social sa dijeljenjem sesija i kartica (v2), tamni režim, study with me uz timer.
 
 **Odluke**
 
@@ -1871,3 +1964,9 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio; prstenovi i izazovi
 | Pomjeren blok | Način bloka Automatski / Fiksno (pomjeranje predloži Fiksno); Fiksno se bilo kad vraća na Automatski |
 | Današnji dan | Promjena dostupnosti, nastave ili zauzetosti preslaže vremena današnjih nezapočetih AI blokova; dodatni posao samo kroz karticu |
 | Start iz liste | Tap na blok → “Započeti sesiju sada?”; nazad u sesiji → Nastavi / Izađi / Završi ranije / Odbaci |
+| Energija dana | Nemam / pun/a energije jednim tapom; mijenja obim (~60% / do limita rasta) i sadržaj (lakše / teže prvo); ulaz u `plan()` (29. okt 2026) |
+| Ručno “Razumijem” | Dozvoljeno uz napomenu o iskrenosti; nivo 2 bez FSRS memorije, provjera za 2 dana; “Ponovljeno” samo kroz provjere |
+| AI tutor | Etapa 11c, prije v1.0; dio toka učenja (blok, sesija, jedinica), recall upisuje u FSRS; glas ElevenLabs free tier + Web Speech rezerva |
+| Tekst izvora | Samo tekst po jedinici + embeddings; PDF se ne čuva |
+| Prijava | Kod + lozinka, Google, Apple, passkey (Apple i passkey uz uslove) |
+| Besplatni AI | Lanac provajdera samo za javni sadržaj; privatni tekst samo na plaćeni model |
