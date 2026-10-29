@@ -1,5 +1,5 @@
 import { mergeSlots, subtractSlots, type Slot } from '@/lib/schedule'
-import { PART_RANGES, type SlotPart } from '@/lib/schedule/rhythm'
+import { PART_RANGES, partOf, type SlotPart } from '@/lib/schedule/rhythm'
 import {
   breakAfterBlock,
   breakMinAfter,
@@ -10,6 +10,7 @@ import {
   workMinAt,
   type Preset,
 } from '@/lib/session/timer'
+import { SLOT_GAP } from './constants'
 import type { BlockKind } from './types'
 
 /**
@@ -18,8 +19,9 @@ import type { BlockKind } from './types'
  * block is kept free before the next one. A block that does not fit is split into multiples of
  * the study interval; what fits nowhere is returned as unplaced. Free slots shorter than the
  * minimum block take only reviews (micro-blocks). First-pass and harder blocks get the better
- * slots (prior from onboarding until slot scores arrive in Stage 11); reviews and recaps take the
- * earliest time left. Fully deterministic.
+ * slots (the completion model's expected done share per part of the day, or the onboarding prior
+ * without it); reviews and recaps take the earliest time left. Fully deterministic: the one
+ * exploring block takes a posterior draw made outside.
  */
 
 export interface PlaceItem {
@@ -39,6 +41,13 @@ export interface PlaceDayInput {
   preset: Preset
   minBlockMinutes: number
   preferredParts: readonly SlotPart[]
+  /** Slot score per part of the day (completion model, cautious); replaces `preferredParts`. */
+  scores?: Record<SlotPart, number> | null
+  /**
+   * A posterior draw of the expected done share (Thompson): the first learning block of the day
+   * takes the start with the best draw among starts within `SLOT_GAP` of the best score.
+   */
+  explore?: Record<SlotPart, number> | null
   /** Nothing starts before this minute (today planned now). */
   notBefore?: number | null
   /** Nothing ends after this minute (the eve of an exam). */
@@ -88,18 +97,20 @@ export function maxStudyIn(preset: Preset, length: number): number {
   }
 }
 
-/** Score of a wall-clock minute: preferred parts of the day 1, others 0.6 (all 1 without a prior). */
-function minuteScore(minute: number, parts: readonly SlotPart[]): number {
-  if (parts.length === 0) return 1
-  return parts.some((p) => minute >= PART_RANGES[p].startMin && minute < PART_RANGES[p].endMin)
-    ? 1
-    : 0.6
+type Scores = Partial<Record<SlotPart, number>>
+
+/** Onboarding prior: preferred parts of the day 1, others 0.6 (all 1 without a prior). */
+function priorScores(parts: readonly SlotPart[]): Scores | null {
+  if (parts.length === 0) return null
+  return Object.fromEntries(
+    (Object.keys(PART_RANGES) as SlotPart[]).map((p) => [p, parts.includes(p) ? 1 : 0.6]),
+  )
 }
 
-function spanScore(start: number, minutes: number, parts: readonly SlotPart[]): number {
-  if (parts.length === 0 || minutes <= 0) return 1
+function spanScore(start: number, minutes: number, scores: Scores | null): number {
+  if (!scores || minutes <= 0) return 1
   let total = 0
-  for (let m = start; m < start + minutes; m += 5) total += minuteScore(m, parts)
+  for (let m = start; m < start + minutes; m += 5) total += scores[partOf(m)] ?? 0
   return total / Math.ceil(minutes / 5)
 }
 
@@ -121,29 +132,42 @@ interface Position {
   score: number
 }
 
-/** Best start for `minutes` of study: highest score, then earliest (reviews: earliest). */
+const better = (a: Position, b: Position | null) =>
+  !b || a.score > b.score + 1e-9 || (Math.abs(a.score - b.score) <= 1e-9 && a.start < b.start)
+
+/**
+ * Best start for `minutes` of study: the earliest one among starts whose score is within
+ * `SLOT_GAP` of the best (a smaller difference is noise, and an earlier start keeps the rest of
+ * the slot whole); reviews: earliest. Exploring: the best draw among those starts.
+ */
 function bestPosition(
   free: Slot[],
   minutes: number,
   kind: BlockKind,
   input: PlaceDayInput,
+  exploring = false,
 ): Position | null {
   const span = spanOf(input.preset, minutes)
-  let best: Position | null = null
+  const scores = input.scores ?? priorScores(input.preferredParts)
+  const all: Position[] = []
   for (const slot of free) {
     const length = slot.endMin - slot.startMin
     if (!isReview(kind) && length < input.minBlockMinutes) continue
-    for (const start of candidateStarts(slot, span)) {
-      const score = isReview(kind) ? 0 : spanScore(start, minutes, input.preferredParts)
-      if (
-        !best ||
-        score > best.score + 1e-9 ||
-        (Math.abs(score - best.score) <= 1e-9 && start < best.start)
-      )
-        best = { start, score }
-    }
+    for (const start of candidateStarts(slot, span))
+      all.push({ start, score: isReview(kind) ? 0 : spanScore(start, minutes, scores) })
   }
-  return best
+  if (all.length === 0) return null
+  const top = Math.max(...all.map((p) => p.score))
+  const near = all.filter((p) => p.score >= top - SLOT_GAP - 1e-9)
+  let best: Position | null = null
+  for (const p of near) if (!best || p.start < best.start) best = p
+  if (!exploring || !input.explore) return best
+  let pick: Position | null = null
+  for (const p of near) {
+    const drawn = { start: p.start, score: spanScore(p.start, minutes, input.explore) }
+    if (better(drawn, pick)) pick = drawn
+  }
+  return pick && { start: pick.start, score: spanScore(pick.start, minutes, scores) }
 }
 
 /** Largest part of a block that fits a free slot, rounded down to whole study intervals. */
@@ -242,6 +266,7 @@ export function placeTimes(items: PlaceItem[], input: PlaceDayInput): PlaceDayRe
     )
 
   const maxBlock = maxBlockOf(input.preset)
+  const explorer = order.find((i) => !i.manual && !isReview(i.kind))?.key
   for (const item of order) {
     let left = item.minutes
     let part = 0
@@ -250,7 +275,8 @@ export function placeTimes(items: PlaceItem[], input: PlaceDayInput): PlaceDayRe
       const want = Math.min(left, maxBlock)
       // The next part of a long block continues right after the previous one when it can.
       const next: Position | null = prevEnd === null ? null : followOn(free, prevEnd, want, input)
-      const whole: Position | null = next ?? bestPosition(free, want, item.kind, input)
+      const whole: Position | null =
+        next ?? bestPosition(free, want, item.kind, input, item.key === explorer && part === 0)
       const chunk: { start: number; minutes: number } | null = whole
         ? { start: whole.start, minutes: want }
         : bestChunk(free, want, item.kind, input)

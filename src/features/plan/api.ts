@@ -7,8 +7,11 @@ import { toSegment } from '@/features/session/model'
 import { useGlobalScale, useProfile } from '@/features/settings/profile'
 import { useDeadlines, useSubjects } from '@/features/subjects/api'
 import { rateOf, type AssessmentUnit, type SourceWithUnits } from '@/features/sources/model'
-import { addDays, localDay, type DayBoundary } from '@/lib/day'
+import { addDays, localDay, type DayBoundary, type LocalDate } from '@/lib/day'
 import { activeMs, MINUTE } from '@/lib/session/timer'
+import { fitCompletion } from '@/lib/slots/completion'
+import { completionExamples, type ExampleBlock, type ExampleSkip } from '@/lib/slots/examples'
+import { SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
 import { supabase } from '@/lib/supabase'
 import type { CardReview, PlanBlockRow, PlanInputs, SessionMinutes } from './state'
 
@@ -24,6 +27,9 @@ const topicLinksKey = (userId: string | undefined) => ['plan', userId, 'topics']
 export const questionLinksKey = (userId: string | undefined) =>
   ['plan', userId, 'question-links'] as const
 export const cardReviewsKey = (userId: string | undefined) => ['plan', userId, 'cards'] as const
+/** Under the blocks key, so every invalidation of the blocks refetches it too. */
+const completionKey = (userId: string | undefined) =>
+  [...planBlocksKey(userId), 'completion'] as const
 
 /** History window for ρ (14 days) plus a day of slack around the day boundary. */
 const HISTORY_DAYS = 15
@@ -129,6 +135,66 @@ export function usePlanBlocks(boundary: DayBoundary) {
   })
 }
 
+/** Blocks behind the completion model: three half-lives (`priors.json` halfLifeDays = 42). */
+const COMPLETION_DAYS = 126
+
+/** Labelled-block history of the completion model: AI blocks and "Preskoči" rows. */
+function useCompletionHistory(boundary: DayBoundary) {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: completionKey(userId),
+    enabled: Boolean(userId),
+    queryFn: async (): Promise<{
+      today: LocalDate
+      blocks: ExampleBlock[]
+      skips: ExampleSkip[]
+    }> => {
+      const today = localDay(new Date(), boundary)
+      const since = addDays(today, -COMPLETION_DAYS)
+      const [blocks, skips] = await Promise.all([
+        supabase
+          .from('plan_blocks')
+          .select(
+            'id, subject_id, on_date, kind, status, origin, plan_start_min, planned_start, day_load_min, days_to_goal, demand',
+          )
+          .eq('origin', 'ai')
+          .gte('on_date', since),
+        supabase
+          .from('block_skips')
+          .select('subject_id, on_date, kind, start_min, day_load_min, days_to_goal, demand')
+          .gte('on_date', since),
+      ])
+      if (blocks.error) throw blocks.error
+      if (skips.error) throw skips.error
+      return {
+        today,
+        blocks: blocks.data.map((b) => ({
+          id: b.id,
+          subjectId: b.subject_id,
+          onDate: b.on_date,
+          kind: b.kind,
+          status: b.status,
+          origin: b.origin,
+          planStartMin: b.plan_start_min,
+          plannedStart: b.planned_start,
+          dayLoadMin: b.day_load_min,
+          daysToGoal: b.days_to_goal,
+          demand: b.demand,
+        })),
+        skips: skips.data.map((x) => ({
+          subjectId: x.subject_id,
+          onDate: x.on_date,
+          kind: x.kind,
+          startMin: x.start_min,
+          dayLoadMin: x.day_load_min,
+          daysToGoal: x.days_to_goal,
+          demand: x.demand,
+        })),
+      }
+    },
+  })
+}
+
 export interface PlanRun {
   id: string
   input_hash: string
@@ -178,6 +244,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
   const questionLinks = useQuestionLinks().data
   const cards = useCardReviews().data
   const blocks = usePlanBlocks(boundary).data
+  const history = useCompletionHistory(boundary).data
   const sessionList = useSessions().data
   const scale = useGlobalScale()
   // A new object on every render would restart the replan debounce forever.
@@ -192,8 +259,27 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
   )
   const schedule = useScheduleData()
 
+  // The personal completion posterior (a few ms of Newton steps): refitted only when its blocks,
+  // sessions or the onboarding parts change.
+  const preferred = (profile?.preferred_slots ?? [])
+    .filter((p): p is SlotPart => (SLOT_PARTS as readonly string[]).includes(p))
+    .sort()
+    .join(',')
+  const completion = useMemo(() => {
+    if (!history || !sessionList) return null
+    const examples = completionExamples(
+      history.blocks,
+      history.skips,
+      sessionList.map((s) => ({ blockId: s.block_id, startedAt: s.started_at })),
+      history.today,
+    )
+    const parts = preferred ? (preferred.split(',') as SlotPart[]) : []
+    return fitCompletion(examples, history.today, parts)
+  }, [history, sessionList, preferred])
+
   return useMemo(() => {
     if (
+      !completion ||
       !profile ||
       !subjects ||
       !deadlines ||
@@ -227,10 +313,12 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       logs: schedule.logRows,
       blocks,
       sessions,
+      completion,
       globalScale,
       dayInput: schedule.dayInput,
     }
   }, [
+    completion,
     profile,
     subjects,
     deadlines,

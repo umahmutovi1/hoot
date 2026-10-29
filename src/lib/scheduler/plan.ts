@@ -1,6 +1,7 @@
-import { addDays, diffDays, type LocalDate } from '@/lib/day'
+import { addDays, diffDays, weekdayOf, type LocalDate } from '@/lib/day'
 import { retrievabilityOn } from '@/lib/srs'
-import { slotMinutes } from '@/lib/schedule'
+import { slotMinutes, type Slot } from '@/lib/schedule'
+import { PART_RANGES, SLOT_PARTS } from '@/lib/schedule/rhythm'
 import { planIntervalMin } from '@/lib/session/timer'
 import {
   BOOST_WEIGHT,
@@ -9,6 +10,8 @@ import {
   priorityRule,
   RECAP_MINUTES,
   RESERVE,
+  RHO_MAX,
+  RHO_MIN,
   reviewMinutes,
   TARGET_MARGIN,
   workShare,
@@ -110,14 +113,51 @@ export function coverageOf(subject: PlanSubject): number {
   return Math.max(own, Math.min(1, subject.requiredShare + TARGET_MARGIN))
 }
 
-/** AI minutes a day can take: min(free, cap) × ρ × reserve, minus fixed blocks of that day. */
+export const isWeekendDay = (date: LocalDate) => weekdayOf(date) >= 5
+
+/** Expected done share of a day's free time by the completion model (minute-weighted); null without it. */
+function slotShare(state: PlanState, date: LocalDate, slots: Slot[]): number | null {
+  const table = state.slotCompletion?.[isWeekendDay(date) ? 'weekend' : 'weekday']
+  if (!table) return null
+  let minutes = 0
+  let done = 0
+  for (const s of slots)
+    for (const part of SLOT_PARTS) {
+      const r = PART_RANGES[part]
+      const m = Math.max(0, Math.min(s.endMin, r.endMin) - Math.max(s.startMin, r.startMin))
+      minutes += m
+      done += m * table[part]
+    }
+  return minutes > 0 ? done / minutes : null
+}
+
+/**
+ * Done share each planned day is expected to realize: ρ, shaped per day by the completion model
+ * (a day of better slots gets more, a day of worse ones less, the mean over the horizon stays ρ),
+ * clamped as ρ is.
+ */
+export function dayRealization(state: PlanState): number[] {
+  const shares = state.days.map((d) => slotShare(state, d.date, d.slots))
+  const known = shares.filter((x): x is number => x !== null)
+  if (known.length === 0) return state.days.map(() => state.rho)
+  const mean = known.reduce((s, x) => s + x, 0) / known.length
+  return shares.map((x) =>
+    x === null ? state.rho : Math.min(RHO_MAX, Math.max(RHO_MIN, (state.rho * x) / mean)),
+  )
+}
+
+/**
+ * AI minutes a day can take: min(free, cap) × expected done share × reserve, minus fixed blocks
+ * of that day. The share is ρ, or per slot from the completion model (`dayRealization()`).
+ */
 export function aiCapacity(state: PlanState): number[] {
   const fixedOn = new Map<LocalDate, number>()
   for (const b of state.fixed) fixedOn.set(b.onDate, (fixedOn.get(b.onDate) ?? 0) + b.minutes)
-  return state.days.map((d) =>
+  const share = dayRealization(state)
+  return state.days.map((d, k) =>
     Math.max(
       0,
-      Math.floor(Math.min(slotMinutes(d.slots), d.cap) * state.rho * RESERVE) -
+      Math.floor(Math.min(slotMinutes(d.slots), d.cap) * share[k]! * RESERVE) -
         (fixedOn.get(d.date) ?? 0),
     ),
   )
@@ -819,6 +859,8 @@ function run(
       preset,
       minBlockMinutes: minBlock,
       preferredParts: state.preferredParts,
+      scores: state.slotScores?.[isWeekendDay(d) ? 'weekend' : 'weekday'] ?? null,
+      explore: state.explore?.find((e) => e.date === d)?.scores ?? null,
       notBefore: k === 0 ? state.nowMin : null,
       endBy: examEve ? settings.examEveEndMin : null,
     })

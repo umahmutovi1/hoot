@@ -1,6 +1,7 @@
 {
   "seeds": 100,
   "estimator": "old",
+  "slots": "off",
   "student": {
     "base": 1.6,
     "part": {
@@ -36,12 +37,12 @@
     "unmarkedDoneP": 0.08
   },
   "summary": {
-    "examScore": 0.556,
-    "deficitMin": 623.556,
-    "missedShare": 0.305,
-    "planChurn": 0.136,
-    "loadSd": 31.721,
-    "completionAvoided": 0.531,
+    "examScore": 0.54,
+    "deficitMin": 671.523,
+    "missedShare": 0.307,
+    "planChurn": 0.143,
+    "loadSd": 30.642,
+    "completionAvoided": 0.523,
     "completionNeutral": 0.765
   }
 }
