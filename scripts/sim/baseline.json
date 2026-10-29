@@ -1,5 +1,5 @@
 {
-  "seeds": 30,
+  "seeds": 100,
   "student": {
     "base": 1.6,
     "part": {
@@ -33,12 +33,12 @@
     "unmarkedDoneP": 0.08
   },
   "summary": {
-    "examScore": 0.529,
-    "deficitMin": 433.049,
+    "examScore": 0.496,
+    "deficitMin": 459.187,
     "missedShare": 0.309,
-    "planChurn": 0.153,
-    "loadSd": 37.446,
-    "completionAvoided": 0.514,
-    "completionNeutral": 0.77
+    "planChurn": 0.15,
+    "loadSd": 36.071,
+    "completionAvoided": 0.52,
+    "completionNeutral": 0.768
   }
 }

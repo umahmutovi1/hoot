@@ -599,9 +599,16 @@ function run(
         }
         urgency.set(sid, u * weightOf(subject))
       }
+      const must = optional ? new Map<string, number>() : mustToday(k)
       const top: [string, number][] = []
       let room = settings.maxSubjectsPerDay - chosen.size
-      for (const entry of [...urgency].sort(([a, ua], [b, ub]) => ub - ua || (a < b ? -1 : 1))) {
+      const order = [...urgency].sort(
+        ([a, ua], [b, ub]) =>
+          Number((must.get(b) ?? 0) > 0) - Number((must.get(a) ?? 0) > 0) ||
+          ub - ua ||
+          (a < b ? -1 : 1),
+      )
+      for (const entry of order) {
         if (chosen.has(entry[0])) top.push(entry)
         else if (room > 0) {
           top.push(entry)
@@ -640,6 +647,34 @@ function run(
         shares.set(sid, s + add)
         freed -= add
       }
+      // EDF guard: a subject gets at least what must be done today for the rest to still fit,
+      // taken from unused minutes first, then from the least urgent subjects' extra.
+      let spare = L - [...shares.values()].reduce((a, b) => a + b, 0)
+      for (const [sid] of top) {
+        const floor = Math.min(must.get(sid) ?? 0, poolMinutes(sid))
+        let lack = floor - shares.get(sid)!
+        if (lack <= 0) continue
+        // Unused minutes only as a piece the day would keep (whole block or the subject's end).
+        let gained = Math.min(lack, Math.max(0, spare))
+        if (gained < minBlock && shares.get(sid)! + gained < poolMinutes(sid)) gained = 0
+        spare -= gained
+        lack -= gained
+        for (const [other] of [...top].reverse()) {
+          if (lack <= 0) break
+          const own = shares.get(other)!
+          const extra = own - (must.get(other) ?? 0)
+          if (other === sid || extra <= 0) continue
+          let give = Math.min(lack, extra)
+          // A remainder below the minimum block is dropped, not left as a sliver.
+          if (own - give > 0 && own - give < minBlock && extra === own) give = own
+          shares.set(other, own - give)
+          const taken = Math.min(give, lack)
+          lack -= taken
+          gained += taken
+          spare += give - taken
+        }
+        shares.set(sid, shares.get(sid)! + gained)
+      }
       for (const [sid] of top) {
         let share = shares.get(sid)!
         if (share <= 0) continue
@@ -663,6 +698,45 @@ function run(
         }
         L += share
       }
+    }
+    /**
+     * Required minutes each subject must get today so that its goals still fit the later days
+     * (ROADMAP 11a feasibility): later days are filled backwards, latest goal first, and what
+     * does not fit is today's floor. Reviews and buffers of later days are not known here.
+     */
+    const mustToday = (k: number): Map<string, number> => {
+      const open = new Map<string, { sid: string; left: number; first: number; last: number }>()
+      for (const w of works) {
+        const left = w.left - picked(w)
+        if (w.optional || left <= 0 || !eligible(w, d)) continue
+        const g = open.get(w.goal.id)
+        if (g) g.left += left
+        else {
+          const start = startOf(w)
+          open.set(w.goal.id, {
+            sid: w.subjectId,
+            left,
+            first: start ? (dayIndex.get(start) ?? 0) : 0,
+            last: (dayIndex.get(learnEnd.get(w.goal.id)!) ?? state.days.length) - 1,
+          })
+        }
+      }
+      const list = [...open.entries()].sort(([a, x], [b, y]) => y.last - x.last || (a < b ? -1 : 1))
+      for (let j = state.days.length - 1; j > k; j--) {
+        let room = effCap[j]!
+        for (const [, g] of list) {
+          if (room <= 0) break
+          if (g.left <= 0 || g.last < j || g.first > j || blockedFor(state.days[j]!.date, g.sid))
+            continue
+          const take = Math.min(room, g.left)
+          g.left -= take
+          room -= take
+        }
+      }
+      const out = new Map<string, number>()
+      for (const [, g] of list)
+        if (g.left > 0) out.set(g.sid, (out.get(g.sid) ?? 0) + Math.ceil(g.left))
+      return out
     }
     const picked = (w: Work) =>
       drafts.reduce(
