@@ -34,7 +34,7 @@ interface Card {
   faded: boolean
   strike: boolean
   lock: boolean
-  /** The expanded card's button: Uredi (block), Detalji (class), Šta je ovo? (busy). */
+  /** The expanded card's button: Uredi (block), Detalji (class), Promijeni vrstu (busy). */
   action: { label: string; icon?: ReactNode; run: () => void } | null
 }
 
@@ -42,7 +42,7 @@ interface Card {
  * One day on a time axis (day-view inspiration, Satnica grid): the whole day 00–24 like the iOS
  * calendar, 52 px per hour, cards in the subject's colors, overlapping items side by side, a line at
  * the current time. It opens scrolled to now, the first block or 08:00. A tap expands a card to
- * the full width with all its details and one action (Uredi, Detalji, Šta je ovo?).
+ * the full width with all its details and one action (Uredi, Detalji, Promijeni vrstu).
  */
 /** A plan block on the axis: its subject's color, done ticked, manual with a lock. */
 export interface DayBlock {
@@ -192,7 +192,7 @@ export function DayTimeline({
       faded: e.ignored,
       strike: e.ignored,
       lock: false,
-      action: onPickBusy ? { label: t('feeds.kindOf.title'), run: () => onPickBusy(e) } : null,
+      action: onPickBusy ? { label: t('feeds.kindOf.change'), run: () => onPickBusy(e) } : null,
     })),
   ]
 

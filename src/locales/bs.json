@@ -1843,7 +1843,7 @@
       "deadlines": "Prepoznala sam Moodle: događaji su rokovi koje ti nudim za uvoz, ne zauzeto vrijeme."
     },
     "kindOf": {
-      "title": "Šta je ovo?",
+      "title": "Vrsta događaja",
       "busy": "Zauzeto",
       "lecture": "Nastava",
       "exam": "Ispit",
@@ -1856,7 +1856,8 @@
         "deadline": "Rok ne zauzima vrijeme; nudim ga za uvoz u rokove.",
         "free": "Samo se prikazuje, vrijeme je slobodno."
       },
-      "byAi": "procjena AI-ja"
+      "byAi": "procjena AI-ja",
+      "change": "Promijeni vrstu"
     }
   },
   "onboarding": {

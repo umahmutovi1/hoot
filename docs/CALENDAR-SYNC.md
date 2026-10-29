@@ -76,7 +76,7 @@ Odluka pri implementaciji: pravila se ne spremaju, nego se računaju u app-u (`s
 - Šalje samo naslov, trajanje i dan u sedmici, najviše 50 događaja po pozivu, samo neklasifikovane.
 - Svaki poziv ide u `ai_runs` (`classify_events`) i u AI limit. Feed „samo zauzeto“ se nikad ne šalje.
 
-**Gdje se mijenja.** Tap na zauzet događaj (Plan → Dan, Dostupnost) otvara „Šta je ovo?“: Zauzeto / Nastava / Ispit / Rok / Slobodno. `EventClassifier` šalje AI-ju samo događaje u sljedećih 60 dana, svaki jednom po pokretanju app-a; kad AI limit istekne, staje do sljedećeg pokretanja.
+**Gdje se mijenja.** Tap na zauzet događaj (Plan → Dan, Dostupnost) otvara „Vrsta događaja“: Zauzeto / Nastava / Ispit / Rok / Slobodno. `EventClassifier` šalje AI-ju samo događaje u sljedećih 60 dana, svaki jednom po pokretanju app-a; kad AI limit istekne, staje do sljedećeg pokretanja.
 
 **Uticaj na plan.**
 - `eventBlocks()` blokira `busy`, `lecture` i `exam`. `deadline` i `free` ne blokiraju.

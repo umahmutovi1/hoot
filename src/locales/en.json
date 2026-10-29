@@ -1793,7 +1793,7 @@
       "deadlines": "Recognized as Moodle: events are due dates offered for import, not busy time."
     },
     "kindOf": {
-      "title": "What is this?",
+      "title": "Event type",
       "busy": "Busy",
       "lecture": "Class",
       "exam": "Exam",
@@ -1806,7 +1806,8 @@
         "deadline": "A due date takes no time; it is offered as a deadline.",
         "free": "Only shown, the time stays free."
       },
-      "byAi": "AI's guess"
+      "byAi": "AI's guess",
+      "change": "Change type"
     }
   },
   "onboarding": {

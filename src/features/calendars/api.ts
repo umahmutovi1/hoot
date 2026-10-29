@@ -237,7 +237,7 @@ export function useIgnoreEvent() {
   })
 }
 
-/** "Šta je ovo?" on an event: the user's kind, which neither sync nor the AI overwrites. */
+/** "Vrsta događaja" on an event: the user's kind, which neither sync nor the AI overwrites. */
 export function useSetEventKind() {
   const userId = useUserId()
   const queryClient = useQueryClient()
