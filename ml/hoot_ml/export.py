@@ -1,12 +1,18 @@
 """Export the signed-in user's data to parquet (RESEARCH-ML 4).
 
-Reads through the Data API as the user, so RLS decides what comes back: no service-role key.
-Only listed columns leave the database and none of them is free text (titles, names, notes,
-answers, reflections); `plan_blocks.reason` is reduced to its code.
+Reads as the user, so RLS decides what comes back: no service-role key. Only listed columns
+leave the database and none of them is free text (titles, names, notes, answers, reflections);
+`plan_blocks.reason` is reduced to its code.
 
     HOOT_ACCESS_TOKEN=... uv run python -m hoot_ml.export [--out data]
 
 `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` fall back to the app's `VITE_*` values.
+
+In CI (`train.yml`) there is no browser session: `--db` connects with `SUPABASE_DB_URL`, switches
+to the `authenticated` role and sets the JWT claim `sub` to `HOOT_USER_ID`, so the same RLS
+policies as in the app decide the rows, and the same column lists apply.
+
+    SUPABASE_DB_URL=... HOOT_USER_ID=... uv run python -m hoot_ml.export --db
 """
 
 from __future__ import annotations
@@ -14,8 +20,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from collections.abc import Callable, Iterator
+from datetime import date, datetime
+from decimal import Decimal
 from pathlib import Path
+from uuid import UUID
 
 import httpx
 import pandas as pd
@@ -273,6 +283,55 @@ def http_fetch(url: str, key: str, token: str) -> Fetch:
     return fetch
 
 
+def plain(value):
+    """A database value as the Data API returns it (JSON types), so both paths give the same
+    frames: ids and dates as strings, numerics as floats."""
+    if isinstance(value, UUID):
+        return str(value)
+    if isinstance(value, Decimal):
+        return float(value)
+    if isinstance(value, datetime | date):
+        return value.isoformat()
+    return value
+
+
+def db_query(table: str, params: dict[str, str], headers: dict[str, str]):
+    """The SQL for one Data API page request (only whitelisted tables and columns)."""
+    from psycopg import sql
+
+    columns = params["select"].split(",")
+    if table not in TABLES or any(c not in TABLES[table] for c in columns):
+        raise ValueError(f"{table}: not in the export whitelist")
+    order = params["order"].split(",")
+    first, last = (int(x) for x in re.fullmatch(r"(\d+)-(\d+)", headers["Range"]).groups())
+    return sql.SQL("select {} from public.{} order by {} limit {} offset {}").format(
+        sql.SQL(", ").join(map(sql.Identifier, columns)),
+        sql.Identifier(table),
+        sql.SQL(", ").join(map(sql.Identifier, order)),
+        sql.Literal(last - first + 1),
+        sql.Literal(first),
+    )
+
+
+def db_fetch(db_url: str, user_id: str) -> Fetch:
+    """Postgres as the user: role `authenticated` and JWT claims with `sub`, as PostgREST does."""
+    import psycopg
+
+    UUID(user_id)  # fail early on a wrong secret
+    conn = psycopg.connect(db_url, autocommit=True)
+    conn.execute("set role authenticated")
+    claims = json.dumps({"sub": user_id, "role": "authenticated"})
+    conn.execute("select set_config('request.jwt.claims', %s, false)", (claims,))
+    conn.execute("select set_config('request.jwt.claim.sub', %s, false)", (user_id,))
+
+    def fetch(table: str, params: dict[str, str], headers: dict[str, str]) -> list[dict]:
+        cur = conn.execute(db_query(table, params, headers))
+        names = [d.name for d in cur.description]
+        return [{n: plain(v) for n, v in zip(names, row, strict=True)} for row in cur]
+
+    return fetch
+
+
 def export(fetch: Fetch, out: Path) -> dict[str, int]:
     out.mkdir(parents=True, exist_ok=True)
     counts: dict[str, int] = {}
@@ -293,12 +352,16 @@ def env(*names: str) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--out", type=Path, default=Path(__file__).parents[1] / "data")
+    parser.add_argument("--db", action="store_true", help="SUPABASE_DB_URL + HOOT_USER_ID (CI)")
     args = parser.parse_args()
-    fetch = http_fetch(
-        env("SUPABASE_URL", "VITE_SUPABASE_URL"),
-        env("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY"),
-        env("HOOT_ACCESS_TOKEN"),
-    )
+    if args.db:
+        fetch = db_fetch(env("SUPABASE_DB_URL"), env("HOOT_USER_ID"))
+    else:
+        fetch = http_fetch(
+            env("SUPABASE_URL", "VITE_SUPABASE_URL"),
+            env("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY"),
+            env("HOOT_ACCESS_TOKEN"),
+        )
     for table, n in export(fetch, args.out).items():
         print(f"{table:20} {n:6}")
 

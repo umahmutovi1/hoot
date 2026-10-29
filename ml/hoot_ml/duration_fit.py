@@ -98,15 +98,14 @@ class Backtest:
     coverage_p80: float
 
 
-def backtest(samples: pd.DataFrame, p: Priors | None = None) -> Backtest:
+def predictions(samples: pd.DataFrame, p: Priors | None = None) -> pd.DataFrame:
     """Time-ordered: each sample is predicted from the samples before it (its source's mean and
-    count, the user's other sources), by the model and by the old k/(k+5) blend."""
+    count, the user's other sources), by the model and by the old k/(k+5) blend. One row per
+    sample: when, absolute log errors and whether it fell under the unit P80."""
     p = p or load_priors()
     seen: dict[str, list[float]] = {}
     meta: dict[str, tuple[str, float]] = {}
-    err_model: list[float] = []
-    err_old: list[float] = []
-    covered: list[bool] = []
+    rows = []
     for row in samples.itertuples():
         meta[row.source_id] = (row.kind, row.base)
 
@@ -120,17 +119,27 @@ def backtest(samples: pd.DataFrame, p: Priors | None = None) -> Backtest:
         others = [stats(sid) for sid in meta if sid != row.source_id]
         rate = source_rate(own, others, p)
         actual = math.log(row.rate)
-        # The log-scale point estimate is the median.
-        err_model.append(abs(actual - math.log(rate.p50)))
-        err_old.append(abs(actual - math.log(old_blend(row.base, own.learned, own.samples))))
-        covered.append(row.rate <= rate.unit_p80)
+        rows.append(
+            {
+                "at": row.at,
+                # The log-scale point estimate is the median.
+                "err_model": abs(actual - math.log(rate.p50)),
+                "err_old": abs(actual - math.log(old_blend(row.base, own.learned, own.samples))),
+                "covered": row.rate <= rate.unit_p80,
+            }
+        )
         seen.setdefault(row.source_id, []).append(row.rate)
-    n = len(err_model)
+    return pd.DataFrame(rows, columns=["at", "err_model", "err_old", "covered"])
+
+
+def backtest(samples: pd.DataFrame, p: Priors | None = None) -> Backtest:
+    pred = predictions(samples, p)
+    n = len(pred)
     return Backtest(
         n=n,
-        mae_model=float(np.mean(err_model)) if n else math.nan,
-        mae_old=float(np.mean(err_old)) if n else math.nan,
-        coverage_p80=float(np.mean(covered)) if n else math.nan,
+        mae_model=float(pred["err_model"].mean()) if n else math.nan,
+        mae_old=float(pred["err_old"].mean()) if n else math.nan,
+        coverage_p80=float(pred["covered"].mean()) if n else math.nan,
     )
 
 

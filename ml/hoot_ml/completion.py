@@ -169,7 +169,7 @@ def fit(
     z = x @ theta
     loglik = float(np.sum(w * (y * z - np.logaddexp(0, z))))
     logprior = float(-0.5 * np.sum(prec * (theta - m) ** 2) + 0.5 * np.sum(np.log(prec)))
-    _, logdet = np.linalg.slogdet(h)
+    logdet = 2 * float(np.sum(np.log(np.diag(np.linalg.cholesky(h)))))
     evidence = loglik + logprior - 0.5 * logdet
     sw: dict[str, float] = {}
     for e, wi in zip(examples, w, strict=True):

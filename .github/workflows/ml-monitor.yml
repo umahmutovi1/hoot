@@ -1,0 +1,35 @@
+name: ml-monitor
+
+# Weekly monitoring of the Stage 11a models (PRD "Dopune" → MLOps): P80 coverage of durations,
+# Brier score of block completion and FSRS calibration per week, in the run summary.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ml
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: dev
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: ml/uv.lock
+      - run: uv sync --locked --no-default-groups --group dev
+      - name: Export
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          HOOT_USER_ID: ${{ secrets.HOOT_USER_ID }}
+        run: uv run --no-sync python -m hoot_ml.export --db
+      - run: uv run --no-sync python -m hoot_ml.monitor --report monitor.md
+      - run: cat monitor.md >> "$GITHUB_STEP_SUMMARY"
