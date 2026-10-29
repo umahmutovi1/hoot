@@ -65,6 +65,8 @@ export type OwlMessage =
       citations: Citation[]
       stateRefs: StateRef[]
       action?: OwlAction
+      /** Still being written (streamed); not saved to the history until it ends. */
+      streaming?: boolean
     }
   | {
       id: string
@@ -147,7 +149,7 @@ function titleOf(m: OwlMessage) {
 }
 
 function saveMessage(conversationId: string, m: OwlMessage) {
-  if (m.type === 'pending') return
+  if (m.type === 'pending' || (m.type === 'answer' && m.streaming)) return
   enqueue(() =>
     supabase.from('owl_messages').upsert({
       id: m.id,
@@ -224,7 +226,10 @@ export const useOwlStore = create<OwlState>()(
       partialize: (s) => ({
         userId: s.userId,
         conversationId: s.conversationId,
-        messages: s.messages.filter((m) => m.type !== 'pending'),
+        // A reply still pending or being written would never finish after a reload.
+        messages: s.messages.filter(
+          (m) => m.type !== 'pending' && !(m.type === 'answer' && m.streaming),
+        ),
       }),
       // Stage 6 kept one device-only chat per day; it is not in the database, start fresh.
       migrate: () => ({ userId: null, conversationId: null, messages: [] }),

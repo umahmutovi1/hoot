@@ -163,43 +163,95 @@ export function geminiProvider({
     return name
   }
 
+  /**
+   * One call with the primary model and, when it is busy or out of quota, the fallback one; a
+   * cache that is gone falls back to the full prompt, a 500/503 is tried once more.
+   */
+  async function call(
+    req: LlmRequest<unknown>,
+    method: 'generateContent' | 'streamGenerateContent?alt=sse',
+    read: (res: Response, m: string) => Promise<LlmRawResult>,
+  ): Promise<LlmRawResult> {
+    const post = (m: string, cacheName?: string) =>
+      doFetch(`${API}/models/${encodeURIComponent(m)}:${method}`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(buildGeminiBody(m, req, cacheName)),
+      })
+    const models = fallbackModel && fallbackModel !== model ? [model, fallbackModel] : [model]
+    let busy: LlmError | null = null
+    for (const m of models) {
+      // Caches belong to one model; only the primary one uses it (never with web search).
+      const cacheName = m === model && !req.webSearch ? await cacheFor(m, req) : null
+      let res = await post(m, cacheName ?? undefined)
+      if (cacheName && res.status >= 400 && res.status < 500 && res.status !== 429) {
+        // A cache that expired or was dropped early: send the full prompt instead.
+        res = await post(m)
+      }
+      if (RETRY_STATUSES.has(res.status)) {
+        await sleep(RETRY_DELAY_MS)
+        res = await post(m)
+      }
+      if (res.ok) return { ...(await read(res, m)), model: m }
+      if (res.status === 429 || RETRY_STATUSES.has(res.status)) {
+        busy = await busyError(res)
+        continue
+      }
+      const detail = (await res.text()).slice(0, 300)
+      throw new LlmError('failed', `gemini ${res.status}: ${detail}`)
+    }
+    throw busy ?? new ProviderBusyError('gemini')
+  }
+
   return {
     name: 'gemini',
     model,
-    async generate(req) {
-      const call = (m: string, cacheName?: string) =>
-        doFetch(`${API}/models/${encodeURIComponent(m)}:generateContent`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(buildGeminiBody(m, req, cacheName)),
-        })
-      const models = fallbackModel && fallbackModel !== model ? [model, fallbackModel] : [model]
-      let busy: LlmError | null = null
-      for (const m of models) {
-        // Caches belong to one model; only the primary one uses it (never with web search).
-        const cacheName = m === model && !req.webSearch ? await cacheFor(m, req) : null
-        let res = await call(m, cacheName ?? undefined)
-        if (cacheName && res.status >= 400 && res.status < 500 && res.status !== 429) {
-          // A cache that expired or was dropped early: send the full prompt instead.
-          res = await call(m)
-        }
-        if (RETRY_STATUSES.has(res.status)) {
-          await sleep(RETRY_DELAY_MS)
-          res = await call(m)
-        }
-        if (res.ok)
-          return {
-            ...readGeminiResponse((await res.json()) as GeminiResponse, Boolean(req.webSearch)),
-            model: m,
-          }
-        if (res.status === 429 || RETRY_STATUSES.has(res.status)) {
-          busy = await busyError(res)
-          continue
-        }
-        const detail = (await res.text()).slice(0, 300)
-        throw new LlmError('failed', `gemini ${res.status}: ${detail}`)
-      }
-      throw busy ?? new ProviderBusyError('gemini')
-    },
+    generate: (req) =>
+      call(req, 'generateContent', async (res) =>
+        readGeminiResponse((await res.json()) as GeminiResponse, Boolean(req.webSearch)),
+      ),
+    stream: (req, onText) =>
+      call(req, 'streamGenerateContent?alt=sse', async (res) => {
+        const whole = await readGeminiStream(res, onText)
+        return readGeminiResponse(whole, Boolean(req.webSearch))
+      }),
+  }
+}
+
+/**
+ * Server-sent events of streamGenerateContent: each `data:` line is a response with the next
+ * piece of text; the last one carries the usage. Returns them joined as one response.
+ */
+export async function readGeminiStream(
+  res: Response,
+  onText: (delta: string) => void,
+): Promise<GeminiResponse> {
+  const reader = res.body!.pipeThrough(new TextDecoderStream()).getReader()
+  let buffer = ''
+  let text = ''
+  let last: GeminiResponse = {}
+  const take = (line: string) => {
+    if (!line.startsWith('data:')) return
+    const chunk = JSON.parse(line.slice(5).trim()) as GeminiResponse
+    const delta = (chunk.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? '').join('')
+    if (delta) {
+      text += delta
+      onText(delta)
+    }
+    last = chunk
+  }
+  for (;;) {
+    const { value, done } = await reader.read()
+    if (done) break
+    buffer += value
+    const lines = buffer.split(/\r?\n/)
+    buffer = lines.pop() ?? ''
+    for (const line of lines) take(line)
+  }
+  take(buffer)
+  const candidate = last.candidates?.[0]
+  return {
+    ...last,
+    candidates: [{ ...candidate, content: { parts: [{ text }] } }],
   }
 }

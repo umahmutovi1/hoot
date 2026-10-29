@@ -59,72 +59,84 @@ export interface AnthropicConfig {
   model: string
 }
 
+/** Rate limits and overload are "busy"; other API errors are failures with their status. */
+function mapError(err: unknown): unknown {
+  if (err instanceof Anthropic.RateLimitError || err instanceof Anthropic.InternalServerError)
+    return new ProviderBusyError(`anthropic ${err.status}`)
+  if (err instanceof Anthropic.APIError)
+    return new LlmError('failed', `anthropic ${err.status}: ${err.message}`.slice(0, 300))
+  return err
+}
+
+/** System, prefix (cache breakpoints), files and text, and the structured output format. */
+function params(model: string, req: LlmRequest<unknown>) {
+  // The stable prefix comes first with a cache breakpoint, so system + prefix are reused
+  // across calls (Anthropic ignores breakpoints below its minimum prefix length).
+  const content: Anthropic.ContentBlockParam[] = req.prefix
+    ? [{ type: 'text', text: req.prefix, cache_control: { type: 'ephemeral' } }]
+    : []
+  const files: Anthropic.ContentBlockParam[] = (req.files ?? []).map((f) =>
+    f.mediaType === 'application/pdf'
+      ? {
+          type: 'document',
+          source: { type: 'base64', media_type: 'application/pdf', data: f.base64 },
+        }
+      : { type: 'image', source: { type: 'base64', media_type: f.mediaType, data: f.base64 } },
+  )
+  content.push(...files, { type: 'text', text: req.text })
+  return {
+    model,
+    max_tokens: req.maxTokens,
+    system: [
+      { type: 'text' as const, text: req.system, cache_control: { type: 'ephemeral' as const } },
+    ],
+    messages: [{ role: 'user' as const, content }],
+    // Extraction and short answers: low effort keeps thinking (and cost) small.
+    output_config: { effort: 'low' as const, format: zodOutputFormat(req.schema) },
+  }
+}
+
+function usageOf(usage: Anthropic.Usage) {
+  return {
+    // input_tokens excludes cached tokens; count all of them like Gemini does.
+    inputTokens:
+      usage.input_tokens +
+      (usage.cache_read_input_tokens ?? 0) +
+      (usage.cache_creation_input_tokens ?? 0),
+    outputTokens: usage.output_tokens,
+    cachedTokens: usage.cache_read_input_tokens ?? 0,
+  }
+}
+
 export function anthropicProvider({ apiKey, model }: AnthropicConfig): LlmProvider {
   const client = new Anthropic({ apiKey, maxRetries: 1 })
   return {
     name: 'anthropic',
     model,
     async generate(req) {
-      if (req.webSearch) {
-        try {
-          return await withWebSearch(client, model, req)
-        } catch (err) {
-          if (
-            err instanceof Anthropic.RateLimitError ||
-            err instanceof Anthropic.InternalServerError
-          )
-            throw new ProviderBusyError(`anthropic ${err.status}`)
-          if (err instanceof Anthropic.APIError)
-            throw new LlmError('failed', `anthropic ${err.status}: ${err.message}`.slice(0, 300))
-          throw err
-        }
-      }
-      // The stable prefix comes first with a cache breakpoint, so system + prefix are reused
-      // across calls (Anthropic ignores breakpoints below its minimum prefix length).
-      const content: Anthropic.ContentBlockParam[] = req.prefix
-        ? [{ type: 'text', text: req.prefix, cache_control: { type: 'ephemeral' } }]
-        : []
-      const files: Anthropic.ContentBlockParam[] = (req.files ?? []).map((f) =>
-        f.mediaType === 'application/pdf'
-          ? {
-              type: 'document',
-              source: { type: 'base64', media_type: 'application/pdf', data: f.base64 },
-            }
-          : { type: 'image', source: { type: 'base64', media_type: f.mediaType, data: f.base64 } },
-      )
-      content.push(...files, { type: 'text', text: req.text })
       try {
-        const response = await client.messages.parse({
-          model,
-          max_tokens: req.maxTokens,
-          system: [{ type: 'text', text: req.system, cache_control: { type: 'ephemeral' } }],
-          messages: [{ role: 'user', content }],
-          // Extraction and short answers: low effort keeps thinking (and cost) small.
-          output_config: { effort: 'low', format: zodOutputFormat(req.schema) },
-        })
+        if (req.webSearch) return await withWebSearch(client, model, req)
+        const response = await client.messages.parse(params(model, req))
         if (response.stop_reason === 'refusal') throw new LlmError('failed', 'anthropic: refusal')
         return {
           // null when the output did not parse; the wrapper treats that as invalid and retries.
           json: response.parsed_output ?? null,
-          // input_tokens excludes cached tokens; count all of them like Gemini does.
-          inputTokens:
-            response.usage.input_tokens +
-            (response.usage.cache_read_input_tokens ?? 0) +
-            (response.usage.cache_creation_input_tokens ?? 0),
-          outputTokens: response.usage.output_tokens,
-          cachedTokens: response.usage.cache_read_input_tokens ?? 0,
+          ...usageOf(response.usage),
         }
       } catch (err) {
-        if (
-          err instanceof Anthropic.RateLimitError ||
-          err instanceof Anthropic.InternalServerError
-        ) {
-          throw new ProviderBusyError(`anthropic ${err.status}`)
-        }
-        if (err instanceof Anthropic.APIError) {
-          throw new LlmError('failed', `anthropic ${err.status}: ${err.message}`.slice(0, 300))
-        }
-        throw err
+        throw mapError(err)
+      }
+    },
+    async stream(req, onText) {
+      try {
+        const stream = client.messages.stream(params(model, req))
+        stream.on('text', (delta) => onText(delta))
+        const response = await stream.finalMessage()
+        if (response.stop_reason === 'refusal') throw new LlmError('failed', 'anthropic: refusal')
+        const text = response.content.map((b) => (b.type === 'text' ? b.text : '')).join('')
+        return { json: jsonFromText(text), ...usageOf(response.usage) }
+      } catch (err) {
+        throw mapError(err)
       }
     },
   }

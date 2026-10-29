@@ -76,6 +76,8 @@ export interface LlmProvider {
   name: string
   model: string
   generate(req: LlmRequest<unknown>): Promise<LlmRawResult>
+  /** The same call with the output text handed over as it is written (chat answers). */
+  stream?(req: LlmRequest<unknown>, onText: (delta: string) => void): Promise<LlmRawResult>
 }
 
 export interface LlmResult<T> {
@@ -125,7 +127,33 @@ export class ProviderBusyError extends LlmError {
   }
 }
 
-export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<LlmResult<T>> {
+export function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<LlmResult<T>> {
+  const call = () => deps.provider.generate(req as LlmRequest<unknown>)
+  // One retry, only when the output does not pass the Zod schema.
+  return run(deps, req, [call, call])
+}
+
+/**
+ * `generate` with the output text streamed to `onText` (the raw JSON as it is written). When
+ * the streamed output does not pass the schema, the retry is a normal call: its answer only
+ * arrives as the result. A provider without streaming answers in one piece.
+ */
+export function generateStream<T>(
+  deps: LlmDeps,
+  req: LlmRequest<T>,
+  onText: (delta: string) => void,
+): Promise<LlmResult<T>> {
+  const { provider } = deps
+  const call = () => provider.generate(req as LlmRequest<unknown>)
+  const stream = provider.stream ? () => provider.stream!(req as LlmRequest<unknown>, onText) : call
+  return run(deps, req, [stream, call])
+}
+
+async function run<T>(
+  deps: LlmDeps,
+  req: LlmRequest<T>,
+  attempts: (() => Promise<LlmRawResult>)[],
+): Promise<LlmResult<T>> {
   const used = await deps.countRecentRuns()
   if (used >= DAILY_AI_LIMIT) throw new LlmError('rate_limited')
 
@@ -136,11 +164,10 @@ export async function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<Ll
   let cachedTokens: number | null = null
   let lastError: unknown = null
 
-  // One retry, only when the output does not pass the Zod schema.
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (const attempt of attempts) {
     let raw: LlmRawResult
     try {
-      raw = await provider.generate(req as LlmRequest<unknown>)
+      raw = await attempt()
     } catch (err) {
       lastError = err
       break

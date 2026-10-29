@@ -35,7 +35,7 @@ import {
 import { localDateOf, type SubjectWithAssessments } from '@/features/subjects/model'
 import type { AiErrorCode } from '@shared/schemas.ts'
 import i18n from '@/app/i18n'
-import { AiCallError, aiStatusKey, documentsKey, invokeAi } from './api'
+import { AiCallError, aiStatusKey, documentsKey, invokeAi, streamAi } from './api'
 import { documentFromLink } from './link'
 import { pdfText } from './pdfText'
 import { searchNotes } from './embeddings'
@@ -634,7 +634,20 @@ export async function ask(question: string, state: string, ctx: OwlContext) {
       locale: ctx.locale,
       today: ctx.today,
     }
-    const res = await invokeAi<AnswerResponse>('answer', request)
+    // The answer appears while it is written; citations and the action come with the end.
+    let text = ''
+    const res = await streamAi<AnswerResponse>('answer', request, (delta) => {
+      text += delta
+      store().replace(pendingId, {
+        id: pendingId,
+        role: 'owl',
+        type: 'answer',
+        text,
+        citations: [],
+        stateRefs: [],
+        streaming: true,
+      })
+    })
     void ctx.queryClient.invalidateQueries({ queryKey: aiStatusKey(ctx.userId) })
     const action = await actionFor(res)
     store().replace(pendingId, {

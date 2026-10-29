@@ -633,6 +633,8 @@ export const answerRequestSchema = z.object({
   today: isoDate,
   /** Conversation the question belongs to; keeps its prompt cache. */
   conversation_id: z.uuid().nullable().optional(),
+  /** Server-sent events: the answer text as it is written, then the whole response. */
+  stream: z.boolean().optional(),
 })
 export type AnswerRequest = z.infer<typeof answerRequestSchema>
 
