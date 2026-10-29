@@ -1,7 +1,8 @@
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { addDays } from '@/lib/day'
-import { blockLabel, type BlockStatus } from './labels'
+import cases from './labels.cases.json'
+import { blockLabel, type BlockLabel, type BlockStatus } from './labels'
 
 const TODAY = '2026-10-29'
 const block = (status: BlockStatus, onDate = addDays(TODAY, -1), hasSession = false) => ({
@@ -45,5 +46,15 @@ describe('blockLabel', () => {
         },
       ),
     )
+  })
+
+  it('the cases shared with ml/ (TS = Python)', () => {
+    for (const c of cases.cases)
+      expect(
+        blockLabel(
+          { status: c.status as BlockStatus, onDate: c.onDate, hasSession: c.hasSession },
+          cases.today,
+        ),
+      ).toBe(c.label as BlockLabel | null)
   })
 })

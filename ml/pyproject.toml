@@ -1,0 +1,34 @@
+[project]
+name = "hoot-ml"
+version = "0.1.0"
+description = "Hoot: training and backtests for the Stage 11a models (inference runs in TS)"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "httpx>=0.28",
+  "numpy>=2.1",
+  "pandas>=2.2",
+  "pyarrow>=18",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "ruff>=0.8"]
+models = ["numpyro>=0.16", "scikit-learn>=1.6", "scipy>=1.14"]
+notebooks = ["jupyter>=1.1", "matplotlib>=3.9"]
+
+[tool.uv]
+default-groups = ["dev", "models", "notebooks"]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

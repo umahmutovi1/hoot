@@ -349,12 +349,12 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md). Python (`ml/`) trenira, TS (`src/lib/`) izvršava; artefakti su JSON sa `version` u `input_hash`. Higijena podataka ide prva, jer se podaci skupljaju od danas.
 
 - [x] Istraživanje: adaptivni scheduling, ML i diskretna optimizacija (`docs/RESEARCH-ML-2026-10.md`)
-- [ ] Migracija `ml_signals`: `review_logs.rating` (1–4), `state_before`, `difficulty_before`, `retrievability_before`; `plan_blocks` snimak featura pri planu (`day_load_min`, `days_to_goal`, `demand`, dio dana) i opcionalni `skip_reason`; `study_sessions.app_leaves` / `app_away_sec` (pomjereno iz Etape 11); upis u `review/apply.ts` i pri kreiranju blokova; `db:types`. Oznake za model: odrađen / eksplicitno preskočen / nepotvrđen (prošao bez oznake), nikad „odrađen“ iz proteklog vremena (RESEARCH-ML 1.2)
-- [ ] `ml/` (uv, numpy, pandas, scipy, scikit-learn, NumPyro, jupyter): izvoz podataka kao korisnik (RLS, parquet, bez slobodnog teksta), EDA notebook
-- [ ] Simulator `scripts/sim/` (TS): pravi `plan()` + `placeTimes()` i model studenta (log-normalno trajanje uz planning fallacy, odrađenost po terminu i opterećenju, FSRS zaboravljanje, „Danas ne mogu“), seed; baseline metrike (R na ispitu × bodovi, deficit, propušteni blokovi, promjena plana, varijansa opterećenja)
+- [x] Migracija `ml_signals`: `review_logs.rating` (1–4), `state_before`, `difficulty_before`, `retrievability_before`; `plan_blocks` snimak featura pri planu (`day_load_min`, `days_to_goal`, `demand`, dio dana) i opcionalni `skip_reason`; `study_sessions.app_leaves` / `app_away_sec` (pomjereno iz Etape 11); upis u `review/apply.ts` i pri kreiranju blokova; `db:types`. Oznake za model: odrađen / eksplicitno preskočen / nepotvrđen (prošao bez oznake), nikad „odrađen“ iz proteklog vremena (RESEARCH-ML 1.2)
+- [x] `ml/` (uv, numpy, pandas, scipy, scikit-learn, NumPyro, jupyter): izvoz podataka kao korisnik (RLS, parquet, bez slobodnog teksta), EDA notebook
+- [ ] Simulator `scripts/sim/` (TS): pravi `plan()` + `placeTimes()` i model studenta (log-normalno trajanje uz planning fallacy, odrađenost po terminu i opterećenju, sklonost izbjegavanju po predmetu (dopuna 29. okt: neki predmeti imaju nižu odrađenost i veće kašnjenje starta), FSRS zaboravljanje, „Danas ne mogu“), seed; baseline metrike (R na ispitu × bodovi, deficit, propušteni blokovi, promjena plana, varijansa opterećenja)
 - [ ] `src/lib/scheduler/feasibility.ts`: EDF / max-flow test izvodljivosti + property test „izvodljivo ⇒ `plan()` bez deficita“; LP (HiGHS wasm) samo ako test nađe propuste
 - [ ] Model trajanja: hijerarhijski log-normalni (`src/lib/estimates/model.ts`, `priors.json`) umjesto `k/(k+5)`, `n/(n+3)`, `j/(j+2)`; P50/P80, plan po P80 za prioritet 4–5; backtest notebook (MAE log-minuta, pokrivenost P80) + test TS = Python
-- [ ] Model odrađenosti bloka: Bayesovska logistička regresija (`src/lib/slots/`, prior iz Pythona, lični Laplace update); kapacitet po terminu umjesto jednog ρ; ulaz u ocjene termina i Thompson (Etapa 11) sa sigurnim istraživanjem (ε od najboljeg, ≤ 1 istraživački blok sedmično)
+- [ ] Model odrađenosti bloka: Bayesovska logistička regresija (`src/lib/slots/`, prior iz Pythona, lični Laplace update); predmet kao hijerarhijski efekat (dopuna 29. okt, PRD „Termini učenja“ → Odrađenost kao model), koji razdvaja izbjegavan predmet od lošeg termina i postaje ulaz uvida „Izbjegavanje“ u Etapi 11; simulator mora pokazati da model nađe predmet sa sklonošću izbjegavanju; kapacitet po terminu umjesto jednog ρ; ulaz u ocjene termina i Thompson (Etapa 11) sa sigurnim istraživanjem (ε od najboljeg, ≤ 1 istraživački blok sedmično)
 - [ ] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash`
 - [ ] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad
 - [ ] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio)
@@ -372,6 +372,8 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] `strategist` edge funkcija (sedmično / na dugme): bira najviše 3 kandidata i objašnjava (Zod: `candidate_id`), bez refleksija dok je Gemini free tier; odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`, `avoid_slot`, `add_slot`; zaostatak po predavanjima i jačina po temama u ulazu
 - [ ] Sedmični check-in (nedjelja): izuzeci za sljedeću sedmicu, prognoza, do 3 akcije; radi i bez AI-ja
 - [ ] Uvidi na Napretku (PRD „Termini učenja“ → Uvidi): najproduktivniji termini, ometanja (`visibilitychange` + „Ometena sam“; kolone `app_leaves` / `app_away_sec` iz Etape 11a), ritam sesije, savjeti iz tabele Tehnike; svaki uvid sa jednom akcijom
+- [ ] Uvidi iz nauke o učenju (PRD „Termini učenja“ → Uvidi iz nauke o učenju): izbjegavanje (efekat predmeta iz Etape 11a, strategist kandidat `first_step`), kalibracija (samoprocjena vs `review_logs`), udio prisjećanja po `mode`, kasno pred ispit; pravila u `src/lib/insights/` + testovi, „nije korisno“ i bilježenje prihvaćenih akcija
+- [ ] Ekran „Sedmica u retrovizoru“ (spaja sedmični check-in, uvide i dva pitanja refleksije sa čipovima); mockup prije koda
 - [ ] Ritam sesije (PRD „Timer, pauza i rekalibracija“): medijan do prve pauze, stvarne pauze, rano završene sesije → kartica „prebaci na 40/10?“ + testovi
 - **DoD** → `v0.11.0`
 
@@ -383,6 +385,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Pristupačnost: touch ≥ 44 px, kontrast, aria, fokus
 - [ ] Playwright E2E: onboarding, novi predmet, dodaj izvor, sesija, replan
 - [ ] Eval suite (PRD „AI integracija“ → Eval suite): sve AI funkcije, Zod stopa, rubrike, budžet cijene/latencije, red-team prompt injection; CI na PR-ovima koji diraju `supabase/functions/**` ili `evals/**`, puni skup noćno
+- [ ] Pretraga na bosanskom (PRD „AI integracija“ → Pretraga na bosanskom): eval recall@5 na ~50 pitanja, hibridna pretraga (full-text `simple` + `unaccent` + `pg_trgm`, RRF u RPC-u), pa `multilingual-e5-small` (384) sa verzijom modela uz vektore ako eval pokaže dobitak
 - [ ] `.github/workflows/backup.yml` (sedmični `db dump`, DB lozinka u Secrets)
 - [ ] Lighthouse PWA i performanse
 - [ ] Prečice u manifestu (`shortcuts` u `vite.config.ts`, uz `share_target`): „Počni sljedeći blok“, „Danas“, „Imam samo 30 min“; dug pritisak na ikonu na Androidu (iOS ih ne podržava). Zamjena za widget dok je app PWA ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2)
@@ -391,6 +394,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 ## Kasnije
 
 - **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a).
+- Uvoz gotovog plana učenja (PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja): `study_plan` u `parse-document`, tri sloja (sadržaj, sidra, tempo), tvrd redoslijed modula, kartica „ispred / iza plana“; etapa još nije dodijeljena.
 - Tamni režim (teme iz Etape 10b su svijetle).
 - Puni sadržaj materijala za asistenta, opt-in po izvoru (PRD „Materijali“, faza 3).
 - Read-only demo nalog sa seed podacima za portfolio.
@@ -404,7 +408,10 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - Admin pregled (read-only): oznaka `role: admin` u `app_metadata`, funkcija `is_admin()` i dodatna `select` RLS politika po tabeli, ekran `/admin`.
 - Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#6-otvaranje-aplikacije-za-više-korisnika)).
 - Prvo plan, pa prijava (uz otvaranje za više korisnika): Supabase anonimna prijava (`signInAnonymously()`), onboarding i prvi plan bez emaila, pa „Spasi svoj plan“ → email preko `updateUser` (isti `user_id`, RLS bez izmjena). Uslovi: AI edge funkcije odbijaju ili ograničavaju `is_anonymous`, CAPTCHA (Turnstile) na anonimnoj prijavi, čišćenje starih anonimnih naloga. Razlog: ekran za prijavu na startu tjera nove korisnike ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2).
-- Native widgeti na početnom ekranu („sljedeći blok“, brzo dodavanje): PWA ih nema ni na iOS-u ni u Chromeu na Androidu, pa traže native omotač (Capacitor) i widget extension (Swift WidgetKit, Kotlin). Poslije v1; do tad prečice u manifestu i notifikacije sa akcijama.
+- Native aplikacije (odluka, 29. okt 2026): Capacitor za iOS i Android, PWA ostaje; bez prepisivanja u React Native. Redom: ljuska (service worker isključen u native buildu), Google i Supabase prijava kroz sistemski preglednik + deep link (Google ne dozvoljava OAuth u WebView-u; Drive Picker možda native birač fajlova), native push (APNs/FCM uz Web Push za PWA), timer kao Live Activity / ongoing notifikacija (vrijeme iz segmenata), widget „Sljedeći blok“ (WidgetKit, Glance; podaci kroz App Group pri replanu), Share Extension i App Intents, objava (TestFlight, Play interni test). Poslije v1 i otvaranja za više korisnika; do tad prečice u manifestu i notifikacije sa akcijama.
+- Pretplata (PRD „Deploy i troškovi“ → Pretplata): Besplatno / Plus / Pro, mjesečno ili po semestru; merchant of record (Paddle ili Lemon Squeezy, provjeriti BiH), tabela `subscriptions` + webhook, nivo i mjesečni budžet troška po korisniku u `_shared/llm.ts` iz `ai_runs`, Supabase Pro kad pređe limite, politika privatnosti i uslovi. Uz otvaranje za više korisnika.
+- Partner za gradivo (PRD „Materijali“ faza 3, nivo Pro): indeksiranje teksta knjige bez LLM-a, pitanja vezana za raspon stranica jedinice, OCR skeniranih knjiga, provjera odgovora prema knjizi; uslovi: plaćeni Anthropic API, pretraga na bosanskom iz Etape 12, budžet po korisniku.
+- Ispiti van fakulteta (PRD „AI uvoz“ → Ispiti van fakulteta): `subjects.context`, onboarding „Šta spremaš?“, sakrivanje fakultetskih dijelova, banka pitanja kao izvor, probni testovi u prognozi; poslije uvoza gotovog plana.
 
 ---
 
