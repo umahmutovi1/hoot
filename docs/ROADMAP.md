@@ -391,6 +391,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 ## Kasnije
 
 - **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a).
+- Uvoz gotovog plana učenja (PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja): `study_plan` u `parse-document`, tri sloja (sadržaj, sidra, tempo), tvrd redoslijed modula, kartica „ispred / iza plana“; etapa još nije dodijeljena.
 - Tamni režim (teme iz Etape 10b su svijetle).
 - Puni sadržaj materijala za asistenta, opt-in po izvoru (PRD „Materijali“, faza 3).
 - Read-only demo nalog sa seed podacima za portfolio.
