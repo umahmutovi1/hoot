@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
+import { paramsOf } from '@/lib/srs/optimize'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
 import type { Locale } from '@/lib/locale'
@@ -31,6 +32,12 @@ export function useDayBoundary(): DayBoundary {
   const timeZone = profile?.timezone ?? DEFAULT_BOUNDARY.timeZone
   const dayStartMin = profile?.day_start_min ?? DEFAULT_BOUNDARY.dayStartMin
   return useMemo(() => ({ timeZone, dayStartMin }), [timeZone, dayStartMin])
+}
+
+/** Personal FSRS weights (`profiles.fsrs_params`), undefined for the defaults. */
+export function useFsrsParams(): number[] | undefined {
+  const raw = useProfile().data?.fsrs_params
+  return useMemo(() => paramsOf(raw), [raw])
 }
 
 /** Grade scale for all subjects (until the profile loads: undefined = defaults). */
@@ -137,6 +144,7 @@ export function useUpdateProfile() {
           | 'year_of_study'
           | 'reminder_offsets_min'
           | 'academic_search'
+          | 'fsrs_params'
         >
       >,
     ) => {

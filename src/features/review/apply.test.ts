@@ -1,3 +1,4 @@
+import { default_w } from 'ts-fsrs'
 import { describe, expect, it } from 'vitest'
 import type { Row } from '@/lib/sync'
 import { planReviews, readCheckOn, type ReviewContext } from './apply'
@@ -24,6 +25,19 @@ const logsOf = (plan: ReturnType<typeof planReviews>) =>
   (plan.ops.find((o) => o.kind === 'upsert' && o.table === 'review_logs') as { rows: Row[] }).rows
 
 describe('planReviews', () => {
+  it('uses the personal FSRS weights when the profile has them', () => {
+    const input = [{ unit: unit('a'), recalls: [{ recall: 2 as const, source: 'notes' as const }] }]
+    const fallback = planReviews(input, [], ctx())
+    // A lower first stability for "Good" (w[2]): weaker memory tomorrow.
+    const w = [...default_w]
+    w[2] = 0.5
+    const personal = planReviews(input, [], { ...ctx(), params: w })
+    expect(patchOf(personal, 'units', 'a')!.patch.fsrs_stability).toBeLessThan(
+      patchOf(fallback, 'units', 'a')!.patch.fsrs_stability as number,
+    )
+    expect(personal.outcomes[0]!.strengthAfter).toBeLessThan(fallback.outcomes[0]!.strengthAfter)
+  })
+
   it('"Sjećam se" in the gate: level 2, memory, next review and a log', () => {
     const plan = planReviews(
       [

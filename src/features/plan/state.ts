@@ -30,6 +30,7 @@ import {
 import { resolvePreset, type CustomPresetRow } from '@/lib/session/timer'
 import type { CompletionPosterior } from '@/lib/slots/completion'
 import { exploreDays, slotCompletion, slotScores } from '@/lib/slots/score'
+import { paramsOf } from '@/lib/srs/optimize'
 import type { Tables } from '@/types/database'
 import {
   asProgress,
@@ -506,6 +507,7 @@ export function buildPlanState(
     slotScores: slotScores(input.completion),
     // Seeded by the user and the week: the exploring day stays put across replans.
     explore: exploreDays(input.completion, from, end, profile.id),
+    fsrsParams: paramsOf(profile.fsrs_params),
   }
   const behind: SubjectBehindInput[] = []
   for (const subject of subjects) {

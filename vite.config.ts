@@ -5,6 +5,8 @@ import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  // Module workers: the FSRS optimizer's WASI loader uses top-level await.
+  worker: { format: 'es' },
   plugins: [
     react(),
     tailwindcss(),
@@ -49,8 +51,9 @@ export default defineConfig({
       workbox: {
         navigateFallback: '/index.html',
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
-        // pdf.js is loaded only when a PDF goes to the owl, which needs a connection anyway.
-        globIgnores: ['**/assets/pdf-*.js'],
+        // pdf.js is loaded only when a PDF goes to the owl, which needs a connection anyway; the
+        // FSRS optimizer worker only runs online (its wasm is not precached either).
+        globIgnores: ['**/assets/pdf-*.js', '**/assets/fsrs*.js'],
         // Share target (POST /share-target) and Web Push handlers (push, notificationclick).
         importScripts: ['share-sw.js', 'push-sw.js'],
       },

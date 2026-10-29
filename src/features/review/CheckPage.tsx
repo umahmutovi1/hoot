@@ -10,7 +10,7 @@ import { useActiveSession, useSessionWriter } from '@/features/session/api'
 import type { ActiveSession } from '@/features/session/model'
 import { toSegment } from '@/features/session/model'
 import { useSessionUi } from '@/features/session/store'
-import { useDayBoundary } from '@/features/settings/profile'
+import { useDayBoundary, useFsrsParams } from '@/features/settings/profile'
 import type { Card, SourceWithUnits } from '@/features/sources/model'
 import { useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
@@ -273,11 +273,13 @@ function sourceLabel(t: TFunction, item: CheckItem) {
 function UnitLine({ item, cards, today }: { item: CheckItem; cards: Card[]; today: LocalDate }) {
   const { t } = useTranslation()
   const boundary = useDayBoundary()
+  const params = useFsrsParams()
   const r = strengthOf(
     item.unit,
     cards.filter((c) => c.unit_id === item.unit.id),
     today,
     boundary,
+    params,
   )
   const lastOn = item.unit.last_review_at
     ? localDay(new Date(item.unit.last_review_at), boundary)

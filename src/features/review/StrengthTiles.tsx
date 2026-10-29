@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useDayBoundary } from '@/features/settings/profile'
+import { useDayBoundary, useFsrsParams } from '@/features/settings/profile'
 import type { Card, Unit } from '@/features/sources/model'
 import { format } from 'date-fns'
 import { toDisplayDate } from '@/lib/day'
@@ -23,7 +23,8 @@ export function StrengthTiles({
   const { t } = useTranslation()
   const { locale } = useLocale()
   const boundary = useDayBoundary()
-  const r = strengthOf(unit, cards, today, boundary)
+  const params = useFsrsParams()
+  const r = strengthOf(unit, cards, today, boundary, params)
   const band = r === null ? null : strengthBand(r)
   // Questions have no reading step: before a test they are just untested.
   const unread = unit.kind === 'chapter' && unit.level === 0
