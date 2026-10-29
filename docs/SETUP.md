@@ -15,6 +15,7 @@ Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Gemini, Anthropic
 | `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`), Web Push svake minute (`notify`) | ✅ |
 | Web Push | VAPID ključevi (secrets + Cloudflare Production i Preview), `notify` deployana, `pg_cron` svake minute | ✅ |
 | Sigurnost u CI | CodeQL, Dependabot, `npm audit`, gitleaks, RLS testovi, CSP u `public/_headers` (Etapa 10b, vidi 2a) | ⏳ koraci u 2a |
+| ML trening | GitHub secrets `SUPABASE_DB_URL`, `HOOT_USER_ID`, `ML_PR_TOKEN` za `train.yml` i `ml-monitor.yml` (Etapa 11a, vidi 5e) | ⏳ koraci u 5e |
 | Domena | za emailove drugim korisnicima i vlastiti URL | kasnije |
 
 ---
@@ -346,6 +347,19 @@ Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove
 8. Provjera: Predmet → + Izvor → Google Drive → izaberi PDF → „Pregledaj jedinice“; na izvoru je „Otvori u Drive-u“.
 
 **Web pretraga za „Fakultet s interneta“ (Etapa 10c).** Poslije mergea: `npx supabase functions deploy find-academic-info` i ponovo `parse-document` (nova vrsta „Plan i program“); novih secreta nema, koristi `LLM_PROVIDER` / `LLM_MODEL` / ključ kao ostale AI funkcije. Eval za plan i program: `GEMINI_API_KEY=... npm run eval` (slučaj „syllabus of a programme“). Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
+
+## 5e. ML trening i praćenje: `train.yml`, `ml-monitor.yml` (Etapa 11a)
+
+`train.yml` (ručno i 1. u mjesecu) izvozi tvoje podatke, trenira, pokreće backtest i simulator i otvara PR u `dev` sa novim `priors.json` samo kad nema pogoršanja; inače ostaje samo izvještaj u Actions → run → Summary. `ml-monitor.yml` (ponedjeljkom) u Summary piše sedmične metrike (pokrivenost P80, Brier odrađenosti, kalibracija FSRS-a). Izvoz čita bazu kao ti (RLS kao u appu: uloga `authenticated`, JWT `sub` = tvoj id), iste kolone kao ručni izvoz, bez slobodnog teksta; podaci ne napuštaju runner.
+
+GitHub → repo → Settings → Secrets and variables → Actions → **New repository secret**:
+
+1. **`SUPABASE_DB_URL`**: Supabase → Project → **Connect** → **Session pooler** (port 5432) → URI, sa lozinkom baze umjesto `[YOUR-PASSWORD]`. Session pooler, ne Direct connection (GitHub runneri nemaju IPv6) i ne Transaction pooler (port 6543 ne čuva `set role` između upita). Lozinka je ista kao za `db push`; kad je promijeniš (Database → Settings → Reset database password), ažuriraj i ovaj secret.
+2. **`HOOT_USER_ID`**: Supabase → Authentication → Users → tvoj red → **User UID** (uuid).
+3. **`ML_PR_TOKEN`**: github.com → Settings (profil) → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token: ime `hoot-ml-train`, Expiration 1 godina (kalendar podsjetnik za obnovu), Repository access → **Only select repositories** → `umahmutovi1/hoot`, Permissions → Repository → **Contents: Read and write** i **Pull requests: Read and write** (Metadata: Read se doda sam). Generate → kopiraj token u secret. PAT umjesto `GITHUB_TOKEN`, jer PR koji otvori `GITHUB_TOKEN` ne pokreće CI.
+4. Provjera: Actions → **train** → Run workflow (grana `dev`). Sa malo podataka izvještaj kaže „prior stays“ i PR-a nema; Actions → **ml-monitor** → Run workflow pokazuje tabelu po sedmici.
+
+**Vraćanje modela:** revert PR-a „chore(ml): retrain … priors“ (ili `git revert` njegovog commita u `dev` kroz PR). Artefakt je samo `priors.json` + primjeri TS = Python; nova `version` ide u `input_hash`, pa app odmah planira sa vraćenim priorom.
 
 ## 6. Otvaranje aplikacije za više korisnika
 

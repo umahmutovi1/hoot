@@ -61,3 +61,31 @@ def test_export_writes_one_parquet_per_table(tmp_path):
     sessions = pd.read_parquet(tmp_path / "study_sessions.parquet")
     assert "reflection" not in sessions.columns
     assert sessions.loc[0, "app_leaves"] == 2
+
+
+def test_db_path_reads_only_the_whitelist_and_returns_api_types():
+    import uuid
+    from datetime import UTC, date, datetime
+    from decimal import Decimal
+
+    import pytest
+
+    from hoot_ml.export import db_query, plain
+
+    params = {"select": "id,on_date,demand", "order": "id"}
+    query = db_query("plan_blocks", params, {"Range": "1000-1999"}).as_string(None)
+    assert query == (
+        'select "id", "on_date", "demand" from public."plan_blocks" order by "id" '
+        "limit 1000 offset 1000"
+    )
+    with pytest.raises(ValueError):
+        db_query("plan_blocks", {"select": "id,title", "order": "id"}, {"Range": "0-9"})
+    with pytest.raises(ValueError):
+        db_query("ai_runs", {"select": "id", "order": "id"}, {"Range": "0-9"})
+    u = uuid.uuid4()
+    assert plain(u) == str(u)
+    assert plain(Decimal("1.25")) == 1.25
+    assert plain(date(2026, 10, 29)) == "2026-10-29"
+    stamp = datetime(2026, 10, 29, 9, tzinfo=UTC)
+    assert plain(stamp) == "2026-10-29T09:00:00+00:00"
+    assert plain({"a": 1}) == {"a": 1}

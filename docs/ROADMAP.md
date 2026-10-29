@@ -358,7 +358,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash`
 - [ ] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad
 - [ ] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio)
-- [ ] MLOps (PRD „Dopune“ → MLOps): `.github/workflows/train.yml` (ručno + mjesečno) izvoz → trening → backtest → simulator; PR sa novim artefaktom samo bez pogoršanja prema `baseline.json`; praćenje pokrivenosti P80, Brier odrađenosti i FSRS kalibracije po sedmici
+- [x] MLOps (PRD „Dopune“ → MLOps): `.github/workflows/train.yml` (ručno + mjesečno) izvoz → trening → backtest → simulator; PR sa novim artefaktom samo bez pogoršanja prema `baseline.json`; praćenje pokrivenosti P80, Brier odrađenosti i FSRS kalibracije po sedmici (`ml-monitor.yml`; izvoz u CI kao korisnik preko `SUPABASE_DB_URL` + `HOOT_USER_ID`, PR preko `ML_PR_TOKEN`, `docs/SETUP.md` 5e)
 - **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.5`
 
 ## Etapa 11b — Doživljaj, prijava i energija

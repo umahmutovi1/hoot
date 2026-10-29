@@ -74,43 +74,56 @@ class Backtest:
     brier_constant: float
 
 
-def backtest(examples: list[Example], min_history: int = 20) -> Backtest:
+def predictions(
+    examples: list[Example], min_history: int = 20, p: dict | None = None
+) -> pd.DataFrame:
     """Time-ordered: every day's blocks are predicted from the blocks of earlier days, by the
     model, the model without subjects and a constant (the done share so far). Outcome: done = 1,
-    anything else 0."""
-    days = sorted({e.on_date for e in examples})
-    pred: list[tuple[float, float, float, float]] = []
-    for day in days:
+    anything else 0. One row per predicted block."""
+    p = p or load_priors()
+    rows = []
+    for day in sorted({e.on_date for e in examples}):
         seen = [e for e in examples if e.on_date < day]
         if len(seen) < min_history:
             continue
-        today = [e for e in examples if e.on_date == day]
-        with_s = fit(seen, day)
-        without = fit(seen, day, subject_effect=False)
+        with_s = fit(seen, day, p=p)
+        without = fit(seen, day, p=p, subject_effect=False)
         rate = sum(e.label == "done" for e in seen) / len(seen)
-        for e in today:
-            y = 1.0 if e.label == "done" else 0.0
-            pred.append((y, probability(with_s, e), probability(without, e), rate))
-    if not pred:
+        for e in (e for e in examples if e.on_date == day):
+            rows.append(
+                {
+                    "on_date": day,
+                    "y": 1.0 if e.label == "done" else 0.0,
+                    "model": probability(with_s, e, p),
+                    "no_subject": probability(without, e, p),
+                    "constant": rate,
+                }
+            )
+    return pd.DataFrame(rows, columns=["on_date", "y", "model", "no_subject", "constant"])
+
+
+def brier(pred: pd.DataFrame, column: str = "model") -> float:
+    return float(np.mean((pred[column] - pred["y"]) ** 2))
+
+
+def log_loss(pred: pd.DataFrame, column: str = "model") -> float:
+    q = np.clip(pred[column].to_numpy(), 1e-9, 1 - 1e-9)
+    y = pred["y"].to_numpy()
+    return float(-np.mean(y * np.log(q) + (1 - y) * np.log(1 - q)))
+
+
+def backtest(examples: list[Example], min_history: int = 20, p: dict | None = None) -> Backtest:
+    pred = predictions(examples, min_history, p)
+    if pred.empty:
         nan = math.nan
         return Backtest(0, nan, nan, nan, nan, nan)
-    a = np.array(pred)
-    y = a[:, 0]
-
-    def brier(q):
-        return float(np.mean((q - y) ** 2))
-
-    def log_loss(q):
-        q = np.clip(q, 1e-9, 1 - 1e-9)
-        return float(-np.mean(y * np.log(q) + (1 - y) * np.log(1 - q)))
-
     return Backtest(
-        n=len(y),
-        brier=brier(a[:, 1]),
-        log_loss=log_loss(a[:, 1]),
-        brier_no_subject=brier(a[:, 2]),
-        log_loss_no_subject=log_loss(a[:, 2]),
-        brier_constant=brier(a[:, 3]),
+        n=len(pred),
+        brier=brier(pred),
+        log_loss=log_loss(pred),
+        brier_no_subject=brier(pred, "no_subject"),
+        log_loss_no_subject=log_loss(pred, "no_subject"),
+        brier_constant=brier(pred, "constant"),
     )
 
 

@@ -27,6 +27,21 @@ HOOT_ACCESS_TOKEN=<access_token> uv run python -m hoot_ml.export
 
 Parquet fajlovi idu u `ml/data/`, koji je u `.gitignore` i nikad se ne commita.
 
+U CI-ju (`train.yml`, `ml-monitor.yml`) nema sesije iz browsera: `--db` se spaja sa `SUPABASE_DB_URL`, prelazi u ulogu `authenticated` i postavlja JWT claim `sub` = `HOOT_USER_ID`, pa iste RLS politike kao u appu biraju redove, a iste kolone iz `TABLES` izlaze (podešavanje: `docs/SETUP.md` 5e).
+
+```sh
+SUPABASE_DB_URL=... HOOT_USER_ID=... uv run python -m hoot_ml.export --db
+```
+
+## Trening i praćenje (MLOps)
+
+- `uv run python -m hoot_ml.train [--write]`: fit model trajanja (σ, τ_izvor; od 30 sesija) i modela odrađenosti (τ_predmet; od 200 blokova) + backtest sa trenutnim i novim priorom. Novi `priors.json` (nova `version`) samo uz `--write`, kad ima dovoljno podataka, kad se fit pomjerio (≥ 0,02) i kad backtest nije lošiji. Bez `--write` samo izvještaj.
+- `npm run ml:cases`: osvježi očekivane brojeve u primjerima TS = Python iz trenutnih priora (ulazi ostaju).
+- `npm run sim -- --seeds 100 --check --report sim.md`: izlaz 1 kad je neka metrika lošija od `scripts/sim/baseline.json` preko tolerancije.
+- `uv run python -m hoot_ml.monitor`: po sedmici pokrivenost P80 trajanja, Brier odrađenosti (i konstanta kao mjera) i kalibracija FSRS-a iz `review_logs` (prosječni R prije ponavljanja prema udjelu zapamćenih).
+
+`train.yml` (ručno i mjesečno): izvoz → `train --write` → `ml:cases` → testovi TS = Python → simulator (`--check` + DoD testovi) → PR u `dev` samo bez pogoršanja, inače samo izvještaj. Vraćanje: revert PR-a sa artefaktom.
+
 ## Oznake bloka
 
 Pravilo je isto kao u `src/lib/ml/labels.ts`, a oba testa čitaju iste primjere iz `src/lib/ml/labels.cases.json` (test TS = Python):
