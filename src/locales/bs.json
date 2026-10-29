@@ -1786,19 +1786,17 @@
   },
   "feeds": {
     "title": "Povezani kalendari",
-    "intro": "Zalijepi tajni iCal link. Zauzetost iz kalendara ulazi u plan kao nastava, a rokovi iz Moodlea se nude za uvoz.",
-    "add": "Dodaj kalendar",
+    "intro": "Google se povezuje jednim tapom. Za Outlook i Moodle zalijepi tajni iCal link: zauzetost ulazi u plan kao nastava, a rokovi iz Moodlea se nude za uvoz.",
+    "add": "Dodaj kalendar preko linka",
     "newTitle": "Novi kalendar",
-    "newSub": "Google, Outlook ili Moodle (iCal link)",
+    "newSub": "Outlook ili Moodle (iCal link)",
     "serviceLabel": "Servis",
     "service": {
-      "google": "Google",
       "outlook": "Outlook",
       "moodle": "Moodle"
     },
     "link": "iCal link",
     "howto": {
-      "google": "Google Kalendar → Postavke kalendara → „Tajna adresa u iCal formatu“.",
       "outlook": "Outlook → Postavke → Kalendar → Dijeljeni kalendari → Objavi kalendar → ICS.",
       "moodle": "Moodle → Kalendar → Izvoz kalendara → „Dobij URL kalendara“."
     },
@@ -1860,7 +1858,7 @@
       "timetable": "Raspored nastave",
       "timetableSub": "ručno, termin po termin",
       "feed": "Povezani kalendar",
-      "feedSub": "Google, Outlook ili Moodle (iCal link)",
+      "feedSub": "Google jednim tapom, Outlook ili Moodle preko linka",
       "link": "Link do dokumenta",
       "linkSub": "Plan i program, kalendar ili raspored sa weba",
       "none": "Nemaš ništa sad? Samo nastavi; sve ovo možeš dodati kasnije u Postavkama.",
@@ -2700,6 +2698,45 @@
       "cardTitle_few": "{{count}} dokumenta sa interneta",
       "cardTitle_other": "{{count}} dokumenata sa interneta",
       "cardSub": "Akademski kalendar i plan i program · pregledaš prije spašavanja"
+    }
+  },
+  "googleCalendar": {
+    "title": "Google kalendar",
+    "sub": "Poveži se sa Google-om: plan se upisuje u kalendar „Hoot“ za par sekundi, a zauzetost i pomjereni blokovi se vraćaju u plan. Bez linka.",
+    "connect": "Poveži Google kalendar",
+    "connecting": "Otvaram Google…",
+    "reconnectTitle": "Google kalendar treba ponovo povezati",
+    "reconnectSub": "Pristup je istekao. Poveži ponovo; ništa se ne gubi.",
+    "connectedTitle": "Google kalendar",
+    "error": "Zadnja sinhronizacija nije uspjela. Pokušaj ponovo.",
+    "syncNow": "Sinhronizuj",
+    "syncing": "Sinhronizujem…",
+    "push": "Plan u Google kalendaru",
+    "pushSub": "Blokovi, nastava, ispiti i rokovi u kalendaru „Hoot“",
+    "busyTitle": "Zauzetost iz kalendara",
+    "busySub": "Događaji iz uključenih kalendara su zauzeto vrijeme: plan ne stavlja učenje preko njih.",
+    "loading": "Učitavam kalendare…",
+    "primary": "glavni",
+    "disconnect": "Prekini vezu sa Google-om",
+    "disconnectConfirm": "Prekinuti vezu? Zauzetost iz Google-a nestaje iz plana.",
+    "disconnectDelete": "Prekini i obriši kalendar „Hoot“",
+    "disconnectKeep": "Prekini, kalendar „Hoot“ ostaje",
+    "result": {
+      "connected": "Google kalendar je povezan",
+      "error": "Povezivanje sa Google-om nije uspjelo"
+    },
+    "fromGoogle": "iz Google kalendara · {{source}}",
+    "examTitle": "Ispit: {{subject}} · {{exam}}",
+    "deadlineTitle": "Rok: {{title}}",
+    "badge": {
+      "synced": "Google ✓",
+      "pending": "Google · čeka {{count}}",
+      "reconnect": "Poveži Google ponovo",
+      "off": "Nije u Google-u"
+    },
+    "tag": {
+      "synced": "u Google-u",
+      "pending": "čeka Google"
     }
   }
 }

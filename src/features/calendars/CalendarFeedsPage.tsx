@@ -10,12 +10,15 @@ import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { useCalendarFeeds, type FeedRow } from './api'
 import { FeedSheet } from './FeedSheet'
+import { GoogleCalendarCard } from './GoogleCalendarCard'
 
 /** Postavke → Povezani kalendari (PovezaniKalendari mockup): feeds, status, add. */
 export function CalendarFeedsPage() {
   const { t } = useTranslation()
   const online = useOnline()
-  const { data: feeds, isPending } = useCalendarFeeds()
+  // Google calendars are listed on the Google card; here the iCal links (Outlook, Moodle).
+  const feeds = useCalendarFeeds().data?.filter((f) => f.source === 'ics')
+  const isPending = feeds === undefined
   const [sheet, setSheet] = useState<FeedRow | 'new' | null>(null)
 
   return (
@@ -23,6 +26,7 @@ export function CalendarFeedsPage() {
       <ScreenTitle title={t('feeds.title')} />
       <p className="px-1 text-sm leading-[1.45] text-ink-secondary">{t('feeds.intro')}</p>
       {!online && <OfflineNotice />}
+      <GoogleCalendarCard online={online} />
 
       {!isPending && (feeds ?? []).length > 0 && (
         <div className="flex flex-col rounded-card glass px-4 py-1">

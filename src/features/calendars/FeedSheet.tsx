@@ -6,7 +6,8 @@ import { feedKindFromUrl, type FeedKind } from '@/lib/calendar/feedKind'
 import { cn } from '@/lib/utils'
 import { useAddFeed, useDeleteFeed, useUpdateFeed, type FeedRow } from './api'
 
-const SERVICES = ['google', 'outlook', 'moodle'] as const
+// Google connects with OAuth on the Google card; links are for calendars without an API.
+const SERVICES = ['outlook', 'moodle'] as const
 const KINDS: FeedKind[] = ['busy', 'deadlines']
 type Service = (typeof SERVICES)[number]
 
@@ -41,7 +42,7 @@ export function FeedSheet({
 function NewFeedForm({ onDone }: { onDone: () => void }) {
   const { t } = useTranslation()
   const add = useAddFeed()
-  const [service, setService] = useState<Service>('google')
+  const [service, setService] = useState<Service>('outlook')
   const [url, setUrl] = useState('')
   const [busyOnly, setBusyOnly] = useState(true)
   const [allDay, setAllDay] = useState(false)
@@ -105,7 +106,7 @@ function NewFeedForm({ onDone }: { onDone: () => void }) {
           autoComplete="off"
           autoCapitalize="off"
           spellCheck={false}
-          placeholder="https://calendar.google.com/…/basic.ics"
+          placeholder="https://outlook.office365.com/…/calendar.ics"
           className="h-12 rounded-input bg-canvas px-4 text-[15px] outline-none"
         />
         <span className="text-xs leading-[1.45] text-ink-muted">{t(`feeds.howto.${service}`)}</span>

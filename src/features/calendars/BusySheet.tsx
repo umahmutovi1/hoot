@@ -15,7 +15,7 @@ export function BusySheet({ item, onClose }: { item: DayBusy | null; onClose: ()
       title={item?.title ?? t('feeds.busy')}
       subtitle={
         item
-          ? `${formatClock(item.startMin)} – ${formatClock(item.endMin)} · ${t('feeds.fromSource', { source: item.source })}`
+          ? `${formatClock(item.startMin)} – ${formatClock(item.endMin)} · ${item.google ? t('googleCalendar.fromGoogle', { source: item.source }) : t('feeds.fromSource', { source: item.source })}`
           : undefined
       }
     >

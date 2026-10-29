@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/auth-context'
 import { planBlocksKey } from '@/features/plan/api'
 import { supabase } from '@/lib/supabase'
 import { eventsKey, useCalendarFeeds, useSyncCalendars } from './api'
+import { calendarLinksKey, googleAccountKey } from './google'
 
 const KEY = 'hoot-calendar-sync-at'
 const INTERVAL_MS = 30 * 60_000
@@ -23,7 +24,8 @@ export function CalendarSync() {
   const { data: feeds } = useCalendarFeeds()
   const sync = useSyncCalendars()
   const queryClient = useQueryClient()
-  const hasFeed = (feeds ?? []).length > 0
+  // iCal links only: Google calendars come by push notifications (google-calendar-sync).
+  const hasFeed = (feeds ?? []).some((f) => f.source === 'ics')
 
   useEffect(() => {
     if (!userId || !hasFeed) return
@@ -74,6 +76,15 @@ export function CalendarSync() {
       )
       .on('postgres_changes', { event: '*', schema: 'public', table: 'plan_blocks', filter }, () =>
         refetch(planBlocksKey(userId)),
+      )
+      // Google wrote an event: "u Google-u" on the block, the time on the Plan badge.
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'calendar_links', filter },
+        () => {
+          refetch(calendarLinksKey(userId))
+          refetch(googleAccountKey(userId))
+        },
       )
       .subscribe()
     return () => {

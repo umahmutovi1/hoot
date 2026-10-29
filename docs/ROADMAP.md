@@ -329,11 +329,12 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 - [x] Plan → Dan: pilula „Uredi dan“ i tap na prazno vrijeme (`EditDaySheet`: kad učim ovaj dan, više vremena, dodaj blok, Dostupnost, Raspored) umjesto dugmadi Raspored i Dostupnost u zaglavlju
 - [x] Vrsta feeda iz linka (`src/lib/calendar/feedKind.ts`: Moodle = rokovi), promjena vrste na feedu; servisi Google, Outlook, Moodle
 - [ ] Klasifikacija događaja: `external_events.kind` / `kind_by`, pravila u `src/lib/calendar/classify.ts` + testovi, `classify-events` (AI samo za nejasne, `ai_runs`), `eventBlocks` po vrsti i `kind` u `input_hash`, prijedlozi ispita i rokova iz bilo kojeg feeda
-- [ ] Google OAuth (`google-calendar`, refresh token samo za service role), izbor kalendara zauzetosti, kalendar „Hoot“; provjera da token važi > 7 dana u neverifikovanom „In production“ režimu; SETUP.md
-- [ ] Hoot → Google: `calendar_outbox` + trigger + `pg_net` → `calendar-push` (blokovi +14 dana, ispiti, rokovi, nastava kao RRULE), `hootRef`, `etag`, `pushed_hash`, link „Započni“ (`/?block=<id>`)
-- [ ] Google → Hoot: `events.watch` + `google-calendar-webhook` (`syncToken`), zajednički upsert sa ICS-om (`_shared/externalEvents.ts`); pomjeren blok = ručni, obrisan = preskočen, pomjeren ispit = prijedlog; cron 15 min i obnova kanala
+- [x] Google OAuth (`google-calendar`, refresh token samo za service role), izbor kalendara zauzetosti, kalendar „Hoot“, `GoogleCalendarCard`; consent screen ostaje „Testing“ (ponovno povezivanje svakih 7 dana) do Brandinga i publish-a; SETUP.md 5d
+- [x] Hoot → Google: app računa `calendar_items` (`src/lib/calendar/items.ts`, `GooglePush`: blokovi i nastava 14 dana, ispiti, rokovi) → `google-calendar` push, `reconcile()` sa ponovnim korištenjem događaja bloka, `hootKey`, `etag`, `pushed_hash`, link „Započni“ (`/?block=<id>`); odluka: bez outbox triggera (replan mijenja ID-jeve blokova)
+- [x] Google → Hoot: `events.watch` + `google-calendar-sync` (prozor 7/120 dana umjesto `syncToken`), zajednički upis sa ICS-om (`_shared/externalEvents.ts`); pomjeren blok = ručni, obrisan = preskočen (`skip_requested_at`); cron 15 min i obnova kanala
+- [ ] Pomjeren ispit ili rok u Google-u → prijedlog jednim tapom (sada se vraća Hoot-ova verzija)
 - [ ] Duplikati: `src/lib/calendar/match.ts` + testovi, kartica Spoji / Hoot zamjenjuje / Google zamjenjuje / Zadrži oba, uvoz predavanja, ispita i rokova iz Google-a povezano, „već imaš“ u ostalim uvozima
-- [ ] Status u Planu: badge u zaglavlju (Google: sinhronizovano prije X / čeka / nije povezano → Povezani kalendari), na bloku oznaka sinhronizovan / čeka (`calendar_links`), na događaju iz Google-a oznaka „iz Google kalendara“
+- [x] Status u Planu: badge u zaglavlju (Google: sinhronizovano prije X / čeka / nije povezano → Povezani kalendari), na bloku oznaka sinhronizovan / čeka (`calendar_links`), na događaju iz Google-a oznaka „iz Google kalendara“
 - [ ] Onboarding korak 2: „Poveži Google kalendar“ prvi, preskakanje rasporeda i rokova koji su već u kalendaru
 - **DoD:** blok promijenjen u app-u je u Google kalendaru za par sekundi i obratno; link iz događaja otvara „Započeti sesiju sada?“; predavanje koje je i u Google-u i u Hoot-u postoji jednom; nijedan token ni link u logovima → `v0.10.5`
 

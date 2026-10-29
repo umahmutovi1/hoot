@@ -185,7 +185,9 @@ export function DayTimeline({
                     {item.title ?? t('feeds.busy')}
                   </span>
                   <span className="truncate text-[11px] text-ink-muted">
-                    {t('feeds.fromSource', { source: item.source })}
+                    {item.google
+                      ? t('googleCalendar.fromGoogle', { source: item.source })
+                      : t('feeds.fromSource', { source: item.source })}
                   </span>
                 </div>
               </button>

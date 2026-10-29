@@ -1736,19 +1736,17 @@
   },
   "feeds": {
     "title": "Connected calendars",
-    "intro": "Paste a secret iCal link. Busy time from the calendar goes into the plan like classes, and Moodle due dates are offered for import.",
-    "add": "Add calendar",
+    "intro": "Google connects with one tap. For Outlook and Moodle paste a secret iCal link: busy time goes into the plan like classes, and Moodle due dates are offered for import.",
+    "add": "Add a calendar by link",
     "newTitle": "New calendar",
-    "newSub": "Google, Outlook or Moodle (iCal link)",
+    "newSub": "Outlook or Moodle (iCal link)",
     "serviceLabel": "Service",
     "service": {
-      "google": "Google",
       "outlook": "Outlook",
       "moodle": "Moodle"
     },
     "link": "iCal link",
     "howto": {
-      "google": "Google Calendar → Calendar settings → “Secret address in iCal format”.",
       "outlook": "Outlook → Settings → Calendar → Shared calendars → Publish a calendar → ICS.",
       "moodle": "Moodle → Calendar → Export calendar → “Get calendar URL”."
     },
@@ -1810,7 +1808,7 @@
       "timetable": "Class timetable",
       "timetableSub": "by hand, one class at a time",
       "feed": "Connected calendar",
-      "feedSub": "Google, Outlook or Moodle (iCal link)",
+      "feedSub": "Google with one tap, Outlook or Moodle by link",
       "link": "Link to a document",
       "linkSub": "Study plan, calendar or timetable from the web",
       "none": "Nothing yet? Just continue; you can add all of this later in Settings.",
@@ -2628,6 +2626,45 @@
       "cardTitle_one": "{{count}} document from the web",
       "cardTitle_other": "{{count}} documents from the web",
       "cardSub": "Academic calendar and syllabus · you review before saving"
+    }
+  },
+  "googleCalendar": {
+    "title": "Google Calendar",
+    "sub": "Connect with Google: the plan goes into the “Hoot” calendar within seconds, and busy time and moved blocks come back into the plan. No link needed.",
+    "connect": "Connect Google Calendar",
+    "connecting": "Opening Google…",
+    "reconnectTitle": "Google Calendar needs reconnecting",
+    "reconnectSub": "Access expired. Connect again; nothing is lost.",
+    "connectedTitle": "Google Calendar",
+    "error": "The last sync failed. Try again.",
+    "syncNow": "Sync",
+    "syncing": "Syncing…",
+    "push": "Plan in Google Calendar",
+    "pushSub": "Blocks, classes, exams and deadlines in the “Hoot” calendar",
+    "busyTitle": "Busy time from calendars",
+    "busySub": "Events from the calendars turned on are busy time: the plan doesn't put studying over them.",
+    "loading": "Loading calendars…",
+    "primary": "main",
+    "disconnect": "Disconnect Google",
+    "disconnectConfirm": "Disconnect? Busy time from Google leaves the plan.",
+    "disconnectDelete": "Disconnect and delete the “Hoot” calendar",
+    "disconnectKeep": "Disconnect, keep the “Hoot” calendar",
+    "result": {
+      "connected": "Google Calendar is connected",
+      "error": "Connecting to Google failed"
+    },
+    "fromGoogle": "from Google Calendar · {{source}}",
+    "examTitle": "Exam: {{subject}} · {{exam}}",
+    "deadlineTitle": "Due: {{title}}",
+    "badge": {
+      "synced": "Google ✓",
+      "pending": "Google · {{count}} waiting",
+      "reconnect": "Reconnect Google",
+      "off": "Not in Google"
+    },
+    "tag": {
+      "synced": "in Google",
+      "pending": "waiting for Google"
     }
   }
 }

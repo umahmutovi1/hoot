@@ -9,7 +9,7 @@ import type { Tables } from '@/types/database'
 // Nothing here keeps the link in the query cache, logs or error messages.
 
 const FEED_COLUMNS =
-  'id, title, url_hint, kind, color, all_day_busy, busy_only, last_synced_at, last_error, created_at, updated_at'
+  'id, title, url_hint, kind, source, color, all_day_busy, busy_only, last_synced_at, last_error, created_at, updated_at'
 const EVENT_COLUMNS =
   'id, feed_id, uid, starts_at, ends_at, all_day, title, location, ignored, category, deadline_id'
 
@@ -19,6 +19,7 @@ export type FeedRow = Pick<
   | 'title'
   | 'url_hint'
   | 'kind'
+  | 'source'
   | 'color'
   | 'all_day_busy'
   | 'busy_only'

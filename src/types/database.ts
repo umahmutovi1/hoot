@@ -413,53 +413,293 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_accounts: {
+        Row: {
+          access_expires_at: string | null
+          access_token: string | null
+          app_origin: string | null
+          created_at: string
+          email: string | null
+          hoot_calendar_id: string | null
+          id: string
+          last_error: string | null
+          last_pushed_at: string | null
+          last_synced_at: string | null
+          provider: string
+          push_enabled: boolean
+          push_lock_until: string | null
+          push_requested_at: string | null
+          refresh_token: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_expires_at?: string | null
+          access_token?: string | null
+          app_origin?: string | null
+          created_at?: string
+          email?: string | null
+          hoot_calendar_id?: string | null
+          id?: string
+          last_error?: string | null
+          last_pushed_at?: string | null
+          last_synced_at?: string | null
+          provider?: string
+          push_enabled?: boolean
+          push_lock_until?: string | null
+          push_requested_at?: string | null
+          refresh_token?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          access_expires_at?: string | null
+          access_token?: string | null
+          app_origin?: string | null
+          created_at?: string
+          email?: string | null
+          hoot_calendar_id?: string | null
+          id?: string
+          last_error?: string | null
+          last_pushed_at?: string | null
+          last_synced_at?: string | null
+          provider?: string
+          push_enabled?: boolean
+          push_lock_until?: string | null
+          push_requested_at?: string | null
+          refresh_token?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      calendar_channels: {
+        Row: {
+          account_id: string
+          channel_id: string
+          created_at: string
+          expires_at: string
+          google_calendar_id: string
+          id: string
+          resource_id: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          channel_id: string
+          created_at?: string
+          expires_at: string
+          google_calendar_id: string
+          id?: string
+          resource_id: string
+          token: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          account_id?: string
+          channel_id?: string
+          created_at?: string
+          expires_at?: string
+          google_calendar_id?: string
+          id?: string
+          resource_id?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_channels_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_feeds: {
         Row: {
+          account_id: string | null
           all_day_busy: boolean
           busy_only: boolean
           color: string | null
           created_at: string
+          google_calendar_id: string | null
           id: string
           kind: string
           last_error: string | null
           last_synced_at: string | null
+          source: string
           title: string
           updated_at: string
-          url: string
+          url: string | null
           url_hint: string | null
           user_id: string
         }
         Insert: {
+          account_id?: string | null
           all_day_busy?: boolean
           busy_only?: boolean
           color?: string | null
           created_at?: string
+          google_calendar_id?: string | null
           id?: string
           kind: string
           last_error?: string | null
           last_synced_at?: string | null
+          source?: string
           title: string
           updated_at?: string
-          url: string
+          url?: string | null
           url_hint?: string | null
           user_id?: string
         }
         Update: {
+          account_id?: string | null
           all_day_busy?: boolean
           busy_only?: boolean
           color?: string | null
           created_at?: string
+          google_calendar_id?: string | null
           id?: string
           kind?: string
           last_error?: string | null
           last_synced_at?: string | null
+          source?: string
           title?: string
           updated_at?: string
-          url?: string
+          url?: string | null
           url_hint?: string | null
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_feeds_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_items: {
+        Row: {
+          all_day: boolean
+          color: string | null
+          created_at: string
+          description: string | null
+          ends_at: string
+          hash: string
+          id: string
+          key: string
+          kind: string
+          ref_id: string
+          starts_at: string
+          title: string
+          updated_at: string
+          url_path: string | null
+          user_id: string
+        }
+        Insert: {
+          all_day?: boolean
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at: string
+          hash: string
+          id?: string
+          key: string
+          kind: string
+          ref_id: string
+          starts_at: string
+          title: string
+          updated_at?: string
+          url_path?: string | null
+          user_id?: string
+        }
+        Update: {
+          all_day?: boolean
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string
+          hash?: string
+          id?: string
+          key?: string
+          kind?: string
+          ref_id?: string
+          starts_at?: string
+          title?: string
+          updated_at?: string
+          url_path?: string | null
+          user_id?: string
+        }
         Relationships: []
+      }
+      calendar_links: {
+        Row: {
+          account_id: string
+          created_at: string
+          etag: string | null
+          google_calendar_id: string
+          google_event_id: string
+          id: string
+          item_key: string | null
+          kind: string
+          pushed_hash: string | null
+          pushed_start: string | null
+          ref_id: string | null
+          state: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          etag?: string | null
+          google_calendar_id: string
+          google_event_id: string
+          id?: string
+          item_key?: string | null
+          kind: string
+          pushed_hash?: string | null
+          pushed_start?: string | null
+          ref_id?: string | null
+          state?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          etag?: string | null
+          google_calendar_id?: string
+          google_event_id?: string
+          id?: string
+          item_key?: string | null
+          kind?: string
+          pushed_hash?: string | null
+          pushed_start?: string | null
+          ref_id?: string | null
+          state?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_links_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       card_embeddings: {
         Row: {

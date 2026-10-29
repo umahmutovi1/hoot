@@ -24,6 +24,8 @@ export interface DayBusy {
   title: string | null
   /** The feed's name, for "iz kalendara Google". */
   source: string
+  /** From a connected Google calendar: "iz Google kalendara". */
+  google: boolean
   ignored: boolean
 }
 
@@ -54,6 +56,7 @@ export function useAgenda() {
         endMin: e.endMin,
         title: e.title ?? null,
         source: data.feedRows.find((f) => f.id === e.feedId)?.title ?? '',
+        google: data.feedRows.find((f) => f.id === e.feedId)?.source === 'google',
         ignored: data.events.find((x) => x.id === e.id)?.ignored ?? false,
       }))
     }

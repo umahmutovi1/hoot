@@ -29,21 +29,19 @@ Ciljevi:
 ## Arhitektura
 
 ```
-            Hoot app (browser)                       Supabase                              Google
- ┌──────────────────────────────┐        ┌─────────────────────────────────┐       ┌──────────────────┐
- │ ReplanRunner → replace_plan ─┼──────▶ │ plan_blocks, assessments,       │       │ kalendar „Hoot“  │
- │                              │        │ deadlines, timetable_entries    │       │ (Hoot upisuje)   │
- │                              │        │   │ trigger                     │       │                  │
- │                              │        │   ▼                             │ API   │                  │
- │                              │        │ calendar_outbox ─pg_net─▶ calendar-push ┼──────▶ insert/patch/ │
- │                              │        │                                 │       │ delete           │
- │ Realtime (external_events,   │ ◀──────┤ external_events, plan_blocks    │       │                  │
- │ plan_blocks) → refetch →     │        │   ▲                             │ push  │ izabrani         │
- │ replan za ~2 s               │        │   └── google-calendar-webhook ◀─┼───────┤ kalendari        │
- └──────────────────────────────┘        │        (syncToken, etag)        │       │ (zauzetost)      │
-                                         │ pg_cron: sync 15 min, kanali    │       └──────────────────┘
-                                         │ 1× dnevno, ICS feedovi 3 h      │
-                                         └─────────────────────────────────┘
+         Hoot app (browser)                          Supabase                           Google
+ ┌───────────────────────────────┐       ┌──────────────────────────────────┐     ┌─────────────────┐
+ │ plan() → replace_plan         │       │                                  │     │                 │
+ │ GooglePush: plan, nastava,    │ upsert│ calendar_items (šta treba biti   │     │ kalendar „Hoot“ │
+ │ ispiti, rokovi → stavke ──────┼──────▶│ u Google-u)                      │ API │ (Hoot upisuje)  │
+ │                         {push}┼──────▶│ google-calendar → reconcile ─────┼────▶│ insert/patch/   │
+ │                               │       │ calendar_links (događaj ↔ stavka)│     │ delete          │
+ │ Realtime (external_events,    │◀──────┤ external_events, plan_blocks     │     │                 │
+ │ plan_blocks, calendar_links)  │       │   ▲                              │push │ izabrani        │
+ │ → refetch → replan za ~2 s    │       │   └─ google-calendar-sync ◀──────┼─────┤ kalendari       │
+ └───────────────────────────────┘       │ pg_cron 15 min: kanali, pull,    │     │ (zauzetost)     │
+                                         │ push zaostalog; ICS feedovi 3 h  │     └─────────────────┘
+                                         └──────────────────────────────────┘
 ```
 
 - **Jedan model događaja.** Izabrani Google kalendari su obični redovi u `calendar_feeds` (`source = 'google'`). Njihovi događaji idu u isti `external_events` kao iCal feedovi, pa zauzetost, „ignoriši“, klasifikacija i Moodle tok rade isto za oba izvora.
@@ -84,63 +82,70 @@ Ciljevi:
 
 ### OAuth
 
-- Authorization code flow na serveru (edge funkcija `google-calendar`: `auth_url`, `callback`, `calendars`, `disconnect`), `access_type=offline`.
+- Authorization code flow na serveru. Edge funkcija `google-calendar` ima GET callback (redirect URI) i POST `auth_url`, `calendars`, `select`, `push`, `sync`, `disconnect`. Koristi `access_type=offline`, `prompt=consent` i `state` potpisan HMAC-om (korisnik, adresa app-a, rok 10 min).
+- OAuth client je isti Web client kao za Google Drive Picker, uz redirect URI `https://<projekat>.supabase.co/functions/v1/google-calendar` i secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.
 - Refresh token je u `calendar_accounts.refresh_token`, bez granta za `authenticated` (kao `calendar_feeds.url`), i nikad se ne loguje.
 - Scope-ovi (najuži koji pokrivaju potrebe):
   - `calendar.app.created`: Hoot pravi svoj kalendar „Hoot“ i upisuje samo u njega;
   - `calendar.calendarlist.readonly`: lista kalendara da korisnica izabere šta je zauzetost;
   - `calendar.events.owned`: čitanje i `events.watch` na njenim kalendarima, i brisanje Google kopije kod „Hoot zamjenjuje“.
-- Prije implementacije u Cloud Console potvrditi klasifikaciju scope-ova (sensitive / non-sensitive).
+- Cloud Console (oktobar 2026): `calendar.events.owned` je sensitive.
 - **Režim consent screena.**
   - U „Testing“ refresh token ističe za 7 dana, što bi ugasilo sync.
-  - Dok je jedan korisnik: „In production“ bez verifikacije (ekran „Google hasn't verified this app“). Prvi korak implementacije je provjeriti da token važi i poslije 7 dana.
+  - Odluka (oktobar 2026): ostaje „Testing“ (korisnica je test user) dok se ne urade Branding podaci (homepage, privacy policy). App tada svakih 7 dana traži „Poveži ponovo“ (status `reconnect`). Publish na kraju.
   - Verifikacija (privacy policy, domena, demo video) prije otvaranja za više korisnika ([SETUP.md](SETUP.md)).
 
-### Tabele
+### Tabele (`0030_google_calendar.sql`)
 
 | Tabela | Svrha |
 | --- | --- |
-| `calendar_accounts` | povezan Google račun: email, `hoot_calendar_id`, status (`active` / `reconnect`), `last_error` (kod), `refresh_token` (samo service role) |
+| `calendar_accounts` | povezan Google račun: email, `hoot_calendar_id`, `app_origin` (za link), `push_enabled`, status (`active` / `reconnect`), `last_error` (kod), zaključavanje push-a; tokeni samo za service role |
 | `calendar_feeds` + `source`, `account_id`, `google_calendar_id` | izabrani Google kalendari kao feedovi; `url` obavezan samo za `source = 'ics'` |
-| `calendar_channels` | push kanali: `channel_id`, `resource_id`, `token`, `expires_at`, `sync_token` (samo service role) |
-| `calendar_links` | Hoot stavka ↔ Google događaj: `kind` (`block`, `assessment`, `deadline`, `timetable_entry`), `ref_id`, `google_event_id`, `owner` (`hoot` / `google`), `etag`, `pushed_hash`, odluka `distinct` (Zadrži oba) |
-| `calendar_outbox` | stavke koje treba upisati u Google (puni ga trigger) |
-| `external_events` + `assessment_id`, `timetable_entry_id` | veza događaja sa Hoot stavkom, uz postojeći `deadline_id` |
+| `calendar_channels` | push kanali: `channel_id`, `resource_id`, `token`, `expires_at` (samo service role) |
+| `calendar_items` | šta Hoot želi u svom Google kalendaru; računa ih app (`src/lib/calendar/items.ts`), ključ `block:<id>`, `exam:<id>`, `deadline:<id>`, `class:<id>:<datum>`, uz `hash` |
+| `calendar_links` | Google događaj ↔ stavka: `google_event_id`, `item_key`, `pushed_hash`, `pushed_start`, `etag`, `state` (`ok` / `deleted`); app ih čita za „u Google-u“ |
+
+Uz duplikate (sljedeći PR) dolaze `external_events.assessment_id` / `timetable_entry_id` i odluka „Zadrži oba“.
 
 ### Hoot → Google
 
-- Trigger na `plan_blocks`, `assessments`, `deadlines` i `timetable_entries` upisuje red u `calendar_outbox` i odmah zove `calendar-push` preko `pg_net`. Pali se samo kad korisnica ima aktivan Google račun.
-- `calendar-push` uzme sve redove korisnice odjednom, pa `replace_plan` sa 40 izmjena postaje jedan poziv; zaključavanje po korisnici (`pg_try_advisory_lock`).
-- Za svaku stavku poredi `pushed_hash` i radi `insert` / `patch` / `delete` samo u kalendaru „Hoot“.
-- Šta se upisuje:
-  - blokovi sa vremenom, danas do +14 dana. Odrađen blok dobija „✓“ i stvarno vrijeme; preskočen i propušten se brišu;
-  - ispiti i rokovi;
-  - termini nastave kao ponavljajući događaji (`RRULE:FREQ=WEEKLY`, `INTERVAL=2` za parne/neparne sedmice, `UNTIL` = kraj perioda nastave, `EXDATE` za otkazane i neradne dane).
-- Stavka povezana sa postojećim Google događajem (`owner = 'google'`) se **ne** upisuje: već je u kalendaru.
-- Svaki događaj ima `extendedProperties.private.hootRef = <kind>:<id>`; spremljen `etag` prepoznaje vlastite upise.
-- Boja je `colorId` najbliži boji predmeta.
+Odluka pri implementaciji: app računa šta treba biti u Google-u, a server samo poredi i upisuje. Razlog je `replace_plan`, koji pri svakom replanu briše buduće AI blokove i ubacuje nove sa novim ID-jevima. Trigger po redu bi zato brisao i ponovo pravio sve događaje. Sve izmjene ionako nastaju u app-u, pa trigger, `pg_net` i vault nisu potrebni.
+
+- `GooglePush` (`src/features/calendars/GooglePush.tsx`, montiran kad je Google povezan) iz istih podataka koje ekrani imaju pravi stavke:
+  - blokovi sa vremenom, danas do +14 dana (odrađen dobija „✓“ i stvarno vrijeme; preskočen i propušten nestaju);
+  - termini nastave kao pojedinačni događaji za 14 dana (otkazani i neradni dani se ne upisuju; bez RRULE-a, pa nema pravila o parnim sedmicama u Google-u);
+  - ispiti (cijeli dan, okvirni datum kao raspon) i otvoreni rokovi.
+- Poslije 2 s mira upiše promijenjene stavke u `calendar_items`, obriše nestale (prošle ostaju kao historija) i pozove `google-calendar` `{op: 'push'}`.
+- Server (`_shared/googleSync.ts`, `pushWithLock`): jedan push po računu u isto vrijeme; zahtjev koji stigne usred push-a se izvrši odmah poslije.
+- `reconcile()` (`_shared/calendarSync.ts`) poredi stavke i linkove:
+  - isti `hash` → ništa;
+  - promijenjen → `patch`;
+  - nova → `insert`;
+  - nestala → `delete`.
+  Događaj bloka koji je nestao se **ponovo koristi** za novi blok istog dana (najbliži početak), pa replan znači nekoliko patch-eva umjesto brisanja i pravljenja svega.
+- Svaki događaj ima `extendedProperties.private.hootKey`; spremljen `etag` prepoznaje vlastite upise. Boja je najbliži Google `colorId` boji predmeta. Blok nema Google podsjetnike (Hoot šalje svoje); rok je „slobodan“ (ne blokira).
 
 ### Link „Započni“ u događaju
 
 - `source: { title: 'Hoot', url }`: Google Calendar prikaže klikabilan izvor na događaju.
 - Prvi red opisa: „▶ Započni u Hoot-u: <url>“, ispod gradivo bloka (jedinice, stranice).
-- Blok: `<APP_URL>/?block=<id>`. Taj deep link već postoji (podsjetnici, Etapa 10c) i otvara „Započeti sesiju sada?“ sa „Počni“. Ispit i rok: `<APP_URL>/subjects/<id>`.
+- Blok: `<origin>/?block=<id>` (`origin` je adresa app-a sa koje je Google povezan, `calendar_accounts.app_origin`). Taj deep link već postoji (podsjetnici, Etapa 10c) i otvara „Započeti sesiju sada?“ sa „Počni“. Ispit i rok: `<origin>/subjects/<id>`.
 - Na Androidu instalirana PWA otvara linkove iz svog scope-a direktno. Na iOS-u se link otvara u Safariju; prijava važi ako je Hoot otvaran u Safariju.
 
 ### Google → Hoot
 
-- `events.watch` na kalendar „Hoot“ i na svaki izabrani kalendar zauzetosti.
-- Webhook `google-calendar-webhook` (`verify_jwt = false`) provjeri `X-Goog-Channel-Token`, vrati 200 i uradi inkrementalni `events.list` sa `syncToken`. Kod `410 Gone` ide puni resync (7 dana nazad, 120 naprijed, kao ICS).
-- Kalendari zauzetosti: isti upsert kao ICS (zajednički kod u `_shared/externalEvents.ts`).
+- `events.watch` na kalendar „Hoot“ i na svaki izabrani kalendar zauzetosti (kanal 7 dana, obnova 2 dana prije isteka).
+- Webhook `google-calendar-sync` (`verify_jwt = false`) provjeri `X-Goog-Channel-Token`, odmah vrati 204 i posao uradi poslije odgovora (`EdgeRuntime.waitUntil`): pročita taj kalendar u prozoru 7 dana nazad / 120 naprijed. Odluka pri implementaciji: prozor umjesto `syncToken`-a. `syncToken` ne radi zajedno sa `timeMin`/`timeMax`, a cijela historija kalendara bez prozora može biti ogromna. Prozor je par poziva po promjeni, što je daleko ispod Google kvote.
+- Kalendari zauzetosti: isti upis kao iCal (`_shared/externalEvents.ts`, `replaceFeedEvents`).
 - Kalendar „Hoot“, događaj čiji se `etag` razlikuje od spremljenog (promjena korisnice):
-  - pomjeren blok → ručni blok sa novim vremenom;
-  - obrisan blok → preskočen;
-  - pomjeren ispit ili rok → prijedlog u app-u, a događaj se vraća dok korisnica ne potvrdi;
+  - pomjeren blok → ručni blok (`origin = 'user'`) sa novim danom i vremenom. AI blok dobija `edited`, pa radi „Vrati predloženo“;
+  - obrisan blok → `skip_requested_at`, isti put kao „Preskoči“ iz notifikacije: app primijeni `skipBlock()`, a link je `deleted`, pa se događaj ne vraća;
+  - ispit, rok, nastava ili promijenjen naslov → Hoot-ova verzija se upiše nazad pri sljedećem push-u. Prijedlog „Datum ispita promijenjen u Google-u?“ dolazi uz duplikate;
   - događaj koji je korisnica sama dodala u kalendar „Hoot“ se ignoriše.
 - **Bez petlje (odjeka):**
   - naš upis vrati webhook sa našim `etag`-om, koji se ignoriše;
   - replan ne pomjera ručne blokove;
-  - `pushed_hash` sprječava upis iste stvari dvaput.
+  - isti `hash` ne pravi poziv.
 
 ### Duplikati i uvoz iz Google-a
 
@@ -179,29 +184,32 @@ Kartica „Isto u Google kalendaru i u Hoot-u“ nudi:
 
 ### Pouzdanost
 
-Google kaže da push obavještenja nisu potpuno pouzdana i da se poneka izgube. Zato:
+Google kaže da push obavještenja nisu potpuno pouzdana i da se poneka izgube. Zato `pg_cron` svakih 15 min zove `google-calendar-sync` (`x-cron-secret`), koji:
 
-- `pg_cron` svakih 15 min radi inkrementalni sync (jeftin sa `syncToken`) i prazni zaostali outbox;
-- jednom dnevno obnavlja kanale kojima rok ističe za manje od 48 h;
-- greška upisuje kod u `calendar_accounts.last_error`. `invalid_grant` daje status `reconnect` i karticu „Ponovo poveži Google kalendar“.
+- obnavlja kanale;
+- čita sve kalendare;
+- pusha stavke koje app nije stigao poslati (offline).
+
+Greška upisuje samo kod u `calendar_accounts.last_error`. `invalid_grant` (u „Testing“ režimu svakih 7 dana) daje status `reconnect`, karticu „Google kalendar treba ponovo povezati“ i badge „Poveži Google ponovo“.
 
 ### Latencija
 
 | Smjer | Očekivano |
 | --- | --- |
-| Hoot → Google | par sekundi poslije `replace_plan` |
+| Hoot → Google | ~2–5 s poslije izmjene u app-u (2 s mira + push) |
 | Google → baza | sekunde (webhook), najviše 15 min (cron) |
 | Preslagivanje ostalih blokova | odmah ako je app otvoren (Realtime → replan); inače pri sljedećem otvaranju, jer se `plan()` računa u browseru |
 
 ### UI
 
-- Plan (zaglavlje): badge stanja, „Google ✓ prije 1 min“, „Google · čeka 3“ (outbox nije prazan) ili „Google nije povezan“; tap vodi na Povezane kalendare. Stanje dolazi iz `calendar_accounts` i `calendar_outbox`, pa se badge pravi tek sa ovim PR-om (bez lažnog stanja ranije).
-- Plan → Dan, svaki Hoot blok, ispit i rok: mala oznaka „u Google-u“ (veza postoji i `pushed_hash` je aktuelan) ili „čeka“; događaj iz Google kalendara ima oznaku „iz Google kalendara“ (već postoji za iCal feedove).
-- Postavke → Povezani kalendari:
-  - „Poveži Google kalendar“;
-  - lista Google kalendara sa prekidačem „zauzeto“ (default: primarni);
-  - status, „Prikaži plan u Google kalendaru“ (default uključeno);
-  - „Prekini vezu“ (pita da li obrisati kalendar „Hoot“, opoziva token).
+- Plan (zaglavlje): badge „Google ✓“, „Google · čeka N“, „Poveži Google ponovo“ ili „Nije u Google-u“; tap vodi na Povezane kalendare.
+- Plan → Dan: blok ima „u Google-u“ ili „čeka Google“ (veza postoji i `pushed_hash` je aktuelan); događaj iz Google kalendara ima „iz Google kalendara · <kalendar>“.
+- Postavke → Povezani kalendari (`GoogleCalendarCard`):
+  - „Poveži Google kalendar“ (bez linka);
+  - lista Google kalendara sa prekidačem zauzetosti (default: glavni);
+  - „Plan u Google kalendaru“ (default uključeno), „Sinhronizuj“;
+  - „Prekini vezu“ (sa ili bez brisanja kalendara „Hoot“; token se opoziva).
+- iCal linkovi (Outlook, Moodle) su ispod, kao ranije.
 
 ## Kasnije
 

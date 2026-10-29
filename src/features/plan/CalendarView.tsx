@@ -1,4 +1,5 @@
 import { BusySheet } from '@/features/calendars/BusySheet'
+import { useGoogleSyncStatus } from '@/features/calendars/google'
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -68,6 +69,7 @@ export function CalendarView() {
   const openClass = (item: DayClass, date: Date) =>
     setDetail({ item, date: localDateOf(date.toISOString()) })
   const agenda = useAgenda()
+  const google = useGoogleSyncStatus()
   const [busy, setBusy] = useState<DayBusy | null>(null)
   const boundary = useDayBoundary()
   const selectedDate = localDateOf(selected.toISOString())
@@ -168,7 +170,16 @@ export function CalendarView() {
             <DayTimeline
               items={dayClasses}
               busy={agenda.busyFor(selectedDate)}
-              blocks={toTimeline(blocks)}
+              blocks={toTimeline(blocks).map((b) => {
+                // "u Google-u" / "čeka Google" on each block once Google is connected.
+                const sync = google.stateOf(`block:${b.id}`)
+                return sync
+                  ? {
+                      ...b,
+                      sub: [b.sub, t(`googleCalendar.tag.${sync}`)].filter(Boolean).join(' · '),
+                    }
+                  : b
+              })}
               onPickBlock={(b) => openBlock(b.block)}
               onPickBusy={setBusy}
               onPick={(item) => openClass(item, selected)}
