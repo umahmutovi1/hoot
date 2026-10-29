@@ -1,10 +1,10 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
-import { simulate, summarize, type BlockExample, type RunMetrics } from './run'
+import { simulate, summarize, type BlockExample, type Estimator, type RunMetrics } from './run'
 import { DEFAULT_STUDENT } from './student'
 
 /**
- * `npm run sim -- [--seeds 100] [--baseline] [--examples ml/data/sim_blocks.json]`
+ * `npm run sim -- [--seeds 100] [--estimator model|old] [--baseline] [--examples ml/data/sim_blocks.json]`
  * Prints the mean metrics over seeds 1..N. `--baseline` writes them to `scripts/sim/baseline.json`
  * (what later changes are compared against); `--examples` writes every block for `ml/`.
  */
@@ -14,11 +14,12 @@ const option = (name: string) => {
   return i === -1 ? null : (args[i + 1] ?? '')
 }
 const seeds = Number(option('seeds') ?? 100)
+const estimator = (option('estimator') ?? 'model') as Estimator
 
 const runs: RunMetrics[] = []
 const examples: BlockExample[] = []
 for (let seed = 1; seed <= seeds; seed++) {
-  const result = simulate(seed)
+  const result = simulate(seed, DEFAULT_STUDENT, undefined, estimator)
   runs.push(result.metrics)
   examples.push(...result.examples)
 }
@@ -27,7 +28,10 @@ console.log(JSON.stringify(summary, null, 2))
 
 if (args.includes('--baseline')) {
   const file = new URL('./baseline.json', import.meta.url)
-  writeFileSync(file, `${JSON.stringify({ seeds, student: DEFAULT_STUDENT, summary }, null, 2)}\n`)
+  writeFileSync(
+    file,
+    `${JSON.stringify({ seeds, estimator, student: DEFAULT_STUDENT, summary }, null, 2)}\n`,
+  )
   console.log(`baseline → ${file.pathname}`)
 }
 const out = option('examples')

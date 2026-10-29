@@ -1,4 +1,5 @@
 import type { Measure } from '@/lib/outline/parse'
+import { DURATION_PRIORS } from './model'
 
 /**
  * Minutes per unit (PRD "Procjena težine i vremena"):
@@ -50,12 +51,32 @@ export interface RatedUnit {
   user: number
 }
 
-/** d_adj − d_prior = n/(n+3) · mean(user − prior), over the source's rated units. */
+/** d_adj − d_prior = n/(n+c) · mean(user − prior), over the source's rated units (c = 3, from
+ * `priors.json`). */
 export function difficultyCorrection(rated: RatedUnit[]): number {
   const n = rated.length
   if (n === 0) return 0
   const mean = rated.reduce((s, r) => s + (r.user - (r.prior ?? DEFAULT_DIFFICULTY)), 0) / n
-  return (n / (n + 3)) * mean
+  return (n / (n + DURATION_PRIORS.difficultyShrink)) * mean
+}
+
+export interface GivenUnit {
+  /** Minutes the user or a document gave for the unit. */
+  estMinutes: number | null
+  amount: number
+  difficulty: number
+}
+
+/**
+ * Minutes per unit of measure (difficulty 3) implied by the numbers given for a source's units:
+ * the geometric mean over units with a number; null without any.
+ */
+export function givenRate(units: GivenUnit[]): number | null {
+  const rates = units
+    .filter((u) => u.estMinutes !== null && u.estMinutes > 0 && u.amount > 0)
+    .map((u) => u.estMinutes! / (u.amount * difficultyMultiplier(u.difficulty)))
+  if (rates.length === 0) return null
+  return Math.exp(rates.reduce((s, r) => s + Math.log(r), 0) / rates.length)
 }
 
 /** rate = k/(k+5) · measured + 5/(k+5) · heuristic, k = units with recorded time. */
@@ -94,36 +115,4 @@ export function estimateUnits(units: EstimateInput[], rate: number): Map<string,
       return [u.id, { difficulty, minutes: u.amount * rate * difficultyMultiplier(difficulty) }]
     }),
   )
-}
-
-/** A source's own measurements for the personal speed factor. */
-export interface SpeedSample {
-  id: string
-  kind: SourceKind
-  /** Heuristic minutes per unit of measure the source started from. */
-  base: number
-  /** Measured minutes per unit of measure (difficulty 3), null before the first sample. */
-  learned: number | null
-  samples: number
-}
-
-/** A source counts towards the speed factor from this many measured units. */
-export const SPEED_MIN_SAMPLES = 3
-
-/**
- * Personal speed factor f (PRD "Procjena težine i vremena" → 5): mean of measured / heuristic
- * over sources of the same kind (all kinds as a fallback) with at least 3 samples, shrunk to 1
- * by the number of sources j: f = j/(j+2) · mean + 2/(j+2). `exceptId` leaves the source itself
- * out, so its own measurements are not counted twice.
- */
-export function speedFactor(sources: SpeedSample[], kind: SourceKind, exceptId?: string): number {
-  const measured = sources.filter(
-    (s) => s.id !== exceptId && s.learned !== null && s.samples >= SPEED_MIN_SAMPLES && s.base > 0,
-  )
-  const same = measured.filter((s) => s.kind === kind)
-  const group = same.length > 0 ? same : measured
-  const j = group.length
-  if (j === 0) return 1
-  const mean = group.reduce((sum, s) => sum + s.learned! / s.base, 0) / j
-  return (j / (j + 2)) * mean + 2 / (j + 2)
 }

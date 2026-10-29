@@ -11,7 +11,7 @@ import { useActiveSession } from '@/features/session/api'
 import { useProfile } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { formatDuration } from '@/features/sources/format'
-import { materialOf, speedOf, subjectMaterialProgress } from '@/features/sources/model'
+import { materialOf, rateOf, subjectMaterialProgress } from '@/features/sources/model'
 import { useDeadlines, useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
 import { usePlanToday, type PlanToday } from '@/features/today/usePlanToday'
@@ -209,7 +209,7 @@ function SoonCard({ plan }: { plan: PlanToday }) {
     const own = sources.filter((s) => s.subject_id === subjectId)
     if (own.length === 0) return null
     return Math.round(
-      subjectMaterialProgress(own.map((s) => materialOf(s, speedOf(s, sources)))) * 100,
+      subjectMaterialProgress(own.map((s) => materialOf(s, rateOf(s, sources).mean))) * 100,
     )
   }
 

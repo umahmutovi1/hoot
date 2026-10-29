@@ -32,7 +32,7 @@ import type { Tables } from '@/types/database'
 import {
   asProgress,
   materialOf,
-  speedOf,
+  rateOf,
   toScopeRows,
   type AssessmentUnit,
   type SourceWithUnits,
@@ -264,7 +264,7 @@ export function buildPlanState(
   const leafIdsBySource = new Map<string, string[]>()
   const allUnitsForScope: { id: string; parentId: string | null }[] = []
   for (const source of allSources) {
-    const material = materialOf(source, speedOf(source, allSources))
+    const material = materialOf(source, rateOf(source, allSources).mean)
     const leaves = leavesOf(asProgress(material.units))
     const leafIds = new Set(leaves.map((l) => l.id))
     const logs = input.logs.filter((l) => l.source_id === source.id)

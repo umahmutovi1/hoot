@@ -1,5 +1,6 @@
 import type { Tables } from '@/types/database'
-import { blendedRate, DEFAULT_MEASURE, estimateUnits, speedFactor } from '@/lib/estimates'
+import { DEFAULT_DIFFICULTY, DEFAULT_MEASURE, estimateUnits, givenRate } from '@/lib/estimates'
+import { sourceRate, type RateEstimate, type SourceStats } from '@/lib/estimates/model'
 import { MEASURES, type Measure } from '@/lib/outline/parse'
 import {
   EMPTY_PROGRESS,
@@ -84,16 +85,14 @@ export interface SourceMaterial {
 }
 
 /**
- * Estimates and progress of one source; computed, never stored. `speed` is the personal speed
- * factor (PRD "Procjena" → 5) that scales the heuristic before measurements take over.
+ * Estimates and progress of one source; computed, never stored. `rate` is minutes per unit of
+ * measure at difficulty 3 from the duration model (`rateOf()`); without it, the source alone.
  */
-export function materialOf(source: SourceWithUnits, speed = 1): SourceMaterial {
+export function materialOf(
+  source: SourceWithUnits,
+  rate = rateOf(source, []).mean,
+): SourceMaterial {
   const units = visibleUnits(source)
-  const rate = blendedRate(
-    source.base_min_per_unit * speed,
-    source.learned_min_per_unit,
-    source.learned_samples,
-  )
   const estimates = estimateUnits(
     units.map((u) => ({
       id: u.id,
@@ -107,19 +106,31 @@ export function materialOf(source: SourceWithUnits, speed = 1): SourceMaterial {
   return { source, units: withMinutes, progress: progressOf(leavesOf(asProgress(withMinutes))) }
 }
 
-/** The speed factor of one source among all the user's sources. */
-export function speedOf(source: Source, all: Source[]): number {
-  return speedFactor(
-    all.map((s) => ({
-      id: s.id,
-      kind: s.kind,
-      base: s.base_min_per_unit,
-      learned: s.learned_min_per_unit === null ? null : Number(s.learned_min_per_unit),
-      samples: s.learned_samples,
-    })),
-    source.kind,
-    source.id,
-  )
+/** What the duration model knows about a source; `given` comes from `units.est_minutes`. */
+export function statsOf(source: Source | SourceWithUnits): SourceStats {
+  const units = 'units' in source ? source.units.filter((u) => u.archived_at === null) : []
+  return {
+    id: source.id,
+    kind: source.kind,
+    base: source.base_min_per_unit,
+    learned: source.learned_min_per_unit === null ? null : Number(source.learned_min_per_unit),
+    samples: source.learned_samples,
+    given: givenRate(
+      units.map((u) => ({
+        estMinutes: u.est_minutes === null ? null : Number(u.est_minutes),
+        amount: Number(u.amount),
+        difficulty: u.user_difficulty ?? u.ai_difficulty ?? DEFAULT_DIFFICULTY,
+      })),
+    ),
+  }
+}
+
+/** Duration model estimate of one source among all the user's sources (PRD "Procjena"). */
+export function rateOf(
+  source: Source | SourceWithUnits,
+  all: (Source | SourceWithUnits)[],
+): RateEstimate {
+  return sourceRate(statsOf(source), all.map(statsOf))
 }
 
 export function asProgress(units: (Unit & { minutes: number })[]): ProgressUnit[] {

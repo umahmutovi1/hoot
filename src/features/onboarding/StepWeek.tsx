@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStartBlock } from '@/features/plan/actions'
-import { useSpeeds } from '@/features/plan/api'
+import { useRates } from '@/features/plan/api'
 import { blockTitle } from '@/features/plan/model'
 import { usePresets, presetName } from '@/features/session/presets'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
@@ -51,9 +51,9 @@ export function StepWeek({
     .filter((x) => x.on >= today)
     .sort((a, b) => a.on.localeCompare(b.on))[0]
   const { data: sources = [] } = useSources(next?.subject.id)
-  const speeds = useSpeeds()
+  const rates = useRates()
   const needed = sources.reduce(
-    (sum, s) => sum + materialOf(s, speeds.get(s.id)).progress.remainingMinutes,
+    (sum, s) => sum + materialOf(s, rates.get(s.id)).progress.remainingMinutes,
     0,
   )
   const weekly = schedule.weekMinutes(today)

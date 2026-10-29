@@ -1,11 +1,11 @@
 import { isMeasured } from '@/lib/estimates/calibration'
-import { blendedRate } from '@/lib/estimates'
 import type { Measure } from '@/lib/outline/parse'
 import { leavesOf } from '@/lib/progress'
 import {
   asProgress,
   materialOf,
   measureOf,
+  rateOf,
   type SourceMaterial,
   type SourceWithUnits,
 } from '@/features/sources/model'
@@ -24,11 +24,11 @@ export interface SessionSource {
 
 export function sessionSources(
   sources: SourceWithUnits[],
-  speeds: ReadonlyMap<string, number> = new Map(),
+  rates: ReadonlyMap<string, number> = new Map(),
 ): SessionSource[] {
   return sources
     .map((source) => {
-      const material = materialOf(source, speeds.get(source.id))
+      const material = materialOf(source, rates.get(source.id))
       const leafIds = new Set(leavesOf(asProgress(material.units)).map((u) => u.id))
       return {
         source,
@@ -66,11 +66,7 @@ export function toEndSources(sources: SessionSource[]): EndSource[] {
     return {
       id: source.id,
       measure,
-      rate: blendedRate(
-        source.base_min_per_unit,
-        source.learned_min_per_unit === null ? null : Number(source.learned_min_per_unit),
-        source.learned_samples,
-      ),
+      rate: rateOf(source, []).mean,
       units: leaves.map((u) => ({
         id: u.id,
         kind: u.kind,
