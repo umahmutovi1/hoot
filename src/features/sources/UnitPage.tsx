@@ -1,4 +1,4 @@
-import { useQuestionLinks, useSpeeds } from '@/features/plan/api'
+import { useQuestionLinks, useRates } from '@/features/plan/api'
 import type { TFunction } from 'i18next'
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -71,8 +71,8 @@ function UnitDetail({
   const { t } = useTranslation()
   const update = useUpdateUnit(subject.id)
   const patch = (p: UnitPatch) => update.mutate({ id: unit.id, patch: p })
-  const speeds = useSpeeds()
-  const material = materialOf(source, speeds.get(source.id))
+  const rates = useRates()
+  const material = materialOf(source, rates.get(source.id))
   const measure = measureOf(source)
   const estimate = material.units.find((u) => u.id === unit.id)
   const children = material.units.filter((u) => u.parent_id === unit.id)

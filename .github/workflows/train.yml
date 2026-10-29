@@ -1,0 +1,104 @@
+name: train
+
+# Stage 11a MLOps (PRD "Dopune" → MLOps): export as the user → fit → backtest → simulator. A new
+# model artefact goes to a PR into dev only when no backtest and no simulator metric got worse
+# than `scripts/sim/baseline.json`; otherwise the run only leaves its report. Revert = revert the
+# artefact commit (a new `version` in priors.json changes input_hash either way).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 1 * *'
+
+concurrency:
+  group: train
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: https://example.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: dev
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: ml/uv.lock
+      - working-directory: ml
+        run: uv sync --locked --no-default-groups --group dev --group models
+
+      # RLS as in the app: role `authenticated`, JWT claim `sub` = the user. ml/data never leaves
+      # the runner (no artifact upload); reports hold aggregate metrics only.
+      - name: Export
+        working-directory: ml
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          HOOT_USER_ID: ${{ secrets.HOOT_USER_ID }}
+        run: uv run --no-sync python -m hoot_ml.export --db
+
+      - name: Train and backtest
+        id: train
+        working-directory: ml
+        run: |
+          set -o pipefail
+          uv run --no-sync python -m hoot_ml.train --write --report ../train.md | tee ../train.log
+          echo "summary=$(tail -n 1 ../train.log)" >> "$GITHUB_OUTPUT"
+
+      - name: Parity cases and tests on the new priors (TS = Python)
+        run: |
+          npm run ml:cases
+          npx vitest run src/lib/estimates src/lib/slots
+          (cd ml && uv run --no-sync pytest -q)
+
+      # Metrics against the baseline, and the DoD tests on the simulator (avoided subject found,
+      # bad slot kept apart from the subjects) with the new priors.
+      - name: Simulator gate
+        id: sim
+        continue-on-error: true
+        run: |
+          set +e
+          npm run sim -- --seeds 100 --check --report sim.md
+          metrics=$?
+          npx vitest run scripts/sim
+          dod=$?
+          [ "$dod" -eq 0 ] || printf '\nDoD testovi simulatora: pali.\n' >> sim.md
+          exit $((metrics || dod))
+
+      - name: Report
+        if: always()
+        run: cat train.md sim.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+
+      # A fine-grained PAT (contents + pull requests: write, this repo only), so CI runs on the PR;
+      # a PR opened with GITHUB_TOKEN would not trigger it.
+      - name: Pull request
+        if: >-
+          steps.sim.outcome == 'success' &&
+          fromJSON(steps.train.outputs.summary).ok &&
+          join(fromJSON(steps.train.outputs.summary).changed, ',') != ''
+        env:
+          GH_TOKEN: ${{ secrets.ML_PR_TOKEN }}
+          CHANGED: ${{ join(fromJSON(steps.train.outputs.summary).changed, ', ') }}
+        run: |
+          branch="chore/ml-train-$(date -u +%Y-%m-%d)-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add src/lib/estimates/priors.json src/lib/estimates/model.cases.json \
+            src/lib/slots/priors.json src/lib/slots/completion.cases.json
+          git commit -m "chore(ml): retrain $CHANGED priors"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$branch"
+          cat train.md sim.md > body.md
+          gh pr create --base dev --head "$branch" --title "chore(ml): retrain $CHANGED priors" \
+            --body-file body.md

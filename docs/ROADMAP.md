@@ -349,16 +349,35 @@ PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s
 Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md). Python (`ml/`) trenira, TS (`src/lib/`) izvršava; artefakti su JSON sa `version` u `input_hash`. Higijena podataka ide prva, jer se podaci skupljaju od danas.
 
 - [x] Istraživanje: adaptivni scheduling, ML i diskretna optimizacija (`docs/RESEARCH-ML-2026-10.md`)
-- [ ] Migracija `ml_signals`: `review_logs.rating` (1–4), `state_before`, `difficulty_before`, `retrievability_before`; `plan_blocks` snimak featura pri planu (`day_load_min`, `days_to_goal`, `demand`, dio dana) i opcionalni `skip_reason`; `study_sessions.app_leaves` / `app_away_sec` (pomjereno iz Etape 11); upis u `review/apply.ts` i pri kreiranju blokova; `db:types`. Oznake za model: odrađen / eksplicitno preskočen / nepotvrđen (prošao bez oznake), nikad „odrađen“ iz proteklog vremena (RESEARCH-ML 1.2)
-- [ ] `ml/` (uv, numpy, pandas, scipy, scikit-learn, NumPyro, jupyter): izvoz podataka kao korisnik (RLS, parquet, bez slobodnog teksta), EDA notebook
-- [ ] Simulator `scripts/sim/` (TS): pravi `plan()` + `placeTimes()` i model studenta (log-normalno trajanje uz planning fallacy, odrađenost po terminu i opterećenju, FSRS zaboravljanje, „Danas ne mogu“), seed; baseline metrike (R na ispitu × bodovi, deficit, propušteni blokovi, promjena plana, varijansa opterećenja)
-- [ ] `src/lib/scheduler/feasibility.ts`: EDF / max-flow test izvodljivosti + property test „izvodljivo ⇒ `plan()` bez deficita“; LP (HiGHS wasm) samo ako test nađe propuste
-- [ ] Model trajanja: hijerarhijski log-normalni (`src/lib/estimates/model.ts`, `priors.json`) umjesto `k/(k+5)`, `n/(n+3)`, `j/(j+2)`; P50/P80, plan po P80 za prioritet 4–5; backtest notebook (MAE log-minuta, pokrivenost P80) + test TS = Python
-- [ ] Model odrađenosti bloka: Bayesovska logistička regresija (`src/lib/slots/`, prior iz Pythona, lični Laplace update); kapacitet po terminu umjesto jednog ρ; ulaz u ocjene termina i Thompson (Etapa 11) sa sigurnim istraživanjem (ε od najboljeg, ≤ 1 istraživački blok sedmično)
-- [ ] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash`
-- [ ] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad
-- [ ] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio)
-- **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.5`
+- [x] Migracija `ml_signals`: `review_logs.rating` (1–4), `state_before`, `difficulty_before`, `retrievability_before`; `plan_blocks` snimak featura pri planu (`day_load_min`, `days_to_goal`, `demand`, dio dana) i opcionalni `skip_reason`; `study_sessions.app_leaves` / `app_away_sec` (pomjereno iz Etape 11); upis u `review/apply.ts` i pri kreiranju blokova; `db:types`. Oznake za model: odrađen / eksplicitno preskočen / nepotvrđen (prošao bez oznake), nikad „odrađen“ iz proteklog vremena (RESEARCH-ML 1.2)
+- [x] `ml/` (uv, numpy, pandas, scipy, scikit-learn, NumPyro, jupyter): izvoz podataka kao korisnik (RLS, parquet, bez slobodnog teksta), EDA notebook
+- [x] Simulator `scripts/sim/` (TS): pravi `plan()` + `placeTimes()` i model studenta (log-normalno trajanje uz planning fallacy, odrađenost po terminu i opterećenju, sklonost izbjegavanju po predmetu (dopuna 29. okt: neki predmeti imaju nižu odrađenost i veće kašnjenje starta), FSRS zaboravljanje, „Danas ne mogu“), seed; baseline metrike (R na ispitu × bodovi, deficit, propušteni blokovi, promjena plana, varijansa opterećenja)
+- [x] `src/lib/scheduler/feasibility.ts`: EDF / max-flow test izvodljivosti + property test „izvodljivo ⇒ `plan()` bez deficita“; LP (HiGHS wasm) samo ako test nađe propuste
+- [x] Model trajanja: hijerarhijski log-normalni (`src/lib/estimates/model.ts`, `priors.json`) umjesto `k/(k+5)`, `n/(n+3)`, `j/(j+2)`; P50/P80, plan po P80 za prioritet 4–5; backtest notebook (MAE log-minuta, pokrivenost P80) + test TS = Python (odluka 29. okt: plan po očekivanom trajanju za sve prioritete, P80 samo za prognozu; simulator sa procjeniteljem `old` / `model`, kriterij R×bodovi ≤ 2%, ostale metrike ≤ 5%)
+- [x] Model odrađenosti bloka: Bayesovska logistička regresija (`src/lib/slots/`, prior iz Pythona, lični Laplace update); predmet kao hijerarhijski efekat (dopuna 29. okt, PRD „Termini učenja“ → Odrađenost kao model), koji razdvaja izbjegavan predmet od lošeg termina i postaje ulaz uvida „Izbjegavanje“ u Etapi 11; simulator mora pokazati da model nađe predmet sa sklonošću izbjegavanju; kapacitet po terminu umjesto jednog ρ; ulaz u ocjene termina i Thompson (Etapa 11) sa sigurnim istraživanjem (ε od najboljeg, ≤ 1 istraživački blok sedmično) (odluke 29. okt: ρ zadržava nivo, model daje oblik po danima; oprezne ocjene uz `SLOT_GAP` 5 p.p.; istraživački dan po sedmici; simulator sa zajedničkim slučajnim brojevima i novim baseline-om)
+- [x] Lični FSRS parametri (`@open-spaced-repetition/binding`, spike COOP/COEP; rezerva `fsrs-browser` ili `ml/`) od ~100 ponavljanja → `profiles.fsrs_params` → `srs/index.ts` i `input_hash` (spike 29. okt: threadless `binding-wasm32-wasip1` 0.6.0 u Web Workeru radi bez COOP/COEP; treba CSP `'wasm-unsafe-eval'` i `worker.format: 'es'`; lični parametri samo kad im je log-loss van uzorka bolji od defaulta; iOS Safari još provjeriti na uređaju)
+- [x] Ponavljanja ciljana na ispit: izbor po `ΔR(dan ispita) × bodovi` po minuti umjesto „bliži ispit, pa niži R“; simulator ne smije pokazati pad (29. okt: ΔR po FSRS-6 stabilnosti za uspjeh/neuspjeh; bodovi = `points_max` po jedinici obima, bez bodova medijan poznatih; simulator 1000 seedova R×bodovi 0,560 prema 0,559, deficit −0,8 %)
+- [x] `ml/fsrs/`: reprodukcija srs-benchmarka na uzorku `anki-revlogs-10k` (portfolio) (29. okt: 100 kolekcija, „without same-day“; FSRS-6 preko fsrs-rs 0,349 log-loss / 0,070 RMSE(bins), unutar 99 % CI od benchmarka; GRU bez pretreninga 0,368 / 0,078, bolji kod 24 % korisnika; Hoot skala bez Easy +0,0016 RMSE(bins); `ml/fsrs/README.md`, `notebooks/fsrs_benchmark.ipynb`)
+- [x] MLOps (PRD „Dopune“ → MLOps): `.github/workflows/train.yml` (ručno + mjesečno) izvoz → trening → backtest → simulator; PR sa novim artefaktom samo bez pogoršanja prema `baseline.json`; praćenje pokrivenosti P80, Brier odrađenosti i FSRS kalibracije po sedmici (`ml-monitor.yml`; izvoz u CI kao korisnik preko `SUPABASE_DB_URL` + `HOOT_USER_ID`, PR preko `ML_PR_TOKEN`, `docs/SETUP.md` 5e)
+- [x] **DoD:** svaki model ima backtest u `ml/notebooks/`, test TS = Python i metrike simulatora u odnosu na baseline bez pogoršanja → `v0.10.5` (backtest trajanja i odrađenosti, FSRS-6 lični prema defaultu u `fsrs_benchmark.ipynb`; TS = Python za oznake, trajanje i odrađenost; `npm run sim -- --seeds 100 --check` bez pogoršanja; migracija 0035 primijenjena. Otvoreno: iOS Safari test FSRS optimizera na uređaju i Secrets za `train.yml` / `ml-monitor.yml` iz SETUP 5e)
+
+## Etapa 11b — Doživljaj, prijava i energija
+
+Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj i prijava, (2) učenje i AI.
+
+- [ ] Toastovi i potvrde: jedan sistem (uspjeh, greška, Poništi) za sve upise; dijalog samo za nepovratne radnje
+- [ ] Čestitke: završen blok, dan, „Ponovljeno“, sedmica u planu (poruka, animacija prstena, vibracija); bez maskote
+- [ ] Skeleton učitavanje po ekranima (Danas, Plan, Predmeti, Predmet, Izvor, Napredak); spinner samo u dugmadi
+- [ ] Landing stranica `/` za neprijavljene (mockup u `docs/design/` prije koda), bs i en
+- [ ] Email šablon prijave u Liquid Glass izgledu (SETUP.md 3)
+- [ ] Prijava: lozinka poslije prve prijave kodom; Google i Apple OAuth (provjera redirecta u iOS PWA; Apple uz Apple Developer Program, inače uz Capacitor); passkey ako Supabase ima podršku; SETUP.md za svaki provajder
+- [ ] Energija dana: brze akcije „Nemam energije“ / „Pun/a sam energije“; `day_energy` po datumu kao ulaz u `plan()` i `input_hash`; property testovi (low ne prelazi ~60% kapaciteta, high ne prelazi limit rasta); ML signal uz blokove
+- [ ] Ručno „Razumijem“ uz napomenu o iskrenosti: nivo 2, bez FSRS memorije, provjera za `READ_CHECK_DAYS`; `units.level_source`
+- [ ] `recall-questions` prima zalijepljeni tekst (gate i kviz)
+- [ ] Rotacija besplatnih AI-eva: `LLM_CHAIN` u `_shared/llm.ts`, prelaz na 429/kvotu, iscrpljeni do reseta; zadaci označeni javni / privatni (privatni nikad na free tier); eval prije uključivanja modela
+- [ ] Kraj semestra: kartica na Danas (rezultati, prenos, „Dodaj sljedeći semestar“); gotovo prije januara 2027
+- [ ] Studijski program odjednom: `parse-document` vrsta `study_program` → godine, semestri, predmeti; pregled prije snimanja
+- **DoD** → `v0.10.6`
 
 ## Etapa 11 — Napredak
 
@@ -372,8 +391,22 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] `strategist` edge funkcija (sedmično / na dugme): bira najviše 3 kandidata i objašnjava (Zod: `candidate_id`), bez refleksija dok je Gemini free tier; odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`, `avoid_slot`, `add_slot`; zaostatak po predavanjima i jačina po temama u ulazu
 - [ ] Sedmični check-in (nedjelja): izuzeci za sljedeću sedmicu, prognoza, do 3 akcije; radi i bez AI-ja
 - [ ] Uvidi na Napretku (PRD „Termini učenja“ → Uvidi): najproduktivniji termini, ometanja (`visibilitychange` + „Ometena sam“; kolone `app_leaves` / `app_away_sec` iz Etape 11a), ritam sesije, savjeti iz tabele Tehnike; svaki uvid sa jednom akcijom
+- [ ] Uvidi iz nauke o učenju (PRD „Termini učenja“ → Uvidi iz nauke o učenju): izbjegavanje (efekat predmeta iz Etape 11a, strategist kandidat `first_step`), kalibracija (samoprocjena vs `review_logs`), udio prisjećanja po `mode`, kasno pred ispit; pravila u `src/lib/insights/` + testovi, „nije korisno“ i bilježenje prihvaćenih akcija
+- [ ] Ekran „Sedmica u retrovizoru“ (spaja sedmični check-in, uvide i dva pitanja refleksije sa čipovima); mockup prije koda
 - [ ] Ritam sesije (PRD „Timer, pauza i rekalibracija“): medijan do prve pauze, stvarne pauze, rano završene sesije → kartica „prebaci na 40/10?“ + testovi
 - **DoD** → `v0.11.0`
+
+## Etapa 11c — Tekst izvora i AI tutor
+
+PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model (Haiku) za privatni tekst; ElevenLabs nalog (free tier).
+
+- [ ] Tekst izvora: PDF (uređaj ili Drive) → tekst po jedinici prema rasponu stranica, `source_chunks` sa embeddings; original se ne čuva; poruka za skenirani PDF
+- [ ] Sažetak jedinice / poglavlja (keš po hashu teksta); opcija „sažetak umjesto čitanja“ kod deficita za prioritet 1–2
+- [ ] Kartice iz gradiva: AI prijedlog 5–15 kartica iz teksta, bilješki ili zalijepljenog teksta → pregled → FSRS kartice
+- [ ] Tutor: ulazi iz bloka, sesije i jedinice; načini Objasni (citat stranice), Ispitaj me, Usmeni, Feynman; isti izbor pitanja kao recall gate; ocjene u `review_logs` i `levelAfter()`; vrijeme kao sesija (način `tutor`); mockup prije koda
+- [ ] Glas: edge funkcija `voice` (ElevenLabs TTS bs/en, Scribe STT), budžet free tiera iz `ai_runs`, rezerva Web Speech API
+- [ ] Asistent na Danas ostaje za plan i dokumente; pitanja o gradivu vode u tutora
+- **DoD** → `v0.11.1`
 
 ## Etapa 12 — Notifikacije i dorada
 
@@ -383,6 +416,7 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - [ ] Pristupačnost: touch ≥ 44 px, kontrast, aria, fokus
 - [ ] Playwright E2E: onboarding, novi predmet, dodaj izvor, sesija, replan
 - [ ] Eval suite (PRD „AI integracija“ → Eval suite): sve AI funkcije, Zod stopa, rubrike, budžet cijene/latencije, red-team prompt injection; CI na PR-ovima koji diraju `supabase/functions/**` ili `evals/**`, puni skup noćno
+- [ ] Pretraga na bosanskom (PRD „AI integracija“ → Pretraga na bosanskom): eval recall@5 na ~50 pitanja, hibridna pretraga (full-text `simple` + `unaccent` + `pg_trgm`, RRF u RPC-u), pa `multilingual-e5-small` (384) sa verzijom modela uz vektore ako eval pokaže dobitak
 - [ ] `.github/workflows/backup.yml` (sedmični `db dump`, DB lozinka u Secrets)
 - [ ] Lighthouse PWA i performanse
 - [ ] Prečice u manifestu (`shortcuts` u `vite.config.ts`, uz `share_target`): „Počni sljedeći blok“, „Danas“, „Imam samo 30 min“; dug pritisak na ikonu na Androidu (iOS ih ne podržava). Zamjena za widget dok je app PWA ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2)
@@ -390,9 +424,11 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 
 ## Kasnije
 
-- **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a).
+- **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a): dijeljenje sesija i kartica, prijatelj za odgovornost (dopuna 29. okt 2026).
+- Study with me uz timer: lofi muzika ili stream (YouTube embed), samo dok je app otvoren na iOS-u (PRD „Dopune“).
+- OCR skeniranih PDF-ova za tekst izvora; ElevenLabs plaćeni plan uz Pretplatu.
+- Uvoz gotovog plana učenja (PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja): `study_plan` u `parse-document`, tri sloja (sadržaj, sidra, tempo), tvrd redoslijed modula, kartica „ispred / iza plana“; etapa još nije dodijeljena.
 - Tamni režim (teme iz Etape 10b su svijetle).
-- Puni sadržaj materijala za asistenta, opt-in po izvoru (PRD „Materijali“, faza 3).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
 - Prijedlog obima parcijale iz onoga što je pređeno na predavanjima do datuma parcijale.
@@ -404,7 +440,10 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - Admin pregled (read-only): oznaka `role: admin` u `app_metadata`, funkcija `is_admin()` i dodatna `select` RLS politika po tabeli, ekran `/admin`.
 - Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#6-otvaranje-aplikacije-za-više-korisnika)).
 - Prvo plan, pa prijava (uz otvaranje za više korisnika): Supabase anonimna prijava (`signInAnonymously()`), onboarding i prvi plan bez emaila, pa „Spasi svoj plan“ → email preko `updateUser` (isti `user_id`, RLS bez izmjena). Uslovi: AI edge funkcije odbijaju ili ograničavaju `is_anonymous`, CAPTCHA (Turnstile) na anonimnoj prijavi, čišćenje starih anonimnih naloga. Razlog: ekran za prijavu na startu tjera nove korisnike ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2).
-- Native widgeti na početnom ekranu („sljedeći blok“, brzo dodavanje): PWA ih nema ni na iOS-u ni u Chromeu na Androidu, pa traže native omotač (Capacitor) i widget extension (Swift WidgetKit, Kotlin). Poslije v1; do tad prečice u manifestu i notifikacije sa akcijama.
+- Native aplikacije (odluka, 29. okt 2026): Capacitor za iOS i Android, PWA ostaje; bez prepisivanja u React Native. Redom: ljuska (service worker isključen u native buildu), Google i Supabase prijava kroz sistemski preglednik + deep link (Google ne dozvoljava OAuth u WebView-u; Drive Picker možda native birač fajlova), native push (APNs/FCM uz Web Push za PWA), timer kao Live Activity / ongoing notifikacija (vrijeme iz segmenata), widget „Sljedeći blok“ (WidgetKit, Glance; podaci kroz App Group pri replanu), Share Extension i App Intents, objava (TestFlight, Play interni test). Poslije v1 i otvaranja za više korisnika; do tad prečice u manifestu i notifikacije sa akcijama.
+- Pretplata (PRD „Deploy i troškovi“ → Pretplata): Besplatno / Plus / Pro, mjesečno ili po semestru; merchant of record (Paddle ili Lemon Squeezy, provjeriti BiH), tabela `subscriptions` + webhook, nivo i mjesečni budžet troška po korisniku u `_shared/llm.ts` iz `ai_runs`, Supabase Pro kad pređe limite, politika privatnosti i uslovi. Uz otvaranje za više korisnika.
+- Partner za gradivo (PRD „Materijali“ faza 3, nivo Pro): indeksiranje teksta knjige bez LLM-a, pitanja vezana za raspon stranica jedinice, OCR skeniranih knjiga, provjera odgovora prema knjizi; uslovi: plaćeni Anthropic API, pretraga na bosanskom iz Etape 12, budžet po korisniku.
+- Ispiti van fakulteta (PRD „AI uvoz“ → Ispiti van fakulteta): `subjects.context`, onboarding „Šta spremaš?“, sakrivanje fakultetskih dijelova, banka pitanja kao izvor, probni testovi u prognozi; poslije uvoza gotovog plana.
 
 ---
 
@@ -418,27 +457,3 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 - Supabase API ključ je novi „publishable" (`sb_publishable_…`), env `VITE_SUPABASE_PUBLISHABLE_KEY`.
 - Linter je oxlint (Vite 8 default) umjesto ESLinta.
 - Font Outfit se servirao lokalno (`@fontsource-variable/outfit`); od redizajna (Liquid Glass) je to Geist (`@fontsource-variable/geist`) iza sistemskog SF Pro.
-
-## Prompt za Etapu 9 (sljedeći chat)
-
-> Pročitaj CLAUDE.md, docs/PRD.md (sekcije „Scheduler, replan i AI strategist“ → „Spaced repetition (FSRS)“ cijela, „Model izvora, jedinica i progresa“ → „Izvor Pitanja“, „Tehnike učenja ugrađene u app“ (recall gate, blurting, pitanja kao glavni put), „Testiranje bez sadržaja literature“ (sedam izvora testiranja i odluka nakon Etape 7), „Timer, pauza i rekalibracija“ (kraj pauze, `break_ends_at`, dvije vrste pauze), „Podaci za strategista“ (`review_logs`), „Šema baze podataka“ → „Kasnije migracije“ (`0017_fsrs.sql`)), docs/ROADMAP.md (Etapa 9), docs/design/README.md (Liquid Glass, Navigacija i mrvice, odluke nakon 8b) i mockupe RecallGate, ProvjeraZnanja, ProvjeraSazetak, KrajSesije, Jedinica, Predmet (kartica „Jačina znanja“), Danas (kartica „Znanje slabi“) i Napredak (jačina po temama samo kao referenca, ekran je Etapa 11). Mockupi trebaju support.js koji nije u repou, pa tekstove i demo podatke čitaj iz HTML-a i `<script>` bloka. Onda uradi Etapu 9 — Recall gate, provjera znanja, FSRS i osnovni push.
-> Isti tok kao do sad: mali PR-ovi u `dev`, svaki mergeaj sam (squash) kad CI prođe; release `dev → main` + tag `v0.9.0` tek kad potvrdim na previewu (dev.hoot-5ig.pages.dev). Prije release-a označi stavke i DoD u ROADMAP-u. Ako se PRD i mockup ne slažu ili je PRD nejasan, pitaj s opcijama i preporukom, pa odluku upiši u PRD/ROADMAP. Za `npx supabase db push` mi treba eksplicitno OK uz `--dry-run` ispis. Ako treba nešto u dashboardu (VAPID ključevi, secrets, `pg_cron`), napiši mi tačne korake i ažuriraj SETUP.md.
-> Redoslijed:
-> 1. **Čista logika:** `src/lib/srs/` sa `ts-fsrs` (FSRS v6): recall 0/1/2 → Again/Hard/Good, ciljno zadržavanje po prioritetu (+0.03 za poglavlja, najviše 0.93), `next_review_on` (nikad poslije ispita; ako bi pao iza, ponavljanje u bufferu), R(t) i R na dan ispita, level 2 na uspjeh i level 3 nakon 4 uzastopna uspjeha, pad levela na 0; jačina po jedinici/temi/izvoru/predmetu/ispitu ponderisana minutama (računa se, ne snima), kartice kao zasebni FSRS objekti koji ulaze u jačinu jedinice. Unit testovi + `fast-check` gdje ima invarijanti (R opada sa vremenom, datum ponavljanja ≤ ispit).
-> 2. **Migracija `0017_fsrs.sql` samo aditivno:** FSRS kolone na `units` i `cards`, `review_logs.card_id` (+ šta još treba), regenerisan `database.ts`. Dev i prod dijele istu bazu, a v0.8.0 još čita SM-2 kolone (`srs_ease`, `srs_interval_days`, `sources.srs_multiplier` u `src/features/sources/api.ts`), pa se one NE brišu u 0017: prestani ih koristiti u kodu, a brisanje ide u posebnu migraciju poslije release-a v0.9.0 (zapiši to u ROADMAP).
-> 3. **Ekrani:** RecallGate nakon „Pročitano“ u KrajSesije (ispitna pitanja povezana preko tema, bilješke bez AI-ja, podnaslovi, blurting, kartice; tačan odgovor pa ocjena 0–2; preskočen gate → provjera pročitanog za 2 dana), u sesiji nakon čitanja poglavlja ponudi povezana pitanja; „Razumijem“/„Ponovljeno“ (pitanja: „Znam“) samo kroz gate; ProvjeraZnanja (review blok kao niz gate-ova) → ProvjeraSazetak (promjena jačine); kartica „Znanje slabi“ na Danas (pazi na pravilo: najviše jedna kartica akcije iznad liste) i „Jačina znanja“ na Predmetu i Jedinici.
-> 4. **Scheduler:** `review` blokovi iz pravog `next_review_on` (logika postoji u `plan()` od 8b, testirana sa ručno postavljenim datumima), `review_cap_pct`, prije starta kampanje samo ponavljanja već naučenog, R na dan ispita ≥ cilj; `review_logs` upis (proteklo dana, stabilnost prije/poslije). Sve novo ulazi u `input_hash`.
-> 5. **Web Push temelj:** service worker (vite-plugin-pwa, injectManifest ako treba), pretplata u Postavkama, `notify` edge funkcija + `pg_cron`; obavještenja: prvi blok dana i kraj planirane pauze (`break_ends_at`; slobodna pauza nema push). Otkazivanje pri izlasku iz pauze. iOS radi samo za instaliranu PWA, pa to napiši u UI i SETUP.md.
-> 6. **End-to-end na previewu** sa privremenim test korisnikom: onboarding sa grubom veličinom ili ručnim sadržajem i par pitanja, sesija → Pročitano → recall gate → ocjena → `next_review_on` i level u bazi, review blok u planu, ProvjeraZnanja, push pretplata. Na kraju obriši korisnika zajedno sa fajlovima u storageu.
-> Napomene:
-> - FSRS i raspoređivanje su deterministički kod u `src/lib/`, nikad LLM; AI izvori pitanja (`recall-questions`, slika stranice, opće znanje) su Etapa 10, ovdje ih nema i ne troši Gemini kvotu.
-> - Jačina znanja i progres se računaju iz `units`/`cards`/`review_logs`, nikad se ne snimaju. UI skala: 85%+ Jako, 75–84 Dobro, 60–74 Slabi, ispod 60 Zaboravlja se.
-> - Tekst neutralan, bez streakova i kazni; dugmad „Spasi“; svaki tekst u `bs.json` i `en.json` (ključevi su tipizirani).
-> - Navigacija od 8b: logo/AI/☰ red i mrvice na svim ekranima osim onboardinga i sesije; nova ruta mora dobiti mrvicu u `crumbsFor()` (`src/app/crumbs.ts`) + test. Back samo kroz mrvice/`goBack()`. Plan je jedan kalendar (Dan/Mjesec). Ekrani sesije su u `PlainLayout` (ima Toast).
-> - Postojeće brze akcije (Preskoči, kašnjenje, Imam samo, Imam još vremena, Danas ne mogu) ne smiju se pokvariti: review blokovi idu kroz isti `useStartBlock`/`pickForTime()`, a „Imam još vremena“ već bira provjeru koja je na redu prije novog gradiva.
-> - oxlint `--deny-warnings`: hookovi i pomoćne funkcije ne u istom fajlu sa komponentama, bez setState u effectu. Lokalni harness (`preview.html` + `src/preview.tsx`, nisu u gitu) sam montira `ReplanRunner`; parametri `path`, `click`, `delay`, `start=1`, `noreplan=1`; prije svakog chrome pokretanja `pkill -f remote-debugging-pipe`. Service role nema grant na korisničke tabele: podatke test korisnika čitaj kao taj korisnik (anon ključ + lozinka) preko RLS-a.
-> - U commitima i PR-ovima nema AI potpisa.
-
-## Prompt za početak etape (primjer)
-
-> Pročitaj docs/PRD.md i docs/ROADMAP.md i uradi Etapu 1: kostur projekta, migraciju 0001_init.sql, login, i18n i deploy. Radi na grani `feat/foundation` iz `dev`, otvori PR u `dev` kad je DoD ispunjen.

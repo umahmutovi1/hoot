@@ -413,6 +413,75 @@ export type Database = {
         }
         Relationships: []
       }
+      block_skips: {
+        Row: {
+          block_id: string | null
+          created_at: string
+          day_load_min: number | null
+          days_to_goal: number | null
+          demand: number | null
+          id: string
+          kind: Database["public"]["Enums"]["block_kind"]
+          on_date: string
+          planned_minutes: number
+          reason: string
+          skipped_at: string
+          start_min: number | null
+          subject_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          block_id?: string | null
+          created_at?: string
+          day_load_min?: number | null
+          days_to_goal?: number | null
+          demand?: number | null
+          id?: string
+          kind: Database["public"]["Enums"]["block_kind"]
+          on_date: string
+          planned_minutes: number
+          reason: string
+          skipped_at: string
+          start_min?: number | null
+          subject_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          block_id?: string | null
+          created_at?: string
+          day_load_min?: number | null
+          days_to_goal?: number | null
+          demand?: number | null
+          id?: string
+          kind?: Database["public"]["Enums"]["block_kind"]
+          on_date?: string
+          planned_minutes?: number
+          reason?: string
+          skipped_at?: string
+          start_min?: number | null
+          subject_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "block_skips_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "plan_blocks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "block_skips_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_accounts: {
         Row: {
           access_expires_at: string | null
@@ -1261,12 +1330,16 @@ export type Database = {
         Row: {
           assessment_id: string | null
           created_at: string
+          day_load_min: number | null
+          days_to_goal: number | null
           deadline_id: string | null
+          demand: number | null
           id: string
           kind: Database["public"]["Enums"]["block_kind"]
           on_date: string
           origin: Database["public"]["Enums"]["assigned_by"]
           plan_run_id: string | null
+          plan_start_min: number | null
           planned_minutes: number
           planned_start: string | null
           reason: string | null
@@ -1281,12 +1354,16 @@ export type Database = {
         Insert: {
           assessment_id?: string | null
           created_at?: string
+          day_load_min?: number | null
+          days_to_goal?: number | null
           deadline_id?: string | null
+          demand?: number | null
           id?: string
           kind?: Database["public"]["Enums"]["block_kind"]
           on_date: string
           origin?: Database["public"]["Enums"]["assigned_by"]
           plan_run_id?: string | null
+          plan_start_min?: number | null
           planned_minutes: number
           planned_start?: string | null
           reason?: string | null
@@ -1301,12 +1378,16 @@ export type Database = {
         Update: {
           assessment_id?: string | null
           created_at?: string
+          day_load_min?: number | null
+          days_to_goal?: number | null
           deadline_id?: string | null
+          demand?: number | null
           id?: string
           kind?: Database["public"]["Enums"]["block_kind"]
           on_date?: string
           origin?: Database["public"]["Enums"]["assigned_by"]
           plan_run_id?: string | null
+          plan_start_min?: number | null
           planned_minutes?: number
           planned_start?: string | null
           reason?: string | null
@@ -1639,45 +1720,57 @@ export type Database = {
       review_logs: {
         Row: {
           card_id: string | null
+          difficulty_before: number | null
           elapsed_days: number | null
           id: string
           interval_after: number | null
           interval_before: number | null
+          rating: number | null
           recall: number
+          retrievability_before: number | null
           reviewed_at: string
           source: Database["public"]["Enums"]["recall_source"]
           stability_after: number | null
           stability_before: number | null
+          state_before: number | null
           unit_id: string
           user_id: string
           was_scheduled: boolean
         }
         Insert: {
           card_id?: string | null
+          difficulty_before?: number | null
           elapsed_days?: number | null
           id?: string
           interval_after?: number | null
           interval_before?: number | null
+          rating?: number | null
           recall: number
+          retrievability_before?: number | null
           reviewed_at?: string
           source: Database["public"]["Enums"]["recall_source"]
           stability_after?: number | null
           stability_before?: number | null
+          state_before?: number | null
           unit_id: string
           user_id?: string
           was_scheduled?: boolean
         }
         Update: {
           card_id?: string | null
+          difficulty_before?: number | null
           elapsed_days?: number | null
           id?: string
           interval_after?: number | null
           interval_before?: number | null
+          rating?: number | null
           recall?: number
+          retrievability_before?: number | null
           reviewed_at?: string
           source?: Database["public"]["Enums"]["recall_source"]
           stability_after?: number | null
           stability_before?: number | null
+          state_before?: number | null
           unit_id?: string
           user_id?: string
           was_scheduled?: boolean
@@ -1903,6 +1996,8 @@ export type Database = {
       }
       study_sessions: {
         Row: {
+          app_away_sec: number
+          app_leaves: number
           block_id: string | null
           break_ends_at: string | null
           created_at: string
@@ -1922,6 +2017,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          app_away_sec?: number
+          app_leaves?: number
           block_id?: string | null
           break_ends_at?: string | null
           created_at?: string
@@ -1941,6 +2038,8 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          app_away_sec?: number
+          app_leaves?: number
           block_id?: string | null
           break_ends_at?: string | null
           created_at?: string

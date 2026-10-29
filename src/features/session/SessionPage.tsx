@@ -37,6 +37,7 @@ import { usePendingSync } from './usePendingSync'
 import { TimerSheet } from './TimerSheet'
 import { UnitOption } from './UnitOption'
 import { UnitPickerSheet } from './UnitPickerSheet'
+import { useAppAway } from './useAppAway'
 import { useNow } from './useNow'
 
 const RING_R = 104
@@ -73,6 +74,10 @@ export function SessionPage() {
   const reminder = data ? presetReminder(preset, list, now) : null
   const reminderKey =
     reminder && reminder.remainingMs <= 0 ? `${reminder.phase}-${segments.at(-1)?.id}` : null
+
+  useAppAway(data?.session.id, Boolean(open), (sec) => {
+    if (data) void writer.away(data, sec)
+  })
 
   // A short buzz when a preset's phase is over while the screen is open; nothing else happens.
   useEffect(() => {

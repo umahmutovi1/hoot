@@ -38,6 +38,7 @@ export function pickFor(plan: PlanToday, minutes: number, subjectId?: string): P
     plan.cards,
     plan.today,
     plan.boundary,
+    plan.fsrsParams,
   ).map((d) => ({
     unitId: d.unit.id,
     subjectId: sourceOf.get(d.unit.id)!.subject_id,

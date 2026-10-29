@@ -1,6 +1,7 @@
-import { addDays, diffDays, type LocalDate } from '@/lib/day'
-import { retrievabilityOn } from '@/lib/srs'
-import { slotMinutes } from '@/lib/schedule'
+import { addDays, diffDays, weekdayOf, type LocalDate } from '@/lib/day'
+import { examGain, retrievabilityOn } from '@/lib/srs'
+import { slotMinutes, type Slot } from '@/lib/schedule'
+import { PART_RANGES, SLOT_PARTS } from '@/lib/schedule/rhythm'
 import { planIntervalMin } from '@/lib/session/timer'
 import {
   BOOST_WEIGHT,
@@ -9,6 +10,8 @@ import {
   priorityRule,
   RECAP_MINUTES,
   RESERVE,
+  RHO_MAX,
+  RHO_MIN,
   reviewMinutes,
   TARGET_MARGIN,
   workShare,
@@ -110,14 +113,51 @@ export function coverageOf(subject: PlanSubject): number {
   return Math.max(own, Math.min(1, subject.requiredShare + TARGET_MARGIN))
 }
 
-/** AI minutes a day can take: min(free, cap) × ρ × reserve, minus fixed blocks of that day. */
+export const isWeekendDay = (date: LocalDate) => weekdayOf(date) >= 5
+
+/** Expected done share of a day's free time by the completion model (minute-weighted); null without it. */
+function slotShare(state: PlanState, date: LocalDate, slots: Slot[]): number | null {
+  const table = state.slotCompletion?.[isWeekendDay(date) ? 'weekend' : 'weekday']
+  if (!table) return null
+  let minutes = 0
+  let done = 0
+  for (const s of slots)
+    for (const part of SLOT_PARTS) {
+      const r = PART_RANGES[part]
+      const m = Math.max(0, Math.min(s.endMin, r.endMin) - Math.max(s.startMin, r.startMin))
+      minutes += m
+      done += m * table[part]
+    }
+  return minutes > 0 ? done / minutes : null
+}
+
+/**
+ * Done share each planned day is expected to realize: ρ, shaped per day by the completion model
+ * (a day of better slots gets more, a day of worse ones less, the mean over the horizon stays ρ),
+ * clamped as ρ is.
+ */
+export function dayRealization(state: PlanState): number[] {
+  const shares = state.days.map((d) => slotShare(state, d.date, d.slots))
+  const known = shares.filter((x): x is number => x !== null)
+  if (known.length === 0) return state.days.map(() => state.rho)
+  const mean = known.reduce((s, x) => s + x, 0) / known.length
+  return shares.map((x) =>
+    x === null ? state.rho : Math.min(RHO_MAX, Math.max(RHO_MIN, (state.rho * x) / mean)),
+  )
+}
+
+/**
+ * AI minutes a day can take: min(free, cap) × expected done share × reserve, minus fixed blocks
+ * of that day. The share is ρ, or per slot from the completion model (`dayRealization()`).
+ */
 export function aiCapacity(state: PlanState): number[] {
   const fixedOn = new Map<LocalDate, number>()
   for (const b of state.fixed) fixedOn.set(b.onDate, (fixedOn.get(b.onDate) ?? 0) + b.minutes)
-  return state.days.map((d) =>
+  const share = dayRealization(state)
+  return state.days.map((d, k) =>
     Math.max(
       0,
-      Math.floor(Math.min(slotMinutes(d.slots), d.cap) * state.rho * RESERVE) -
+      Math.floor(Math.min(slotMinutes(d.slots), d.cap) * share[k]! * RESERVE) -
         (fixedOn.get(d.date) ?? 0),
     ),
   )
@@ -407,6 +447,13 @@ function run(
     dueOn.set(u.id, last !== null && u.nextReviewOn > last ? last : u.nextReviewOn)
   }
 
+  // Exams without known points count as the median of the known ones (all equal without any).
+  const known = goals
+    .filter((g) => g.kind === 'exam' && g.points !== undefined && g.points > 0)
+    .map((g) => g.points!)
+    .sort((a, b) => a - b)
+  const fallbackPoints = known.length > 0 ? known[Math.floor(known.length / 2)]! : 1
+
   const reviewed = new Set<string>()
   const blocks: PlannedBlock[] = []
   const used = new Map<LocalDate, number>()
@@ -424,10 +471,18 @@ function run(
       ...(s.boostUntil && d <= s.boostUntil ? { boost: true as const } : {}),
     })
 
-    // 2. Reviews due and recaps, within the review share of the day. Over the cap, the closer
-    // exam and then the lower strength go first; the rest moves to the next day.
+    // 2. Reviews due and recaps, within the review share of the day. Over the cap, the reviews
+    // worth the most exam points per minute go first (the expected gain in strength on the exam
+    // day × the unit's share of the exam's points); the rest moves to the next day.
     let reviewBudget = Math.min(Math.floor((cap * settings.reviewCapPct) / 100), limit)
-    const strength = (u: PlanUnit) => (u.memory ? retrievabilityOn(u.memory, d) : 0)
+    const strength = (u: PlanUnit) =>
+      u.memory ? retrievabilityOn(u.memory, d, state.fsrsParams) : 0
+    const worth = (u: PlanUnit) => {
+      const goal = goalsOfUnit.get(u.id)!.find((g) => g.on > d)!
+      const points = (goal.points ?? fallbackPoints) / Math.max(1, goal.unitIds.length)
+      const gain = examGain(u.memory ?? null, d, goal.on, state.fsrsParams)
+      return (gain * points) / reviewMinutes(u.kind, u.minutes)
+    }
     const due = state.units
       .filter((u) => {
         const on = dueOn.get(u.id)
@@ -439,7 +494,10 @@ function run(
           (goalsOfUnit.get(u.id) ?? []).some((g) => g.on > d)
         )
       })
-      .sort((a, b) => {
+      .map((u) => ({ u, worth: worth(u) }))
+      .sort((x, y) => {
+        if (Math.abs(x.worth - y.worth) > 1e-12) return y.worth - x.worth
+        const [a, b] = [x.u, y.u]
         const ga = goalsOfUnit.get(a.id)!.find((g) => g.on > d)!.on
         const gb = goalsOfUnit.get(b.id)!.find((g) => g.on > d)!.on
         if (ga !== gb) return ga < gb ? -1 : 1
@@ -450,6 +508,7 @@ function run(
         const db = dueOn.get(b.id)!
         return da < db ? -1 : da > db ? 1 : a.order - b.order || byId(a, b)
       })
+      .map((x) => x.u)
     const reviewDrafts = new Map<string, Draft>()
     for (const u of due) {
       const m = reviewMinutes(u.kind, u.minutes)
@@ -599,9 +658,16 @@ function run(
         }
         urgency.set(sid, u * weightOf(subject))
       }
+      const must = optional ? new Map<string, number>() : mustToday(k)
       const top: [string, number][] = []
       let room = settings.maxSubjectsPerDay - chosen.size
-      for (const entry of [...urgency].sort(([a, ua], [b, ub]) => ub - ua || (a < b ? -1 : 1))) {
+      const order = [...urgency].sort(
+        ([a, ua], [b, ub]) =>
+          Number((must.get(b) ?? 0) > 0) - Number((must.get(a) ?? 0) > 0) ||
+          ub - ua ||
+          (a < b ? -1 : 1),
+      )
+      for (const entry of order) {
         if (chosen.has(entry[0])) top.push(entry)
         else if (room > 0) {
           top.push(entry)
@@ -640,6 +706,34 @@ function run(
         shares.set(sid, s + add)
         freed -= add
       }
+      // EDF guard: a subject gets at least what must be done today for the rest to still fit,
+      // taken from unused minutes first, then from the least urgent subjects' extra.
+      let spare = L - [...shares.values()].reduce((a, b) => a + b, 0)
+      for (const [sid] of top) {
+        const floor = Math.min(must.get(sid) ?? 0, poolMinutes(sid))
+        let lack = floor - shares.get(sid)!
+        if (lack <= 0) continue
+        // Unused minutes only as a piece the day would keep (whole block or the subject's end).
+        let gained = Math.min(lack, Math.max(0, spare))
+        if (gained < minBlock && shares.get(sid)! + gained < poolMinutes(sid)) gained = 0
+        spare -= gained
+        lack -= gained
+        for (const [other] of [...top].reverse()) {
+          if (lack <= 0) break
+          const own = shares.get(other)!
+          const extra = own - (must.get(other) ?? 0)
+          if (other === sid || extra <= 0) continue
+          let give = Math.min(lack, extra)
+          // A remainder below the minimum block is dropped, not left as a sliver.
+          if (own - give > 0 && own - give < minBlock && extra === own) give = own
+          shares.set(other, own - give)
+          const taken = Math.min(give, lack)
+          lack -= taken
+          gained += taken
+          spare += give - taken
+        }
+        shares.set(sid, shares.get(sid)! + gained)
+      }
       for (const [sid] of top) {
         let share = shares.get(sid)!
         if (share <= 0) continue
@@ -663,6 +757,45 @@ function run(
         }
         L += share
       }
+    }
+    /**
+     * Required minutes each subject must get today so that its goals still fit the later days
+     * (ROADMAP 11a feasibility): later days are filled backwards, latest goal first, and what
+     * does not fit is today's floor. Reviews and buffers of later days are not known here.
+     */
+    const mustToday = (k: number): Map<string, number> => {
+      const open = new Map<string, { sid: string; left: number; first: number; last: number }>()
+      for (const w of works) {
+        const left = w.left - picked(w)
+        if (w.optional || left <= 0 || !eligible(w, d)) continue
+        const g = open.get(w.goal.id)
+        if (g) g.left += left
+        else {
+          const start = startOf(w)
+          open.set(w.goal.id, {
+            sid: w.subjectId,
+            left,
+            first: start ? (dayIndex.get(start) ?? 0) : 0,
+            last: (dayIndex.get(learnEnd.get(w.goal.id)!) ?? state.days.length) - 1,
+          })
+        }
+      }
+      const list = [...open.entries()].sort(([a, x], [b, y]) => y.last - x.last || (a < b ? -1 : 1))
+      for (let j = state.days.length - 1; j > k; j--) {
+        let room = effCap[j]!
+        for (const [, g] of list) {
+          if (room <= 0) break
+          if (g.left <= 0 || g.last < j || g.first > j || blockedFor(state.days[j]!.date, g.sid))
+            continue
+          const take = Math.min(room, g.left)
+          g.left -= take
+          room -= take
+        }
+      }
+      const out = new Map<string, number>()
+      for (const [, g] of list)
+        if (g.left > 0) out.set(g.sid, (out.get(g.sid) ?? 0) + Math.ceil(g.left))
+      return out
     }
     const picked = (w: Work) =>
       drafts.reduce(
@@ -745,6 +878,8 @@ function run(
       preset,
       minBlockMinutes: minBlock,
       preferredParts: state.preferredParts,
+      scores: state.slotScores?.[isWeekendDay(d) ? 'weekend' : 'weekday'] ?? null,
+      explore: state.explore?.find((e) => e.date === d)?.scores ?? null,
       notBefore: k === 0 ? state.nowMin : null,
       endBy: examEve ? settings.examEveEndMin : null,
     })
@@ -802,6 +937,7 @@ function run(
           optional: x.optional,
           units: mergeUnits(blockUnits),
           reason: x.reason,
+          demand: x.demand,
         })
       }
     }

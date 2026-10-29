@@ -1,4 +1,4 @@
-import { addDays, type LocalDate } from '@/lib/day'
+import { addDays, diffDays, type LocalDate } from '@/lib/day'
 import {
   GROWTH,
   GROWTH_FLOOR_MIN,
@@ -50,15 +50,23 @@ export function realization(history: DayHistory[], today: LocalDate): Realizatio
 }
 
 /**
- * Base of the growth limit: average studied minutes over the last 7 days (zeros included). A
- * user without any planned day in that window has no limit yet (new user, decision Stage 8b).
+ * Base of the growth limit: average studied minutes per day over the last 7 days, counted from
+ * the first day with a plan (days before it are not zeros) and without "Danas ne mogu" days,
+ * divided by ρ: ρ already shrinks the capacity, so done minutes alone would punish twice and keep
+ * the plan at the floor (decision after the Stage 11a simulator). A user without any planned day
+ * in that window has no limit yet (new user, decision Stage 8b).
  */
-export function growthBase(history: DayHistory[], today: LocalDate): number | null {
+export function growthBase(history: DayHistory[], today: LocalDate, rho: number): number | null {
   const from = addDays(today, -GROWTH_WINDOW_DAYS)
   const window = history.filter((d) => d.date >= from && d.date < today)
-  if (!window.some((d) => d.plannedMin > 0)) return null
-  const studied = window.reduce((s, d) => s + d.studiedMin, 0)
-  return Math.round(studied / GROWTH_WINDOW_DAYS)
+  const first = window
+    .filter((d) => d.plannedMin > 0)
+    .reduce<LocalDate | null>((m, d) => (m === null || d.date < m ? d.date : m), null)
+  if (first === null) return null
+  const counted = window.filter((d) => d.date >= first && !d.skipped)
+  const days = diffDays(first, today) - window.filter((d) => d.date >= first && d.skipped).length
+  const studied = counted.reduce((s, d) => s + d.studiedMin, 0)
+  return Math.round(studied / Math.max(1, days) / rho)
 }
 
 /**

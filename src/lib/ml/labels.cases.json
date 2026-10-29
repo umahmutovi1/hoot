@@ -1,0 +1,16 @@
+{
+  "today": "2026-10-29",
+  "cases": [
+    { "status": "done", "onDate": "2026-10-28", "hasSession": false, "label": "done" },
+    { "status": "missed", "onDate": "2026-10-20", "hasSession": true, "label": "done" },
+    { "status": "in_progress", "onDate": "2026-10-29", "hasSession": true, "label": "done" },
+    { "status": "skipped", "onDate": "2026-10-29", "hasSession": false, "label": "skipped" },
+    { "status": "skipped", "onDate": "2026-10-27", "hasSession": false, "label": "skipped" },
+    { "status": "missed", "onDate": "2026-10-28", "hasSession": false, "label": "unconfirmed" },
+    { "status": "planned", "onDate": "2026-10-28", "hasSession": false, "label": "unconfirmed" },
+    { "status": "in_progress", "onDate": "2026-10-28", "hasSession": false, "label": "unconfirmed" },
+    { "status": "planned", "onDate": "2026-10-29", "hasSession": false, "label": null },
+    { "status": "planned", "onDate": "2026-11-02", "hasSession": false, "label": null },
+    { "status": "done", "onDate": "2026-11-02", "hasSession": false, "label": "done" }
+  ]
+}

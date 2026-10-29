@@ -22,7 +22,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 ## Layout
 - `src/app/` router, layout, providers, i18n setup
 - `src/features/<feature>/` screens, components and query hooks per feature (today, plan, schedule, subjects, sources, session, progress, settings)
-- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `schedule/` (timetable occurrences, availability), `grades/` (points, grade scale, grade projection), `session/` (timer from segments, coverage, minutes per unit), `slots/` (study-time slot scores), `strategist/` (rule-based action candidates), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
+- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `schedule/` (timetable occurrences, availability), `grades/` (points, grade scale, grade projection), `session/` (timer from segments, coverage, minutes per unit), `slots/` (study-time slot scores), `strategist/` (rule-based action candidates), `ml/` (model labels and features; Stage 11a), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
 - `src/types/database.ts` generated — never edit by hand
 - `supabase/migrations/` SQL migrations; `supabase/functions/_shared/` Zod schemas, `llm.ts`, prices, cors (imported by the frontend via `@shared/`)
 
@@ -30,6 +30,8 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `npm run dev` · `npm run build` · `npm run lint` (oxlint) · `npm run format` (Prettier) · `npm run typecheck` · `npm test`
 - `npx supabase db push` · `npm run db:types` (regenerates `src/types/database.ts` from the linked project)
 - `npx supabase functions serve` / `npx supabase functions deploy <name>`
+- `npm run sim -- [--seeds 100] [--estimator model|old] [--slots model|off] [--baseline] [--check] [--report sim.md] [--examples ml/data/sim_blocks.json]` (Stage 11a simulator: real `plan()` + student model; `scripts/sim/baseline.json` is the bar no model may fall below, `--check` fails when a metric is worse)
+- `npm run ml:cases` (refresh the TS = Python cases after a prior changes) · `cd ml && uv run python -m hoot_ml.train [--write]` / `hoot_ml.monitor` (Stage 11a MLOps; `train.yml` monthly, `ml-monitor.yml` weekly)
 - `npm run eval` (promptfoo evals for `parse-document`; needs `GEMINI_API_KEY` in the shell)
 
 ## Product principle

@@ -41,7 +41,7 @@ import { GoalCard } from './GoalCard'
 import { SuggestionCard } from '@/features/plan/SuggestionCard'
 import { useSuggestions } from '@/features/plan/useSuggestions'
 import { usePlanStore } from '@/features/plan/store'
-import { useSpeeds } from '@/features/plan/api'
+import { useRates } from '@/features/plan/api'
 import { ResultSheet } from './ResultSheet'
 import { ScaleSheet } from './ScaleSheet'
 import { retakeStatus, type GradeItem } from '@/lib/grades'
@@ -98,8 +98,8 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   // Sheets keep only the id, so they always render the latest cached row.
   const [examSheet, setExamSheet] = useState<{ open: boolean; id?: string }>({ open: false })
   const { data: sources = [] } = useSources(subject.id)
-  const speeds = useSpeeds()
-  const materials = sources.map((s) => materialOf(s, speeds.get(s.id)))
+  const rates = useRates()
+  const materials = sources.map((s) => materialOf(s, rates.get(s.id)))
   const hasMaterial = materials.some((m) => m.units.length > 0)
   const { data: scope = [] } = useScope(subject.id)
   const scopeRows = toScopeRows(scope)

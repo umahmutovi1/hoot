@@ -1,0 +1,48 @@
+{
+  "seeds": 100,
+  "estimator": "old",
+  "slots": "off",
+  "student": {
+    "base": 1.6,
+    "part": {
+      "morning": 0.2,
+      "midday": 0,
+      "afternoon": 0,
+      "evening": -0.3,
+      "night": -1
+    },
+    "weekend": -0.4,
+    "loadPerHour": -0.35,
+    "loadFreeMin": 120,
+    "kind": {
+      "review": 0.3,
+      "recap": 0.2
+    },
+    "demand": -0.3,
+    "nearGoal": 0.6,
+    "nearGoalDays": 3,
+    "prevLate": -0.4,
+    "avoided": [
+      0
+    ],
+    "avoidLogit": -1.2,
+    "avoidDelayMin": 20,
+    "delayMedianMin": 3,
+    "delaySigma": 0.9,
+    "fallacy": 1.15,
+    "durationSigma": 0.3,
+    "subjectSpeedSigma": 0.15,
+    "cantTodayP": 0.04,
+    "markSkipP": 0.35,
+    "unmarkedDoneP": 0.08
+  },
+  "summary": {
+    "examScore": 0.54,
+    "deficitMin": 671.523,
+    "missedShare": 0.307,
+    "planChurn": 0.143,
+    "loadSd": 30.642,
+    "completionAvoided": 0.523,
+    "completionNeutral": 0.765
+  }
+}

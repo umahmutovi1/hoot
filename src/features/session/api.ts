@@ -5,6 +5,7 @@ import { useAuth } from '@/features/auth/auth-context'
 import { supabase } from '@/lib/supabase'
 import type { Op, Row, SyncQueue } from '@/lib/sync'
 import type { StudyMode } from '@/lib/estimates/calibration'
+import { addAway } from '@/lib/session/away'
 import { closeAt, openSegment } from '@/lib/session/timer'
 import type { Tables } from '@/types/database'
 import { toSegment, type ActiveSession, type SegmentRow, type SessionRow } from './model'
@@ -15,7 +16,7 @@ import { toSegment, type ActiveSession, type SegmentRow, type SessionRow } from 
 // networkMode 'always' because offline they still have the mirror to read.
 
 const SESSION_COLUMNS =
-  'id, subject_id, block_id, mode, timer_mode, origin, planned_minutes, started_at, ended_at, focus, focus_reasons, distractions, break_ends_at, reflection, updated_at'
+  'id, subject_id, block_id, mode, timer_mode, origin, planned_minutes, started_at, ended_at, focus, focus_reasons, distractions, break_ends_at, reflection, app_leaves, app_away_sec, updated_at'
 const SEGMENT_COLUMNS = 'id, session_id, unit_id, started_at, ended_at'
 
 export const activeSessionKey = (userId: string | undefined) =>
@@ -275,6 +276,8 @@ export function useSessionWriter() {
           distractions: 0,
           break_ends_at: null,
           reflection: null,
+          app_leaves: 0,
+          app_away_sec: 0,
           updated_at: t,
         }
         const segment: SegmentRow = {
@@ -336,6 +339,12 @@ export function useSessionWriter() {
       /** "Ometena sam": one more distraction in this session. */
       distracted: async ({ session, segments }: ActiveSession) => {
         const row = { ...session, distractions: session.distractions + 1, updated_at: nowIso() }
+        await write([sessionOp(row)], () => ({ session: row, segments }))
+      },
+
+      /** Back in the app after leaving it with the timer running (`useAppAway`). */
+      away: async ({ session, segments }: ActiveSession, sec: number) => {
+        const row = { ...session, ...addAway(session, sec), updated_at: nowIso() }
         await write([sessionOp(row)], () => ({ session: row, segments }))
       },
 
@@ -454,6 +463,8 @@ export function useSessionWriter() {
           distractions: 0,
           break_ends_at: null,
           reflection: null,
+          app_leaves: 0,
+          app_away_sec: 0,
           updated_at: nowIso(),
         }
         const segment: SegmentRow = {

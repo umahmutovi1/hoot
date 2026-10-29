@@ -9,6 +9,8 @@ import { useActiveSession } from '@/features/session/api'
 import { useDayBoundary } from '@/features/settings/profile'
 import { localDay, zonedInstant, type DayBoundary, type LocalDate } from '@/lib/day'
 import { formatClock } from '@/lib/schedule'
+import { DURATION_PRIORS } from '@/lib/estimates/model'
+import { COMPLETION_PRIORS } from '@/lib/slots/completion'
 import { inputHash, plan, SCHEDULER_VERSION } from '@/lib/scheduler'
 import {
   invalidatePlanInputs,
@@ -78,6 +80,7 @@ export function ReplanRunner() {
           nowMin: null,
           todaySlots: usual.todaySlotsKey,
           version: SCHEDULER_VERSION,
+          models: { duration: DURATION_PRIORS.version, completion: COMPLETION_PRIORS.version },
         })
         const lastSlots = run.data?.today_slots ?? null
         const built =

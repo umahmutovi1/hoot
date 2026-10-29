@@ -25,6 +25,7 @@ export function dueUnits(
   cards: CardDue[],
   today: LocalDate,
   boundary: DayBoundary,
+  params?: readonly number[],
 ): DueUnit[] {
   const dueCards = new Map<string, string[]>()
   for (const c of cards)
@@ -39,7 +40,7 @@ export function dueUnits(
     const memory = memoryOf(unit, boundary)
     out.push({
       unit,
-      strength: memory ? retrievabilityOn(memory, today) : 0,
+      strength: memory ? retrievabilityOn(memory, today, params) : 0,
       cardIds,
       unitDue,
     })

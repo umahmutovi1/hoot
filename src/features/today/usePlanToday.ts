@@ -5,8 +5,8 @@ import { usePlanStore } from '@/features/plan/store'
 import { useActiveSession, useSessions } from '@/features/session/api'
 import { toSegment } from '@/features/session/model'
 import { useNow } from '@/features/session/useNow'
-import { useDayBoundary } from '@/features/settings/profile'
-import { materialOf, speedOf, subjectMaterialProgress } from '@/features/sources/model'
+import { useDayBoundary, useFsrsParams } from '@/features/settings/profile'
+import { materialOf, rateOf, subjectMaterialProgress } from '@/features/sources/model'
 import { useSubjects } from '@/features/subjects/api'
 import { addDays, diffDays, localDay, startOfWeek, wallClock } from '@/lib/day'
 import { activeMs, MINUTE } from '@/lib/session/timer'
@@ -14,6 +14,7 @@ import { activeMs, MINUTE } from '@/lib/session/timer'
 /** Today's plan and the numbers around it (Danas). */
 export function usePlanToday() {
   const boundary = useDayBoundary()
+  const fsrsParams = useFsrsParams()
   const now = useNow(60_000)
   const today = localDay(now, boundary)
   const wall = wallClock(now, boundary.timeZone).minutes
@@ -68,13 +69,15 @@ export function usePlanToday() {
     const readiness =
       subjectSources.length > 0
         ? Math.round(
-            subjectMaterialProgress(subjectSources.map((s) => materialOf(s, speedOf(s, sources)))) *
-              100,
+            subjectMaterialProgress(
+              subjectSources.map((s) => materialOf(s, rateOf(s, sources).mean)),
+            ) * 100,
           )
         : null
 
     return {
       boundary,
+      fsrsParams,
       now,
       today,
       nowMin,
@@ -103,6 +106,7 @@ export function usePlanToday() {
     active,
     sources,
     boundary,
+    fsrsParams,
     now,
     blocksQuery.data,
   ])

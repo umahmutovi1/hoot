@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { addDays, zonedInstant } from '@/lib/day'
 import { inputHash, plan } from '@/lib/scheduler'
 import type { DayInput } from '@/lib/schedule'
+import { fitCompletion } from '@/lib/slots/completion'
 import { assessmentRow, subjectRow } from '@/features/subjects/fixtures'
 import type { SourceWithUnits, Unit } from '@/features/sources/model'
 import { applyReplace, reasonOf, replaceArgs, todayMoves } from './save'
@@ -157,6 +158,7 @@ function inputs(patch: Partial<PlanInputs> = {}): PlanInputs {
     logs: [],
     blocks: [],
     sessions: [],
+    completion: fitCompletion([], '2026-10-29'),
     globalScale: undefined,
     dayInput,
     ...patch,
@@ -198,7 +200,7 @@ describe('buildPlanState', () => {
     )
     const u = state.units.find((x) => x.id === 'p0')!
     expect(u.nextReviewOn).toBe('2026-10-25')
-    expect(u.memory).toEqual({ stability: 12.346, lastReviewOn: '2026-10-20' })
+    expect(u.memory).toEqual({ stability: 12.346, difficulty: 5, lastReviewOn: '2026-10-20' })
     expect(state.units.find((x) => x.id === 'p1')!.memory).toBeNull()
     expect(state.settings.reviewCapPct).toBe(25)
   })
@@ -234,6 +236,29 @@ describe('buildPlanState', () => {
       b.units.some((u) => today.has(u.unitId) && u.minutes >= 60),
     )
     expect(again).toEqual([])
+  })
+
+  it('saves what the plan knew about each block (block completion features)', () => {
+    const built = buildPlanState(inputs(), { now: NOW, boundary })
+    const result = plan(built.state)
+    const args = replaceArgs(built, result, 'h', 'r', TZ)
+    const goalOn = new Map(built.state.goals.map((g) => [g.id, g.on]))
+    for (const [i, b] of result.blocks.entries()) {
+      const row = args.p_blocks[i]!
+      const load = result.blocks
+        .filter((x) => x.onDate === b.onDate)
+        .reduce((s, x) => s + x.minutes, 0)
+      expect(row.day_load_min).toBe(Math.round(load))
+      expect(row.days_to_goal).toBe(
+        b.goalId
+          ? Math.round((Date.parse(goalOn.get(b.goalId)!) - Date.parse(b.onDate)) / 864e5)
+          : null,
+      )
+      expect(row.demand).toBeCloseTo(b.demand, 3)
+    }
+    expect(args.p_blocks.some((b) => b.days_to_goal !== null && b.days_to_goal > 0)).toBe(true)
+    const [saved] = applyReplace([], args, 'u')
+    expect(saved!.plan_start_min).toBe(saved!.start_min)
   })
 
   it('keeps today after its only block was skipped to tomorrow ("Preskoči")', () => {
@@ -273,10 +298,11 @@ describe('buildPlanState', () => {
     const blocks = applyReplace([], replaceArgs(first, plan(first.state), 'h', 'r', TZ), 'u')
     const todays = blocks.filter((b) => b.on_date === TODAY)
     expect(todays.length).toBeGreaterThan(0)
-    // Free from 15:00 today only (a class until then).
+    // Free from 16:00 today only (a class until then); today may be the week's exploring day, so
+    // its first block may already sit in the afternoon.
     const later = () => ({
       ...dayInput(),
-      exceptions: [{ onDate: TODAY, startMin: 9 * 60, endMin: 15 * 60, isBusy: true }],
+      exceptions: [{ onDate: TODAY, startMin: 9 * 60, endMin: 16 * 60, isBusy: true }],
     })
     const kept = buildPlanState(inputs({ blocks, dayInput: later }), { now: NOW, boundary })
     expect(kept.keepToday).toBe(true)
@@ -298,12 +324,12 @@ describe('buildPlanState', () => {
     expect(result.blocks.filter((b) => b.onDate === TODAY)).toEqual([])
     const moves = todayMoves(re, result, blocks)
     expect(moves.length).toBeGreaterThan(0)
-    for (const m of moves) expect(m.startMin).toBeGreaterThanOrEqual(15 * 60)
-    // A block that was not moved still fits: every today block now starts at 15:00 or later.
+    for (const m of moves) expect(m.startMin).toBeGreaterThanOrEqual(16 * 60)
+    // A block that was not moved still fits: every today block now starts at 16:00 or later.
     for (const b of todays)
       expect(
         moves.find((m) => m.block.id === b.id)?.startMin ?? b.start_min!,
-      ).toBeGreaterThanOrEqual(15 * 60)
+      ).toBeGreaterThanOrEqual(16 * 60)
   })
 
   it('a manual block is fixed; the hash changes when any input changes', () => {
@@ -324,6 +350,10 @@ describe('buildPlanState', () => {
       origin: 'user',
       title: 'Vježbe',
       skip_requested_at: null,
+      plan_start_min: null,
+      day_load_min: null,
+      days_to_goal: null,
+      demand: null,
       created_at: '',
       updated_at: '',
       plan_block_units: [],

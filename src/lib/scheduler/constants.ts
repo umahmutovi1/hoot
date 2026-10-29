@@ -40,6 +40,14 @@ export const RHO_MIN = 0.5
 export const RHO_MAX = 1
 export const RHO_WINDOW_DAYS = 14
 
+/**
+ * A clear difference between slot scores (done share). Starts within it of the best are equal and
+ * the earliest wins: per-run estimates of part-of-day effects are noisy (Stage 11a simulator:
+ * wrong sign in ~40% of 4-week runs), and chasing them moved work into worse slots. The same set
+ * is where the one exploring block a week chooses by a posterior draw (Thompson, ε of the best).
+ */
+export const SLOT_GAP = 0.05
+
 /** Growth limit: a day plans at most 1.25× the previous day's limit, from 1.25 × the 7-day average. */
 export const GROWTH = 1.25
 export const GROWTH_FLOOR_MIN = 60
@@ -68,4 +76,4 @@ export function reviewMinutes(kind: 'chapter' | 'question', minutes: number): nu
 }
 
 /** Bump when the algorithm changes, so an old plan is not reused for the same input. */
-export const SCHEDULER_VERSION = 2
+export const SCHEDULER_VERSION = 5

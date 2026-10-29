@@ -2,6 +2,7 @@ import { addDays, diffDays, type DayBoundary, type LocalDate } from '@/lib/day'
 import {
   combineRecall,
   levelAfter,
+  ratingOf,
   READ_CHECK_DAYS,
   retrievabilityOn,
   review,
@@ -51,6 +52,8 @@ export interface ReviewContext {
   at: string
   boundary: DayBoundary
   limits: Map<string, ReviewLimit>
+  /** Personal FSRS weights (`profiles.fsrs_params`); undefined = defaults. */
+  params?: readonly number[]
 }
 
 export interface Outcome {
@@ -103,6 +106,7 @@ export function planReviews(
       today: ctx.today,
       retention: targetRetention(limit.priority, kind),
       lastDay: limit.lastDay,
+      params: ctx.params,
     })
     let level = levelAfter(kind, unit.level, recall, r.memory.streak)
     // General knowledge may differ from the lectures: it moves a chapter up only together with
@@ -133,7 +137,7 @@ export function planReviews(
       levelBefore: unit.level,
       levelAfter: level,
       strengthBefore: r.retrievabilityBefore,
-      strengthAfter: retrievabilityOn(r.memory, tomorrow),
+      strengthAfter: retrievabilityOn(r.memory, tomorrow, ctx.params),
       nextReviewOn,
       relearn,
     })
@@ -148,6 +152,7 @@ export function planReviews(
       today: ctx.today,
       retention: targetRetention(limit.priority, 'card'),
       lastDay: limit.lastDay,
+      params: ctx.params,
     })
     ops.push({
       kind: 'update',
@@ -168,7 +173,7 @@ export function planReviews(
       levelBefore: unit.level,
       levelAfter: unit.level,
       strengthBefore: r.retrievabilityBefore,
-      strengthAfter: retrievabilityOn(r.memory, tomorrow),
+      strengthAfter: retrievabilityOn(r.memory, tomorrow, ctx.params),
       nextReviewOn: r.nextReviewOn,
       relearn: false,
     })
@@ -195,6 +200,11 @@ function logRow(
     reviewed_at: ctx.at,
     source,
     recall,
+    // FSRS rating and the state before it, for personal FSRS parameters (Stage 11a).
+    rating: ratingOf(recall),
+    state_before: before ? before.state : null,
+    difficulty_before: before ? round(before.difficulty) : null,
+    retrievability_before: r.retrievabilityBefore === null ? null : round(r.retrievabilityBefore),
     // Due for a check (the plan put it there) vs. tested right after reading or on demand.
     was_scheduled: dueOn !== null && dueOn <= ctx.today,
     interval_before:

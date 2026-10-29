@@ -62,6 +62,8 @@ export interface PlanGoal {
   eveReserved?: boolean
   /** Exam: wall-clock minute, set with `eveReserved` (two exams on one day: the earlier is closer). */
   atMin?: number
+  /** Exam: its points (`assessments.points_max`); absent when unknown. */
+  points?: number
 }
 
 /** A leaf unit with its estimate (minutes already include calibration and speed factor). */
@@ -88,7 +90,7 @@ export interface PlanUnit {
    */
   nextReviewOn: LocalDate | null
   /** FSRS memory of the unit, for its strength on a day; null before the first test. */
-  memory?: { stability: number; lastReviewOn: LocalDate } | null
+  memory?: { stability: number; difficulty?: number; lastReviewOn: LocalDate } | null
   /** Covered in class on this day (latest lecture log), null = not covered or not tracked. */
   coveredOn: LocalDate | null
   /** The subject has lecture logs for this unit's source: uncovered units are not pushed ahead. */
@@ -148,8 +150,26 @@ export interface PlanState {
   rho: number
   /** Average studied minutes of the last 7 days for the growth limit; null = no limit. */
   growthBase: number | null
-  /** Onboarding "kad ti je najlakše učiti" (prior for slot scores until Stage 11). */
+  /** Onboarding "kad ti je najlakše učiti" (prior for slot scores without `slotCompletion`). */
   preferredParts: SlotPart[]
+  /**
+   * Expected done share of a learning block per part of the day (block completion model,
+   * `src/lib/slots/`): capacity per slot instead of one ρ. Absent = ρ.
+   */
+  slotCompletion?: SlotCompletion | null
+  /** Slot scores of `placeTimes()` from the same model (cautious); absent = onboarding prior. */
+  slotScores?: SlotCompletion | null
+  /** Exploring days (at most one a week) with their posterior draw of the expected share. */
+  explore?: ExploreDay[]
+  /** Personal FSRS weights (`profiles.fsrs_params`); absent = defaults. */
+  fsrsParams?: number[]
+}
+
+export type SlotCompletion = Record<'weekday' | 'weekend', Record<SlotPart, number>>
+
+export interface ExploreDay {
+  date: LocalDate
+  scores: Record<SlotPart, number>
 }
 
 /**
@@ -197,6 +217,8 @@ export interface PlannedBlock {
   optional: boolean
   units: BlockUnit[]
   reason: Reason
+  /** Placement demand (first pass, difficulty); kept as a block completion feature. */
+  demand: number
 }
 
 export interface Deficit {

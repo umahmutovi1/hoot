@@ -303,6 +303,24 @@ export function useClearSkipRequest() {
   )
 }
 
+/** The `block_skips` row of a "Preskoči": the left slot with its plan-time features. */
+export function skipRow(block: PlanBlockRow, at: string): Row {
+  return {
+    id: crypto.randomUUID(),
+    block_id: block.id,
+    subject_id: block.subject_id,
+    kind: block.kind,
+    reason: block.skip_requested_at ? 'notification' : 'skip',
+    skipped_at: at,
+    on_date: block.on_date,
+    start_min: block.start_min,
+    planned_minutes: block.planned_minutes,
+    day_load_min: block.day_load_min,
+    days_to_goal: block.days_to_goal,
+    demand: block.demand,
+  }
+}
+
 /**
  * "Preskoči" (decision after 8b): the block is not done now, but its material keeps priority.
  * With `startNext` the next block starts right away and the rest of the day is pulled earlier
@@ -428,8 +446,10 @@ export function useSkipBlock() {
         queryClient.setQueryData<PlanBlockRow[]>(key, (list = []) =>
           list.map((b) => rows.find((r) => r.id === b.id) ?? b),
         )
+      // An explicit "skipped" label for the slot the block left (block completion model).
+      const skip = skipRow(block, now.toISOString())
       apply(changed)
-      await write(changed.map(patchOf))
+      await write([...changed.map(patchOf), { kind: 'upsert', table: 'block_skips', rows: [skip] }])
       replanNow()
 
       const when = target.startMin === null ? '' : formatClock(target.startMin)
@@ -443,7 +463,10 @@ export function useSkipBlock() {
           label: t('today.cant.undo'),
           run: () => {
             apply(before)
-            void write(before.map(patchOf)).then(() => replanNow())
+            void write([
+              ...before.map(patchOf),
+              { kind: 'delete', table: 'block_skips', match: { id: skip.id } },
+            ]).then(() => replanNow())
           },
         },
       )
@@ -763,6 +786,10 @@ export function useSaveBlock() {
         {
           ...row,
           skip_requested_at: previous?.skip_requested_at ?? null,
+          plan_start_min: previous?.plan_start_min ?? null,
+          day_load_min: previous?.day_load_min ?? null,
+          days_to_goal: previous?.days_to_goal ?? null,
+          demand: previous?.demand ?? null,
           user_id: userId!,
           created_at: previous?.created_at ?? now,
           updated_at: now,

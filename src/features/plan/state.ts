@@ -28,11 +28,14 @@ import {
   type PlanUnit,
 } from '@/lib/scheduler'
 import { resolvePreset, type CustomPresetRow } from '@/lib/session/timer'
+import type { CompletionPosterior } from '@/lib/slots/completion'
+import { exploreDays, slotCompletion, slotScores } from '@/lib/slots/score'
+import { paramsOf } from '@/lib/srs/optimize'
 import type { Tables } from '@/types/database'
 import {
   asProgress,
   materialOf,
-  speedOf,
+  rateOf,
   toScopeRows,
   type AssessmentUnit,
   type SourceWithUnits,
@@ -78,6 +81,8 @@ export interface PlanInputs {
   /** Blocks from 14 days ago on. */
   blocks: PlanBlockRow[]
   sessions: SessionMinutes[]
+  /** Personal block completion posterior (capacity per slot, slot scores, exploration). */
+  completion: CompletionPosterior
   globalScale: { points_total: number; grade_scale: unknown } | undefined
   dayInput: (date: LocalDate) => DayInput
 }
@@ -264,7 +269,7 @@ export function buildPlanState(
   const leafIdsBySource = new Map<string, string[]>()
   const allUnitsForScope: { id: string; parentId: string | null }[] = []
   for (const source of allSources) {
-    const material = materialOf(source, speedOf(source, allSources))
+    const material = materialOf(source, rateOf(source, allSources).mean)
     const leaves = leavesOf(asProgress(material.units))
     const leafIds = new Set(leaves.map((l) => l.id))
     const logs = input.logs.filter((l) => l.source_id === source.id)
@@ -370,6 +375,7 @@ export function buildPlanState(
         on,
         unitIds: [...scope].filter((id) => subjectOfUnit.get(id) === subject.id).sort(),
         minutes: 0,
+        ...(a.points_max ? { points: a.points_max } : {}),
         // Only set when reserved, so plans without a reservation keep their input hash.
         ...(a.eve_reserved
           ? { eveReserved: true, atMin: wallClock(new Date(a.at), boundary.timeZone).minutes }
@@ -496,8 +502,13 @@ export function buildPlanState(
     },
     preset: resolvePreset(profile.default_preset, presetsOf(profile)),
     rho: rho.rho,
-    growthBase: growthBase(history, today),
+    growthBase: growthBase(history, today, rho.rho),
     preferredParts: [...parts].sort(),
+    slotCompletion: slotCompletion(input.completion),
+    slotScores: slotScores(input.completion),
+    // Seeded by the user and the week: the exploring day stays put across replans.
+    explore: exploreDays(input.completion, from, end, profile.id),
+    fsrsParams: paramsOf(profile.fsrs_params),
   }
   const behind: SubjectBehindInput[] = []
   for (const subject of subjects) {
@@ -527,7 +538,11 @@ export function buildPlanState(
 /** Only what the plan uses (strength on a day), so other memory fields do not change the hash. */
 function memoryRef(m: ReturnType<typeof memoryOf>): PlanUnit['memory'] {
   return m
-    ? { stability: Math.round(m.stability * 1000) / 1000, lastReviewOn: m.lastReviewOn }
+    ? {
+        stability: Math.round(m.stability * 1000) / 1000,
+        difficulty: Math.round(m.difficulty * 1000) / 1000,
+        lastReviewOn: m.lastReviewOn,
+      }
     : null
 }
 

@@ -1,3 +1,4 @@
+import { default_w } from 'ts-fsrs'
 import { describe, expect, it } from 'vitest'
 import type { Row } from '@/lib/sync'
 import { planReviews, readCheckOn, type ReviewContext } from './apply'
@@ -24,6 +25,19 @@ const logsOf = (plan: ReturnType<typeof planReviews>) =>
   (plan.ops.find((o) => o.kind === 'upsert' && o.table === 'review_logs') as { rows: Row[] }).rows
 
 describe('planReviews', () => {
+  it('uses the personal FSRS weights when the profile has them', () => {
+    const input = [{ unit: unit('a'), recalls: [{ recall: 2 as const, source: 'notes' as const }] }]
+    const fallback = planReviews(input, [], ctx())
+    // A lower first stability for "Good" (w[2]): weaker memory tomorrow.
+    const w = [...default_w]
+    w[2] = 0.5
+    const personal = planReviews(input, [], { ...ctx(), params: w })
+    expect(patchOf(personal, 'units', 'a')!.patch.fsrs_stability).toBeLessThan(
+      patchOf(fallback, 'units', 'a')!.patch.fsrs_stability as number,
+    )
+    expect(personal.outcomes[0]!.strengthAfter).toBeLessThan(fallback.outcomes[0]!.strengthAfter)
+  })
+
   it('"Sjećam se" in the gate: level 2, memory, next review and a log', () => {
     const plan = planReviews(
       [
@@ -54,6 +68,10 @@ describe('planReviews', () => {
       was_scheduled: false,
       elapsed_days: 0,
       stability_before: null,
+      rating: 3,
+      state_before: null,
+      difficulty_before: null,
+      retrievability_before: null,
     })
     expect(plan.outcomes[0]).toMatchObject({ levelBefore: 1, levelAfter: 2, relearn: false })
   })
@@ -113,6 +131,9 @@ describe('planReviews', () => {
     const [log] = logsOf(plan)
     expect(log).toMatchObject({ was_scheduled: true, elapsed_days: 10, interval_before: 10 })
     expect(log!.stability_before).toBe(8)
+    // "Ne" is FSRS Again; the state, difficulty and strength just before the review.
+    expect(log).toMatchObject({ rating: 1, state_before: 2, difficulty_before: 5 })
+    expect(log!.retrievability_before).toBeCloseTo(plan.outcomes[0]!.strengthBefore!, 4)
     expect(plan.outcomes[0]!.relearn).toBe(true)
     expect(plan.outcomes[0]!.strengthBefore).toBeLessThan(0.9)
   })

@@ -15,13 +15,14 @@ export function strengthOf(
   cards: (MemoryRow & { unit_id: string })[],
   today: LocalDate,
   boundary: DayBoundary,
+  params?: readonly number[],
 ): number | null {
   const own = memoryOf(unit, boundary)
   const cardRs = cards.flatMap((c) => {
     const m = memoryOf(c, boundary)
-    return m ? [retrievabilityOn(m, today)] : []
+    return m ? [retrievabilityOn(m, today, params)] : []
   })
-  return unitStrength(own ? retrievabilityOn(own, today) : null, cardRs)
+  return unitStrength(own ? retrievabilityOn(own, today, params) : null, cardRs)
 }
 
 export interface UnitStrength {
@@ -48,13 +49,14 @@ export function strengthSummary(
   cards: (MemoryRow & { unit_id: string })[],
   today: LocalDate,
   boundary: DayBoundary,
+  params?: readonly number[],
 ): StrengthSummary {
   const byUnit = new Map<string, typeof cards>()
   for (const c of cards) byUnit.set(c.unit_id, [...(byUnit.get(c.unit_id) ?? []), c])
   const all: UnitStrength[] = leaves.map(({ unit, minutes }) => ({
     unit,
     minutes,
-    strength: strengthOf(unit, byUnit.get(unit.id) ?? [], today, boundary),
+    strength: strengthOf(unit, byUnit.get(unit.id) ?? [], today, boundary, params),
   }))
   const inReview = all.flatMap((x) =>
     x.strength === null ? [] : [{ ...x, strength: x.strength, band: strengthBand(x.strength) }],
