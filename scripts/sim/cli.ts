@@ -4,7 +4,7 @@ import { simulate, summarize, type BlockExample, type RunMetrics } from './run'
 import { DEFAULT_STUDENT } from './student'
 
 /**
- * `npm run sim -- [--seeds 30] [--baseline] [--examples ml/data/sim_blocks.json]`
+ * `npm run sim -- [--seeds 100] [--baseline] [--examples ml/data/sim_blocks.json]`
  * Prints the mean metrics over seeds 1..N. `--baseline` writes them to `scripts/sim/baseline.json`
  * (what later changes are compared against); `--examples` writes every block for `ml/`.
  */
@@ -13,7 +13,7 @@ const option = (name: string) => {
   const i = args.indexOf(`--${name}`)
   return i === -1 ? null : (args[i + 1] ?? '')
 }
-const seeds = Number(option('seeds') ?? 30)
+const seeds = Number(option('seeds') ?? 100)
 
 const runs: RunMetrics[] = []
 const examples: BlockExample[] = []

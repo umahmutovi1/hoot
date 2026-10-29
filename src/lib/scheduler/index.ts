@@ -35,3 +35,10 @@ export {
   type Suggestion,
   type SuggestionInput,
 } from './suggestions'
+export {
+  dayCapacity,
+  feasibility,
+  goalWindows,
+  type Feasibility,
+  type GoalWindow,
+} from './feasibility'

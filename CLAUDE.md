@@ -30,7 +30,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `npm run dev` · `npm run build` · `npm run lint` (oxlint) · `npm run format` (Prettier) · `npm run typecheck` · `npm test`
 - `npx supabase db push` · `npm run db:types` (regenerates `src/types/database.ts` from the linked project)
 - `npx supabase functions serve` / `npx supabase functions deploy <name>`
-- `npm run sim -- [--seeds 30] [--baseline] [--examples ml/data/sim_blocks.json]` (Stage 11a simulator: real `plan()` + student model; `scripts/sim/baseline.json` is the bar no model may fall below)
+- `npm run sim -- [--seeds 100] [--baseline] [--examples ml/data/sim_blocks.json]` (Stage 11a simulator: real `plan()` + student model; `scripts/sim/baseline.json` is the bar no model may fall below)
 - `npm run eval` (promptfoo evals for `parse-document`; needs `GEMINI_API_KEY` in the shell)
 
 ## Product principle
