@@ -41,7 +41,21 @@ Razlike prema benchmarku, zbog kojih se brojevi ne poklapaju 1:1:
 
 ## Rezultati
 
-Popunjava se iz `results/summary.md` nakon pokretanja.
+Uzorak je 100 kolekcija (seed 42) sa ukupno 4 070 535 predviđenih ponavljanja (medijan 12 395 po korisniku). Treba ~30 s po korisniku na Apple M5. Ispod je prosjek po korisnicima ± 99 % CI, sa benchmarkom (9 999 kolekcija) u zadnjoj koloni:
+
+| model | log-loss ↓ | RMSE(bins) ↓ | AUC ↑ | benchmark (LL / RMSE / AUC) |
+|---|---|---|---|---|
+| `fsrs6` | 0,3494 ± 0,0455 | 0,0698 ± 0,0108 | 0,6932 ± 0,0262 | 0,3460 / 0,0653 / 0,7034 |
+| `fsrs6_default` | 0,3686 ± 0,0438 | 0,1009 ± 0,0136 | 0,6846 ± 0,0269 | |
+| `fsrs6_3btn` | 0,3510 ± 0,0455 | 0,0714 ± 0,0107 | 0,6862 ± 0,0275 | |
+| `gru` | 0,3676 ± 0,0480 | 0,0779 ± 0,0119 | 0,6643 ± 0,0284 | 0,3328 / 0,0549 / 0,7324 |
+
+Ponderisano brojem ponavljanja i udio korisnika kod kojih je GRU bolji: [`results/summary.md`](results/summary.md).
+
+- **FSRS-6 se reprodukuje.** Sve tri metrike su unutar 99 % CI od tabele benchmarka.
+- **GRU bez pretreninga je lošiji od FSRS-6.** Po log-lossu je bolji samo kod 24 % korisnika, jednako u manjoj i u većoj polovini po broju ponavljanja. Njegova prednost u benchmarku dolazi od pretreninga na mnogo korisnika, a ne od podataka jednog korisnika.
+- **Lični parametri donose najviše.** Default težine su lošije za 0,019 log-lossa i 0,031 RMSE(bins).
+- **Skala bez Easy skoro ništa ne košta:** 0,0015 log-lossa i 0,0016 RMSE(bins).
 
 ## Šta se prenosi na Hoot, a šta ne
 
