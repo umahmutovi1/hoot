@@ -34,6 +34,7 @@ import { useToast } from '@/components/toast-store'
 import { useDeleteBlock } from './actions'
 import { BlockSheet } from './BlockSheet'
 import { EditDaySheet, type EditDayAction } from './EditDaySheet'
+import { RestorePlanSheet } from './RestorePlanSheet'
 import { DayTimeline } from './DayTimeline'
 import { EveBand } from './EveBand'
 import { MoreTimeSheet } from './MoreTimeSheet'
@@ -88,9 +89,11 @@ export function CalendarView() {
   const [moreOpen, setMoreOpen] = useState(() => params.get('more') === '1')
   const [editOpen, setEditOpen] = useState(false)
   const [slotsOpen, setSlotsOpen] = useState(false)
+  const [restoreOpen, setRestoreOpen] = useState(false)
   const editAction = (action: EditDayAction) => {
     if (action === 'slots') setSlotsOpen(true)
     else if (action === 'more') setMoreOpen(true)
+    else if (action === 'restore') setRestoreOpen(true)
     else openBlock(null)
   }
   const revert = async () => {
@@ -139,29 +142,15 @@ export function CalendarView() {
             }
           />
           <EveBand date={selectedDate} />
-          <div className="flex items-center justify-between gap-3 px-1">
-            <span className="text-xs leading-[1.4] text-ink-muted">
-              {t('plan.schedule.note')} · {t('plan.schedule.moved')}
-            </span>
-            <span className="flex shrink-0 gap-1.5">
-              {edited.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => void revert()}
-                  className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
-                >
-                  {t('plan.schedule.revert')}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setEditOpen(true)}
-                className="flex h-11 shrink-0 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold text-ink"
-              >
-                <PencilIcon size={16} className="text-brand" />
-                {t('plan.editDay.button')}
-              </button>
-            </span>
+          <div className="flex justify-end px-1">
+            <button
+              type="button"
+              onClick={() => setEditOpen(true)}
+              className="flex h-11 shrink-0 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold text-ink"
+            >
+              <PencilIcon size={16} className="text-brand" />
+              {t('plan.editDay.button')}
+            </button>
           </div>
           <div
             data-timeline-scroll
@@ -209,6 +198,13 @@ export function CalendarView() {
         open={editOpen}
         onOpenChange={setEditOpen}
         onAction={editAction}
+        restorable={edited.length}
+      />
+      <RestorePlanSheet
+        open={restoreOpen}
+        onOpenChange={setRestoreOpen}
+        blocks={edited}
+        onConfirm={() => void revert()}
       />
       <DaySheet date={selectedDate} open={slotsOpen} onOpenChange={setSlotsOpen} />
       <MoreTimeSheet

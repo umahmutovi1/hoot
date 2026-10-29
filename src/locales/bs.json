@@ -211,8 +211,7 @@
     "legendPlanned": "Planirano učenje",
     "schedule": {
       "note": "Vremena predlaže plan, uz pauze",
-      "moved": "Pomjeren blok postaje ručni",
-      "revert": "Vrati predloženo",
+      "moved": "Pomjeren blok postaje fiksan",
       "reverted": "Vraćen je prijedlog plana"
     },
     "openMonth": "Prikaži mjesec, {{month}}",
@@ -243,6 +242,18 @@
     "timeline": {
       "edit": "Uredi",
       "details": "Detalji"
+    },
+    "restore": {
+      "row": "Vrati predloženi plan",
+      "rowSub_one": "{{count}} pomjeren blok ovog dana opet slaže plan",
+      "rowSub_few": "{{count}} pomjerena bloka ovog dana opet slaže plan",
+      "rowSub_other": "{{count}} pomjerenih blokova ovog dana opet slaže plan",
+      "title": "Vratiti predloženi plan?",
+      "lead": "Ovi blokovi su pomjereni i fiksni. Postaju opet automatski, a plan im odmah bira novo vrijeme. Možeš poništiti.",
+      "change": "fiksno → automatski",
+      "confirm_one": "Vrati {{count}} blok planu",
+      "confirm_few": "Vrati {{count}} bloka planu",
+      "confirm_other": "Vrati {{count}} blokova planu"
     }
   },
   "subjects": {

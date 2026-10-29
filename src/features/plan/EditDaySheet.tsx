@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { BottomSheet } from '@/components/BottomSheet'
-import { CapIcon, ChevronRightIcon, ClockIcon, PlusIcon } from '@/components/icons'
+import { CapIcon, ChevronRightIcon, ClockIcon, PlusIcon, SparkleIcon } from '@/components/icons'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useLocale } from '@/features/settings/useLocale'
 import { formatDuration } from '@/features/sources/format'
@@ -11,7 +11,7 @@ import { toDisplayDate, type LocalDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { capFor, freeMinutesOn } from '@/lib/schedule'
 
-export type EditDayAction = 'slots' | 'more' | 'block'
+export type EditDayAction = 'slots' | 'more' | 'block' | 'restore'
 
 /**
  * "Uredi dan" (Plan → Dan): every change for the selected day in one place, so it is clear the day
@@ -23,11 +23,14 @@ export function EditDaySheet({
   open,
   onOpenChange,
   onAction,
+  restorable = 0,
 }: {
   date: LocalDate
   open: boolean
   onOpenChange: (open: boolean) => void
   onAction: (action: EditDayAction) => void
+  /** Moved (Fixed) blocks of the day that "Vrati predloženi plan" would give back to the plan. */
+  restorable?: number
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
@@ -68,6 +71,14 @@ export function EditDaySheet({
           sub={t('plan.editDay.blockSub')}
           onClick={() => pick('block')}
         />
+        {restorable > 0 && (
+          <Row
+            icon={<SparkleIcon size={20} className="text-brand" />}
+            title={t('plan.restore.row')}
+            sub={t('plan.restore.rowSub', { count: restorable })}
+            onClick={() => pick('restore')}
+          />
+        )}
         <span className="mt-3 px-1 text-xs font-semibold tracking-wide text-ink-muted uppercase">
           {t('plan.editDay.always')}
         </span>
@@ -83,6 +94,9 @@ export function EditDaySheet({
           sub={t('plan.editDay.timetableSub')}
           to="/plan/timetable"
         />
+        <p className="mt-2 px-1 text-xs leading-[1.45] text-ink-muted">
+          {t('plan.schedule.note')} · {t('plan.schedule.moved')}
+        </p>
       </div>
     </BottomSheet>
   )
