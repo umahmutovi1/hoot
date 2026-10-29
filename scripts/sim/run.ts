@@ -145,6 +145,7 @@ export function simulate(
     const open = new Set(goals.map((g) => g.subjectId))
     const cantToday = r.chance(params.cantTodayP)
 
+    const rho = realization(history, day).rho
     const horizon = diffDays(
       day,
       goals.reduce((m, g) => (g.on > m ? g.on : m), day),
@@ -170,8 +171,8 @@ export function simulate(
       fixed: [],
       settings: SETTINGS,
       preset: BUILT_IN_PRESETS[0]!,
-      rho: realization(history, day).rho,
-      growthBase: growthBase(history, day),
+      rho,
+      growthBase: growthBase(history, day, rho),
       preferredParts: [],
     }
     const result = plan(state)
