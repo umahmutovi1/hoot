@@ -1,9 +1,17 @@
 import { BusySheet } from '@/features/calendars/BusySheet'
+import { useGoogleSyncStatus } from '@/features/calendars/google'
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { addMonths, differenceInCalendarDays, format, isSameDay, startOfMonth } from 'date-fns'
-import { ChevronLeftIcon, ChevronRightIcon, FlagIcon, LockIcon, PlusIcon } from '@/components/icons'
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  FlagIcon,
+  LockIcon,
+  PencilIcon,
+  PlusIcon,
+} from '@/components/icons'
 import { formatClock } from '@/lib/schedule'
 import { useDayBoundary } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
@@ -16,6 +24,7 @@ import { localDay, toDisplayDate, wallClock } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { ClassDetailSheet } from '@/features/schedule/ClassDetailSheet'
+import { DaySheet } from '@/features/schedule/DaySheet'
 import { statusLabel } from '@/features/schedule/format'
 import { useAgenda, type DayBusy, type DayClass } from './agenda'
 import { deadlinesAhead, deadlinesOn, examsOn, monthGrid, possibleExamsOn } from './calendar'
@@ -24,6 +33,8 @@ import { DayStrip } from './DayStrip'
 import { useToast } from '@/components/toast-store'
 import { useDeleteBlock } from './actions'
 import { BlockSheet } from './BlockSheet'
+import { EditDaySheet, type EditDayAction } from './EditDaySheet'
+import { RestorePlanSheet } from './RestorePlanSheet'
 import { DayTimeline } from './DayTimeline'
 import { EveBand } from './EveBand'
 import { MoreTimeSheet } from './MoreTimeSheet'
@@ -59,6 +70,7 @@ export function CalendarView() {
   const openClass = (item: DayClass, date: Date) =>
     setDetail({ item, date: localDateOf(date.toISOString()) })
   const agenda = useAgenda()
+  const google = useGoogleSyncStatus()
   const [busy, setBusy] = useState<DayBusy | null>(null)
   const boundary = useDayBoundary()
   const selectedDate = localDateOf(selected.toISOString())
@@ -75,6 +87,15 @@ export function CalendarView() {
   const edited = blocks.filter((b) => b.edited && b.block.status === 'planned')
   // "Više vremena ovaj dan": the button, or `?more=1` from search.
   const [moreOpen, setMoreOpen] = useState(() => params.get('more') === '1')
+  const [editOpen, setEditOpen] = useState(false)
+  const [slotsOpen, setSlotsOpen] = useState(false)
+  const [restoreOpen, setRestoreOpen] = useState(false)
+  const editAction = (action: EditDayAction) => {
+    if (action === 'slots') setSlotsOpen(true)
+    else if (action === 'more') setMoreOpen(true)
+    else if (action === 'restore') setRestoreOpen(true)
+    else openBlock(null)
+  }
   const revert = async () => {
     const undos: (() => Promise<void>)[] = []
     for (const b of edited) undos.push(await remove(b.block, false))
@@ -121,28 +142,15 @@ export function CalendarView() {
             }
           />
           <EveBand date={selectedDate} />
-          <div className="flex items-center justify-between gap-3 px-1">
-            <span className="text-xs leading-[1.4] text-ink-muted">
-              {t('plan.schedule.note')} · {t('plan.schedule.moved')}
-            </span>
-            <span className="flex shrink-0 gap-1.5">
-              {edited.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => void revert()}
-                  className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
-                >
-                  {t('plan.schedule.revert')}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setMoreOpen(true)}
-                className="flex h-9 shrink-0 items-center rounded-full bg-canvas px-3 text-[13px] font-semibold text-brand"
-              >
-                {t('plan.more.button')}
-              </button>
-            </span>
+          <div className="flex justify-end px-1">
+            <button
+              type="button"
+              onClick={() => setEditOpen(true)}
+              className="flex h-11 shrink-0 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold text-ink"
+            >
+              <PencilIcon size={16} className="text-brand" />
+              {t('plan.editDay.button')}
+            </button>
           </div>
           <div
             data-timeline-scroll
@@ -151,10 +159,21 @@ export function CalendarView() {
             <DayTimeline
               items={dayClasses}
               busy={agenda.busyFor(selectedDate)}
-              blocks={toTimeline(blocks)}
+              blocks={toTimeline(blocks).map((b) => {
+                // "u Google-u" / "čeka Google" on each block once Google is connected.
+                const sync = google.stateOf(`block:${b.id}`)
+                return sync
+                  ? {
+                      ...b,
+                      sub: [b.sub, t(`googleCalendar.tag.${sync}`)].filter(Boolean).join(' · '),
+                    }
+                  : b
+              })}
               onPickBlock={(b) => openBlock(b.block)}
               onPickBusy={setBusy}
               onPick={(item) => openClass(item, selected)}
+              onPickEmpty={() => setEditOpen(true)}
+              emptyLabel={t('plan.editDay.button')}
               scrollKey={selectedDate}
               nowMin={
                 isSameDay(selected, today) ? wallClock(now, boundary.timeZone).minutes : undefined
@@ -174,6 +193,20 @@ export function CalendarView() {
         onPickClass={(item) => openClass(item, selected)}
       />
       <BusySheet item={busy} onClose={() => setBusy(null)} />
+      <EditDaySheet
+        date={selectedDate}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        onAction={editAction}
+        restorable={edited.length}
+      />
+      <RestorePlanSheet
+        open={restoreOpen}
+        onOpenChange={setRestoreOpen}
+        blocks={edited}
+        onConfirm={() => void revert()}
+      />
+      <DaySheet date={selectedDate} open={slotsOpen} onOpenChange={setSlotsOpen} />
       <MoreTimeSheet
         open={moreOpen}
         onOpenChange={(o) => {

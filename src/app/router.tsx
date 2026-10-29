@@ -18,6 +18,7 @@ import { SourcePage } from '@/features/sources/SourcePage'
 import { UnitPage } from '@/features/sources/UnitPage'
 import { ExamScopePage } from '@/features/sources/ExamScopePage'
 import { QuestionLinksPage } from '@/features/sources/QuestionLinksPage'
+import { CalendarImportPage } from '@/features/calendars/CalendarImportPage'
 import { DeadlinesImportPage } from '@/features/calendars/DeadlinesImportPage'
 import { AcademicCalendarPage } from '@/features/schedule/AcademicCalendarPage'
 import { AvailabilityPage } from '@/features/schedule/AvailabilityPage'
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
               { path: 'settings', element: <SettingsPage /> },
               { path: 'today/fresh', element: <FreshStartPage /> },
               { path: 'today/moodle', element: <DeadlinesImportPage /> },
+              { path: 'today/calendar', element: <CalendarImportPage /> },
               { path: 'settings/calendar', element: <AcademicCalendarPage /> },
               { path: 'settings/appearance', element: <AppearancePage /> },
               { path: 'settings/academic', element: <FacultyPage /> },

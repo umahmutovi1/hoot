@@ -208,12 +208,10 @@
     "prevWeek": "Prethodna sedmica",
     "nextWeek": "Sljedeća sedmica",
     "cancelled": "otkazano",
-    "timetableButton": "Raspored",
     "legendPlanned": "Planirano učenje",
     "schedule": {
       "note": "Vremena predlaže plan, uz pauze",
-      "moved": "Pomjeren blok postaje ručni",
-      "revert": "Vrati predloženo",
+      "moved": "Pomjeren blok postaje fiksan",
       "reverted": "Vraćen je prijedlog plana"
     },
     "openMonth": "Prikaži mjesec, {{month}}",
@@ -221,13 +219,41 @@
       "title": "Više vremena ovaj dan",
       "sub": "{{day}} · maksimum {{cap}}",
       "done": "{{day}}: maksimum je {{cap}}",
-      "fullDay": "Maksimum je već koliko i slobodnog vremena; za više dodaj termine u Dostupnosti.",
-      "button": "Više vremena"
+      "fullDay": "Maksimum je već koliko i slobodnog vremena; za više dodaj termine u Dostupnosti."
     },
     "eve": {
       "band": "Samo za {{subject}} · ispit {{when}}",
       "remove": "Ukloni",
       "removed": "Dan više nije rezervisan. Plan je preračunat."
+    },
+    "editDay": {
+      "button": "Uredi dan",
+      "title": "Uredi: {{day}}",
+      "slots": "Kad učim ovaj dan",
+      "slotsSub": "Termini i maksimum, samo danas ili svaki taj dan",
+      "moreSub": "Podigni maksimum samo za ovaj dan",
+      "block": "Dodaj blok",
+      "blockSub": "Ručni blok u tačno vrijeme",
+      "always": "Svake sedmice",
+      "weekSub": "Šablon termina za cijelu sedmicu",
+      "timetable": "Raspored nastave",
+      "timetableSub": "Predavanja i vježbe po sedmicama"
+    },
+    "timeline": {
+      "edit": "Uredi",
+      "details": "Detalji"
+    },
+    "restore": {
+      "row": "Vrati predloženi plan",
+      "rowSub_one": "{{count}} pomjeren blok ovog dana opet slaže plan",
+      "rowSub_few": "{{count}} pomjerena bloka ovog dana opet slaže plan",
+      "rowSub_other": "{{count}} pomjerenih blokova ovog dana opet slaže plan",
+      "title": "Vratiti predloženi plan?",
+      "lead": "Ovi blokovi su pomjereni i fiksni. Postaju opet automatski, a plan im odmah bira novo vrijeme. Možeš poništiti.",
+      "change": "fiksno → automatski",
+      "confirm_one": "Vrati {{count}} blok planu",
+      "confirm_few": "Vrati {{count}} bloka planu",
+      "confirm_other": "Vrati {{count}} blokova planu"
     }
   },
   "subjects": {
@@ -1775,21 +1801,19 @@
   },
   "feeds": {
     "title": "Povezani kalendari",
-    "intro": "Zalijepi tajni iCal link. Zauzetost iz kalendara ulazi u plan kao nastava.",
-    "add": "Dodaj kalendar",
+    "intro": "Google se povezuje jednim tapom. Za Outlook i Moodle zalijepi tajni iCal link: zauzetost ulazi u plan kao nastava, a rokovi iz Moodlea se nude za uvoz.",
+    "add": "Dodaj kalendar preko linka",
     "newTitle": "Novi kalendar",
-    "newSub": "Google, Apple ili Outlook (iCal link)",
+    "newSub": "Outlook ili Moodle (iCal link)",
     "serviceLabel": "Servis",
     "service": {
-      "google": "Google",
-      "apple": "Apple",
-      "outlook": "Outlook"
+      "outlook": "Outlook",
+      "moodle": "Moodle"
     },
     "link": "iCal link",
     "howto": {
-      "google": "Google Kalendar → Postavke kalendara → „Tajna adresa u iCal formatu“.",
-      "apple": "iCloud → Kalendar → Dijeli → Javni kalendar → kopiraj link.",
-      "outlook": "Outlook → Postavke → Kalendar → Dijeljeni kalendari → Objavi kalendar → ICS."
+      "outlook": "Outlook → Postavke → Kalendar → Dijeljeni kalendari → Objavi kalendar → ICS.",
+      "moodle": "Moodle → Kalendar → Izvoz kalendara → „Dobij URL kalendara“."
     },
     "busyOnly": "Spremaj samo zauzeto",
     "busyOnlySub": "Naslov i lokacija se ne spremaju",
@@ -1823,7 +1847,29 @@
     "busyHint": "Ovo vrijeme se ne planira za učenje. Ako ti ne smeta, ignoriši ga.",
     "ignoredHint": "Ignorisano: plan ovo vrijeme računa kao slobodno.",
     "ignore": "Ignoriši",
-    "unignore": "Vrati kao zauzeto"
+    "unignore": "Vrati kao zauzeto",
+    "kindLabel": "Vrsta",
+    "kindHint": {
+      "busy": "Događaji su zauzeto vrijeme: plan ne stavlja učenje preko njih.",
+      "deadlines": "Prepoznala sam Moodle: događaji su rokovi koje ti nudim za uvoz, ne zauzeto vrijeme."
+    },
+    "kindOf": {
+      "title": "Vrsta događaja",
+      "busy": "Zauzeto",
+      "lecture": "Nastava",
+      "exam": "Ispit",
+      "deadline": "Rok",
+      "free": "Slobodno",
+      "hint": {
+        "busy": "Plan ne stavlja učenje preko ovoga.",
+        "lecture": "Nastava: plan ne stavlja učenje preko nje.",
+        "exam": "Ispit: plan ne stavlja učenje preko njega.",
+        "deadline": "Rok ne zauzima vrijeme; nudim ga za uvoz u rokove.",
+        "free": "Samo se prikazuje, vrijeme je slobodno."
+      },
+      "byAi": "procjena AI-ja",
+      "change": "Promijeni vrstu"
+    }
   },
   "onboarding": {
     "skip": "Preskoči",
@@ -1843,12 +1889,19 @@
       "calendarSub": "PDF, slika ili tekst · nastava, rokovi, neradni dani",
       "timetable": "Raspored nastave",
       "timetableSub": "ručno, termin po termin",
-      "feed": "Povezani kalendar",
-      "feedSub": "Google, Apple ili Outlook (iCal link)",
+      "feed": "Drugi kalendar (link)",
+      "feedSub": "Outlook ili Moodle (iCal link)",
       "link": "Link do dokumenta",
       "linkSub": "Plan i program, kalendar ili raspored sa weba",
       "none": "Nemaš ništa sad? Samo nastavi; sve ovo možeš dodati kasnije u Postavkama.",
-      "added": "Dodano"
+      "added": "Dodano",
+      "google": "Poveži Google kalendar",
+      "googleSub": "Zauzetost, predavanja i ispiti iz kalendara, a plan ide nazad u Google",
+      "googleFound": "U kalendaru već imaš: {{found}} · pregledaj",
+      "timetableInGoogle_one": "Već u Google kalendaru: {{count}} predavanje · uvezi",
+      "timetableInGoogle_few": "Već u Google kalendaru: {{count}} predavanja · uvezi",
+      "timetableInGoogle_other": "Već u Google kalendaru: {{count}} predavanja · uvezi",
+      "timetableAsk": "U Google kalendaru ima sedmičnih događaja: jesu li neki predavanja? · pogledaj"
     },
     "rhythm": {
       "title": "Tvoj ritam",
@@ -1954,7 +2007,7 @@
     "unitsMore_one": "{{title}} i još {{count}}",
     "unitsMore_few": "{{title}} i još {{count}}",
     "unitsMore_other": "{{title}} i još {{count}}",
-    "manual": "ručno",
+    "manual": "fiksno",
     "done": "odrađeno",
     "missed": "propušteno",
     "skipped": "preskočeno",
@@ -2087,7 +2140,6 @@
     "timeFixed": "Fiksan termin u satnici",
     "timeFree": "Bez termina, plan ga smjesti u dan",
     "setTime": "Postavi vrijeme",
-    "lockNote": "Kad ga izmijeniš, plan ga više neće pomjerati.",
     "save": "Spasi",
     "deleteBlock": "Obriši blok",
     "move": "Prebaci gradivo na druge dane",
@@ -2097,19 +2149,14 @@
     "delete": "Obriši",
     "cancel": "Odustani",
     "savedToast": "Blok je spašen",
-    "lockedToast": "Blok je sad ručni, plan ga ne pomjera",
+    "lockedToast": "Blok je fiksan: plan ga ne pomjera",
     "deletedToast": "Blok je obrisan",
     "add": "Dodaj blok",
     "other": "Drugi predmet u ovo vrijeme",
     "otherSub": "Isto vrijeme i trajanje; gradivo ovog bloka ide u plan od sutra",
     "otherToast": "Termin je sad za {{subject}}",
-    "keepTime": "Zadrži ovo vrijeme",
-    "keepTimeOn": "Plan ga više neće pomjerati.",
-    "keepTimeOff": "Plan ga smije pomjeriti kad se nešto promijeni.",
     "movedAiToast": "Blok je pomjeren. Plan ga može presložiti.",
-    "backToPlan": "Vrati planu",
-    "backToPlanSub": "Plan ga opet slaže sam.",
-    "backToPlanToast": "Blok je vraćen planu",
+    "backToPlanToast": "Blok je opet automatski: plan ga slaže sam",
     "addedToast": "Blok je dodan",
     "startNow": "Dodano u današnji plan: {{title}}. Započeti odmah?",
     "later": "Kasnije",
@@ -2118,7 +2165,12 @@
     "manual": "Ručno",
     "suggestion": "Plan predlaže",
     "noSuggestion": "Plan sad nema šta predložiti. Izaberi ručno.",
-    "addOne": "Dodaj"
+    "addOne": "Dodaj",
+    "modeTitle": "Način bloka",
+    "modeAuto": "Automatski",
+    "modeFixed": "Fiksno",
+    "modeAutoSub": "Plan ga slaže sam i smije ga pomjeriti kad se nešto promijeni.",
+    "modeFixedSub": "Zaključan: plan ga ne pomjera ni briše, nego planira oko njega. Vrati na Automatski bilo kad."
   },
   "crumbs": {
     "label": "Putanja",
@@ -2377,11 +2429,11 @@
     "continue": "Nastavi"
   },
   "moodle": {
-    "title": "Rokovi iz Moodlea",
+    "title": "Rokovi iz kalendara",
     "lead": "Novi i pomjereni rokovi iz povezanog kalendara. Upisuju se tek kad primijeniš.",
-    "card_one": "{{count}} novi rok iz Moodlea",
-    "card_few": "{{count}} nova roka iz Moodlea",
-    "card_other": "{{count}} novih rokova iz Moodlea",
+    "card_one": "{{count}} novi rok iz kalendara",
+    "card_few": "{{count}} nova roka iz kalendara",
+    "card_other": "{{count}} novih rokova iz kalendara",
     "cardSub": "Pregledaj prije upisa",
     "cardChanged_one": "{{count}} je pomjeren · pregledaj prije upisa",
     "cardChanged_few": "{{count}} su pomjerena · pregledaj prije upisa",
@@ -2398,7 +2450,7 @@
     "restoreAria": "Vrati {{title}}",
     "subject": "Predmet za {{title}}",
     "noSubject": "Bez predmeta",
-    "hint": "Preskočen rok se više ne nudi. Datumi dolaze iz Moodlea; procjenu sati dodaješ na roku.",
+    "hint": "Preskočen rok se više ne nudi. Datumi dolaze iz povezanih kalendara (Moodle, Google, Outlook); procjenu sati dodaješ na roku.",
     "apply_one": "Primijeni {{count}} izmjenu",
     "apply_few": "Primijeni {{count}} izmjene",
     "apply_other": "Primijeni {{count}} izmjena",
@@ -2685,5 +2737,92 @@
       "cardTitle_other": "{{count}} dokumenata sa interneta",
       "cardSub": "Akademski kalendar i plan i program · pregledaš prije spašavanja"
     }
+  },
+  "googleCalendar": {
+    "title": "Google kalendar",
+    "sub": "Poveži se sa Google-om: plan se upisuje u kalendar „Hoot“ za par sekundi, a zauzetost i pomjereni blokovi se vraćaju u plan. Bez linka.",
+    "connect": "Poveži Google kalendar",
+    "connecting": "Otvaram Google…",
+    "reconnectTitle": "Google kalendar treba ponovo povezati",
+    "reconnectSub": "Pristup je istekao. Poveži ponovo; ništa se ne gubi.",
+    "connectedTitle": "Google kalendar",
+    "error": "Zadnja sinhronizacija nije uspjela. Pokušaj ponovo.",
+    "syncNow": "Sinhronizuj",
+    "syncing": "Sinhronizujem…",
+    "push": "Plan u Google kalendaru",
+    "pushSub": "Blokovi, nastava, ispiti i rokovi u kalendaru „Hoot“",
+    "busyTitle": "Zauzetost iz kalendara",
+    "busySub": "Događaji iz uključenih kalendara su zauzeto vrijeme: plan ne stavlja učenje preko njih.",
+    "loading": "Učitavam kalendare…",
+    "primary": "glavni",
+    "disconnect": "Prekini vezu sa Google-om",
+    "disconnectConfirm": "Prekinuti vezu? Zauzetost iz Google-a nestaje iz plana.",
+    "disconnectDelete": "Prekini i obriši kalendar „Hoot“",
+    "disconnectKeep": "Prekini, kalendar „Hoot“ ostaje",
+    "result": {
+      "connected": "Google kalendar je povezan",
+      "error": "Povezivanje sa Google-om nije uspjelo"
+    },
+    "fromGoogle": "iz Google kalendara · {{source}}",
+    "examTitle": "Ispit: {{subject}} · {{exam}}",
+    "deadlineTitle": "Rok: {{title}}",
+    "badge": {
+      "synced": "Sinhronizovano sa Google-om",
+      "pending": "Šaljem u Google…",
+      "reconnect": "Google treba ponovo povezati",
+      "off": "Nije sinhronizovano sa Google-om"
+    },
+    "tag": {
+      "synced": "u Google-u",
+      "pending": "čeka Google"
+    },
+    "review": "Predavanja i ispiti iz kalendara"
+  },
+  "calendarImport": {
+    "title": "Iz kalendara",
+    "lead": "Predavanja i ispiti iz tvojih kalendara. Novo ulazi u Hoot povezano, a ono što već imaš ne dupliram. Ništa se ne spašava dok ne primijeniš.",
+    "none": "Nema novih predavanja ni ispita iz kalendara.",
+    "lectures": "Predavanja",
+    "exams": "Ispiti",
+    "weekly": "Svaki {{day}} {{from}}–{{to}}",
+    "tag": {
+      "new": "Novo",
+      "same": "Već imaš u Hoot-u",
+      "changed": "Promijenjeno u kalendaru"
+    },
+    "action": {
+      "add": "Dodaj u Hoot",
+      "skip": "Preskoči",
+      "link": "Spoji",
+      "google": "Google zamjenjuje",
+      "hoot": "Hoot zamjenjuje",
+      "distinct": "Zadrži oba",
+      "accept": "Uzmi novi datum",
+      "keep": "Zadrži stari"
+    },
+    "actionHint": {
+      "add": "Ulazi u Hoot i ostaje povezano sa kalendarom, bez duplikata.",
+      "skip": "Ne ulazi u Hoot i više se ne nudi.",
+      "link": "Isto je: jedna stavka u Hoot-u, a događaj ostaje u kalendaru. Hoot ga ne upisuje ponovo.",
+      "google": "Hoot uzima vrijeme iz kalendara i povezuje ih.",
+      "hoot": "Događaj se briše iz tvog Google kalendara; ostaje Hoot-ov u kalendaru „Hoot“.",
+      "distinct": "Dvije različite stvari: obje ostaju i više ne pitam.",
+      "accept": "Ispit u Hoot-u dobija datum iz kalendara.",
+      "keep": "Datum u Hoot-u ostaje; ovu promjenu više ne nudim."
+    },
+    "apply_one": "Primijeni {{count}}",
+    "apply_few": "Primijeni {{count}}",
+    "apply_other": "Primijeni {{count}}",
+    "noTeaching": "Za predavanja treba period nastave: dodaj ga u Akademskom kalendaru, pa pokušaj ponovo.",
+    "cardTitle": "Iz tvog kalendara",
+    "cardLectures_one": "{{count}} predavanje",
+    "cardLectures_few": "{{count}} predavanja",
+    "cardLectures_other": "{{count}} predavanja",
+    "cardExams_one": "{{count}} ispit",
+    "cardExams_few": "{{count}} ispita",
+    "cardExams_other": "{{count}} ispita",
+    "unknown": "Ponavlja se svake sedmice: je li predavanje?",
+    "isLecture": "Predavanje je",
+    "notLecture": "Nije"
   }
 }

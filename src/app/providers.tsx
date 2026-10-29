@@ -5,6 +5,8 @@ import { AuthProvider } from '@/features/auth/AuthProvider'
 import { Recalibrator } from '@/features/session/Recalibrator'
 import { queryPersister } from './queryPersister'
 import { CalendarSync } from '@/features/calendars/CalendarSync'
+import { EventClassifier } from '@/features/calendars/EventClassifier'
+import { GooglePush } from '@/features/calendars/GooglePush'
 import { ReplanRunner } from '@/features/plan/ReplanRunner'
 import { PushJobsRunner } from '@/features/notify/PushJobsRunner'
 import { EmbedRunner } from '@/features/owl/EmbedRunner'
@@ -38,6 +40,8 @@ export function Providers({ children }: { children: ReactNode }) {
         <ViewportInsets />
         <SyncRunner />
         <CalendarSync />
+        <GooglePush />
+        <EventClassifier />
         <Recalibrator />
         <ReplanRunner />
         <PushJobsRunner />

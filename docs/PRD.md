@@ -47,13 +47,13 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju, osim stavki označenih
 | Uvoz | Teme | AI označi teme pri uvozu; ručno ispravljive; povezuju pitanja i poglavlja |
 | Raspored | Raspored nastave | Ručno ili slikom; predavanja, vježbe, labovi, parne/neparne sedmice; automatski zauzeto |
 | Raspored | Dostupnost | Sedmični slobodni termini + izuzeci za konkretne dane |
-| Raspored | Povezani kalendari | Google / Apple / Outlook iCal link → zauzeto u planu; Moodle iCal link → prijedlozi rokova sa pregledom |
+| Raspored | Povezani kalendari | Google dvosmjerno (OAuth, sekunde); Outlook / Moodle iCal link → zauzeto u planu ili prijedlozi rokova sa pregledom ([CALENDAR-SYNC.md](CALENDAR-SYNC.md)) |
 | Plan | “Danas” ekran | Fokus kartica dana sa dva prstena (vanjski: plan danas, unutrašnji: sedmica), kartica “Sljedeći blok”, lista blokova, 3 najranija ispita, “zašto ovo danas”; najviše jedna kartica akcije iznad liste |
 | Plan | Brze akcije dana | “Danas ne mogu” (dan zauzet + replan) i “Imam samo 30 min” (najvredniji komad za to vrijeme) |
 | Plan | Kalendar | Mjesec i dan: ispiti, rokovi, nastava i planirani dani |
 | Plan | Satnica | Svaki blok automatski dobije predloženo vrijeme i pauze po predlošku sesije; dnevni pogled kalendara (Plan → Dan, ranije tab Satnica) prikazuje i dozvoljava pomjeranje |
 | Plan | Replan | Propušteno se preraspodijeli od sutra uz limit dnevnog rasta; deficit sa 3 opcije; “novi početak” |
-| Plan | Izvoz u kalendar | ICS pretplata na ispite, rokove i blokove |
+| Plan | Izvoz u kalendar | Blokovi, ispiti, rokovi i nastava u Google kalendaru „Hoot“ za par sekundi, sa linkom „Započni“ ([CALENDAR-SYNC.md](CALENDAR-SYNC.md); zamjenjuje ICS pretplatu) |
 | Plan | Ručni blokovi | Dodaj, izmijeni, obriši blok; ručni i izmijenjeni blokovi su zaključani od replana |
 | Učenje | Timer dugme | Izbor: sljedeći blok (preporučeno), drugi blok danas, slobodna sesija; nastavak aktivne sesije |
 | Učenje | Timer sesije | Segmenti u bazi, pauza, “Sad radim na”, predlošci sesije (Standardno 50/15 default, Pomodoro 25/5 + duga pauza, Flowtime, vlastiti niz, slobodno); radi offline |
@@ -390,6 +390,8 @@ Oba koraka su kod, ne AI, pa su besplatni. Prije računanja pravi se `input_hash
 
 **Pomjeren blok: zaključaj ili ne (odluka, oktobar 2026, Etapa 10b).** Izmjena vremena ili dana bloka u BlockSheetu ima prekidač “Zadrži ovo vrijeme” (uključen po defaultu, kao do sad): uključen → blok postaje ručni (`origin = 'user'`) i replan ga ne pomjera; isključen → blok ostaje AI blok sa novim vremenom samo dok se plan ne promijeni (replan ga smije presložiti, toast to kaže). Ručni blok koji je nastao iz AI bloka ima “Vrati planu” (pojedinačno, uz postojeće “Vrati predloženo” za cijeli dan).
 
+**Dva moda bloka: Automatski i Fiksno (odluka, oktobar 2026, Etapa 10d).** „Ručni“ blok je u stvari zaključan, pa se u UI-ju zove **Fiksno** (ikona katanca, oznaka „fiksno“), a AI blok je **Automatski**. U bazi je to i dalje `plan_blocks.origin` (`user` = Fiksno, `ai` = Automatski). BlockSheet za postojeći blok ima jedan izbor „Način bloka: Automatski / Fiksno“ umjesto prekidača „Zadrži ovo vrijeme“ i dugmeta „Vrati planu“. Pomjeranje AI bloka predloži Fiksno (kao ranije default); Automatski uz izmjenu zadrži blok kao AI blok sa novim vremenom, koji replan smije presložiti. Svaki Fiksni blok (i onaj koji je korisnica sama dodala) se bilo kad vraća na Automatski: blok ide, a plan sam slaže njegovo gradivo. Blok pomjeren u Google kalendaru postaje Fiksni ([CALENDAR-SYNC.md](CALENDAR-SYNC.md)).
+
 **Ručni blokovi.** Blok sa `plan_blocks.origin = 'user'` napravio je ili izmijenio korisnik (vidi tok 7). Nema `plan_run_id`, troši kapacitet svog dana i njegove jedinice se računaju kao planirane. Replan ga nikad ne briše ni pomjera (pomjera ga samo kašnjenje na Počni, vidi Brze akcije dana); kad prođe, postaje odrađen ili propušten kao svaki drugi blok.
 
 **Replan je idempotentan.** Brišu se samo budući nezapočeti blokovi sa `origin = 'ai'`; odrađeni, propušteni i ručni ostaju. Isti ulaz uvijek daje isti plan, pa se može pokretati koliko god puta.
@@ -614,14 +616,14 @@ Mockupi `design/Onboarding.dc.html` … `design/OnboardingSedmica.dc.html` (svi 
 
 ## Povezani kalendari i integracije
 
-Google, Apple iCloud, Outlook i Moodle izvoze kalendar kao iCal (ICS) link, pa jedan mehanizam pokriva sva četiri izvora bez OAuth-a.
+Outlook i Moodle izvoze kalendar kao iCal (ICS) link, pa ih pokriva jedan mehanizam bez OAuth-a. Google se od oktobra 2026 povezuje dvosmjerno (OAuth, push obavještenja), uz klasifikaciju događaja i prepoznavanje duplikata; arhitektura i odluke su u [CALENDAR-SYNC.md](CALENDAR-SYNC.md). Apple iCloud je isključen (odluka, oktobar 2026): nema push-a, a CalDAV traži lozinku za cijeli iCloud; postojeći iCloud linkovi rade dalje kao obični iCal.
 
-**Uvoz (`calendar_feeds`).** Korisnik zalijepi tajni iCal link i izabere vrstu:
+**Uvoz (`calendar_feeds`).** Korisnik zalijepi tajni iCal link; vrsta se pogađa iz linka (Moodle izvoz = rokovi, ostalo = zauzetost) i može se promijeniti na feedu (odluka, oktobar 2026):
 
-- **Zauzetost** (`busy`): Google (Postavke kalendara → “Tajna adresa u iCal formatu”), Outlook (“Objavi kalendar” → ICS), iCloud (javni link). Događaji su zauzeto vrijeme u planu, kao nastava.
+- **Zauzetost** (`busy`): Google (Postavke kalendara → “Tajna adresa u iCal formatu”; dok dvosmjerni sync ne stigne), Outlook (“Objavi kalendar” → ICS). Događaji su zauzeto vrijeme u planu, kao nastava.
 - **Rokovi** (`deadlines`): Moodle (Kalendar → Izvoz → “Dobij URL kalendara”; link sadrži `authtoken` i radi bez prijave, [Moodle docs](https://docs.moodle.org/403/en/Calendar_export)). Događaji ne prave zauzetost nego karticu “3 nova roka iz Moodlea” sa pregledom novo / izmijenjeno / preskačem → `deadlines`; predmet se uparuje preko `fuse.js` kao kod uvoza rasporeda, jer Moodle URL ne može biti ograničen na jedan predmet.
 
-**Sinhronizacija.** Edge funkcija `sync-calendar` (browser ne može povući feed zbog CORS-a): povuče feed, parsira, raširi ponavljanja (RRULE, EXDATE, RECURRENCE-ID) za horizont od 120 dana i upsert po `uid` + početku u `external_events`; nestali događaji se brišu. Okidači: otvaranje app-a (najviše jednom u 30 min) i `pg_cron` svaka 3 h. Greška se upiše u `last_error` i prikaže na feedu; plan koristi zadnje uspješno stanje. Bez LLM poziva; ne broji se u AI limit.
+**Sinhronizacija.** Edge funkcija `sync-calendar` (browser ne može povući feed zbog CORS-a): povuče feed, parsira, raširi ponavljanja (RRULE, EXDATE, RECURRENCE-ID) za horizont od 120 dana i upsert po `uid` + početku u `external_events`; nestali događaji se brišu. Okidači: otvaranje app-a i povratak u app (najviše jednom u 30 min, za svaki feed, i rokove) i `pg_cron` svaka 3 h; upis sa servera stiže u otvoren app kroz Realtime i pokreće replan. Greška se upiše u `last_error` i prikaže na feedu; plan koristi zadnje uspješno stanje. Bez LLM poziva; ne broji se u AI limit.
 
 **Pravila.**
 
@@ -635,7 +637,7 @@ Google, Apple iCloud, Outlook i Moodle izvoze kalendar kao iCal (ICS) link, pa j
 
 **UI.** Postavke → “Povezani kalendari” (lista, dodaj, vrsta, boja, zadnja sinhronizacija, prekidači, ukloni) i korak 2 onboardinga. Uz polje za link kratko uputstvo po servisu.
 
-**Izvoz plana (ICS pretplata).** Edge funkcija `calendar-feed` servira ICS sa tajnim tokenom (`profiles.ics_token`, može se obnoviti): ispiti, rokovi i (prekidač) blokovi plana. Google osvježava pretplaćene kalendare tek svakih ~8–24 h, pa blokovi tamo kasne; app to kaže uz prekidač. Upis blokova odmah (Google Calendar API, OAuth) je “Kasnije”: u Testing režimu Google refresh token ističe za 7 dana, a produkcija traži verifikaciju.
+**Izvoz plana.** ~~ICS pretplata (`calendar-feed`, `profiles.ics_token`)~~ je zamijenjena Google dvosmjernim sync-om (odluka, oktobar 2026): Hoot upisuje blokove, ispite, rokove i nastavu u svoj Google kalendar za par sekundi, a pomjeren ili obrisan blok u Google-u se vraća u plan kao ručni ili preskočen. Detalji u [CALENDAR-SYNC.md](CALENDAR-SYNC.md).
 
 **Materijali: PDF, skripte, knjige, Google Drive (odluka, oktobar 2026, Etapa 10c).** Cilj je da izvor dobije poglavlja i broj stranica bez kucanja, a da app ne postane spremište fajlova. U fazama:
 
@@ -719,7 +721,7 @@ Korisnik unosi predavanja, vježbe i labove (ručno ili slikom rasporeda, isti A
 - **Ekran**: sedmica sa datumima (traka dana, strelice) i vremenska osa izabranog dana: termini dostupnosti, nastava (šrafirano, “iz rasporeda”), slobodno i maksimum tog dana; ispod šablon po danu u sedmici i lista datuma sa izmjenama. Izmjene se spašavaju odmah; replan na izmjenu dolazi sa schedulerom.
 - “Nastava otkazana” i dalje pravi izuzetak (`availability_exceptions`, `lecture_log_id`) koji oslobađa vrijeme termina.
 
-**Kalendar.** Plan ima dva prikaza: Mjesec (postojeća mreža) i Dan (sedmični prikaz je izbačen nakon pregleda). U mjesečnoj mreži nastava nema tačkice (bila bi na skoro svakom danu); termini nastave su u listi izabranog dana, otkazani precrtani. Dan: traka dana kao pilule (izabrani dan taman) i vremenska osa sa karticama u boji predmeta (nastava, kasnije blokovi plana). Tačkice aktivnosti (ispiti, mogući ispiti, rokovi, kasnije planirano učenje) su pod danom u oba prikaza. Tap na termin nastave otvara detalje: predmet (link), tip, vrijeme, sala, sedmice, “Dokle ste stigli?”, “Otkaži za ovaj dan” / “Vrati termin”, “Uredi u rasporedu”. Zaglavlje Plana ima dva dugmeta: Dostupnost i Raspored. Kalendar prima `?date=` i `?view=`, pa drugi ekrani vode direktno na dan (npr. ispit na predmetu → “Prikaži u kalendaru”).
+**Kalendar.** Plan ima dva prikaza: Mjesec (postojeća mreža) i Dan (sedmični prikaz je izbačen nakon pregleda). U mjesečnoj mreži nastava nema tačkice (bila bi na skoro svakom danu); termini nastave su u listi izabranog dana, otkazani precrtani. Dan: traka dana kao pilule (izabrani dan taman) i vremenska osa sa karticama u boji predmeta (nastava, kasnije blokovi plana). Tačkice aktivnosti (ispiti, mogući ispiti, rokovi, kasnije planirano učenje) su pod danom u oba prikaza. Tap na termin nastave otvara detalje: predmet (link), tip, vrijeme, sala, sedmice, “Dokle ste stigli?”, “Otkaži za ovaj dan” / “Vrati termin”, “Uredi u rasporedu”. Zaglavlje Plana nema dugmadi (odluka, oktobar 2026): u pogledu Dan pilula „Uredi dan“ (i tap na prazno vrijeme na osi) otvara sheet sa izmjenama za taj dan (kad učim ovaj dan, više vremena, dodaj blok, a kad dan ima pomjerene blokove i „Vrati predloženi plan“ sa pregledom blokova koji postaju opet automatski prije potvrde) i ispod „Svake sedmice“: Dostupnost i Raspored nastave. Napomena o vremenima je u tom sheetu, ne iznad kalendara. Ranije su Dostupnost i Raspored bili dugmad u zaglavlju, pa nije bilo očito da se njima uređuje dan. Kalendar prima `?date=` i `?view=`, pa drugi ekrani vode direktno na dan (npr. ispit na predmetu → “Prikaži u kalendaru”).
 
 Kartica “Uslikaj raspored” se prikazuje tek sa AI uvozom rasporeda (Etapa 10). Tabela `timetable_entries` je u konsolidovanoj migraciji; AI zadatak `parse_timetable` koristi isti pipeline kao uvoz sadržaja.
 
@@ -883,7 +885,7 @@ React SPA kao PWA na Cloudflare Pages, Supabase za bazu, auth i storage, a AI po
 | Bilješke | `react-markdown` + `remark-math` + `rehype-katex` | Markdown i formule u bilješkama |
 | Grafikoni | `recharts` | Statistika i jačina po temama na Napretku |
 | Slike | `browser-image-compression` | Smanjenje na 1600 px u web workeru prije uploada |
-| Kalendari (ICS) | `ical.js` u edge funkciji `sync-calendar` (parsiranje, RRULE/EXDATE); izvoz ICS-a generiše se ručno (mali format) | Jedan uvoz za Google, Apple, Outlook i Moodle, bez OAuth-a |
+| Kalendari | `ical.js` u edge funkciji `sync-calendar` (parsiranje, RRULE/EXDATE) za Outlook i Moodle; Google Calendar API (OAuth, push kanali) za dvosmjerni Google | iCal za izvore bez API-ja; Google u sekundama u oba smjera ([CALENDAR-SYNC.md](CALENDAR-SYNC.md)) |
 | Fuzzy uparivanje | `fuse.js` | Nazivi predmeta iz rasporeda ↔ postojeći predmeti |
 | Embeddings | pgvector + ugrađeni `gte-small` u Edge Functions (`Supabase.ai.Session`) | Povezivanje pitanja i poglavlja, dedupe tema, bez LLM poziva |
 | Testovi | Vitest + `fast-check` (+ Playwright kasnije) | Scheduler, formule progresa, property testovi invarijanti plana |
@@ -1801,6 +1803,6 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio; prstenovi i izazovi
 | Materijali | PDF na uređaju (outline, bez tokena) → Google Drive Picker (`drive.file`) → puni sadržaj Kasnije, opt-in |
 | Podsjetnici | Svaki blok, pomaci 2 h–5 min (default 30), preskače se samo iza započetog bloka; kašnjenje 15 min; Započni / Preskoči |
 | Teme boja | 5 svijetlih tema, boje predmeta ostaju; tamni režim Kasnije |
-| Pomjeren blok | Prekidač “Zadrži ovo vrijeme” (default: ručni, zaključan); isključen = replan smije presložiti |
+| Pomjeren blok | Način bloka Automatski / Fiksno (pomjeranje predloži Fiksno); Fiksno se bilo kad vraća na Automatski |
 | Današnji dan | Promjena dostupnosti, nastave ili zauzetosti preslaže vremena današnjih nezapočetih AI blokova; dodatni posao samo kroz karticu |
 | Start iz liste | Tap na blok → “Započeti sesiju sada?”; nazad u sesiji → Nastavi / Izađi / Završi ranije / Odbaci |

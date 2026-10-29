@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/auth-context'
 import { deadlinesKey, useDeadlines, useSubjects } from '@/features/subjects/api'
+import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { proposeDeadlines, type DeadlineProposal } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
 import { eventsKey, useCalendarFeeds, useExternalEvents } from './api'
@@ -9,21 +10,22 @@ import { eventsKey, useCalendarFeeds, useExternalEvents } from './api'
 // Deadlines from connected "Rokovi" calendars (Moodle, PRD "Povezani kalendari"): the events are
 // offered as deadlines on Danas and written only after the review ("Primijeni").
 
-/** New or moved deadlines from deadline feeds; [] until everything is loaded. */
+/** New or moved deadlines from deadline feeds and deadline events; [] until everything is loaded. */
 export function useDeadlineProposals(): DeadlineProposal[] {
   const { data: feeds } = useCalendarFeeds()
   const { data: events } = useExternalEvents()
   const { data: deadlines } = useDeadlines()
   const { data: subjects } = useSubjects()
+  const kindOf = useScheduleData().eventKinds.kindOf
   // The moment the screen opened: what is "upcoming" does not move while it is open.
   const [now] = useState(() => new Date())
   return useMemo(() => {
     if (!feeds || !events || !deadlines || !subjects) return []
+    // Moodle feeds, and deadlines found in any calendar (classification, Stage 10d).
     const feedIds = new Set(feeds.filter((f) => f.kind === 'deadlines').map((f) => f.id))
-    if (feedIds.size === 0) return []
     return proposeDeadlines(
       events
-        .filter((e) => feedIds.has(e.feed_id))
+        .filter((e) => feedIds.has(e.feed_id) || kindOf.get(e.id) === 'deadline')
         .map((e) => ({
           id: e.id,
           title: e.title,
@@ -36,7 +38,7 @@ export function useDeadlineProposals(): DeadlineProposal[] {
       deadlines.map((d) => ({ id: d.id, dueAt: d.due_at })),
       now,
     )
-  }, [feeds, events, deadlines, subjects, now])
+  }, [feeds, events, deadlines, subjects, now, kindOf])
 }
 
 /** "Primijeni N": new deadlines are created and linked, moved ones get the new date, skipped ones are ignored. */

@@ -201,12 +201,10 @@
     "prevWeek": "Previous week",
     "nextWeek": "Next week",
     "cancelled": "cancelled",
-    "timetableButton": "Timetable",
     "legendPlanned": "Planned study",
     "schedule": {
       "note": "The plan suggests the times, with breaks",
-      "moved": "A moved block becomes manual",
-      "revert": "Restore the plan",
+      "moved": "A moved block becomes fixed",
       "reverted": "The plan's suggestion is back"
     },
     "openMonth": "Show the month, {{month}}",
@@ -214,13 +212,39 @@
       "title": "More time this day",
       "sub": "{{day}} · maximum {{cap}}",
       "done": "{{day}}: maximum is {{cap}}",
-      "fullDay": "The maximum already equals the free time; add hours in Availability for more.",
-      "button": "More time"
+      "fullDay": "The maximum already equals the free time; add hours in Availability for more."
     },
     "eve": {
       "band": "Only for {{subject}} · exam {{when}}",
       "remove": "Remove",
       "removed": "The day is no longer kept. The plan is updated."
+    },
+    "editDay": {
+      "button": "Edit day",
+      "title": "Edit: {{day}}",
+      "slots": "When I study this day",
+      "slotsSub": "Slots and the cap, just this day or every such weekday",
+      "moreSub": "Raise the cap for this day only",
+      "block": "Add block",
+      "blockSub": "A manual block at an exact time",
+      "always": "Every week",
+      "weekSub": "The slot template for the whole week",
+      "timetable": "Class timetable",
+      "timetableSub": "Lectures and exercises by week"
+    },
+    "timeline": {
+      "edit": "Edit",
+      "details": "Details"
+    },
+    "restore": {
+      "row": "Restore the suggested plan",
+      "rowSub_one": "{{count}} moved block this day goes back to the plan",
+      "rowSub_other": "{{count}} moved blocks this day go back to the plan",
+      "title": "Restore the suggested plan?",
+      "lead": "These blocks were moved and are fixed. They become automatic again and the plan picks new times right away. You can undo.",
+      "change": "fixed → automatic",
+      "confirm_one": "Return {{count}} block to the plan",
+      "confirm_other": "Return {{count}} blocks to the plan"
     }
   },
   "subjects": {
@@ -1725,21 +1749,19 @@
   },
   "feeds": {
     "title": "Connected calendars",
-    "intro": "Paste a secret iCal link. Busy time from the calendar counts like classes in the plan.",
-    "add": "Add calendar",
+    "intro": "Google connects with one tap. For Outlook and Moodle paste a secret iCal link: busy time goes into the plan like classes, and Moodle due dates are offered for import.",
+    "add": "Add a calendar by link",
     "newTitle": "New calendar",
-    "newSub": "Google, Apple or Outlook (iCal link)",
+    "newSub": "Outlook or Moodle (iCal link)",
     "serviceLabel": "Service",
     "service": {
-      "google": "Google",
-      "apple": "Apple",
-      "outlook": "Outlook"
+      "outlook": "Outlook",
+      "moodle": "Moodle"
     },
     "link": "iCal link",
     "howto": {
-      "google": "Google Calendar → Calendar settings → “Secret address in iCal format”.",
-      "apple": "iCloud → Calendar → Share → Public calendar → copy the link.",
-      "outlook": "Outlook → Settings → Calendar → Shared calendars → Publish a calendar → ICS."
+      "outlook": "Outlook → Settings → Calendar → Shared calendars → Publish a calendar → ICS.",
+      "moodle": "Moodle → Calendar → Export calendar → “Get calendar URL”."
     },
     "busyOnly": "Keep busy time only",
     "busyOnlySub": "Titles and locations are not stored",
@@ -1773,7 +1795,29 @@
     "busyHint": "This time is not planned for study. If it does not matter, ignore it.",
     "ignoredHint": "Ignored: the plan counts this time as free.",
     "ignore": "Ignore",
-    "unignore": "Count as busy again"
+    "unignore": "Count as busy again",
+    "kindLabel": "Type",
+    "kindHint": {
+      "busy": "Events are busy time: the plan doesn't put studying over them.",
+      "deadlines": "Recognized as Moodle: events are due dates offered for import, not busy time."
+    },
+    "kindOf": {
+      "title": "Event type",
+      "busy": "Busy",
+      "lecture": "Class",
+      "exam": "Exam",
+      "deadline": "Due date",
+      "free": "Free",
+      "hint": {
+        "busy": "The plan doesn't put studying over this.",
+        "lecture": "A class: the plan doesn't put studying over it.",
+        "exam": "An exam: the plan doesn't put studying over it.",
+        "deadline": "A due date takes no time; it is offered as a deadline.",
+        "free": "Only shown, the time stays free."
+      },
+      "byAi": "AI's guess",
+      "change": "Change type"
+    }
   },
   "onboarding": {
     "skip": "Skip",
@@ -1793,12 +1837,18 @@
       "calendarSub": "PDF, photo or text · classes, exam periods, holidays",
       "timetable": "Class timetable",
       "timetableSub": "by hand, one class at a time",
-      "feed": "Connected calendar",
-      "feedSub": "Google, Apple or Outlook (iCal link)",
+      "feed": "Another calendar (link)",
+      "feedSub": "Outlook or Moodle (iCal link)",
       "link": "Link to a document",
       "linkSub": "Study plan, calendar or timetable from the web",
       "none": "Nothing yet? Just continue; you can add all of this later in Settings.",
-      "added": "Added"
+      "added": "Added",
+      "google": "Connect Google Calendar",
+      "googleSub": "Busy time, lectures and exams from the calendar, and the plan goes back into Google",
+      "googleFound": "Already in your calendar: {{found}} · review",
+      "timetableInGoogle_one": "Already in Google Calendar: {{count}} lecture · import",
+      "timetableInGoogle_other": "Already in Google Calendar: {{count}} lectures · import",
+      "timetableAsk": "Your Google Calendar has weekly events: are any of them lectures? · review"
     },
     "rhythm": {
       "title": "Your rhythm",
@@ -1901,7 +1951,7 @@
     "reviewUnits_other": "Check · {{count}} units",
     "unitsMore_one": "{{title}} and {{count}} more",
     "unitsMore_other": "{{title}} and {{count}} more",
-    "manual": "manual",
+    "manual": "fixed",
     "done": "done",
     "missed": "missed",
     "skipped": "skipped",
@@ -2029,7 +2079,6 @@
     "timeFixed": "Fixed time in the schedule",
     "timeFree": "No time, the plan fits it into the day",
     "setTime": "Set a time",
-    "lockNote": "Once you change it, the plan won't move it any more.",
     "save": "Save",
     "deleteBlock": "Delete block",
     "move": "Move the material to other days",
@@ -2039,19 +2088,14 @@
     "delete": "Delete",
     "cancel": "Cancel",
     "savedToast": "Block saved",
-    "lockedToast": "The block is manual now, the plan won't move it",
+    "lockedToast": "The block is fixed: the plan won't move it",
     "deletedToast": "Block deleted",
     "add": "Add block",
     "other": "Another subject in this slot",
     "otherSub": "Same time and length; this block's material goes back to the plan from tomorrow",
     "otherToast": "This slot is now for {{subject}}",
-    "keepTime": "Keep this time",
-    "keepTimeOn": "The plan will not move it.",
-    "keepTimeOff": "The plan may move it when something changes.",
     "movedAiToast": "Block moved. The plan may rearrange it.",
-    "backToPlan": "Return to plan",
-    "backToPlanSub": "The plan arranges it again.",
-    "backToPlanToast": "Block returned to the plan",
+    "backToPlanToast": "The block is automatic again: the plan arranges it",
     "addedToast": "Block added",
     "startNow": "Added to today's plan: {{title}}. Start right away?",
     "later": "Later",
@@ -2060,7 +2104,12 @@
     "manual": "Manual",
     "suggestion": "The plan suggests",
     "noSuggestion": "The plan has nothing to suggest right now. Pick manually.",
-    "addOne": "Add"
+    "addOne": "Add",
+    "modeTitle": "Block mode",
+    "modeAuto": "Automatic",
+    "modeFixed": "Fixed",
+    "modeAutoSub": "The plan arranges it and may move it when something changes.",
+    "modeFixedSub": "Locked: the plan doesn't move or delete it, it plans around it. Switch back to Automatic any time."
   },
   "crumbs": {
     "label": "Breadcrumb",
@@ -2312,10 +2361,10 @@
     "continue": "Continue"
   },
   "moodle": {
-    "title": "Deadlines from Moodle",
+    "title": "Due dates from calendars",
     "lead": "New and moved deadlines from the connected calendar. Nothing is saved until you apply.",
-    "card_one": "{{count}} new deadline from Moodle",
-    "card_other": "{{count}} new deadlines from Moodle",
+    "card_one": "{{count}} new due date from a calendar",
+    "card_other": "{{count}} new due dates from calendars",
     "cardSub": "Review before saving",
     "cardChanged_one": "{{count}} moved · review before saving",
     "cardChanged_other": "{{count}} moved · review before saving",
@@ -2331,7 +2380,7 @@
     "restoreAria": "Restore {{title}}",
     "subject": "Subject for {{title}}",
     "noSubject": "No subject",
-    "hint": "A skipped deadline is not offered again. Dates come from Moodle; add the hours estimate on the deadline.",
+    "hint": "A skipped due date is not offered again. Dates come from connected calendars (Moodle, Google, Outlook); add the hours on the deadline.",
     "apply_one": "Apply {{count}} change",
     "apply_other": "Apply {{count}} changes",
     "skipAll": "Skip all"
@@ -2613,5 +2662,89 @@
       "cardTitle_other": "{{count}} documents from the web",
       "cardSub": "Academic calendar and syllabus · you review before saving"
     }
+  },
+  "googleCalendar": {
+    "title": "Google Calendar",
+    "sub": "Connect with Google: the plan goes into the “Hoot” calendar within seconds, and busy time and moved blocks come back into the plan. No link needed.",
+    "connect": "Connect Google Calendar",
+    "connecting": "Opening Google…",
+    "reconnectTitle": "Google Calendar needs reconnecting",
+    "reconnectSub": "Access expired. Connect again; nothing is lost.",
+    "connectedTitle": "Google Calendar",
+    "error": "The last sync failed. Try again.",
+    "syncNow": "Sync",
+    "syncing": "Syncing…",
+    "push": "Plan in Google Calendar",
+    "pushSub": "Blocks, classes, exams and deadlines in the “Hoot” calendar",
+    "busyTitle": "Busy time from calendars",
+    "busySub": "Events from the calendars turned on are busy time: the plan doesn't put studying over them.",
+    "loading": "Loading calendars…",
+    "primary": "main",
+    "disconnect": "Disconnect Google",
+    "disconnectConfirm": "Disconnect? Busy time from Google leaves the plan.",
+    "disconnectDelete": "Disconnect and delete the “Hoot” calendar",
+    "disconnectKeep": "Disconnect, keep the “Hoot” calendar",
+    "result": {
+      "connected": "Google Calendar is connected",
+      "error": "Connecting to Google failed"
+    },
+    "fromGoogle": "from Google Calendar · {{source}}",
+    "examTitle": "Exam: {{subject}} · {{exam}}",
+    "deadlineTitle": "Due: {{title}}",
+    "badge": {
+      "synced": "Synced with Google",
+      "pending": "Sending to Google…",
+      "reconnect": "Reconnect Google",
+      "off": "Not synced with Google"
+    },
+    "tag": {
+      "synced": "in Google",
+      "pending": "waiting for Google"
+    },
+    "review": "Lectures and exams from calendars"
+  },
+  "calendarImport": {
+    "title": "From your calendars",
+    "lead": "Lectures and exams from your calendars. New ones go into Hoot linked, and what you already have is not duplicated. Nothing is saved until you apply.",
+    "none": "No new lectures or exams from calendars.",
+    "lectures": "Lectures",
+    "exams": "Exams",
+    "weekly": "Every {{day}} {{from}}–{{to}}",
+    "tag": {
+      "new": "New",
+      "same": "Already in Hoot",
+      "changed": "Changed in the calendar"
+    },
+    "action": {
+      "add": "Add to Hoot",
+      "skip": "Skip",
+      "link": "Merge",
+      "google": "Google wins",
+      "hoot": "Hoot wins",
+      "distinct": "Keep both",
+      "accept": "Take the new date",
+      "keep": "Keep the old one"
+    },
+    "actionHint": {
+      "add": "Goes into Hoot and stays linked to the calendar, without duplicates.",
+      "skip": "Stays out of Hoot and is not offered again.",
+      "link": "The same thing: one item in Hoot, the event stays in the calendar. Hoot doesn't write it again.",
+      "google": "Hoot takes the calendar's time and links them.",
+      "hoot": "The event is deleted from your Google calendar; Hoot's stays in the “Hoot” calendar.",
+      "distinct": "Two different things: both stay and I won't ask again.",
+      "accept": "The exam in Hoot takes the calendar's date.",
+      "keep": "Hoot's date stays; this change is not offered again."
+    },
+    "apply_one": "Apply {{count}}",
+    "apply_other": "Apply {{count}}",
+    "noTeaching": "Lectures need a teaching period: add it in the Academic calendar and try again.",
+    "cardTitle": "From your calendar",
+    "cardLectures_one": "{{count}} lecture",
+    "cardLectures_other": "{{count}} lectures",
+    "cardExams_one": "{{count}} exam",
+    "cardExams_other": "{{count}} exams",
+    "unknown": "Repeats every week: is it a lecture?",
+    "isLecture": "It's a lecture",
+    "notLecture": "No"
   }
 }
