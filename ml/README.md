@@ -60,6 +60,8 @@ Pravilo je isto kao u `src/lib/ml/labels.ts`, a oba testa čitaju iste primjere 
 
 `notebooks/completion_backtest.ipynb`: model odrađenosti bloka sa predmetom, bez predmeta i konstanta (Brier, log-loss), efekti predmeta. Bez izvoza radi na primjerima simulatora (`npm run sim -- --seeds 30 --examples ml/data/sim_blocks.json`) ili sintetičkim primjerima. Primjeri TS = Python: `src/lib/slots/completion.cases.json`.
 
+`notebooks/fsrs_benchmark.ipynb`: FSRS-6 prema GRU na uzorku `anki-revlogs-10k` (portfolio, RESEARCH-ML 5.3). Čita samo metrike iz `fsrs/results/`. Pokretanje, protokol i šta se (ne) prenosi na Hoot: [`fsrs/README.md`](fsrs/README.md). Treba grupu `fsrs` (`uv sync --group fsrs`: torch, fsrs-rs-python), koja nije u default grupama.
+
 ```sh
 uv run jupyter lab notebooks/
 ```
