@@ -204,8 +204,7 @@
     "legendPlanned": "Planned study",
     "schedule": {
       "note": "The plan suggests the times, with breaks",
-      "moved": "A moved block becomes manual",
-      "revert": "Restore the plan",
+      "moved": "A moved block becomes fixed",
       "reverted": "The plan's suggestion is back"
     },
     "openMonth": "Show the month, {{month}}",
@@ -236,6 +235,16 @@
     "timeline": {
       "edit": "Edit",
       "details": "Details"
+    },
+    "restore": {
+      "row": "Restore the suggested plan",
+      "rowSub_one": "{{count}} moved block this day goes back to the plan",
+      "rowSub_other": "{{count}} moved blocks this day go back to the plan",
+      "title": "Restore the suggested plan?",
+      "lead": "These blocks were moved and are fixed. They become automatic again and the plan picks new times right away. You can undo.",
+      "change": "fixed → automatic",
+      "confirm_one": "Return {{count}} block to the plan",
+      "confirm_other": "Return {{count}} blocks to the plan"
     }
   },
   "subjects": {
