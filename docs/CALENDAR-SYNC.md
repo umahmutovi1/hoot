@@ -56,7 +56,9 @@ Ciljevi:
 
 ## 2. Klasifikacija događaja (PR 2)
 
-`external_events.kind`: `busy` | `lecture` | `exam` | `deadline` | `free`, uz `kind_by` (pravilo / AI / korisnica). Ne dira se u upsertu sinhronizacije, pa preživljava sync; izmjenu korisnice AI nikad ne prepisuje.
+`external_events.kind`: `busy` | `lecture` | `exam` | `deadline` | `free`, uz `kind_by` (`ai` / `user`), migracija `0031_event_kind.sql`. Ne dira se u upsertu sinhronizacije, pa preživljava sync; izmjenu korisnice AI nikad ne prepisuje.
+
+Odluka pri implementaciji: pravila se ne spremaju, nego se računaju u app-u (`src/features/calendars/kinds.ts`, u `useScheduleData`), pa novo pravilo odmah važi za stare događaje. U bazi su samo odgovor AI-ja i izbor korisnice. Dok AI ne odgovori, nejasan događaj se računa kao zauzet, što je sigurno za plan.
 
 **Pravila** (`src/lib/calendar/classify.ts`, čista logika, testovi). Prvo pravilo koje važi odlučuje:
 
@@ -74,9 +76,13 @@ Ciljevi:
 - Šalje samo naslov, trajanje i dan u sedmici, najviše 50 događaja po pozivu, samo neklasifikovane.
 - Svaki poziv ide u `ai_runs` (`classify_events`) i u AI limit. Feed „samo zauzeto“ se nikad ne šalje.
 
+**Gdje se mijenja.** Tap na zauzet događaj (Plan → Dan, Dostupnost) otvara „Šta je ovo?“: Zauzeto / Nastava / Ispit / Rok / Slobodno. `EventClassifier` šalje AI-ju samo događaje u sljedećih 60 dana, svaki jednom po pokretanju app-a; kad AI limit istekne, staje do sljedećeg pokretanja.
+
 **Uticaj na plan.**
-- `eventBlocks()` blokira `busy`, `lecture` i `exam`. `deadline` i `free` ne blokiraju. `kind` ulazi u `input_hash`.
-- `deadline` i `exam` (i `lecture` serije) se nude kroz postojeći pregled novo / izmijenjeno / preskačem (`DeadlinesImportPage`, uparivanje predmeta kao Moodle).
+- `eventBlocks()` blokira `busy`, `lecture` i `exam`. `deadline` i `free` ne blokiraju.
+- `deadline` iz bilo kojeg kalendara se nudi kroz postojeći pregled novo / izmijenjeno / preskačem (`DeadlinesImportPage`, „Rokovi iz kalendara“, uparivanje predmeta kao Moodle).
+- `exam` i `lecture` serije se nude uz duplikate (isti pregled i povezivanje, da ispit ili predavanje ne postoji dvaput).
+- `kind` mijenja slobodno vrijeme, a slobodno vrijeme je već u `input_hash`, pa promjena vrste pokreće replan.
 
 ## 3. Google dvosmjerni sync (PR 3)
 

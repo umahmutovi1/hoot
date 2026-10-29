@@ -1787,6 +1787,22 @@
     "kindHint": {
       "busy": "Events are busy time: the plan doesn't put studying over them.",
       "deadlines": "Recognized as Moodle: events are due dates offered for import, not busy time."
+    },
+    "kindOf": {
+      "title": "What is this?",
+      "busy": "Busy",
+      "lecture": "Class",
+      "exam": "Exam",
+      "deadline": "Due date",
+      "free": "Free",
+      "hint": {
+        "busy": "The plan doesn't put studying over this.",
+        "lecture": "A class: the plan doesn't put studying over it.",
+        "exam": "An exam: the plan doesn't put studying over it.",
+        "deadline": "A due date takes no time; it is offered as a deadline.",
+        "free": "Only shown, the time stays free."
+      },
+      "byAi": "AI's guess"
     }
   },
   "onboarding": {
@@ -2325,10 +2341,10 @@
     "continue": "Continue"
   },
   "moodle": {
-    "title": "Deadlines from Moodle",
+    "title": "Due dates from calendars",
     "lead": "New and moved deadlines from the connected calendar. Nothing is saved until you apply.",
-    "card_one": "{{count}} new deadline from Moodle",
-    "card_other": "{{count}} new deadlines from Moodle",
+    "card_one": "{{count}} new due date from a calendar",
+    "card_other": "{{count}} new due dates from calendars",
     "cardSub": "Review before saving",
     "cardChanged_one": "{{count}} moved · review before saving",
     "cardChanged_other": "{{count}} moved · review before saving",
@@ -2344,7 +2360,7 @@
     "restoreAria": "Restore {{title}}",
     "subject": "Subject for {{title}}",
     "noSubject": "No subject",
-    "hint": "A skipped deadline is not offered again. Dates come from Moodle; add the hours estimate on the deadline.",
+    "hint": "A skipped due date is not offered again. Dates come from connected calendars (Moodle, Google, Outlook); add the hours on the deadline.",
     "apply_one": "Apply {{count}} change",
     "apply_other": "Apply {{count}} changes",
     "skipAll": "Skip all"

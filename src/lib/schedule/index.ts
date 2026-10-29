@@ -1,3 +1,4 @@
+import { BLOCKING_KINDS, type EventKind } from '@/lib/calendar/classify'
 import {
   addDays,
   diffDays,
@@ -223,14 +224,20 @@ export interface CalendarEvent {
   allDay: boolean
   ignored: boolean
   title?: string | null
+  /** What the event is (rules, AI or the user); a deadline or a free event takes no time. */
+  kind?: EventKind
 }
 
 const utcDate = (d: Date): LocalDate => d.toISOString().slice(0, 10)
 
-/** Does an event block study time? Busy feeds only, not ignored, all-day only when the feed says so. */
+/**
+ * Does an event block study time? Busy feeds only, not ignored, not a deadline or a free event,
+ * all-day only when the feed says so.
+ */
 export function eventBlocks(event: CalendarEvent, feeds: CalendarFeed[]): boolean {
   const feed = feeds.find((f) => f.id === event.feedId)
   if (!feed || feed.kind !== 'busy' || event.ignored) return false
+  if (event.kind && !BLOCKING_KINDS.has(event.kind)) return false
   return !event.allDay || feed.allDayBusy
 }
 

@@ -708,3 +708,46 @@ export type SessionPreset = z.infer<typeof sessionPresetSchema>
 
 export const MAX_CUSTOM_PRESETS = 8
 export const sessionPresetsSchema = z.array(sessionPresetSchema).max(MAX_CUSTOM_PRESETS)
+
+// --- classify-events (docs/CALENDAR-SYNC.md "Klasifikacija") ---
+
+export const EVENT_KIND_VALUES = ['busy', 'lecture', 'exam', 'deadline', 'free'] as const
+
+export const classifyEventsRequestSchema = z.object({
+  events: z
+    .array(
+      z.object({
+        id: z.uuid(),
+        title: z.string().min(1).max(300),
+        minutes: z
+          .int()
+          .min(0)
+          .max(14 * 24 * 60),
+        /** 0 = Monday. */
+        weekday: z.int().min(0).max(6),
+        start_min: z.int().min(0).max(1439),
+        weekly: z.boolean(),
+      }),
+    )
+    .min(1)
+    .max(50),
+  subjects: z.array(z.string().max(200)).max(60),
+  locale: z.enum(['bs', 'en']),
+})
+export type ClassifyEventsRequest = z.infer<typeof classifyEventsRequestSchema>
+
+export const classifyOutputSchema = z.object({
+  events: z
+    .array(
+      z.object({
+        event: z.int().min(1).describe('Number of the event'),
+        kind: z
+          .enum(EVENT_KIND_VALUES)
+          .describe(
+            'busy = takes the time (work, appointment, sport); lecture = a class at university; exam = an exam or test; deadline = something due, not time spent; free = shown but takes no time (reminder, holiday)',
+          ),
+      }),
+    )
+    .describe('One entry per event'),
+})
+export type ClassifyOutput = z.infer<typeof classifyOutputSchema>

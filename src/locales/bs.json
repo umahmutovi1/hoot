@@ -1837,6 +1837,22 @@
     "kindHint": {
       "busy": "Događaji su zauzeto vrijeme: plan ne stavlja učenje preko njih.",
       "deadlines": "Prepoznala sam Moodle: događaji su rokovi koje ti nudim za uvoz, ne zauzeto vrijeme."
+    },
+    "kindOf": {
+      "title": "Šta je ovo?",
+      "busy": "Zauzeto",
+      "lecture": "Nastava",
+      "exam": "Ispit",
+      "deadline": "Rok",
+      "free": "Slobodno",
+      "hint": {
+        "busy": "Plan ne stavlja učenje preko ovoga.",
+        "lecture": "Nastava: plan ne stavlja učenje preko nje.",
+        "exam": "Ispit: plan ne stavlja učenje preko njega.",
+        "deadline": "Rok ne zauzima vrijeme; nudim ga za uvoz u rokove.",
+        "free": "Samo se prikazuje, vrijeme je slobodno."
+      },
+      "byAi": "procjena AI-ja"
     }
   },
   "onboarding": {
@@ -2390,11 +2406,11 @@
     "continue": "Nastavi"
   },
   "moodle": {
-    "title": "Rokovi iz Moodlea",
+    "title": "Rokovi iz kalendara",
     "lead": "Novi i pomjereni rokovi iz povezanog kalendara. Upisuju se tek kad primijeniš.",
-    "card_one": "{{count}} novi rok iz Moodlea",
-    "card_few": "{{count}} nova roka iz Moodlea",
-    "card_other": "{{count}} novih rokova iz Moodlea",
+    "card_one": "{{count}} novi rok iz kalendara",
+    "card_few": "{{count}} nova roka iz kalendara",
+    "card_other": "{{count}} novih rokova iz kalendara",
     "cardSub": "Pregledaj prije upisa",
     "cardChanged_one": "{{count}} je pomjeren · pregledaj prije upisa",
     "cardChanged_few": "{{count}} su pomjerena · pregledaj prije upisa",
@@ -2411,7 +2427,7 @@
     "restoreAria": "Vrati {{title}}",
     "subject": "Predmet za {{title}}",
     "noSubject": "Bez predmeta",
-    "hint": "Preskočen rok se više ne nudi. Datumi dolaze iz Moodlea; procjenu sati dodaješ na roku.",
+    "hint": "Preskočen rok se više ne nudi. Datumi dolaze iz povezanih kalendara (Moodle, Google, Outlook); procjenu sati dodaješ na roku.",
     "apply_one": "Primijeni {{count}} izmjenu",
     "apply_few": "Primijeni {{count}} izmjene",
     "apply_other": "Primijeni {{count}} izmjena",

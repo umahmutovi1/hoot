@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import type { LocalDate } from '@/lib/day'
 import { toEvent, toFeed, useCalendarFeeds, useExternalEvents } from '@/features/calendars/api'
+import { eventKinds } from '@/features/calendars/kinds'
+import { useSubjects } from '@/features/subjects/api'
 import { useProfile } from '@/features/settings/profile'
 import { DEFAULT_CAPS, weekStudyMinutes, type DayInput } from '@/lib/schedule'
 import {
@@ -26,6 +28,7 @@ export function useScheduleData() {
   const timeZone = profile?.timezone ?? 'Europe/Sarajevo'
   const feedRows = useCalendarFeeds().data
   const eventRows = useExternalEvents().data
+  const subjectRows = useSubjects().data
 
   return useMemo(() => {
     const periods = (periodRows ?? []).map(toPeriod)
@@ -36,7 +39,17 @@ export function useScheduleData() {
     const days = (dayRows ?? []).map(toDay)
     const caps = capsRow?.length === 7 ? capsRow : DEFAULT_CAPS
     const feeds = (feedRows ?? []).map(toFeed)
-    const events = (eventRows ?? []).map(toEvent)
+    // Deadlines and free events do not take study time (classification, Stage 10d).
+    const kinds = eventKinds(
+      eventRows ?? [],
+      feedRows ?? [],
+      (subjectRows ?? []).filter((x) => !x.archived).map((x) => x.name),
+      timeZone,
+    )
+    const events = (eventRows ?? []).map((row) => ({
+      ...toEvent(row),
+      kind: kinds.kindOf.get(row.id),
+    }))
     /** Everything `freeSlotsOn()` needs for one date. */
     const dayInput = (date: LocalDate): DayInput => ({
       rules,
@@ -66,6 +79,7 @@ export function useScheduleData() {
       feeds,
       feedRows: feedRows ?? [],
       events,
+      eventKinds: kinds,
       timeZone,
       dayInput,
       /** Study minutes of the week that contains `date` (free time, capped per day). */
@@ -82,5 +96,6 @@ export function useScheduleData() {
     timeZone,
     feedRows,
     eventRows,
+    subjectRows,
   ])
 }

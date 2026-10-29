@@ -960,6 +960,8 @@ export type Database = {
           feed_id: string
           id: string
           ignored: boolean
+          kind: string | null
+          kind_by: string | null
           location: string | null
           starts_at: string
           title: string | null
@@ -975,6 +977,8 @@ export type Database = {
           feed_id: string
           id?: string
           ignored?: boolean
+          kind?: string | null
+          kind_by?: string | null
           location?: string | null
           starts_at: string
           title?: string | null
@@ -990,6 +994,8 @@ export type Database = {
           feed_id?: string
           id?: string
           ignored?: boolean
+          kind?: string | null
+          kind_by?: string | null
           location?: string | null
           starts_at?: string
           title?: string | null
@@ -2370,6 +2376,7 @@ export type Database = {
         | "link_questions"
         | "parse_syllabus"
         | "find_academic_info"
+        | "classify_events"
       assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
       assigned_by: "ai" | "user"
       block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
@@ -2533,6 +2540,7 @@ export const Constants = {
         "link_questions",
         "parse_syllabus",
         "find_academic_info",
+        "classify_events",
       ],
       assessment_kind: ["partial", "final", "integral", "makeup", "other"],
       assigned_by: ["ai", "user"],
