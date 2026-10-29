@@ -3,6 +3,7 @@ import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { cancelledOn, type ClassWithRow } from '@/features/schedule/model'
 import { useSubjects } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
+import type { EventKind } from '@/lib/calendar/classify'
 import type { LocalDate } from '@/lib/day'
 import { busyEventsOn, calendarStatus, classesOn, type CalendarStatus } from '@/lib/schedule'
 
@@ -24,6 +25,10 @@ export interface DayBusy {
   title: string | null
   /** The feed's name, for "iz kalendara Google". */
   source: string
+  /** From a connected Google calendar: "iz Google kalendara". */
+  google: boolean
+  /** What it is (classification): busy, a class or an exam; changed in BusySheet. */
+  kind: EventKind
   ignored: boolean
 }
 
@@ -54,6 +59,8 @@ export function useAgenda() {
         endMin: e.endMin,
         title: e.title ?? null,
         source: data.feedRows.find((f) => f.id === e.feedId)?.title ?? '',
+        google: data.feedRows.find((f) => f.id === e.feedId)?.source === 'google',
+        kind: e.kind ?? 'busy',
         ignored: data.events.find((x) => x.id === e.id)?.ignored ?? false,
       }))
     }

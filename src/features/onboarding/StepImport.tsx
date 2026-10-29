@@ -1,8 +1,11 @@
-import type { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState, type ReactNode } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CalendarIcon, CapIcon, ChevronRightIcon, DocIcon, LinkIcon } from '@/components/icons'
 import { useCalendarFeeds } from '@/features/calendars/api'
+import { connectGoogle, useGoogleAccount } from '@/features/calendars/google'
+import { useCalendarProposals } from '@/features/calendars/matches'
+import { useToast } from '@/components/toast-store'
 import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
 import { useOwlStore } from '@/features/owl/store'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
@@ -12,15 +15,39 @@ import { StepTitle, type StepProps } from './OnboardingPage'
 /**
  * Step 2 "Šta već imaš?": import first, so classes and other commitments are taken before the
  * free periods are picked. Each card opens the existing flow (the academic calendar through
- * `parse-document`); coming back returns to this step.
+ * `parse-document`); coming back returns to this step. Google comes first: lectures and exams
+ * already in the calendar are reviewed once ("Iz kalendara") instead of being entered again.
  */
 export function StepImport(_props: StepProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const openSheet = useOwlStore((s) => s.openSheet)
   const { periodRows, timetableRows } = useScheduleData()
-  const feeds = useCalendarFeeds().data ?? []
+  const feeds = (useCalendarFeeds().data ?? []).filter((f) => f.source === 'ics')
   const found = useAcademicSearch()
+  const { data: google } = useGoogleAccount()
+  const fromCalendar = useCalendarProposals()
+  const show = useToast((s) => s.show)
+  const [params, setParams] = useSearchParams()
+  const [connecting, setConnecting] = useState(false)
+  // Lectures and exams already in Google: one review instead of entering them again.
+  const review = () => navigate('/today/calendar', { state: { back: '/onboarding' } })
+  const lectures = fromCalendar.lectures.length
+  const exams = fromCalendar.exams.length
+  // Weekly events that were not read as lectures: asked only when nothing else was found.
+  const askSeries =
+    Boolean(google) &&
+    lectures === 0 &&
+    timetableRows.length === 0 &&
+    fromCalendar.unknown.length > 0
+
+  // Back from Google's consent screen.
+  const result = params.get('google')
+  useEffect(() => {
+    if (!result) return
+    show(t(`googleCalendar.result.${result === 'connected' ? 'connected' : 'error'}`))
+    setParams({}, { replace: true })
+  }, [result, setParams, show, t])
 
   return (
     <>
@@ -42,6 +69,35 @@ export function StepImport(_props: StepProps) {
         </button>
       )}
       <div className="flex flex-col gap-2">
+        {/* Google first (Stage 10d): what is already in the calendar is not entered again. */}
+        <ImportCard
+          icon={<CalendarIcon size={22} />}
+          title={t('onboarding.import.google')}
+          sub={
+            !google
+              ? t('onboarding.import.googleSub')
+              : lectures + exams > 0
+                ? t('onboarding.import.googleFound', {
+                    found: [
+                      lectures > 0 && t('calendarImport.cardLectures', { count: lectures }),
+                      exams > 0 && t('calendarImport.cardExams', { count: exams }),
+                    ]
+                      .filter(Boolean)
+                      .join(' · '),
+                  })
+                : (google.email ?? t('googleCalendar.connectedTitle'))
+          }
+          done={Boolean(google) && lectures + exams === 0}
+          onClick={() => {
+            if (google) return lectures + exams > 0 ? review() : navigate('/settings/feeds')
+            setConnecting(true)
+            connectGoogle('/onboarding').catch(() => {
+              setConnecting(false)
+              show(t('googleCalendar.result.error'))
+            })
+          }}
+          busy={connecting}
+        />
         <ImportCard
           icon={<CalendarIcon size={22} />}
           title={t('onboarding.import.calendar')}
@@ -54,9 +110,19 @@ export function StepImport(_props: StepProps) {
         <ImportCard
           icon={<CapIcon size={22} />}
           title={t('onboarding.import.timetable')}
-          sub={t('onboarding.import.timetableSub')}
+          sub={
+            timetableRows.length === 0 && lectures > 0
+              ? t('onboarding.import.timetableInGoogle', { count: lectures })
+              : askSeries
+                ? t('onboarding.import.timetableAsk')
+                : t('onboarding.import.timetableSub')
+          }
           done={timetableRows.length > 0}
-          onClick={() => navigate('/plan/timetable')}
+          onClick={() =>
+            timetableRows.length === 0 && (lectures > 0 || askSeries)
+              ? review()
+              : navigate('/plan/timetable')
+          }
         />
         <ImportCard
           icon={<LinkIcon size={22} />}
@@ -87,19 +153,22 @@ function ImportCard({
   sub,
   done,
   onClick,
+  busy = false,
 }: {
   icon: ReactNode
   title: string
   sub: string
   done: boolean
   onClick: () => void
+  busy?: boolean
 }) {
   const { t } = useTranslation()
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-3 rounded-[22px] glass p-3.5 text-left"
+      disabled={busy}
+      className="flex items-center gap-3 rounded-[22px] glass p-3.5 text-left disabled:opacity-60"
     >
       <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-brand-soft text-brand">
         {icon}

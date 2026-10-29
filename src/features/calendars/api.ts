@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/auth-context'
+import type { EventKind } from '@/lib/calendar/classify'
+import type { MatchRow } from '@/lib/calendar/match'
 import type { CalendarEvent, CalendarFeed } from '@/lib/schedule'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
@@ -9,9 +11,9 @@ import type { Tables } from '@/types/database'
 // Nothing here keeps the link in the query cache, logs or error messages.
 
 const FEED_COLUMNS =
-  'id, title, url_hint, kind, color, all_day_busy, busy_only, last_synced_at, last_error, created_at, updated_at'
+  'id, title, url_hint, kind, source, color, all_day_busy, busy_only, last_synced_at, last_error, created_at, updated_at'
 const EVENT_COLUMNS =
-  'id, feed_id, uid, starts_at, ends_at, all_day, title, location, ignored, category, deadline_id'
+  'id, feed_id, uid, starts_at, ends_at, all_day, title, location, ignored, category, deadline_id, kind, kind_by'
 
 export type FeedRow = Pick<
   Tables<'calendar_feeds'>,
@@ -19,6 +21,7 @@ export type FeedRow = Pick<
   | 'title'
   | 'url_hint'
   | 'kind'
+  | 'source'
   | 'color'
   | 'all_day_busy'
   | 'busy_only'
@@ -40,6 +43,8 @@ export type EventRow = Pick<
   | 'ignored'
   | 'category'
   | 'deadline_id'
+  | 'kind'
+  | 'kind_by'
 >
 
 export const feedsKey = (userId: string | undefined) => ['calendar_feeds', userId] as const
@@ -165,7 +170,10 @@ export function useUpdateFeed() {
       patch,
     }: {
       id: string
-      patch: Partial<Pick<FeedRow, 'title' | 'busy_only' | 'all_day_busy'>> & { url?: string }
+      patch: Partial<Pick<FeedRow, 'title' | 'busy_only' | 'all_day_busy'>> & {
+        url?: string
+        kind?: 'busy' | 'deadlines'
+      }
     }) => {
       const { error } = await supabase.from('calendar_feeds').update(patch).eq('id', id)
       if (error) throw new Error('save_failed')
@@ -226,5 +234,44 @@ export function useIgnoreEvent() {
       )
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: eventsKey(userId) }),
+  })
+}
+
+/** "Šta je ovo?" on an event: the user's kind, which neither sync nor the AI overwrites. */
+export function useSetEventKind() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, kind }: { id: string; kind: EventKind }) => {
+      const { error } = await supabase
+        .from('external_events')
+        .update({ kind, kind_by: 'user' })
+        .eq('id', id)
+      if (error) throw new Error('save_failed')
+    },
+    onMutate: ({ id, kind }) => {
+      queryClient.setQueryData<EventRow[]>(eventsKey(userId), (old) =>
+        old?.map((e) => (e.id === id ? { ...e, kind, kind_by: 'user' } : e)),
+      )
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: eventsKey(userId) }),
+  })
+}
+
+// Decisions about lectures and exams that are in a calendar and in Hoot (calendar_matches).
+export const matchesKey = (userId: string | undefined) => ['calendar_matches', userId] as const
+
+export function useCalendarMatches() {
+  const userId = useUserId()
+  return useQuery({
+    queryKey: matchesKey(userId),
+    enabled: Boolean(userId),
+    queryFn: async (): Promise<MatchRow[]> => {
+      const { data, error } = await supabase
+        .from('calendar_matches')
+        .select('feed_id, match_key, kind, target_id, decision, seen_start')
+      if (error) throw error
+      return data
+    },
   })
 }

@@ -40,6 +40,8 @@ export function DayTimeline({
   onPick,
   onPickBusy,
   onPickBlock,
+  onPickEmpty,
+  emptyLabel,
 }: {
   items: DayClass[]
   blocks?: DayBlock[]
@@ -54,6 +56,9 @@ export function DayTimeline({
   scrollKey?: string
   onPick?: (item: DayClass) => void
   onPickBusy?: (item: DayBusy) => void
+  /** A tap on free space on the axis (Plan → Dan opens "Uredi dan"). */
+  onPickEmpty?: () => void
+  emptyLabel?: string
 }) {
   const { t } = useTranslation()
   const from = 0
@@ -97,10 +102,18 @@ export function DayTimeline({
           style={{ top: targetTop }}
         />
       )}
+      {onPickEmpty && (
+        <button
+          type="button"
+          aria-label={emptyLabel}
+          onClick={onPickEmpty}
+          className="absolute inset-0 cursor-default"
+        />
+      )}
       {hours.map((h) => (
         <div
           key={h}
-          className="absolute right-0 left-0 flex items-start gap-1.5"
+          className="pointer-events-none absolute right-0 left-0 flex items-start gap-1.5"
           style={{ top: (h - from) * HOUR_PX }}
         >
           <span className="w-11 -translate-y-1.5 text-[11px] text-ink-subtle">
@@ -172,7 +185,9 @@ export function DayTimeline({
                     {item.title ?? t('feeds.busy')}
                   </span>
                   <span className="truncate text-[11px] text-ink-muted">
-                    {t('feeds.fromSource', { source: item.source })}
+                    {item.google
+                      ? t('googleCalendar.fromGoogle', { source: item.source })
+                      : t('feeds.fromSource', { source: item.source })}
                   </span>
                 </div>
               </button>

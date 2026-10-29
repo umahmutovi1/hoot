@@ -1,4 +1,6 @@
 import { MoodleCard } from '@/features/calendars/MoodleCard'
+import { CalendarImportCard } from '@/features/calendars/CalendarImportCard'
+import { useCalendarProposals } from '@/features/calendars/matches'
 import { useDeadlineProposals } from '@/features/calendars/moodle'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -195,6 +197,7 @@ function ActionCards({ plan }: { plan: PlanToday }) {
   const urgent = suggestions.filter((s) => s.kind === 'fresh_start' || s.kind === 'deficit')
   const rest = suggestions.filter((s) => s.kind !== 'fresh_start' && s.kind !== 'deficit')
   const moodle = useDeadlineProposals()
+  const fromCalendar = useCalendarProposals()
   const cards = [
     ...urgent.map((s) => <SuggestionCard key={s.key} suggestion={s} />),
     ...(gained ? [<GainedCard key="gained" plan={plan} />] : []),
@@ -207,6 +210,15 @@ function ActionCards({ plan }: { plan: PlanToday }) {
       />
     )),
     ...(moodle.length > 0 ? [<MoodleCard key="moodle" proposals={moodle} />] : []),
+    ...(fromCalendar.lectures.length + fromCalendar.exams.length > 0
+      ? [
+          <CalendarImportCard
+            key="calendar"
+            lectures={fromCalendar.lectures.length}
+            exams={fromCalendar.exams.length}
+          />,
+        ]
+      : []),
     ...rest.map((s) => <SuggestionCard key={s.key} suggestion={s} />),
   ]
   if (cards.length === 0) return null

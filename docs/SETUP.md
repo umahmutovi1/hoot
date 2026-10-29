@@ -215,7 +215,9 @@ unset GEMINI_API_KEY
 
 ## 5a. Povezani kalendari: `sync-calendar` i `pg_cron` (Etapa 8)
 
-`sync-calendar` povlači iCal linkove (Google, Outlook, iCloud, a od Etape 10 i Moodle „Rokovi“) u `external_events`. App je zove pri otvaranju (najviše jednom u 30 min); `pg_cron` je zove svaka 3 h da plan ima svježu zauzetost i kad app nije otvoren. Bez LLM-a, ne troši AI limit. Tajni iCal link se nikad ne loguje; u `calendar_feeds.last_error` ide samo kod greške.
+`sync-calendar` povlači iCal linkove (Google, Outlook, iCloud, a od Etape 10 i Moodle „Rokovi“) u `external_events`. App je zove pri otvaranju i povratku u app (najviše jednom u 30 min, za svaki feed); `pg_cron` je zove svaka 3 h da plan ima svježu zauzetost i kad app nije otvoren. Bez LLM-a, ne troši AI limit. Tajni iCal link se nikad ne loguje; u `calendar_feeds.last_error` ide samo kod greške.
+
+**Realtime (Etapa 10d).** Migracija `0029_calendar_realtime.sql` dodaje `external_events` i `plan_blocks` u publikaciju `supabase_realtime`, pa upis sa servera stiže u otvoren app bez reloada. Provjera: Database → Publications → `supabase_realtime` sadrži obje tabele. Ništa se ne podešava ručno; Google Calendar API (OAuth klijent, scope-ovi, režim consent screena) dolazi uz PR 3 iz [CALENDAR-SYNC.md](CALENDAR-SYNC.md).
 
 1. **Tajna za cron** (terminal, vrijednost ne ide u repo ni chat):
    ```sh
@@ -248,6 +250,46 @@ unset GEMINI_API_KEY
    ```
 5. **Provjera:** Integrations → Cron → posao `sync-calendar` → History poslije prvog pokretanja (svaka 3 h u :17); odgovor funkcije je `{"synced": N, "failed": M}`. Edge Functions → `sync-calendar` → Logs ne smiju sadržavati link.
 6. **Promjena tajne:** novi `secrets set`, pa `select vault.update_secret((select id from vault.secrets where name = 'sync_calendar_cron_secret'), '<novi>');`. **Gašenje:** `select cron.unschedule('sync-calendar');`.
+
+
+## 5d. Google Calendar dvosmjerno (Etapa 10d)
+
+Detalji u [CALENDAR-SYNC.md](CALENDAR-SYNC.md). Koristi isti OAuth Web client kao Google Drive (5c).
+
+1. **Cloud Console:** APIs & Services → Library → **Google Calendar API** → Enable. Google Auth Platform → Data Access → scope-ovi `calendar.app.created`, `calendar.calendarlist.readonly`, `calendar.events.owned` (sensitive).
+2. **Client:** Clients → postojeći Web client → Authorized redirect URIs → `https://lpyyatqzvrvqgcmwiqfr.supabase.co/functions/v1/google-calendar`. Client secret: ako stari nije sačuvan, **Add secret**. Picker ga ne koristi, pa novi secret ništa ne kvari.
+3. **Audience:** dok je „Testing“, svoj Gmail dodaj u **Test users**. Token tada ističe za 7 dana, pa app traži „Poveži Google ponovo“. Za „In production“ trebaju Branding podaci (naziv, support email, homepage, privacy policy), a za druge korisnike i verifikacija sensitive scope-a.
+4. **Secrets** (terminal; u zsh-u bez `<` `>` u komandi, vrijednosti se ne vide i ne ostaju u historiji):
+   ```sh
+   read -r "GCID?Client ID: "; read -rs "GCS?Client secret: "; echo
+   npx supabase secrets set GOOGLE_CLIENT_ID="$GCID" GOOGLE_CLIENT_SECRET="$GCS"
+   unset GCID GCS
+   ```
+5. **Baza i deploy:** `npx supabase db push` (0029–0033), `npx supabase functions deploy classify-events` (klasifikacija, AI), pa `npx supabase functions deploy google-calendar` i `npx supabase functions deploy google-calendar-sync` (obje imaju `verify_jwt = false` u `config.toml`: callback dolazi od Google-a bez JWT-a, webhook takođe; funkcije same provjeravaju korisnika, potpisan `state`, token kanala ili `x-cron-secret`).
+6. **Raspored** (SQL Editor; `pg_cron`, `pg_net` i vault tajna su iz 5a):
+   ```sql
+   select cron.schedule(
+     'google-calendar-sync',
+     '*/15 * * * *',
+     $$
+     select net.http_post(
+       url := 'https://lpyyatqzvrvqgcmwiqfr.supabase.co/functions/v1/google-calendar-sync',
+       headers := jsonb_build_object(
+         'content-type', 'application/json',
+         'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets
+                           where name = 'sync_calendar_cron_secret')
+       ),
+       body := '{}'::jsonb
+     );
+     $$
+   );
+   ```
+7. **Provjera:**
+   - Postavke → Povezani kalendari → „Poveži Google kalendar“ → Google → povratak sa „Google kalendar je povezan“;
+   - u Google Calendaru postoji kalendar „Hoot“ sa blokovima, ispitima i nastavom;
+   - pomjeri blok u Google-u: za par sekundi je u Planu ručni blok;
+   - Edge Functions → Logs ne smiju sadržavati token.
+   Cron History: `{"synced": N, "failed": 0}`. **Gašenje:** `select cron.unschedule('google-calendar-sync');`.
 
 ## 5b. Web Push: `notify` i `pg_cron` (Etapa 9)
 

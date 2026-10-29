@@ -18,6 +18,7 @@ export type AiTask =
   | 'propose_answer'
   | 'parse_syllabus'
   | 'find_academic_info'
+  | 'classify_events'
 
 export type LlmMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'application/pdf'
 
