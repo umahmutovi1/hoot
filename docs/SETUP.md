@@ -10,6 +10,7 @@ Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Gemini, Anthropic
 | Cloudflare Pages | projekat `hoot` → `hoot-5ig.pages.dev`, production branch `main` | ✅ |
 | GitHub | repo `umahmutovi1/hoot`, ruleset `protect-main-dev`, secrets za keepalive | ✅ |
 | Resend | SMTP za auth emailove (kod za prijavu), šablon u stilu appa | ✅ |
+| Prijava | lozinka (min 8) i Google OAuth u Supabaseu (Etapa 11b, vidi 3a) | ⏳ koraci u 3a |
 | Gemini | API ključ (free tier) za AI dok nema Anthropic kartice | ⏳ treba za Etapu 6 |
 | Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (opcionalno, Etapa 10) |
 | `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`), Web Push svake minute (`notify`) | ✅ |
@@ -122,6 +123,32 @@ Email-safe tabele i inline stilovi u bojama appa, bez `backdrop-filter` (email k
 2. App prelazi na „Provjeri email" sa poljem za kod.
 3. Prepiši kod iz emaila (ne otvaraj link) → „Prijavi se kodom".
 4. Ako email ne stigne: Resend → Emails / Logs.
+
+## 3a. Prijava lozinkom i Googleom (Etapa 11b)
+
+Kod iz emaila ostaje za prvu prijavu i zaboravljenu lozinku. Poslije prve prijave kodom app jednom ponudi „Postavi lozinku“ (uz „Preskoči“); kasnije je to u Postavke → Lozinka. Apple prijava dolazi uz Capacitor (nema Apple Developer Programa), passkey uz vlastitu domenu (Relying Party ID je domena: promjena domene poništava sve passkeyeve).
+
+**Lozinka.** Authentication → Sign In / Providers → **Email**:
+- Enable Email provider: ✅ (već uključeno zbog koda)
+- Minimum password length: **8** (isto kao u appu)
+- Password requirements: bez dodatnih (dovoljno je 8 znakova)
+- Secure password change: ❌ (inače promjena lozinke u Postavkama traži ponovnu prijavu ako je zadnja starija od 24 h)
+
+**Google.**
+1. console.cloud.google.com → projekat `hoot` → Google Auth Platform → **Clients** → Create client → **Web application**, ime `hoot-supabase-auth` (odvojeno od klijenta za Calendar/Drive, da se scope-ovi ne miješaju).
+   - Authorized JavaScript origins: `https://hoot-5ig.pages.dev`, `https://dev.hoot-5ig.pages.dev`, `http://localhost:5173`
+   - Authorized redirect URIs: `https://lpyyatqzvrvqgcmwiqfr.supabase.co/auth/v1/callback`
+   - Create → kopiraj Client ID i Client secret (secret u password manager).
+2. Data Access: dovoljni su osnovni scope-ovi `openid`, `email`, `profile` (nisu sensitive, ne traže verifikaciju).
+3. Supabase → Authentication → Sign In / Providers → **Google** → Enable → Client ID i Client Secret iz koraka 1 → Save. Callback URL koji Supabase pokaže mora biti isti kao u koraku 1.
+4. Redirect URLs (sekcija 1) već pokrivaju `https://hoot-5ig.pages.dev/**` i preview grane; app šalje `redirectTo` = svoj origin.
+5. Novi korisnici su i dalje zatvoreni (Allow new users to sign up ❌): Google prijava radi samo za email koji već ima nalog, a Supabase Google identitet sam poveže sa postojećim nalogom istog (potvrđenog) emaila.
+
+**Test na iPhoneu (instalirana PWA).**
+1. Odjavi se → otvori Hoot sa početnog ekrana → „Nastavi s Googleom“.
+2. Google ekran se otvori unutar appa (traka sa „Gotovo“), ne u posebnom Safariju; poslije izbora naloga app se vrati na Danas, prijavljen.
+3. Ako završi u Safariju ili se vrati odjavljen: javi, prelazimo na kod/lozinku kao jedini put u PWA i Google samo u pregledniku.
+4. Lozinka: Postavke → Lozinka → Postavi → odjava → prijava emailom i lozinkom.
 
 ## 4. Gemini (AI za sad)
 

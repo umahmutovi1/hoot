@@ -10,3 +10,8 @@ export function useAuth(): AuthState {
   if (!value) throw new Error('useAuth must be used inside <AuthProvider>')
   return value
 }
+
+/** Whether this account can sign in with a password (set here, flag in `user_metadata`). */
+export function useHasPassword(): boolean {
+  return Boolean(useAuth().session?.user.user_metadata?.password_set)
+}
