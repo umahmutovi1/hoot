@@ -2251,14 +2251,16 @@
         "hint": "Questions from the title and subheadings. Answers may differ from the lectures, so they count for “Understood” only together with another source."
       },
       "page_photo": {
-        "label": "PAGE PHOTO",
-        "hint": "Take a photo of 1–2 pages, e.g. the chapter summary. The photo is deleted right after reading."
+        "label": "BOOK PAGE",
+        "hint": "Take a photo of 1–2 pages (e.g. the chapter summary) or paste text. The photo is deleted right after reading; the text is not stored."
       },
       "make": "Make {{count}} questions",
       "making": "Making questions…",
       "camera": "Take a photo",
       "gallery": "Gallery",
-      "plain": "Without AI: compare with your notes"
+      "plain": "Without AI: compare with your notes",
+      "paste": "Paste text from the book",
+      "pastePlaceholder": "Paste a chapter or a passage. The text is sent only for the questions and is not stored."
     },
     "quizTitle": "Quiz",
     "quizOffer": "Quiz · {{count}} AI questions",

@@ -1,5 +1,6 @@
 // AI recall questions for one chapter (recall gate: 3, quiz: 5–10) from the student's notes, a
-// photo of a page (deleted after the call) or general knowledge from the title. The unit is read
+// photo of a page (deleted after the call) or pasted text from the book (never stored), or
+// general knowledge from the title. The unit is read
 // as the user (RLS). Nothing is written: ratings go through the app's review flow.
 import { json } from '../_shared/cors.ts'
 import { llmDeps, readJson, serve, withUploads } from '../_shared/edge.ts'
@@ -57,6 +58,7 @@ Deno.serve(
             label: unit.label,
             subheadings: subs.map((c) => [c.label, c.title].filter(Boolean).join(' ')),
             notes: notes || null,
+            pasted: body.text ?? null,
           },
           body.source,
           body.count,

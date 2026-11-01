@@ -2317,14 +2317,16 @@
         "hint": "Pitanja iz naslova i podnaslova. Odgovori se mogu razlikovati od predavanja, pa se za „Razumijem” računaju samo uz još jedan izvor."
       },
       "page_photo": {
-        "label": "SLIKA STRANICE",
-        "hint": "Uslikaj 1–2 stranice, npr. sažetak na kraju poglavlja. Slika se briše odmah nakon obrade."
+        "label": "STRANICA KNJIGE",
+        "hint": "Uslikaj 1–2 stranice (npr. sažetak na kraju poglavlja) ili zalijepi tekst. Slika se briše odmah nakon obrade, tekst se ne čuva."
       },
       "make": "Napravi {{count}} pitanja",
       "making": "Pravim pitanja…",
       "camera": "Uslikaj",
       "gallery": "Galerija",
-      "plain": "Bez AI-ja: uporedi sa bilješkama"
+      "plain": "Bez AI-ja: uporedi sa bilješkama",
+      "paste": "Zalijepi tekst iz knjige",
+      "pastePlaceholder": "Zalijepi poglavlje ili odlomak. Tekst se šalje samo za pitanja i ne čuva se."
     },
     "quizTitle": "Kviz",
     "quizOffer": "Kviz · {{count}} AI pitanja",

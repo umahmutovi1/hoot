@@ -471,6 +471,8 @@ export const QUIZ_QUESTIONS = 6
 export const MAX_RECALL_QUESTIONS = 10
 /** Photos of a page or two (e.g. the chapter summary). */
 export const MAX_PAGE_PHOTOS = 2
+/** Pasted text of a chapter or a passage (Stage 11b): the same "page" source as a photo. */
+export const MAX_PASTED_CHARS = 12000
 
 export const recallQuestionsRequestSchema = z
   .object({
@@ -479,9 +481,11 @@ export const recallQuestionsRequestSchema = z
     count: z.int().min(1).max(MAX_RECALL_QUESTIONS),
     locale: localeSchema,
     files: z.array(uploadedFileSchema).max(MAX_PAGE_PHOTOS),
+    /** Pasted text from the book; with `page_photo`, instead of or next to the photos. */
+    text: z.string().trim().min(1).max(MAX_PASTED_CHARS).optional(),
   })
-  .refine((r) => (r.source === 'page_photo') === r.files.length > 0, {
-    message: 'page photos only for page_photo',
+  .refine((r) => (r.source === 'page_photo') === (r.files.length > 0 || r.text !== undefined), {
+    message: 'page photos or pasted text only for page_photo',
   })
 export type RecallQuestionsRequest = z.infer<typeof recallQuestionsRequestSchema>
 
