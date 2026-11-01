@@ -113,43 +113,9 @@ Subject:
 Hoot: kod za prijavu / sign-in code
 ```
 
-Body (Source):
-```html
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F1EFF7;padding:32px 16px;font-family:'Outfit',Arial,Helvetica,sans-serif;color:#1D1A2B">
-  <tr>
-    <td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;background:#FFFFFF;border-radius:28px">
-        <tr>
-          <td style="padding:32px 28px 8px">
-            <img src="https://hoot-5ig.pages.dev/pwa-192x192.png" width="56" height="56" alt="Hoot" style="display:block;border-radius:16px">
-            <h1 style="margin:20px 0 6px;font-size:26px;line-height:1.2;font-weight:700;color:#1D1A2B">Prijava u Hoot</h1>
-            <p style="margin:0;font-size:15px;line-height:1.45;color:#5B5670">Upiši ovaj kod u aplikaciju:</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:16px 28px">
-            <div style="background:#E9E4FB;border-radius:18px;padding:18px 0;text-align:center;font-size:34px;font-weight:700;letter-spacing:8px;color:#4B3B8F">{{ .Token }}</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:4px 28px 8px">
-            <p style="margin:0 0 14px;font-size:14px;color:#5B5670">Ili otvori link na ovom uređaju:</p>
-            <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1D1A2B;color:#FFFFFF;text-decoration:none;font-size:16px;font-weight:600;padding:16px 28px;border-radius:28px">Prijavi se</a>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:20px 28px 28px">
-            <p style="margin:0 0 16px;font-size:13px;line-height:1.45;color:#5B5670">Kod i link vrijede kratko i mogu se iskoristiti samo jednom. Ako nisi tražila prijavu, ignoriši ovaj email.</p>
-            <p style="margin:0;padding-top:16px;border-top:1px solid #DCD7EA;font-size:13px;line-height:1.45;color:#5B5670">Your Hoot sign-in code is <strong style="color:#4B3B8F">{{ .Token }}</strong>. Enter it in the app or use the button above.</p>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-```
+Body (Source): cijeli sadržaj fajla [`supabase/templates/magic_link.html`](../supabase/templates/magic_link.html) (Liquid Glass od Etape 11b: lavanda gradijent, staklena kartica, dugme u gradijentu appa). Kad se fajl promijeni, ponovo ga zalijepi ovdje. Isti fajl koristi lokalni Supabase (`supabase/config.toml` → `[auth.email.template.magic_link]`).
 
-Email-safe tabele i inline stilovi u bojama appa; ikonica je PNG sa produkcije (WebP ne podržavaju svi klijenti), Outfit pada na Arial gdje nije dostupan.
+Email-safe tabele i inline stilovi u bojama appa, bez `backdrop-filter` (email klijenti ga ne podržavaju): staklo je poluprozirna bijela kartica, a gdje klijent izbaci gradijent ostaje `bgcolor`. Ikonica je PNG sa produkcije (WebP ne podržavaju svi klijenti), font je sistemski (SF Pro / Segoe UI / Arial).
 
 ### 3.4 Test
 1. Otvori Hoot sa početnog ekrana telefona → email → „Pošalji link za prijavu".
