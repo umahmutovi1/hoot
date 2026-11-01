@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ListSkeleton } from '@/components/Skeleton'
 import { EmptyCard } from '@/components/EmptyCard'
 import { useTranslation } from 'react-i18next'
 import { useLocale } from '@/features/settings/useLocale'
@@ -12,9 +13,10 @@ import { cn } from '@/lib/utils'
 /** Napredak → "Ocjene": points, target and entry conditions per active subject (screen 6). */
 export function GradesOverview() {
   const { t } = useTranslation()
-  const { data: subjects = [] } = useSubjects()
+  const { data: subjects = [], isPending } = useSubjects()
   const { data: deadlines = [] } = useDeadlines()
   const active = subjects.filter((s) => !s.archived)
+  if (isPending) return <ListSkeleton count={2} rows={3} />
   if (active.length === 0) return <EmptyCard>{t('progress.empty')}</EmptyCard>
   return (
     <section className="flex flex-col gap-2.5">

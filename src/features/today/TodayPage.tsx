@@ -29,6 +29,7 @@ import { ExamTiles } from './ExamTiles'
 import { BlockSheet } from '@/features/plan/BlockSheet'
 import { FactCard } from './FactCard'
 import { FocusBar } from './FocusBar'
+import { TodaySkeleton } from '@/components/Skeleton'
 import { useMilestones } from './useMilestones'
 import { useActiveSession } from '@/features/session/api'
 import { GainedCard } from './GainedCard'
@@ -132,7 +133,9 @@ export function TodayPage() {
             {t('today.addSubject')}
           </Link>
         </section>
-      ) : null}
+      ) : (
+        <TodaySkeleton />
+      )}
       {firstRun && (
         <div className="mt-8">
           <SetupChecklist />

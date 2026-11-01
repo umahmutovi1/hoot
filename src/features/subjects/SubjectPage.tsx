@@ -6,7 +6,7 @@ import { differenceInCalendarDays, format } from 'date-fns'
 import { ArchiveIcon, ChevronRightIcon, FlagIcon, PencilIcon, TrashIcon } from '@/components/icons'
 import { useToast } from '@/components/toast-store'
 import { SwipeRow } from '@/components/SwipeRow'
-import { SplashScreen } from '@/components/SplashScreen'
+import { DetailSkeleton } from '@/components/Skeleton'
 import { useLocale } from '@/features/settings/useLocale'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
@@ -62,7 +62,7 @@ import {
 export function SubjectPage() {
   const { id } = useParams()
   const { data: subject, isPending } = useSubject(id)
-  if (isPending) return <SplashScreen />
+  if (isPending) return <DetailSkeleton />
   if (!subject) return <Navigate to="/subjects" replace />
   return <SubjectDetail subject={subject} />
 }
