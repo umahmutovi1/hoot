@@ -7,7 +7,7 @@ import { useLocale } from '@/features/settings/useLocale'
 
 /**
  * Public `/` for signed-out visitors (Landing.dc.html): what Hoot does, a screenshot of Danas and
- * "Počni". One column, centred on wide screens. The screenshot is a PNG per locale in
+ * "Počni". One column, centred on wide screens. The screenshot is a JPEG per locale in
  * `public/landing/` (`npm run landing:shots`); without it the frame is left out.
  */
 export function LandingPage() {
@@ -47,7 +47,7 @@ export function LandingPage() {
         <div className="flex justify-center pt-6 pb-2">
           <div className="w-[250px] rounded-[40px] bg-ink p-2 shadow-[0_24px_60px_rgb(58_51_96/0.3)]">
             <img
-              src={`/landing/today-${locale}.png`}
+              src={`/landing/today-${locale}.jpg`}
               alt={t('landing.shotAlt')}
               width={234}
               height={507}
