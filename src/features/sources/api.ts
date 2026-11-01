@@ -347,6 +347,7 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     user_difficulty: null,
     est_minutes: null,
     level: 0,
+    level_source: null,
     confidence: null,
     notes: null,
     answer: null,
@@ -374,6 +375,7 @@ export type UnitPatch = Pick<
   | 'amount'
   | 'completed_at'
   | 'next_review_on'
+  | 'level_source'
 >
 
 /** Partial update of one unit (status, rating, notes, answer, archive, title/pages). */

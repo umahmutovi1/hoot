@@ -137,6 +137,7 @@ TABLES: dict[str, list[str]] = {
         "page_start",
         "page_end",
         "level",
+        "level_source",
         "est_minutes",
         "ai_difficulty",
         "user_difficulty",
@@ -197,6 +198,8 @@ TABLES: dict[str, list[str]] = {
         "points_max",
     ],
     "availability_days": ["id", "on_date", "cap_min", "slots"],
+    # Energy of the day (Stage 11b): joined to blocks by date; no row = normal.
+    "day_energy": ["on_date", "energy"],
     "profiles": [
         "timezone",
         "day_start_min",

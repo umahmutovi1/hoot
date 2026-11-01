@@ -8,6 +8,8 @@ import {
   isAiConfigured,
   jsonFromText,
   LlmError,
+  ProviderBusyError,
+  providersFor,
 } from './llm.ts'
 import type { AiRunLog, LlmDeps, LlmProvider, LlmRawResult } from './llm.ts'
 
@@ -31,6 +33,8 @@ function deps(provider: LlmProvider, used = 0) {
   const runs: AiRunLog[] = []
   const d: LlmDeps = {
     provider,
+    // As deployed until a paid model exists (LLM_PRIVATE_FREE=allow).
+    privateFree: true,
     countRecentRuns: async () => used,
     logRun: async (run) => {
       runs.push(run)
@@ -187,5 +191,58 @@ describe('generateStream', () => {
   it('keeps the daily limit', async () => {
     const { d } = deps(fakeProvider([]), DAILY_AI_LIMIT)
     await expect(generateStream(d, req, () => {})).rejects.toMatchObject({ code: 'rate_limited' })
+  })
+})
+
+describe('chain routing (Stage 11b)', () => {
+  const named = (name: string, model: string, results: (LlmRawResult | Error)[]) => ({
+    ...fakeProvider(results),
+    name,
+    model,
+  })
+  const ok = { json: { answer: 'ok' }, inputTokens: 1, outputTokens: 1 }
+  const toc = { ...req, task: 'parse_toc' as const }
+
+  it('a public task moves down the chain on quota or busy, and logs each try', async () => {
+    const gemini = named('gemini', 'gemini-2.5-flash', [new LlmError('quota_exhausted', 'day')])
+    const groq = named('groq', 'llama', [new ProviderBusyError('groq 429')])
+    const main = named('anthropic', 'claude-haiku-5-5', [ok])
+    const { d, runs } = deps(main)
+    const result = await generate({ ...d, chain: [gemini, groq], providerPaid: true }, toc)
+    expect(result.provider).toBe('anthropic')
+    expect(runs.map((r) => [r.provider, r.ok])).toEqual([
+      ['gemini', false],
+      ['groq', false],
+      ['anthropic', true],
+    ])
+  })
+
+  it('stops on an error that is not about capacity', async () => {
+    const gemini = named('gemini', 'gemini-2.5-flash', [new LlmError('failed', 'bad')])
+    const main = named('anthropic', 'claude-haiku-5-5', [ok])
+    const { d } = deps(main)
+    await expect(generate({ ...d, chain: [gemini] }, toc)).rejects.toMatchObject({ code: 'failed' })
+  })
+
+  it('a private task never uses the chain, and needs a paid model unless free use is allowed', async () => {
+    const gemini = named('gemini', 'gemini-2.5-flash', [ok])
+    const main = named('gemini', 'gemini-2.5-flash', [ok])
+    const { d } = deps(main)
+    expect(providersFor({ ...d, chain: [gemini], privateFree: false }, req)).toEqual([])
+    await expect(generate({ ...d, privateFree: false }, req)).rejects.toMatchObject({
+      code: 'needs_paid',
+    })
+    const paid = named('anthropic', 'claude-haiku-5-5', [ok])
+    expect(providersFor({ ...deps(paid).d, chain: [gemini], providerPaid: true }, req)).toEqual([
+      paid,
+    ])
+  })
+
+  it('skips a provider that cannot take the request (PDF) and the same model twice', () => {
+    const groq = { ...named('groq', 'llama', []), supports: () => false }
+    const gemini = named('gemini', 'gemini-2.5-flash', [])
+    const main = named('gemini', 'gemini-2.5-flash', [])
+    const list = providersFor({ ...deps(main).d, chain: [groq, gemini] }, toc)
+    expect(list).toEqual([gemini])
   })
 })

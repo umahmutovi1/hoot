@@ -20,6 +20,7 @@ import { classLines, examLines, periodLines, useDateLabel } from './format'
 import { StatusChip } from './ImportCard'
 import { NoTeachingPeriod, saveCount, useSaveImport } from './saveImport'
 import { findProposal, useOwlStore } from './store'
+import { ProgramReview } from './ProgramReview'
 import { SyllabusReview } from './SyllabusReview'
 import { pickElective } from '@/lib/import/syllabus'
 import { yearLabelOn } from '@/lib/academic'
@@ -290,6 +291,24 @@ export function ImportReviewPage() {
           }
           onPickElective={(key) =>
             updateProposal(id, (p) => ({ ...p, syllabus: pickElective(p.syllabus ?? [], key) }))
+          }
+        />
+      )}
+
+      {proposal.program && (
+        <ProgramReview
+          program={proposal.program}
+          saved={saved}
+          onToggle={(key, include) =>
+            updateProposal(id, (p) => ({
+              ...p,
+              program: p.program && {
+                semesters: p.program.semesters.map((s) => ({
+                  ...s,
+                  subjects: s.subjects.map((x) => (x.key === key ? { ...x, include } : x)),
+                })),
+              },
+            }))
           }
         />
       )}

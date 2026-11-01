@@ -1,4 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { useDayEnergy } from '@/features/schedule/api'
+import { useDayBoundary } from '@/features/settings/profile'
+import { localDay } from '@/lib/day'
 import type { TFunction } from 'i18next'
 import { sessionPresetsSchema, type SessionPreset } from '@shared/schemas.ts'
 import { useProfile } from '@/features/settings/profile'
@@ -24,7 +27,7 @@ export interface PresetChoices {
   custom: SessionPreset[]
   /** The default from Postavke (falls back to Standardno). */
   defaultId: string
-  /** The last preset used, when it still exists; otherwise the default. */
+  /** 25/5 on a "Nemam energije" day; else the last preset used, when it still exists; else the default. */
   suggestedId: string
   resolve: (id: string | null | undefined) => Preset
 }
@@ -32,6 +35,9 @@ export interface PresetChoices {
 export function usePresets(): PresetChoices {
   const { data: profile } = useProfile()
   const last = useSessionUi((s) => s.timerMode)
+  const boundary = useDayBoundary()
+  const [today] = useState(() => localDay(new Date(), boundary))
+  const low = useDayEnergy().data?.some((e) => e.on_date === today && e.energy === 'low') ?? false
   return useMemo(() => {
     const custom = parseCustomPresets(profile?.session_presets)
     const presets = [...BUILT_IN_PRESETS, ...custom.map(customPreset)]
@@ -41,7 +47,7 @@ export function usePresets(): PresetChoices {
         ? profile.default_preset
         : DEFAULT_PRESET_ID
     // Stage 7 ids (25/5, 50/10) are not offered any more, so they never come back as a suggestion.
-    const suggestedId = last && exists(last) ? last : defaultId
+    const suggestedId = low ? 'pomodoro' : last && exists(last) ? last : defaultId
     return {
       presets,
       custom,
@@ -49,7 +55,7 @@ export function usePresets(): PresetChoices {
       suggestedId,
       resolve: (id) => resolvePreset(id, custom),
     }
-  }, [profile?.session_presets, profile?.default_preset, last])
+  }, [profile?.session_presets, profile?.default_preset, last, low])
 }
 
 /** "Standardno", "25/5", or the custom preset's own name. */

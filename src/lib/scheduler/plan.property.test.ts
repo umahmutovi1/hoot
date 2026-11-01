@@ -1,6 +1,7 @@
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { addDays } from '@/lib/day'
+import type { Energy } from '@/lib/energy'
 import { mergeSlots } from '@/lib/schedule'
 import { BUILT_IN_PRESETS, breakAfterBlock } from '@/lib/session/timer'
 import {
@@ -307,6 +308,80 @@ describe('plan invariants', () => {
           goals: [...s.goals].reverse(),
         }
         expect(plan(shuffled)).toEqual(plan(s))
+      }),
+      RUNS,
+    )
+  })
+})
+
+// Energy of the day (Stage 11b): low and high days on top of any state, with personal factors.
+const energyArb = fc
+  .tuple(
+    stateArb,
+    fc.array(fc.constantFrom('low', 'normal', 'high') as fc.Arbitrary<Energy>, {
+      minLength: DAYS,
+      maxLength: DAYS,
+    }),
+    fc.double({ min: 0, max: 1, noNaN: true }),
+    fc.double({ min: 1, max: 1.25, noNaN: true }),
+  )
+  .map(([s, energy, low, high]) => ({
+    usual: s,
+    s: {
+      ...s,
+      days: s.days.map((d, i) => ({ ...d, energy: energy[i] })),
+      energyFactors: { low: Math.round(low * 1000) / 1000, high: Math.round(high * 1000) / 1000 },
+    } satisfies PlanState,
+  }))
+
+describe('energy of the day', () => {
+  it('a low day stays within its share of the usual capacity', () => {
+    fc.assert(
+      fc.property(energyArb, ({ usual, s }) => {
+        const r = plan(s)
+        const caps = aiCapacity(usual)
+        s.days.forEach((d, k) => {
+          if (d.energy !== 'low') return
+          const fixed = s.fixed
+            .filter((b) => b.onDate === d.date)
+            .reduce((a, b) => a + b.minutes, 0)
+          const total = r.blocks
+            .filter((b) => b.onDate === d.date)
+            .reduce((a, b) => a + b.minutes, 0)
+          expect(total).toBeLessThanOrEqual(s.energyFactors!.low * (caps[k]! + fixed + 1))
+        })
+      }),
+      RUNS,
+    )
+  })
+
+  it('a high day never goes over the growth limit or its capacity', () => {
+    fc.assert(
+      fc.property(energyArb, ({ s }) => {
+        const r = plan(s)
+        const caps = aiCapacity(s)
+        s.days.forEach((d, k) => {
+          const blocks = r.blocks.filter((b) => b.onDate === d.date)
+          expect(blocks.reduce((a, b) => a + b.minutes, 0)).toBeLessThanOrEqual(caps[k]!)
+          const growing = blocks
+            .filter((b) => b.reason.code !== 'buffer')
+            .reduce((a, b) => a + b.minutes, 0)
+          expect(growing).toBeLessThanOrEqual(growthLimit(s.growthBase, k))
+        })
+      }),
+      RUNS,
+    )
+  })
+
+  it('a high day has at least the usual capacity, a low day at most', () => {
+    fc.assert(
+      fc.property(energyArb, ({ usual, s }) => {
+        const base = aiCapacity(usual)
+        const caps = aiCapacity(s)
+        s.days.forEach((d, k) => {
+          if (d.energy === 'high') expect(caps[k]!).toBeGreaterThanOrEqual(base[k]!)
+          if (d.energy === 'low') expect(caps[k]!).toBeLessThanOrEqual(base[k]!)
+        })
       }),
       RUNS,
     )

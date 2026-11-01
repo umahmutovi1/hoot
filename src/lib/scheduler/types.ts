@@ -1,3 +1,4 @@
+import type { Energy } from '@/lib/energy'
 import type { LocalDate } from '@/lib/day'
 import type { Slot } from '@/lib/schedule'
 import type { SlotPart } from '@/lib/schedule/rhythm'
@@ -107,6 +108,8 @@ export interface PlanDay {
   cap: number
   /** Subjects with a lecture on this day (recap blocks). */
   lectureSubjectIds: string[]
+  /** "Nemam energije" / "Pun/a sam energije" for this date (`day_energy`); absent = normal. */
+  energy?: Energy
 }
 
 export interface BlockUnit {
@@ -163,6 +166,8 @@ export interface PlanState {
   explore?: ExploreDay[]
   /** Personal FSRS weights (`profiles.fsrs_params`); absent = defaults. */
   fsrsParams?: number[]
+  /** Personal share of a usual day on low / high days (`energyFactors()`); absent = priors. */
+  energyFactors?: { low: number; high: number }
 }
 
 export type SlotCompletion = Record<'weekday' | 'weekend', Record<SlotPart, number>>

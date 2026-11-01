@@ -1,3 +1,4 @@
+import type { ProgramProposal } from '@/lib/import/program'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import type { SyllabusProposal } from '@/lib/import/syllabus'
@@ -42,6 +43,8 @@ export interface ImportProposal {
   classes?: ClassProposal[]
   /** Syllabus per subject (Stage 10c). */
   syllabus?: SyllabusProposal[]
+  /** A whole study programme: years, semesters and subjects (Stage 11b). */
+  program?: ProgramProposal
   /** Found on the web: link to the source and the year it says it is for. */
   origin?: { url: string; academicYear: string | null } | null
   warnings: string[]

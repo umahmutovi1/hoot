@@ -31,6 +31,7 @@ import { FactCard } from './FactCard'
 import { FocusBar } from './FocusBar'
 import { TodaySkeleton } from '@/components/Skeleton'
 import { useMilestones } from './useMilestones'
+import { SemesterEndCard } from './SemesterEndCard'
 import { useActiveSession } from '@/features/session/api'
 import { GainedCard } from './GainedCard'
 import { useGainedCard } from './useGainedCard'
@@ -110,6 +111,7 @@ export function TodayPage() {
           <div className="mt-3 empty:hidden">
             <QuickActions plan={plan} dayOff={dayOff} />
           </div>
+          <SemesterEndCard />
           <ActionCards plan={plan} />
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />

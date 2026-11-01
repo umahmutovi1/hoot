@@ -54,6 +54,7 @@ describe('planReviews', () => {
     )
     const patch = patchOf(plan, 'units', 'a')!.patch
     expect(patch.level).toBe(2)
+    expect(patch.level_source).toBe('gate')
     expect(patch.completed_at).toBe(AT)
     expect(patch.fsrs_reps).toBe(1)
     expect(patch.review_streak).toBe(1)

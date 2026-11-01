@@ -40,12 +40,15 @@ export function useRecallQuestions(
   })
 }
 
-/** Questions from a photo of a page or two; the photo is deleted after the call. */
+/**
+ * Questions from the book itself: a photo of a page or two (deleted after the call) or pasted
+ * text (sent once, never stored).
+ */
 export function usePagePhotoQuestions(unitId: string, count: number) {
   const userId = useAuth().session?.user.id
   const { locale } = useLocale()
   return useMutation({
-    mutationFn: async (photos: File[]) => {
+    mutationFn: async ({ photos = [], text }: { photos?: File[]; text?: string }) => {
       if (!userId) throw new Error('signed out')
       const files = await Promise.all(photos.map((f) => uploadImportFile(userId, f, 'recall')))
       const r = await invokeAi<RecallQuestionsResponse>('recall-questions', {
@@ -54,6 +57,7 @@ export function usePagePhotoQuestions(unitId: string, count: number) {
         count,
         locale,
         files,
+        ...(text ? { text } : {}),
       })
       return r.questions
     },

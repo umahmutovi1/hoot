@@ -1,11 +1,15 @@
 // promptfoo provider: the same prompts and schemas as the parse-document, parse-toc and
 // parse-questions Edge Functions (var `task`, default parse-document).
 // GEMINI_API_KEY set -> calls Gemini directly (LLM_MODEL, default gemini-2.5-flash).
+// EVAL_MODEL=groq:<model> or openrouter:<model> (+ GROQ_API_KEY / OPENROUTER_API_KEY) -> that
+// free-chain model; it goes into EVALUATED_MODELS (`_shared/chain.ts`) only after this passes.
 // Otherwise HOOT_EVAL_URL + HOOT_EVAL_TOKEN -> calls the deployed function (counts toward
 // that user's daily limit and needs the file uploaded, so text cases only).
 import { readFileSync } from 'node:fs'
 import { generate } from '../supabase/functions/_shared/llm.ts'
+import { parseChain } from '../supabase/functions/_shared/chain.ts'
 import { geminiProvider } from '../supabase/functions/_shared/providers/gemini.ts'
+import { openAiCompatProvider } from '../supabase/functions/_shared/providers/openaiCompat.ts'
 import {
   normalizeQuestions,
   normalizeToc,
@@ -35,6 +39,20 @@ interface Vars {
 }
 
 type Deps = Parameters<typeof generate>[0]
+
+/** The model under evaluation: EVAL_MODEL (a chain entry) or Gemini's LLM_MODEL. */
+function evalProvider(geminiKey: string) {
+  const [entry] = parseChain(process.env.EVAL_MODEL)
+  if (entry && entry.provider !== 'gemini') {
+    const apiKey = process.env[entry.provider === 'groq' ? 'GROQ_API_KEY' : 'OPENROUTER_API_KEY']
+    if (!apiKey) throw new Error(`EVAL_MODEL ${entry.provider} needs its API key`)
+    return openAiCompatProvider({ name: entry.provider, apiKey, model: entry.model })
+  }
+  return geminiProvider({
+    apiKey: geminiKey,
+    model: entry?.model ?? process.env.LLM_MODEL ?? 'gemini-2.5-flash',
+  })
+}
 
 /** parse-toc and parse-questions straight against Gemini (images need the key anyway). */
 async function contentCall(
@@ -86,7 +104,7 @@ export default class ParseDocumentProvider {
       subjects: SUBJECTS,
     }
     try {
-      const key = process.env.GEMINI_API_KEY
+      const key = process.env.GEMINI_API_KEY ?? (process.env.EVAL_MODEL ? 'chain' : undefined)
       if (key && vars.task && vars.task !== 'parse-document') {
         const files = isImage
           ? [{ mediaType: 'image/png' as const, base64: readFileSync(path).toString('base64') }]
@@ -94,10 +112,8 @@ export default class ParseDocumentProvider {
         const { output, result } = await contentCall(
           vars,
           {
-            provider: geminiProvider({
-              apiKey: key,
-              model: process.env.LLM_MODEL ?? 'gemini-2.5-flash',
-            }),
+            provider: evalProvider(key),
+            privateFree: true,
             countRecentRuns: async () => 0,
             logRun: async () => {},
           },
@@ -117,10 +133,8 @@ export default class ParseDocumentProvider {
           : []
         const result = await generate(
           {
-            provider: geminiProvider({
-              apiKey: key,
-              model: process.env.LLM_MODEL ?? 'gemini-2.5-flash',
-            }),
+            provider: evalProvider(key),
+            privateFree: true,
             countRecentRuns: async () => 0,
             logRun: async () => {},
           },

@@ -200,6 +200,15 @@
       "sub": "Dodati {{title}}?",
       "add": "Dodaj",
       "later": "Ne sad"
+    },
+    "energy": {
+      "low": "Nemam energije",
+      "high": "Pun/a sam energije",
+      "toast": {
+        "low": "Danas lakše: kraći blokovi, ponavljanja prvo",
+        "high": "Danas malo više, najteže gradivo prvo",
+        "normal": "Plan danas je opet uobičajen"
+      }
     }
   },
   "plan": {
@@ -506,7 +515,16 @@
   },
   "progress": {
     "title": "Napredak",
-    "empty": "Napredak se prikazuje kad počneš učiti."
+    "empty": "Napredak se prikazuje kad počneš učiti.",
+    "energy": {
+      "title": "Energija",
+      "low_one": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takvog dana).",
+      "low_few": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takva dana).",
+      "low_other": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takvih dana).",
+      "high_one": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takvog dana).",
+      "high_few": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takva dana).",
+      "high_other": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takvih dana)."
+    }
   },
   "session": {
     "title": "Sesija učenja",
@@ -1195,6 +1213,12 @@
       "imported_one": "Uvezena {{count}} kartica",
       "imported_few": "Uvezene {{count}} kartice",
       "imported_other": "Uvezeno {{count}} kartica"
+    },
+    "understand": {
+      "title": "Razumijem",
+      "check": "Provjeri se (preporučeno)",
+      "mark": "Označi bez provjere",
+      "honesty": "Iskrena ocjena drži plan tačnim. Ako precijeniš, plan će misliti da si spremnija/spremniji nego što jesi. Za 2 dana stiže kratka provjera."
     }
   },
   "scope": {
@@ -1585,7 +1609,8 @@
         "exam_schedule": "Raspored ispita",
         "document": "Pravilnik, silabus, obavještenje",
         "timetable": "Raspored nastave",
-        "syllabus": "Plan i program"
+        "syllabus": "Plan i program",
+        "study_program": "Cijeli studijski program"
       },
       "textLabel": "Tekst",
       "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
@@ -1631,7 +1656,8 @@
       "failed": "Nešto nije uspjelo. Pokušaj ponovo.",
       "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
       "link": "Ovaj link ne mogu otvoriti. Provjeri da je javan (bez prijave) i da vodi do PDF-a, slike ili stranice.",
-      "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h)."
+      "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h).",
+      "needs_paid": "Ovo AI radi samo sa plaćenim modelom: tvoj tekst nikad ne ide na besplatne servise."
     },
     "document": {
       "stored": "Spremila sam „{{title}}“ u Dokumente.",
@@ -1800,6 +1826,13 @@
       "review": "Pregledaj",
       "open": "Otvori chat",
       "dismiss": "Zatvori"
+    },
+    "program": {
+      "semester": "{{n}}. semestar {{year}}",
+      "past": "završeno",
+      "elective": "izborni: {{group}}",
+      "ects": "{{n}} ECTS",
+      "hint": "Predmeti idu u svoju godinu i semestar, bez ispita dok ne dođe njihov semestar. Izborne i ranije semestre uključi tapom."
     }
   },
   "offline": {
@@ -2293,14 +2326,16 @@
         "hint": "Pitanja iz naslova i podnaslova. Odgovori se mogu razlikovati od predavanja, pa se za „Razumijem” računaju samo uz još jedan izvor."
       },
       "page_photo": {
-        "label": "SLIKA STRANICE",
-        "hint": "Uslikaj 1–2 stranice, npr. sažetak na kraju poglavlja. Slika se briše odmah nakon obrade."
+        "label": "STRANICA KNJIGE",
+        "hint": "Uslikaj 1–2 stranice (npr. sažetak na kraju poglavlja) ili zalijepi tekst. Slika se briše odmah nakon obrade, tekst se ne čuva."
       },
       "make": "Napravi {{count}} pitanja",
       "making": "Pravim pitanja…",
       "camera": "Uslikaj",
       "gallery": "Galerija",
-      "plain": "Bez AI-ja: uporedi sa bilješkama"
+      "plain": "Bez AI-ja: uporedi sa bilješkama",
+      "paste": "Zalijepi tekst iz knjige",
+      "pastePlaceholder": "Zalijepi poglavlje ili odlomak. Tekst se šalje samo za pitanja i ne čuva se."
     },
     "quizTitle": "Kviz",
     "quizOffer": "Kviz · {{count}} AI pitanja",
@@ -2898,5 +2933,16 @@
       "body": "Tvoji podaci ostaju tvoji: izvoz u svakom trenutku.",
       "button": "Počni"
     }
+  },
+  "semesterEnd": {
+    "title": "Kraj {{n}}. semestra",
+    "summary": "Položeno: {{passed}} · prenosi se: {{carried}}",
+    "passed": "položeno",
+    "carried": "prenosi se",
+    "carriedHint": "Nepoloženi predmeti ostaju u planu sa sljedećim rokom. Ako si položio/la, upiši rezultat na predmetu.",
+    "addNext": "Dodaj sljedeći semestar",
+    "nextSubjects_one": "Sljedeći semestar: {{count}} predmet",
+    "nextSubjects_few": "Sljedeći semestar: {{count}} predmeta",
+    "nextSubjects_other": "Sljedeći semestar: {{count}} predmeta"
   }
 }

@@ -194,6 +194,15 @@
       "sub": "Add {{title}}?",
       "add": "Add",
       "later": "Not now"
+    },
+    "energy": {
+      "low": "Low on energy",
+      "high": "Full of energy",
+      "toast": {
+        "low": "Lighter today: shorter blocks, reviews first",
+        "high": "A bit more today, hardest material first",
+        "normal": "Today's plan is back to usual"
+      }
     }
   },
   "plan": {
@@ -493,7 +502,14 @@
   },
   "progress": {
     "title": "Progress",
-    "empty": "Progress shows up once you start studying."
+    "empty": "Progress shows up once you start studying.",
+    "energy": {
+      "title": "Energy",
+      "low_one": "When you're low on energy, the plan gives you about {{pct}}% of a usual day (from {{count}} such day).",
+      "low_other": "When you're low on energy, the plan gives you about {{pct}}% of a usual day (from {{count}} such days).",
+      "high_one": "When you're full of energy, the plan goes up to {{pct}}% of a usual day (from {{count}} such day).",
+      "high_other": "When you're full of energy, the plan goes up to {{pct}}% of a usual day (from {{count}} such days)."
+    }
   },
   "session": {
     "title": "Study session",
@@ -1157,6 +1173,12 @@
       "importSave_other": "Save {{count}} cards",
       "imported_one": "{{count}} card imported",
       "imported_other": "{{count}} cards imported"
+    },
+    "understand": {
+      "title": "I understand",
+      "check": "Check yourself (recommended)",
+      "mark": "Mark without a check",
+      "honesty": "An honest rating keeps the plan accurate. If you overrate it, the plan will think you're more ready than you are. A short check comes in 2 days."
     }
   },
   "scope": {
@@ -1543,7 +1565,8 @@
         "exam_schedule": "Exam schedule",
         "document": "Rules, syllabus, notice",
         "timetable": "Class timetable",
-        "syllabus": "Syllabus"
+        "syllabus": "Syllabus",
+        "study_program": "Whole study programme"
       },
       "textLabel": "Text",
       "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
@@ -1587,7 +1610,8 @@
       "failed": "Something went wrong. Try again.",
       "file": "I can't read this. Send an image, a PDF or text.",
       "link": "This link could not be opened. Check that it is public (no sign-in) and leads to a PDF, an image or a page.",
-      "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET)."
+      "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET).",
+      "needs_paid": "This AI feature only works with the paid model: your text never goes to free services."
     },
     "document": {
       "stored": "I saved “{{title}}” to Documents.",
@@ -1746,6 +1770,13 @@
       "review": "Review",
       "open": "Open chat",
       "dismiss": "Close"
+    },
+    "program": {
+      "semester": "Semester {{n}} {{year}}",
+      "past": "done",
+      "elective": "elective: {{group}}",
+      "ects": "{{n}} ECTS",
+      "hint": "Subjects go into their year and semester, without exams until their semester comes. Turn on electives and earlier semesters with a tap."
     }
   },
   "offline": {
@@ -2229,14 +2260,16 @@
         "hint": "Questions from the title and subheadings. Answers may differ from the lectures, so they count for “Understood” only together with another source."
       },
       "page_photo": {
-        "label": "PAGE PHOTO",
-        "hint": "Take a photo of 1–2 pages, e.g. the chapter summary. The photo is deleted right after reading."
+        "label": "BOOK PAGE",
+        "hint": "Take a photo of 1–2 pages (e.g. the chapter summary) or paste text. The photo is deleted right after reading; the text is not stored."
       },
       "make": "Make {{count}} questions",
       "making": "Making questions…",
       "camera": "Take a photo",
       "gallery": "Gallery",
-      "plain": "Without AI: compare with your notes"
+      "plain": "Without AI: compare with your notes",
+      "paste": "Paste text from the book",
+      "pastePlaceholder": "Paste a chapter or a passage. The text is sent only for the questions and is not stored."
     },
     "quizTitle": "Quiz",
     "quizOffer": "Quiz · {{count}} AI questions",
@@ -2818,5 +2851,15 @@
       "body": "Your data stays yours: export it any time.",
       "button": "Get started"
     }
+  },
+  "semesterEnd": {
+    "title": "End of semester {{n}}",
+    "summary": "Passed: {{passed}} · carried over: {{carried}}",
+    "passed": "passed",
+    "carried": "carried over",
+    "carriedHint": "Subjects not passed stay in the plan with the next exam date. If you passed, enter the result on the subject.",
+    "addNext": "Add the next semester",
+    "nextSubjects_one": "Next semester: {{count}} subject",
+    "nextSubjects_other": "Next semester: {{count}} subjects"
   }
 }

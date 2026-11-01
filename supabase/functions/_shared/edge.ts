@@ -3,7 +3,8 @@
 import { createClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { corsHeaders, json } from './cors.ts'
-import { DAILY_AI_LIMIT, getProvider, LlmError } from './llm.ts'
+import { availableChain, parseChain, type FailedRun } from './chain.ts'
+import { chainProviders, DAILY_AI_LIMIT, getProvider, LlmError } from './llm.ts'
 import type { LlmDeps, LlmEnv, LlmFile, LlmProvider, PromptCacheStore } from './llm.ts'
 import { toBase64 } from './prompts.ts'
 import type { UploadedFile } from './schemas.ts'
@@ -77,11 +78,30 @@ export async function remainingRuns(ctx: EdgeContext): Promise<number> {
   return Math.max(0, DAILY_AI_LIMIT - (await countRecentRuns(ctx)))
 }
 
+/** Failed runs of the last day: which free models are out of quota or busy (`chain.ts`). */
+async function failedRuns(ctx: EdgeContext): Promise<FailedRun[]> {
+  const since = new Date(Date.now() - DAY_MS).toISOString()
+  const { data } = await ctx.db
+    .from('ai_runs')
+    .select('provider, model, error, created_at')
+    .eq('ok', false)
+    .gte('created_at', since)
+  return (data ?? []) as FailedRun[]
+}
+
 export async function llmDeps(ctx: EdgeContext): Promise<LlmDeps> {
   const provider: LlmProvider | null = await getProvider(ctx.env)
   if (!provider) throw new LlmError('no_key')
+  const entries = parseChain(ctx.env.get('LLM_CHAIN'))
+  const chain =
+    entries.length > 0
+      ? await chainProviders(ctx.env, availableChain(entries, await failedRuns(ctx), new Date()))
+      : []
   return {
     provider,
+    chain,
+    providerPaid: (ctx.env.get('LLM_PROVIDER') ?? 'gemini') === 'anthropic',
+    privateFree: ctx.env.get('LLM_PRIVATE_FREE') === 'allow',
     countRecentRuns: () => countRecentRuns(ctx),
     logRun: async (run) => {
       const { error } = await ctx.admin.from('ai_runs').insert({ ...run, user_id: ctx.userId })

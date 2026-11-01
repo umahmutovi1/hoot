@@ -8,6 +8,7 @@ import {
   calendarParseSchema,
   documentParseSchema,
   examScheduleParseSchema,
+  studyProgramParseSchema,
   syllabusParseSchema,
   timetableParseSchema,
 } from './schemas.ts'
@@ -17,6 +18,7 @@ import type {
   ImportKind,
   ParseDocumentRequest,
   ParsedClass,
+  ParsedProgramSubject,
   ParsedSyllabusSubject,
   ParseResult,
 } from './schemas.ts'
@@ -82,6 +84,14 @@ const SYLLABUS_RULES = `Syllabus ("Plan i program", "nastavni plan", "silabus", 
   year 2 = semesters 3 and 4); return an empty list when this text has none of them.
 - If the student's note names a year, semester or subject, keep only those subjects.`
 
+const PROGRAM_RULES = `A whole study programme ("plan i program", "nastavni plan", "plan studija",
+"studijski program"): list EVERY subject of EVERY year and semester, required and elective, once
+each, with its semester number counted over the whole programme (year 1 = semesters 1 and 2,
+year 2 = 3 and 4, ...). When the document numbers semesters per year ("II godina, zimski"),
+convert to the whole-programme number. Elective options keep their slot name in elective_group.
+Do not list literature, topics or grading; ECTS only when written. Ignore subjects of other
+study programmes or modules in the same document unless the student's note names them.`
+
 const DOCUMENT_RULES = `Document kind: academic_calendar, exam_schedule, rules (rulebook,
 "pravilnik"), syllabus (a course syllabus or a whole study plan: "silabus", "nastavni plan",
 "plan i program", "plan studija", module descriptions with ECTS, content and literature),
@@ -110,6 +120,11 @@ const VARIANTS: Record<ImportKind, ParseVariant> = {
     rules: TIMETABLE_RULES,
   },
   syllabus: { task: 'parse_syllabus', schema: syllabusParseSchema, rules: SYLLABUS_RULES },
+  study_program: {
+    task: 'parse_study_program',
+    schema: studyProgramParseSchema,
+    rules: PROGRAM_RULES,
+  },
   document: { task: 'parse_document', schema: documentParseSchema, rules: DOCUMENT_RULES },
   auto: {
     task: 'parse_document',
@@ -164,7 +179,8 @@ export function parseRequest(
     // A whole programme's syllabus lists many subjects; it gets the larger budget too.
     // A syllabus answer (books, chapters, grading for each subject) gets the most room; above
     // ~21 000 the Anthropic SDK requires streaming.
-    maxTokens: req.kind === 'syllabus' ? 20000 : req.text ? 8000 : 16000,
+    maxTokens:
+      req.kind === 'syllabus' ? 20000 : req.kind === 'study_program' || !req.text ? 16000 : 8000,
   }
 }
 
@@ -176,9 +192,11 @@ export function normalizeParse(req: ParseDocumentRequest, data: AnyParse): Parse
   const kind =
     req.kind === 'academic_calendar' || req.kind === 'exam_schedule' || req.kind === 'syllabus'
       ? req.kind
-      : req.kind === 'timetable'
-        ? 'other'
-        : (data.kind ?? 'other')
+      : req.kind === 'study_program'
+        ? 'syllabus'
+        : req.kind === 'timetable'
+          ? 'other'
+          : (data.kind ?? 'other')
   const subjectIds = new Set(req.subjects.map((s) => s.id))
   const periods =
     kind === 'academic_calendar'
@@ -223,9 +241,22 @@ export function normalizeParse(req: ParseDocumentRequest, data: AnyParse): Parse
           })),
         }))
       : []
+  // One row per subject and semester (a model may repeat a subject listed in two tables).
+  const program =
+    req.kind === 'study_program'
+      ? ((data as { subjects?: ParsedProgramSubject[] }).subjects ?? []).filter(
+          (x, i, all) =>
+            all.findIndex(
+              (y) =>
+                y.semester === x.semester &&
+                y.subject_name.trim().toLowerCase() === x.subject_name.trim().toLowerCase(),
+            ) === i,
+        )
+      : undefined
   return {
     kind,
     title: data.title ?? '',
+    ...(program ? { program } : {}),
     pages: req.text ? [] : (data.pages ?? []).filter((p) => p.text.trim() !== ''),
     periods,
     exams,
