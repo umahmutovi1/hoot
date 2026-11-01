@@ -371,12 +371,12 @@ Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj
 - [x] Landing stranica `/` za neprijavljene (mockup u `docs/design/` prije koda), bs i en
 - [x] Email šablon prijave u Liquid Glass izgledu (SETUP.md 3)
 - [x] Prijava: lozinka poslije prve prijave kodom; Google OAuth (provjera redirecta u iOS PWA, SETUP.md 3a); Apple uz Capacitor (nema Apple Developer Programa); passkey (Supabase beta) uz vlastitu domenu, odluka 1. nov 2026
-- [ ] Energija dana: brze akcije „Nemam energije“ / „Pun/a sam energije“; `day_energy` po datumu kao ulaz u `plan()` i `input_hash`; property testovi (low ne prelazi ~60% kapaciteta, high ne prelazi limit rasta); ML signal uz blokove
-- [ ] Ručno „Razumijem“ uz napomenu o iskrenosti: nivo 2, bez FSRS memorije, provjera za `READ_CHECK_DAYS`; `units.level_source`
-- [ ] `recall-questions` prima zalijepljeni tekst (gate i kviz)
-- [ ] Rotacija besplatnih AI-eva: `LLM_CHAIN` u `_shared/llm.ts`, prelaz na 429/kvotu, iscrpljeni do reseta; zadaci označeni javni / privatni (privatni nikad na free tier); eval prije uključivanja modela
-- [ ] Kraj semestra: kartica na Danas (rezultati, prenos, „Dodaj sljedeći semestar“); gotovo prije januara 2027
-- [ ] Studijski program odjednom: `parse-document` vrsta `study_program` → godine, semestri, predmeti; pregled prije snimanja
+- [x] Energija dana: brze akcije „Nemam energije“ / „Pun/a sam energije“; `day_energy` po datumu kao ulaz u `plan()` i `input_hash`; property testovi (low ne prelazi svoj udio kapaciteta, high ne prelazi limit rasta); ML signal uz blokove. Odluka 1. nov 2026: šta low/high znači uči se iz dana (`energyFactors()`, prior 0,6 / 1,25, kao ρ), vidi se u Napretku i u `ml-monitor`
+- [x] Ručno „Razumijem“ uz napomenu o iskrenosti: nivo 2, bez FSRS memorije, provjera za `READ_CHECK_DAYS`; `units.level_source`
+- [x] `recall-questions` prima zalijepljeni tekst (gate i kviz; izvor „stranica knjige“, kao slika)
+- [x] Rotacija besplatnih AI-eva: `LLM_CHAIN` u `_shared/llm.ts`, prelaz na 429/kvotu, iscrpljeni do reseta; zadaci označeni javni / privatni (privatni nikad na free tier); eval prije uključivanja modela
+- [x] Kraj semestra: kartica na Danas (rezultati, prenos, „Dodaj sljedeći semestar“); gotovo prije januara 2027
+- [x] Studijski program odjednom: `parse-document` vrsta `study_program` → godine, semestri, predmeti; pregled prije snimanja (PDF, slika, tekst; „s interneta“ za sad kroz Pronađi → silabus)
 - **DoD** → `v0.10.6`
 
 ## Etapa 11 — Napredak

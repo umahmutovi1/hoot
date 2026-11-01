@@ -15,6 +15,7 @@ export const IMPORT_KINDS = [
   'exam_schedule',
   'timetable',
   'syllabus',
+  'study_program',
   'document',
 ] as const
 export const importKindSchema = z.enum(IMPORT_KINDS)
@@ -184,6 +185,32 @@ export const syllabusParseSchema = z.object({
   subjects: z.array(parsedSyllabusSubjectSchema),
 })
 
+/**
+ * One subject of a whole study programme (Stage 11b, "Studijski program odjednom"): only where it
+ * belongs; books, topics and grading come later per subject (`syllabus`).
+ */
+export const parsedProgramSubjectSchema = z.object({
+  subject_name: z.string().min(1).describe('Subject name exactly as written in the document'),
+  semester: z
+    .int()
+    .min(1)
+    .max(12)
+    .describe('Semester number in the whole programme (year 2 winter = 3, year 2 summer = 4)'),
+  ects: z.number().min(0).max(60).nullable().describe('ECTS credits if written, else null'),
+  elective_group: z
+    .string()
+    .nullable()
+    .describe(
+      'Elective slot this subject is an option of ("Izborni predmet 4.1"), null if required',
+    ),
+})
+export type ParsedProgramSubject = z.infer<typeof parsedProgramSubjectSchema>
+
+export const studyProgramParseSchema = z.object({
+  ...parseBase,
+  subjects: z.array(parsedProgramSubjectSchema),
+})
+
 export const documentParseSchema = z.object({
   ...parseBase,
   kind: documentKindSchema,
@@ -208,6 +235,8 @@ export interface ParseResult {
   entries: ParsedClass[]
   /** Per subject; only for kind `syllabus` (Stage 10c). */
   syllabus: ParsedSyllabusSubject[]
+  /** Every subject of every year; only for kind `study_program` (Stage 11b). */
+  program?: ParsedProgramSubject[]
   warnings: string[]
 }
 

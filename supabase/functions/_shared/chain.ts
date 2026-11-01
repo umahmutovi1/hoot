@@ -22,6 +22,7 @@ export const PUBLIC_TASKS: ReadonlySet<AiTask> = new Set<AiTask>([
   'parse_exam_schedule',
   'parse_timetable',
   'parse_syllabus',
+  'parse_study_program',
   'parse_toc',
   'find_academic_info',
 ])

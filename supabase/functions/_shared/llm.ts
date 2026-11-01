@@ -18,6 +18,7 @@ export type AiTask =
   | 'recall_questions'
   | 'propose_answer'
   | 'parse_syllabus'
+  | 'parse_study_program'
   | 'find_academic_info'
   | 'classify_events'
 

@@ -1565,7 +1565,8 @@
         "exam_schedule": "Exam schedule",
         "document": "Rules, syllabus, notice",
         "timetable": "Class timetable",
-        "syllabus": "Syllabus"
+        "syllabus": "Syllabus",
+        "study_program": "Whole study programme"
       },
       "textLabel": "Text",
       "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
@@ -1769,6 +1770,13 @@
       "review": "Review",
       "open": "Open chat",
       "dismiss": "Close"
+    },
+    "program": {
+      "semester": "Semester {{n}} {{year}}",
+      "past": "done",
+      "elective": "elective: {{group}}",
+      "ects": "{{n}} ECTS",
+      "hint": "Subjects go into their year and semester, without exams until their semester comes. Turn on electives and earlier semesters with a tap."
     }
   },
   "offline": {

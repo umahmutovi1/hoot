@@ -100,6 +100,17 @@ export function ImportCard({
       key: p.key,
       ...syllabusLines(t, p, nameOf(p.subjectId)),
     })),
+    // A study programme: one row per semester.
+    ...(proposal.program?.semesters ?? []).map((s) => {
+      const picked = s.subjects.filter((x) => x.include && !x.existingId).length
+      return {
+        key: `program:${s.semester}`,
+        title: t('owl.program.semester', { n: s.semester, year: s.yearLabel ?? '' }).trim(),
+        detail: s.subjects.map((x) => x.name).join(', '),
+        previous: null,
+        status: (picked > 0 ? 'new' : 'unchanged') as ProposalStatus,
+      }
+    }),
   ]
 
   const onSave = () =>

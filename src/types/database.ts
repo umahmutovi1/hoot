@@ -2553,6 +2553,7 @@ export type Database = {
         | "parse_syllabus"
         | "find_academic_info"
         | "classify_events"
+        | "parse_study_program"
       assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
       assigned_by: "ai" | "user"
       block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
@@ -2717,6 +2718,7 @@ export const Constants = {
         "parse_syllabus",
         "find_academic_info",
         "classify_events",
+        "parse_study_program",
       ],
       assessment_kind: ["partial", "final", "integral", "makeup", "other"],
       assigned_by: ["ai", "user"],

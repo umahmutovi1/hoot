@@ -1609,7 +1609,8 @@
         "exam_schedule": "Raspored ispita",
         "document": "Pravilnik, silabus, obavještenje",
         "timetable": "Raspored nastave",
-        "syllabus": "Plan i program"
+        "syllabus": "Plan i program",
+        "study_program": "Cijeli studijski program"
       },
       "textLabel": "Tekst",
       "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
@@ -1825,6 +1826,13 @@
       "review": "Pregledaj",
       "open": "Otvori chat",
       "dismiss": "Zatvori"
+    },
+    "program": {
+      "semester": "{{n}}. semestar {{year}}",
+      "past": "završeno",
+      "elective": "izborni: {{group}}",
+      "ects": "{{n}} ECTS",
+      "hint": "Predmeti idu u svoju godinu i semestar, bez ispita dok ne dođe njihov semestar. Izborne i ranije semestre uključi tapom."
     }
   },
   "offline": {
