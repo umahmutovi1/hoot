@@ -1173,6 +1173,12 @@
       "importSave_other": "Save {{count}} cards",
       "imported_one": "{{count}} card imported",
       "imported_other": "{{count}} cards imported"
+    },
+    "understand": {
+      "title": "I understand",
+      "check": "Check yourself (recommended)",
+      "mark": "Mark without a check",
+      "honesty": "An honest rating keeps the plan accurate. If you overrate it, the plan will think you're more ready than you are. A short check comes in 2 days."
     }
   },
   "scope": {

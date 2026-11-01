@@ -1213,6 +1213,12 @@
       "imported_one": "Uvezena {{count}} kartica",
       "imported_few": "Uvezene {{count}} kartice",
       "imported_other": "Uvezeno {{count}} kartica"
+    },
+    "understand": {
+      "title": "Razumijem",
+      "check": "Provjeri se (preporučeno)",
+      "mark": "Označi bez provjere",
+      "honesty": "Iskrena ocjena drži plan tačnim. Ako precijeniš, plan će misliti da si spremnija/spremniji nego što jesi. Za 2 dana stiže kratka provjera."
     }
   },
   "scope": {

@@ -125,6 +125,8 @@ export function planReviews(
       patch.level = level
       if (level >= 1 && !unit.completed_at) patch.completed_at = ctx.at
     }
+    // A tested level (also the check after "Označi bez provjere") is the gate's from now on.
+    if (level >= 2) patch.level_source = 'gate'
     ops.push({ kind: 'update', table: 'units', match: { id: unit.id }, patch })
     logs.push(
       logRow(unit.id, null, bestSource(recalls), recall, unit.next_review_on, before, r, ctx),
