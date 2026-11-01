@@ -2823,5 +2823,27 @@
     "unknown": "Ponavlja se svake sedmice: je li predavanje?",
     "isLecture": "Predavanje je",
     "notLecture": "Nije"
+  },
+  "celebrate": {
+    "block": {
+      "title": "Blok završen",
+      "body": "Još jedan korak bliže ispitu."
+    },
+    "day": {
+      "title": "Dan završen",
+      "body": "Sve iz današnjeg plana je urađeno."
+    },
+    "week": {
+      "title": "Sedmica u planu",
+      "body": "Ova sedmica je odrađena kako je planirano."
+    },
+    "repeated": {
+      "title": "Ponovljeno",
+      "body": "Gradivo je sad u dugoročnom pamćenju."
+    },
+    "passed": {
+      "title": "Položeno!",
+      "body": "{{name}}: ispit je položen."
+    }
   }
 }

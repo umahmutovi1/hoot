@@ -29,6 +29,8 @@ import { ExamTiles } from './ExamTiles'
 import { BlockSheet } from '@/features/plan/BlockSheet'
 import { FactCard } from './FactCard'
 import { FocusBar } from './FocusBar'
+import { useMilestones } from './useMilestones'
+import { useActiveSession } from '@/features/session/api'
 import { GainedCard } from './GainedCard'
 import { useGainedCard } from './useGainedCard'
 import { DayOffCard, NextCard } from './NextCard'
@@ -52,6 +54,8 @@ export function TodayPage() {
   const { locale } = useLocale()
   const { data: profile } = useProfile()
   const plan = usePlanToday()
+  const { data: active } = useActiveSession()
+  useMilestones(plan, Boolean(active))
   // `?extra=1` (search: "Imam još vremena") opens that sheet.
   const [params, setParams] = useSearchParams()
   const name = profile?.display_name ?? ''

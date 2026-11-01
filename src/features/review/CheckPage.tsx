@@ -24,6 +24,8 @@ import { BAND_BG } from './bands'
 import { checkItems, checkReviews, checkSummary, type CheckItem, type CheckSummary } from './check'
 import type { DirectLink } from '@/lib/questions/links'
 import { linkedQuestions } from './gate'
+import { useCelebration } from '@/components/celebrate-store'
+import { reachedRepeated } from '@/lib/celebrate'
 import { RateButtons } from './RateButtons'
 import { strengthOf } from './strength'
 
@@ -86,6 +88,7 @@ function Quiz({
   const navigate = useNavigate()
   const boundary = useDayBoundary()
   const writer = useReviewWriter()
+  const celebrate = useCelebration((s) => s.celebrate)
   const sessionWriter = useSessionWriter()
   const setCheck = useSessionUi((s) => s.setCheck)
   const { data: subjects = [] } = useSubjects()
@@ -125,6 +128,7 @@ function Quiz({
     onFinishing()
     const reviews = checkReviews(items, final)
     const outcomes = await writer.save(reviews.units, reviews.cards)
+    if (reachedRepeated(outcomes)) celebrate('repeated')
     const end = new Date()
     const minutes = activeMs(active.segments.map(toSegment), end) / MINUTE
     await sessionWriter.finish(active, end)

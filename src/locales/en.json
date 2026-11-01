@@ -2745,5 +2745,27 @@
     "unknown": "Repeats every week: is it a lecture?",
     "isLecture": "It's a lecture",
     "notLecture": "No"
+  },
+  "celebrate": {
+    "block": {
+      "title": "Block done",
+      "body": "One step closer to the exam."
+    },
+    "day": {
+      "title": "Day done",
+      "body": "Everything in today's plan is done."
+    },
+    "week": {
+      "title": "Week on plan",
+      "body": "This week went as planned."
+    },
+    "repeated": {
+      "title": "Repeated",
+      "body": "This material is in long-term memory now."
+    },
+    "passed": {
+      "title": "Passed!",
+      "body": "{{name}}: exam passed."
+    }
   }
 }
