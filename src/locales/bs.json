@@ -2845,5 +2845,35 @@
       "title": "Položeno!",
       "body": "{{name}}: ispit je položen."
     }
+  },
+  "landing": {
+    "signIn": "Prijavi se",
+    "start": "Počni",
+    "lead": "Hoot od tvojih rokova, literature i ispitnih pitanja napravi dnevni plan učenja i sam ga prepravi kad nešto propustiš.",
+    "devices": "Radi na telefonu i računaru · dodaj na početni ekran",
+    "shotAlt": "Ekran Danas u Hootu: sljedeći blok, ponavljanje i ispit za 12 dana",
+    "what": {
+      "title": "Ti učiš, Hoot planira",
+      "plan": "Plan iz tvojih rokova",
+      "planBody": "Uslikaj sadržaj knjige i dodaj datume ispita. Hoot rasporedi gradivo po danima, oko nastave i tvog slobodnog vremena.",
+      "adapt": "Sam se prilagodi",
+      "adaptBody": "Propušten dan ili dan bez energije? Jedan tap i plan se prepravi, bez krivnje i bez ručnog premještanja.",
+      "remember": "Pamti umjesto tebe",
+      "rememberBody": "Kratka provjera poslije učenja, a ponavljanja stižu baš kad bi gradivo počelo blijediti, do dana ispita."
+    },
+    "how": {
+      "title": "Kako počinješ",
+      "signIn": "Prijavi se",
+      "signInBody": "emailom ili Googleom.",
+      "subjects": "Dodaj predmete:",
+      "subjectsBody": "uvezi akademski kalendar i raspored ili samo upiši ispite.",
+      "today": "Otvori Danas",
+      "todayBody": "i počni prvi blok."
+    },
+    "cta": {
+      "title": "Sljedeći ispitni rok, bez panike",
+      "body": "Tvoji podaci ostaju tvoji: izvoz u svakom trenutku.",
+      "button": "Počni"
+    }
   }
 }

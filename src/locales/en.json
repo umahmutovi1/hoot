@@ -2767,5 +2767,35 @@
       "title": "Passed!",
       "body": "{{name}}: exam passed."
     }
+  },
+  "landing": {
+    "signIn": "Sign in",
+    "start": "Get started",
+    "lead": "Hoot turns your exam dates, books and exam questions into a daily study plan, and fixes it by itself when you miss something.",
+    "devices": "Works on phone and computer · add it to your home screen",
+    "shotAlt": "Hoot's Today screen: the next block, a review and an exam in 12 days",
+    "what": {
+      "title": "You study, Hoot plans",
+      "plan": "A plan from your deadlines",
+      "planBody": "Snap the book's table of contents and add exam dates. Hoot spreads the material over the days, around classes and your free time.",
+      "adapt": "Adapts by itself",
+      "adaptBody": "Missed a day or low on energy? One tap and the plan is redone, no guilt and no moving things by hand.",
+      "remember": "Remembers for you",
+      "rememberBody": "A short check after studying, and reviews come right when the material would start to fade, up to exam day."
+    },
+    "how": {
+      "title": "How to start",
+      "signIn": "Sign in",
+      "signInBody": "with email or Google.",
+      "subjects": "Add subjects:",
+      "subjectsBody": "import the academic calendar and timetable, or just enter your exams.",
+      "today": "Open Today",
+      "todayBody": "and start the first block."
+    },
+    "cta": {
+      "title": "Next exam period, no panic",
+      "body": "Your data stays yours: export it any time.",
+      "button": "Get started"
+    }
   }
 }
