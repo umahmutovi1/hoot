@@ -2843,5 +2843,15 @@
       "body": "Your data stays yours: export it any time.",
       "button": "Get started"
     }
+  },
+  "semesterEnd": {
+    "title": "End of semester {{n}}",
+    "summary": "Passed: {{passed}} · carried over: {{carried}}",
+    "passed": "passed",
+    "carried": "carried over",
+    "carriedHint": "Subjects not passed stay in the plan with the next exam date. If you passed, enter the result on the subject.",
+    "addNext": "Add the next semester",
+    "nextSubjects_one": "Next semester: {{count}} subject",
+    "nextSubjects_other": "Next semester: {{count}} subjects"
   }
 }

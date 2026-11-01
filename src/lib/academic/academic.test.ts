@@ -4,10 +4,12 @@ import {
   groupSubjects,
   isWinter,
   newYearOffer,
+  semesterEnd,
   semesterOn,
   yearLabelOn,
   yearRange,
   type AcademicYear,
+  type SemesterSubject,
   type SubjectTerm,
 } from '.'
 
@@ -134,5 +136,43 @@ describe('newYearOffer', () => {
     expect(newYearOffer([y2526, y2627], '2026-10-04')).toBeNull()
     expect(newYearOffer([], '2026-10-04')).toBeNull()
     expect(newYearOffer([{ ...y2526, yearOfStudy: 6 }], '2026-10-04')?.yearOfStudy).toBe(6)
+  })
+})
+
+describe('semesterEnd', () => {
+  const s = (id: string, sem: number, examDays: string[], done = true): SemesterSubject => ({
+    id,
+    academicYearId: 'y1',
+    semesterNo: sem,
+    done,
+    activeExam: false,
+    examDays,
+  })
+
+  it('appears after the last exam of the semester, with passed, carried and next subjects', () => {
+    const subjects = [
+      s('a', 3, ['2027-01-20', '2027-02-10']),
+      s('b', 3, ['2027-02-03'], false),
+      s('c', 4, []),
+    ]
+    expect(semesterEnd(subjects, '2027-02-10')).toBeNull()
+    expect(semesterEnd(subjects, '2027-02-11')).toEqual({
+      yearId: 'y1',
+      semester: 3,
+      lastExamOn: '2027-02-10',
+      passed: ['a'],
+      carried: ['b'],
+      next: ['c'],
+    })
+  })
+
+  it('goes away 45 days after the last exam and needs at least one exam', () => {
+    expect(semesterEnd([s('a', 3, ['2027-02-10'])], '2027-03-28')).toBeNull()
+    expect(semesterEnd([s('a', 3, [])], '2027-03-01')).toBeNull()
+  })
+
+  it('takes the latest finished semester', () => {
+    const r = semesterEnd([s('a', 3, ['2027-02-10']), s('b', 4, ['2027-02-20'])], '2027-03-01')
+    expect(r?.semester).toBe(4)
   })
 })

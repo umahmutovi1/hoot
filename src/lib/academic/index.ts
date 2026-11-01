@@ -196,3 +196,57 @@ export function newYearOffer(
     yearOfStudy: latest.yearOfStudy ? Math.min(6, latest.yearOfStudy + 1) : null,
   }
 }
+
+/** A subject with its exam days, for the end of a semester. */
+export interface SemesterSubject extends SubjectTerm {
+  /** Local days of its exams (the latest possible one for a range); contingent ones left out. */
+  examDays: LocalDate[]
+}
+
+export interface SemesterEnd {
+  yearId: string
+  semester: number
+  /** Last exam day of the semester. */
+  lastExamOn: LocalDate
+  passed: string[]
+  /** Not passed: they move on with the next semester ("prenesen" in Predmeti). */
+  carried: string[]
+  /** Subjects already added for the next semester (plan and programme or by hand). */
+  next: string[]
+}
+
+/** The card stays this long after the semester's last exam. */
+export const SEMESTER_END_DAYS = 45
+
+/**
+ * "Kraj semestra" (PRD "Dopune, 29. okt 2026"): the latest semester whose every exam is behind
+ * (and at least one exam), until 45 days after its last exam. Its passed and carried subjects,
+ * and those already added for the next semester (number + 1, any year).
+ */
+export function semesterEnd(subjects: SemesterSubject[], today: LocalDate): SemesterEnd | null {
+  const groups = new Map<string, SemesterSubject[]>()
+  for (const s of subjects) {
+    if (!s.academicYearId || s.semesterNo === null) continue
+    const key = `${s.academicYearId}:${s.semesterNo}`
+    groups.set(key, [...(groups.get(key) ?? []), s])
+  }
+  let best: SemesterEnd | null = null
+  for (const list of groups.values()) {
+    const days = list.flatMap((s) => s.examDays)
+    if (days.length === 0 || days.some((d) => d >= today)) continue
+    const lastExamOn = days.reduce((m, d) => (d > m ? d : m))
+    const age = (Date.parse(today) - Date.parse(lastExamOn)) / 86_400_000
+    if (age > SEMESTER_END_DAYS) continue
+    const semester = list[0]!.semesterNo!
+    if (best && best.semester >= semester) continue
+    best = {
+      yearId: list[0]!.academicYearId!,
+      semester,
+      lastExamOn,
+      passed: list.filter((s) => s.done).map((s) => s.id),
+      carried: list.filter((s) => !s.done).map((s) => s.id),
+      next: subjects.filter((s) => s.semesterNo === semester + 1).map((s) => s.id),
+    }
+  }
+  return best
+}

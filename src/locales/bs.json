@@ -2925,5 +2925,16 @@
       "body": "Tvoji podaci ostaju tvoji: izvoz u svakom trenutku.",
       "button": "Počni"
     }
+  },
+  "semesterEnd": {
+    "title": "Kraj {{n}}. semestra",
+    "summary": "Položeno: {{passed}} · prenosi se: {{carried}}",
+    "passed": "položeno",
+    "carried": "prenosi se",
+    "carriedHint": "Nepoloženi predmeti ostaju u planu sa sljedećim rokom. Ako si položio/la, upiši rezultat na predmetu.",
+    "addNext": "Dodaj sljedeći semestar",
+    "nextSubjects_one": "Sljedeći semestar: {{count}} predmet",
+    "nextSubjects_few": "Sljedeći semestar: {{count}} predmeta",
+    "nextSubjects_other": "Sljedeći semestar: {{count}} predmeta"
   }
 }
