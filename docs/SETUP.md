@@ -178,6 +178,15 @@ unset GEMINI_API_KEY
 
 > **Modeli i limiti (stanje 20. 10. 2026).** Free tier ima limit po modelu: Gemini 2.5 Flash samo 5 zahtjeva u minuti i 20 dnevno, a `gemini-2.5-flash-lite` više nije dostupan novim nalozima (404). Zato je `LLM_MODEL=gemini-3.5-flash-lite`, a `LLM_FALLBACK_MODEL=gemini-2.5-flash` se koristi kad prvi vrati 429 ili 503 (kvote su po modelu). Trenutne limite vidiš u AI Studio → Rate Limit. Antigravity iz te liste je Googleov agent, ne model za API. Promjena modela je samo `secrets set`, bez deploya.
 
+**Lanac besplatnih AI-eva i privatni zadaci (Etapa 11b).** Javni zadaci (uvoz akademskog kalendara, rasporeda ispita, rasporeda, plana i programa, sadržaja knjige, web pretraga; lista `PUBLIC_TASKS` u `supabase/functions/_shared/chain.ts`) idu redom kroz `LLM_CHAIN`, a na 429 / kvotu prelaze na sljedeći model; iscrpljen model se preskače do reseta (Gemini ponoć po pacifičkom vremenu, ostali ponoć UTC; kratki 429 samo minut), što se čita iz `ai_runs`. Privatni zadaci (bilješke, pitanja, odgovori, dokumenti, chat, provjere, tekst iz knjige) nikad ne idu na lanac: samo `LLM_PROVIDER`, i to samo kad je plaćen (Anthropic) ili kad je `LLM_PRIVATE_FREE=allow`.
+```bash
+npx supabase secrets set LLM_PRIVATE_FREE=allow   # dok nema Anthropic ključa; bez ovoga privatni AI vraća „needs_paid“
+npx supabase secrets set LLM_CHAIN="gemini:gemini-3.5-flash-lite,gemini:gemini-2.5-flash"
+```
+Kad dođe Anthropic (sekcija 5): `LLM_PROVIDER=anthropic`, pa `npx supabase secrets unset LLM_PRIVATE_FREE`.
+
+Groq i OpenRouter (opcionalno, besplatni nalozi): console.groq.com → API Keys → Create; openrouter.ai → Keys → Create (modeli sa `:free`). Ključeve `npx supabase secrets set GROQ_API_KEY=… OPENROUTER_API_KEY=…` (preko `read -rs` kao u 5d). Model ide u `LLM_CHAIN` tek kad prođe eval (`EVAL_MODEL=groq:llama-3.3-70b-versatile GROQ_API_KEY=… npm run eval`) i kad je dodan u `EVALUATED_MODELS` u `chain.ts` (PR); model iz lanca koji nije na toj listi se preskače. Groq/OpenRouter ne primaju PDF ni web pretragu: takav poziv ide sljedećem modelu u lancu.
+
 **4. Edge funkcije** (Etapa 6: `parse-document`, `documents`, `answer`, `ai-status`; Etapa 10: `embed`, vektori jedinica, kartica i tema bez LLM-a; `parse-toc`, `parse-questions`, `link-questions`, `recall-questions`, `propose-answer`; slike sadržaja i stranica se brišu iz `uploads/<user_id>/import/` i `…/recall/` odmah poslije poziva):
 ```bash
 for f in ai-status parse-document documents answer embed parse-toc parse-questions link-questions recall-questions propose-answer; do npx supabase functions deploy $f; done

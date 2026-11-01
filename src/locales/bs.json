@@ -1655,7 +1655,8 @@
       "failed": "Nešto nije uspjelo. Pokušaj ponovo.",
       "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
       "link": "Ovaj link ne mogu otvoriti. Provjeri da je javan (bez prijave) i da vodi do PDF-a, slike ili stranice.",
-      "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h)."
+      "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h).",
+      "needs_paid": "Ovo AI radi samo sa plaćenim modelom: tvoj tekst nikad ne ide na besplatne servise."
     },
     "document": {
       "stored": "Spremila sam „{{title}}“ u Dokumente.",

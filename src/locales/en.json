@@ -1609,7 +1609,8 @@
       "failed": "Something went wrong. Try again.",
       "file": "I can't read this. Send an image, a PDF or text.",
       "link": "This link could not be opened. Check that it is public (no sign-in) and leads to a PDF, an image or a page.",
-      "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET)."
+      "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET).",
+      "needs_paid": "This AI feature only works with the paid model: your text never goes to free services."
     },
     "document": {
       "stored": "I saved “{{title}}” to Documents.",

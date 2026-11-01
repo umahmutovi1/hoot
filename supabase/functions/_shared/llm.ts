@@ -3,6 +3,7 @@
 // Shared work lives here: rate limit, Zod validation with one retry, cost and the ai_runs log.
 import type { z } from 'zod'
 import type { AiErrorCode } from './schemas.ts'
+import { PUBLIC_TASKS, type ChainEntry } from './chain.ts'
 import { costUsd } from './prices.ts'
 
 export type AiTask =
@@ -76,6 +77,8 @@ export interface LlmRawResult {
 export interface LlmProvider {
   name: string
   model: string
+  /** False for a request this provider cannot take (PDF, web search); the chain moves on. */
+  supports?(req: LlmRequest<unknown>): boolean
   generate(req: LlmRequest<unknown>): Promise<LlmRawResult>
   /** The same call with the output text handed over as it is written (chat answers). */
   stream?(req: LlmRequest<unknown>, onText: (delta: string) => void): Promise<LlmRawResult>
@@ -105,7 +108,14 @@ export interface AiRunLog {
 }
 
 export interface LlmDeps {
+  /** LLM_PROVIDER / LLM_MODEL: the paid model once there is one (private tasks). */
   provider: LlmProvider
+  /** Free models for public tasks (`LLM_CHAIN`, evaluated and not exhausted), in order. */
+  chain?: LlmProvider[]
+  /** `provider` is a paid model (Anthropic); free tiers never see private tasks. */
+  providerPaid?: boolean
+  /** LLM_PRIVATE_FREE=allow: private tasks may use the free `provider` until a paid one exists. */
+  privateFree?: boolean
   /** AI calls already made in the rate-limit window. */
   countRecentRuns: () => Promise<number>
   logRun: (run: AiRunLog) => Promise<void>
@@ -128,10 +138,28 @@ export class ProviderBusyError extends LlmError {
   }
 }
 
+/**
+ * Who may answer `req`, in order: a public task tries the free chain, then the main provider; a
+ * private one only the main provider, and only when it is paid or free use is allowed.
+ */
+export function providersFor(deps: LlmDeps, req: LlmRequest<unknown>): LlmProvider[] {
+  const main = deps.provider
+  const list = PUBLIC_TASKS.has(req.task)
+    ? [...(deps.chain ?? []), main].filter(
+        (p, i, all) => all.findIndex((q) => q.name === p.name && q.model === p.model) === i,
+      )
+    : deps.providerPaid || deps.privateFree
+      ? [main]
+      : []
+  return list.filter((p) => p.supports?.(req) ?? true)
+}
+
 export function generate<T>(deps: LlmDeps, req: LlmRequest<T>): Promise<LlmResult<T>> {
-  const call = () => deps.provider.generate(req as LlmRequest<unknown>)
   // One retry, only when the output does not pass the Zod schema.
-  return run(deps, req, [call, call])
+  return run(deps, req, (provider) => {
+    const call = () => provider.generate(req as LlmRequest<unknown>)
+    return [call, call]
+  })
 }
 
 /**
@@ -144,21 +172,46 @@ export function generateStream<T>(
   req: LlmRequest<T>,
   onText: (delta: string) => void,
 ): Promise<LlmResult<T>> {
-  const { provider } = deps
-  const call = () => provider.generate(req as LlmRequest<unknown>)
-  const stream = provider.stream ? () => provider.stream!(req as LlmRequest<unknown>, onText) : call
-  return run(deps, req, [stream, call])
+  return run(deps, req, (provider) => {
+    const call = () => provider.generate(req as LlmRequest<unknown>)
+    const stream = provider.stream
+      ? () => provider.stream!(req as LlmRequest<unknown>, onText)
+      : call
+    return [stream, call]
+  })
 }
+
+/** A quota or an overload moves to the next model in the chain; anything else stops. */
+const NEXT_MODEL = new Set<AiErrorCode>(['provider_busy', 'quota_exhausted'])
 
 async function run<T>(
   deps: LlmDeps,
   req: LlmRequest<T>,
-  attempts: (() => Promise<LlmRawResult>)[],
+  attemptsOf: (provider: LlmProvider) => (() => Promise<LlmRawResult>)[],
 ): Promise<LlmResult<T>> {
   const used = await deps.countRecentRuns()
   if (used >= DAILY_AI_LIMIT) throw new LlmError('rate_limited')
+  const providers = providersFor(deps, req as LlmRequest<unknown>)
+  if (providers.length === 0) throw new LlmError('needs_paid')
 
-  const { provider } = deps
+  let error: LlmError | null = null
+  for (const provider of providers) {
+    try {
+      return await runOne(deps, req, provider, attemptsOf(provider))
+    } catch (err) {
+      error = err instanceof LlmError ? err : new LlmError('failed', errorMessage(err))
+      if (!NEXT_MODEL.has(error.code)) throw error
+    }
+  }
+  throw error!
+}
+
+async function runOne<T>(
+  deps: LlmDeps,
+  req: LlmRequest<T>,
+  provider: LlmProvider,
+  attempts: (() => Promise<LlmRawResult>)[],
+): Promise<LlmResult<T>> {
   let inputTokens = 0
   let outputTokens = 0
   let model = provider.model
@@ -270,6 +323,25 @@ export async function getProvider(env: LlmEnv): Promise<LlmProvider | null> {
     return anthropicProvider({ apiKey: key, model: env.get('LLM_MODEL') ?? 'claude-haiku-5-5' })
   }
   return null
+}
+
+/** Providers for the chain entries that have a key (GEMINI / GROQ / OPENROUTER_API_KEY). */
+export async function chainProviders(env: LlmEnv, entries: ChainEntry[]): Promise<LlmProvider[]> {
+  const out: LlmProvider[] = []
+  for (const e of entries) {
+    if (e.provider === 'gemini') {
+      const key = env.get('GEMINI_API_KEY')
+      if (!key) continue
+      const { geminiProvider } = await import('./providers/gemini.ts')
+      out.push(geminiProvider({ apiKey: key, model: e.model }))
+      continue
+    }
+    const key = env.get(e.provider === 'groq' ? 'GROQ_API_KEY' : 'OPENROUTER_API_KEY')
+    if (!key) continue
+    const { openAiCompatProvider } = await import('./providers/openaiCompat.ts')
+    out.push(openAiCompatProvider({ name: e.provider, apiKey: key, model: e.model }))
+  }
+  return out
 }
 
 export function isAiConfigured(env: LlmEnv): boolean {

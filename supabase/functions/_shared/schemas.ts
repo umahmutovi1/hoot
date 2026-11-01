@@ -678,6 +678,8 @@ export const AI_ERRORS = [
   'provider_busy',
   'invalid_output',
   'failed',
+  /** A private task without a paid model (PRD: private text never goes to a free tier). */
+  'needs_paid',
 ] as const
 export type AiErrorCode = (typeof AI_ERRORS)[number]
 
