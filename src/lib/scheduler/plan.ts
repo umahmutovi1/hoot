@@ -1,8 +1,9 @@
 import { addDays, diffDays, weekdayOf, type LocalDate } from '@/lib/day'
+import { HIGH_ENERGY_FACTOR, LOW_ENERGY_FACTOR } from '@/lib/energy'
 import { examGain, retrievabilityOn } from '@/lib/srs'
 import { slotMinutes, type Slot } from '@/lib/schedule'
 import { PART_RANGES, SLOT_PARTS } from '@/lib/schedule/rhythm'
-import { planIntervalMin } from '@/lib/session/timer'
+import { BUILT_IN_PRESETS, planIntervalMin } from '@/lib/session/timer'
 import {
   BOOST_WEIGHT,
   CAMPAIGN_MARGIN,
@@ -56,6 +57,9 @@ import type {
  * enter rotation on an ALAP start computed from a first pass. Remaining required work at the
  * last day before a goal is its deficit. Pure and deterministic.
  */
+
+/** Block rhythm on a low-energy day (PRD: "predložak 25/5 za taj dan"). */
+const LOW_ENERGY_PRESET = BUILT_IN_PRESETS.find((p) => p.id === 'pomodoro')!
 
 interface Work {
   /** Unit id, or the goal id for a deadline. */
@@ -154,13 +158,19 @@ export function aiCapacity(state: PlanState): number[] {
   const fixedOn = new Map<LocalDate, number>()
   for (const b of state.fixed) fixedOn.set(b.onDate, (fixedOn.get(b.onDate) ?? 0) + b.minutes)
   const share = dayRealization(state)
-  return state.days.map((d, k) =>
-    Math.max(
-      0,
-      Math.floor(Math.min(slotMinutes(d.slots), d.cap) * share[k]! * RESERVE) -
-        (fixedOn.get(d.date) ?? 0),
-    ),
-  )
+  const { low, high } = state.energyFactors ?? { low: LOW_ENERGY_FACTOR, high: HIGH_ENERGY_FACTOR }
+  return state.days.map((d, k) => {
+    // A low day is a share of the usual day; a high day may use more of its free time than the
+    // daily cap (the growth limit still holds, `effCap`).
+    const usual = Math.min(slotMinutes(d.slots), d.cap) * share[k]! * RESERVE
+    const room =
+      d.energy === 'low'
+        ? usual * low
+        : d.energy === 'high'
+          ? Math.min(slotMinutes(d.slots) * share[k]! * RESERVE, usual * high)
+          : usual
+    return Math.max(0, Math.floor(room) - (fixedOn.get(d.date) ?? 0))
+  })
 }
 
 /**
@@ -380,7 +390,7 @@ function run(
   const units = new Map(state.units.map((u) => [u.id, u]))
   const goals = [...state.goals].sort(byGoal)
   const works = buildWorks(state)
-  const interval = planIntervalMin(preset)
+  const baseInterval = planIntervalMin(preset)
   const minBlock = settings.minBlockMinutes
 
   const learnEnd = new Map(
@@ -463,6 +473,10 @@ function run(
     const d = day.date
     const cap = aiCap[k]!
     const limit = growthLimit(state.growthBase, k)
+    // "Nemam energije": shorter blocks (25/5) and the easier units first.
+    const low = day.energy === 'low'
+    const dayPreset = low ? LOW_ENERGY_PRESET : preset
+    const interval = low ? planIntervalMin(LOW_ENERGY_PRESET) : baseInterval
     const drafts: Draft[] = []
     const weightOf = (s: PlanSubject) =>
       priorityRule(s.priority).weight * (s.boostUntil && d <= s.boostUntil ? BOOST_WEIGHT : 1)
@@ -741,7 +755,11 @@ function run(
         L -= share
         const subject = subjects.get(sid)!
         const byGoalDraft = new Map<string, Draft>()
-        for (const w of pools.get(sid)!) {
+        const list = pools.get(sid)!
+        const ordered = low
+          ? [...list].sort((a, b) => (a.unit?.difficulty ?? 3) - (b.unit?.difficulty ?? 3))
+          : list
+        for (const w of ordered) {
           if (share <= 0) break
           const m = Math.min(w.left - picked(w), share)
           if (m <= 0) continue
@@ -855,6 +873,13 @@ function run(
       if (x.kind === 'learn' || x.kind === 'questions' || x.kind === 'deadline')
         x.demand = first + diff / 10
     }
+    // "Pun/a sam energije": the hardest learning block is placed first, into the day's best slot.
+    if (day.energy === 'high') {
+      const hardest = drafts
+        .filter((x) => x.kind === 'learn' || x.kind === 'questions')
+        .reduce<Draft | null>((m, x) => (m === null || x.demand > m.demand ? x : m), null)
+      if (hardest) hardest.demand += 1
+    }
 
     // 4. Times: fixed blocks stay, the rest goes into free slots with breaks.
     const fixedToday = state.fixed.filter((b) => b.onDate === d)
@@ -875,7 +900,7 @@ function run(
     const examEve = goals.some((g) => g.kind === 'exam' && g.on === addDays(d, 1))
     const placed = placeTimes(items, {
       slots: day.slots,
-      preset,
+      preset: dayPreset,
       minBlockMinutes: minBlock,
       preferredParts: state.preferredParts,
       scores: state.slotScores?.[isWeekendDay(d) ? 'weekend' : 'weekday'] ?? null,

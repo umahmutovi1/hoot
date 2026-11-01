@@ -911,6 +911,33 @@ export type Database = {
           },
         ]
       }
+      day_energy: {
+        Row: {
+          created_at: string
+          energy: string
+          id: string
+          on_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          energy: string
+          id?: string
+          on_date: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          energy?: string
+          id?: string
+          on_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deadlines: {
         Row: {
           created_at: string
@@ -2353,6 +2380,7 @@ export type Database = {
           label: string | null
           last_review_at: string | null
           level: number
+          level_source: string | null
           next_review_on: string | null
           notes: string | null
           page_end: number | null
@@ -2387,6 +2415,7 @@ export type Database = {
           label?: string | null
           last_review_at?: string | null
           level?: number
+          level_source?: string | null
           next_review_on?: string | null
           notes?: string | null
           page_end?: number | null
@@ -2421,6 +2450,7 @@ export type Database = {
           label?: string | null
           last_review_at?: string | null
           level?: number
+          level_source?: string | null
           next_review_on?: string | null
           notes?: string | null
           page_end?: number | null

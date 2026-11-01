@@ -73,6 +73,7 @@ begin
   insert into availability_rules (user_id, weekday, start_min, end_min) values (a, 1, 540, 1020);
   insert into availability_exceptions (user_id, on_date) values (a, current_date);
   insert into availability_days (user_id, on_date) values (a, current_date);
+  insert into day_energy (user_id, on_date, energy) values (a, current_date, 'low');
   insert into documents (id, user_id, kind, title) values (doc, a, 'other', 'Bilješke');
   insert into owl_conversations (id, user_id) values (conv, a);
   insert into ai_runs (user_id, task, provider, model, ok) values (a, 'quiz', 'test', 'test', true);
