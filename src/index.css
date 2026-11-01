@@ -532,3 +532,39 @@ html [data-vaul-overlay] {
     @apply overflow-x-auto overflow-y-hidden py-1;
   }
 }
+
+/* Celebration ring (Doživljaj): the stroke draws once, then the check pops in. */
+@keyframes ring-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes check-pop {
+  0%,
+  55% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@utility animate-ring-draw {
+  stroke-dasharray: 1;
+  animation: ring-draw 700ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+@utility animate-check-pop {
+  transform-origin: center;
+  animation: check-pop 900ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}

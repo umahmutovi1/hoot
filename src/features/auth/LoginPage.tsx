@@ -2,16 +2,17 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { LocaleToggle } from '@/components/LocaleToggle'
+import { Logo } from '@/components/Logo'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useLocale } from '@/features/settings/useLocale'
-import { sendMagicLink, verifyEmailCode } from './api'
+import { sendMagicLink, signInWithGoogle, signInWithPassword, verifyEmailCode } from './api'
 import { useAuth } from './auth-context'
 
-const emailSchema = z.object({ email: z.email() })
+const emailSchema = z.object({ email: z.email(), password: z.string() })
 const codeSchema = z.object({ code: z.string().regex(/^\d{6,10}$/) })
 
 const inputClass =
@@ -19,49 +20,127 @@ const inputClass =
 
 function EmailStep({ onSent }: { onSent: (email: string) => void }) {
   const { t } = useTranslation()
-  const [failed, setFailed] = useState(false)
-  const form = useForm({ resolver: zodResolver(emailSchema), defaultValues: { email: '' } })
+  const [failed, setFailed] = useState<'send' | 'password' | 'google' | null>(null)
+  const [sending, setSending] = useState(false)
+  const form = useForm({
+    resolver: zodResolver(emailSchema),
+    defaultValues: { email: '', password: '' },
+  })
 
-  const submit = form.handleSubmit(async ({ email }) => {
-    setFailed(false)
+  const sendCode = form.handleSubmit(async ({ email }) => {
+    setFailed(null)
+    setSending(true)
     try {
       await sendMagicLink(email)
       onSent(email)
     } catch {
-      setFailed(true)
+      setFailed('send')
+    } finally {
+      setSending(false)
     }
   })
 
+  // Without a password "Prijavi se" sends the code, so the first sign-in is the same button.
+  const submit = form.handleSubmit(async ({ email, password }) => {
+    if (!password) return sendCode()
+    setFailed(null)
+    try {
+      await signInWithPassword(email, password)
+    } catch {
+      setFailed('password')
+    }
+  })
+
+  const google = async () => {
+    setFailed(null)
+    try {
+      await signInWithGoogle()
+    } catch {
+      setFailed('google')
+    }
+  }
+
   const error = form.formState.errors.email
     ? t('auth.emailInvalid')
-    : failed
+    : failed === 'send'
       ? t('auth.sendFailed')
-      : null
+      : failed === 'password'
+        ? t('auth.passwordWrong')
+        : failed === 'google'
+          ? t('auth.googleFailed')
+          : null
+  const busy = form.formState.isSubmitting || sending
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-3.5">
-      <label className="mt-1.5 flex flex-col gap-1.5">
-        <span className="text-[13px] font-semibold">{t('auth.email')}</span>
-        <input
-          type="email"
-          autoComplete="email"
-          inputMode="email"
-          placeholder={t('auth.emailPlaceholder')}
-          aria-invalid={Boolean(error)}
-          className={inputClass}
-          {...form.register('email')}
-        />
-      </label>
-      {error && (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      )}
-      <Button type="submit" variant="ink" size="pill" disabled={form.formState.isSubmitting}>
-        {form.formState.isSubmitting ? t('auth.sending') : t('auth.sendLink')}
+    <div className="flex flex-col gap-3.5">
+      <Button type="button" variant="surface" size="pill" onClick={() => void google()}>
+        <GoogleMark />
+        {t('auth.google')}
       </Button>
-      <span className="text-center text-xs text-ink-muted">{t('auth.noPassword')}</span>
-    </form>
+      <div className="flex items-center gap-2.5 text-xs text-ink-muted">
+        <span className="h-px flex-1 bg-ink/14" />
+        {t('auth.orEmail')}
+        <span className="h-px flex-1 bg-ink/14" />
+      </div>
+      <form onSubmit={submit} noValidate className="flex flex-col gap-3.5">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-semibold">{t('auth.email')}</span>
+          <input
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            placeholder={t('auth.emailPlaceholder')}
+            aria-invalid={Boolean(form.formState.errors.email)}
+            className={inputClass}
+            {...form.register('email')}
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-semibold">{t('auth.password')}</span>
+          <input
+            type="password"
+            autoComplete="current-password"
+            placeholder={t('auth.passwordPlaceholder')}
+            aria-invalid={failed === 'password'}
+            className={inputClass}
+            {...form.register('password')}
+          />
+        </label>
+        {error && (
+          <p role="alert" className="text-sm text-danger">
+            {error}
+          </p>
+        )}
+        <Button type="submit" variant="ink" size="pill" disabled={busy}>
+          {busy ? t('auth.signingIn') : t('auth.signIn')}
+        </Button>
+        <Button type="button" variant="link" disabled={busy} onClick={() => void sendCode()}>
+          {sending ? t('auth.sending') : t('auth.sendCode')}
+        </Button>
+        <span className="text-center text-xs text-ink-muted">{t('auth.codeHint')}</span>
+      </form>
+    </div>
+  )
+}
+
+/** Google's "G" in its own colours (brand guidelines), not a stroke icon. */
+function GoogleMark() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M22.5 12.3c0-.8-.1-1.5-.2-2.3H12v4.3h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2.1-1.9 3.2-4.8 3.2-8z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.7c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8A11 11 0 0 0 12 23z"
+      />
+      <path fill="#FBBC05" d="M5.8 14.2a6.6 6.6 0 0 1 0-4.4V7H2.1a11 11 0 0 0 0 9.9z" />
+      <path
+        fill="#EA4335"
+        d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2A11 11 0 0 0 2.1 7l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4z"
+      />
+    </svg>
   )
 }
 
@@ -125,37 +204,20 @@ export function LoginPage() {
   if (session) return <Navigate to="/" replace />
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col">
-      <div className="relative flex h-[420px] shrink-0 items-center justify-center rounded-b-[48px] bg-white/20">
-        <LocaleToggle
-          value={locale}
-          onChange={setLocale}
-          variant="short"
-          className="absolute top-6 right-5 bg-white/60"
-        />
-        <div className="flex size-[260px] items-center justify-center rounded-full bg-white/38">
-          <span
-            role="img"
-            aria-label={t('auth.appIcon')}
-            className="icon-tile flex size-[132px] items-center justify-center rounded-[38px]"
-          >
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2.5l2.1 6 6.4 2.1-6.4 2.1-2.1 6.3-2.1-6.3-6.4-2.1 6.4-2.1z" />
-            </svg>
-          </span>
-        </div>
+    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col gap-3.5 px-6 pt-[calc(24px+env(safe-area-inset-top))] pb-8">
+      <div className="flex h-11 items-center justify-between">
+        <Link to="/" aria-label="Hoot">
+          <Logo size={40} />
+        </Link>
+        <LocaleToggle value={locale} onChange={setLocale} variant="short" className="bg-white/60" />
       </div>
-      <div className="flex flex-1 flex-col gap-3.5 px-6 py-7">
-        <h1 className="text-[30px] leading-[1.15] font-bold whitespace-pre-line">
-          {t('auth.headline')}
-        </h1>
-        <p className="text-[15px] leading-snug text-ink-muted">{t('auth.lead')}</p>
-        {sentTo ? (
-          <CodeStep email={sentTo} onBack={() => setSentTo(null)} />
-        ) : (
-          <EmailStep onSent={setSentTo} />
-        )}
-      </div>
+      <h1 className="mt-4 text-[30px] leading-[1.15] font-bold">{t('auth.title')}</h1>
+      <p className="text-[15px] leading-snug text-ink-secondary">{t('auth.firstTime')}</p>
+      {sentTo ? (
+        <CodeStep email={sentTo} onBack={() => setSentTo(null)} />
+      ) : (
+        <EmailStep onSent={setSentTo} />
+      )}
     </div>
   )
 }

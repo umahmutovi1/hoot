@@ -5,6 +5,8 @@ import { goBack } from '@/app/navigation'
 import { ChevronLeftIcon } from '@/components/icons'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useToast } from '@/components/toast-store'
+import { useCelebration } from '@/components/celebrate-store'
+import { reachedRepeated } from '@/lib/celebrate'
 import { useAiAvailability } from '@/features/owl/api'
 import { useAllSources, useQuestionLinks, useTopicLinks } from '@/features/plan/api'
 import { useSubjects } from '@/features/subjects/api'
@@ -73,6 +75,7 @@ function Gate({
   const { t } = useTranslation()
   const navigate = useNavigate()
   const toast = useToast((s) => s.show)
+  const celebrate = useCelebration((s) => s.celebrate)
   const writer = useReviewWriter()
   const aiReady = useAiAvailability().state === 'ready'
   const { data: subjects } = useSubjects()
@@ -124,7 +127,7 @@ function Gate({
       units.push(...r.units)
       cardReviews.push(...r.cards)
     }
-    await writer.save(units, cardReviews)
+    const outcomes = await writer.save(units, cardReviews)
     if (sessionId && skipped.length > 0)
       await writer.write(
         skipped.map((unitId): Op => ({
@@ -134,7 +137,8 @@ function Gate({
           patch: { recall_skipped: true },
         })),
       )
-    toast(t(units.length === 0 && skipped.length > 0 ? 'recall.skipped' : 'recall.saved'))
+    if (reachedRepeated(outcomes)) celebrate('repeated')
+    else toast(t(units.length === 0 && skipped.length > 0 ? 'recall.skipped' : 'recall.saved'))
     navigate(to, { replace: true })
   }
 

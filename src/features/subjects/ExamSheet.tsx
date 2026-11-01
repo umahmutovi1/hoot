@@ -86,8 +86,7 @@ function ExamForm({
   const [touched, setTouched] = useState<Record<string, SourcePick>>({})
   const [step, setStep] = useState<1 | 2>(1)
   const navigate = useNavigate()
-  const remove = useDeleteAssessment()
-  const [confirmDelete, setConfirmDelete] = useState(false)
+  const remove = useDeleteAssessment({ undo: true })
   const form = useForm<AssessmentForm>({
     resolver: zodResolver(examSheetSchema),
     defaultValues: exam
@@ -528,12 +527,11 @@ function ExamForm({
           variant="link"
           className="h-11 text-danger"
           onClick={() => {
-            if (!confirmDelete) return setConfirmDelete(true)
             remove.mutate(exam.id)
             onDone()
           }}
         >
-          {t(confirmDelete ? 'exams.confirmDelete' : 'exams.delete')}
+          {t('exams.delete')}
         </Button>
       )}
     </form>

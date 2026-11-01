@@ -64,6 +64,8 @@ export function usePagePhotoQuestions(unitId: string, count: number) {
 export function useProposeAnswer() {
   const { locale } = useLocale()
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async (questionId: string) => {
       const r = await invokeAi<ProposeAnswerOutput>('propose-answer', {
         question_id: questionId,

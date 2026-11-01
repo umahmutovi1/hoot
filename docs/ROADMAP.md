@@ -365,12 +365,12 @@ Istraživanje i obrazloženje: [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md).
 
 Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj i prijava, (2) učenje i AI.
 
-- [ ] Toastovi i potvrde: jedan sistem (uspjeh, greška, Poništi) za sve upise; dijalog samo za nepovratne radnje
-- [ ] Čestitke: završen blok, dan, „Ponovljeno“, sedmica u planu (poruka, animacija prstena, vibracija); bez maskote
-- [ ] Skeleton učitavanje po ekranima (Danas, Plan, Predmeti, Predmet, Izvor, Napredak); spinner samo u dugmadi
-- [ ] Landing stranica `/` za neprijavljene (mockup u `docs/design/` prije koda), bs i en
-- [ ] Email šablon prijave u Liquid Glass izgledu (SETUP.md 3)
-- [ ] Prijava: lozinka poslije prve prijave kodom; Google i Apple OAuth (provjera redirecta u iOS PWA; Apple uz Apple Developer Program, inače uz Capacitor); passkey ako Supabase ima podršku; SETUP.md za svaki provajder
+- [x] Toastovi i potvrde: jedan sistem (uspjeh, greška, Poništi) za sve upise; dijalog samo za nepovratne radnje
+- [x] Čestitke: završen blok, dan, „Ponovljeno“, sedmica u planu (poruka, animacija prstena, vibracija); bez maskote
+- [x] Skeleton učitavanje po ekranima (Danas, Plan, Predmeti, Predmet, Izvor, Napredak); spinner samo u dugmadi
+- [x] Landing stranica `/` za neprijavljene (mockup u `docs/design/` prije koda), bs i en
+- [x] Email šablon prijave u Liquid Glass izgledu (SETUP.md 3)
+- [x] Prijava: lozinka poslije prve prijave kodom; Google OAuth (provjera redirecta u iOS PWA, SETUP.md 3a); Apple uz Capacitor (nema Apple Developer Programa); passkey (Supabase beta) uz vlastitu domenu, odluka 1. nov 2026
 - [ ] Energija dana: brze akcije „Nemam energije“ / „Pun/a sam energije“; `day_energy` po datumu kao ulaz u `plan()` i `input_hash`; property testovi (low ne prelazi ~60% kapaciteta, high ne prelazi limit rasta); ML signal uz blokove
 - [ ] Ručno „Razumijem“ uz napomenu o iskrenosti: nivo 2, bez FSRS memorije, provjera za `READ_CHECK_DAYS`; `units.level_source`
 - [ ] `recall-questions` prima zalijepljeni tekst (gate i kviz)
@@ -433,6 +433,7 @@ PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
 - Prijedlog obima parcijale iz onoga što je pređeno na predavanjima do datuma parcijale.
 - Outlook dvosmjerno (Microsoft Graph, subscriptions) i replan na serveru ([CALENDAR-SYNC.md](CALENDAR-SYNC.md) „Kasnije“).
+- Passkey prijava (Face ID / Touch ID): Supabase passkeys su beta, a Relying Party ID je domena; ide uz vlastitu domenu (odluka 1. nov 2026). Apple prijava uz Capacitor.
 - Notion javna integracija (baza rokova → `deadlines`) samo ako paste kroz sovu ne bude dovoljan.
 - Lični faktor brzine po jeziku izvora (`sources.language`).
 - Opcionalno mjesto bloka („biblioteka“, „kuća“) uz predloženo vrijeme (namjera „kad i gdje“).

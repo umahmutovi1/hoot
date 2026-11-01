@@ -118,6 +118,7 @@ describe('SyncQueue', () => {
     expect([...server.table('study_sessions').keys()]).toEqual(['good'])
     expect(await queue.pendingCount()).toBe(0)
     expect((await db.queue.toArray())[0]!.failed).toBe(true)
+    expect(await queue.failedCount()).toBe(1)
   })
 
   it('applies updates and deletes to the mirror', async () => {

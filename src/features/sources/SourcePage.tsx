@@ -3,7 +3,7 @@ import { useRates } from '@/features/plan/api'
 import { useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { SplashScreen } from '@/components/SplashScreen'
+import { DetailSkeleton } from '@/components/Skeleton'
 import { useSubject } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
 import { levelMinutes, leavesOf, subtreeLeaves } from '@/lib/progress'
@@ -28,7 +28,7 @@ export function SourcePage() {
   const { id, sourceId } = useParams()
   const { data: subject, isPending } = useSubject(id)
   const { data: source, isPending: sourcePending } = useSource(id, sourceId)
-  if (isPending || sourcePending) return <SplashScreen />
+  if (isPending || sourcePending) return <DetailSkeleton />
   if (!subject) return <Navigate to="/subjects" replace />
   if (!source) return <Navigate to={`/subjects/${subject.id}`} replace />
   return <SourceDetail subject={subject} source={source} />

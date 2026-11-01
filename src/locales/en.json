@@ -24,13 +24,10 @@
   },
   "auth": {
     "headline": "Study smarter,\nnot longer.",
-    "lead": "A plan built from your deadlines and reading list that adapts when you miss something.",
     "email": "Email",
     "emailPlaceholder": "name@example.com",
     "emailInvalid": "Enter a valid email.",
-    "sendLink": "Send sign-in link",
     "sending": "Sending…",
-    "noPassword": "No password — the link arrives by email.",
     "checkEmailTitle": "Check your email",
     "checkEmailBody": "We sent a sign-in link to {{email}}. Open it on this device or enter the code from the email.",
     "code": "Code from email",
@@ -40,7 +37,31 @@
     "codeInvalid": "The code is wrong or has expired.",
     "useOtherEmail": "Use another email",
     "sendFailed": "Couldn't send the email. Try again in a minute.",
-    "appIcon": "App icon"
+    "title": "Sign in",
+    "firstTime": "First time? We'll email you a code.",
+    "google": "Continue with Google",
+    "googleFailed": "Google sign-in failed. Try again.",
+    "orEmail": "or with email",
+    "password": "Password",
+    "passwordPlaceholder": "If you have set one",
+    "signIn": "Sign in",
+    "signingIn": "Signing in…",
+    "sendCode": "Email me a code",
+    "codeHint": "No password or forgot it? The email code signs you in.",
+    "passwordWrong": "Wrong email or password. The email code signs you in without it.",
+    "setPassword": "Set a password",
+    "setPasswordShort": "Set",
+    "changePassword": "Change",
+    "setPasswordBody": "Next time you sign in without waiting for a code, also in the home screen app.",
+    "newPassword": "New password",
+    "newPasswordPlaceholder_one": "At least {{count}} character",
+    "newPasswordPlaceholder_other": "At least {{count}} characters",
+    "passwordShort_one": "The password needs at least {{count}} character.",
+    "passwordShort_other": "The password needs at least {{count}} characters.",
+    "passwordFailed": "The password was not saved. Try again.",
+    "passwordSaved": "Password saved",
+    "savePassword": "Save password",
+    "skip": "Skip"
   },
   "today": {
     "greeting": {
@@ -771,7 +792,11 @@
   "common": {
     "cancel": "Cancel",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "undo": "Undo",
+    "deleted": "Deleted",
+    "saveFailed": "Not saved. Try again.",
+    "saveOffline": "No connection, the change was not saved."
   },
   "profile": {
     "nameLabel": "Name",
@@ -786,7 +811,6 @@
     "kindLabel": "Type",
     "scopeAll": "All material",
     "delete": "Delete exam",
-    "confirmDelete": "Sure? Tap again to delete",
     "kind": {
       "partial": "Midterm",
       "final": "Final",
@@ -860,8 +884,7 @@
     "optional": "(optional)",
     "done": "Done",
     "doneShort": "done",
-    "delete": "Delete deadline",
-    "confirmDelete": "Sure? Tap again to delete"
+    "delete": "Delete deadline"
   },
   "sources": {
     "editor": {
@@ -1124,7 +1147,6 @@
       "newTitle": "New card",
       "editTitle": "Edit card",
       "delete": "Delete card",
-      "confirmDelete": "Sure? Tap again to delete",
       "import": "Import",
       "importTitle": "Import cards",
       "importPlaceholder": "One card per line:\nConvolution\tmultiplication in frequency\nDTFT - transform of a sequence",
@@ -1245,8 +1267,7 @@
       "holiday": "Holiday",
       "exam_partial": "Partial exam week"
     },
-    "delete": "Delete period",
-    "confirmDelete": "Delete for sure?"
+    "delete": "Delete period"
   },
   "timetable": {
     "title": "Class timetable",
@@ -1293,7 +1314,6 @@
     "recapTitle": "Short review after a lecture",
     "recapHint": "15 min the same day, the first review step",
     "delete": "Delete class",
-    "confirmDelete": "Delete for sure?",
     "photoTitle": "Photograph the timetable",
     "photoHint": "The AI finds the classes; you review them before saving"
   },
@@ -2746,5 +2766,57 @@
     "unknown": "Repeats every week: is it a lecture?",
     "isLecture": "It's a lecture",
     "notLecture": "No"
+  },
+  "celebrate": {
+    "block": {
+      "title": "Block done",
+      "body": "One step closer to the exam."
+    },
+    "day": {
+      "title": "Day done",
+      "body": "Everything in today's plan is done."
+    },
+    "week": {
+      "title": "Week on plan",
+      "body": "This week went as planned."
+    },
+    "repeated": {
+      "title": "Repeated",
+      "body": "This material is in long-term memory now."
+    },
+    "passed": {
+      "title": "Passed!",
+      "body": "{{name}}: exam passed."
+    }
+  },
+  "landing": {
+    "signIn": "Sign in",
+    "start": "Get started",
+    "lead": "Hoot turns your exam dates, books and exam questions into a daily study plan, and fixes it by itself when you miss something.",
+    "devices": "Works on phone and computer · add it to your home screen",
+    "shotAlt": "Hoot's Today screen: the next block, a review and an exam in 12 days",
+    "what": {
+      "title": "You study, Hoot plans",
+      "plan": "A plan from your deadlines",
+      "planBody": "Snap the book's table of contents and add exam dates. Hoot spreads the material over the days, around classes and your free time.",
+      "adapt": "Adapts by itself",
+      "adaptBody": "Missed a day or low on energy? One tap and the plan is redone, no guilt and no moving things by hand.",
+      "remember": "Remembers for you",
+      "rememberBody": "A short check after studying, and reviews come right when the material would start to fade, up to exam day."
+    },
+    "how": {
+      "title": "How to start",
+      "signIn": "Sign in",
+      "signInBody": "with email or Google.",
+      "subjects": "Add subjects:",
+      "subjectsBody": "import the academic calendar and timetable, or just enter your exams.",
+      "today": "Open Today",
+      "todayBody": "and start the first block."
+    },
+    "cta": {
+      "title": "Next exam period, no panic",
+      "body": "Your data stays yours: export it any time.",
+      "button": "Get started"
+    }
   }
 }

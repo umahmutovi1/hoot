@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { ListSkeleton } from '@/components/Skeleton'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { differenceInCalendarDays } from 'date-fns'
@@ -71,6 +72,7 @@ export function SubjectsPage() {
 
       <div className="flex flex-col gap-3">
         <NewYearCard />
+        {isPending && <ListSkeleton count={4} rows={1} />}
         {!isPending && active.length === 0 && <EmptyCard>{t('subjects.empty')}</EmptyCard>}
         {term.years.length > 0 ? (
           <>

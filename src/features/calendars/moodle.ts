@@ -46,6 +46,8 @@ export function useApplyDeadlines() {
   const userId = useAuth().session?.user.id
   const queryClient = useQueryClient()
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async (proposals: DeadlineProposal[]) => {
       for (const p of proposals) {
         if (!p.include) {

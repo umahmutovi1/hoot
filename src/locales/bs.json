@@ -24,13 +24,10 @@
   },
   "auth": {
     "headline": "Uči pametnije,\nne duže.",
-    "lead": "Plan iz tvojih rokova i literature, koji se sam prilagođava kad nešto propustiš.",
     "email": "Email",
     "emailPlaceholder": "ime@primjer.ba",
     "emailInvalid": "Upiši ispravan email.",
-    "sendLink": "Pošalji link za prijavu",
     "sending": "Šaljem…",
-    "noPassword": "Bez lozinke — link stiže na email.",
     "checkEmailTitle": "Provjeri email",
     "checkEmailBody": "Poslali smo link za prijavu na {{email}}. Otvori ga na ovom uređaju ili upiši kod iz emaila.",
     "code": "Kod iz emaila",
@@ -40,7 +37,33 @@
     "codeInvalid": "Kod nije ispravan ili je istekao.",
     "useOtherEmail": "Drugi email",
     "sendFailed": "Slanje nije uspjelo. Pokušaj ponovo za minutu.",
-    "appIcon": "Ikona aplikacije"
+    "title": "Prijavi se",
+    "firstTime": "Prvi put? Pošaljemo ti kod na email.",
+    "google": "Nastavi s Googleom",
+    "googleFailed": "Prijava s Googleom nije uspjela. Pokušaj ponovo.",
+    "orEmail": "ili emailom",
+    "password": "Lozinka",
+    "passwordPlaceholder": "Ako si je već postavio/la",
+    "signIn": "Prijavi se",
+    "signingIn": "Prijavljujem…",
+    "sendCode": "Pošalji mi kod na email",
+    "codeHint": "Bez lozinke ili si je zaboravio/la? Kod iz emaila te prijavi.",
+    "passwordWrong": "Pogrešan email ili lozinka. Kod iz emaila te prijavi i bez nje.",
+    "setPassword": "Postavi lozinku",
+    "setPasswordShort": "Postavi",
+    "changePassword": "Promijeni",
+    "setPasswordBody": "Sljedeći put se prijaviš bez čekanja koda, i u appu na početnom ekranu.",
+    "newPassword": "Nova lozinka",
+    "newPasswordPlaceholder_one": "Najmanje {{count}} znak",
+    "newPasswordPlaceholder_few": "Najmanje {{count}} znaka",
+    "newPasswordPlaceholder_other": "Najmanje {{count}} znakova",
+    "passwordShort_one": "Lozinka treba najmanje {{count}} znak.",
+    "passwordShort_few": "Lozinka treba najmanje {{count}} znaka.",
+    "passwordShort_other": "Lozinka treba najmanje {{count}} znakova.",
+    "passwordFailed": "Lozinka nije spremljena. Pokušaj ponovo.",
+    "passwordSaved": "Lozinka je spremljena",
+    "savePassword": "Spasi lozinku",
+    "skip": "Preskoči"
   },
   "today": {
     "greeting": {
@@ -797,7 +820,11 @@
   "common": {
     "cancel": "Odustani",
     "save": "Spasi",
-    "close": "Zatvori"
+    "close": "Zatvori",
+    "undo": "Poništi",
+    "deleted": "Obrisano",
+    "saveFailed": "Nije spremljeno. Pokušaj ponovo.",
+    "saveOffline": "Nema mreže, promjena nije spremljena."
   },
   "profile": {
     "nameLabel": "Ime",
@@ -812,7 +839,6 @@
     "kindLabel": "Vrsta",
     "scopeAll": "Cijelo gradivo",
     "delete": "Obriši ispit",
-    "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
     "kind": {
       "partial": "Parcijala",
       "final": "Završni",
@@ -887,8 +913,7 @@
     "optional": "(opcionalno)",
     "done": "Završeno",
     "doneShort": "završeno",
-    "delete": "Obriši rok",
-    "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
+    "delete": "Obriši rok"
   },
   "sources": {
     "editor": {
@@ -1158,7 +1183,6 @@
       "newTitle": "Nova kartica",
       "editTitle": "Uredi karticu",
       "delete": "Obriši karticu",
-      "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
       "import": "Uvezi",
       "importTitle": "Uvoz kartica",
       "importPlaceholder": "Jedna kartica po liniji:\nKonvolucija\tmnoženje u frekvenciji\nDTFT - transformacija niza",
@@ -1282,8 +1306,7 @@
       "holiday": "Neradni dan",
       "exam_partial": "Sedmica parcijalnih"
     },
-    "delete": "Obriši period",
-    "confirmDelete": "Sigurno obrisati?"
+    "delete": "Obriši period"
   },
   "timetable": {
     "title": "Raspored nastave",
@@ -1331,7 +1354,6 @@
     "recapTitle": "Kratko ponavljanje nakon predavanja",
     "recapHint": "15 min istog dana, prvi korak ponavljanja",
     "delete": "Obriši termin",
-    "confirmDelete": "Sigurno obrisati?",
     "photoTitle": "Uslikaj raspored",
     "photoHint": "AI prepozna termine; pregledaš prije spašavanja"
   },
@@ -2824,5 +2846,57 @@
     "unknown": "Ponavlja se svake sedmice: je li predavanje?",
     "isLecture": "Predavanje je",
     "notLecture": "Nije"
+  },
+  "celebrate": {
+    "block": {
+      "title": "Blok završen",
+      "body": "Još jedan korak bliže ispitu."
+    },
+    "day": {
+      "title": "Dan završen",
+      "body": "Sve iz današnjeg plana je urađeno."
+    },
+    "week": {
+      "title": "Sedmica u planu",
+      "body": "Ova sedmica je odrađena kako je planirano."
+    },
+    "repeated": {
+      "title": "Ponovljeno",
+      "body": "Gradivo je sad u dugoročnom pamćenju."
+    },
+    "passed": {
+      "title": "Položeno!",
+      "body": "{{name}}: ispit je položen."
+    }
+  },
+  "landing": {
+    "signIn": "Prijavi se",
+    "start": "Počni",
+    "lead": "Hoot od tvojih rokova, literature i ispitnih pitanja napravi dnevni plan učenja i sam ga prepravi kad nešto propustiš.",
+    "devices": "Radi na telefonu i računaru · dodaj na početni ekran",
+    "shotAlt": "Ekran Danas u Hootu: sljedeći blok, ponavljanje i ispit za 12 dana",
+    "what": {
+      "title": "Ti učiš, Hoot planira",
+      "plan": "Plan iz tvojih rokova",
+      "planBody": "Uslikaj sadržaj knjige i dodaj datume ispita. Hoot rasporedi gradivo po danima, oko nastave i tvog slobodnog vremena.",
+      "adapt": "Sam se prilagodi",
+      "adaptBody": "Propušten dan ili dan bez energije? Jedan tap i plan se prepravi, bez krivnje i bez ručnog premještanja.",
+      "remember": "Pamti umjesto tebe",
+      "rememberBody": "Kratka provjera poslije učenja, a ponavljanja stižu baš kad bi gradivo počelo blijediti, do dana ispita."
+    },
+    "how": {
+      "title": "Kako počinješ",
+      "signIn": "Prijavi se",
+      "signInBody": "emailom ili Googleom.",
+      "subjects": "Dodaj predmete:",
+      "subjectsBody": "uvezi akademski kalendar i raspored ili samo upiši ispite.",
+      "today": "Otvori Danas",
+      "todayBody": "i počni prvi blok."
+    },
+    "cta": {
+      "title": "Sljedeći ispitni rok, bez panike",
+      "body": "Tvoji podaci ostaju tvoji: izvoz u svakom trenutku.",
+      "button": "Počni"
+    }
   }
 }

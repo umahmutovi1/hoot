@@ -14,6 +14,8 @@ import { ScaleSheet } from '@/features/subjects/ScaleSheet'
 import { localDay } from '@/lib/day'
 import { cn } from '@/lib/utils'
 import { DisplayNameForm } from './DisplayNameForm'
+import { useAuth, useHasPassword } from '@/features/auth/auth-context'
+import { PasswordSheet } from '@/features/auth/PasswordSheet'
 import { NotifySettings } from '@/features/notify/NotifySettings'
 import { ThemeSwatch } from './AppearancePage'
 import { isTheme } from './theme'
@@ -35,6 +37,9 @@ export function SettingsPage() {
   const schedule = useScheduleData()
   const documents = useDocuments().data
   const feeds = useCalendarFeeds().data
+  const [passwordOpen, setPasswordOpen] = useState(false)
+  const hasPassword = useHasPassword()
+  const emailAccount = useAuth().session?.user.app_metadata?.provider === 'email'
   const row = 'flex items-center justify-between border-b border-canvas py-3.5'
 
   return (
@@ -77,6 +82,18 @@ export function SettingsPage() {
           <span className="text-[15px]">{t('settings.language')}</span>
           <LocaleToggle value={locale} onChange={setLocale} className="bg-canvas" />
         </div>
+        {emailAccount && (
+          <button
+            type="button"
+            onClick={() => setPasswordOpen(true)}
+            className={cn(row, 'text-left')}
+          >
+            <span className="text-[15px]">{t('auth.password')}</span>
+            <span className="text-sm text-ink-muted">
+              {t(hasPassword ? 'auth.changePassword' : 'auth.setPasswordShort')} ›
+            </span>
+          </button>
+        )}
         <Link to="/settings/academic" className={row}>
           <span className="flex flex-col gap-0.5">
             <span className="text-[15px]">{t('academic.faculty.row')}</span>
@@ -167,6 +184,7 @@ export function SettingsPage() {
       </div>
 
       <ScaleSheet open={scaleOpen} onOpenChange={setScaleOpen} />
+      <PasswordSheet open={passwordOpen} onOpenChange={setPasswordOpen} />
 
       <button
         type="button"

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useCelebration } from '@/components/celebrate-store'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { BottomSheet } from '@/components/BottomSheet'
@@ -49,6 +50,7 @@ export function ResultSheet({ target, subjectName, worth, open, onOpenChange }: 
         <ResultForm
           key={target.row.id}
           target={target}
+          subjectName={subjectName}
           worth={worth}
           onDone={() => onOpenChange(false)}
         />
@@ -59,10 +61,12 @@ export function ResultSheet({ target, subjectName, worth, open, onOpenChange }: 
 
 function ResultForm({
   target,
+  subjectName,
   worth,
   onDone,
 }: {
   target: ResultTarget
+  subjectName: string
   worth: number | null
   onDone: () => void
 }) {
@@ -70,6 +74,7 @@ function ResultForm({
   const { locale } = useLocale()
   const saveExam = useSaveExamResult()
   const saveDeadline = useSaveDeadlineResult()
+  const celebrate = useCelebration((s) => s.celebrate)
   const row = target.row
   const exam = target.kind === 'exam' ? target.row : undefined
   const hasResult = row.result_points !== null && row.result_max !== null
@@ -112,6 +117,7 @@ function ResultForm({
         id: exam.id,
         patch: { ...result, passed: parsed.data.passed, result_annulled: false },
       })
+      if (parsed.data.passed && !(hasResult && exam.passed)) celebrate('passed', subjectName)
     } else {
       saveDeadline.mutate({ id: row.id, patch: { ...result, done: true } })
     }

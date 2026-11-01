@@ -125,6 +125,8 @@ export function useSyncCalendars() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
+    // Mostly a background refresh (CalendarSync); a write toast would be misleading.
+    meta: { silent: true },
     mutationFn: syncCalendars,
     onSettled: () =>
       Promise.all([

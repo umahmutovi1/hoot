@@ -85,11 +85,11 @@ jobs:
       - name: Pull request
         if: >-
           steps.sim.outcome == 'success' &&
-          fromJSON(steps.train.outputs.summary).ok &&
-          join(fromJSON(steps.train.outputs.summary).changed, ',') != ''
+          fromJSON(steps.train.outputs.summary || '{}').ok &&
+          join(fromJSON(steps.train.outputs.summary || '{}').changed, ',') != ''
         env:
           GH_TOKEN: ${{ secrets.ML_PR_TOKEN }}
-          CHANGED: ${{ join(fromJSON(steps.train.outputs.summary).changed, ', ') }}
+          CHANGED: ${{ join(fromJSON(steps.train.outputs.summary || '{}').changed, ', ') }}
         run: |
           branch="chore/ml-train-$(date -u +%Y-%m-%d)-${GITHUB_RUN_ID}"
           git config user.name "github-actions[bot]"

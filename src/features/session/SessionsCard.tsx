@@ -14,7 +14,7 @@ import { sessionMinutes } from './model'
 export function SessionsCard({ subjectId }: { subjectId?: string }) {
   const { t } = useTranslation()
   const boundary = useDayBoundary()
-  const { data } = useSessions()
+  const { data, isPending } = useSessions()
   const [now] = useState(() => new Date())
   const weekStart = startOfWeek(localDay(now, boundary))
   const list = (data ?? []).filter(
@@ -35,14 +35,16 @@ export function SessionsCard({ subjectId }: { subjectId?: string }) {
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="text-[15px] font-semibold">{t('session.history.title')}</span>
         <span className="text-xs text-ink-muted">
-          {list.length === 0
-            ? t('session.history.cardEmpty')
-            : [
-                subjectId
-                  ? t('session.history.count', { count: list.length })
-                  : t('session.history.thisWeek', { count: list.length }),
-                formatDuration(t, minutes),
-              ].join(' · ')}
+          {isPending
+            ? '\u00a0'
+            : list.length === 0
+              ? t('session.history.cardEmpty')
+              : [
+                  subjectId
+                    ? t('session.history.count', { count: list.length })
+                    : t('session.history.thisWeek', { count: list.length }),
+                  formatDuration(t, minutes),
+                ].join(' · ')}
         </span>
       </span>
       <ChevronRightIcon size={18} className="text-ink-muted" />
