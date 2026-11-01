@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>Landing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4C4892}
+.g{background:rgba(255,255,255,0.36);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);box-shadow:inset 0 0 0 0.5px rgba(255,255,255,0.55),inset 0 1px 1px rgba(255,255,255,0.85),inset 0 -1px 1px rgba(58,51,96,0.05),0 8px 28px rgba(58,51,96,0.07)}
+.tile{width:40px;height:40px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#7F78CC,#4C4892);box-shadow:inset 0 1px 1px rgba(255,255,255,0.5),0 6px 16px rgba(76,72,146,0.22)}
+.tile svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn{height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;text-decoration:none}
+.primary{background:linear-gradient(160deg,#6E67BE,#4C4892);color:#fff;box-shadow:0 10px 26px rgba(76,72,146,0.28)}
+h2{margin:0;font-size:22px;font-weight:700;line-height:1.2}
+p{margin:0}
+</style>
+</helmet>
+<!-- Javna `/` za neprijavljene. Prijavljeni idu ravno na Danas. Jedna kolona do 390 px; na širem ekranu ista kolona centrirana (max 440 px). -->
+<div style="width: 390px; box-sizing: border-box; background: radial-gradient(120% 22% at 0% 0%, rgba(150,141,222,0.62), rgba(150,141,222,0) 62%), radial-gradient(90% 18% at 100% 12%, rgba(229,182,206,0.62), rgba(229,182,206,0) 62%), radial-gradient(110% 20% at 0% 45%, rgba(168,196,234,0.60), rgba(168,196,234,0) 62%), radial-gradient(95% 20% at 100% 78%, rgba(160,148,226,0.55), rgba(160,148,226,0) 62%), linear-gradient(180deg, #ECE9F4 0%, #E8E5F1 100%); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; color: #14121C; padding-bottom: 40px">
+
+<!-- Prvi red: logo + ime, BS/EN, Prijavi se -->
+<div style="height: 64px; padding: 0 18px; display: flex; align-items: center; gap: 10px">
+<img src="owl-pwa-icons/logo.svg" alt="" style="height: 28px">
+<span style="font-size: 18px; font-weight: 700; flex: 1">Hoot</span>
+<div style="display: flex; background: rgba(255,255,255,0.6); border-radius: 18px; padding: 3px">
+<button class="g" style="height: 32px; padding: 0 12px; border-radius: 15px; border: none; font: inherit; font-size: 13px; font-weight: 600">BS</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 15px; border: none; background: transparent; font: inherit; font-size: 13px; font-weight: 600">EN</button>
+</div>
+<a href="Prijava.dc.html" style="height: 44px; display: flex; align-items: center; padding: 0 4px 0 8px; font-size: 15px; font-weight: 600; text-decoration: none; color: #4C4892">Prijavi se</a>
+</div>
+
+<!-- Hero -->
+<div style="padding: 28px 24px 8px; display: flex; flex-direction: column; gap: 14px">
+<h1 style="margin: 0; font-size: 34px; font-weight: 700; line-height: 1.1">Uči pametnije,<br>ne duže.</h1>
+<p style="font-size: 16px; color: #3F3B4E; line-height: 1.45">Hoot od tvojih rokova, literature i ispitnih pitanja napravi dnevni plan učenja i sam ga prepravi kad nešto propustiš.</p>
+<a href="Prijava.dc.html" class="btn primary" style="margin-top: 6px">Počni</a>
+<span style="font-size: 12px; color: #55516A; text-align: center">Radi na telefonu i računaru · dodaj na početni ekran</span>
+</div>
+
+<!-- Snimak ekrana Danas u okviru telefona (u kodu: PNG po jeziku, `public/landing/today-bs.png`) -->
+<div style="padding: 24px 0 8px; display: flex; justify-content: center">
+<div style="width: 250px; height: 500px; border-radius: 40px; padding: 8px; background: #14121C; box-shadow: 0 24px 60px rgba(58,51,96,0.30)">
+<div style="height: 100%; border-radius: 33px; overflow: hidden; background: radial-gradient(120% 50% at 0% 0%, rgba(150,141,222,0.62), rgba(150,141,222,0) 62%), radial-gradient(90% 40% at 100% 30%, rgba(229,182,206,0.62), rgba(229,182,206,0) 62%), linear-gradient(180deg, #ECE9F4, #E8E5F1); padding: 34px 12px 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 9px">
+<span style="font-size: 20px; font-weight: 700">Danas</span>
+<span style="font-size: 10px; color: #55516A">Utorak, 3. novembar · 2 h 10 min u planu</span>
+<div style="border-radius: 20px; padding: 12px; color: #fff; background: linear-gradient(160deg, rgba(110,103,190,.90), rgba(76,72,146,.94)); display: flex; flex-direction: column; gap: 5px">
+<span style="font-size: 9px; font-weight: 600; opacity: .8; letter-spacing: .04em">SLJEDEĆE · 10:00</span>
+<span style="font-size: 14px; font-weight: 700">Signali i sistemi</span>
+<span style="font-size: 10px; opacity: .85">Furijeova transformacija · str. 112–131</span>
+<span style="align-self: flex-start; margin-top: 4px; background: #fff; color: #36336E; font-size: 10px; font-weight: 600; border-radius: 12px; padding: 5px 12px">Počni · 50 min</span>
+</div>
+<div class="g" style="border-radius: 18px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center"><span style="font-size: 11px; font-weight: 600">Ponavljanje · Matematika 2</span><span style="font-size: 10px; color: #55516A">15 min</span></div>
+<div class="g" style="border-radius: 18px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center"><span style="font-size: 11px; font-weight: 600">Elektronika · Diode</span><span style="font-size: 10px; color: #55516A">45 min</span></div>
+<div class="g" style="border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 11px; font-weight: 600">Ispit iz Signala za 12 dana</span><div style="height: 6px; border-radius: 3px; background: rgba(106,100,184,.18)"><div style="width: 64%; height: 100%; border-radius: 3px; background: #6A64B8"></div></div><span style="font-size: 9px; color: #55516A">64% gradiva · stižeš do 9. novembra</span></div>
+</div>
+</div>
+</div>
+
+<!-- Tri stvari koje Hoot radi -->
+<div style="padding: 28px 18px 0; display: flex; flex-direction: column; gap: 12px">
+<h2 style="padding: 0 6px">Ti učiš, Hoot planira</h2>
+<div class="g" style="border-radius: 26px; padding: 18px; display: flex; gap: 14px">
+<span class="tile"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 16px; font-weight: 600">Plan iz tvojih rokova</span><p style="font-size: 14px; color: #3F3B4E; line-height: 1.4">Uslikaj sadržaj knjige i dodaj datume ispita. Hoot rasporedi gradivo po danima, oko nastave i tvog slobodnog vremena.</p></div>
+</div>
+<div class="g" style="border-radius: 26px; padding: 18px; display: flex; gap: 14px">
+<span class="tile"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 16px; font-weight: 600">Sam se prilagodi</span><p style="font-size: 14px; color: #3F3B4E; line-height: 1.4">Propušten dan ili dan bez energije? Jedan tap i plan se prepravi, bez krivnje i bez ručnog premještanja.</p></div>
+</div>
+<div class="g" style="border-radius: 26px; padding: 18px; display: flex; gap: 14px">
+<span class="tile"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3zM9.5 20.5h5"/></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 16px; font-weight: 600">Pamti umjesto tebe</span><p style="font-size: 14px; color: #3F3B4E; line-height: 1.4">Kratka provjera poslije učenja, a ponavljanja stižu baš kad bi gradivo počelo blijediti, do dana ispita.</p></div>
+</div>
+</div>
+
+<!-- Kako počinješ -->
+<div style="padding: 28px 24px 0; display: flex; flex-direction: column; gap: 14px">
+<h2>Kako počinješ</h2>
+<div style="display: flex; gap: 12px; align-items: baseline"><span style="font-size: 15px; font-weight: 700; color: #6A64B8; width: 18px">1</span><p style="font-size: 15px; line-height: 1.4"><b>Prijavi se</b> emailom ili Googleom.</p></div>
+<div style="display: flex; gap: 12px; align-items: baseline"><span style="font-size: 15px; font-weight: 700; color: #6A64B8; width: 18px">2</span><p style="font-size: 15px; line-height: 1.4"><b>Dodaj predmete</b>: uvezi akademski kalendar i raspored ili samo upiši ispite.</p></div>
+<div style="display: flex; gap: 12px; align-items: baseline"><span style="font-size: 15px; font-weight: 700; color: #6A64B8; width: 18px">3</span><p style="font-size: 15px; line-height: 1.4"><b>Otvori Danas</b> i počni prvi blok.</p></div>
+</div>
+
+<!-- Završni CTA -->
+<div style="padding: 32px 18px 0">
+<div style="border-radius: 28px; padding: 24px 20px; color: #fff; background: linear-gradient(160deg, rgba(110,103,190,.90), rgba(76,72,146,.94)); display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 20px; font-weight: 700">Sljedeći ispitni rok, bez panike</span>
+<p style="font-size: 14px; opacity: .88; line-height: 1.4">Tvoji podaci ostaju tvoji: izvoz u svakom trenutku.</p>
+<a href="Prijava.dc.html" class="btn" style="background: #fff; color: #36336E">Počni</a>
+</div>
+</div>
+
+<div style="padding: 24px; font-size: 12px; color: #55516A; text-align: center">Hoot</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
