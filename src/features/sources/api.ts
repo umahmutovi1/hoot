@@ -347,6 +347,7 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     user_difficulty: null,
     est_minutes: null,
     level: 0,
+    level_source: null,
     confidence: null,
     notes: null,
     answer: null,

@@ -6,7 +6,7 @@ import { syncQueueFor } from '@/app/sync'
 import { useToast } from '@/components/toast-store'
 import { useAuth } from '@/features/auth/auth-context'
 import { scheduleKey } from '@/features/schedule/api'
-import type { DayRow, ExceptionRow } from '@/features/schedule/model'
+import type { DayRow, EnergyRow, ExceptionRow } from '@/features/schedule/model'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useSessionWriter } from '@/features/session/api'
 import { usePresets } from '@/features/session/presets'
@@ -14,6 +14,7 @@ import { useDayBoundary } from '@/features/settings/profile'
 import { useSessionUi } from '@/features/session/store'
 import { subjectsKey } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
+import type { Energy } from '@/lib/energy'
 import { addDays, localDay, wallClock, zonedInstant, type LocalDate } from '@/lib/day'
 import { capFor, formatClock, freeSlotsOn, subtractSlots } from '@/lib/schedule'
 import { breakAfterBlock } from '@/lib/session/timer'
@@ -45,6 +46,64 @@ function useQueueWrite() {
       void queryClient.invalidateQueries({ queryKey: planBlocksKey(userId) })
     },
     [userId, queryClient],
+  )
+}
+
+/**
+ * "Nemam energije" / "Pun/a sam energije" (PRD "Dopune, 29. okt 2026" → Energija dana): the
+ * date's energy is a scheduler input; `normal` removes the row. Today is rebuilt right away.
+ * Returns an undo that restores the previous energy.
+ */
+export function useSetEnergy() {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  const write = useQueueWrite()
+  const replanNow = usePlanStore((s) => s.replanNow)
+  const key = scheduleKey('day_energy', userId)
+
+  const apply = useCallback(
+    async (date: LocalDate, energy: Energy, previous: EnergyRow | undefined) => {
+      const now = new Date().toISOString()
+      const id = previous?.id ?? crypto.randomUUID()
+      queryClient.setQueryData<EnergyRow[]>(key, (list = []) => [
+        ...list.filter((e) => e.on_date !== date),
+        ...(energy === 'normal'
+          ? []
+          : [
+              {
+                id,
+                user_id: userId!,
+                on_date: date,
+                energy,
+                created_at: previous?.created_at ?? now,
+                updated_at: now,
+              },
+            ]),
+      ])
+      await write([
+        energy === 'normal'
+          ? { kind: 'delete', table: 'day_energy', match: { id } }
+          : { kind: 'upsert', table: 'day_energy', rows: [{ id, on_date: date, energy }] },
+      ])
+      void queryClient.invalidateQueries({ queryKey: key })
+      replanNow()
+    },
+    [queryClient, key, userId, write, replanNow],
+  )
+
+  return useCallback(
+    async (date: LocalDate, energy: Energy) => {
+      const previous = queryClient.getQueryData<EnergyRow[]>(key)?.find((e) => e.on_date === date)
+      await apply(date, energy, previous)
+      const before = (previous?.energy as Energy | undefined) ?? 'normal'
+      return () =>
+        apply(
+          date,
+          before,
+          queryClient.getQueryData<EnergyRow[]>(key)?.find((e) => e.on_date === date),
+        )
+    },
+    [apply, queryClient, key],
   )
 }
 

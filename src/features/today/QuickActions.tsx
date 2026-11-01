@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { BottomSheet } from '@/components/BottomSheet'
-import { ClockIcon, CloseIcon } from '@/components/icons'
+import { BoltIcon, ClockIcon, CloseIcon, MoonIcon } from '@/components/icons'
 import { useToast } from '@/components/toast-store'
-import { useCantToday } from '@/features/plan/actions'
+import { useCantToday, useSetEnergy } from '@/features/plan/actions'
+import { useDayEnergy } from '@/features/schedule/api'
+import type { Energy } from '@/lib/energy'
 import { isOpen, useGoalTitle } from '@/features/plan/model'
 import { formatDuration } from '@/features/sources/format'
 import { useLocale } from '@/features/settings/useLocale'
@@ -18,32 +20,64 @@ import type { PlanToday } from './usePlanToday'
 const button =
   'glass flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-semibold'
 
-/** "Danas ne mogu" and "Imam samo 30 min" under the next block (PRD "Brze akcije dana"). */
+/**
+ * "Danas ne mogu" and "Imam samo 30 min" under the next block (PRD "Brze akcije dana"), and below
+ * them the energy of the day ("Nemam energije" / "Pun/a sam energije"): one tap, only today,
+ * tapped again it goes back to normal.
+ */
 export function QuickActions({ plan, dayOff }: { plan: PlanToday; dayOff: boolean }) {
   const { t } = useTranslation()
   const cantToday = useCantToday()
+  const setEnergy = useSetEnergy()
   const show = useToast((s) => s.show)
   const [pickOpen, setPickOpen] = useState(false)
   const hasWork = plan.blocks.some((b) => isOpen(b) && b.on_date >= plan.today)
+  const energy =
+    (useDayEnergy().data?.find((e) => e.on_date === plan.today)?.energy as Energy | undefined) ??
+    'normal'
 
   const cant = async () => {
     const undo = await cantToday(plan.today)
     show(t('today.cant.toast'), { label: t('today.cant.undo'), run: () => void undo() })
   }
 
+  const tapEnergy = async (tapped: 'low' | 'high') => {
+    const next = energy === tapped ? 'normal' : tapped
+    const undo = await setEnergy(plan.today, next)
+    show(t(`today.energy.toast.${next}`), { label: t('common.undo'), run: () => void undo() })
+  }
+
   return (
-    <div className="flex gap-2">
-      {!dayOff && plan.todayBlocks.some(isOpen) && (
-        <button type="button" onClick={() => void cant()} className={button}>
-          <CloseIcon size={16} />
-          {t('today.cant.button')}
-        </button>
-      )}
-      {hasWork && (
-        <button type="button" onClick={() => setPickOpen(true)} className={button}>
-          <ClockIcon size={17} />
-          {t('today.only.button')}
-        </button>
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2 empty:hidden">
+        {!dayOff && plan.todayBlocks.some(isOpen) && (
+          <button type="button" onClick={() => void cant()} className={button}>
+            <CloseIcon size={16} />
+            {t('today.cant.button')}
+          </button>
+        )}
+        {hasWork && (
+          <button type="button" onClick={() => setPickOpen(true)} className={button}>
+            <ClockIcon size={17} />
+            {t('today.only.button')}
+          </button>
+        )}
+      </div>
+      {!dayOff && hasWork && (
+        <div className="flex gap-2">
+          {(['low', 'high'] as const).map((e) => (
+            <button
+              key={e}
+              type="button"
+              aria-pressed={energy === e}
+              onClick={() => void tapEnergy(e)}
+              className={cn(button, energy === e && 'bg-brand text-white shadow-none')}
+            >
+              {e === 'low' ? <MoonIcon size={17} /> : <BoltIcon size={17} />}
+              {t(`today.energy.${e}`)}
+            </button>
+          ))}
+        </div>
       )}
       <OnlySheet open={pickOpen} onOpenChange={setPickOpen} plan={plan} />
     </div>

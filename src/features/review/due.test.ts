@@ -24,6 +24,7 @@ const unit = (id: string, extra: Partial<Unit> = {}): Unit => ({
   user_difficulty: null,
   est_minutes: 60,
   level: 1,
+  level_source: null,
   confidence: null,
   notes: null,
   answer: null,

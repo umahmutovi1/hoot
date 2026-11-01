@@ -75,9 +75,19 @@ def block_examples(tables: dict[str, pd.DataFrame], today: str) -> pd.DataFrame:
     ]
     frame = pd.concat([outcomes[columns], skips[columns]], ignore_index=True)
     frame = frame[frame["label"].notna()].copy()
+    frame["energy"] = energy_of(tables, frame["on_date"])
     frame["part"] = frame["start_min"].map(part_of)
     frame["weekday"] = pd.to_datetime(frame["on_date"]).dt.day_of_week
     return frame.reset_index(drop=True)
+
+
+def energy_of(tables: dict[str, pd.DataFrame], dates: pd.Series) -> list[str]:
+    """`day_energy` of each date (low / high); normal without a row or without the table."""
+    rows = tables.get("day_energy")
+    by_date = (
+        {} if rows is None else dict(zip(rows["on_date"].astype(str), rows["energy"], strict=True))
+    )
+    return [by_date.get(str(d), "normal") for d in dates]
 
 
 def session_minutes(tables: dict[str, pd.DataFrame]) -> pd.Series:

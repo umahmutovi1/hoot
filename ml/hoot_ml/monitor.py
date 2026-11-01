@@ -1,8 +1,10 @@
 """Weekly monitoring of the Stage 11a models (PRD "Dopune" → MLOps, `ml-monitor.yml`).
 
 Per ISO week, from the export: P80 coverage of the duration model (target ~0.8), Brier score
-of block completion (model, and the done share so far as the bar), and FSRS calibration from
-`review_logs` (mean retrievability before a review against the share recalled, rating > Again).
+of block completion (model, and the done share so far as the bar), FSRS calibration from
+`review_logs` (mean retrievability before a review against the share recalled, rating > Again),
+and what a low / high energy day means (studied minutes over the median usual day; the app's
+`energyFactors()` learns the same ratio).
 Every prediction uses only data from before it, as the backtests.
 
     uv run python -m hoot_ml.monitor [--data data] [--weeks 8] [--report monitor.md]
@@ -17,7 +19,7 @@ from pathlib import Path
 import pandas as pd
 
 from hoot_ml import completion_fit, duration_fit
-from hoot_ml.data import block_examples, load
+from hoot_ml.data import block_examples, load, session_minutes
 
 
 def _week(values: pd.Series) -> pd.Series:
@@ -63,9 +65,50 @@ def fsrs_weeks(tables) -> pd.DataFrame:
     )
 
 
+def energy_weeks(tables) -> pd.DataFrame:
+    """Low / high days per week; studied minutes over the median usual day (one with a plan)."""
+    columns = ["low_n", "low_share", "high_n", "high_share"]
+    energy = tables.get("day_energy")
+    sessions = tables["study_sessions"]
+    if energy is None or energy.empty or sessions.empty:
+        return pd.DataFrame(columns=columns)
+    minutes = session_minutes(tables)
+    day = pd.to_datetime(sessions["started_at"], utc=True).dt.tz_convert("Europe/Sarajevo")
+    studied = (
+        pd.Series(
+            minutes.reindex(sessions["id"]).fillna(0).to_numpy(), index=day.dt.date.astype(str)
+        )
+        .groupby(level=0)
+        .sum()
+    )
+    planned = set(tables["plan_blocks"].query("origin == 'ai'")["on_date"].astype(str))
+    kind = dict(zip(energy["on_date"].astype(str), energy["energy"], strict=True))
+    usual = [m for d, m in studied.items() if d in planned and d not in kind]
+    if len(usual) < 3:
+        return pd.DataFrame(columns=columns)
+    base = float(pd.Series(usual).median()) or 1.0
+    rows = pd.DataFrame(
+        [{"date": d, "energy": e, "share": studied.get(d, 0.0) / base} for d, e in kind.items()]
+    )
+    week = _week(rows["date"])
+    out = pd.DataFrame(index=sorted(set(week)))
+    for e in ("low", "high"):
+        part = rows[rows["energy"] == e]
+        grouped = part.groupby(week[part.index])["share"]
+        out[f"{e}_n"] = grouped.size()
+        out[f"{e}_share"] = grouped.mean()
+    return out
+
+
 def weekly(tables, today: str, weeks: int = 8) -> pd.DataFrame:
     frame = pd.concat(
-        [duration_weeks(tables), completion_weeks(tables, today), fsrs_weeks(tables)], axis=1
+        [
+            duration_weeks(tables),
+            completion_weeks(tables, today),
+            fsrs_weeks(tables),
+            energy_weeks(tables),
+        ],
+        axis=1,
     ).sort_index()
     frame.index.name = "week"
     return frame.tail(weeks)

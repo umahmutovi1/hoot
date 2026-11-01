@@ -200,6 +200,15 @@
       "sub": "Dodati {{title}}?",
       "add": "Dodaj",
       "later": "Ne sad"
+    },
+    "energy": {
+      "low": "Nemam energije",
+      "high": "Pun/a sam energije",
+      "toast": {
+        "low": "Danas lakše: kraći blokovi, ponavljanja prvo",
+        "high": "Danas malo više, najteže gradivo prvo",
+        "normal": "Plan danas je opet uobičajen"
+      }
     }
   },
   "plan": {
@@ -506,7 +515,16 @@
   },
   "progress": {
     "title": "Napredak",
-    "empty": "Napredak se prikazuje kad počneš učiti."
+    "empty": "Napredak se prikazuje kad počneš učiti.",
+    "energy": {
+      "title": "Energija",
+      "low_one": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takvog dana).",
+      "low_few": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takva dana).",
+      "low_other": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takvih dana).",
+      "high_one": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takvog dana).",
+      "high_few": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takva dana).",
+      "high_other": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takvih dana)."
+    }
   },
   "session": {
     "title": "Sesija učenja",

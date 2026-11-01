@@ -267,3 +267,15 @@ export const LockIcon = (p: IconProps) => (
     <path d="M8 11V8a4 4 0 0 1 8 0v3" />
   </Icon>
 )
+
+export const MoonIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+  </Icon>
+)
+
+export const BoltIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M13 3L5 13.5h6L10 21l8-10.5h-6z" />
+  </Icon>
+)

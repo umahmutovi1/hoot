@@ -194,6 +194,15 @@
       "sub": "Add {{title}}?",
       "add": "Add",
       "later": "Not now"
+    },
+    "energy": {
+      "low": "Low on energy",
+      "high": "Full of energy",
+      "toast": {
+        "low": "Lighter today: shorter blocks, reviews first",
+        "high": "A bit more today, hardest material first",
+        "normal": "Today's plan is back to usual"
+      }
     }
   },
   "plan": {
@@ -493,7 +502,14 @@
   },
   "progress": {
     "title": "Progress",
-    "empty": "Progress shows up once you start studying."
+    "empty": "Progress shows up once you start studying.",
+    "energy": {
+      "title": "Energy",
+      "low_one": "When you're low on energy, the plan gives you about {{pct}}% of a usual day (from {{count}} such day).",
+      "low_other": "When you're low on energy, the plan gives you about {{pct}}% of a usual day (from {{count}} such days).",
+      "high_one": "When you're full of energy, the plan goes up to {{pct}}% of a usual day (from {{count}} such day).",
+      "high_other": "When you're full of energy, the plan goes up to {{pct}}% of a usual day (from {{count}} such days)."
+    }
   },
   "session": {
     "title": "Study session",

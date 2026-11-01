@@ -1,4 +1,5 @@
 import { addDays, localDay, wallClock, type DayBoundary, type LocalDate } from '@/lib/day'
+import { energyFactors, type EnergyFactors } from '@/lib/energy'
 import { questionsByChapter } from '@/lib/questions/links'
 import { project, retakeStatus } from '@/lib/grades'
 import {
@@ -85,6 +86,8 @@ export interface PlanInputs {
   completion: CompletionPosterior
   globalScale: { points_total: number; grade_scale: unknown } | undefined
   dayInput: (date: LocalDate) => DayInput
+  /** `day_energy` rows (low / high days); every other date is normal. */
+  energy: { on_date: LocalDate; energy: string }[]
 }
 
 /** Longest planning horizon (days). */
@@ -97,6 +100,8 @@ export interface BuiltState {
   /** Subjects whose target grade is out of reach or needs > 90% below "Važan". */
   targetGrade: string[]
   realization: ReturnType<typeof realization>
+  /** What low / high days mean for this user ("Kad nemaš energije…"). */
+  energy: EnergyFactors
   /** Today's blocks stay as they are (replan starts tomorrow). */
   keepToday: boolean
   /** First day whose unstarted AI blocks the saved run replaces (`replace_plan` `p_from`). */
@@ -413,6 +418,9 @@ export function buildPlanState(
   // Today stays as it is once it has AI blocks, unless it became impossible.
   const todayAi = input.blocks.filter((b) => b.on_date === today && b.origin === 'ai')
   const nowMin = Math.ceil(minutesOf(now, boundary) / 5) * 5
+  const studiedToday = input.sessions
+    .filter((x) => localDay(new Date(x.startedAt), boundary) === today)
+    .reduce((sum, x) => sum + x.minutes, 0)
   const open = todayAi.filter((b) => b.status === 'planned')
   const freeLeft = freeSlotsOn(today, input.dayInput(today)).reduce(
     (s, x) => s + Math.max(0, x.endMin - Math.max(x.startMin, nowMin)),
@@ -422,7 +430,17 @@ export function buildPlanState(
   // A block skipped away from today ("Preskoči") still keeps today's list: skipping is "not now",
   // not "plan me something else today".
   const skippedToday = input.blocks.some((b) => carriedFrom(b) === today)
-  const keepToday = (todayAi.length > 0 || skippedToday) && !impossible
+  // Energy set for today replans today: its blocks are rebuilt for that energy.
+  const energyOn = new Map(
+    input.energy
+      .filter(
+        (e): e is { on_date: LocalDate; energy: 'low' | 'high' } =>
+          e.energy === 'low' || e.energy === 'high',
+      )
+      .map((e) => [e.on_date, e.energy]),
+  )
+  const energyToday = energyOn.get(today)
+  const keepToday = (todayAi.length > 0 || skippedToday) && !impossible && !energyToday
   const replacedToday = keepToday && replaceToday
   const replaceFrom = keepToday ? addDays(today, 1) : today
   const from = replacedToday ? today : replaceFrom
@@ -464,7 +482,14 @@ export function buildPlanState(
       slots: freeSlotsOn(d, dayInput),
       // Re-placing today only moves its blocks; it never adds work (that is the "Imaš X min više
       // danas" card).
-      cap: replacedToday && d === today ? 0 : capFor(d, dayInput),
+      // With today's energy the day is rebuilt: what was already studied today counts against it.
+      cap:
+        replacedToday && d === today
+          ? 0
+          : energyToday && d === today
+            ? Math.max(0, capFor(d, dayInput) - studiedToday)
+            : capFor(d, dayInput),
+      ...(energyOn.has(d) ? { energy: energyOn.get(d)! } : {}),
       lectureSubjectIds: [
         ...new Set(
           classesOn(d, dayInput.entries, dayInput.periods)
@@ -479,6 +504,16 @@ export function buildPlanState(
 
   const history = historyOf(input.blocks, input.sessions, boundary, today)
   const rho = realization(history, today)
+  const energy = energyFactors(
+    history.map((h) => ({
+      date: h.date,
+      energy: energyOn.get(h.date) ?? 'normal',
+      studiedMin: h.studiedMin,
+      plannedMin: h.plannedMin,
+      skipped: h.skipped,
+    })),
+    today,
+  )
   const parts = (profile.preferred_slots ?? []).filter((p): p is SlotPart =>
     (SLOT_PARTS as readonly string[]).includes(p),
   )
@@ -509,6 +544,7 @@ export function buildPlanState(
     // Seeded by the user and the week: the exploring day stays put across replans.
     explore: exploreDays(input.completion, from, end, profile.id),
     fsrsParams: paramsOf(profile.fsrs_params),
+    energyFactors: { low: energy.low, high: energy.high },
   }
   const behind: SubjectBehindInput[] = []
   for (const subject of subjects) {
@@ -528,6 +564,7 @@ export function buildPlanState(
     targetGrade,
     realization: rho,
     keepToday,
+    energy,
     replaceFrom,
     todaySlotsKey,
     replacedToday,

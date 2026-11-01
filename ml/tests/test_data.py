@@ -64,6 +64,31 @@ def test_block_examples_labels_and_skips():
     assert list(frame["part"]) == ["morning", "morning", "evening", "afternoon"]
     assert list(frame["source"]) == ["block", "block", "block", "skip"]
     assert not frame["prev_late"].any()
+    assert set(frame["energy"]) == {"normal"}
+
+
+def test_block_examples_carry_the_energy_of_their_day():
+    tables = {
+        "plan_blocks": pd.DataFrame(
+            [block("a", "done", "2026-10-27"), block("b", "done", "2026-10-28")]
+        ),
+        "study_sessions": pd.DataFrame(columns=["id", "block_id"]),
+        "block_skips": pd.DataFrame(
+            columns=[
+                "subject_id",
+                "kind",
+                "on_date",
+                "start_min",
+                "planned_minutes",
+                "day_load_min",
+                "days_to_goal",
+                "demand",
+            ]
+        ),
+        "day_energy": pd.DataFrame([{"on_date": "2026-10-28", "energy": "low"}]),
+    }
+    frame = block_examples(tables, "2026-10-29")
+    assert list(frame["energy"]) == ["normal", "low"]
 
 
 def test_prev_late_from_the_first_session_of_the_block_before():

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { PageTitle } from '@/components/PageTitle'
 import { SessionsCard } from '@/features/session/SessionsCard'
+import { EnergyInsight } from './EnergyInsight'
 import { GradesOverview } from './GradesOverview'
 
 export function ProgressPage() {
@@ -10,6 +11,7 @@ export function ProgressPage() {
       <PageTitle>{t('progress.title')}</PageTitle>
       <SessionsCard />
       <GradesOverview />
+      <EnergyInsight />
     </div>
   )
 }
