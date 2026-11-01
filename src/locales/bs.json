@@ -797,7 +797,11 @@
   "common": {
     "cancel": "Odustani",
     "save": "Spasi",
-    "close": "Zatvori"
+    "close": "Zatvori",
+    "undo": "Poništi",
+    "deleted": "Obrisano",
+    "saveFailed": "Nije spremljeno. Pokušaj ponovo.",
+    "saveOffline": "Nema mreže, promjena nije spremljena."
   },
   "profile": {
     "nameLabel": "Ime",
@@ -812,7 +816,6 @@
     "kindLabel": "Vrsta",
     "scopeAll": "Cijelo gradivo",
     "delete": "Obriši ispit",
-    "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
     "kind": {
       "partial": "Parcijala",
       "final": "Završni",
@@ -887,8 +890,7 @@
     "optional": "(opcionalno)",
     "done": "Završeno",
     "doneShort": "završeno",
-    "delete": "Obriši rok",
-    "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
+    "delete": "Obriši rok"
   },
   "sources": {
     "editor": {
@@ -1158,7 +1160,6 @@
       "newTitle": "Nova kartica",
       "editTitle": "Uredi karticu",
       "delete": "Obriši karticu",
-      "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
       "import": "Uvezi",
       "importTitle": "Uvoz kartica",
       "importPlaceholder": "Jedna kartica po liniji:\nKonvolucija\tmnoženje u frekvenciji\nDTFT - transformacija niza",
@@ -1282,8 +1283,7 @@
       "holiday": "Neradni dan",
       "exam_partial": "Sedmica parcijalnih"
     },
-    "delete": "Obriši period",
-    "confirmDelete": "Sigurno obrisati?"
+    "delete": "Obriši period"
   },
   "timetable": {
     "title": "Raspored nastave",
@@ -1331,7 +1331,6 @@
     "recapTitle": "Kratko ponavljanje nakon predavanja",
     "recapHint": "15 min istog dana, prvi korak ponavljanja",
     "delete": "Obriši termin",
-    "confirmDelete": "Sigurno obrisati?",
     "photoTitle": "Uslikaj raspored",
     "photoHint": "AI prepozna termine; pregledaš prije spašavanja"
   },

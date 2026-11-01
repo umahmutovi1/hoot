@@ -771,7 +771,11 @@
   "common": {
     "cancel": "Cancel",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "undo": "Undo",
+    "deleted": "Deleted",
+    "saveFailed": "Not saved. Try again.",
+    "saveOffline": "No connection, the change was not saved."
   },
   "profile": {
     "nameLabel": "Name",
@@ -786,7 +790,6 @@
     "kindLabel": "Type",
     "scopeAll": "All material",
     "delete": "Delete exam",
-    "confirmDelete": "Sure? Tap again to delete",
     "kind": {
       "partial": "Midterm",
       "final": "Final",
@@ -860,8 +863,7 @@
     "optional": "(optional)",
     "done": "Done",
     "doneShort": "done",
-    "delete": "Delete deadline",
-    "confirmDelete": "Sure? Tap again to delete"
+    "delete": "Delete deadline"
   },
   "sources": {
     "editor": {
@@ -1124,7 +1126,6 @@
       "newTitle": "New card",
       "editTitle": "Edit card",
       "delete": "Delete card",
-      "confirmDelete": "Sure? Tap again to delete",
       "import": "Import",
       "importTitle": "Import cards",
       "importPlaceholder": "One card per line:\nConvolution\tmultiplication in frequency\nDTFT - transform of a sequence",
@@ -1245,8 +1246,7 @@
       "holiday": "Holiday",
       "exam_partial": "Partial exam week"
     },
-    "delete": "Delete period",
-    "confirmDelete": "Delete for sure?"
+    "delete": "Delete period"
   },
   "timetable": {
     "title": "Class timetable",
@@ -1293,7 +1293,6 @@
     "recapTitle": "Short review after a lecture",
     "recapHint": "15 min the same day, the first review step",
     "delete": "Delete class",
-    "confirmDelete": "Delete for sure?",
     "photoTitle": "Photograph the timetable",
     "photoHint": "The AI finds the classes; you review them before saving"
   },

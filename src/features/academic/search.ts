@@ -22,6 +22,8 @@ export function useFindAcademicInfo() {
   const { data: profile } = useProfile()
   const { locale } = useLocale()
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async (academicYear: string) => {
       if (!profile?.institution) return { documents: [] as FoundDocument[], cached: true }
       return invokeAi<{ documents: FoundDocument[]; cached: boolean }>('find-academic-info', {

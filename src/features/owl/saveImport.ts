@@ -197,6 +197,8 @@ export function useSaveImport(t: TFunction) {
   }
 
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async (proposal: ImportProposal) => {
       // Classes go into the current teaching period (PRD "Semestar"); check before writing.
       const classes = toSave(proposal.classes ?? []).filter((c) => c.subjectId)

@@ -135,8 +135,7 @@ function CardFormFields({
 }) {
   const { t } = useTranslation()
   const save = useSaveCard()
-  const remove = useDeleteCard()
-  const [confirm, setConfirm] = useState(false)
+  const remove = useDeleteCard({ undo: true })
   const form = useForm<CardForm>({
     resolver: zodResolver(cardFormSchema),
     defaultValues: card
@@ -189,12 +188,11 @@ function CardFormFields({
           variant="link"
           className="h-11 text-danger"
           onClick={() => {
-            if (!confirm) return setConfirm(true)
             remove.mutate({ id: card.id, unitId })
             onDone()
           }}
         >
-          {t(confirm ? 'units.cards.confirmDelete' : 'units.cards.delete')}
+          {t('units.cards.delete')}
         </Button>
       )}
     </form>

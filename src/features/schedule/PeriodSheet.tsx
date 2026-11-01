@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
@@ -45,8 +44,7 @@ function PeriodFormView({
 }) {
   const { t } = useTranslation()
   const save = useSavePeriod()
-  const remove = useDeletePeriod()
-  const [confirmDelete, setConfirmDelete] = useState(false)
+  const remove = useDeletePeriod({ undo: true })
   const form = useForm<PeriodForm>({
     resolver: zodResolver(periodFormSchema),
     defaultValues: period
@@ -187,12 +185,11 @@ function PeriodFormView({
           variant="link"
           className="h-11 text-danger"
           onClick={() => {
-            if (!confirmDelete) return setConfirmDelete(true)
             remove.mutate(period.id)
             onDone()
           }}
         >
-          {t(confirmDelete ? 'calendar.confirmDelete' : 'calendar.delete')}
+          {t('calendar.delete')}
         </Button>
       )}
     </form>

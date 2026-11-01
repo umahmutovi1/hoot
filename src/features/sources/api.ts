@@ -2,6 +2,7 @@ import { roughSource, roughToArchive, type RoughSize } from '@/lib/estimates/rou
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import type { TablesInsert, TablesUpdate } from '@/types/database'
 import { useAuth } from '@/features/auth/auth-context'
+import { undoDelete } from '@/components/toast-store'
 import { supabase } from '@/lib/supabase'
 import type { MergeResult } from '@/lib/outline/merge'
 import type { Measure } from '@/lib/outline/parse'
@@ -613,11 +614,12 @@ export function useSaveCard() {
   })
 }
 
-export function useDeleteCard() {
+export function useDeleteCard({ undo = false } = {}) {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id }: { id: string; unitId: string }) => {
+      if (undo) await undoDelete()
       const { error } = await supabase.from('cards').delete().eq('id', id)
       if (error) throw error
     },
@@ -636,6 +638,8 @@ export function useImportCards() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async ({
       unitId,
       cards,

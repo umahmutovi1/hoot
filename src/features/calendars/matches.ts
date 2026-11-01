@@ -137,6 +137,8 @@ export function useApplyCalendarProposals() {
   const feeds = useCalendarFeeds().data ?? []
 
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async ({ lectures, exams }: { lectures: LectureChoice[]; exams: ExamChoice[] }) => {
       const rows: MatchRow[] = []
       const decide = (
