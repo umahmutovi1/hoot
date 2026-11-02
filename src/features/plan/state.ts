@@ -31,6 +31,7 @@ import {
 import { resolvePreset, type CustomPresetRow } from '@/lib/session/timer'
 import type { CompletionPosterior } from '@/lib/slots/completion'
 import { exploreDays, slotCompletion, slotScores } from '@/lib/slots/score'
+import { slotObservations, slotSignals, withSignals, type SignalSession } from '@/lib/slots/signals'
 import { paramsOf } from '@/lib/srs/optimize'
 import type { Tables } from '@/types/database'
 import {
@@ -89,6 +90,11 @@ export interface PlanInputs {
   dayInput: (date: LocalDate) => DayInput
   /** `day_energy` rows (low / high days); every other date is normal. */
   energy: { on_date: LocalDate; energy: string }[]
+  /**
+   * Timer sessions with focus, distractions and material done, and the planned start of AI
+   * blocks: the slot signals (Sprint 17) that nudge `placeTimes()`. Absent = no nudge.
+   */
+  signals?: { sessions: SignalSession[]; plannedStart: Map<string, string> }
 }
 
 /** Longest planning horizon (days). */
@@ -275,6 +281,8 @@ export function buildPlanState(
   const paces = new Map<string, (SourcePace | null)[]>()
   const leafIdsBySource = new Map<string, string[]>()
   const allUnitsForScope: { id: string; parentId: string | null }[] = []
+  // Estimated minutes per unit of measure (difficulty included), for the slots' speed signal.
+  const expectedPerAmount = new Map<string, number>()
   for (const source of allSources) {
     const material = materialOf(source, rateOf(source, allSources).mean)
     const leaves = leavesOf(asProgress(material.units))
@@ -319,6 +327,7 @@ export function buildPlanState(
     )
     for (const u of material.units) {
       if (!leafIds.has(u.id)) continue
+      if (Number(u.amount) > 0) expectedPerAmount.set(u.id, u.minutes / Number(u.amount))
       units.push({
         id: u.id,
         subjectId: source.subject_id,
@@ -546,7 +555,20 @@ export function buildPlanState(
     growthBase: growthBase(history, today, rho.rho),
     preferredParts: [...parts].sort(),
     slotCompletion: slotCompletion(input.completion),
-    slotScores: slotScores(input.completion),
+    slotScores: input.signals
+      ? withSignals(
+          slotScores(input.completion),
+          slotSignals(
+            slotObservations(
+              input.signals.sessions,
+              input.signals.plannedStart,
+              expectedPerAmount,
+              boundary,
+            ),
+            today,
+          ),
+        )
+      : slotScores(input.completion),
     // Seeded by the user and the week: the exploring day stays put across replans.
     explore: exploreDays(input.completion, from, end, profile.id),
     fsrsParams: paramsOf(profile.fsrs_params),
