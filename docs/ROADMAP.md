@@ -376,11 +376,12 @@ Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj
 - [x] `recall-questions` prima zalijepljeni tekst (gate i kviz; izvor „stranica knjige“, kao slika)
 - [x] Rotacija besplatnih AI-eva: `LLM_CHAIN` u `_shared/llm.ts`, prelaz na 429/kvotu, iscrpljeni do reseta; zadaci označeni javni / privatni (privatni nikad na free tier); eval prije uključivanja modela
 - [x] Kraj semestra: kartica na Danas (rezultati, prenos, „Dodaj sljedeći semestar“); gotovo prije januara 2027
-- [x] Studijski program odjednom: `parse-document` vrsta `study_program` → godine, semestri, predmeti; pregled prije snimanja (PDF, slika, tekst; „s interneta“ za sad kroz Pronađi → silabus)
+- [x] Studijski program odjednom: `parse-document` vrsta `study_program` → godine, semestri, predmeti; pregled prije snimanja (PDF, slika, tekst; „s interneta“ je u Etapi 11)
 - **DoD** → `v0.10.6`
 
 ## Etapa 11 — Napredak
 
+- [ ] Studijski program s interneta (PRD „Fakultet s interneta“ → Studijski program s interneta): `FOUND_KINDS` + `study_program`, pretraga traži i cijeli program (isti poziv i keš), Nađeno → `study_program` pregled, pa kartica „Uvezi i detalje za N. godinu“ kroz plan i program; zalijepljen link / „Pogodi sama“ sa više godina → `study_program` (pravilo uz `looksLikeSyllabus`) + testovi
 - [ ] Progres po izvoru, ispitu, predmetu i temi; jačina po temama (`recharts`)
 - [ ] Statistika: sati vs plan, ispunjenost i ρ, fokus, efikasnost po dobu dana, poređenje predložaka sesije (SQL view / RPC)
 - [ ] `src/lib/slots/`: signali po terminu (fokus uz razloge, brzina normalizovana težinom, odrađenost Beta, kašnjenje starta, ometanja), ocjena termina sa shrinkage-om i polu-životom 6 sedmica, Thompson uzorkovanje sa seedom + testovi; ulaz u `placeTimes()` i `input_hash`
@@ -408,6 +409,21 @@ PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model
 - [ ] Asistent na Danas ostaje za plan i dokumente; pitanja o gradivu vode u tutora
 - **DoD** → `v0.11.1`
 
+## Etapa 11d — Uvoz gotovog plana i termina
+
+PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 2026). Hoot uzima šta treba naučiti; kada računa `plan()`, osim termina koje korisnik fiksira.
+
+- [ ] Mockup `docs/design/UvozPlana.dc.html` prije koda: pregled sadržaja (novo / izmijenjeno / preskačem, citati), „Tvoji termini“ sa preporučenim izborom, prekidačem Moji / Hoot raspored i pinom po terminu
+- [ ] Migracija: meki rok modula i veza uvoza (izvor, jedinice, blokovi), redoslijed modula; `external_events.kind` vrijednost `study`; regenerisan `database.ts`
+- [ ] `study_plan` Zod šema u `_shared/schemas.ts` (sadržaj, sidra, tempo, termini; citat uz svaki broj i termin; bez rekurzije) + vrsta u `parse-document` + eval (15 stranica: broj modula, zadataka, termina i zbir budžeta kao u originalu)
+- [ ] Bez AI-ja (`src/lib/import/`): zalijepljena tabela / CSV i `.ics` fajl → isti prijedlog + testovi
+- [ ] Klasifikacija `study` u `src/lib/calendar/classify.ts` i `classify-events`: takvi događaji nisu zauzetost nego termini za uvoz; kartica „Našla sam N termina učenja u kalendaru“
+- [ ] `src/lib/import/slots.ts`: pravilo preporuke („Zadrži moje termine“ kad su u dostupnosti, bez preklapanja i `feasibility` prolazi; inače „Neka Hoot rasporedi“ uz razlog) + testovi; suha proba `plan()` + `placeTimes()` za prikaz Hoot rasporeda
+- [ ] `plan()`: tvrd redoslijed modula uvezenog izvora i meki rokovi modula (i iz nepinovanih termina) u ulazu i `input_hash` + property testovi; pinovani termini su ručni blokovi
+- [ ] Ekrani: pregled sadržaja i „Tvoji termini“, onboarding korak 7 „Imam svoj plan“ (pa korak 8), Plan → „Uvezi plan“, asistent; UrediBlok „Fiksiraj“ / skini pin
+- [ ] Kartica „ispred / iza plana“ na Danas; ponovni uvoz spaja po oznaci (ručno mijenjani blokovi ostaju)
+- **DoD** → `v0.11.2`
+
 ## Etapa 12 — Notifikacije i dorada
 
 - [ ] Ostale notifikacije (Web Push temelj je iz Etape 9, podsjetnici prije bloka i kašnjenje iz Etape 10c): propušten blok, ponavljanje, „Dokle ste stigli?“ nakon termina, kampanja počinje za 3 dana
@@ -427,7 +443,6 @@ PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model
 - **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a): dijeljenje sesija i kartica, prijatelj za odgovornost (dopuna 29. okt 2026).
 - Study with me uz timer: lofi muzika ili stream (YouTube embed), samo dok je app otvoren na iOS-u (PRD „Dopune“).
 - OCR skeniranih PDF-ova za tekst izvora; ElevenLabs plaćeni plan uz Pretplatu.
-- Uvoz gotovog plana učenja (PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja): `study_plan` u `parse-document`, tri sloja (sadržaj, sidra, tempo), tvrd redoslijed modula, kartica „ispred / iza plana“; etapa još nije dodijeljena.
 - Tamni režim (teme iz Etape 10b su svijetle).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
@@ -444,7 +459,7 @@ PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model
 - Native aplikacije (odluka, 29. okt 2026): Capacitor za iOS i Android, PWA ostaje; bez prepisivanja u React Native. Redom: ljuska (service worker isključen u native buildu), Google i Supabase prijava kroz sistemski preglednik + deep link (Google ne dozvoljava OAuth u WebView-u; Drive Picker možda native birač fajlova), native push (APNs/FCM uz Web Push za PWA), timer kao Live Activity / ongoing notifikacija (vrijeme iz segmenata), widget „Sljedeći blok“ (WidgetKit, Glance; podaci kroz App Group pri replanu), Share Extension i App Intents, objava (TestFlight, Play interni test). Poslije v1 i otvaranja za više korisnika; do tad prečice u manifestu i notifikacije sa akcijama.
 - Pretplata (PRD „Deploy i troškovi“ → Pretplata): Besplatno / Plus / Pro, mjesečno ili po semestru; merchant of record (Paddle ili Lemon Squeezy, provjeriti BiH), tabela `subscriptions` + webhook, nivo i mjesečni budžet troška po korisniku u `_shared/llm.ts` iz `ai_runs`, Supabase Pro kad pređe limite, politika privatnosti i uslovi. Uz otvaranje za više korisnika.
 - Partner za gradivo (PRD „Materijali“ faza 3, nivo Pro): indeksiranje teksta knjige bez LLM-a, pitanja vezana za raspon stranica jedinice, OCR skeniranih knjiga, provjera odgovora prema knjizi; uslovi: plaćeni Anthropic API, pretraga na bosanskom iz Etape 12, budžet po korisniku.
-- Ispiti van fakulteta (PRD „AI uvoz“ → Ispiti van fakulteta): `subjects.context`, onboarding „Šta spremaš?“, sakrivanje fakultetskih dijelova, banka pitanja kao izvor, probni testovi u prognozi; poslije uvoza gotovog plana.
+- Ispiti van fakulteta (PRD „AI uvoz“ → Ispiti van fakulteta): `subjects.context`, onboarding „Šta spremaš?“, sakrivanje fakultetskih dijelova, banka pitanja kao izvor, probni testovi u prognozi; poslije Etape 11d (uvoz gotovog plana).
 
 ---
 
