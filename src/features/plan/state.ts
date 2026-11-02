@@ -1,3 +1,4 @@
+import { sameStudyPeriod, studyPeriod } from '@/lib/slots/period'
 import { addDays, localDay, wallClock, type DayBoundary, type LocalDate } from '@/lib/day'
 import { energyFactors, type EnergyFactors } from '@/lib/energy'
 import { questionsByChapter } from '@/lib/questions/links'
@@ -554,16 +555,21 @@ export function buildPlanState(
     rho: rho.rho,
     growthBase: growthBase(history, today, rho.rho),
     preferredParts: [...parts].sort(),
+    slotPeriod: studyPeriod(today, input.dayInput(today).periods),
     slotCompletion: slotCompletion(input.completion),
     slotScores: input.signals
       ? withSignals(
           slotScores(input.completion),
           slotSignals(
-            slotObservations(
-              input.signals.sessions,
-              input.signals.plannedStart,
-              expectedPerAmount,
-              boundary,
+            sameStudyPeriod(
+              slotObservations(
+                input.signals.sessions,
+                input.signals.plannedStart,
+                expectedPerAmount,
+                boundary,
+              ),
+              today,
+              input.dayInput(today).periods,
             ),
             today,
           ),

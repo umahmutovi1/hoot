@@ -509,6 +509,86 @@
       "low_other": "When you're low on energy, the plan gives you about {{pct}}% of a usual day (from {{count}} such days).",
       "high_one": "When you're full of energy, the plan goes up to {{pct}}% of a usual day (from {{count}} such day).",
       "high_other": "When you're full of energy, the plan goes up to {{pct}}% of a usual day (from {{count}} such days)."
+    },
+    "forecast": {
+      "title": "Readiness forecast",
+      "range": "Likely {{low}}–{{high}}%",
+      "chance": "{{pct}}% chance of completing required work",
+      "grade": "Estimated grade {{likely}} · range {{low}}–{{high}}",
+      "noMemory": "Grade estimate after the first knowledge check.",
+      "noScope": "Add study material and exam scope for a forecast.",
+      "hint": "This range is an estimate, not a promise. Memory strength is projected to exam day."
+    },
+    "breakdown": {
+      "title": "Progress by subject and source"
+    },
+    "topics": {
+      "title": "Strength by topic",
+      "filter": "Filter by subject",
+      "all": "All",
+      "strength": "Strength",
+      "empty": "Topics appear once you link them to study material."
+    },
+    "statistics": {
+      "title": "Statistics",
+      "week": "Past week",
+      "month": "Month",
+      "error": "Statistics could not be loaded.",
+      "retry": "Try again",
+      "loading": "Loading statistics…",
+      "hours": "Hours vs plan",
+      "hoursValue": "{{actual}} / {{planned}} h",
+      "fulfilment": "Fulfilment",
+      "blocks": "Completed blocks",
+      "focus": "Focus",
+      "rho": "Realization factor ρ",
+      "sessions": "Sessions",
+      "planned": "Plan",
+      "actual": "Study",
+      "efficiency": "Efficiency by time of day",
+      "presets": "Session presets · focus and speed",
+      "more": "{{count}} more to compare",
+      "presetSessions": "{{count}} sessions",
+      "speedHint": "Speed is normalized by material difficulty; 1.15× means 15% slower than usual. Presets are compared after 5 sessions."
+    },
+    "parts": {
+      "morning": "Morning",
+      "midday": "Midday",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "slots": {
+      "title": "When studying works for you",
+      "weekday": "Weekday",
+      "weekend": "Weekend",
+      "hint": "Tap a slot for focus, completion and session count.",
+      "detail": "Focus {{focus}}/3 · completion {{completion}}% · {{count}} sessions",
+      "learning": "Learning… {{count}} more sessions",
+      "exam": "Exam period · separate measurements",
+      "teaching": "Teaching · separate measurements"
+    },
+    "rhythm": {
+      "title": "Session rhythm",
+      "suggestion": "Your sessions last about {{aboutMin}} min — switch to {{workMin}}/{{breakMin}}?",
+      "apply": "Switch to {{workMin}}/{{breakMin}}",
+      "name": "My rhythm {{workMin}}/{{breakMin}}",
+      "later": "Not now",
+      "full": "Your preset list is full. Make room in Settings for your rhythm."
+    },
+    "slotAction": {
+      "avoid_slot": "This slot works less well for you",
+      "add_slot": "Add a good study slot?",
+      "detail": "{{days}} · {{part}} · {{start}}–{{end}} · focus {{focus}}/3",
+      "persistent": "Changes weekly availability. Today’s schedule and your date exceptions are preserved.",
+      "remove": "Remove slot",
+      "add": "Add slot"
+    },
+    "readiness": {
+      "title": "Readiness before the exam",
+      "question": "Your exam is tomorrow. What score do you expect? Optionally, choose an estimate.",
+      "calibration": "Your estimate appears about {{percentagePoints}} percentage points higher than your result ({{pairs}} exams). A knowledge check may help.",
+      "saved": "Estimate saved."
     }
   },
   "session": {

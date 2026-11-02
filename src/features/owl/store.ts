@@ -159,7 +159,7 @@ function saveMessage(conversationId: string, m: OwlMessage) {
       conversation_id: conversationId,
       role: m.role,
       type: m.type,
-      payload: m as unknown as Json,
+      payload: m as unknown as Exclude<Json, null>,
     }),
   )
   enqueue(() =>

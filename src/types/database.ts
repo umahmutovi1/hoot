@@ -1,17 +1,6 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.18"
-  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -21,12 +10,7 @@ export type Database = {
     }
     Functions: {
       graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
+        Args: { extensions?: Json; operationName?: string; query?: string; variables?: Json }
         Returns: Json
       }
     }
@@ -52,6 +36,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           academic_year_id?: string | null
           created_at?: string
@@ -78,11 +63,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "academic_periods_academic_year_id_fkey"
-            columns: ["academic_year_id"]
+            foreignKeyName: 'academic_periods_academic_year_id_fkey'
+            columns: ['academic_year_id']
             isOneToOne: false
-            referencedRelation: "academic_years"
-            referencedColumns: ["id"]
+            referencedRelation: 'academic_years'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -97,6 +82,7 @@ export type Database = {
           user_id: string
           year_of_study: number | null
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           ends_on: string
@@ -131,9 +117,10 @@ export type Database = {
           ok: boolean
           output_tokens: number | null
           provider: string
-          task: Database["public"]["Enums"]["ai_task"]
+          task: Database['public']['Enums']['ai_task']
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           cached_tokens?: number | null
           cost_usd?: number | null
@@ -145,7 +132,7 @@ export type Database = {
           ok: boolean
           output_tokens?: number | null
           provider: string
-          task: Database["public"]["Enums"]["ai_task"]
+          task: Database['public']['Enums']['ai_task']
           user_id?: string
         }
         Update: {
@@ -159,7 +146,7 @@ export type Database = {
           ok?: boolean
           output_tokens?: number | null
           provider?: string
-          task?: Database["public"]["Enums"]["ai_task"]
+          task?: Database['public']['Enums']['ai_task']
           user_id?: string
         }
         Relationships: []
@@ -167,39 +154,40 @@ export type Database = {
       assessment_units: {
         Row: {
           assessment_id: string
-          assigned_by: Database["public"]["Enums"]["assigned_by"]
+          assigned_by: Database['public']['Enums']['assigned_by']
           included: boolean
           unit_id: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           assessment_id: string
-          assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          assigned_by?: Database['public']['Enums']['assigned_by']
           included?: boolean
           unit_id: string
           user_id?: string
         }
         Update: {
           assessment_id?: string
-          assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          assigned_by?: Database['public']['Enums']['assigned_by']
           included?: boolean
           unit_id?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "assessment_units_assessment_id_fkey"
-            columns: ["assessment_id"]
+            foreignKeyName: 'assessment_units_assessment_id_fkey'
+            columns: ['assessment_id']
             isOneToOne: false
-            referencedRelation: "assessments"
-            referencedColumns: ["id"]
+            referencedRelation: 'assessments'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "assessment_units_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'assessment_units_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -214,9 +202,9 @@ export type Database = {
           entry_min_points: number | null
           eve_reserved: boolean | null
           exam_period_id: string | null
-          format: Database["public"]["Enums"]["exam_format"]
+          format: Database['public']['Enums']['exam_format']
           id: string
-          kind: Database["public"]["Enums"]["assessment_kind"]
+          kind: Database['public']['Enums']['assessment_kind']
           pass_min_pct: number | null
           passed: boolean
           points_max: number | null
@@ -232,6 +220,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           archived_at?: string | null
           at: string
@@ -242,9 +231,9 @@ export type Database = {
           entry_min_points?: number | null
           eve_reserved?: boolean | null
           exam_period_id?: string | null
-          format?: Database["public"]["Enums"]["exam_format"]
+          format?: Database['public']['Enums']['exam_format']
           id?: string
-          kind?: Database["public"]["Enums"]["assessment_kind"]
+          kind?: Database['public']['Enums']['assessment_kind']
           pass_min_pct?: number | null
           passed?: boolean
           points_max?: number | null
@@ -270,9 +259,9 @@ export type Database = {
           entry_min_points?: number | null
           eve_reserved?: boolean | null
           exam_period_id?: string | null
-          format?: Database["public"]["Enums"]["exam_format"]
+          format?: Database['public']['Enums']['exam_format']
           id?: string
-          kind?: Database["public"]["Enums"]["assessment_kind"]
+          kind?: Database['public']['Enums']['assessment_kind']
           pass_min_pct?: number | null
           passed?: boolean
           points_max?: number | null
@@ -290,25 +279,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "assessments_exam_period_id_fkey"
-            columns: ["exam_period_id"]
+            foreignKeyName: 'assessments_exam_period_id_fkey'
+            columns: ['exam_period_id']
             isOneToOne: false
-            referencedRelation: "academic_periods"
-            referencedColumns: ["id"]
+            referencedRelation: 'academic_periods'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "assessments_retake_of_fkey"
-            columns: ["retake_of"]
+            foreignKeyName: 'assessments_retake_of_fkey'
+            columns: ['retake_of']
             isOneToOne: false
-            referencedRelation: "assessments"
-            referencedColumns: ["id"]
+            referencedRelation: 'assessments'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "assessments_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'assessments_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -322,6 +311,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           cap_min?: number | null
           created_at?: string
@@ -353,6 +343,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           end_min?: number | null
           id?: string
@@ -375,11 +366,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "availability_exceptions_lecture_log_id_fkey"
-            columns: ["lecture_log_id"]
+            foreignKeyName: 'availability_exceptions_lecture_log_id_fkey'
+            columns: ['lecture_log_id']
             isOneToOne: false
-            referencedRelation: "lecture_logs"
-            referencedColumns: ["id"]
+            referencedRelation: 'lecture_logs'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -393,6 +384,7 @@ export type Database = {
           user_id: string
           weekday: number
         }
+        ComputedFields: never
         Insert: {
           end_min: number
           id?: string
@@ -421,7 +413,7 @@ export type Database = {
           days_to_goal: number | null
           demand: number | null
           id: string
-          kind: Database["public"]["Enums"]["block_kind"]
+          kind: Database['public']['Enums']['block_kind']
           on_date: string
           planned_minutes: number
           reason: string
@@ -431,6 +423,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           block_id?: string | null
           created_at?: string
@@ -438,7 +431,7 @@ export type Database = {
           days_to_goal?: number | null
           demand?: number | null
           id?: string
-          kind: Database["public"]["Enums"]["block_kind"]
+          kind: Database['public']['Enums']['block_kind']
           on_date: string
           planned_minutes: number
           reason: string
@@ -455,7 +448,7 @@ export type Database = {
           days_to_goal?: number | null
           demand?: number | null
           id?: string
-          kind?: Database["public"]["Enums"]["block_kind"]
+          kind?: Database['public']['Enums']['block_kind']
           on_date?: string
           planned_minutes?: number
           reason?: string
@@ -467,18 +460,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "block_skips_block_id_fkey"
-            columns: ["block_id"]
+            foreignKeyName: 'block_skips_block_id_fkey'
+            columns: ['block_id']
             isOneToOne: false
-            referencedRelation: "plan_blocks"
-            referencedColumns: ["id"]
+            referencedRelation: 'plan_blocks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "block_skips_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'block_skips_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -503,6 +496,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           access_expires_at?: string | null
           access_token?: string | null
@@ -558,6 +552,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           account_id: string
           channel_id: string
@@ -584,11 +579,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "calendar_channels_account_id_fkey"
-            columns: ["account_id"]
+            foreignKeyName: 'calendar_channels_account_id_fkey'
+            columns: ['account_id']
             isOneToOne: false
-            referencedRelation: "calendar_accounts"
-            referencedColumns: ["id"]
+            referencedRelation: 'calendar_accounts'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -611,6 +606,7 @@ export type Database = {
           url_hint: string | null
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           account_id?: string | null
           all_day_busy?: boolean
@@ -626,7 +622,7 @@ export type Database = {
           title: string
           updated_at?: string
           url?: string | null
-          url_hint?: string | null
+          url_hint?: never
           user_id?: string
         }
         Update: {
@@ -644,16 +640,16 @@ export type Database = {
           title?: string
           updated_at?: string
           url?: string | null
-          url_hint?: string | null
+          url_hint?: never
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "calendar_feeds_account_id_fkey"
-            columns: ["account_id"]
+            foreignKeyName: 'calendar_feeds_account_id_fkey'
+            columns: ['account_id']
             isOneToOne: false
-            referencedRelation: "calendar_accounts"
-            referencedColumns: ["id"]
+            referencedRelation: 'calendar_accounts'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -675,6 +671,7 @@ export type Database = {
           url_path: string | null
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           all_day?: boolean
           color?: string | null
@@ -728,6 +725,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           account_id: string
           created_at?: string
@@ -762,11 +760,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "calendar_links_account_id_fkey"
-            columns: ["account_id"]
+            foreignKeyName: 'calendar_links_account_id_fkey'
+            columns: ['account_id']
             isOneToOne: false
-            referencedRelation: "calendar_accounts"
-            referencedColumns: ["id"]
+            referencedRelation: 'calendar_accounts'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -783,6 +781,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           decision: string
@@ -809,11 +808,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "calendar_matches_feed_id_fkey"
-            columns: ["feed_id"]
+            foreignKeyName: 'calendar_matches_feed_id_fkey'
+            columns: ['feed_id']
             isOneToOne: false
-            referencedRelation: "calendar_feeds"
-            referencedColumns: ["id"]
+            referencedRelation: 'calendar_feeds'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -824,6 +823,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           card_id: string
           embedding: string
@@ -838,11 +838,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "card_embeddings_card_id_fkey"
-            columns: ["card_id"]
+            foreignKeyName: 'card_embeddings_card_id_fkey'
+            columns: ['card_id']
             isOneToOne: true
-            referencedRelation: "cards"
-            referencedColumns: ["id"]
+            referencedRelation: 'cards'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -859,12 +859,13 @@ export type Database = {
           id: string
           last_review_at: string | null
           next_review_on: string | null
-          origin: Database["public"]["Enums"]["assigned_by"]
+          origin: Database['public']['Enums']['assigned_by']
           review_streak: number
           unit_id: string
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           back: string
           created_at?: string
@@ -877,7 +878,7 @@ export type Database = {
           id?: string
           last_review_at?: string | null
           next_review_on?: string | null
-          origin?: Database["public"]["Enums"]["assigned_by"]
+          origin?: Database['public']['Enums']['assigned_by']
           review_streak?: number
           unit_id: string
           updated_at?: string
@@ -895,7 +896,7 @@ export type Database = {
           id?: string
           last_review_at?: string | null
           next_review_on?: string | null
-          origin?: Database["public"]["Enums"]["assigned_by"]
+          origin?: Database['public']['Enums']['assigned_by']
           review_streak?: number
           unit_id?: string
           updated_at?: string
@@ -903,11 +904,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "cards_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'cards_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -920,6 +921,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           energy: string
@@ -946,7 +948,7 @@ export type Database = {
           due_at: string
           est_minutes: number | null
           id: string
-          kind: Database["public"]["Enums"]["deadline_kind"]
+          kind: Database['public']['Enums']['deadline_kind']
           notes: string | null
           pass_min_pct: number | null
           points_max: number | null
@@ -958,6 +960,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           done?: boolean
@@ -965,7 +968,7 @@ export type Database = {
           due_at: string
           est_minutes?: number | null
           id?: string
-          kind?: Database["public"]["Enums"]["deadline_kind"]
+          kind?: Database['public']['Enums']['deadline_kind']
           notes?: string | null
           pass_min_pct?: number | null
           points_max?: number | null
@@ -984,7 +987,7 @@ export type Database = {
           due_at?: string
           est_minutes?: number | null
           id?: string
-          kind?: Database["public"]["Enums"]["deadline_kind"]
+          kind?: Database['public']['Enums']['deadline_kind']
           notes?: string | null
           pass_min_pct?: number | null
           points_max?: number | null
@@ -998,11 +1001,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "deadlines_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'deadlines_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1017,6 +1020,7 @@ export type Database = {
           position: number
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           content: string
           created_at?: string
@@ -1039,11 +1043,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "document_chunks_document_id_fkey"
-            columns: ["document_id"]
+            foreignKeyName: 'document_chunks_document_id_fkey'
+            columns: ['document_id']
             isOneToOne: false
-            referencedRelation: "documents"
-            referencedColumns: ["id"]
+            referencedRelation: 'documents'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1060,6 +1064,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           id?: string
@@ -1086,11 +1091,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "documents_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'documents_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1112,6 +1117,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           all_day?: boolean
           category?: string | null
@@ -1148,18 +1154,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "external_events_deadline_id_fkey"
-            columns: ["deadline_id"]
+            foreignKeyName: 'external_events_deadline_id_fkey'
+            columns: ['deadline_id']
             isOneToOne: false
-            referencedRelation: "deadlines"
-            referencedColumns: ["id"]
+            referencedRelation: 'deadlines'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "external_events_feed_id_fkey"
-            columns: ["feed_id"]
+            foreignKeyName: 'external_events_feed_id_fkey'
+            columns: ['feed_id']
             isOneToOne: false
-            referencedRelation: "calendar_feeds"
-            referencedColumns: ["id"]
+            referencedRelation: 'calendar_feeds'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1177,6 +1183,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           cancelled?: boolean
           created_at?: string
@@ -1205,32 +1212,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "lecture_logs_source_id_fkey"
-            columns: ["source_id"]
+            foreignKeyName: 'lecture_logs_source_id_fkey'
+            columns: ['source_id']
             isOneToOne: false
-            referencedRelation: "sources"
-            referencedColumns: ["id"]
+            referencedRelation: 'sources'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "lecture_logs_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'lecture_logs_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "lecture_logs_timetable_entry_id_fkey"
-            columns: ["timetable_entry_id"]
+            foreignKeyName: 'lecture_logs_timetable_entry_id_fkey'
+            columns: ['timetable_entry_id']
             isOneToOne: false
-            referencedRelation: "timetable_entries"
-            referencedColumns: ["id"]
+            referencedRelation: 'timetable_entries'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "lecture_logs_up_to_unit_id_fkey"
-            columns: ["up_to_unit_id"]
+            foreignKeyName: 'lecture_logs_up_to_unit_id_fkey'
+            columns: ['up_to_unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1246,6 +1253,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           cache_expires_at?: string | null
           cache_key?: string | null
@@ -1275,17 +1283,18 @@ export type Database = {
           conversation_id: string
           created_at: string
           id: string
-          payload: Json
+          payload: NonNullable<Json>
           role: string
           type: string
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           conversation_id: string
           created_at?: string
           id?: string
-          payload: Json
+          payload: NonNullable<Json>
           role: string
           type: string
           updated_at?: string
@@ -1295,7 +1304,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           id?: string
-          payload?: Json
+          payload?: NonNullable<Json>
           role?: string
           type?: string
           updated_at?: string
@@ -1303,11 +1312,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "owl_messages_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: 'owl_messages_conversation_id_fkey'
+            columns: ['conversation_id']
             isOneToOne: false
-            referencedRelation: "owl_conversations"
-            referencedColumns: ["id"]
+            referencedRelation: 'owl_conversations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1320,6 +1329,7 @@ export type Database = {
           unit_id: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           block_id: string
           page_from?: number | null
@@ -1338,18 +1348,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "plan_block_units_block_id_fkey"
-            columns: ["block_id"]
+            foreignKeyName: 'plan_block_units_block_id_fkey'
+            columns: ['block_id']
             isOneToOne: false
-            referencedRelation: "plan_blocks"
-            referencedColumns: ["id"]
+            referencedRelation: 'plan_blocks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "plan_block_units_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'plan_block_units_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1362,9 +1372,9 @@ export type Database = {
           deadline_id: string | null
           demand: number | null
           id: string
-          kind: Database["public"]["Enums"]["block_kind"]
+          kind: Database['public']['Enums']['block_kind']
           on_date: string
-          origin: Database["public"]["Enums"]["assigned_by"]
+          origin: Database['public']['Enums']['assigned_by']
           plan_run_id: string | null
           plan_start_min: number | null
           planned_minutes: number
@@ -1372,12 +1382,13 @@ export type Database = {
           reason: string | null
           skip_requested_at: string | null
           start_min: number | null
-          status: Database["public"]["Enums"]["block_status"]
+          status: Database['public']['Enums']['block_status']
           subject_id: string
           title: string | null
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           assessment_id?: string | null
           created_at?: string
@@ -1386,9 +1397,9 @@ export type Database = {
           deadline_id?: string | null
           demand?: number | null
           id?: string
-          kind?: Database["public"]["Enums"]["block_kind"]
+          kind?: Database['public']['Enums']['block_kind']
           on_date: string
-          origin?: Database["public"]["Enums"]["assigned_by"]
+          origin?: Database['public']['Enums']['assigned_by']
           plan_run_id?: string | null
           plan_start_min?: number | null
           planned_minutes: number
@@ -1396,7 +1407,7 @@ export type Database = {
           reason?: string | null
           skip_requested_at?: string | null
           start_min?: number | null
-          status?: Database["public"]["Enums"]["block_status"]
+          status?: Database['public']['Enums']['block_status']
           subject_id: string
           title?: string | null
           updated_at?: string
@@ -1410,9 +1421,9 @@ export type Database = {
           deadline_id?: string | null
           demand?: number | null
           id?: string
-          kind?: Database["public"]["Enums"]["block_kind"]
+          kind?: Database['public']['Enums']['block_kind']
           on_date?: string
-          origin?: Database["public"]["Enums"]["assigned_by"]
+          origin?: Database['public']['Enums']['assigned_by']
           plan_run_id?: string | null
           plan_start_min?: number | null
           planned_minutes?: number
@@ -1420,7 +1431,7 @@ export type Database = {
           reason?: string | null
           skip_requested_at?: string | null
           start_min?: number | null
-          status?: Database["public"]["Enums"]["block_status"]
+          status?: Database['public']['Enums']['block_status']
           subject_id?: string
           title?: string | null
           updated_at?: string
@@ -1428,32 +1439,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "plan_blocks_assessment_id_fkey"
-            columns: ["assessment_id"]
+            foreignKeyName: 'plan_blocks_assessment_id_fkey'
+            columns: ['assessment_id']
             isOneToOne: false
-            referencedRelation: "assessments"
-            referencedColumns: ["id"]
+            referencedRelation: 'assessments'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "plan_blocks_deadline_id_fkey"
-            columns: ["deadline_id"]
+            foreignKeyName: 'plan_blocks_deadline_id_fkey'
+            columns: ['deadline_id']
             isOneToOne: false
-            referencedRelation: "deadlines"
-            referencedColumns: ["id"]
+            referencedRelation: 'deadlines'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "plan_blocks_plan_run_id_fkey"
-            columns: ["plan_run_id"]
+            foreignKeyName: 'plan_blocks_plan_run_id_fkey'
+            columns: ['plan_run_id']
             isOneToOne: false
-            referencedRelation: "plan_runs"
-            referencedColumns: ["id"]
+            referencedRelation: 'plan_runs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "plan_blocks_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'plan_blocks_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1467,6 +1478,7 @@ export type Database = {
           user_id: string
           with_times: boolean
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           deficit?: Json | null
@@ -1516,7 +1528,7 @@ export type Database = {
           recap_after_lecture: boolean
           reminder_offsets_min: number[]
           review_cap_pct: number
-          session_presets: Json
+          session_presets: NonNullable<Json>
           sleep_min: number[] | null
           study_program: string | null
           theme: string
@@ -1526,6 +1538,7 @@ export type Database = {
           wake_min: number[] | null
           year_of_study: number | null
         }
+        ComputedFields: never
         Insert: {
           academic_search?: Json | null
           buffer_days?: number
@@ -1554,7 +1567,7 @@ export type Database = {
           recap_after_lecture?: boolean
           reminder_offsets_min?: number[]
           review_cap_pct?: number
-          session_presets?: Json
+          session_presets?: NonNullable<Json>
           sleep_min?: number[] | null
           study_program?: string | null
           theme?: string
@@ -1592,7 +1605,7 @@ export type Database = {
           recap_after_lecture?: boolean
           reminder_offsets_min?: number[]
           review_cap_pct?: number
-          session_presets?: Json
+          session_presets?: NonNullable<Json>
           sleep_min?: number[] | null
           study_program?: string | null
           theme?: string
@@ -1622,6 +1635,7 @@ export type Database = {
           url: string | null
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           action_token_hash?: string | null
           action_used_at?: string | null
@@ -1658,11 +1672,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "push_jobs_block_id_fkey"
-            columns: ["block_id"]
+            foreignKeyName: 'push_jobs_block_id_fkey'
+            columns: ['block_id']
             isOneToOne: false
-            referencedRelation: "plan_blocks"
-            referencedColumns: ["id"]
+            referencedRelation: 'plan_blocks'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1677,6 +1691,7 @@ export type Database = {
           user_agent: string | null
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           auth: string
           created_at?: string
@@ -1701,7 +1716,7 @@ export type Database = {
       }
       question_links: {
         Row: {
-          assigned_by: Database["public"]["Enums"]["assigned_by"]
+          assigned_by: Database['public']['Enums']['assigned_by']
           created_at: string
           linked: boolean
           question_id: string
@@ -1709,8 +1724,9 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
-          assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          assigned_by?: Database['public']['Enums']['assigned_by']
           created_at?: string
           linked?: boolean
           question_id: string
@@ -1719,7 +1735,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
-          assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          assigned_by?: Database['public']['Enums']['assigned_by']
           created_at?: string
           linked?: boolean
           question_id?: string
@@ -1729,18 +1745,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "question_links_question_id_fkey"
-            columns: ["question_id"]
+            foreignKeyName: 'question_links_question_id_fkey'
+            columns: ['question_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "question_links_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'question_links_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1756,7 +1772,7 @@ export type Database = {
           recall: number
           retrievability_before: number | null
           reviewed_at: string
-          source: Database["public"]["Enums"]["recall_source"]
+          source: Database['public']['Enums']['recall_source']
           stability_after: number | null
           stability_before: number | null
           state_before: number | null
@@ -1764,6 +1780,7 @@ export type Database = {
           user_id: string
           was_scheduled: boolean
         }
+        ComputedFields: never
         Insert: {
           card_id?: string | null
           difficulty_before?: number | null
@@ -1775,7 +1792,7 @@ export type Database = {
           recall: number
           retrievability_before?: number | null
           reviewed_at?: string
-          source: Database["public"]["Enums"]["recall_source"]
+          source: Database['public']['Enums']['recall_source']
           stability_after?: number | null
           stability_before?: number | null
           state_before?: number | null
@@ -1794,7 +1811,7 @@ export type Database = {
           recall?: number
           retrievability_before?: number | null
           reviewed_at?: string
-          source?: Database["public"]["Enums"]["recall_source"]
+          source?: Database['public']['Enums']['recall_source']
           stability_after?: number | null
           stability_before?: number | null
           state_before?: number | null
@@ -1804,18 +1821,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "review_logs_card_id_fkey"
-            columns: ["card_id"]
+            foreignKeyName: 'review_logs_card_id_fkey'
+            columns: ['card_id']
             isOneToOne: false
-            referencedRelation: "cards"
-            referencedColumns: ["id"]
+            referencedRelation: 'cards'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "review_logs_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'review_logs_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1831,6 +1848,7 @@ export type Database = {
           unit_id: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           amount_done?: number | null
           difficulty?: number | null
@@ -1855,33 +1873,34 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "session_units_session_id_fkey"
-            columns: ["session_id"]
+            foreignKeyName: 'session_units_session_id_fkey'
+            columns: ['session_id']
             isOneToOne: false
-            referencedRelation: "study_sessions"
-            referencedColumns: ["id"]
+            referencedRelation: 'study_sessions'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "session_units_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'session_units_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
       source_mode_rates: {
         Row: {
           min_per_unit: number
-          mode: Database["public"]["Enums"]["study_mode"]
+          mode: Database['public']['Enums']['study_mode']
           samples: number
           source_id: string
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           min_per_unit: number
-          mode: Database["public"]["Enums"]["study_mode"]
+          mode: Database['public']['Enums']['study_mode']
           samples?: number
           source_id: string
           updated_at?: string
@@ -1889,7 +1908,7 @@ export type Database = {
         }
         Update: {
           min_per_unit?: number
-          mode?: Database["public"]["Enums"]["study_mode"]
+          mode?: Database['public']['Enums']['study_mode']
           samples?: number
           source_id?: string
           updated_at?: string
@@ -1897,11 +1916,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "source_mode_rates_source_id_fkey"
-            columns: ["source_id"]
+            foreignKeyName: 'source_mode_rates_source_id_fkey'
+            columns: ['source_id']
             isOneToOne: false
-            referencedRelation: "sources"
-            referencedColumns: ["id"]
+            referencedRelation: 'sources'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1916,7 +1935,7 @@ export type Database = {
           file_name: string | null
           id: string
           is_rough: boolean
-          kind: Database["public"]["Enums"]["source_kind"]
+          kind: Database['public']['Enums']['source_kind']
           learned_min_per_unit: number | null
           learned_samples: number
           measure: string
@@ -1927,6 +1946,7 @@ export type Database = {
           user_id: string
           weight: number | null
         }
+        ComputedFields: never
         Insert: {
           archived_at?: string | null
           author?: string | null
@@ -1937,7 +1957,7 @@ export type Database = {
           file_name?: string | null
           id?: string
           is_rough?: boolean
-          kind: Database["public"]["Enums"]["source_kind"]
+          kind: Database['public']['Enums']['source_kind']
           learned_min_per_unit?: number | null
           learned_samples?: number
           measure?: string
@@ -1958,7 +1978,7 @@ export type Database = {
           file_name?: string | null
           id?: string
           is_rough?: boolean
-          kind?: Database["public"]["Enums"]["source_kind"]
+          kind?: Database['public']['Enums']['source_kind']
           learned_min_per_unit?: number | null
           learned_samples?: number
           measure?: string
@@ -1971,11 +1991,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sources_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'sources_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1988,6 +2008,7 @@ export type Database = {
           unit_id: string | null
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           ended_at?: string | null
           id?: string
@@ -2006,18 +2027,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "study_segments_session_id_fkey"
-            columns: ["session_id"]
+            foreignKeyName: 'study_segments_session_id_fkey'
+            columns: ['session_id']
             isOneToOne: false
-            referencedRelation: "study_sessions"
-            referencedColumns: ["id"]
+            referencedRelation: 'study_sessions'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "study_segments_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'study_segments_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2033,7 +2054,7 @@ export type Database = {
           focus: number | null
           focus_reasons: string[] | null
           id: string
-          mode: Database["public"]["Enums"]["study_mode"] | null
+          mode: Database['public']['Enums']['study_mode'] | null
           origin: string
           planned_minutes: number | null
           reflection: string | null
@@ -2043,6 +2064,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           app_away_sec?: number
           app_leaves?: number
@@ -2054,7 +2076,7 @@ export type Database = {
           focus?: number | null
           focus_reasons?: string[] | null
           id?: string
-          mode?: Database["public"]["Enums"]["study_mode"] | null
+          mode?: Database['public']['Enums']['study_mode'] | null
           origin?: string
           planned_minutes?: number | null
           reflection?: string | null
@@ -2075,7 +2097,7 @@ export type Database = {
           focus?: number | null
           focus_reasons?: string[] | null
           id?: string
-          mode?: Database["public"]["Enums"]["study_mode"] | null
+          mode?: Database['public']['Enums']['study_mode'] | null
           origin?: string
           planned_minutes?: number | null
           reflection?: string | null
@@ -2087,18 +2109,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "study_sessions_block_id_fkey"
-            columns: ["block_id"]
+            foreignKeyName: 'study_sessions_block_id_fkey'
+            columns: ['block_id']
             isOneToOne: false
-            referencedRelation: "plan_blocks"
-            referencedColumns: ["id"]
+            referencedRelation: 'plan_blocks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "study_sessions_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'study_sessions_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2122,6 +2144,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           academic_year_id?: string | null
           archived?: boolean
@@ -2162,11 +2185,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "subjects_academic_year_id_fkey"
-            columns: ["academic_year_id"]
+            foreignKeyName: 'subjects_academic_year_id_fkey'
+            columns: ['academic_year_id']
             isOneToOne: false
-            referencedRelation: "academic_years"
-            referencedColumns: ["id"]
+            referencedRelation: 'academic_years'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2174,7 +2197,7 @@ export type Database = {
         Row: {
           end_min: number
           id: string
-          kind: Database["public"]["Enums"]["class_kind"]
+          kind: Database['public']['Enums']['class_kind']
           location: string | null
           note: string | null
           period_id: string | null
@@ -2187,10 +2210,11 @@ export type Database = {
           week_parity: string | null
           weekday: number
         }
+        ComputedFields: never
         Insert: {
           end_min: number
           id?: string
-          kind: Database["public"]["Enums"]["class_kind"]
+          kind: Database['public']['Enums']['class_kind']
           location?: string | null
           note?: string | null
           period_id?: string | null
@@ -2206,7 +2230,7 @@ export type Database = {
         Update: {
           end_min?: number
           id?: string
-          kind?: Database["public"]["Enums"]["class_kind"]
+          kind?: Database['public']['Enums']['class_kind']
           location?: string | null
           note?: string | null
           period_id?: string | null
@@ -2221,18 +2245,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "timetable_entries_period_id_fkey"
-            columns: ["period_id"]
+            foreignKeyName: 'timetable_entries_period_id_fkey'
+            columns: ['period_id']
             isOneToOne: false
-            referencedRelation: "academic_periods"
-            referencedColumns: ["id"]
+            referencedRelation: 'academic_periods'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "timetable_entries_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'timetable_entries_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2243,6 +2267,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           embedding: string
           topic_id: string
@@ -2257,11 +2282,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "topic_embeddings_topic_id_fkey"
-            columns: ["topic_id"]
+            foreignKeyName: 'topic_embeddings_topic_id_fkey'
+            columns: ['topic_id']
             isOneToOne: true
-            referencedRelation: "topics"
-            referencedColumns: ["id"]
+            referencedRelation: 'topics'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2272,6 +2297,7 @@ export type Database = {
           subject_id: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           id?: string
           name: string
@@ -2286,11 +2312,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "topics_subject_id_fkey"
-            columns: ["subject_id"]
+            foreignKeyName: 'topics_subject_id_fkey'
+            columns: ['subject_id']
             isOneToOne: false
-            referencedRelation: "subjects"
-            referencedColumns: ["id"]
+            referencedRelation: 'subjects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2301,6 +2327,7 @@ export type Database = {
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           embedding: string
           unit_id: string
@@ -2315,47 +2342,48 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "unit_embeddings_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'unit_embeddings_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: true
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
       unit_topics: {
         Row: {
-          assigned_by: Database["public"]["Enums"]["assigned_by"]
+          assigned_by: Database['public']['Enums']['assigned_by']
           topic_id: string
           unit_id: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
-          assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          assigned_by?: Database['public']['Enums']['assigned_by']
           topic_id: string
           unit_id: string
           user_id?: string
         }
         Update: {
-          assigned_by?: Database["public"]["Enums"]["assigned_by"]
+          assigned_by?: Database['public']['Enums']['assigned_by']
           topic_id?: string
           unit_id?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "unit_topics_topic_id_fkey"
-            columns: ["topic_id"]
+            foreignKeyName: 'unit_topics_topic_id_fkey'
+            columns: ['topic_id']
             isOneToOne: false
-            referencedRelation: "topics"
-            referencedColumns: ["id"]
+            referencedRelation: 'topics'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "unit_topics_unit_id_fkey"
-            columns: ["unit_id"]
+            foreignKeyName: 'unit_topics_unit_id_fkey'
+            columns: ['unit_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2364,7 +2392,7 @@ export type Database = {
           ai_difficulty: number | null
           amount: number
           answer: string | null
-          answer_origin: Database["public"]["Enums"]["assigned_by"] | null
+          answer_origin: Database['public']['Enums']['assigned_by'] | null
           archived_at: string | null
           completed_at: string | null
           confidence: number | null
@@ -2376,7 +2404,7 @@ export type Database = {
           fsrs_stability: number | null
           fsrs_state: number | null
           id: string
-          kind: Database["public"]["Enums"]["unit_kind"]
+          kind: Database['public']['Enums']['unit_kind']
           label: string | null
           last_review_at: string | null
           level: number
@@ -2395,11 +2423,12 @@ export type Database = {
           user_difficulty: number | null
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           ai_difficulty?: number | null
           amount?: number
           answer?: string | null
-          answer_origin?: Database["public"]["Enums"]["assigned_by"] | null
+          answer_origin?: Database['public']['Enums']['assigned_by'] | null
           archived_at?: string | null
           completed_at?: string | null
           confidence?: number | null
@@ -2411,7 +2440,7 @@ export type Database = {
           fsrs_stability?: number | null
           fsrs_state?: number | null
           id?: string
-          kind?: Database["public"]["Enums"]["unit_kind"]
+          kind?: Database['public']['Enums']['unit_kind']
           label?: string | null
           last_review_at?: string | null
           level?: number
@@ -2434,7 +2463,7 @@ export type Database = {
           ai_difficulty?: number | null
           amount?: number
           answer?: string | null
-          answer_origin?: Database["public"]["Enums"]["assigned_by"] | null
+          answer_origin?: Database['public']['Enums']['assigned_by'] | null
           archived_at?: string | null
           completed_at?: string | null
           confidence?: number | null
@@ -2446,7 +2475,7 @@ export type Database = {
           fsrs_stability?: number | null
           fsrs_state?: number | null
           id?: string
-          kind?: Database["public"]["Enums"]["unit_kind"]
+          kind?: Database['public']['Enums']['unit_kind']
           label?: string | null
           last_review_at?: string | null
           level?: number
@@ -2467,18 +2496,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "units_parent_id_fkey"
-            columns: ["parent_id"]
+            foreignKeyName: 'units_parent_id_fkey'
+            columns: ['parent_id']
             isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            referencedRelation: 'units'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "units_source_id_fkey"
-            columns: ["source_id"]
+            foreignKeyName: 'units_source_id_fkey'
+            columns: ['source_id']
             isOneToOne: false
-            referencedRelation: "sources"
-            referencedColumns: ["id"]
+            referencedRelation: 'sources'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2487,7 +2516,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      keepalive: { Args: never; Returns: string }
+      keepalive: { Args: Record<PropertyKey, never>; Returns: string }
       match_document_chunks: {
         Args: { match_count?: number; query_embedding: string }
         Returns: {
@@ -2508,6 +2537,7 @@ export type Database = {
           unit_id: string
         }[]
       }
+      progress_statistics: { Args: { p_from: string; p_rates?: Json; p_to: string }; Returns: Json }
       question_candidates: {
         Args: { match_count?: number; question_ids: string[] }
         Returns: {
@@ -2538,40 +2568,34 @@ export type Database = {
     }
     Enums: {
       ai_task:
-        | "parse_toc"
-        | "parse_questions"
-        | "parse_timetable"
-        | "recall_questions"
-        | "propose_answer"
-        | "quiz"
-        | "strategist"
-        | "parse_academic_calendar"
-        | "parse_exam_schedule"
-        | "parse_document"
-        | "answer"
-        | "link_questions"
-        | "parse_syllabus"
-        | "find_academic_info"
-        | "classify_events"
-        | "parse_study_program"
-      assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
-      assigned_by: "ai" | "user"
-      block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
-      block_status: "planned" | "in_progress" | "done" | "missed" | "skipped"
-      class_kind: "lecture" | "exercise" | "lab" | "other"
-      deadline_kind: "assignment" | "custom"
-      exam_format: "written" | "oral" | "combined" | "project" | "other"
+        | 'parse_toc'
+        | 'parse_questions'
+        | 'parse_timetable'
+        | 'recall_questions'
+        | 'propose_answer'
+        | 'quiz'
+        | 'strategist'
+        | 'parse_academic_calendar'
+        | 'parse_exam_schedule'
+        | 'parse_document'
+        | 'answer'
+        | 'link_questions'
+        | 'parse_syllabus'
+        | 'find_academic_info'
+        | 'classify_events'
+        | 'parse_study_program'
+      assessment_kind: 'partial' | 'final' | 'integral' | 'makeup' | 'other'
+      assigned_by: 'ai' | 'user'
+      block_kind: 'learn' | 'review' | 'questions' | 'recap' | 'deadline'
+      block_status: 'planned' | 'in_progress' | 'done' | 'missed' | 'skipped'
+      class_kind: 'lecture' | 'exercise' | 'lab' | 'other'
+      deadline_kind: 'assignment' | 'custom'
+      exam_format: 'written' | 'oral' | 'combined' | 'project' | 'other'
       recall_source:
-        | "exam_question"
-        | "notes"
-        | "outline"
-        | "blurt"
-        | "card"
-        | "page_photo"
-        | "general"
-      source_kind: "book" | "script" | "questions" | "slides" | "other"
-      study_mode: "reading" | "problems" | "review" | "questions"
-      unit_kind: "chapter" | "question"
+        'exam_question' | 'notes' | 'outline' | 'blurt' | 'card' | 'page_photo' | 'general'
+      source_kind: 'book' | 'script' | 'questions' | 'slides' | 'other'
+      study_mode: 'reading' | 'problems' | 'review' | 'questions'
+      unit_kind: 'chapter' | 'question'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2579,33 +2603,29 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -2614,23 +2634,20 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -2639,23 +2656,20 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -2664,36 +2678,30 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema['Enums'] | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema['CompositeTypes'] | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never) = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -2703,42 +2711,42 @@ export const Constants = {
   public: {
     Enums: {
       ai_task: [
-        "parse_toc",
-        "parse_questions",
-        "parse_timetable",
-        "recall_questions",
-        "propose_answer",
-        "quiz",
-        "strategist",
-        "parse_academic_calendar",
-        "parse_exam_schedule",
-        "parse_document",
-        "answer",
-        "link_questions",
-        "parse_syllabus",
-        "find_academic_info",
-        "classify_events",
-        "parse_study_program",
+        'parse_toc',
+        'parse_questions',
+        'parse_timetable',
+        'recall_questions',
+        'propose_answer',
+        'quiz',
+        'strategist',
+        'parse_academic_calendar',
+        'parse_exam_schedule',
+        'parse_document',
+        'answer',
+        'link_questions',
+        'parse_syllabus',
+        'find_academic_info',
+        'classify_events',
+        'parse_study_program',
       ],
-      assessment_kind: ["partial", "final", "integral", "makeup", "other"],
-      assigned_by: ["ai", "user"],
-      block_kind: ["learn", "review", "questions", "recap", "deadline"],
-      block_status: ["planned", "in_progress", "done", "missed", "skipped"],
-      class_kind: ["lecture", "exercise", "lab", "other"],
-      deadline_kind: ["assignment", "custom"],
-      exam_format: ["written", "oral", "combined", "project", "other"],
+      assessment_kind: ['partial', 'final', 'integral', 'makeup', 'other'],
+      assigned_by: ['ai', 'user'],
+      block_kind: ['learn', 'review', 'questions', 'recap', 'deadline'],
+      block_status: ['planned', 'in_progress', 'done', 'missed', 'skipped'],
+      class_kind: ['lecture', 'exercise', 'lab', 'other'],
+      deadline_kind: ['assignment', 'custom'],
+      exam_format: ['written', 'oral', 'combined', 'project', 'other'],
       recall_source: [
-        "exam_question",
-        "notes",
-        "outline",
-        "blurt",
-        "card",
-        "page_photo",
-        "general",
+        'exam_question',
+        'notes',
+        'outline',
+        'blurt',
+        'card',
+        'page_photo',
+        'general',
       ],
-      source_kind: ["book", "script", "questions", "slides", "other"],
-      study_mode: ["reading", "problems", "review", "questions"],
-      unit_kind: ["chapter", "question"],
+      source_kind: ['book', 'script', 'questions', 'slides', 'other'],
+      study_mode: ['reading', 'problems', 'review', 'questions'],
+      unit_kind: ['chapter', 'question'],
     },
   },
 } as const

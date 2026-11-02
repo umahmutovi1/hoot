@@ -162,6 +162,8 @@ export interface PlanState {
   slotCompletion?: SlotCompletion | null
   /** Slot scores of `placeTimes()` from the same model (cautious); absent = onboarding prior. */
   slotScores?: SlotCompletion | null
+  /** Sprint 17: selected history, also part of input_hash. */
+  slotPeriod?: 'exam' | 'teaching'
   /** Exploring days (at most one a week) with their posterior draw of the expected share. */
   explore?: ExploreDay[]
   /** Personal FSRS weights (`profiles.fsrs_params`); absent = defaults. */

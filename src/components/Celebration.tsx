@@ -23,7 +23,13 @@ export function Celebration() {
       onClick={hide}
       className="glass-strong animate-in fade-in slide-in-from-top-3 fixed inset-x-0 top-[calc(12px+env(safe-area-inset-top))] z-50 mx-auto flex w-[calc(100%-36px)] max-w-[394px] items-center gap-3.5 rounded-card-lg p-3.5 pr-5 text-left motion-reduce:animate-none"
     >
-      <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" className="shrink-0">
+      <svg
+        width={current.kind === 'passed' ? 120 : 48}
+        height={current.kind === 'passed' ? 120 : 48}
+        viewBox="0 0 48 48"
+        aria-hidden="true"
+        className="shrink-0"
+      >
         <circle cx="24" cy="24" r="20" fill="none" strokeWidth="6" className="stroke-track" />
         <circle
           cx="24"

@@ -414,7 +414,10 @@ export function useDeleteDeadline({ undo = false } = {}) {
 }
 
 export type ExamResultPatch = Partial<
-  Pick<Assessment, 'result_points' | 'result_max' | 'passed' | 'result_annulled'>
+  Pick<
+    Assessment,
+    'result_points' | 'result_max' | 'passed' | 'result_annulled' | 'readiness_before'
+  >
 >
 
 /** "Rezultat": points, maximum, passed and waiver of one exam. */

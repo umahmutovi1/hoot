@@ -675,3 +675,40 @@ describe('slot signals in the plan (Sprint 17)', () => {
     expect(inputHash(empty)).toBe(inputHash(plain))
   })
 })
+
+it('Sprint 17 keeps teaching signals out of exam-period scores and hashes the selected period', () => {
+  const signal = {
+    startedAt: zonedInstant('2026-10-18', 9 * 60, TZ).toISOString(),
+    blockId: null,
+    minutes: 50,
+    focus: 3,
+    focusReasons: [],
+    distractions: 0,
+    appLeaves: 0,
+    units: [],
+  }
+  const common = inputs({ signals: { sessions: [signal], plannedStart: new Map() } })
+  const teaching = buildPlanState(common, { now: NOW, boundary })
+  const exam = buildPlanState(
+    {
+      ...common,
+      dayInput: () => ({
+        ...dayInput(),
+        periods: [
+          {
+            id: 'p',
+            kind: 'exam',
+            examSession: 'regular',
+            title: 'Exam',
+            startsOn: TODAY,
+            endsOn: '2026-10-30',
+          },
+        ],
+      }),
+    },
+    { now: NOW, boundary },
+  )
+  expect(teaching.state.slotPeriod).toBe('teaching')
+  expect(exam.state.slotPeriod).toBe('exam')
+  expect(inputHash(teaching.state)).not.toBe(inputHash(exam.state))
+})

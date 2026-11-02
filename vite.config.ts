@@ -75,6 +75,11 @@ export default defineConfig({
               name: 'markdown',
               test: /node_modules[\\/](katex|react-markdown|remark-[^\\/]+|rehype-[^\\/]+|micromark[^\\/]*|mdast-[^\\/]+|hast-[^\\/]+|unified|unist-[^\\/]+)[\\/]/,
             },
+            {
+              name: 'charts',
+              includeDependenciesRecursively: false,
+              test: /node_modules[\\/](recharts|recharts-scale|d3-[^\\/]+|victory-vendor|@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|reselect|immer)[\\/]/,
+            },
             { name: 'vendor', test: /node_modules[\\/]/ },
           ],
         },
