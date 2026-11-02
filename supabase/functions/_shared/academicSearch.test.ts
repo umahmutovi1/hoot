@@ -36,6 +36,23 @@ describe('academic search', () => {
     expect(req.text.split('\n')).toHaveLength(5)
   })
 
+  it('asks for the whole study programme too (Sprint 17)', () => {
+    const req = academicSearchRequest(search)
+    expect(req.system).toContain('study_program:')
+    expect(
+      req.schema.safeParse({
+        documents: [
+          {
+            kind: 'study_program',
+            title: 'Studijski program',
+            url: 'https://etf.unsa.ba/sp.pdf',
+            academic_year: null,
+          },
+        ],
+      }).success,
+    ).toBe(true)
+  })
+
   it('keeps public https links from sites the search returned, once each', () => {
     const doc = (url: string) => ({
       kind: 'syllabus' as const,

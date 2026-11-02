@@ -1,5 +1,6 @@
-// "Fakultet s interneta" (PRD, Sprint 13), pure: the web search prompt, which found links to
-// keep, and HTML pages as text for parse-document. Tested with Vitest like the other _shared code.
+// "Fakultet s interneta" (PRD, Sprint 13; the whole study programme from Sprint 17), pure: the
+// web search prompt, which found links to keep, and HTML pages as text for parse-document. Tested
+// with Vitest like the other _shared code.
 import type { LlmRequest, WebSource } from './llm.ts'
 import { findAcademicInfoOutputSchema } from './schemas.ts'
 import type { FindAcademicInfoRequest, FoundDocument, PageText } from './schemas.ts'
@@ -13,7 +14,7 @@ export const MAX_SEARCHES = 6
 export const MAX_FOUND = 6
 
 /** Bumped when the prompt changes, so a search saved with the old prompt runs again. */
-const PROMPT_VERSION = 2
+const PROMPT_VERSION = 3
 
 /** Same faculty, programme, year and academic year = same search (one call per change). */
 export function searchKey(req: SearchRequest): string {
@@ -31,21 +32,26 @@ export function academicSearchRequest(
   req: SearchRequest,
 ): LlmRequest<{ documents: FoundDocument[] }> {
   const system = `You help a university student find official documents of their faculty on the web.
-Search the web and return links to the faculty's own documents of two kinds:
+Search the web and return links to the faculty's own documents of three kinds:
 - academic_calendar: the academic calendar (teaching periods, exam sessions, holidays) for the
   given academic year.
 - syllabus: the study plan and programme ("nastavni plan i program", "NPP", "plan studija",
   "silabus", "syllabus") of the given programme, or the course syllabi of its year of study.
   A study plan is often valid for several years and may not name the current academic year:
   return the newest one in force even when it is from an earlier year.
-Search for each kind separately: first the calendar, then the study plan (also on the faculty's
-pages for students, study programmes and departments, and with "pdf" in the query).
+- study_program: one document with the whole study programme, every year and semester with
+  its subjects ("studijski program", "struktura studija", "plan studija po godinama",
+  "curriculum"). When the study plan document lists every year, it is this kind.
+Search for each kind separately: first the calendar, then the study plan and the whole
+programme (also on the faculty's pages for students, study programmes and departments, and
+with "pdf" in the query).
 Rules:
 - Only links you actually found in the search results, copied exactly (full https URL).
   Never guess or build a URL. Prefer the faculty's or university's own site, and PDF files.
 - academic_year: the year the document says it is for ("2026/27"), null if it does not say.
 - Titles as shown on the page, in the document's language. At most ${MAX_FOUND} links, with
-  the study plan included whenever one is found; an empty list when nothing official is found.`
+  the study plan and the whole programme included whenever found; an empty list when nothing
+  official is found.`
   const lines = [
     `Faculty: ${req.institution}`,
     `Study programme: ${req.program ?? 'not given'}`,

@@ -15,6 +15,7 @@ import { yearLabelOn } from '@/lib/academic'
 import { cn } from '@/lib/utils'
 import type { FoundDocument } from '@shared/schemas'
 import { useAcademicTerm } from './api'
+import { ProgramDetailsCard } from './ProgramDetailsCard'
 import { useAcademicSearch, useFindAcademicInfo } from './search'
 
 const hostOf = (url: string) => {
@@ -28,7 +29,8 @@ const hostOf = (url: string) => {
 /**
  * "Nađeno na internetu" (PlanIProgram.dc.html 1–2): documents find-academic-info found for the
  * faculty, with their link and the year they say. "Uvezi" reads one through the same
- * parse-document review as a given PDF; nothing is saved without it. `?search=1` searches first
+ * parse-document review as a given PDF; nothing is saved without it. A whole study programme
+ * (Sprint 17), once saved, offers this year's details from the same document. `?search=1` searches first
  * (the same search is answered from the profile, without an AI call).
  */
 export function FoundPage() {
@@ -45,6 +47,7 @@ export function FoundPage() {
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState<Record<string, Extract<GiveResult, { ok: true }>>>({})
   const newConversation = useOwlStore((s) => s.newConversation)
+  const messages = useOwlStore((s) => s.messages)
   // The year the documents should be for: the current academic year, else today's label.
   const academicYear =
     years.find((y) => y.startsOn <= today && today <= y.endsOn)?.label ?? yearLabelOn(today)
@@ -57,6 +60,14 @@ export function FoundPage() {
   }, [params, profile?.institution, academicYear, find])
 
   const docs = search?.documents ?? []
+  const programs = messages.flatMap((m) =>
+    m.type === 'proposal' &&
+    m.proposal.program &&
+    m.proposal.savedCount !== null &&
+    docs.some((d) => d.url === m.proposal.origin?.url)
+      ? [m]
+      : [],
+  )
   const subtitle = [
     profile?.institution,
     profile?.study_program,
@@ -71,12 +82,7 @@ export function FoundPage() {
     setError(null)
     try {
       const got = await documentFromLink(doc.url)
-      const kind =
-        doc.kind === 'academic_calendar'
-          ? 'academic_calendar'
-          : doc.kind === 'syllabus'
-            ? 'syllabus'
-            : 'auto'
+      const kind = doc.kind === 'other' ? 'auto' : doc.kind
       newConversation()
       const result = await owl.giveDocument(got.input, kind, null, {
         url: doc.url,
@@ -175,6 +181,10 @@ export function FoundPage() {
               )
             })}
           </div>
+          {/* The review comes back here: the saved programme is found in the chat by its link. */}
+          {programs.map((m) => (
+            <ProgramDetailsCard key={m.id} proposal={m.proposal} />
+          ))}
           <p className="rounded-[18px] bg-warning-soft px-3.5 py-2.5 text-[13px] leading-[1.4] text-warning-ink">
             {t('academic.found.warning', { year: academicYear })}
           </p>

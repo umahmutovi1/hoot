@@ -2691,10 +2691,11 @@
       "title": "Found on the web",
       "crumb": "Found",
       "year": "year {{n}}",
-      "searching": "Looking for the academic calendar and syllabus…",
+      "searching": "Looking for the academic calendar, syllabus and study programme…",
       "kind": {
         "academic_calendar": "Academic calendar",
         "syllabus": "Syllabus",
+        "study_program": "Whole study programme",
         "other": "Document"
       },
       "checkYear": "{{year}} · check the year",
@@ -2715,6 +2716,10 @@
       "cardTitle_one": "{{count}} document from the web",
       "cardTitle_other": "{{count}} documents from the web",
       "cardSub": "Academic calendar and syllabus · you review before saving"
+    },
+    "programDetails": {
+      "title": "Import the details for year {{n}}",
+      "sub": "Books, topics and grading from the same document"
     }
   },
   "googleCalendar": {
