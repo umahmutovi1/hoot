@@ -5,6 +5,8 @@ import {
   DEFAULT_SCALE,
   entryConditions,
   gradeFor,
+  gradeFromShare,
+  gradeRange,
   isValidScale,
   itemWorth,
   project,
@@ -359,5 +361,28 @@ describe('properties', () => {
         }
       }),
     )
+  })
+})
+
+describe('grade from readiness (Sprint 17)', () => {
+  // Have 46; II parcijala 40 (prag 50%) and seminarski 6 remain.
+  const p = project(mockupItems(), subject)
+
+  it('each remaining slot scores the share; a share below its threshold gives nothing', () => {
+    // 46 + 0.8 × 46 = 82.8 → 8
+    expect(gradeFromShare(p, subject, 0.8)).toBe(8)
+    // 0.4 misses II parcijala's 50%: 46 + 0.4 × 6 = 48.4 → 5
+    expect(gradeFromShare(p, subject, 0.4)).toBe(5)
+    // 46 + 0.5 × 46 = 69 → 7
+    expect(gradeFromShare(p, subject, 0.5)).toBe(7)
+  })
+
+  it('a range from the forecast percentiles', () => {
+    expect(gradeRange(p, subject, { p10: 0.45, p50: 0.7, p90: 0.95 })).toEqual({
+      low: 5,
+      // 46 + 0.7 × 46 = 78.2
+      likely: 8,
+      high: 9,
+    })
   })
 })
