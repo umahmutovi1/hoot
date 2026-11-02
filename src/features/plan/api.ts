@@ -1,3 +1,4 @@
+import { sameStudyPeriod } from '@/lib/slots/period'
 import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useAuth } from '@/features/auth/auth-context'
@@ -296,8 +297,12 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       history.today,
     )
     const parts = preferred ? (preferred.split(',') as SlotPart[]) : []
-    return fitCompletion(examples, history.today, parts)
-  }, [history, sessionList, preferred])
+    return fitCompletion(
+      sameStudyPeriod(examples, history.today, schedule.periods),
+      history.today,
+      parts,
+    )
+  }, [history, sessionList, preferred, schedule.periods])
 
   return useMemo(() => {
     if (

@@ -603,6 +603,8 @@ App uči u kojim terminima ti učenje stvarno ide i koristi to u satnici i u pri
 
 **Signali u satnici (odluke, 2. nov 2026, Sprint 17).** `slotSignals()` standardizuje svaki signal prema vlastitom prosjeku korisnika, ublaži ga sa `k/(k+6)` i polu-životom 6 sedmica; težine: fokus 40 %, brzina, kašnjenje starta (> 30 min = neuspjeh) i ometanja (izlasci iz appa + „Ometena sam“ na 30 min) po 20 %. Jedna standardna devijacija zbirnog signala pomjera ocjenu termina za `placeTimes()` za jedan `SLOT_GAP` (5 p.p.), pa samo jasna razlika mijenja početak; kapacitet ostaje na modelu odrađenosti. Ocjene termina su u `input_hash`. Kartice: `avoid_slot` kad termin ima ≥ 6 sesija i odrađenost < 50 % ili fokus ≤ 1,5 (uz negativan zbirni signal), `add_slot` uz fokus ≥ 2,5 i pozitivan zbirni signal.
 
+**Dopuna (2. nov 2026, Sprint 17, odobreno).** Mjerenja fokusa, brzine i odrađenosti razdvajaju se na nastavu i ispitni rok prema akademskom kalendaru; prikazuje se i u scheduler ulazi trenutni period (uključujući `input_hash`). Bez mjerenja u tom periodu koristi se prior, ne podaci drugog perioda. `avoid_slot` / `add_slot` trajno mijenja sedmičnu dostupnost za radne dane ili vikend; današnji raspored i eksplicitni dnevni izuzeci ostaju sačuvani.
+
 **Uvidi (odluka, oktobar 2026, Sprint 17).** Napredak → Uvidi pretvara iste signale u par rečenica sa brojem, a ne u grafove za tumačenje: “Najbolje učiš utorkom i četvrtkom 17–19 (fokus 2.6/3, 9 sesija)”, “Navečer izađeš iz appa 3× po sesiji”, “Prva pauza ti dođe nakon ~35 min”, “Pitanja ti idu 30% brže od plana”. Uvid ima jednu akciju kad je ima (kartica prijedloga: termin, predložak sesije) i savjet iz tabele Tehnike sa izvorom. Pravila su kod (`src/lib/slots/`, `src/lib/session/`); AI samo formuliše, a radi i bez njega. Uvid se pokazuje tek uz dovoljno mjerenja (≥ 6, kao termini).
 
 **Uvidi iz nauke o učenju i ekran „Sedmica u retrovizoru“ (odluka, 29. okt 2026, Sprint 17).** Četiri nova uvida, svaki pravilo u kodu sa pragom i jednom akcijom:
@@ -633,6 +635,8 @@ Prognoza je raspon i vjerovatnoća, ne jedan broj. Čista funkcija `forecast()` 
 **Odluke (2. nov 2026, Sprint 17).** Model odrađenosti se koristi kad ima ≥ 10 označenih blokova (jedan uzorak koeficijenata po prolazu), inače bootstrap, a dok nema 7 dana historije kapacitet × ρ ±30 %. Brzina: jedan uzorak iz posteriora trajanja po prolazu. Urađene minute dana troše posao redom iz plana, i blokove narednih dana (rad unaprijed, kao replan); računa se samo rad prije dana ispita. Procjena ocjene: svaka preostala stavka dobije isti udio bodova (pokrivenost × R), a stavka čiji prag udio ne dostiže ne donosi ništa (`gradeRange()`).
 
 Prikaz: “Vjerovatno 75–90% · 70% šanse da stigneš obavezno”. Procjena ocjene (vidi Projekcija ocjene) koristi istu simulaciju × R na dan ispita i prikazuje se kao raspon ocjena; `readiness_before` i rezultati pokazuju da li se korisnik sistematski precjenjuje (“obično se procijeniš za 1 ocjenu više”).
+
+**Dopuna (2. nov 2026, Sprint 17, odobreno).** Dan prije ispita korisnik opciono bira `readiness_before` od 1 do 5, što znači očekivani rezultat 20%, 40%, 60%, 80%, 100%. Nakon najmanje 3 ispita s procjenom i važećim rezultatom, prosječno precjenjivanje ≥ 15 postotnih poena prikazuje se kao signal (ne kao razlika ocjena). Za položen ispit postojeći animirani prsten s kvačicom je 120 px; nema maskote.
 
 ## Onboarding
 

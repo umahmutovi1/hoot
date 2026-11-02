@@ -1,3 +1,6 @@
+import { ReadinessCard } from '@/features/progress/ReadinessCard'
+import { ProgressProvider } from '@/features/progress/useProgress'
+import { ForecastCard } from '@/features/progress/ForecastCard'
 import { MoodleCard } from '@/features/calendars/MoodleCard'
 import { CalendarImportCard } from '@/features/calendars/CalendarImportCard'
 import { useCalendarProposals } from '@/features/calendars/matches'
@@ -115,6 +118,10 @@ export function TodayPage() {
           <ActionCards plan={plan} />
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />
+          <ProgressProvider>
+            <ForecastCard compact />
+            <ReadinessCard />
+          </ProgressProvider>
           <ExamTiles now={plan.now} />
           <BlockSheet
             open={params.get('extra') === '1'}
