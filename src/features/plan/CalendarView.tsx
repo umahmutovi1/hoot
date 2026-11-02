@@ -36,6 +36,7 @@ import { BlockSheet } from './BlockSheet'
 import { EditDaySheet, type EditDayAction } from './EditDaySheet'
 import { RestorePlanSheet } from './RestorePlanSheet'
 import { DayTimeline } from './DayTimeline'
+import { BlocksSkeleton } from '@/components/Skeleton'
 import { EveBand } from './EveBand'
 import { MoreTimeSheet } from './MoreTimeSheet'
 import type { PlanBlockRow } from './state'
@@ -156,29 +157,33 @@ export function CalendarView() {
             data-timeline-scroll
             className="max-h-[52dvh] overflow-y-auto overscroll-contain rounded-card-lg glass p-3 pr-2"
           >
-            <DayTimeline
-              items={dayClasses}
-              busy={agenda.busyFor(selectedDate)}
-              blocks={toTimeline(blocks).map((b) => {
-                // "u Google-u" / "čeka Google" on each block once Google is connected.
-                const sync = google.stateOf(`block:${b.id}`)
-                return sync
-                  ? {
-                      ...b,
-                      sub: [b.sub, t(`googleCalendar.tag.${sync}`)].filter(Boolean).join(' · '),
-                    }
-                  : b
-              })}
-              onPickBlock={(b) => openBlock(b.block)}
-              onPickBusy={setBusy}
-              onPick={(item) => openClass(item, selected)}
-              onPickEmpty={() => setEditOpen(true)}
-              emptyLabel={t('plan.editDay.button')}
-              scrollKey={selectedDate}
-              nowMin={
-                isSameDay(selected, today) ? wallClock(now, boundary.timeZone).minutes : undefined
-              }
-            />
+            {dayBlocks.loaded ? (
+              <DayTimeline
+                items={dayClasses}
+                busy={agenda.busyFor(selectedDate)}
+                blocks={toTimeline(blocks).map((b) => {
+                  // "u Google-u" / "čeka Google" on each block once Google is connected.
+                  const sync = google.stateOf(`block:${b.id}`)
+                  return sync
+                    ? {
+                        ...b,
+                        sub: [b.sub, t(`googleCalendar.tag.${sync}`)].filter(Boolean).join(' · '),
+                      }
+                    : b
+                })}
+                onPickBlock={(b) => openBlock(b.block)}
+                onPickBusy={setBusy}
+                onPick={(item) => openClass(item, selected)}
+                onPickEmpty={() => setEditOpen(true)}
+                emptyLabel={t('plan.editDay.button')}
+                scrollKey={selectedDate}
+                nowMin={
+                  isSameDay(selected, today) ? wallClock(now, boundary.timeZone).minutes : undefined
+                }
+              />
+            ) : (
+              <BlocksSkeleton />
+            )}
           </div>
         </div>
       )}

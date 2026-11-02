@@ -90,8 +90,14 @@ function UnitDetail({
       ? subtreeLeaves(asProgress(material.units), unit.id).map((l) => l.id)
       : [unit.id]
   const gateUrl = `/session/recall?units=${leafIds.join(',')}&to=${encodeURIComponent(location.pathname)}`
-  // "Razumijem" / "Ponovljeno" ("Znam") come only from the recall gate (PRD "Recall gate").
+  // "Ponovljeno" ("Znam") comes only from the recall gate (PRD "Recall gate"); "Razumijem" on a
+  // chapter may also be marked by hand (PRD "Dopune, 29. okt 2026" → Ručno "Razumijem").
+  const [understandOpen, setUnderstandOpen] = useState(false)
   const pickLevel = (level: number) => {
+    if (level === 2 && !isQuestion && unit.level < 2) {
+      setUnderstandOpen(true)
+      return
+    }
     if (level >= 2) {
       navigate(gateUrl)
       return
@@ -187,6 +193,20 @@ function UnitDetail({
           )}
         </div>
       )}
+
+      <UnderstandSheet
+        open={understandOpen}
+        onOpenChange={setUnderstandOpen}
+        onCheck={() => navigate(gateUrl)}
+        onMark={() =>
+          patch({
+            level: 2,
+            level_source: 'manual',
+            ...(unit.completed_at ? {} : { completed_at: new Date().toISOString() }),
+            next_review_on: readCheckOn(localDay(now, boundary), unit.next_review_on),
+          })
+        }
+      />
 
       <div className="grid grid-cols-2 gap-2">
         <button
@@ -611,5 +631,52 @@ function TextSection({
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * "Razumijem" by hand: the check (recommended) or a mark without it, with the honesty note. The
+ * mark sets level 2 without FSRS memory and plans a check in READ_CHECK_DAYS, as "Pročitano";
+ * that check is the first real review and "Ne" brings the chapter back to level 1.
+ */
+function UnderstandSheet({
+  open,
+  onOpenChange,
+  onCheck,
+  onMark,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onCheck: () => void
+  onMark: () => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <BottomSheet open={open} onOpenChange={onOpenChange} title={t('units.understand.title')}>
+      <div className="flex flex-col gap-3 pb-2">
+        <Button
+          size="pill"
+          onClick={() => {
+            onOpenChange(false)
+            onCheck()
+          }}
+        >
+          {t('units.understand.check')}
+        </Button>
+        <p className="rounded-[18px] bg-warning-soft px-4 py-3 text-sm leading-snug text-warning-ink">
+          {t('units.understand.honesty')}
+        </p>
+        <Button
+          variant="surface"
+          size="pill"
+          onClick={() => {
+            onOpenChange(false)
+            onMark()
+          }}
+        >
+          {t('units.understand.mark')}
+        </Button>
+      </div>
+    </BottomSheet>
   )
 }

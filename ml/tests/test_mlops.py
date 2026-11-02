@@ -1,6 +1,6 @@
 import pandas as pd
 
-from hoot_ml.monitor import fsrs_weeks, report
+from hoot_ml.monitor import energy_weeks, fsrs_weeks, report
 from hoot_ml.train import report as train_report
 from hoot_ml.train import train_completion
 
@@ -42,3 +42,41 @@ def test_too_few_blocks_keep_the_prior():
     assert result["changed"] is False and result["ok"] is True
     assert "prior stays" in result["note"]
     assert "completion: bez promjene" in train_report([result])
+
+
+def test_energy_share_of_a_usual_day():
+    # Usual days (with a plan) of 100, 120 and 80 min; a low day of 30 and a high day of 120.
+    days = {
+        "2026-10-26": 100,
+        "2026-10-27": 120,
+        "2026-10-28": 80,
+        "2026-10-29": 30,
+        "2026-10-30": 120,
+    }
+    sessions = pd.DataFrame(
+        [{"id": d, "started_at": f"{d}T09:00:00Z", "block_id": None} for d in days]
+    )
+    segments = pd.DataFrame(
+        [
+            {
+                "session_id": d,
+                "started_at": f"{d}T09:00:00Z",
+                "ended_at": (pd.Timestamp(f"{d}T09:00:00Z") + pd.Timedelta(minutes=m)).isoformat(),
+            }
+            for d, m in days.items()
+        ]
+    )
+    tables = {
+        "study_sessions": sessions,
+        "study_segments": segments,
+        "plan_blocks": pd.DataFrame([{"origin": "ai", "on_date": d} for d in days]),
+        "day_energy": pd.DataFrame(
+            [
+                {"on_date": "2026-10-29", "energy": "low"},
+                {"on_date": "2026-10-30", "energy": "high"},
+            ]
+        ),
+    }
+    week = energy_weeks(tables).iloc[0]
+    assert week["low_n"] == 1 and abs(week["low_share"] - 0.3) < 1e-9
+    assert week["high_n"] == 1 and abs(week["high_share"] - 1.2) < 1e-9

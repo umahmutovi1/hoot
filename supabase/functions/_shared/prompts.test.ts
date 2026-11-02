@@ -147,6 +147,27 @@ describe('normalizeParse', () => {
   })
 })
 
+describe('study programme (Stage 11b)', () => {
+  it('asks for every subject with its whole-programme semester, on the public task', () => {
+    const r = parseRequest(request({ kind: 'study_program' }), [])
+    expect(r.task).toBe('parse_study_program')
+    expect(r.system).toContain('EVERY subject of EVERY year')
+  })
+
+  it('keeps one row per subject and semester and stores the document as a syllabus', () => {
+    const result = normalizeParse(request({ kind: 'study_program' }), {
+      title: 'Plan studija',
+      subjects: [
+        { subject_name: 'Signali', semester: 3, ects: 6, elective_group: null },
+        { subject_name: 'signali ', semester: 3, ects: 6, elective_group: null },
+        { subject_name: 'Signali', semester: 4, ects: 6, elective_group: null },
+      ],
+    } as never)
+    expect(result.kind).toBe('syllabus')
+    expect(result.program?.map((x) => x.semester)).toEqual([3, 4])
+  })
+})
+
 describe('answer', () => {
   const passages = [
     { document_id: 'a', title: 'Akademski kalendar', page: 2, content: 'Popravni rok 15.–26. 2.' },

@@ -76,6 +76,7 @@ const unit = (id: string, position: number, patch: Partial<Unit> = {}): Unit => 
   ai_difficulty: null,
   user_difficulty: null,
   level: 0,
+  level_source: null,
   confidence: null,
   est_minutes: null,
   next_review_on: null,
@@ -147,6 +148,7 @@ function inputs(patch: Partial<PlanInputs> = {}): PlanInputs {
     at: zonedInstant('2026-12-20', 540, TZ).toISOString(),
   })
   return {
+    energy: [],
     profile: profile(),
     subjects: [{ ...subjectRow({ id: 's' }), assessments: [exam1, exam2] }],
     deadlines: [],
@@ -236,6 +238,32 @@ describe('buildPlanState', () => {
       b.units.some((u) => today.has(u.unitId) && u.minutes >= 60),
     )
     expect(again).toEqual([])
+  })
+
+  it('energy for today rebuilds today with less; the hash changes; other days are normal', () => {
+    const first = buildPlanState(inputs(), { now: NOW, boundary })
+    const blocks = applyReplace(
+      [],
+      replaceArgs(first, plan(first.state), inputHash(first.state), 'run1', TZ),
+      'u',
+    )
+    const normal = buildPlanState(inputs({ blocks }), { now: NOW, boundary })
+    const low = buildPlanState(inputs({ blocks, energy: [{ on_date: TODAY, energy: 'low' }] }), {
+      now: NOW,
+      boundary,
+    })
+    expect(low.keepToday).toBe(false)
+    expect(low.state.from).toBe(TODAY)
+    expect(low.state.days[0]).toMatchObject({ date: TODAY, energy: 'low' })
+    expect(low.state.days[1]!.energy).toBeUndefined()
+    expect(low.state.energyFactors).toEqual({ low: 0.6, high: 1.25 })
+    expect(inputHash(low.state)).not.toBe(inputHash(normal.state))
+    const todayMinutes = (s: typeof low) =>
+      plan(s.state)
+        .blocks.filter((b) => b.onDate === TODAY)
+        .reduce((sum, b) => sum + b.minutes, 0)
+    const fresh = buildPlanState(inputs({ energy: [] }), { now: NOW, boundary })
+    expect(todayMinutes(low)).toBeLessThanOrEqual(todayMinutes(fresh))
   })
 
   it('saves what the plan knew about each block (block completion features)', () => {

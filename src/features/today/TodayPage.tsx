@@ -29,6 +29,10 @@ import { ExamTiles } from './ExamTiles'
 import { BlockSheet } from '@/features/plan/BlockSheet'
 import { FactCard } from './FactCard'
 import { FocusBar } from './FocusBar'
+import { TodaySkeleton } from '@/components/Skeleton'
+import { useMilestones } from './useMilestones'
+import { SemesterEndCard } from './SemesterEndCard'
+import { useActiveSession } from '@/features/session/api'
 import { GainedCard } from './GainedCard'
 import { useGainedCard } from './useGainedCard'
 import { DayOffCard, NextCard } from './NextCard'
@@ -52,6 +56,8 @@ export function TodayPage() {
   const { locale } = useLocale()
   const { data: profile } = useProfile()
   const plan = usePlanToday()
+  const { data: active } = useActiveSession()
+  useMilestones(plan, Boolean(active))
   // `?extra=1` (search: "Imam još vremena") opens that sheet.
   const [params, setParams] = useSearchParams()
   const name = profile?.display_name ?? ''
@@ -105,6 +111,7 @@ export function TodayPage() {
           <div className="mt-3 empty:hidden">
             <QuickActions plan={plan} dayOff={dayOff} />
           </div>
+          <SemesterEndCard />
           <ActionCards plan={plan} />
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />
@@ -128,7 +135,9 @@ export function TodayPage() {
             {t('today.addSubject')}
           </Link>
         </section>
-      ) : null}
+      ) : (
+        <TodaySkeleton />
+      )}
       {firstRun && (
         <div className="mt-8">
           <SetupChecklist />

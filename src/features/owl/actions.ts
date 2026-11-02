@@ -1,5 +1,7 @@
 // What the owl does when it gets a document or a question. Plain async functions over the
 // store, so a flow keeps going when the user navigates between Today and the conversation.
+import { semesterOn, yearOn } from '@/lib/academic'
+import { proposeProgram } from '@/lib/import/program'
 import type { QueryClient } from '@tanstack/react-query'
 import {
   EMBED_BATCH,
@@ -395,7 +397,49 @@ async function readDocument(
 
 /** Items a proposal brings (a syllabus subject counts as one). */
 function foundCount(p: ImportProposal) {
-  return p.periods.length + p.exams.length + (p.classes?.length ?? 0) + (p.syllabus?.length ?? 0)
+  const program = p.program?.semesters.reduce((n, s) => n + s.subjects.length, 0) ?? 0
+  return (
+    p.periods.length +
+    p.exams.length +
+    (p.classes?.length ?? 0) +
+    (p.syllabus?.length ?? 0) +
+    program
+  )
+}
+
+/** Where a study programme's semesters go: the academic years and today's semester. */
+async function programProposal(result: ParseResult, ctx: OwlContext) {
+  const { data } = await supabase
+    .from('academic_years')
+    .select('id, label, year_of_study, starts_on, ends_on')
+  const years = (data ?? []).map((y) => ({
+    id: y.id,
+    label: y.label,
+    yearOfStudy: y.year_of_study,
+    startsOn: y.starts_on,
+    endsOn: y.ends_on,
+  }))
+  const year = yearOn(years, ctx.today)
+  const teaching = ctx.periods
+    .filter((p) => p.kind === 'teaching')
+    .map((p) => ({ startsOn: p.starts_on, endsOn: p.ends_on, academicYearId: null }))
+  const yearOfStudy = ctx.yearOfStudy ?? year?.yearOfStudy ?? null
+  const semester = year?.yearOfStudy
+    ? semesterOn(year, teaching, ctx.today)
+    : yearOfStudy
+      ? semesterOn(
+          { id: '-', label: '', yearOfStudy, startsOn: '0000-01-01', endsOn: '9999-12-31' },
+          [],
+          ctx.today,
+        )
+      : null
+  return proposeProgram(result.program ?? [], {
+    subjects: ctx.subjects.map((x) => ({ id: x.id, name: x.name })),
+    years,
+    today: ctx.today,
+    yearOfStudy,
+    semester,
+  })
 }
 
 /** What a syllabus is compared with: the subjects' sources, topics, exams and point totals. */
@@ -445,6 +489,7 @@ async function proposalFrom(
       syllabus.length > 0
         ? proposeSyllabus(syllabus, subjects, await syllabusExisting(ctx))
         : undefined,
+    program: (result.program?.length ?? 0) > 0 ? await programProposal(result, ctx) : undefined,
     warnings: result.warnings,
     savedCount: null,
   }

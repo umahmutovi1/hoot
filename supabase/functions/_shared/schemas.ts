@@ -15,6 +15,7 @@ export const IMPORT_KINDS = [
   'exam_schedule',
   'timetable',
   'syllabus',
+  'study_program',
   'document',
 ] as const
 export const importKindSchema = z.enum(IMPORT_KINDS)
@@ -184,6 +185,32 @@ export const syllabusParseSchema = z.object({
   subjects: z.array(parsedSyllabusSubjectSchema),
 })
 
+/**
+ * One subject of a whole study programme (Stage 11b, "Studijski program odjednom"): only where it
+ * belongs; books, topics and grading come later per subject (`syllabus`).
+ */
+export const parsedProgramSubjectSchema = z.object({
+  subject_name: z.string().min(1).describe('Subject name exactly as written in the document'),
+  semester: z
+    .int()
+    .min(1)
+    .max(12)
+    .describe('Semester number in the whole programme (year 2 winter = 3, year 2 summer = 4)'),
+  ects: z.number().min(0).max(60).nullable().describe('ECTS credits if written, else null'),
+  elective_group: z
+    .string()
+    .nullable()
+    .describe(
+      'Elective slot this subject is an option of ("Izborni predmet 4.1"), null if required',
+    ),
+})
+export type ParsedProgramSubject = z.infer<typeof parsedProgramSubjectSchema>
+
+export const studyProgramParseSchema = z.object({
+  ...parseBase,
+  subjects: z.array(parsedProgramSubjectSchema),
+})
+
 export const documentParseSchema = z.object({
   ...parseBase,
   kind: documentKindSchema,
@@ -208,6 +235,8 @@ export interface ParseResult {
   entries: ParsedClass[]
   /** Per subject; only for kind `syllabus` (Stage 10c). */
   syllabus: ParsedSyllabusSubject[]
+  /** Every subject of every year; only for kind `study_program` (Stage 11b). */
+  program?: ParsedProgramSubject[]
   warnings: string[]
 }
 
@@ -471,6 +500,8 @@ export const QUIZ_QUESTIONS = 6
 export const MAX_RECALL_QUESTIONS = 10
 /** Photos of a page or two (e.g. the chapter summary). */
 export const MAX_PAGE_PHOTOS = 2
+/** Pasted text of a chapter or a passage (Stage 11b): the same "page" source as a photo. */
+export const MAX_PASTED_CHARS = 12000
 
 export const recallQuestionsRequestSchema = z
   .object({
@@ -479,9 +510,11 @@ export const recallQuestionsRequestSchema = z
     count: z.int().min(1).max(MAX_RECALL_QUESTIONS),
     locale: localeSchema,
     files: z.array(uploadedFileSchema).max(MAX_PAGE_PHOTOS),
+    /** Pasted text from the book; with `page_photo`, instead of or next to the photos. */
+    text: z.string().trim().min(1).max(MAX_PASTED_CHARS).optional(),
   })
-  .refine((r) => (r.source === 'page_photo') === r.files.length > 0, {
-    message: 'page photos only for page_photo',
+  .refine((r) => (r.source === 'page_photo') === (r.files.length > 0 || r.text !== undefined), {
+    message: 'page photos or pasted text only for page_photo',
   })
 export type RecallQuestionsRequest = z.infer<typeof recallQuestionsRequestSchema>
 
@@ -674,6 +707,8 @@ export const AI_ERRORS = [
   'provider_busy',
   'invalid_output',
   'failed',
+  /** A private task without a paid model (PRD: private text never goes to a free tier). */
+  'needs_paid',
 ] as const
 export type AiErrorCode = (typeof AI_ERRORS)[number]
 

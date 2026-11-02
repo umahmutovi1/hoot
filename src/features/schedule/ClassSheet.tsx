@@ -62,8 +62,7 @@ function ClassFormView({
   const { data: subjects = [] } = useSubjects()
   const active = subjects.filter((s) => !s.archived)
   const save = useSaveClass()
-  const remove = useDeleteClass()
-  const [confirmDelete, setConfirmDelete] = useState(false)
+  const remove = useDeleteClass({ undo: true })
   // With no subjects yet, the new class starts with creating one.
   const [newSubject, setNewSubject] = useState(!entry && active.length === 0)
   const form = useForm<ClassForm>({
@@ -251,12 +250,11 @@ function ClassFormView({
           variant="link"
           className="h-11 text-danger"
           onClick={() => {
-            if (!confirmDelete) return setConfirmDelete(true)
             remove.mutate(entry.id)
             onDone()
           }}
         >
-          {t(confirmDelete ? 'timetable.confirmDelete' : 'timetable.delete')}
+          {t('timetable.delete')}
         </Button>
       )}
     </form>

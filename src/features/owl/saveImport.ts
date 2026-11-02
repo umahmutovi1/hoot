@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { academicYearsKey } from '@/features/academic/api'
+import { SUBJECT_COLORS } from '@/features/subjects/model'
+import { programSaveCount, programYears, type ProgramProposal } from '@/lib/import/program'
 import type { TFunction } from 'i18next'
 import { useAuth } from '@/features/auth/auth-context'
 import { scheduleKey, usePeriods, useSavePeriod } from '@/features/schedule/api'
@@ -43,7 +46,8 @@ export function saveCount(proposal: ImportProposal) {
     toSave(proposal.periods).length +
     toSave(proposal.exams).filter((e) => e.subjectId).length +
     toSave(proposal.classes ?? []).filter((c) => c.subjectId).length +
-    syllabusSaveCount(proposal.syllabus ?? [])
+    syllabusSaveCount(proposal.syllabus ?? []) +
+    (proposal.program ? programSaveCount(proposal.program) : 0)
   )
 }
 
@@ -73,6 +77,45 @@ export function useSaveImport(t: TFunction) {
    * subject's point total (only over the default). New exams take the matching period of the
    * academic calendar as a tentative date, else the end of the teaching period.
    */
+  /**
+   * Study programme (Stage 11b): the academic years the picked subjects need (default dates),
+   * then the subjects in their year and semester, without exams until their semester comes.
+   */
+  const saveProgram = async (program: ProgramProposal) => {
+    const yearIds = new Map(
+      program.semesters.flatMap((s) => (s.yearId && s.yearLabel ? [[s.yearLabel, s.yearId]] : [])),
+    )
+    for (const y of programYears(program)) {
+      const yearId = crypto.randomUUID()
+      const { error } = await supabase.from('academic_years').insert({
+        id: yearId,
+        label: y.label,
+        year_of_study: y.yearOfStudy,
+        starts_on: y.startsOn,
+        ends_on: y.endsOn,
+      })
+      if (error) throw error
+      yearIds.set(y.label, yearId)
+    }
+    const rows = program.semesters.flatMap((s) =>
+      s.subjects
+        .filter((x) => x.include && !x.existingId)
+        .map((x, i) => ({
+          id: crypto.randomUUID(),
+          name: x.name.slice(0, 80),
+          color: SUBJECT_COLORS[i % SUBJECT_COLORS.length],
+          academic_year_id: s.yearLabel ? (yearIds.get(s.yearLabel) ?? null) : null,
+          semester_no: s.semester,
+        })),
+    )
+    if (rows.length > 0) {
+      const { error } = await supabase.from('subjects').insert(rows)
+      if (error) throw error
+    }
+    void queryClient.invalidateQueries({ queryKey: academicYearsKey(userId) })
+    return rows.length
+  }
+
   const saveSyllabus = async (items: SyllabusProposal[]) => {
     const pick = <T extends { include: boolean; status: string }>(xs: T[]) =>
       xs.filter((x) => x.include && (x.status === 'new' || x.status === 'changed'))
@@ -197,6 +240,8 @@ export function useSaveImport(t: TFunction) {
   }
 
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async (proposal: ImportProposal) => {
       // Classes go into the current teaching period (PRD "Semestar"); check before writing.
       const classes = toSave(proposal.classes ?? []).filter((c) => c.subjectId)
@@ -264,7 +309,8 @@ export function useSaveImport(t: TFunction) {
         if (error) throw error
       }
       const syllabusCount = await saveSyllabus(proposal.syllabus ?? [])
-      return periods.length + exams.length + classes.length + syllabusCount
+      const programCount = proposal.program ? await saveProgram(proposal.program) : 0
+      return periods.length + exams.length + classes.length + syllabusCount + programCount
     },
     onSettled: () =>
       Promise.all([

@@ -4,8 +4,17 @@ import { useAuth } from '@/features/auth/auth-context'
 import { profileKey } from '@/features/settings/profile'
 import { subjectsKey } from '@/features/subjects/api'
 import { examAtFromDate } from '@/features/subjects/model'
+import { undoDelete } from '@/components/toast-store'
 import { supabase } from '@/lib/supabase'
-import type { DayRow, ExceptionRow, LectureLogRow, PeriodRow, RuleRow, TimetableRow } from './model'
+import type {
+  DayRow,
+  EnergyRow,
+  ExceptionRow,
+  LectureLogRow,
+  PeriodRow,
+  RuleRow,
+  TimetableRow,
+} from './model'
 
 // IDs come from the client (crypto.randomUUID()), so writes are idempotent upserts that the
 // offline queue (Stage 7) can replay.
@@ -17,6 +26,7 @@ type ScheduleTable =
   | 'availability_exceptions'
   | 'availability_days'
   | 'lecture_logs'
+  | 'day_energy'
 
 export const scheduleKey = (table: ScheduleTable, userId: string | undefined) =>
   [table, userId] as const
@@ -32,6 +42,7 @@ const ORDER: Record<ScheduleTable, string> = {
   availability_exceptions: 'on_date',
   availability_days: 'on_date',
   lecture_logs: 'on_date',
+  day_energy: 'on_date',
 }
 
 function useTable<T>(table: ScheduleTable) {
@@ -53,6 +64,7 @@ export const useAvailabilityRules = () => useTable<RuleRow>('availability_rules'
 export const useAvailabilityExceptions = () => useTable<ExceptionRow>('availability_exceptions')
 export const useLectureLogs = () => useTable<LectureLogRow>('lecture_logs')
 export const useAvailabilityDays = () => useTable<DayRow>('availability_days')
+export const useDayEnergy = () => useTable<EnergyRow>('day_energy')
 
 async function patchList<T extends { id: string }>(
   queryClient: QueryClient,
@@ -102,12 +114,13 @@ function useUpsert<T extends { id: string; user_id: string }>(
   })
 }
 
-function useDelete(table: ScheduleTable, also: ScheduleTable[] = []) {
+function useDelete(table: ScheduleTable, also: ScheduleTable[] = [], undo = false) {
   const userId = useUserId()
   const queryClient = useQueryClient()
   const key = scheduleKey(table, userId)
   return useMutation({
     mutationFn: async (id: string) => {
+      if (undo) await undoDelete()
       const { error } = await supabase.from(table).delete().eq('id', id)
       if (error) throw error
     },
@@ -170,13 +183,15 @@ export function useSavePeriod() {
   })
 }
 
-export const useDeletePeriod = () => useDelete('academic_periods', ['timetable_entries'])
+export const useDeletePeriod = ({ undo = false } = {}) =>
+  useDelete('academic_periods', ['timetable_entries'], undo)
 
 // ------------------------------------------------------------------ timetable
 
 export const useSaveClass = () =>
   useUpsert<TimetableRow>('timetable_entries', { location: null, week_parity: null })
-export const useDeleteClass = () => useDelete('timetable_entries', ['lecture_logs'])
+export const useDeleteClass = ({ undo = false } = {}) =>
+  useDelete('timetable_entries', ['lecture_logs'], undo)
 
 // ------------------------------------------------------------------ availability
 

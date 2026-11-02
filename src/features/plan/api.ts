@@ -2,6 +2,7 @@ import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useAuth } from '@/features/auth/auth-context'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
+import { useDayEnergy } from '@/features/schedule/api'
 import { useSessions } from '@/features/session/api'
 import { toSegment } from '@/features/session/model'
 import { useGlobalScale, useProfile } from '@/features/settings/profile'
@@ -258,6 +259,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
     [pointsTotal, gradeScale],
   )
   const schedule = useScheduleData()
+  const energy = useDayEnergy().data
 
   // The personal completion posterior (a few ms of Newton steps): refitted only when its blocks,
   // sessions or the onboarding parts change.
@@ -289,7 +291,8 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       !questionLinks ||
       !cards ||
       !blocks ||
-      !sessionList
+      !sessionList ||
+      !energy
     )
       return null
     const sessions: SessionMinutes[] = sessionList
@@ -316,8 +319,10 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       completion,
       globalScale,
       dayInput: schedule.dayInput,
+      energy,
     }
   }, [
+    energy,
     completion,
     profile,
     subjects,

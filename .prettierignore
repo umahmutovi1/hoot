@@ -13,3 +13,4 @@ README.md
 .github/pull_request_template.md
 ml
 scripts/sim/baseline.json
+supabase/templates/

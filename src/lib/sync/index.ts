@@ -225,6 +225,11 @@ export class SyncQueue {
     return next ? next.nextAttemptAt : null
   }
 
+  /** Ops the server rejected for good (parked, never retried). */
+  async failedCount(): Promise<number> {
+    return (await this.db.queue.toArray()).filter((q) => q.failed).length
+  }
+
   /** Ops waiting to be sent (not counting parked failures). */
   async pendingCount(): Promise<number> {
     return (await this.db.queue.toArray()).filter((q) => !q.failed).length

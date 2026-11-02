@@ -29,7 +29,8 @@ export interface DayBlockView {
 export function useDayBlocks() {
   const { t } = useTranslation()
   const boundary = useDayBoundary()
-  const blocks = usePlanBlocks(boundary).data ?? []
+  const blocksQuery = usePlanBlocks(boundary)
+  const blocks = blocksQuery.data ?? []
   const units = useUnitIndex()
   const fixedTimes = usePlanStore((s) => s.model?.result.fixedTimes)
   const { data: subjects = [] } = useSubjects()
@@ -43,6 +44,7 @@ export function useDayBlocks() {
         : null
 
   return {
+    loaded: blocksQuery.data !== undefined,
     hasBlocks: (date: LocalDate) =>
       blocks.some((b) => b.on_date === date && b.status !== 'skipped'),
     blocksFor: (date: LocalDate): DayBlockView[] =>

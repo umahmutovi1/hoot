@@ -24,13 +24,10 @@
   },
   "auth": {
     "headline": "Study smarter,\nnot longer.",
-    "lead": "A plan built from your deadlines and reading list that adapts when you miss something.",
     "email": "Email",
     "emailPlaceholder": "name@example.com",
     "emailInvalid": "Enter a valid email.",
-    "sendLink": "Send sign-in link",
     "sending": "Sending…",
-    "noPassword": "No password — the link arrives by email.",
     "checkEmailTitle": "Check your email",
     "checkEmailBody": "We sent a sign-in link to {{email}}. Open it on this device or enter the code from the email.",
     "code": "Code from email",
@@ -40,7 +37,31 @@
     "codeInvalid": "The code is wrong or has expired.",
     "useOtherEmail": "Use another email",
     "sendFailed": "Couldn't send the email. Try again in a minute.",
-    "appIcon": "App icon"
+    "title": "Sign in",
+    "firstTime": "First time? We'll email you a code.",
+    "google": "Continue with Google",
+    "googleFailed": "Google sign-in failed. Try again.",
+    "orEmail": "or with email",
+    "password": "Password",
+    "passwordPlaceholder": "If you have set one",
+    "signIn": "Sign in",
+    "signingIn": "Signing in…",
+    "sendCode": "Email me a code",
+    "codeHint": "No password or forgot it? The email code signs you in.",
+    "passwordWrong": "Wrong email or password. The email code signs you in without it.",
+    "setPassword": "Set a password",
+    "setPasswordShort": "Set",
+    "changePassword": "Change",
+    "setPasswordBody": "Next time you sign in without waiting for a code, also in the home screen app.",
+    "newPassword": "New password",
+    "newPasswordPlaceholder_one": "At least {{count}} character",
+    "newPasswordPlaceholder_other": "At least {{count}} characters",
+    "passwordShort_one": "The password needs at least {{count}} character.",
+    "passwordShort_other": "The password needs at least {{count}} characters.",
+    "passwordFailed": "The password was not saved. Try again.",
+    "passwordSaved": "Password saved",
+    "savePassword": "Save password",
+    "skip": "Skip"
   },
   "today": {
     "greeting": {
@@ -173,6 +194,15 @@
       "sub": "Add {{title}}?",
       "add": "Add",
       "later": "Not now"
+    },
+    "energy": {
+      "low": "Low on energy",
+      "high": "Full of energy",
+      "toast": {
+        "low": "Lighter today: shorter blocks, reviews first",
+        "high": "A bit more today, hardest material first",
+        "normal": "Today's plan is back to usual"
+      }
     }
   },
   "plan": {
@@ -472,7 +502,14 @@
   },
   "progress": {
     "title": "Progress",
-    "empty": "Progress shows up once you start studying."
+    "empty": "Progress shows up once you start studying.",
+    "energy": {
+      "title": "Energy",
+      "low_one": "When you're low on energy, the plan gives you about {{pct}}% of a usual day (from {{count}} such day).",
+      "low_other": "When you're low on energy, the plan gives you about {{pct}}% of a usual day (from {{count}} such days).",
+      "high_one": "When you're full of energy, the plan goes up to {{pct}}% of a usual day (from {{count}} such day).",
+      "high_other": "When you're full of energy, the plan goes up to {{pct}}% of a usual day (from {{count}} such days)."
+    }
   },
   "session": {
     "title": "Study session",
@@ -771,7 +808,11 @@
   "common": {
     "cancel": "Cancel",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "undo": "Undo",
+    "deleted": "Deleted",
+    "saveFailed": "Not saved. Try again.",
+    "saveOffline": "No connection, the change was not saved."
   },
   "profile": {
     "nameLabel": "Name",
@@ -786,7 +827,6 @@
     "kindLabel": "Type",
     "scopeAll": "All material",
     "delete": "Delete exam",
-    "confirmDelete": "Sure? Tap again to delete",
     "kind": {
       "partial": "Midterm",
       "final": "Final",
@@ -860,8 +900,7 @@
     "optional": "(optional)",
     "done": "Done",
     "doneShort": "done",
-    "delete": "Delete deadline",
-    "confirmDelete": "Sure? Tap again to delete"
+    "delete": "Delete deadline"
   },
   "sources": {
     "editor": {
@@ -1124,7 +1163,6 @@
       "newTitle": "New card",
       "editTitle": "Edit card",
       "delete": "Delete card",
-      "confirmDelete": "Sure? Tap again to delete",
       "import": "Import",
       "importTitle": "Import cards",
       "importPlaceholder": "One card per line:\nConvolution\tmultiplication in frequency\nDTFT - transform of a sequence",
@@ -1135,6 +1173,12 @@
       "importSave_other": "Save {{count}} cards",
       "imported_one": "{{count}} card imported",
       "imported_other": "{{count}} cards imported"
+    },
+    "understand": {
+      "title": "I understand",
+      "check": "Check yourself (recommended)",
+      "mark": "Mark without a check",
+      "honesty": "An honest rating keeps the plan accurate. If you overrate it, the plan will think you're more ready than you are. A short check comes in 2 days."
     }
   },
   "scope": {
@@ -1245,8 +1289,7 @@
       "holiday": "Holiday",
       "exam_partial": "Partial exam week"
     },
-    "delete": "Delete period",
-    "confirmDelete": "Delete for sure?"
+    "delete": "Delete period"
   },
   "timetable": {
     "title": "Class timetable",
@@ -1293,7 +1336,6 @@
     "recapTitle": "Short review after a lecture",
     "recapHint": "15 min the same day, the first review step",
     "delete": "Delete class",
-    "confirmDelete": "Delete for sure?",
     "photoTitle": "Photograph the timetable",
     "photoHint": "The AI finds the classes; you review them before saving"
   },
@@ -1523,7 +1565,8 @@
         "exam_schedule": "Exam schedule",
         "document": "Rules, syllabus, notice",
         "timetable": "Class timetable",
-        "syllabus": "Syllabus"
+        "syllabus": "Syllabus",
+        "study_program": "Whole study programme"
       },
       "textLabel": "Text",
       "textPlaceholder": "Paste the text of a calendar, schedule or notice…",
@@ -1567,7 +1610,8 @@
       "failed": "Something went wrong. Try again.",
       "file": "I can't read this. Send an image, a PDF or text.",
       "link": "This link could not be opened. Check that it is public (no sign-in) and leads to a PDF, an image or a page.",
-      "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET)."
+      "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET).",
+      "needs_paid": "This AI feature only works with the paid model: your text never goes to free services."
     },
     "document": {
       "stored": "I saved “{{title}}” to Documents.",
@@ -1726,6 +1770,13 @@
       "review": "Review",
       "open": "Open chat",
       "dismiss": "Close"
+    },
+    "program": {
+      "semester": "Semester {{n}} {{year}}",
+      "past": "done",
+      "elective": "elective: {{group}}",
+      "ects": "{{n}} ECTS",
+      "hint": "Subjects go into their year and semester, without exams until their semester comes. Turn on electives and earlier semesters with a tap."
     }
   },
   "offline": {
@@ -2209,14 +2260,16 @@
         "hint": "Questions from the title and subheadings. Answers may differ from the lectures, so they count for “Understood” only together with another source."
       },
       "page_photo": {
-        "label": "PAGE PHOTO",
-        "hint": "Take a photo of 1–2 pages, e.g. the chapter summary. The photo is deleted right after reading."
+        "label": "BOOK PAGE",
+        "hint": "Take a photo of 1–2 pages (e.g. the chapter summary) or paste text. The photo is deleted right after reading; the text is not stored."
       },
       "make": "Make {{count}} questions",
       "making": "Making questions…",
       "camera": "Take a photo",
       "gallery": "Gallery",
-      "plain": "Without AI: compare with your notes"
+      "plain": "Without AI: compare with your notes",
+      "paste": "Paste text from the book",
+      "pastePlaceholder": "Paste a chapter or a passage. The text is sent only for the questions and is not stored."
     },
     "quizTitle": "Quiz",
     "quizOffer": "Quiz · {{count}} AI questions",
@@ -2746,5 +2799,67 @@
     "unknown": "Repeats every week: is it a lecture?",
     "isLecture": "It's a lecture",
     "notLecture": "No"
+  },
+  "celebrate": {
+    "block": {
+      "title": "Block done",
+      "body": "One step closer to the exam."
+    },
+    "day": {
+      "title": "Day done",
+      "body": "Everything in today's plan is done."
+    },
+    "week": {
+      "title": "Week on plan",
+      "body": "This week went as planned."
+    },
+    "repeated": {
+      "title": "Repeated",
+      "body": "This material is in long-term memory now."
+    },
+    "passed": {
+      "title": "Passed!",
+      "body": "{{name}}: exam passed."
+    }
+  },
+  "landing": {
+    "signIn": "Sign in",
+    "start": "Get started",
+    "lead": "Hoot turns your exam dates, books and exam questions into a daily study plan, and fixes it by itself when you miss something.",
+    "devices": "Works on phone and computer · add it to your home screen",
+    "shotAlt": "Hoot's Today screen: the next block, a review and an exam in 12 days",
+    "what": {
+      "title": "You study, Hoot plans",
+      "plan": "A plan from your deadlines",
+      "planBody": "Snap the book's table of contents and add exam dates. Hoot spreads the material over the days, around classes and your free time.",
+      "adapt": "Adapts by itself",
+      "adaptBody": "Missed a day or low on energy? One tap and the plan is redone, no guilt and no moving things by hand.",
+      "remember": "Remembers for you",
+      "rememberBody": "A short check after studying, and reviews come right when the material would start to fade, up to exam day."
+    },
+    "how": {
+      "title": "How to start",
+      "signIn": "Sign in",
+      "signInBody": "with email or Google.",
+      "subjects": "Add subjects:",
+      "subjectsBody": "import the academic calendar and timetable, or just enter your exams.",
+      "today": "Open Today",
+      "todayBody": "and start the first block."
+    },
+    "cta": {
+      "title": "Next exam period, no panic",
+      "body": "Your data stays yours: export it any time.",
+      "button": "Get started"
+    }
+  },
+  "semesterEnd": {
+    "title": "End of semester {{n}}",
+    "summary": "Passed: {{passed}} · carried over: {{carried}}",
+    "passed": "passed",
+    "carried": "carried over",
+    "carriedHint": "Subjects not passed stay in the plan with the next exam date. If you passed, enter the result on the subject.",
+    "addNext": "Add the next semester",
+    "nextSubjects_one": "Next semester: {{count}} subject",
+    "nextSubjects_other": "Next semester: {{count}} subjects"
   }
 }

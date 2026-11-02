@@ -3,7 +3,7 @@
 // page, or general knowledge from the chapter title (always flagged as possibly different from
 // the lectures). Pure, so it is unit-tested.
 import type { LlmFile, LlmRequest } from './llm.ts'
-import { proposeAnswerOutputSchema, recallOutputSchema } from './schemas.ts'
+import { MAX_PASTED_CHARS, proposeAnswerOutputSchema, recallOutputSchema } from './schemas.ts'
 import type { ProposeAnswerOutput, RecallAiSource, RecallOutput } from './schemas.ts'
 
 const LANGUAGE = { bs: 'Bosnian', en: 'English' } as const
@@ -18,14 +18,17 @@ export interface RecallMaterial {
   /** Sub-unit titles (from the photographed contents). */
   subheadings: string[]
   notes: string | null
+  /** Text the student pasted from the book (page source). */
+  pasted?: string | null
 }
 
 const SOURCE_RULES: Record<RecallAiSource, string> = {
   notes: `Use ONLY the student's NOTES below. Every question and answer must come straight from
 them; never add facts that are not in the notes. If the notes are too short for the requested
 number, return fewer questions.`,
-  page_photo: `Use ONLY the attached photo(s) of a textbook page. Every question and answer must
-come from what is printed there; never add facts that are not on the page.`,
+  page_photo: `Use ONLY the textbook material given: the attached photo(s) of a page and/or the
+PASTED TEXT below. Every question and answer must come from it; never add facts that are not in
+it.`,
   general: `There is no material: ask about the core concepts a university course teaches under
 this chapter title (and its subheadings), with standard textbook answers. Stay with well-known,
 uncontroversial content.`,
@@ -50,7 +53,10 @@ ${SOURCE_RULES[source]}`
   if (material.subheadings.length > 0)
     lines.push('Subheadings:', ...material.subheadings.map((h) => `- ${h}`))
   if (source === 'notes') lines.push('NOTES:', (material.notes ?? '').slice(0, MAX_NOTES_CHARS))
-  if (source === 'page_photo') lines.push('The page is in the attached photo(s).')
+  if (source === 'page_photo' && files.length > 0)
+    lines.push('The page is in the attached photo(s).')
+  if (source === 'page_photo' && material.pasted)
+    lines.push('PASTED TEXT:', material.pasted.slice(0, MAX_PASTED_CHARS))
   return {
     task: 'recall_questions',
     system,

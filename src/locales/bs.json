@@ -24,13 +24,10 @@
   },
   "auth": {
     "headline": "Uči pametnije,\nne duže.",
-    "lead": "Plan iz tvojih rokova i literature, koji se sam prilagođava kad nešto propustiš.",
     "email": "Email",
     "emailPlaceholder": "ime@primjer.ba",
     "emailInvalid": "Upiši ispravan email.",
-    "sendLink": "Pošalji link za prijavu",
     "sending": "Šaljem…",
-    "noPassword": "Bez lozinke — link stiže na email.",
     "checkEmailTitle": "Provjeri email",
     "checkEmailBody": "Poslali smo link za prijavu na {{email}}. Otvori ga na ovom uređaju ili upiši kod iz emaila.",
     "code": "Kod iz emaila",
@@ -40,7 +37,33 @@
     "codeInvalid": "Kod nije ispravan ili je istekao.",
     "useOtherEmail": "Drugi email",
     "sendFailed": "Slanje nije uspjelo. Pokušaj ponovo za minutu.",
-    "appIcon": "Ikona aplikacije"
+    "title": "Prijavi se",
+    "firstTime": "Prvi put? Pošaljemo ti kod na email.",
+    "google": "Nastavi s Googleom",
+    "googleFailed": "Prijava s Googleom nije uspjela. Pokušaj ponovo.",
+    "orEmail": "ili emailom",
+    "password": "Lozinka",
+    "passwordPlaceholder": "Ako si je već postavio/la",
+    "signIn": "Prijavi se",
+    "signingIn": "Prijavljujem…",
+    "sendCode": "Pošalji mi kod na email",
+    "codeHint": "Bez lozinke ili si je zaboravio/la? Kod iz emaila te prijavi.",
+    "passwordWrong": "Pogrešan email ili lozinka. Kod iz emaila te prijavi i bez nje.",
+    "setPassword": "Postavi lozinku",
+    "setPasswordShort": "Postavi",
+    "changePassword": "Promijeni",
+    "setPasswordBody": "Sljedeći put se prijaviš bez čekanja koda, i u appu na početnom ekranu.",
+    "newPassword": "Nova lozinka",
+    "newPasswordPlaceholder_one": "Najmanje {{count}} znak",
+    "newPasswordPlaceholder_few": "Najmanje {{count}} znaka",
+    "newPasswordPlaceholder_other": "Najmanje {{count}} znakova",
+    "passwordShort_one": "Lozinka treba najmanje {{count}} znak.",
+    "passwordShort_few": "Lozinka treba najmanje {{count}} znaka.",
+    "passwordShort_other": "Lozinka treba najmanje {{count}} znakova.",
+    "passwordFailed": "Lozinka nije spremljena. Pokušaj ponovo.",
+    "passwordSaved": "Lozinka je spremljena",
+    "savePassword": "Spasi lozinku",
+    "skip": "Preskoči"
   },
   "today": {
     "greeting": {
@@ -177,6 +200,15 @@
       "sub": "Dodati {{title}}?",
       "add": "Dodaj",
       "later": "Ne sad"
+    },
+    "energy": {
+      "low": "Nemam energije",
+      "high": "Pun/a sam energije",
+      "toast": {
+        "low": "Danas lakše: kraći blokovi, ponavljanja prvo",
+        "high": "Danas malo više, najteže gradivo prvo",
+        "normal": "Plan danas je opet uobičajen"
+      }
     }
   },
   "plan": {
@@ -483,7 +515,16 @@
   },
   "progress": {
     "title": "Napredak",
-    "empty": "Napredak se prikazuje kad počneš učiti."
+    "empty": "Napredak se prikazuje kad počneš učiti.",
+    "energy": {
+      "title": "Energija",
+      "low_one": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takvog dana).",
+      "low_few": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takva dana).",
+      "low_other": "Kad nemaš energije, plan ti daje oko {{pct}}% običnog dana (iz {{count}} takvih dana).",
+      "high_one": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takvog dana).",
+      "high_few": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takva dana).",
+      "high_other": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takvih dana)."
+    }
   },
   "session": {
     "title": "Sesija učenja",
@@ -797,7 +838,11 @@
   "common": {
     "cancel": "Odustani",
     "save": "Spasi",
-    "close": "Zatvori"
+    "close": "Zatvori",
+    "undo": "Poništi",
+    "deleted": "Obrisano",
+    "saveFailed": "Nije spremljeno. Pokušaj ponovo.",
+    "saveOffline": "Nema mreže, promjena nije spremljena."
   },
   "profile": {
     "nameLabel": "Ime",
@@ -812,7 +857,6 @@
     "kindLabel": "Vrsta",
     "scopeAll": "Cijelo gradivo",
     "delete": "Obriši ispit",
-    "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
     "kind": {
       "partial": "Parcijala",
       "final": "Završni",
@@ -887,8 +931,7 @@
     "optional": "(opcionalno)",
     "done": "Završeno",
     "doneShort": "završeno",
-    "delete": "Obriši rok",
-    "confirmDelete": "Sigurno? Tapni ponovo za brisanje"
+    "delete": "Obriši rok"
   },
   "sources": {
     "editor": {
@@ -1158,7 +1201,6 @@
       "newTitle": "Nova kartica",
       "editTitle": "Uredi karticu",
       "delete": "Obriši karticu",
-      "confirmDelete": "Sigurno? Tapni ponovo za brisanje",
       "import": "Uvezi",
       "importTitle": "Uvoz kartica",
       "importPlaceholder": "Jedna kartica po liniji:\nKonvolucija\tmnoženje u frekvenciji\nDTFT - transformacija niza",
@@ -1171,6 +1213,12 @@
       "imported_one": "Uvezena {{count}} kartica",
       "imported_few": "Uvezene {{count}} kartice",
       "imported_other": "Uvezeno {{count}} kartica"
+    },
+    "understand": {
+      "title": "Razumijem",
+      "check": "Provjeri se (preporučeno)",
+      "mark": "Označi bez provjere",
+      "honesty": "Iskrena ocjena drži plan tačnim. Ako precijeniš, plan će misliti da si spremnija/spremniji nego što jesi. Za 2 dana stiže kratka provjera."
     }
   },
   "scope": {
@@ -1282,8 +1330,7 @@
       "holiday": "Neradni dan",
       "exam_partial": "Sedmica parcijalnih"
     },
-    "delete": "Obriši period",
-    "confirmDelete": "Sigurno obrisati?"
+    "delete": "Obriši period"
   },
   "timetable": {
     "title": "Raspored nastave",
@@ -1331,7 +1378,6 @@
     "recapTitle": "Kratko ponavljanje nakon predavanja",
     "recapHint": "15 min istog dana, prvi korak ponavljanja",
     "delete": "Obriši termin",
-    "confirmDelete": "Sigurno obrisati?",
     "photoTitle": "Uslikaj raspored",
     "photoHint": "AI prepozna termine; pregledaš prije spašavanja"
   },
@@ -1563,7 +1609,8 @@
         "exam_schedule": "Raspored ispita",
         "document": "Pravilnik, silabus, obavještenje",
         "timetable": "Raspored nastave",
-        "syllabus": "Plan i program"
+        "syllabus": "Plan i program",
+        "study_program": "Cijeli studijski program"
       },
       "textLabel": "Tekst",
       "textPlaceholder": "Zalijepi tekst kalendara, rasporeda ili obavještenja…",
@@ -1609,7 +1656,8 @@
       "failed": "Nešto nije uspjelo. Pokušaj ponovo.",
       "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
       "link": "Ovaj link ne mogu otvoriti. Provjeri da je javan (bez prijave) i da vodi do PDF-a, slike ili stranice.",
-      "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h)."
+      "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h).",
+      "needs_paid": "Ovo AI radi samo sa plaćenim modelom: tvoj tekst nikad ne ide na besplatne servise."
     },
     "document": {
       "stored": "Spremila sam „{{title}}“ u Dokumente.",
@@ -1778,6 +1826,13 @@
       "review": "Pregledaj",
       "open": "Otvori chat",
       "dismiss": "Zatvori"
+    },
+    "program": {
+      "semester": "{{n}}. semestar {{year}}",
+      "past": "završeno",
+      "elective": "izborni: {{group}}",
+      "ects": "{{n}} ECTS",
+      "hint": "Predmeti idu u svoju godinu i semestar, bez ispita dok ne dođe njihov semestar. Izborne i ranije semestre uključi tapom."
     }
   },
   "offline": {
@@ -2271,14 +2326,16 @@
         "hint": "Pitanja iz naslova i podnaslova. Odgovori se mogu razlikovati od predavanja, pa se za „Razumijem” računaju samo uz još jedan izvor."
       },
       "page_photo": {
-        "label": "SLIKA STRANICE",
-        "hint": "Uslikaj 1–2 stranice, npr. sažetak na kraju poglavlja. Slika se briše odmah nakon obrade."
+        "label": "STRANICA KNJIGE",
+        "hint": "Uslikaj 1–2 stranice (npr. sažetak na kraju poglavlja) ili zalijepi tekst. Slika se briše odmah nakon obrade, tekst se ne čuva."
       },
       "make": "Napravi {{count}} pitanja",
       "making": "Pravim pitanja…",
       "camera": "Uslikaj",
       "gallery": "Galerija",
-      "plain": "Bez AI-ja: uporedi sa bilješkama"
+      "plain": "Bez AI-ja: uporedi sa bilješkama",
+      "paste": "Zalijepi tekst iz knjige",
+      "pastePlaceholder": "Zalijepi poglavlje ili odlomak. Tekst se šalje samo za pitanja i ne čuva se."
     },
     "quizTitle": "Kviz",
     "quizOffer": "Kviz · {{count}} AI pitanja",
@@ -2824,5 +2881,68 @@
     "unknown": "Ponavlja se svake sedmice: je li predavanje?",
     "isLecture": "Predavanje je",
     "notLecture": "Nije"
+  },
+  "celebrate": {
+    "block": {
+      "title": "Blok završen",
+      "body": "Još jedan korak bliže ispitu."
+    },
+    "day": {
+      "title": "Dan završen",
+      "body": "Sve iz današnjeg plana je urađeno."
+    },
+    "week": {
+      "title": "Sedmica u planu",
+      "body": "Ova sedmica je odrađena kako je planirano."
+    },
+    "repeated": {
+      "title": "Ponovljeno",
+      "body": "Gradivo je sad u dugoročnom pamćenju."
+    },
+    "passed": {
+      "title": "Položeno!",
+      "body": "{{name}}: ispit je položen."
+    }
+  },
+  "landing": {
+    "signIn": "Prijavi se",
+    "start": "Počni",
+    "lead": "Hoot od tvojih rokova, literature i ispitnih pitanja napravi dnevni plan učenja i sam ga prepravi kad nešto propustiš.",
+    "devices": "Radi na telefonu i računaru · dodaj na početni ekran",
+    "shotAlt": "Ekran Danas u Hootu: sljedeći blok, ponavljanje i ispit za 12 dana",
+    "what": {
+      "title": "Ti učiš, Hoot planira",
+      "plan": "Plan iz tvojih rokova",
+      "planBody": "Uslikaj sadržaj knjige i dodaj datume ispita. Hoot rasporedi gradivo po danima, oko nastave i tvog slobodnog vremena.",
+      "adapt": "Sam se prilagodi",
+      "adaptBody": "Propušten dan ili dan bez energije? Jedan tap i plan se prepravi, bez krivnje i bez ručnog premještanja.",
+      "remember": "Pamti umjesto tebe",
+      "rememberBody": "Kratka provjera poslije učenja, a ponavljanja stižu baš kad bi gradivo počelo blijediti, do dana ispita."
+    },
+    "how": {
+      "title": "Kako počinješ",
+      "signIn": "Prijavi se",
+      "signInBody": "emailom ili Googleom.",
+      "subjects": "Dodaj predmete:",
+      "subjectsBody": "uvezi akademski kalendar i raspored ili samo upiši ispite.",
+      "today": "Otvori Danas",
+      "todayBody": "i počni prvi blok."
+    },
+    "cta": {
+      "title": "Sljedeći ispitni rok, bez panike",
+      "body": "Tvoji podaci ostaju tvoji: izvoz u svakom trenutku.",
+      "button": "Počni"
+    }
+  },
+  "semesterEnd": {
+    "title": "Kraj {{n}}. semestra",
+    "summary": "Položeno: {{passed}} · prenosi se: {{carried}}",
+    "passed": "položeno",
+    "carried": "prenosi se",
+    "carriedHint": "Nepoloženi predmeti ostaju u planu sa sljedećim rokom. Ako si položio/la, upiši rezultat na predmetu.",
+    "addNext": "Dodaj sljedeći semestar",
+    "nextSubjects_one": "Sljedeći semestar: {{count}} predmet",
+    "nextSubjects_few": "Sljedeći semestar: {{count}} predmeta",
+    "nextSubjects_other": "Sljedeći semestar: {{count}} predmeta"
   }
 }

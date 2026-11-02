@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/auth-context'
+import { undoDelete } from '@/components/toast-store'
 import { supabase } from '@/lib/supabase'
 import { toAssessmentRow, toDeadlineRow, toSubjectRow } from './mappers'
 import type { Assessment, Deadline, Subject, SubjectWithAssessments } from './model'
@@ -324,11 +325,12 @@ export function useSaveAssessment() {
   })
 }
 
-export function useDeleteAssessment() {
+export function useDeleteAssessment({ undo = false } = {}) {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
+      if (undo) await undoDelete()
       const { error } = await supabase.from('assessments').delete().eq('id', id)
       if (error) throw error
     },
@@ -395,11 +397,12 @@ export function useSetDeadlineDone() {
   })
 }
 
-export function useDeleteDeadline() {
+export function useDeleteDeadline({ undo = false } = {}) {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
+      if (undo) await undoDelete()
       const { error } = await supabase.from('deadlines').delete().eq('id', id)
       if (error) throw error
     },

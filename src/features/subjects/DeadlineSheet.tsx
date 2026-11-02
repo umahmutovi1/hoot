@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
@@ -71,9 +70,8 @@ function DeadlineFormBody({
   const globalScale = useGlobalScale()
   const { data: subjects = [] } = useSubjects()
   const save = useSaveDeadline()
-  const remove = useDeleteDeadline()
+  const remove = useDeleteDeadline({ undo: true })
   const setDone = useSetDeadlineDone()
-  const [confirmDelete, setConfirmDelete] = useState(false)
   const form = useForm<DeadlineForm>({
     resolver: zodResolver(deadlineFormSchema),
     defaultValues: deadline
@@ -247,12 +245,11 @@ function DeadlineFormBody({
           variant="link"
           className="h-11 text-danger"
           onClick={() => {
-            if (!confirmDelete) return setConfirmDelete(true)
             remove.mutate(deadline.id)
             onDone()
           }}
         >
-          {t(confirmDelete ? 'deadlines.confirmDelete' : 'deadlines.delete')}
+          {t('deadlines.delete')}
         </Button>
       )}
     </form>

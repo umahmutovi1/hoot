@@ -34,6 +34,19 @@ describe('recallRequest', () => {
     expect(r.text).toContain('attached photo')
     expect(r.files).toHaveLength(1)
   })
+
+  it('page questions from pasted text alone', () => {
+    const r = recallRequest(
+      { ...material, pasted: 'Fourierov red razlaže periodični signal.' },
+      'page_photo',
+      3,
+      'bs',
+      [],
+    )
+    expect(r.text).toContain('PASTED TEXT:')
+    expect(r.text).toContain('periodični signal')
+    expect(r.text).not.toContain('attached photo')
+  })
 })
 
 describe('normalizeRecall', () => {
@@ -63,8 +76,15 @@ describe('recallQuestionsRequestSchema', () => {
     locale: 'bs',
     files: [],
   }
-  it('needs photos exactly for page questions', () => {
+  it('needs photos or pasted text exactly for page questions', () => {
     expect(recallQuestionsRequestSchema.safeParse({ ...base, source: 'notes' }).success).toBe(true)
+    expect(
+      recallQuestionsRequestSchema.safeParse({ ...base, source: 'page_photo', text: 'Odlomak' })
+        .success,
+    ).toBe(true)
+    expect(
+      recallQuestionsRequestSchema.safeParse({ ...base, source: 'notes', text: 'Odlomak' }).success,
+    ).toBe(false)
     expect(recallQuestionsRequestSchema.safeParse({ ...base, source: 'page_photo' }).success).toBe(
       false,
     )

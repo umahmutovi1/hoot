@@ -1,0 +1,35 @@
+<!-- Hoot sign-in email (Liquid Glass, Stage 11b). Paste into Supabase → Authentication → Emails →
+     Magic link or OTP (docs/SETUP.md 3.3). Email-safe: tables, inline styles, no backdrop-filter;
+     the gradient falls back to the bgcolor where a client drops background-image. -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ECE9F4" style="background-color:#ECE9F4;background-image:radial-gradient(120% 60% at 0% 0%,rgba(150,141,222,0.55),rgba(150,141,222,0) 62%),radial-gradient(90% 50% at 100% 30%,rgba(229,182,206,0.55),rgba(229,182,206,0) 62%),radial-gradient(110% 55% at 0% 100%,rgba(168,196,234,0.55),rgba(168,196,234,0) 62%),linear-gradient(180deg,#ECE9F4,#E8E5F1);padding:40px 16px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Geist,'Segoe UI',Arial,sans-serif;color:#14121C">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#F7F6FB" style="max-width:420px;background-color:rgba(255,255,255,0.62);border-radius:28px;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.7),0 8px 28px rgba(58,51,96,0.08)">
+        <tr>
+          <td style="padding:32px 28px 4px">
+            <img src="https://hoot-5ig.pages.dev/pwa-192x192.png" width="56" height="56" alt="Hoot" style="display:block;border-radius:16px">
+            <h1 style="margin:20px 0 6px;font-size:26px;line-height:1.2;font-weight:700;color:#14121C">Prijava u Hoot</h1>
+            <p style="margin:0;font-size:15px;line-height:1.45;color:#3F3B4E">Upiši ovaj kod u aplikaciju:</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 28px">
+            <div style="background-color:rgba(106,100,184,0.12);border-radius:20px;padding:18px 0;text-align:center;font-size:34px;font-weight:700;letter-spacing:8px;color:#36336E">{{ .Token }}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:4px 28px 8px">
+            <p style="margin:0 0 14px;font-size:14px;color:#3F3B4E">Ili otvori link na ovom uređaju:</p>
+            <a href="{{ .ConfirmationURL }}" style="display:inline-block;background-color:#5A55A8;background-image:linear-gradient(160deg,#6E67BE,#4C4892);color:#FFFFFF;text-decoration:none;font-size:16px;font-weight:600;padding:16px 28px;border-radius:28px">Prijavi se</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 28px 28px">
+            <p style="margin:0 0 16px;font-size:13px;line-height:1.45;color:#55516A">Kod i link vrijede kratko i mogu se iskoristiti samo jednom. Ako prijavu nisi tražio/la ti, ignoriši ovaj email.</p>
+            <p style="margin:0;padding-top:16px;border-top:1px solid rgba(58,51,96,0.12);font-size:13px;line-height:1.45;color:#55516A">Your Hoot sign-in code is <strong style="color:#36336E">{{ .Token }}</strong>. Enter it in the app or use the button above.</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

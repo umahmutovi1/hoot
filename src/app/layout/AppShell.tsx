@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom'
+import { Celebration } from '@/components/Celebration'
+import { PasswordPrompt } from '@/features/auth/PasswordSheet'
 import { Toast } from '@/components/Toast'
 import { ImportJobBanner } from '@/features/owl/ImportJobBanner'
 import { ContinueOnboarding } from '@/features/onboarding/ContinueOnboarding'
@@ -51,6 +53,8 @@ export function AppShell() {
       <ForgottenGuard />
       <ImportJobBanner />
       <Toast />
+      <Celebration />
+      <PasswordPrompt />
       {/* A new screen starts at the top; back restores where you were. */}
       <ScrollRestoration />
     </div>

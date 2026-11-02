@@ -198,7 +198,8 @@ export function GateTest({
                   busy={aiState[aiPanel].busy}
                   error={aiState[aiPanel].error}
                   onAsk={() => setAsked((s) => new Set(s).add(aiPanel))}
-                  onPhotos={(files) => photoAi.mutate(files)}
+                  onPhotos={(photos) => photoAi.mutate({ photos })}
+                  onText={(text) => photoAi.mutate({ text })}
                   onPlain={aiPanel === 'notes' ? () => setPlainNotes(true) : undefined}
                 />
               ) : source === 'outline' ? (

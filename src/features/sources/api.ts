@@ -2,6 +2,7 @@ import { roughSource, roughToArchive, type RoughSize } from '@/lib/estimates/rou
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import type { TablesInsert, TablesUpdate } from '@/types/database'
 import { useAuth } from '@/features/auth/auth-context'
+import { undoDelete } from '@/components/toast-store'
 import { supabase } from '@/lib/supabase'
 import type { MergeResult } from '@/lib/outline/merge'
 import type { Measure } from '@/lib/outline/parse'
@@ -346,6 +347,7 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     user_difficulty: null,
     est_minutes: null,
     level: 0,
+    level_source: null,
     confidence: null,
     notes: null,
     answer: null,
@@ -373,6 +375,7 @@ export type UnitPatch = Pick<
   | 'amount'
   | 'completed_at'
   | 'next_review_on'
+  | 'level_source'
 >
 
 /** Partial update of one unit (status, rating, notes, answer, archive, title/pages). */
@@ -613,11 +616,12 @@ export function useSaveCard() {
   })
 }
 
-export function useDeleteCard() {
+export function useDeleteCard({ undo = false } = {}) {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id }: { id: string; unitId: string }) => {
+      if (undo) await undoDelete()
       const { error } = await supabase.from('cards').delete().eq('id', id)
       if (error) throw error
     },
@@ -636,6 +640,8 @@ export function useImportCards() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async ({
       unitId,
       cards,

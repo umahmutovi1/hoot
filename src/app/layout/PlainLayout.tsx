@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom'
+import { Celebration } from '@/components/Celebration'
 import { Toast } from '@/components/Toast'
 import { ImportJobBanner } from '@/features/owl/ImportJobBanner'
 import { LocaleSync } from '@/features/settings/LocaleSync'
@@ -11,6 +12,7 @@ export function PlainLayout() {
       <Outlet />
       <ImportJobBanner top />
       <Toast />
+      <Celebration />
     </div>
   )
 }

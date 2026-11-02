@@ -95,6 +95,8 @@ export function useUpdateDisplayName() {
   const userId = session?.user.id
   const queryClient = useQueryClient()
   return useMutation({
+    // Shows its own error inline.
+    meta: { silent: true },
     mutationFn: async (displayName: string) => {
       const { error } = await supabase
         .from('profiles')

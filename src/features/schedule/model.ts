@@ -17,6 +17,8 @@ export type TimetableRow = Tables<'timetable_entries'>
 export type RuleRow = Tables<'availability_rules'>
 export type ExceptionRow = Tables<'availability_exceptions'>
 export type DayRow = Tables<'availability_days'>
+/** "Nemam energije" / "Pun/a sam energije" for one date (Stage 11b); no row = normal. */
+export type EnergyRow = Tables<'day_energy'>
 export type LectureLogRow = Tables<'lecture_logs'>
 export type ClassKind = TimetableRow['kind']
 
