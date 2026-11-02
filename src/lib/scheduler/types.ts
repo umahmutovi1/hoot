@@ -1,7 +1,7 @@
 import type { Energy } from '@/lib/energy'
 import type { LocalDate } from '@/lib/day'
 import type { Slot } from '@/lib/schedule'
-import type { SlotPart } from '@/lib/schedule/rhythm'
+import type { Rhythm, SlotPart } from '@/lib/schedule/rhythm'
 import type { Preset } from '@/lib/session/timer'
 
 /**
@@ -101,6 +101,9 @@ export interface PlanUnit {
 }
 
 export interface PlanDay {
+  /** Sprint 17: additions after busy time/classes, and availability protected by date overrides. */
+  slotAdditions?: Slot[]
+  slotPreserved?: Slot[]
   date: LocalDate
   /** Free time: availability minus classes, calendar busy time and exceptions. */
   slots: Slot[]
@@ -136,6 +139,9 @@ export interface FixedBlock {
 }
 
 export interface PlanState {
+  rhythm?: Rhythm
+  /** Sprint 17: approved recall-shift input; only new AI learning blocks are changed. */
+  questionsNext?: { id: string; remaining: number } | null
   /** First day that gets new AI blocks (today, or tomorrow when today's list stays). */
   from: LocalDate
   /** Wall-clock minute when `from` is today and its list is planned now; null otherwise. */
@@ -184,6 +190,7 @@ export interface ExploreDay {
  * `days` = days until the goal, `date` = lecture or campaign day.
  */
 export interface Reason {
+  recallShift?: string
   code:
     | 'review'
     | 'recap'

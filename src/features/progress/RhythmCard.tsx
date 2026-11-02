@@ -1,3 +1,6 @@
+import { useRecordFeedback } from '@/features/strategist/feedback'
+import { useProgress } from './useProgress'
+import { weekWindow } from '@/lib/progress/week'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MAX_CUSTOM_PRESETS } from '@shared/schemas.ts'
@@ -11,6 +14,8 @@ import { Button } from '@/components/ui/button'
 
 export function RhythmCard() {
   const { t } = useTranslation()
+  const data = useProgress()
+  const record = useRecordFeedback()
   const [now] = useState(() => new Date())
   const { data: sessions = [] } = useSessions()
   const presets = usePresets()
@@ -63,7 +68,19 @@ export function RhythmCard() {
                 ],
                 default_preset: id,
               },
-              { onSuccess: replan },
+              {
+                onSuccess: () => {
+                  record.mutate({
+                    insightId: 'first_break',
+                    status: 'accepted',
+                    payload: {
+                      action: { kind: 'set_preset', workMin, breakMin },
+                      week: data ? weekWindow(data.today).nextFrom : '',
+                    },
+                  })
+                  replan()
+                },
+              },
             )
           }}
         >
@@ -73,7 +90,14 @@ export function RhythmCard() {
       <button
         type="button"
         className="min-h-11 text-sm text-brand"
-        onClick={() => setDismissed(true)}
+        onClick={() => {
+          record.mutate({
+            insightId: 'first_break',
+            status: 'rejected',
+            payload: { action: { kind: 'set_preset', workMin, breakMin } },
+          })
+          setDismissed(true)
+        }}
       >
         {t('progress.rhythm.later')}
       </button>

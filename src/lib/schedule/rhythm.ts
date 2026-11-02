@@ -57,7 +57,7 @@ export function awakeSlot(rhythm: Rhythm, weekday: number): Slot {
   return { startMin: wake, endMin: end }
 }
 
-const intersect = (a: Slot, b: Slot): Slot | null => {
+export const intersect = (a: Slot, b: Slot): Slot | null => {
   const startMin = Math.max(a.startMin, b.startMin)
   const endMin = Math.min(a.endMin, b.endMin)
   return endMin > startMin ? { startMin, endMin } : null
@@ -102,4 +102,17 @@ export function partOf(minute: number): SlotPart {
     SLOT_PARTS.find((p) => minute >= PART_RANGES[p].startMin && minute < PART_RANGES[p].endMin) ??
     'night'
   )
+}
+
+/** Stored wake/sleep pairs, shared by onboarding and approved slot additions (Sprint 17). */
+export function rhythmFrom(profile?: {
+  wake_min: number[] | null
+  sleep_min: number[] | null
+}): Rhythm {
+  const pair = (v: number[] | null | undefined, fallback: [number, number]): [number, number] =>
+    v?.length === 2 ? [v[0]!, v[1]!] : fallback
+  return {
+    wake: pair(profile?.wake_min, DEFAULT_RHYTHM.wake),
+    sleep: pair(profile?.sleep_min, DEFAULT_RHYTHM.sleep),
+  }
 }

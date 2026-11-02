@@ -398,3 +398,13 @@ Besplatna alternativa bez domene: Gmail SMTP sa app passwordom (radi za bilo koj
 | Domena | — | ~10 USD/god (kad se otvori za druge) |
 | Gemini | free tier (dnevni limiti, podaci se mogu koristiti) | plaćeni tier po korištenju |
 | Anthropic | — | po korištenju, ~$0.001 po parsiranju |
+
+### Sprint 17 — Progress and strategist
+
+After explicit deployment approval, run `npx supabase db push --dry-run`, inspect the pending
+migrations (0038 statistics RPC, 0039 feedback), then `npx supabase db push`. Deploy only
+`npx supabase functions deploy strategist`; no new secrets are required. Its configuration
+uses `verify_jwt = false` and the shared import map; `serve()` still authenticates every request.
+The LLM wrapper handles rate limits and `ai_runs`. Reflections and focus reasons are excluded
+by the strict request schema for every provider. The weekly check-in and rule-based actions
+work when AI is unavailable. No remote migration or deployment was run as part of this PR.

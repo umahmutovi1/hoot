@@ -1,5 +1,14 @@
+import { activeDecisions, feedbackAction } from '@/features/strategist/feedbackInputs'
+import type { Feedback } from '@/features/strategist/feedback'
 import { sameStudyPeriod, studyPeriod } from '@/lib/slots/period'
-import { addDays, localDay, wallClock, type DayBoundary, type LocalDate } from '@/lib/day'
+import {
+  addDays,
+  localDay,
+  wallClock,
+  weekdayOf,
+  type DayBoundary,
+  type LocalDate,
+} from '@/lib/day'
 import { energyFactors, type EnergyFactors } from '@/lib/energy'
 import { questionsByChapter } from '@/lib/questions/links'
 import { project, retakeStatus } from '@/lib/grades'
@@ -16,7 +25,7 @@ import {
 import { leavesOf } from '@/lib/progress'
 import { scopeOf, type ScopeRow } from '@/lib/progress/scope'
 import { capFor, classesOn, freeSlotsOn, type DayInput } from '@/lib/schedule'
-import { SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
+import { awakeSlot, rhythmFrom, SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
 import {
   growthBase,
   realization,
@@ -71,6 +80,8 @@ export interface SessionMinutes {
 export type CardReview = Pick<Tables<'cards'>, 'id' | 'unit_id' | 'next_review_on'> & MemoryRow
 
 export interface PlanInputs {
+  feedback?: Feedback[]
+  shiftBlocks?: Pick<PlanBlockRow, 'id' | 'status' | 'reason'>[]
   profile: Profile
   subjects: SubjectWithAssessments[]
   deadlines: Deadline[]
@@ -491,11 +502,17 @@ export function buildPlanState(
 
   const end = [lastGoal, addDays(today, HORIZON_DAYS)].sort()[0]!
   const days: PlanDay[] = []
+  const rhythm = rhythmFrom(profile)
   for (let d = from; d <= end; d = addDays(d, 1)) {
     const dayInput = input.dayInput(d)
     days.push({
       date: d,
       slots: freeSlotsOn(d, dayInput),
+      slotAdditions: freeSlotsOn(d, {
+        ...dayInput,
+        rules: [{ weekday: weekdayOf(d), ...awakeSlot(rhythm, weekdayOf(d)) }],
+      }),
+      slotPreserved: freeSlotsOn(d, { ...dayInput, rules: [] }),
       // Re-placing today only moves its blocks; it never adds work (that is the "Imaš X min više
       // danas" card).
       // With today's energy the day is rebuilt: what was already studied today counts against it.
@@ -555,6 +572,7 @@ export function buildPlanState(
     rho: rho.rho,
     growthBase: growthBase(history, today, rho.rho),
     preferredParts: [...parts].sort(),
+    rhythm,
     slotPeriod: studyPeriod(today, input.dayInput(today).periods),
     slotCompletion: slotCompletion(input.completion),
     slotScores: input.signals
@@ -579,6 +597,27 @@ export function buildPlanState(
     explore: exploreDays(input.completion, from, end, profile.id),
     fsrsParams: paramsOf(profile.fsrs_params),
     energyFactors: { low: energy.low, high: energy.high },
+  }
+  const shift = activeDecisions(input.feedback ?? []).find(
+    (r) => feedbackAction(r)?.kind === 'questions_next',
+  )
+  if (shift) {
+    const marked = (b: Pick<PlanBlockRow, 'reason'>) => {
+      try {
+        return b.reason && JSON.parse(b.reason).recallShift === shift.id
+      } catch {
+        return false
+      }
+    }
+    const shiftBlocks = [
+      ...new Map([...(input.shiftBlocks ?? []), ...input.blocks].map((b) => [b.id, b])).values(),
+    ]
+    const consumed = shiftBlocks.filter((b) => b.status === 'done' && marked(b)).length
+    const reserved = input.blocks.filter(
+      (b) => state.fixed.some((f) => f.id === b.id) && marked(b),
+    ).length
+    const remaining = Math.max(0, 2 - consumed - reserved)
+    state.questionsNext = remaining ? { id: shift.id, remaining } : null
   }
   const behind: SubjectBehindInput[] = []
   for (const subject of subjects) {

@@ -389,11 +389,11 @@ Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj
 - [x] `forecast()` Monte Carlo (uzorci iz posteriora trajanja i odrađenosti bloka iz Sprinta 15; bootstrap dnevnih minuta dok modela nema, seed) + testovi; prognoza spremnosti kao raspon + vjerovatnoća na Danas i Napredak; procjena ocjene iz prognoze × R na dan ispita (PRD „Prognoza spremnosti“, „Projekcija ocjene“)
 - [x] Spremnost dan prije ispita (`readiness_before`, bodovi su iz Sprinta 5), signal precjenjivanja; `celebrating` 120 px u toastu/modalu za položen ispit
 - [x] `src/lib/strategist/`: kandidati akcija iz pravila sa izračunatim efektom + testovi
-- [ ] `strategist` edge funkcija (sedmično / na dugme): bira najviše 3 kandidata i objašnjava (Zod: `candidate_id`), bez refleksija dok je Gemini free tier; odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`, `avoid_slot`, `add_slot`; zaostatak po predavanjima i jačina po temama u ulazu
-- [ ] Sedmični check-in (nedjelja): izuzeci za sljedeću sedmicu, prognoza, do 3 akcije; radi i bez AI-ja
-- [ ] Uvidi na Napretku (PRD „Termini učenja“ → Uvidi): najproduktivniji termini, ometanja (`visibilitychange` + „Ometena sam“; kolone `app_leaves` / `app_away_sec` iz Sprinta 15), ritam sesije, savjeti iz tabele Tehnike; svaki uvid sa jednom akcijom
-- [ ] Uvidi iz nauke o učenju (PRD „Termini učenja“ → Uvidi iz nauke o učenju): izbjegavanje (efekat predmeta iz Sprinta 15, strategist kandidat `first_step`), kalibracija (samoprocjena vs `review_logs`), udio prisjećanja po `mode`, kasno pred ispit; pravila u `src/lib/insights/` + testovi, „nije korisno“ i bilježenje prihvaćenih akcija
-- [ ] Ekran „Sedmica u retrovizoru“ (spaja sedmični check-in, uvide i dva pitanja refleksije sa čipovima); mockup prije koda
+- [x] `strategist` edge funkcija (sedmično / na dugme): bira najviše 3 kandidata i objašnjava (Zod: `candidate_id`), bez refleksija dok je Gemini free tier; odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`, `avoid_slot`, `add_slot`; zaostatak po predavanjima i jačina po temama u ulazu
+- [x] Sedmični check-in (nedjelja): izuzeci za sljedeću sedmicu, prognoza, do 3 akcije; radi i bez AI-ja
+- [x] Uvidi na Napretku (PRD „Termini učenja“ → Uvidi): najproduktivniji termini, ometanja (`visibilitychange` + „Ometena sam“; kolone `app_leaves` / `app_away_sec` iz Sprinta 15), ritam sesije, savjeti iz tabele Tehnike; svaki uvid sa jednom akcijom
+- [x] Uvidi iz nauke o učenju (PRD „Termini učenja“ → Uvidi iz nauke o učenju): izbjegavanje (efekat predmeta iz Sprinta 15, strategist kandidat `first_step`), kalibracija (samoprocjena vs `review_logs`), udio prisjećanja po `mode`, kasno pred ispit; pravila u `src/lib/insights/` + testovi, „nije korisno“ i bilježenje prihvaćenih akcija
+- [x] Ekran „Sedmica u retrovizoru“ (spaja sedmični check-in, uvide i dva pitanja refleksije sa čipovima); mockup prije koda
 - [x] Ritam sesije (PRD „Timer, pauza i rekalibracija“): medijan do prve pauze, stvarne pauze, rano završene sesije → kartica „prebaci na 40/10?“ + testovi
 - **DoD** → `v0.17.0`
 

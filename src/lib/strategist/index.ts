@@ -1,6 +1,13 @@
 import { addDays, diffDays, weekdayOf, type LocalDate } from '@/lib/day'
 import { mergeSlots, type Slot } from '@/lib/schedule'
-import { PART_RANGES, SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
+import {
+  proposeRules,
+  intersect,
+  DEFAULT_RHYTHM,
+  PART_RANGES,
+  SLOT_PARTS,
+  type SlotPart,
+} from '@/lib/schedule/rhythm'
 import { plan } from '@/lib/scheduler/plan'
 import { addPerDay, cutCandidates, type SubjectBehindInput } from '@/lib/scheduler/suggestions'
 import type { PlanResult, PlanState, SlotCompletion } from '@/lib/scheduler/types'
@@ -155,17 +162,33 @@ export function applyAction(
         ...state,
         days: state.days.map((d) =>
           d.date > today && isWeekend(d.date) === action.weekend
-            ? { ...d, slots: withoutPart(d.slots, action.part) }
+            ? {
+                ...d,
+                slots: mergeSlots([
+                  ...withoutPart(d.slots, action.part),
+                  ...(d.slotPreserved ?? []),
+                ]),
+              }
             : d,
         ),
       }
     case 'add_slot': {
-      const r = PART_RANGES[action.part]
+      const allowed = proposeRules(state.rhythm ?? DEFAULT_RHYTHM, [action.part])
       return {
         ...state,
         days: state.days.map((d) =>
           d.date > today && isWeekend(d.date) === action.weekend
-            ? { ...d, slots: mergeSlots([...d.slots, { startMin: r.startMin, endMin: r.endMin }]) }
+            ? {
+                ...d,
+                slots: mergeSlots([
+                  ...d.slots,
+                  ...allowed
+                    .filter((r) => r.weekday === weekdayOf(d.date))
+                    .flatMap((r) =>
+                      d.slotAdditions ? d.slotAdditions.flatMap((s) => intersect(r, s) ?? []) : [r],
+                    ),
+                ]),
+              }
             : d,
         ),
       }
@@ -372,6 +395,15 @@ export function candidates(input: CandidateInput): Candidate[] {
   for (const p of proposals(input)) {
     const id = idOf(p.action)
     if (seen.has(id)) continue
+    if (p.action.kind === 'add_slot' || p.action.kind === 'avoid_slot') {
+      const changed = applyAction(input.state, p.action, input.today)
+      if (
+        changed.days.every(
+          (d, i) => JSON.stringify(d.slots) === JSON.stringify(input.state.days[i]!.slots),
+        )
+      )
+        continue
+    }
     seen.add(id)
     list.push({
       id,

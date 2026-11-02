@@ -1,3 +1,4 @@
+import { rhythmFrom } from '@/lib/schedule/rhythm'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { syncQueueFor } from '@/app/sync'
 import { useAuth } from '@/features/auth/auth-context'
@@ -5,7 +6,7 @@ import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { scheduleKey } from '@/features/schedule/api'
 import { toRule, toStoredSlots, type RuleRow, type DayRow } from '@/features/schedule/model'
 import { usePlanStore } from '@/features/plan/store'
-import { useDayBoundary } from '@/features/settings/profile'
+import { useDayBoundary, useProfile } from '@/features/settings/profile'
 import { localDay, weekdayOf } from '@/lib/day'
 import { slotsFor } from '@/lib/schedule'
 import { editWeeklySlots } from '@/lib/slots/availability'
@@ -18,6 +19,7 @@ export function useApplySlot() {
   const queryClient = useQueryClient()
   const schedule = useScheduleData()
   const boundary = useDayBoundary()
+  const profile = useProfile().data
   const replan = usePlanStore((s) => s.replanNow)
   return useMutation({
     mutationFn: async (action: SlotAction) => {
@@ -26,9 +28,11 @@ export function useApplySlot() {
       const now = new Date().toISOString()
       const affected = (weekday: number) => weekday >= 5 === action.weekend
       const removed = schedule.ruleRows.filter((r) => affected(r.weekday))
-      const next = editWeeklySlots(schedule.ruleRows.map(toRule), action).filter((r) =>
-        affected(r.weekday),
-      )
+      const next = editWeeklySlots(
+        schedule.ruleRows.map(toRule),
+        action,
+        rhythmFrom(profile),
+      ).filter((r) => affected(r.weekday))
       const rows: RuleRow[] = next.map((r) => ({
         id: crypto.randomUUID(),
         user_id: userId,

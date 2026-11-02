@@ -1,3 +1,4 @@
+import { WeeklyReviewPage } from '@/features/strategist/WeeklyReviewPage'
 import { CalendarFeedsPage } from '@/features/calendars/CalendarFeedsPage'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
               { path: 'plan/schedule', element: <Navigate to="/plan" replace /> },
               { path: 'subjects', element: <SubjectsPage /> },
               { path: 'progress', element: <ProgressPage /> },
+              { path: 'progress/week', element: <WeeklyReviewPage /> },
               { path: 'chat', element: <OwlChatPage /> },
               { path: 'owl', element: <Navigate to="/chat" replace /> },
               { path: 'welcome', element: <Navigate to="/onboarding" replace /> },

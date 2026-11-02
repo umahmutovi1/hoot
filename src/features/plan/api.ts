@@ -1,3 +1,6 @@
+import { readPages } from '@/lib/readPages'
+import { activeDecisions, feedbackAction } from '@/features/strategist/feedbackInputs'
+import { useFeedback } from '@/features/strategist/feedback'
 import { sameStudyPeriod } from '@/lib/slots/period'
 import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -257,6 +260,21 @@ export function invalidatePlanInputs(queryClient: QueryClient, userId: string | 
 
 /** Everything `buildPlanState()` needs; null until every query has data. */
 export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
+  const feedback = useFeedback().data
+  const userId = useUserId()
+  const shiftHistory = useQuery({
+    queryKey: [...planBlocksKey(userId), 'recall-shifts'],
+    enabled: Boolean(userId),
+    queryFn: () =>
+      readPages((from, to) =>
+        supabase
+          .from('plan_blocks')
+          .select('id,status,reason')
+          .like('reason', '%recallShift%')
+          .order('id')
+          .range(from, to),
+      ),
+  })
   const profile = useProfile().data
   const subjects = useSubjects().data
   const deadlines = useDeadlines().data
@@ -306,6 +324,11 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
 
   return useMemo(() => {
     if (
+      activeDecisions(feedback ?? []).some((r) => feedbackAction(r)?.kind === 'questions_next') &&
+      !shiftHistory.data
+    )
+      return null
+    if (
       !completion ||
       !profile ||
       !subjects ||
@@ -352,6 +375,8 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       ),
     }
     return {
+      feedback,
+      shiftBlocks: shiftHistory.data,
       signals,
       profile,
       subjects,
@@ -370,6 +395,8 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       energy,
     }
   }, [
+    feedback,
+    shiftHistory.data,
     energy,
     completion,
     profile,

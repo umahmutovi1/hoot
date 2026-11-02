@@ -25,6 +25,7 @@ function useProgressData() {
   return useMemo(() => {
     if (!inputs || !model) return null
     const { state, today } = model.built
+    if (state.subjects.some((s) => !inputs.subjects.some((row) => row.id === s.id))) return null
     const units = state.units
     const progress = (ids: string[]) =>
       progressOf(
