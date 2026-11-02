@@ -424,6 +424,18 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - [ ] Kartica „ispred / iza plana“ na Danas; ponovni uvoz spaja po oznaci (ručno mijenjani blokovi ostaju)
 - **DoD** → `v0.11.2`
 
+## Etapa 11e — Personalizacija i ML za više korisnika
+
+PRD „Dopune, 2. nov 2026“, [RESEARCH-ML-2026-11.md](RESEARCH-ML-2026-11.md).
+
+- [ ] Ručni blokovi u modelu odrađenosti: težina `w_manual` i obilježje `manual` u `src/lib/slots/examples.ts` i `ml/hoot_ml/data.py` zajedno (paritet `completion.cases.json`), `manual = 0` pri ocjeni termina; `w_manual` u `priors.json` (verzija u `input_hash`), fit u `ml/`
+- [ ] Simulator za populaciju: tipovi studenata iz raspodjele po seedu, student sa ručnim blokovima, metrike po tipu (prosjek i najgori decil), hladni start (2 sedmice), test pogrešnog priora (oporavak ≤ 3 sedmice); `baseline.json` i `--check` po tipu; `train.yml` gate na populaciji
+- [ ] Migracija: `profiles.study_barriers`; onboarding korak 3 „Šta te najviše koči?“ (do 3 čipa) i „Različito / ne znam“ uz „Kad ti je najlakše učiti?“; Postavke → Ritam; regenerisan `database.ts`
+- [ ] Priori iz odgovora (`src/lib/` + testovi): predložak prvog bloka, podsjetnik „kad i gdje“, `first_step`, optimizam, nesigurnost efekta predmeta, `eve_reserved` default, ciljni R, prior ρ; u `input_hash`; simulator pokazuje dobitak u hladnom startu
+- [ ] Napredak: red „Rekla si …, a podaci kažu …“ sa jednim tapom
+- [ ] `ml-monitor.yml`: issue `ml-alert` kad je P80 pokrivenost van 0,7–0,9 ili Brier gori od konstante 2 sedmice zaredom
+- **DoD** → `v0.11.3`
+
 ## Etapa 12 — Notifikacije i dorada
 
 - [ ] Ostale notifikacije (Web Push temelj je iz Etape 9, podsjetnici prije bloka i kašnjenje iz Etape 10c): propušten blok, ponavljanje, „Dokle ste stigli?“ nakon termina, kampanja počinje za 3 dana
@@ -454,7 +466,7 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - Opcionalno mjesto bloka („biblioteka“, „kuća“) uz predloženo vrijeme (namjera „kad i gdje“).
 - Strategist kroz Message Batches API (−50%) kad bude više korisnika.
 - Admin pregled (read-only): oznaka `role: admin` u `app_metadata`, funkcija `is_admin()` i dodatna `select` RLS politika po tabeli, ekran `/admin`.
-- Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#6-otvaranje-aplikacije-za-više-korisnika)).
+- Otvaranje za više korisnika: domena, Resend domena, uključena registracija, odluka o AI troškovima ([SETUP.md](SETUP.md#6-otvaranje-aplikacije-za-više-korisnika)). Prije drugog korisnika i ML (PRD „Dopune, 2. nov 2026“ → Zajednički trening): pristanak (opt-in, `profiles.ml_consent_at`) i napomena o privatnosti, serverska agregacija dovoljnih statistika za `train.yml` (RLS ostaje owner-only), zajednički prior tek uz ~10 korisnika sa dovoljno podataka, odgovori „Šta te koči“ kao obilježja priora.
 - Prvo plan, pa prijava (uz otvaranje za više korisnika): Supabase anonimna prijava (`signInAnonymously()`), onboarding i prvi plan bez emaila, pa „Spasi svoj plan“ → email preko `updateUser` (isti `user_id`, RLS bez izmjena). Uslovi: AI edge funkcije odbijaju ili ograničavaju `is_anonymous`, CAPTCHA (Turnstile) na anonimnoj prijavi, čišćenje starih anonimnih naloga. Razlog: ekran za prijavu na startu tjera nove korisnike ([RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md) 1.2).
 - Native aplikacije (odluka, 29. okt 2026): Capacitor za iOS i Android, PWA ostaje; bez prepisivanja u React Native. Redom: ljuska (service worker isključen u native buildu), Google i Supabase prijava kroz sistemski preglednik + deep link (Google ne dozvoljava OAuth u WebView-u; Drive Picker možda native birač fajlova), native push (APNs/FCM uz Web Push za PWA), timer kao Live Activity / ongoing notifikacija (vrijeme iz segmenata), widget „Sljedeći blok“ (WidgetKit, Glance; podaci kroz App Group pri replanu), Share Extension i App Intents, objava (TestFlight, Play interni test). Poslije v1 i otvaranja za više korisnika; do tad prečice u manifestu i notifikacije sa akcijama.
 - Pretplata (PRD „Deploy i troškovi“ → Pretplata): Besplatno / Plus / Pro, mjesečno ili po semestru; merchant of record (Paddle ili Lemon Squeezy, provjeriti BiH), tabela `subscriptions` + webhook, nivo i mjesečni budžet troška po korisniku u `_shared/llm.ts` iz `ai_runs`, Supabase Pro kad pređe limite, politika privatnosti i uslovi. Uz otvaranje za više korisnika.
