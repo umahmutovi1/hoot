@@ -96,3 +96,36 @@ def test_samples_from_export():
     frame = samples_from_export(tables)
     assert len(frame) == 1
     assert frame.iloc[0]["rate"] == pytest.approx(40 / (10 * 1.3))
+
+
+def test_samples_from_export_mixed_timestamp_precision():
+    tables = {
+        "session_units": pd.DataFrame(
+            [
+                {
+                    "session_id": "s1",
+                    "unit_id": "u1",
+                    "minutes": 40,
+                    "amount_done": 10,
+                    "difficulty": 3,
+                },
+                {
+                    "session_id": "s2",
+                    "unit_id": "u1",
+                    "minutes": 20,
+                    "amount_done": 5,
+                    "difficulty": 3,
+                },
+            ]
+        ),
+        "units": pd.DataFrame([{"id": "u1", "source_id": "a"}]),
+        "sources": pd.DataFrame([{"id": "a", "kind": "book", "base_min_per_unit": 4}]),
+        "study_sessions": pd.DataFrame(
+            [
+                {"id": "s1", "started_at": "2026-10-24T09:00:00+00:00"},
+                {"id": "s2", "started_at": "2026-10-25T12:19:28.008000+00:00"},
+            ]
+        ),
+    }
+    frame = samples_from_export(tables)
+    assert list(frame["session_id"]) == ["s1", "s2"]
