@@ -91,8 +91,12 @@ function ScopeEditor({
       withUnits[0]?.source.id,
   )
 
+  // A makeup inherits the scope of the exam it repeats, so it gets no rows of its own.
   const exams = useMemo(
-    () => [...subject.assessments].sort((a, b) => a.at.localeCompare(b.at)),
+    () =>
+      subject.assessments
+        .filter((a) => a.kind !== 'makeup')
+        .sort((a, b) => a.at.localeCompare(b.at)),
     [subject.assessments],
   )
   const scopeExams: ScopeExam[] = exams.map((e) => ({ id: e.id, scopeAll: e.scope_all }))
