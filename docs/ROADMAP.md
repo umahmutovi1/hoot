@@ -381,7 +381,7 @@ Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj
 
 ## Sprint 17 — Napredak
 
-- [ ] Studijski program s interneta (PRD „Fakultet s interneta“ → Studijski program s interneta): `FOUND_KINDS` + `study_program`, pretraga traži i cijeli program (isti poziv i keš), Nađeno → `study_program` pregled, pa kartica „Uvezi i detalje za N. godinu“ kroz plan i program; zalijepljen link / „Pogodi sama“ sa više godina → `study_program` (pravilo uz `looksLikeSyllabus`) + testovi
+- [x] Studijski program s interneta (PRD „Fakultet s interneta“ → Studijski program s interneta): `FOUND_KINDS` + `study_program`, pretraga traži i cijeli program (isti poziv i keš), Nađeno → `study_program` pregled, pa kartica „Uvezi i detalje za N. godinu“ kroz plan i program; zalijepljen link / „Pogodi sama“ sa više godina → `study_program` (pravilo uz `looksLikeSyllabus`) + testovi
 - [ ] Progres po izvoru, ispitu, predmetu i temi; jačina po temama (`recharts`)
 - [ ] Statistika: sati vs plan, ispunjenost i ρ, fokus, efikasnost po dobu dana, poređenje predložaka sesije (SQL view / RPC)
 - [ ] `src/lib/slots/`: signali po terminu (fokus uz razloge, brzina normalizovana težinom, odrađenost Beta, kašnjenje starta, ometanja), ocjena termina sa shrinkage-om i polu-životom 6 sedmica, Thompson uzorkovanje sa seedom + testovi; ulaz u `placeTimes()` i `input_hash`

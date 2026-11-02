@@ -2769,10 +2769,11 @@
       "title": "Nađeno na internetu",
       "crumb": "Nađeno",
       "year": "{{n}}. godina",
-      "searching": "Tražim akademski kalendar i plan i program…",
+      "searching": "Tražim akademski kalendar, plan i program i studijski program…",
       "kind": {
         "academic_calendar": "Akademski kalendar",
         "syllabus": "Plan i program",
+        "study_program": "Cijeli studijski program",
         "other": "Dokument"
       },
       "checkYear": "{{year}} · provjeri godinu",
@@ -2794,6 +2795,10 @@
       "cardTitle_few": "{{count}} dokumenta sa interneta",
       "cardTitle_other": "{{count}} dokumenata sa interneta",
       "cardSub": "Akademski kalendar i plan i program · pregledaš prije spašavanja"
+    },
+    "programDetails": {
+      "title": "Uvezi i detalje za {{n}}. godinu",
+      "sub": "Literatura, teme i bodovanje iz istog dokumenta"
     }
   },
   "googleCalendar": {

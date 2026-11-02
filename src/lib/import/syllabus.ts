@@ -399,6 +399,44 @@ const YEAR_WORDS: Record<string, number> = {
   sesta: 6,
 }
 
+const ROMAN_YEARS: Record<string, number> = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6 }
+const ENGLISH_YEARS: Record<string, number> = {
+  first: 1,
+  second: 2,
+  third: 3,
+  fourth: 4,
+  fifth: 5,
+  sixth: 6,
+}
+
+/** Every year of study a text names as a heading word ("Prva godina", "II godina", "Year 2"). */
+function namedYears(text: string): Set<number> {
+  const years = new Set<number>()
+  const add = (n: number | undefined) => n !== undefined && n >= 1 && n <= 6 && years.add(n)
+  for (const m of text.matchAll(/godina studija\s*:?\s*(\d)\b|year of study\s*:?\s*(\d)\b/gi))
+    add(Number(m[1] ?? m[2]))
+  for (const m of text.matchAll(
+    /\b(prva|druga|treća|treca|četvrta|cetvrta|peta|šesta|sesta)\s+godina\b/gi,
+  ))
+    add(YEAR_WORDS[norm(m[1]!)])
+  for (const m of text.matchAll(/\b(VI|IV|V|I{1,3})\.?\s+godina\b/g))
+    add(ROMAN_YEARS[m[1]!.toLowerCase()])
+  for (const m of text.matchAll(/\b([1-6])\.\s+godina\b|\byear\s+([1-6])\b/gi))
+    add(Number(m[1] ?? m[2]))
+  for (const m of text.matchAll(/\b(first|second|third|fourth|fifth|sixth)\s+year\b/gi))
+    add(ENGLISH_YEARS[m[1]!.toLowerCase()])
+  return years
+}
+
+/**
+ * A whole study programme (Sprint 17): a study plan by its words (`looksLikeSyllabus()`) that
+ * names at least two years of study. "Pogodi sama" and a pasted link then read it as
+ * `study_program` (every year and semester) instead of one year's plan and programme.
+ */
+export function looksLikeStudyProgram(pages: readonly { text: string }[]): boolean {
+  return looksLikeSyllabus(pages) && namedYears(pages.map((p) => p.text).join('\n')).size >= 2
+}
+
 /** The year of study a page starts describing ("Godina studija 2", "Godina: Druga godina"). */
 function pageYear(text: string): number | null {
   const n = /godina studija\s*:?\s*(\d)\b|year of study\s*:?\s*(\d)\b/i.exec(text)

@@ -282,10 +282,11 @@ export const parseDocumentRequestSchema = z
 export type ParseDocumentRequest = z.infer<typeof parseDocumentRequestSchema>
 
 // ---------------------------------------------------------------------------
-// find-academic-info (Sprint 13): web search for the academic calendar and syllabus
+// find-academic-info (Sprint 13): web search for the academic calendar and syllabus; from
+// Sprint 17 also the whole study programme (all years)
 // ---------------------------------------------------------------------------
 
-export const FOUND_KINDS = ['academic_calendar', 'syllabus', 'other'] as const
+export const FOUND_KINDS = ['academic_calendar', 'syllabus', 'study_program', 'other'] as const
 
 export const foundDocumentSchema = z.object({
   kind: z.enum(FOUND_KINDS),

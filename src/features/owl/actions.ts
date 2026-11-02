@@ -28,6 +28,7 @@ import {
 } from '@/lib/import'
 import { supabase } from '@/lib/supabase'
 import {
+  looksLikeStudyProgram,
   looksLikeSyllabus,
   mergeSyllabi,
   pagesForYear,
@@ -305,12 +306,22 @@ async function readDocument(
     }
 
     // 2. The owl reads it (one AI call, also for "Pogodi sama"; a syllabus can take more).
-    // A study plan is known by its words: read it as one without asking the model first.
+    // A study plan is known by its words: read it as one without asking the model first; one
+    // that names several years is the whole programme (Sprint 17).
     const readAs: ImportKind =
-      kind === 'auto' && text && looksLikeSyllabus(text) ? 'syllabus' : kind
+      kind === 'auto' && text && looksLikeSyllabus(text)
+        ? looksLikeStudyProgram(text)
+          ? 'study_program'
+          : 'syllabus'
+        : kind
     // A whole study plan or a scan takes minutes: say so, the user can leave meanwhile.
     const chars = text?.reduce((n, p) => n + p.text.length, 0) ?? 0
-    if (readAs === 'syllabus' || !text || chars > SYLLABUS_PART_CHARS) {
+    if (
+      readAs === 'syllabus' ||
+      readAs === 'study_program' ||
+      !text ||
+      chars > SYLLABUS_PART_CHARS
+    ) {
       store().replace(pendingId, {
         id: pendingId,
         role: 'owl',
