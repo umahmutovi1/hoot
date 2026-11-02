@@ -1,3 +1,4 @@
+import { ActiveInputs } from '@/features/strategist/ActiveInputs'
 import { InsightsPanel } from '@/features/strategist/InsightsPanel'
 import { StrategistCard } from '@/features/strategist/StrategistCard'
 import { ReadinessCard } from './ReadinessCard'
@@ -37,6 +38,7 @@ export function ProgressPage() {
         <GradesOverview />
         <StrategistCard />
         <InsightsPanel />
+        <ActiveInputs />
         <EnergyInsight />
       </div>
     </ProgressProvider>

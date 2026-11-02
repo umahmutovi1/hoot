@@ -3062,7 +3062,8 @@
       "strict_recall_gate": "{{subject}}: provjera bez preskakanja",
       "questions_next": "Sljedeća {{blocks}} bloka čitanja → pitanja",
       "end_by": "Do ispita završi učenje do 23:00"
-    }
+    },
+    "active": "Aktivni prijedlozi"
   },
   "insights": {
     "title": "Uvidi",

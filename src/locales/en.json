@@ -2979,7 +2979,8 @@
       "strict_recall_gate": "{{subject}}: checks without skipping",
       "questions_next": "Next {{blocks}} reading blocks → questions",
       "end_by": "Finish studying by 23:00 until the exam"
-    }
+    },
+    "active": "Active suggestions"
   },
   "insights": {
     "title": "Insights",
