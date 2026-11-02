@@ -156,3 +156,14 @@ describe('insights', () => {
     ])
   })
 })
+
+it('Sprint 17 recall share keeps the same dismissal key across days and weeks', () => {
+  const weekModes = [{ mode: 'reading' as const, minutes: 240 }]
+  const a = insights(input({ weekModes })).find((i) => i.kind === 'recall_share')!
+  const b = insights(input({ weekModes, today: addDays(TODAY, 8) })).find(
+    (i) => i.kind === 'recall_share',
+  )!
+  expect(a.id).toBe('recall_share')
+  expect(b.id).toBe(a.id)
+  expect(shownInsights([b], new Set([a.id]))).toEqual([])
+})

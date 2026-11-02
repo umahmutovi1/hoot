@@ -1127,8 +1127,18 @@ export function plan(state: PlanState): PlanResult {
       (a.startMin ?? 9999) - (b.startMin ?? 9999) ||
       (a.key < b.key ? -1 : 1),
   )
+  let questionsLeft = state.questionsNext?.remaining ?? 0
+  const shifted = blocks.map((b) => {
+    if (questionsLeft <= 0 || b.kind !== 'learn') return b
+    questionsLeft--
+    return {
+      ...b,
+      kind: 'questions' as const,
+      reason: { ...b.reason, recallShift: state.questionsNext!.id },
+    }
+  })
   return {
-    blocks,
+    blocks: shifted,
     deficits,
     campaignStarts: Object.fromEntries([...starts].sort(([a], [b]) => (a < b ? -1 : 1))),
     computedStarts: Object.fromEntries(

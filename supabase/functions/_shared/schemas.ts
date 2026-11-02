@@ -787,3 +787,94 @@ export const classifyOutputSchema = z.object({
     .describe('One entry per event'),
 })
 export type ClassifyOutput = z.infer<typeof classifyOutputSchema>
+
+// Sprint 17: only aggregates cross the strategist boundary, even on a paid provider. Reflections
+// and focus reasons are deliberately absent; strict objects reject accidentally added fields.
+export const strategistRequestSchema = z
+  .strictObject({
+    locale: localeSchema,
+    week: isoDate,
+    rho: z.number().min(0).max(2),
+    subjects: z
+      .array(
+        z.strictObject({
+          id: z.string().max(100),
+          name: z.string().max(150),
+          priority: z.number().int().min(1).max(5),
+          mode: z.enum(['regular', 'campaign']),
+          progress: z.number().min(0).max(1),
+          strength: z.number().min(0).max(1).nullable(),
+          behind_minutes: z.number().min(0),
+        }),
+      )
+      .max(40),
+    topics: z
+      .array(
+        z.strictObject({
+          id: z.string().max(100),
+          subject_id: z.string().max(100),
+          name: z.string().max(150),
+          strength: z.number().min(0).max(1).nullable(),
+          progress: z.number().min(0).max(1),
+        }),
+      )
+      .max(24),
+    goals: z
+      .array(
+        z.strictObject({
+          id: z.string().max(100),
+          subject_id: z.string().max(100),
+          on: isoDate,
+          low: z.number().min(0).max(1),
+          high: z.number().min(0).max(1),
+          probability: z.number().min(0).max(1),
+        }),
+      )
+      .max(40),
+    candidates: z
+      .array(
+        z.strictObject({
+          id: z.string().min(1).max(180),
+          kind: z.enum([
+            'set_priority',
+            'set_preset',
+            'boost_priority',
+            'set_mode',
+            'set_campaign_start',
+            'add_hours',
+            'drop_unit',
+            'change_buffer',
+            'reprioritize_unit',
+            'avoid_slot',
+            'add_slot',
+            'first_step',
+          ]),
+          label: z.string().max(350),
+          deficit_before: z.number().min(0).nullable(),
+          deficit_after: z.number().min(0).nullable(),
+          week_minutes: z
+            .array(z.strictObject({ subject_id: z.string().max(100), minutes: z.number() }))
+            .max(40),
+        }),
+      )
+      .min(1)
+      .max(8),
+  })
+  .refine((r) => new Set(r.candidates.map((c) => c.id)).size === r.candidates.length, {
+    message: 'Duplicate candidate IDs',
+  })
+export type StrategistRequest = z.infer<typeof strategistRequestSchema>
+
+/** The model may select only the IDs supplied by the deterministic rules for this request. */
+export function strategistOutputSchema(ids: readonly [string, ...string[]]) {
+  return z
+    .object({
+      summary: z.string().max(1200),
+      risks: z.array(z.string().max(300)).max(3),
+      actions: z.array(z.object({ candidate_id: z.enum(ids), reason: z.string().max(500) })).max(3),
+    })
+    .refine((r) => new Set(r.actions.map((a) => a.candidate_id)).size === r.actions.length, {
+      message: 'Duplicate candidate IDs',
+    })
+}
+export type StrategistOutput = z.infer<ReturnType<typeof strategistOutputSchema>>

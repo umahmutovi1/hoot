@@ -132,3 +132,7 @@ Statični mockupi (bez `support.js`), više stanja na jednoj tabli kao `StartSes
   izvor, svaki PDF jedna jedinica. (3) „Kasniš 15 min“ nema svoj prekidač: ide uz podsjetnike (bar jedan pomak).
 - **Poslije pregleda (oktobar 2026):** kartica „Sljedeće“ kad danas nema plana ima jedno dugme dole desno, „Dodaj sesiju“ (tok „Dodaj
   blok“: prijedlog plana, pa „Započeti odmah?“); slobodne sesije na kartici više nema (ostaje u chatu). Bez materijala dugme je „Dodaj materijal“.
+
+## Sprint 17 — Napredak
+
+- `SedmicaRetrovizor.dc.html`: odobren prije React implementacije (3. nov 2026). Sedmični pregled bez grafova, do tri uvida, predmeti u ogledalu, mapa termina, dva opcionalna osvrta i izuzeci za sljedeću sedmicu. Prsten za položen ispit ostaje postojeći, 120 px, bez maskote.

@@ -1,3 +1,4 @@
+import { StrategistCard } from '@/features/strategist/StrategistCard'
 import { ReadinessCard } from '@/features/progress/ReadinessCard'
 import { ProgressProvider } from '@/features/progress/useProgress'
 import { ForecastCard } from '@/features/progress/ForecastCard'
@@ -121,6 +122,7 @@ export function TodayPage() {
           <ProgressProvider>
             <ForecastCard compact />
             <ReadinessCard />
+            <StrategistCard compact />
           </ProgressProvider>
           <ExamTiles now={plan.now} />
           <BlockSheet

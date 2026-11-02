@@ -489,3 +489,8 @@ import_map = "./functions/deno.json"
 [functions.classify-events]
 verify_jwt = false
 import_map = "./functions/deno.json"
+
+# Sprint 17: serve() authenticates with auth.getUser, including the new JWT keys.
+[functions.strategist]
+verify_jwt = false
+import_map = "./functions/deno.json"

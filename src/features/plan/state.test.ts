@@ -712,3 +712,67 @@ it('Sprint 17 keeps teaching signals out of exam-period scores and hashes the se
   expect(exam.state.slotPeriod).toBe('exam')
   expect(inputHash(teaching.state)).not.toBe(inputHash(exam.state))
 })
+
+it('Sprint 17 never repeats a completed recall shift when its blocks leave the 15-day window', () => {
+  const event = {
+    id: 'feedback',
+    user_id: 'u',
+    insight_id: 'recall_share',
+    candidate_id: null,
+    status: 'accepted',
+    payload: { action: { kind: 'questions_next', blocks: 2 } },
+    created_at: '2026-10-01T00:00:00Z',
+    updated_at: '2026-10-01T00:00:00Z',
+  }
+  const built = buildPlanState(
+    inputs({
+      feedback: [event],
+      shiftBlocks: [
+        {
+          id: 'b1',
+          status: 'done',
+          reason: JSON.stringify({ code: 'exam', recallShift: 'feedback' }),
+        },
+        {
+          id: 'b2',
+          status: 'done',
+          reason: JSON.stringify({ code: 'exam', recallShift: 'feedback' }),
+        },
+      ],
+    }),
+    { now: NOW, boundary },
+  )
+  expect(built.state.questionsNext).toBeNull()
+})
+
+it('Sprint 17 slot effects match persisted weekly edits, including busy time and explicit date slots', async () => {
+  const { applyAction } = await import('@/lib/strategist')
+  const { editWeeklySlots } = await import('@/lib/slots/availability')
+  const { rhythmFrom } = await import('@/lib/schedule/rhythm')
+  const tomorrow = addDays(TODAY, 1)
+  const input = inputs({
+    profile: profile({ wake_min: [480, 600], sleep_min: [1320, 1380] }),
+    dayInput: () => ({
+      ...dayInput(),
+      exceptions: [{ onDate: tomorrow, startMin: 480, endMin: 600, isBusy: true }],
+      days: [{ onDate: addDays(TODAY, 2), slots: [{ startMin: 840, endMin: 960 }], capMin: null }],
+    }),
+  })
+  const built = buildPlanState(input, { now: NOW, boundary })
+  for (const kind of ['add_slot', 'avoid_slot'] as const) {
+    const action = { kind, weekend: false, part: 'morning' as const }
+    const simulated = applyAction(built.state, action, TODAY)
+    const changed = buildPlanState(
+      {
+        ...input,
+        dayInput: (date) => ({
+          ...input.dayInput(date),
+          rules: editWeeklySlots(input.dayInput(date).rules, action, rhythmFrom(input.profile)),
+        }),
+      },
+      { now: NOW, boundary },
+    )
+    for (const day of simulated.days.filter((d) => d.date > TODAY))
+      expect(day.slots).toEqual(changed.state.days.find((d) => d.date === day.date)!.slots)
+  }
+})

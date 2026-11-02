@@ -1,3 +1,6 @@
+import { ActiveInputs } from '@/features/strategist/ActiveInputs'
+import { InsightsPanel } from '@/features/strategist/InsightsPanel'
+import { StrategistCard } from '@/features/strategist/StrategistCard'
 import { ReadinessCard } from './ReadinessCard'
 import { SlotCards } from './SlotCards'
 import { ProgressProvider } from './useProgress'
@@ -33,6 +36,9 @@ export function ProgressPage() {
         <RhythmCard />
         <SessionsCard />
         <GradesOverview />
+        <StrategistCard />
+        <InsightsPanel />
+        <ActiveInputs />
         <EnergyInsight />
       </div>
     </ProgressProvider>

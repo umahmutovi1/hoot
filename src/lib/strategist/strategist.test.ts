@@ -262,3 +262,29 @@ describe('strategist candidates', () => {
     )
   })
 })
+
+it('Sprint 17 offers measured rhythm as a candidate with a deterministic preset effect', () => {
+  const s = tight({
+    preset: {
+      kind: 'cycle',
+      id: 'standard',
+      steps: [
+        { kind: 'work', min: 50 },
+        { kind: 'break', min: 15 },
+      ],
+      longBreak: null,
+    },
+  })
+  const rhythm = { sessions: 8, firstBreakMin: 38, pauseMin: 12, earlyShare: 0.2 }
+  const candidate = candidates(input(s, { rhythm })).find((c) => c.action.kind === 'set_preset')!
+  expect(candidate.id).toBe('set_preset:40:10')
+  expect(candidate.rule).toBe('rhythm')
+  expect(candidate.effect).not.toBeNull()
+  expect(applyAction(s, candidate.action, TODAY).preset).toMatchObject({
+    kind: 'cycle',
+    steps: [
+      { kind: 'work', min: 40 },
+      { kind: 'break', min: 10 },
+    ],
+  })
+})

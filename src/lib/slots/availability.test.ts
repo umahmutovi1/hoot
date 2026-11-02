@@ -22,3 +22,12 @@ describe('Sprint 17 weekly slot actions', () => {
     expect(editWeeklySlots(changed, action)).toEqual(changed)
   })
 })
+
+it('Sprint 17 never opens morning or evening sleep hours when adding a slot', () => {
+  const rhythm = { wake: [480, 600] as [number, number], sleep: [1320, 1380] as [number, number] }
+  const morning = editWeeklySlots([], { kind: 'add_slot', weekend: false, part: 'morning' }, rhythm)
+  expect(morning).toHaveLength(5)
+  expect(morning.every((r) => r.startMin === 480 && r.endMin === 720)).toBe(true)
+  const night = editWeeklySlots([], { kind: 'add_slot', weekend: false, part: 'night' }, rhythm)
+  expect(night).toEqual([])
+})

@@ -7,6 +7,7 @@ import { PUBLIC_TASKS, type ChainEntry } from './chain.ts'
 import { costUsd } from './prices.ts'
 
 export type AiTask =
+  | 'strategist'
   | 'parse_academic_calendar'
   | 'parse_exam_schedule'
   | 'parse_document'

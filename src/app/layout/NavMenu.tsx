@@ -117,6 +117,7 @@ function MenuBody({ pathname, onNavigate }: { pathname: string; onNavigate: () =
       match: (p) => p.startsWith('/progress') || p.startsWith('/sessions'),
       subs: [
         { to: '/progress', label: t('menu.overview') },
+        { to: '/progress/week', label: t('checkin.title') },
         { to: '/sessions', label: t('menu.sessions') },
       ],
     },

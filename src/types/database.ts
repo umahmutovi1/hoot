@@ -1617,6 +1617,40 @@ export type Database = {
         }
         Relationships: []
       }
+      progress_feedback: {
+        Row: {
+          candidate_id: string | null
+          created_at: string
+          id: string
+          insight_id: string | null
+          payload: NonNullable<Json>
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        ComputedFields: never
+        Insert: {
+          candidate_id?: string | null
+          created_at?: string
+          id: string
+          insight_id?: string | null
+          payload?: NonNullable<Json>
+          status: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          candidate_id?: string | null
+          created_at?: string
+          id?: string
+          insight_id?: string | null
+          payload?: NonNullable<Json>
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       push_jobs: {
         Row: {
           action_token_hash: string | null

@@ -160,7 +160,7 @@ function recallShare(input: InsightInput): Insight[] {
   if (share >= RECALL_SHARE_MIN) return []
   return [
     {
-      id: `recall_share:${input.today}`,
+      id: 'recall_share',
       kind: 'recall_share',
       share: round(share),
       minutes: Math.round(minutes),
