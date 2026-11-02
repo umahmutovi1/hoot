@@ -75,7 +75,7 @@ export interface SourceCalibration {
 }
 
 /**
- * Calibration recomputed from every saved timer sample (PRD decision after Stage 7): editing or
+ * Calibration recomputed from every saved timer sample (PRD decision after Sprint 7): editing or
  * deleting a session changes the estimates right away. The mean is order-free, so this equals
  * adding the sessions one by one.
  */

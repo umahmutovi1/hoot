@@ -299,7 +299,7 @@ export function useSessionWriter() {
         return session.id
       },
 
-      /** Closes the running segment; `breakEndsAt` is when the preset's break ends (Web Push, Stage 9). */
+      /** Closes the running segment; `breakEndsAt` is when the preset's break ends (Web Push, Sprint 10). */
       pause: async (
         { session, segments }: ActiveSession,
         breakEndsAt: Date | null = null,
@@ -443,7 +443,7 @@ export function useSessionWriter() {
         mode: StudyMode | null
         start: Date
         end: Date
-        /** "Odradila sam bez timera" (Stage 10b): the session closes this block. */
+        /** "Odradila sam bez timera" (Sprint 12): the session closes this block. */
         blockId?: string | null
         unitId?: string | null
       }) => {

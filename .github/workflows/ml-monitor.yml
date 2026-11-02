@@ -1,6 +1,6 @@
 name: ml-monitor
 
-# Weekly monitoring of the Stage 11a models (PRD "Dopune" → MLOps): P80 coverage of durations,
+# Weekly monitoring of the Sprint 15 models (PRD "Dopune" → MLOps): P80 coverage of durations,
 # Brier score of block completion and FSRS calibration per week, in the run summary.
 on:
   workflow_dispatch:

@@ -155,7 +155,7 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
 }
 
 /**
- * No block left today (DanasSlobodno, decision after 8b: in the same card, not a separate empty
+ * No block left today (DanasSlobodno, decision after Sprint 9b: in the same card, not a separate empty
  * screen): the next planned block (tomorrow or later) and "Dodaj sesiju", or "Predmeti" when the
  * plan has no material yet.
  */
@@ -202,7 +202,7 @@ function FreeCard({ plan }: { plan: PlanToday }) {
         <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">{title}</span>
         <span className="text-[13px] text-white/84">{sub}</span>
       </div>
-      {/* One button bottom right, like "Počni" on a block (feedback after 10c): "Dodaj sesiju" is
+      {/* One button bottom right, like "Počni" on a block (feedback after Sprint 13): "Dodaj sesiju" is
           the add-block flow (the plan's suggestion, then "Započeti odmah?"), which replaced the
           free session here; without material it leads to Predmeti. */}
       {noMaterial ? (
@@ -232,7 +232,7 @@ function RunningCard({ data }: { data: ActiveSession }) {
   const { data: subject } = useSubject(data.session.subject_id)
   const list = data.segments.map(toSegment)
   const running = Boolean(openSegment(list))
-  // The whole card opens the session; finishing or discarding happens there (decision, 10b).
+  // The whole card opens the session; finishing or discarding happens there (decision, Sprint 12).
   return (
     <Link
       to="/session"

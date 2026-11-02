@@ -194,7 +194,7 @@ describe('generateStream', () => {
   })
 })
 
-describe('chain routing (Stage 11b)', () => {
+describe('chain routing (Sprint 16)', () => {
   const named = (name: string, model: string, results: (LlmRawResult | Error)[]) => ({
     ...fakeProvider(results),
     name,

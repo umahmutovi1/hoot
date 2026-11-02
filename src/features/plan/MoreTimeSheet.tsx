@@ -13,7 +13,7 @@ import { capFor, freeSlotsOn } from '@/lib/schedule'
 const MORE = [30, 60, 120, 180]
 
 /**
- * "Više vremena ovaj dan" (PRD "Navigacija, pretraga, teme i geste", Stage 10b): one tap raises
+ * "Više vremena ovaj dan" (PRD "Navigacija, pretraga, teme i geste", Sprint 12): one tap raises
  * the day's maximum (`availability_days.cap_min`), with undo; the replan fills it. Opened from
  * Plan → Dan and from search.
  */

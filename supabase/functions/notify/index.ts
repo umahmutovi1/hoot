@@ -1,5 +1,5 @@
-// notify (Stage 9): pg_cron calls it every minute with x-cron-secret. Sends the due push_jobs
-// (end of a planned break, test, and from Stage 10c reminders before a block and "Kasniš") to
+// notify (Sprint 10): pg_cron calls it every minute with x-cron-secret. Sends the due push_jobs
+// (end of a planned break, test, and from Sprint 13 reminders before a block and "Kasniš") to
 // every subscription of their user, marks them sent and drops subscriptions the push service no
 // longer knows. A block job is dropped when its block has started or been skipped; when sent it
 // gets a one-time token for Preskoči (push-action), of which only the hash is kept. Endpoints,

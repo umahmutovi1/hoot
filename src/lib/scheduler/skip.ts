@@ -11,7 +11,7 @@ export interface SkipResult {
 }
 
 /**
- * "Preskoči" (decision after 8b): the skipped block's material must not get lost. With
+ * "Preskoči" (decision after Sprint 9b): the skipped block's material must not get lost. With
  * `startNext` the next block starts now and the rest of the day is pulled earlier behind it, in
  * order, with the preset's breaks, only into free time. Then the skipped block takes the earliest
  * gap left today (also between two blocks) that holds it and its breaks, never before the end of

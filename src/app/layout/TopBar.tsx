@@ -5,7 +5,7 @@ import { AiSparkIcon, CloseIcon, MenuIcon, SearchIcon } from '@/components/icons
 import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/utils'
 
-/** Faint glass pill behind the AI icon and the right-hand group (design README, 10b). */
+/** Faint glass pill behind the AI icon and the right-hand group (design README, Sprint 12). */
 const pill = 'rounded-full bg-white/30 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.6)]'
 
 /**

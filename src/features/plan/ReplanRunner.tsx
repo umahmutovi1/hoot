@@ -34,7 +34,7 @@ const DEBOUNCE_MS = 2000
  * saved through the offline queue (`replace_plan`). `replanNow()` saves even with the same hash
  * (a deleted AI block is not an input). Never while the timer runs.
  *
- * Today (decision, Stage 10b): today's free slots are in the hash and kept on the run. When they
+ * Today (decision, Sprint 12): today's free slots are in the hash and kept on the run. When they
  * changed since the last run, today's not-started AI blocks get new times from now (same content),
  * with a toast and undo.
  */

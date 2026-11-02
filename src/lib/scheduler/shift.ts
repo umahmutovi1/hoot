@@ -19,7 +19,7 @@ export interface ShiftResult {
 }
 
 /**
- * Late start (decision after 8b): the block started now runs from `nowMin`, and the day's later
+ * Late start (decision after Sprint 9b): the block started now runs from `nowMin`, and the day's later
  * blocks (AI and manual alike) follow in the same order, each with the preset's breaks, only in
  * the day's free slots (classes and calendar busy time are already out of `free`) and never
  * earlier than they were. What no longer fits today is overflow: the caller hands AI blocks back

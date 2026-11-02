@@ -47,7 +47,7 @@ export function useScheduleData() {
     const days = (dayRows ?? []).map(toDay)
     const caps = capsRow?.length === 7 ? capsRow : DEFAULT_CAPS
     const feeds = (feedRows ?? []).map(toFeed)
-    // Deadlines and free events do not take study time (classification, Stage 10d).
+    // Deadlines and free events do not take study time (classification, Sprint 14).
     const kinds = eventKinds(
       eventRows ?? [],
       feedRows ?? [],

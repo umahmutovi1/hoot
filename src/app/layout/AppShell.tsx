@@ -34,7 +34,7 @@ export function AppShell() {
       <LocaleSync />
       <ThemeSync />
       {/* Sticky: what scrolls under the row is blurred and fades out at its lower edge, so the
-          logo, AI and ☰ stay legible on any content (design README, 10b). */}
+          logo, AI and ☰ stay legible on any content (design README, Sprint 12). */}
       <div className="glass-bar sticky top-0 z-40 -mx-5 px-5 pt-[calc(24px+env(safe-area-inset-top))]">
         <TopBar
           menuOpen={menuOpen}

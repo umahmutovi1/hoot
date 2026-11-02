@@ -381,7 +381,7 @@ export function skipRow(block: PlanBlockRow, at: string): Row {
 }
 
 /**
- * "Preskoči" (decision after 8b): the block is not done now, but its material keeps priority.
+ * "Preskoči" (decision after Sprint 9b): the block is not done now, but its material keeps priority.
  * With `startNext` the next block starts right away and the rest of the day is pulled earlier
  * (`skipBlock()`). The skipped block takes the first gap left today; without one it becomes the
  * first block of the next study day (a fixed block, so the replan arranges that day around it).
@@ -541,7 +541,7 @@ export function useSkipBlock() {
 }
 
 /**
- * Late start (decision after 8b): starting today's block more than 5 min after its time moves the
+ * Late start (decision after Sprint 9b): starting today's block more than 5 min after its time moves the
  * started block to now and the rest of the day after it, manual blocks too, in order and only into
  * free time (`shiftRestOfDay()`). AI blocks that no longer fit today go back to the plan (from
  * tomorrow, at the next replan); manual ones stay on the day without a time. Toast with undo.
@@ -655,7 +655,7 @@ function useShiftLateDay() {
 }
 
 /**
- * "Imam još vremena" (decision after 8b): today's plan is done and there is time left. The piece
+ * "Imam još vremena" (decision after Sprint 9b): today's plan is done and there is time left. The piece
  * `pickForTime()` chose becomes a block today from now (a manual block: the user asked for the
  * time, so replan keeps it, and it may go over the daily maximum), with a free-time exception for
  * that span in Dostupnost; the replan then counts that work as done-to-be and rearranges the
@@ -752,7 +752,7 @@ export interface BlockDraft {
   /** An AI block the user changed (Satnica "Vrati predloženo" brings the plan back). */
   edited: boolean
   /**
-   * "Zadrži ovo vrijeme" off (Stage 10b): the block stays an AI block of its run, with its reason
+   * "Zadrži ovo vrijeme" off (Sprint 12): the block stays an AI block of its run, with its reason
    * and units, only at the new day and time; the replan may arrange it again.
    */
   asAi?: { planRunId: string | null; reason: string | null; units: UnitRow[] | null }
@@ -898,7 +898,7 @@ export function useDeleteBlock() {
     async (block: PlanBlockRow, drop: boolean, reuseSlot = false) => {
       const key = planBlocksKey(userId)
       const exceptionsKey = scheduleKey('availability_exceptions', userId)
-      // "Prebaci" (decision, Stage 8b): the AI block's time becomes busy that day, so the replan
+      // "Prebaci" (decision, Sprint 9b): the AI block's time becomes busy that day, so the replan
       // places its units elsewhere instead of in the same slot again.
       const busy: ExceptionRow | null =
         !drop && !reuseSlot && block.origin === 'ai' && block.start_min !== null

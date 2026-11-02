@@ -2,7 +2,7 @@ import type { AiOutlineUnit } from './ai'
 import { MAX_DEPTH } from './parse'
 
 /**
- * Materials from a PDF (PRD "Materijali", Stage 10c), pure. The PDF's outline (bookmarks) becomes
+ * Materials from a PDF (PRD "Materijali", Sprint 13), pure. The PDF's outline (bookmarks) becomes
  * units with pages for the same review as `parse-toc`, without an AI call; without an outline the
  * table-of-contents pages are found so only their text goes to the model.
  */

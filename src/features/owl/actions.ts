@@ -496,7 +496,7 @@ async function proposalFrom(
 }
 
 /**
- * "Ubaci mi ovo" (Stage 10): a document already in Documents is read again as the kind the
+ * "Ubaci mi ovo" (Sprint 11): a document already in Documents is read again as the kind the
  * student asked for, and the result comes as a proposal card like a newly given one.
  */
 async function importFromDocument(

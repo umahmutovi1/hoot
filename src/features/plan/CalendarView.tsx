@@ -42,7 +42,7 @@ import { MoreTimeSheet } from './MoreTimeSheet'
 import type { PlanBlockRow } from './state'
 import { toTimeline, useDayBlocks, type DayBlockView } from './useDayBlocks'
 
-// Day first and default (decision after 8b: Kalendar and Satnica are one calendar).
+// Day first and default (decision after Sprint 9b: Kalendar and Satnica are one calendar).
 const VIEWS = ['day', 'month'] as const
 type CalendarMode = (typeof VIEWS)[number]
 

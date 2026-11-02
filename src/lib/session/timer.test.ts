@@ -103,7 +103,7 @@ const own = customPreset({
 })
 
 describe('resolvePreset', () => {
-  it('knows built-ins, the Stage 7 modes and custom presets', () => {
+  it('knows built-ins, the Sprint 7 modes and custom presets', () => {
     expect(standard).toMatchObject({ kind: 'cycle', id: 'standard' })
     expect(resolvePreset('pomodoro50')).toMatchObject({ kind: 'cycle', id: 'pomodoro50' })
     expect(resolvePreset(own.id, [{ id: own.id, name: 'x', steps: [], long_break: null }]).id).toBe(

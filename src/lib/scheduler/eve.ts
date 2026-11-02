@@ -6,7 +6,7 @@ import type { PlanGoal, PlanState } from './types'
 export const EVE_MAX_BACK_DAYS = 7
 
 /**
- * "Dan pred ispit" (PRD, Stage 10c): the reserved day of an exam is its last study day before the
+ * "Dan pred ispit" (PRD, Sprint 13): the reserved day of an exam is its last study day before the
  * exam (a day with free time and a cap). Two exams with the same day: the closer exam (earlier
  * date, then earlier time) keeps it and the other one takes the study day before, so every
  * reserved day belongs to one exam. Days before `state.from` are not planned and never reserved.

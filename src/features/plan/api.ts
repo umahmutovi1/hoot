@@ -48,7 +48,7 @@ export function useAllSources() {
       const { data, error } = await supabase
         .from('sources')
         .select('*, units(*)')
-        // An archived source is out of the plan, progress and scope (Stage 10b).
+        // An archived source is out of the plan, progress and scope (Sprint 12).
         .is('archived_at', null)
         .order('created_at')
       if (error) throw error
@@ -201,7 +201,7 @@ export interface PlanRun {
   input_hash: string
   deficit: unknown
   created_at: string
-  /** `todaySlotsKey` of the run (Stage 10b); null for older runs. */
+  /** `todaySlotsKey` of the run (Sprint 12); null for older runs. */
   today_slots: string | null
 }
 

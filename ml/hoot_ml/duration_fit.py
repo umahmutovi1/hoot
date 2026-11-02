@@ -1,4 +1,4 @@
-"""Fit and backtest of the duration model (RESEARCH-ML 5.1, ROADMAP 11a).
+"""Fit and backtest of the duration model (RESEARCH-ML 5.1, ROADMAP Sprint 15).
 
 Samples are timer measurements: minutes per unit of measure at difficulty 3, one per studied unit
 (`session_units` × `units` × `sources`, as `sampleRate()` in `src/lib/estimates/calibration.ts`).

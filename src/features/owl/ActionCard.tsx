@@ -13,7 +13,7 @@ const button =
   'flex h-11 items-center justify-center gap-2 rounded-full btn-primary px-4 text-sm font-semibold'
 
 /**
- * The tool next to an answer (Stage 10): notes found, a quiz, adding a timetable or contents.
+ * The tool next to an answer (Sprint 11): notes found, a quiz, adding a timetable or contents.
  * Nothing changes until the user taps through and confirms on the screen it opens.
  */
 export function ActionCard({ action }: { action: OwlAction }) {

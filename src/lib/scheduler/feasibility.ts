@@ -4,7 +4,7 @@ import { growthLimit } from './realization'
 import type { PlanState } from './types'
 
 /**
- * Feasibility test (ROADMAP 11a, RESEARCH-ML 5.4): can the required work of every goal fit its
+ * Feasibility test (ROADMAP Sprint 15, RESEARCH-ML 5.4): can the required work of every goal fit its
  * days at all, whatever the order? Each goal's work may go on any day of its window (from its
  * release, a manual campaign start, to the day before its learn end) up to the day's capacity as
  * `plan()` sees it (`aiCapacity()` and the growth limit). With interval windows this is a

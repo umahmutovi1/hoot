@@ -6,7 +6,7 @@
 export interface PriorityRule {
   /** Multiplies urgency when subjects compete for a day. */
   weight: number
-  /** FSRS target retention (Stage 9). */
+  /** FSRS target retention (Sprint 10). */
   retention: number
   /** Share of the scope (by importance) that is required; the rest is optional. */
   coverage: number
@@ -42,7 +42,7 @@ export const RHO_WINDOW_DAYS = 14
 
 /**
  * A clear difference between slot scores (done share). Starts within it of the best are equal and
- * the earliest wins: per-run estimates of part-of-day effects are noisy (Stage 11a simulator:
+ * the earliest wins: per-run estimates of part-of-day effects are noisy (Sprint 15 simulator:
  * wrong sign in ~40% of 4-week runs), and chasing them moved work into worse slots. The same set
  * is where the one exploring block a week chooses by a posterior draw (Thompson, ε of the best).
  */
@@ -69,7 +69,7 @@ export const CAMPAIGN_MIN_MARGIN_DAYS = 2
 
 export const RECAP_MINUTES = 15
 
-/** A check of one unit in a review block (recall gate series, Stage 9). */
+/** A check of one unit in a review block (recall gate series, Sprint 10). */
 export function reviewMinutes(kind: 'chapter' | 'question', minutes: number): number {
   if (kind === 'question') return 3
   return Math.min(20, Math.max(5, Math.round(minutes * 0.15)))

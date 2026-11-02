@@ -18,7 +18,7 @@ interface PlanStore {
   nudge: number
   replanNow: () => void
   /**
-   * Free time today grew since the last run (Stage 10b): "Imaš X min više danas" offers it once;
+   * Free time today grew since the last run (Sprint 12): "Imaš X min više danas" offers it once;
    * the plan never fills it silently.
    */
   extraToday: { date: string; minutes: number } | null

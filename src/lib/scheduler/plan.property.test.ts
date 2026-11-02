@@ -314,7 +314,7 @@ describe('plan invariants', () => {
   })
 })
 
-// Energy of the day (Stage 11b): low and high days on top of any state, with personal factors.
+// Energy of the day (Sprint 16): low and high days on top of any state, with personal factors.
 const energyArb = fc
   .tuple(
     stateArb,

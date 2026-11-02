@@ -27,7 +27,7 @@ export interface StepProps {
 
 /**
  * Onboarding (PRD "Onboarding", Onboarding*.dc.html): 9 steps (1b "Gdje studiraš?" is the
- * second, Stage 10c) as states of one screen. Every
+ * second, Sprint 13) as states of one screen. Every
  * step can be skipped; progress is kept in `profiles.onboarding_step`, so it continues later.
  * "Završi kasnije" ends it (`onboarded_at`); what is missing stays as a checklist on Today.
  */

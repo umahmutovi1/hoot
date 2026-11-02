@@ -1,10 +1,10 @@
 # Hoot — istraživanje konkurencije, persona i pregled PRD-a
 
-21. okt 2026 · nakon Etape 7 (`v0.7.0`). Odluke iz ovog fajla su prenesene u [PRD.md](PRD.md) i [ROADMAP.md](ROADMAP.md) (Etape 8–12); PRD je izvor istine. Ovdje ostaje obrazloženje i ono što još nije odlučeno (vidi „Otvorena pitanja“ na kraju).
+21. okt 2026 · nakon Sprinta 7 (`v0.7.0`). Odluke iz ovog fajla su prenesene u [PRD.md](PRD.md) i [ROADMAP.md](ROADMAP.md) (Sprintovi 9–23); PRD je izvor istine. Ovdje ostaje obrazloženje i ono što još nije odlučeno (vidi „Otvorena pitanja“ na kraju).
 
 ## Sažetak (10 najvažnijih stvari)
 
-1. **Onboarding fali, a scheduler (Etapa 8) bez njega laže.** Novi korisnik dobija dostupnost 06–24 svaki dan (`handle_new_user()`) i maksimum 3 h / 5 h. Prvi plan će stavljati učenje u 6:00, u vrijeme posla i treninga. Onboarding treba ući **prije** schedulera (prvi PR Etape 8).
+1. **Onboarding fali, a scheduler (Sprint 9) bez njega laže.** Novi korisnik dobija dostupnost 06–24 svaki dan (`handle_new_user()`) i maksimum 3 h / 5 h. Prvi plan će stavljati učenje u 6:00, u vrijeme posla i treninga. Onboarding treba ući **prije** schedulera (prvi PR Sprinta 9).
 2. **Plan je planiran na 100 % kapaciteta.** Studenti sistematski potcjenjuju vrijeme (planning fallacy), a heuristika 4 min/str. je početna pretpostavka. Treba deterministički **faktor realizacije** (koliko planiranog stvarno odradiš) i rezerva ~20 %, ne AI strategist koji to „predloži“.
 3. **Pauze nisu dio plana.** Dnevni maksimum broji samo učenje, a `placeTimes()` nema pravilo za pauze između blokova. Ako se uvedu predlošci pauza (default 15 min, Pomodoro, vlastiti niz), satnica ih mora rezervisati.
 4. **„Kad sam najproduktivnija“ treba biti statistika, ne LLM.** Već se skupljaju fokus 1–3 i segmenti. Rezultat po terminu dana (fokus, brzina u odnosu na kalibraciju, odrađeno/propušteno) sa shrinkage-om, kao kalibracija. LLM samo formuliše prijedlog („makni utorak 8–10?“).
@@ -50,7 +50,7 @@
 
 ---
 
-## 3. End-to-end prolaz (Lejla, PRD do Etape 12)
+## 3. End-to-end prolaz (Lejla, PRD do Sprinta 23)
 
 Oznake: 🔴 blokira povjerenje u plan · 🟠 bitno · 🟡 dorada.
 
@@ -58,14 +58,14 @@ Oznake: 🔴 blokira povjerenje u plan · 🟠 bitno · 🟡 dorada.
 
 1. Magic link / kod, pa „Kako da te zovem?“. Brzo, OK.
 2. 🔴 **Danas je prazan, a onboardinga nema.** Dostupnost je već 06–24 svaki dan, maksimum 3 h / 5 h. Lejla to ne zna dok ne otvori Plan → Dostupnost. Satnica će joj kasnije predložiti 07:00 u utorak.
-3. 🟠 **Redoslijed zavisnosti nije objašnjen.** Raspored traži period nastave iz akademskog kalendara. Lejla prvo želi uslikati raspored (Etapa 10), a app traži kalendar. Treba inline pitanje „Kad počinje i završava semestar?“ (2 datuma), a ne cijeli akademski kalendar.
+3. 🟠 **Redoslijed zavisnosti nije objašnjen.** Raspored traži period nastave iz akademskog kalendara. Lejla prvo želi uslikati raspored (Sprint 11), a app traži kalendar. Treba inline pitanje „Kad počinje i završava semestar?“ (2 datuma), a ne cijeli akademski kalendar.
 4. 🟠 **Vremenska zona** je default `Europe/Sarajevo`; uzeti `Intl.DateTimeFormat().resolvedOptions().timeZone` pri prvom ulasku (Erasmus, putovanja).
 5. 🟠 **Posao i trening** nisu nastava, pa ih mora ručno brisati iz dostupnosti, i to kao „svaki utorak“. Uvoz Google kalendara (ICS) bi to riješio jednim linkom.
 
 **Dan 0: predmeti i gradivo**
 
 6. NoviPredmet za < 30 s: odlično. „Datumi još nisu poznati?“ iz akademskog kalendara: odlično.
-7. 🔴 **Predmet bez izvora satnica ignoriše.** Do Etape 10 (uslikaj sadržaj) Lejla mora ručno kucati sadržaj Oppenheima. Dva od šest predmeta će ostati bez izvora, pa plan za njih ne postoji, a ona misli da ih app „ima“. Prijedlog: **gruba procjena obima** pri dodavanju predmeta („~300 str. skripte“ ili „~20 h“) pravi privremeni izvor sa N jednakih jedinica, kasnije zamjenjiv pravim sadržajem (merge po `label` već postoji).
+7. 🔴 **Predmet bez izvora satnica ignoriše.** Do Sprinta 11 (uslikaj sadržaj) Lejla mora ručno kucati sadržaj Oppenheima. Dva od šest predmeta će ostati bez izvora, pa plan za njih ne postoji, a ona misli da ih app „ima“. Prijedlog: **gruba procjena obima** pri dodavanju predmeta („~300 str. skripte“ ili „~20 h“) pravi privremeni izvor sa N jednakih jedinica, kasnije zamjenjiv pravim sadržajem (merge po `label` već postoji).
 8. 🟠 **Heuristika 4 min/str. za Oppenheim na engleskom** je vjerovatno preoptimistična. Prvi plan obeća previše. Vidi sekciju 6.1 (lični faktor brzine) i 6.2 (faktor realizacije).
 9. 🟡 Prioritet, režim, željena ocjena: tri pojma sa preklapajućim efektima (sekcija 7).
 
@@ -79,7 +79,7 @@ Oznake: 🔴 blokira povjerenje u plan · 🟠 bitno · 🟡 dorada.
 
 13. Timer iz segmenata, offline: odlično i rijetko kod konkurencije.
 14. 🟠 **Pauze**: samo 25/5 i 50/10 kao podsjetnik. Lejla hoće 50 min učenja i 15 min pauze, a za usmeni 90/20. Nema vlastitog niza ni duge pauze nakon 4 pomodora (sekcija 5).
-15. 🟠 **Kraj pauze se ne javlja kad je ekran zaključan** (iOS PWA ne izvršava JS u pozadini). Rješenje dolazi tek sa Web Push-om (Etapa 12): ulazak u pauzu zakaže server push za kraj pauze.
+15. 🟠 **Kraj pauze se ne javlja kad je ekran zaključan** (iOS PWA ne izvršava JS u pozadini). Rješenje dolazi tek sa Web Push-om (Sprint 23): ulazak u pauzu zakaže server push za kraj pauze.
 16. 🟡 **Fokus 1–3** je dobar i jeftin. Kad je fokus 1, opcionalni čipovi razloga (umorna, telefon, buka, teško gradivo, loše spavala) razdvajaju „loš termin“ od „teško gradivo“, što je ključ za učenje termina.
 
 **Sedmice 2–4: život**
@@ -106,7 +106,7 @@ Cilj: za 2–3 minute od „Kako da te zovem?“ do **plana za danas** ili bar d
 | # | Korak | Šta pita | Šta upiše | Napomena |
 | --- | --- | --- | --- | --- |
 | 1 | Ime i jezik | postoji | `display_name`, `locale`, `timezone` iz browsera | |
-| 2 | „Šta već imaš?“ | Kartice: akademski kalendar (PDF/slika/tekst), raspored nastave (slika od Etape 10, ručno do tad), Google/Apple kalendar (ICS link), „Nemam ništa sad“ | `academic_periods`, `timetable_entries`, novi izvor zauzetosti | Uvoz kroz isti pregled (novo / izmijenjeno). Raspored bez kalendara pita samo 2 datuma semestra |
+| 2 | „Šta već imaš?“ | Kartice: akademski kalendar (PDF/slika/tekst), raspored nastave (slika od Sprinta 11, ručno do tad), Google/Apple kalendar (ICS link), „Nemam ništa sad“ | `academic_periods`, `timetable_entries`, novi izvor zauzetosti | Uvoz kroz isti pregled (novo / izmijenjeno). Raspored bez kalendara pita samo 2 datuma semestra |
 | 3 | Ritam | „Kad obično ustaješ i liježeš?“ (radni dan / vikend) i „Kad ti je najlakše učiti?“ (jutro / podne / popodne / veče / kasno noću, više izbora) | prozor dana (zamjenjuje 06–24), `day_start_min` (npr. 2 h poslije uobičajenog lijeganja, najmanje 04:00), prior za termine | Prior za učenje termina (sekcija 6.3) |
 | 4 | Dani i periodi | Sedmica sa vremenskom osom: nastava i kalendar šrafirani, predloženi slobodni periodi iz koraka 3. Tap uključi ili isključi dan, čipovi „jutro / popodne / veče“ ili prevlačenje | `availability_rules` | Ista komponenta kao ekran Dostupnost, samo vođena |
 | 5 | Koliko najviše | Klizač po grupi dana (radni / vikend), uz tekst: „Plan ostavlja rezervu, pa je bolje reći realno nego idealno“ | `daily_cap_min` | Prikazati sedmični zbir: „To je 17 h sedmično“ |
@@ -133,11 +133,11 @@ Cilj: za 2–3 minute od „Kako da te zovem?“ do **plana za danas** ili bar d
 
 - **Default (odlučeno):** „Standardno“ 50 min učenja / 15 min pauze.
 - **Vlastiti niz:** editor intervala („45 učenje → 10 pauza → 45 → 20 → ponovi“), spašen kao imenovani predložak; izbor po sesiji u PokreniSesiju, default u Postavkama.
-- **Ostaje odluka iz Etape 7:** timer nikad sam ne otvara ni zatvara segment. Značka odbrojava, a pauza je tap. Kraj pauze sa zaključanim ekranom javlja Web Push (Etapa 12): ulazak u pauzu zakaže `notify` za `break_end_at`.
+- **Ostaje odluka iz Sprinta 7:** timer nikad sam ne otvara ni zatvara segment. Značka odbrojava, a pauza je tap. Kraj pauze sa zaključanim ekranom javlja Web Push (Sprint 23): ulazak u pauzu zakaže `notify` za `break_end_at`.
 - **Plan mora znati za pauze** (trenutno ne zna):
   - `placeTimes()` slaže blokove sa pauzom po predlošku između i unutar dugih blokova; dnevni maksimum ostaje „minute učenja“, a slobodni termini moraju primiti učenje + pauze.
   - Dužina bloka teži višekratniku intervala učenja (50 + 50, ne 70), pa se podsjetnik i blok poklapaju.
-- **Mjerenje:** `study_sessions.timer_mode` postaje id predloška; statistika poredi brzinu i fokus po predlošku (Etapa 11) i nakon dovoljno sesija predloži „uz 50/15 ti je fokus bolji nego uz 25/5“.
+- **Mjerenje:** `study_sessions.timer_mode` postaje id predloška; statistika poredi brzinu i fokus po predlošku (Sprint 17) i nakon dovoljno sesija predloži „uz 50/15 ti je fokus bolji nego uz 25/5“.
 
 ---
 
@@ -177,7 +177,7 @@ Podaci koji već postoje ili se lako dodaju, po terminu (npr. 5 dijelova dana ×
 - **Upotreba (sve kod):** `placeTimes()` stavlja teške jedinice i prvo učenje u najbolje termine, a ponavljanja, prezentacije i kartice u slabije (synchrony efekat je najjači za zahtjevne, analitičke zadatke — [pregled](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2022.851502/full)). Kartica prijedloga, kad termin ima dovoljno podataka i jasno je loš: „Utorkom ujutro ti propadne 4 od 5 blokova. Maknuti utorak 08–10 iz dostupnosti?“ ili „Navečer ti je fokus 2.7/3. Dodati srijedu 21–23?“. Jedan tap mijenja dostupnost, pa replan. To su promjene ulaza, u skladu s arhitekturom.
 - **Prag:** ništa se ne predlaže prije npr. 6 sesija u terminu; prikaz „uči se…“ dok nema podataka.
 - **Zamke:** (a) teško gradivo navečer izgleda kao loš termin, pa brzina mora biti normalizovana težinom; (b) povratna petlja; (c) ispitni rok mijenja ritam, pa ga posmatrati odvojeno ili sa većim zaboravljanjem starih podataka.
-- 🔴 **Preduslov za Etapu 8:** blok mora imati planirani termin i kad Satnica nije otvorena. Ili `placeTimes()` radi automatski (Satnica samo prikazuje), ili blok dobije „predloženi prozor“. Inače signali „kašnjenje starta“ i „termini koje preskačeš“ iz PRD-a ostaju prazni. Podatke treba skupljati od Etape 8, da ih Etapa 11 ima.
+- 🔴 **Preduslov za Sprint 9:** blok mora imati planirani termin i kad Satnica nije otvorena. Ili `placeTimes()` radi automatski (Satnica samo prikazuje), ili blok dobije „predloženi prozor“. Inače signali „kašnjenje starta“ i „termini koje preskačeš“ iz PRD-a ostaju prazni. Podatke treba skupljati od Sprinta 9, da ih Sprint 17 ima.
 
 ### 6.4 Spaced repetition (FSRS)
 
@@ -216,8 +216,8 @@ Podaci koji već postoje ili se lako dodaju, po terminu (npr. 5 dijelova dana ×
 | PRD šema 0001 | `profiles.timer_mode` `'25/5'` vs `study_sessions.timer_mode` `'pomodoro25'` iz 0012 | Uskladiti pri uvođenju predložaka |
 | PRD „Granica dana“ | 04:00 fiksno u tekstu, a noćne ptice uče do 4:30 | Predložiti iz onboardinga (vrijeme lijeganja) |
 | PRD prioritet | Tabela od 5 efekata prioriteta + željena ocjena + ciljna pokrivenost + pojačanje: korisnik ne vidi zašto se nešto desilo | U UI prikazivati jedan pojam „Koliko ti je bitan“ + željenu ocjenu, a „zašto ovo danas“ neka imenuje efekat |
-| ROADMAP | Notifikacije tek u Etapi 12, a bez njih nema podsjetnika na prvi blok ni kraja pauze | Osnovni push (prvi blok, kraj pauze) premjestiti odmah iza Etape 8 ili 9 |
-| ROADMAP | Onboarding ne postoji ni u jednoj etapi | Prvi PR Etape 8 |
+| ROADMAP | Notifikacije tek u Sprintu 23, a bez njih nema podsjetnika na prvi blok ni kraja pauze | Osnovni push (prvi blok, kraj pauze) premjestiti odmah iza Sprintovi 9 ili 10 |
+| ROADMAP | Onboarding ne postoji ni u jednom sprintu | Prvi PR Sprinta 9 |
 
 ---
 
@@ -247,14 +247,14 @@ Podaci koji već postoje ili se lako dodaju, po terminu (npr. 5 dijelova dana ×
 
 | Kad | Šta |
 | --- | --- |
-| Etapa 7 dorada (prije Etape 8) | Predlošci pauza (model + PokreniSesiju + Postavke), čipovi razloga za fokus 1, brzina po segmentu za kasniju statistiku |
-| Etapa 8, prvi PR-ovi | Onboarding (mockup → migracija → ekrani), timezone iz browsera, gruba veličina gradiva (privremeni izvor) |
-| Etapa 8, scheduler | Faktor realizacije + rezerva, limit rasta nakon propuštenog, „Danas ne mogu“, pauze u `placeTimes()`, planirani termin za svaki blok, mikro-blokovi za ponavljanja |
+| Sprint 7 dorada (prije Sprinta 9) | Predlošci pauza (model + PokreniSesiju + Postavke), čipovi razloga za fokus 1, brzina po segmentu za kasniju statistiku |
+| Sprint 9, prvi PR-ovi | Onboarding (mockup → migracija → ekrani), timezone iz browsera, gruba veličina gradiva (privremeni izvor) |
+| Sprint 9, scheduler | Faktor realizacije + rezerva, limit rasta nakon propuštenog, „Danas ne mogu“, pauze u `placeTimes()`, planirani termin za svaki blok, mikro-blokovi za ponavljanja |
 | Odmah iza 8/9 | Osnovni Web Push (prvi blok, kraj pauze) |
-| Etapa 9 | R na dan ispita, kartice i pitanja kao zasebni FSRS objekti |
-| Etapa 11 | Ocjena termina + kartice prijedloga dostupnosti, poređenje predložaka timera, Monte Carlo prognoza, strategist = pravila + LLM tekst, sedmični check-in |
-| Etapa 8 (uz onboarding) | ICS uvoz zauzetosti (sekcija 11), jer je scheduler ulaz |
-| Etapa 10–12 | Moodle feed rokova, ICS izvoz plana, Web Share Target, CSV izvoz kartica |
+| Sprint 10 | R na dan ispita, kartice i pitanja kao zasebni FSRS objekti |
+| Sprint 17 | Ocjena termina + kartice prijedloga dostupnosti, poređenje predložaka timera, Monte Carlo prognoza, strategist = pravila + LLM tekst, sedmični check-in |
+| Sprint 9 (uz onboarding) | ICS uvoz zauzetosti (sekcija 11), jer je scheduler ulaz |
+| Sprint 11–23 | Moodle feed rokova, ICS izvoz plana, Web Share Target, CSV izvoz kartica |
 | Kasnije | Google Calendar API (upis blokova), Notion baza rokova, lični faktor brzine po jeziku izvora, izvoz podataka |
 
 ---
@@ -265,13 +265,13 @@ Princip: **jedan generički mehanizam pokriva najviše izvora.** ICS (iCalendar)
 
 | Integracija | Šta donosi | Kako | Trošak / rizik | Preporuka |
 | --- | --- | --- | --- | --- |
-| **Google / Apple / Outlook kalendar → Hoot** (zauzetost) | Posao, trening, doktor: zauzeto bez ručnog unosa | Korisnik zalijepi tajni iCal link (Google: Postavke kalendara → „Tajna adresa u iCal formatu“; Outlook: „Objavi kalendar“ → ICS; iCloud: javni link). Edge funkcija `sync-calendar` povlači feed (browser ne može zbog CORS-a) | Nizak. Mi biramo koliko često povlačimo (npr. na otvaranje app-a + `pg_cron` svakih 1–3 h). Tajni link je lozinka: čuvati samo u bazi, nikad u logovima | **v1 (odlučeno)**, Etapa 8 |
-| **Moodle → Hoot** (rokovi) | Zadaće, kvizovi i rokovi predmeta | Moodle „Kalendar → Izvoz → Dobij URL kalendara“ daje URL sa `authtoken` koji radi bez prijave ([Moodle docs](https://docs.moodle.org/403/en/Calendar_export)). Isti `sync-calendar`, ali feed tipa „rokovi“ | Nizak; URL ne može biti ograničen na jedan predmet, pa se događaji uparuju sa predmetima kroz `fuse.js` kao kod uvoza rasporeda | v1, Etapa 10 (uvoz kao kartica novo / izmijenjeno → `deadlines`) |
-| **Hoot → kalendar** (izvoz plana) | Blokovi i ispiti vidljivi u kalendaru koji korisnik ionako gleda | Edge funkcija servira ICS sa tajnim tokenom; korisnik se pretplati | Google osvježava pretplaćene kalendare tek svakih ~8–24 h ([izvor](https://knowledge.cheqroom.com/helpcenter/how-often-does-google-update-its-calendar-feeds)), pa dnevne izmjene kasne. Za ispite i rokove OK, za blokove ne. Apple osvježava češće | v1 samo ispiti, rokovi i (uz napomenu) blokovi; Etapa 12 |
+| **Google / Apple / Outlook kalendar → Hoot** (zauzetost) | Posao, trening, doktor: zauzeto bez ručnog unosa | Korisnik zalijepi tajni iCal link (Google: Postavke kalendara → „Tajna adresa u iCal formatu“; Outlook: „Objavi kalendar“ → ICS; iCloud: javni link). Edge funkcija `sync-calendar` povlači feed (browser ne može zbog CORS-a) | Nizak. Mi biramo koliko često povlačimo (npr. na otvaranje app-a + `pg_cron` svakih 1–3 h). Tajni link je lozinka: čuvati samo u bazi, nikad u logovima | **v1 (odlučeno)**, Sprint 9 |
+| **Moodle → Hoot** (rokovi) | Zadaće, kvizovi i rokovi predmeta | Moodle „Kalendar → Izvoz → Dobij URL kalendara“ daje URL sa `authtoken` koji radi bez prijave ([Moodle docs](https://docs.moodle.org/403/en/Calendar_export)). Isti `sync-calendar`, ali feed tipa „rokovi“ | Nizak; URL ne može biti ograničen na jedan predmet, pa se događaji uparuju sa predmetima kroz `fuse.js` kao kod uvoza rasporeda | v1, Sprint 11 (uvoz kao kartica novo / izmijenjeno → `deadlines`) |
+| **Hoot → kalendar** (izvoz plana) | Blokovi i ispiti vidljivi u kalendaru koji korisnik ionako gleda | Edge funkcija servira ICS sa tajnim tokenom; korisnik se pretplati | Google osvježava pretplaćene kalendare tek svakih ~8–24 h ([izvor](https://knowledge.cheqroom.com/helpcenter/how-often-does-google-update-its-calendar-feeds)), pa dnevne izmjene kasne. Za ispite i rokove OK, za blokove ne. Apple osvježava češće | v1 samo ispiti, rokovi i (uz napomenu) blokovi; Sprint 23 |
 | **Google Calendar API** (upis blokova odmah) | Plan se odmah vidi u Google kalendaru | OAuth, scope za događaje | U „Testing“ režimu refresh token ističe za 7 dana ([izvor](https://www.unipile.com/google-oauth-refresh-token/)); za produkciju treba verifikacija Google-a. Za jednu korisnicu to je sedmično ponovno povezivanje | Kasnije, uz otvaranje za više korisnika |
-| **Web Share Target** (PWA) | „Podijeli“ PDF ili sliku iz Vibera, WhatsAppa, Moodle app-a, Gmaila direktno sovi (raspored u grupi godine, obavještenje) | `share_target` u manifestu → ekran „Daj sovi dokument“ sa prilogom | Bez OAuth-a. Radi na Androidu (Chrome); iOS PWA ga ne podržava | v1, Etapa 10 (jeftino, velika ušteda koraka na Androidu) |
+| **Web Share Target** (PWA) | „Podijeli“ PDF ili sliku iz Vibera, WhatsAppa, Moodle app-a, Gmaila direktno sovi (raspored u grupi godine, obavještenje) | `share_target` u manifestu → ekran „Daj sovi dokument“ sa prilogom | Bez OAuth-a. Radi na Androidu (Chrome); iOS PWA ga ne podržava | v1, Sprint 11 (jeftino, velika ušteda koraka na Androidu) |
 | **Notion** | Studenti tamo drže bilješke i liste rokova | (a) Već sad: kopiraj stranicu iz Notiona i zalijepi sovi (tekst ide kroz `parse-document`). (b) Javna integracija (OAuth), korisnik izabere bazu, mapiramo polje datuma u rokove | (b) ~3 zahtjeva/s, sadržaj je stablo blokova koje treba rekurzivno čitati ([pregled](https://truto.one/blog/how-to-integrate-with-the-notion-api-architecture-guide-for-b2b-saas.md)); integracija vidi samo ono što korisnik podijeli. Notion nema ICS izvoz baze | (a) odmah, bez koda. (b) Kasnije, samo ako se pokaže potreba |
-| **Anki / Quizlet** | Kartice | Izvoz kartica kao CSV (Anki ga uvozi); uvoz „pojam ⇥ definicija“ teksta | Quizlet više nema javni API; AnkiConnect radi samo lokalno na desktopu, pa nije za PWA | CSV izvoz i uvoz teksta, Etapa 10 |
+| **Anki / Quizlet** | Kartice | Izvoz kartica kao CSV (Anki ga uvozi); uvoz „pojam ⇥ definicija“ teksta | Quizlet više nema javni API; AnkiConnect radi samo lokalno na desktopu, pa nije za PWA | CSV izvoz i uvoz teksta, Sprint 11 |
 | **Microsoft Teams / Google Classroom** | Zadaće sa rokovima | Graph / Classroom API | Classroom traži Workspace for Education domenu; školski računi često traže saglasnost admina. Previše za jednu korisnicu | Ne. Teams/Outlook rokovi idu kroz Outlook ICS |
 | **Zamger i drugi fakultetski sistemi** | Ocjene, prijave ispita | Nema javnog API-ja koji sam našla; scraping krši pravila i puca | Visok | Ne. Rezultati se unose ručno ili kroz sovu (slika ili paste) |
 
@@ -295,11 +295,11 @@ Princip: **jedan generički mehanizam pokriva najviše izvora.** ICS (iCalendar)
 1. **Predlošci sesije:** Standardno 50/15 default; Pomodoro 25/5 + duga pauza, Flowtime, vlastiti niz, slobodno.
 2. **Satnica:** `placeTimes()` automatski poslije `plan()`; svaki blok ima predloženo vrijeme; tab samo prikazuje i pomjera.
 3. **Faktor realizacije i rezerva** su u `plan()` (kod, `input_hash`), ne prijedlog strategista.
-4. **ICS uvoz** ulazi u v1 (Etapa 8 zauzetost, Etapa 10 Moodle rokovi); ICS izvoz u Etapi 12.
-5. **Onboarding** u Etapi 8 prije schedulera, svaki korak preskočiv uz checklist.
+4. **ICS uvoz** ulazi u v1 (Sprint 9 zauzetost, Sprint 11 Moodle rokovi); ICS izvoz u Sprintu 23.
+5. **Onboarding** u Sprintu 9 prije schedulera, svaki korak preskočiv uz checklist.
 6. Ostali prijedlozi iz sekcija 3, 6 i 9 (limit rasta, „Danas ne mogu“, „Imam samo 30 min“, mikro-blokovi, termini učenja, Monte Carlo prognoza, R na dan ispita, kartice kao FSRS objekti, strategist = pravila + LLM, sedmični check-in, Web Share Target, CSV kartica, izvoz podataka) su u PRD-u i ROADMAP-u.
 
-7. **Prioritet i željena ocjena** se u UI pojednostavljuju (sekcija „Cilj“, PRD „Prioritet i režim učenja“ → Šta korisnik vidi), Etapa 8.
+7. **Prioritet i željena ocjena** se u UI pojednostavljuju (sekcija „Cilj“, PRD „Prioritet i režim učenja“ → Šta korisnik vidi), Sprint 9.
 8. **„Znaš li?“** je isključena na Danas (kod ostaje).
 
 9. **Testiranje:** svih 7 izvora ide u v1; kviz je `recall-questions` sa 5–10 pitanja, ne zaseban alat.

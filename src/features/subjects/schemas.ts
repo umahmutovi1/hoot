@@ -95,7 +95,7 @@ export const subjectFormSchema = z
     campaignStartOn: isoDate.nullable(),
     /** "Željena ocjena" in the Cilj section (6–10, optional). */
     targetGrade: z.number().int().min(6).max(10).nullable(),
-    /** Academic year and semester (Stage 10c); absent = leave the saved ones as they are. */
+    /** Academic year and semester (Sprint 13); absent = leave the saved ones as they are. */
     academicYearId: z.string().nullable().optional(),
     semesterNo: z.number().int().min(1).max(12).nullable().optional(),
     assessments: z.array(assessmentFormSchema),

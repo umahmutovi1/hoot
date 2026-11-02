@@ -270,7 +270,7 @@ export const minToClock = (min: number) =>
   `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
 
 /**
- * Classes from a timetable photo or text (PRD "Raspored nastave", Stage 10): the subject is the
+ * Classes from a timetable photo or text (PRD "Raspored nastave", Sprint 11): the subject is the
  * model's id or the closest name (fuse.js); a class of the same subject, kind, day and week
  * parity that already exists is unchanged or changed (new time or room), the rest is new. A class
  * whose subject is not found waits for one to be picked.

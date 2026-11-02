@@ -26,7 +26,7 @@ export interface NoteHit {
   snippet: string
 }
 
-/** What the app does next to an answer (Stage 10 tools); the user confirms any change. */
+/** What the app does next to an answer (Sprint 11 tools); the user confirms any change. */
 export type OwlAction =
   | { kind: 'search_notes'; text: string; hits: NoteHit[] | null }
   | { kind: 'quiz'; text: string }
@@ -39,11 +39,11 @@ export interface ImportProposal {
   documentTitle: string
   periods: PeriodProposal[]
   exams: ExamProposal[]
-  /** Timetable classes; missing in proposals kept from before Stage 10. */
+  /** Timetable classes; missing in proposals kept from before Sprint 11. */
   classes?: ClassProposal[]
-  /** Syllabus per subject (Stage 10c). */
+  /** Syllabus per subject (Sprint 13). */
   syllabus?: SyllabusProposal[]
-  /** A whole study programme: years, semesters and subjects (Stage 11b). */
+  /** A whole study programme: years, semesters and subjects (Sprint 16). */
   program?: ProgramProposal
   /** Found on the web: link to the source and the year it says it is for. */
   origin?: { url: string; academicYear: string | null } | null
@@ -234,7 +234,7 @@ export const useOwlStore = create<OwlState>()(
           (m) => m.type !== 'pending' && !(m.type === 'answer' && m.streaming),
         ),
       }),
-      // Stage 6 kept one device-only chat per day; it is not in the database, start fresh.
+      // Sprint 6 kept one device-only chat per day; it is not in the database, start fresh.
       migrate: () => ({ userId: null, conversationId: null, messages: [] }),
     },
   ),

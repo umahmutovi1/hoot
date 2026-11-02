@@ -7,7 +7,7 @@ import { useDayBoundary } from '@/features/settings/profile'
 import { localDay } from '@/lib/day'
 
 /**
- * "Preskoči" from a notification (Stage 10c): push-action only records `skip_requested_at`; once
+ * "Preskoči" from a notification (Sprint 13): push-action only records `skip_requested_at`; once
  * the app is open and the plan is built, today's block is skipped with the same rule as the button
  * (`skipBlock()`, with its toast and undo). A request for a day that has passed is just cleared.
  */

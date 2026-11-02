@@ -7,7 +7,7 @@ import type { Assessment, Deadline, Subject, SubjectWithAssessments } from './mo
 import type { AssessmentForm, DeadlineForm, SubjectForm } from './schemas'
 
 // IDs come from the client (crypto.randomUUID()), so every write is an idempotent upsert.
-// The offline queue (Stage 6) will wrap these same writes.
+// The offline queue (Sprint 6) will wrap these same writes.
 
 export const subjectsKey = (userId: string | undefined) => ['subjects', userId] as const
 export const deadlinesKey = (userId: string | undefined) => ['deadlines', userId] as const
@@ -25,7 +25,7 @@ export function useSubjects() {
       const { data, error } = await supabase
         .from('subjects')
         .select('*, assessments(*)')
-        // Archived exams are out of every screen, the plan and grades (decision after 10b).
+        // Archived exams are out of every screen, the plan and grades (decision after Sprint 12).
         .is('assessments.archived_at', null)
         .order('created_at')
       if (error) throw error
@@ -61,7 +61,7 @@ export function useArchivedExams(subjectId: string) {
   })
 }
 
-/** Archive (or restore) an exam: out of Danas, the calendar, the plan and grades (after 10b). */
+/** Archive (or restore) an exam: out of Danas, the calendar, the plan and grades (after Sprint 12). */
 export function useArchiveExam(subjectId: string) {
   const userId = useUserId()
   const queryClient = useQueryClient()

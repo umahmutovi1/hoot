@@ -2,7 +2,7 @@ import { diffDays, localDay, type DayBoundary, type LocalDate } from '@/lib/day'
 import { ratingOf, type Recall } from '.'
 
 /**
- * Personal FSRS parameters (ROADMAP 11a, RESEARCH-ML 5.3): the FSRS-6 optimizer of
+ * Personal FSRS parameters (ROADMAP Sprint 15, RESEARCH-ML 5.3): the FSRS-6 optimizer of
  * `@open-spaced-repetition/binding` (threadless WASI build in a Web Worker) fits the 21 weights
  * to the user's `review_logs` from `MIN_REVIEWS` reviews on, and again as reviews grow. They are
  * used only when their out-of-sample log loss (time-series splits) beats the default weights.
@@ -34,7 +34,7 @@ export interface ReviewLog {
   itemId: string
   reviewedAt: string
   recall: Recall
-  /** 1–4 when logged (Stage 11a); older rows have only `recall`. */
+  /** 1–4 when logged (Sprint 15); older rows have only `recall`. */
   rating: number | null
 }
 

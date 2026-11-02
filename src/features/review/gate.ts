@@ -5,7 +5,7 @@ import type { CardReview, RecallSource, UnitReview } from './apply'
 
 /**
  * Recall gate (PRD "Recall gate", "Testiranje bez sadržaja literature"): after "Pročitano" a
- * chapter is tested with what exists for it. Stage 9 sources: exam questions linked through
+ * chapter is tested with what exists for it. Sprint 10 sources: exam questions linked through
  * topics, the unit's notes (without AI), subheadings, blurting and cards. Ratings come after the
  * answer is shown; each item rated here also updates its own memory (questions, cards).
  */
@@ -21,7 +21,7 @@ export interface GateTarget {
 
 export type GateSource = 'exam_question' | 'notes' | 'outline' | 'card' | 'page_photo' | 'general'
 
-/** Sources the AI writes questions for (recall-questions, Stage 10). */
+/** Sources the AI writes questions for (recall-questions, Sprint 11). */
 export type AiSource = 'notes' | 'page_photo' | 'general'
 
 /** AI questions loaded for a test, by source. */

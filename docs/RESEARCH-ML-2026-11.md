@@ -1,6 +1,6 @@
 # Hoot — istraživanje: ML za više korisnika i personalizacija
 
-2. nov 2026 · poslije `v0.10.6`. Nastavak [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md). Odluke su prenesene u [ROADMAP.md](ROADMAP.md) kao **Etapa 11e — Personalizacija i ML za više korisnika** (dio pred drugog korisnika ide u „Otvaranje za više korisnika“ u Kasnije) i u [PRD.md](PRD.md) („Onboarding“ korak 3, „Dopune, 2. nov 2026“). PRD je izvor istine; ovdje ostaju obrazloženje i izvori.
+2. nov 2026 · poslije `v0.10.6`. Nastavak [RESEARCH-ML-2026-10.md](RESEARCH-ML-2026-10.md). Odluke su prenesene u [ROADMAP.md](ROADMAP.md) kao **Sprint 22 — Personalizacija i ML za više korisnika** (dio pred drugog korisnika ide u „Otvaranje za više korisnika“ u Kasnije) i u [PRD.md](PRD.md) („Onboarding“ korak 3, „Dopune, 2. nov 2026“). PRD je izvor istine; ovdje ostaju obrazloženje i izvori.
 
 ## Sažetak
 
@@ -31,7 +31,7 @@
 
 ### 2.1 Problem
 
-Primjer za model odrađenosti je AI blok sa vremenom (`plan_start_min`) i oznakom iz `blockLabel()` (odrađen / preskočen / nepotvrđen). Ručni blok (`plan_blocks.origin = 'user'`) se preskače. Razlog je bio ispravan: korisnik ručni blok bira jer tada namjerava učiti, pa je to pristrasan uzorak (selection bias). Ali posljedica je gora od pristrasnosti. Termin koji korisnik uvijek bira sam nikad ne dobije mjerenje, pa ga Hoot nikad ne predloži. Uz uvoz plana sa fiksiranim terminima (Etapa 11d) ovo postaje češće.
+Primjer za model odrađenosti je AI blok sa vremenom (`plan_start_min`) i oznakom iz `blockLabel()` (odrađen / preskočen / nepotvrđen). Ručni blok (`plan_blocks.origin = 'user'`) se preskače. Razlog je bio ispravan: korisnik ručni blok bira jer tada namjerava učiti, pa je to pristrasan uzorak (selection bias). Ali posljedica je gora od pristrasnosti. Termin koji korisnik uvijek bira sam nikad ne dobije mjerenje, pa ga Hoot nikad ne predloži. Uz uvoz plana sa fiksiranim terminima (Sprint 19) ovo postaje češće.
 
 ### 2.2 Prijedlog
 
@@ -149,7 +149,7 @@ U onboarding koraku 3 (Ritam), ispod „Kad ti je najlakše učiti?“, koje dob
 1. Ručni blokovi ulaze u model odrađenosti sa težinom i indikatorom `manual`; trajanje ih već koristi i ostaje tako.
 2. Simulator prelazi na populaciju tipova sa metrikom po tipu, hladnim startom i testom pogrešnog priora; baseline i `--check` po tipu.
 3. „Šta te najviše koči?“ u onboarding koraku 3, do 3 izbora, svaki odgovor je prior postojećeg mehanizma; „Kad ti je najlakše učiti?“ dobija „Različito / ne znam“.
-4. Etapa 11e: tačke 1–3, alarm u monitoru. Pristanak, agregirani izvoz i zajednički trening idu u „Otvaranje za više korisnika“, prije drugog korisnika.
+4. Sprint 22: tačke 1–3, alarm u monitoru. Pristanak, agregirani izvoz i zajednički trening idu u „Otvaranje za više korisnika“, prije drugog korisnika.
 
 ## Otvorena pitanja
 

@@ -1,6 +1,6 @@
 # Hoot — istraživanje: adaptivni scheduling i ML
 
-25. okt 2026 · tokom Etape 10c. Nastavak sekcije 6 iz [RESEARCH-2026-10.md](RESEARCH-2026-10.md). Odluke su prenesene u [ROADMAP.md](ROADMAP.md) kao **Etapa 11a — ML temelj** i u [PRD.md](PRD.md) („Procjena težine i vremena“, „Termini učenja“, „Prognoza spremnosti“). PRD je izvor istine; ovdje ostaju obrazloženje i izvori.
+25. okt 2026 · tokom Sprinta 13. Nastavak sekcije 6 iz [RESEARCH-2026-10.md](RESEARCH-2026-10.md). Odluke su prenesene u [ROADMAP.md](ROADMAP.md) kao **Sprint 15 — ML temelj** i u [PRD.md](PRD.md) („Procjena težine i vremena“, „Termini učenja“, „Prognoza spremnosti“). PRD je izvor istine; ovdje ostaju obrazloženje i izvori.
 
 ## Sažetak
 
@@ -43,9 +43,9 @@ Lista želja iz posta: (1) uvoz dokumenta „bez reinterpretacije mojih brojeva�
 
 Šta to znači za Hoot:
 
-- **Hoot pokriva tačke 1–4 i 6** u jednom lancu (uvoz s pregledom, dostupnost, replan, minute po jedinici, boje predmeta). Tačka 5 je ICS izvoz u Etapi 12, a upis u Google Calendar je pod „Kasnije“. To je diferencijacija koju vrijedi pokazati u portfoliju.
+- **Hoot pokriva tačke 1–4 i 6** u jednom lancu (uvoz s pregledom, dostupnost, replan, minute po jedinici, boje predmeta). Tačka 5 je ICS izvoz u Sprintu 23, a upis u Google Calendar je pod „Kasnije“. To je diferencijacija koju vrijedi pokazati u portfoliju.
 - **„Ne izmišljaj moje brojeve“ je ML zahtjev.** Kad dokument nosi trajanja („modul 2 dana“), to je najjači prior za taj izvor. U modelu 5.1 korisnikov broj ulazi kao prior sa vlastitom varijansom, koriguje se ličnim planning-fallacy faktorom i nikad se ne prepisuje (`assigned_by = 'user'`). „Koliko sati je jedan dan“ je upravo `b_korisnik`: naučen, a ne pitanje u postavkama.
-- **„Budžet po zadatku unutar modula“** je raspodjela budžeta modula na jedinice po težini i obimu. To `estimates` već radi za stranice; ostaje da uvoz zna za trajanje na nivou modula. Prijedlog za `parse-document` šemu, van ove etape.
+- **„Budžet po zadatku unutar modula“** je raspodjela budžeta modula na jedinice po težini i obimu. To `estimates` već radi za stranice; ostaje da uvoz zna za trajanje na nivou modula. Prijedlog za `parse-document` šemu, van ovog sprinta.
 
 ### 1.2 Šta ostala dva Reddit threada kažu
 
@@ -77,10 +77,10 @@ Lista želja iz posta: (1) uvoz dokumenta „bez reinterpretacije mojih brojeva�
 - **Oznake za model odrađenosti (5.2) su najvažnija pouka.** Hoot već ne označava blok kao odrađen sam od sebe: odrađen je samo uz timer ili „Odradila sam bez timera“. Ali prošli blok koji ostane `planned` ili `missed` nije potvrđeno propušten: korisnica je možda učila i nije označila.
   - **Model mora razlikovati tri ishoda:** odrađen (potvrđeno), preskočen (eksplicitno, „Preskoči“ ili „Danas ne mogu“) i nepotvrđen (vrijeme prošlo, ništa označeno).
   - **Nepotvrđeni ulaze u model sa manjom težinom**, kao šum u oznakama, a ne kao siguran neuspjeh.
-  - **Notifikacija „Dokle ste stigli?“** (Etapa 12) smanjuje taj šum, pa joj raste vrijednost. Ide u Etapu 11a kao napomena uz migraciju `ml_signals`.
+  - **Notifikacija „Dokle ste stigli?“** (Sprint 23) smanjuje taj šum, pa joj raste vrijednost. Ide u Sprint 15 kao napomena uz migraciju `ml_signals`.
 - **Lokalni ML je i odgovor na cijenu.** Korisnici odbijaju 10+ $ mjesečno. Modeli koji rade u browseru (inference u TS-u) ne koštaju ništa po korisniku, a AI ostaje samo tamo gdje mora (uvoz, objašnjenja) i nosi limite. Isti obrazac koristi Planif.ai.
 - **„Potvrda prije upisa“ se ponavlja u oba threada.** Hoot već ima pregled prije spašavanja; to vrijedi i za strateške akcije (jedan tap, nikad automatski).
-- **Sync sa kalendarom je uslov za svakodnevno korištenje.** Hoot ima ICS uvoz zauzetosti, a ICS izvoz je u Etapi 12. Upis u Google Calendar je pod „Kasnije“ i ostaje tamo dok se app ne otvori za više korisnika (Google verifikacija).
+- **Sync sa kalendarom je uslov za svakodnevno korištenje.** Hoot ima ICS uvoz zauzetosti, a ICS izvoz je u Sprintu 23. Upis u Google Calendar je pod „Kasnije“ i ostaje tamo dok se app ne otvori za više korisnika (Google verifikacija).
 - **Van ML-a, za ROADMAP „Kasnije“ ako se ponovi:** tamni režim je već tamo; brzo dodavanje (widget ili Web Share Target, koji već postoji) i login (magic link na startu je ista prepreka kao Planif.ai „sign in“, ali je za Hoot potreban jer se podaci sinhronizuju).
 
 ---
@@ -91,10 +91,10 @@ Lista želja iz posta: (1) uvoz dokumenta „bez reinterpretacije mojih brojeva�
 | --- | --- | --- |
 | Trajanje (`src/lib/estimates/`) | `rate = k/(k+5)·izmjereno + 5/(k+5)·baza`, korekcija težine `n/(n+3)`, faktor brzine `j/(j+2)` | Jačine priora (5, 3, 2) su pogođene. Rezultat je jedan broj, bez nesigurnosti. Brzina ne zavisi od termina ni načina rada osim preko para izvor × način |
 | Realizacija ρ (`scheduler/realization.ts`) | Jedan ρ za 14 dana, shrinkage prema 0.8 | Isti ρ za jutro i veče, radni dan i vikend, lak i težak blok |
-| Termini (`scheduler/place.ts:92`) | 1 u željenom dijelu dana, inače 0.6 | Placeholder do Etape 11 |
+| Termini (`scheduler/place.ts:92`) | 1 u željenom dijelu dana, inače 0.6 | Placeholder do Sprinta 17 |
 | FSRS (`src/lib/srs/`) | ts-fsrs v6, default težine, ciljni R po prioritetu, klamp na datum ispita | Bez ličnih parametara. `review_logs` nema ocjenu 1–4, stanje, težinu ni R prije ponavljanja. Redoslijed ponavljanja je heuristika (bliži ispit, pa niži R) |
 | Raspodjela minuta (`scheduler/plan.ts`) | Pohlepno po danima: hitnost, waterfill, ALAP za kampanje, deficit | Nema dokaza da je raspodjela izvodljiva kad jeste. Property testovi provjeravaju kapacitet i determinizam, ali ne optimalnost |
-| Prognoza | Planiran Monte Carlo iz bootstrapa dnevnih minuta (Etapa 11) | Bootstrap ne zna da je ispitni rok drugačiji od semestra i ne koristi nesigurnost trajanja |
+| Prognoza | Planiran Monte Carlo iz bootstrapa dnevnih minuta (Sprint 17) | Bootstrap ne zna da je ispitni rok drugačiji od semestra i ne koristi nesigurnost trajanja |
 
 ---
 
@@ -166,7 +166,7 @@ P(done) = σ(β₀ + β_dio_dana + β_vikend + β_kind + β_demand·demand + β_
 - **Interpretabilnost:** koeficijenti se prevode u rečenice („navečer ti propadne 40 % blokova“), u skladu sa „Uvidi“ u PRD-u.
 - **Oznake (1.2):** odrađen = 1, eksplicitno preskočen = 0, nepotvrđen (vrijeme prošlo bez oznake) = 0 sa manjom težinom. Nikad se ne zaključuje „odrađen“ samo iz proteklog vremena.
 - **Lični update:** Laplaceova aproksimacija oko priora iz Pythona, update po bloku u TS-u. Gradient boosting tek kad bude podataka od više korisnika, i samo ako backtest pokaže dobitak (log loss, Brier, kalibracijska kriva).
-- **Thompson za termine:** ostaje kako je planirano u Etapi 11, uz sigurno istraživanje: uzorkuje se samo među terminima unutar ε od najboljeg, najviše jedan istraživački blok sedmično. Izvor obrasca: kontekstualni banditi u mobilnim intervencijama ([Drink Less, Thompson sampling](https://arxiv.org/abs/2311.14359v1)).
+- **Thompson za termine:** ostaje kako je planirano u Sprintu 17, uz sigurno istraživanje: uzorkuje se samo među terminima unutar ε od najboljeg, najviše jedan istraživački blok sedmično. Izvor obrasca: kontekstualni banditi u mobilnim intervencijama ([Drink Less, Thompson sampling](https://arxiv.org/abs/2311.14359v1)).
 
 ### 5.3 FSRS
 
@@ -203,12 +203,12 @@ P(done) = σ(β₀ + β_dio_dana + β_vikend + β_kind + β_demand·demand + β_
 
 1. Podaci u tri sloja: javni Anki dataset za FSRS, TS simulator sa pravim `plan()`, hijerarhijski prior populacije pa lični posterior.
 2. Python (`ml/`) trenira, TS (`src/lib/`) izvršava; artefakti su JSON sa verzijom u `input_hash`.
-3. Redoslijed: higijena podataka → `ml/` i simulator i test izvodljivosti → model trajanja → odrađenost bloka i termini → lični FSRS i ponavljanja ciljana na ispit → forecast iz posteriora. Etapa 11a u ROADMAP-u.
+3. Redoslijed: higijena podataka → `ml/` i simulator i test izvodljivosti → model trajanja → odrađenost bloka i termini → lični FSRS i ponavljanja ciljana na ispit → forecast iz posteriora. Sprint 15 u ROADMAP-u.
 4. LP i Hungarian samo ako test izvodljivosti, odnosno simulator, pokažu potrebu.
 
 ## Otvorena pitanja
 
-- Trajanja na nivou modula iz uvezenog dokumenta (1.1): proširiti šemu `parse-document` i koristiti ih kao prior. Odluka van Etape 11a.
+- Trajanja na nivou modula iz uvezenog dokumenta (1.1): proširiti šemu `parse-document` i koristiti ih kao prior. Odluka van Sprinta 15.
 - COOP/COEP za FSRS optimizer u browseru: odlučiti nakon spike-a (5.3).
 
 ## Izvori

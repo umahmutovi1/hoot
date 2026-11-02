@@ -198,7 +198,7 @@ TABLES: dict[str, list[str]] = {
         "points_max",
     ],
     "availability_days": ["id", "on_date", "cap_min", "slots"],
-    # Energy of the day (Stage 11b): joined to blocks by date; no row = normal.
+    # Energy of the day (Sprint 16): joined to blocks by date; no row = normal.
     "day_energy": ["on_date", "energy"],
     "profiles": [
         "timezone",

@@ -1,5 +1,5 @@
 // Pulls connected iCal feeds (source 'ics'; Google calendars sync in google-calendar-sync) into external_events (PRD "Povezani kalendari i integracije"): busy
-// time and, from Stage 10, deadline feeds (Moodle), whose events the app offers as deadlines.
+// time and, from Sprint 11, deadline feeds (Moodle), whose events the app offers as deadlines.
 // No LLM call and no AI limit. Two callers:
 //   - the app (user JWT): the user's feeds not synced in the last 30 min, or one feed with force;
 //   - pg_cron (header x-cron-secret = CRON_SECRET): every feed not synced in the last 3 h.

@@ -6,7 +6,7 @@ import { ChevronLeftIcon } from '@/components/icons'
 import { useCrumbs } from './useCrumbs'
 
 /**
- * Second row under the top bar on every screen below the main ones (decision after 8b): ‹ goes
+ * Second row under the top bar on every screen below the main ones (decision after Sprint 9b): ‹ goes
  * back to where you came from (or up one level without history), and the crumbs show where the
  * screen sits in the app; each one above the screen is a link.
  */

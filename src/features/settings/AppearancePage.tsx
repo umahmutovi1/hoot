@@ -6,7 +6,7 @@ import { useProfile, useUpdateProfile } from './profile'
 import { applyTheme, isTheme, THEMES, type Theme } from './theme'
 
 /**
- * Postavke → Opće → Izgled (Izgled.dc.html, Stage 10b): five light themes. A tap applies the theme
+ * Postavke → Opće → Izgled (Izgled.dc.html, Sprint 12): five light themes. A tap applies the theme
  * at once (no Save) and syncs it through `profiles.theme`; the toast can undo it.
  */
 export function AppearancePage() {

@@ -10,7 +10,7 @@ const choice =
   'flex flex-col gap-0.5 rounded-[20px] glass px-4 py-3.5 text-left disabled:opacity-60'
 
 /**
- * Right under "Sesija završena" (decision after 8b): undo an end that came too early or by
+ * Right under "Sesija završena" (decision after Sprint 9b): undo an end that came too early or by
  * accident. "Nastavi ovu sesiju" opens it again; "Počni iznova" starts the same session from zero
  * and asks whether the minutes just studied stay as their own session; "Odbaci" deletes it.
  */

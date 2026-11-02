@@ -38,7 +38,7 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  # ml/ (Stage 11a): export, labels and their parity with src/lib/ml. Only the dev group: the
+  # ml/ (Sprint 15): export, labels and their parity with src/lib/ml. Only the dev group: the
   # model and notebook libraries are not needed for the tests.
   ml:
     runs-on: ubuntu-latest

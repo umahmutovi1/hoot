@@ -16,7 +16,7 @@ import type { PlanToday } from './usePlanToday'
 const OPTIONS = [30, 45, 60, 90]
 
 /**
- * "Odradila sam bez timera" (decision, Stage 10b): a block studied without the timer becomes a
+ * "Odradila sam bez timera" (decision, Sprint 12): a block studied without the timer becomes a
  * manual session tied to it, so the block is done and its material counts as covered. The usual
  * end form follows (how far, difficulty); manual sessions never feed the calibration.
  */

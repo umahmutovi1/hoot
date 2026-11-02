@@ -3,7 +3,7 @@ import type { SlotPart } from '@/lib/schedule/rhythm'
 import { sigmoid, type Rng } from './random'
 
 /**
- * The simulated student (RESEARCH-ML 3, ROADMAP 11a "Simulator"). Parameters come from the
+ * The simulated student (RESEARCH-ML 3, ROADMAP Sprint 15 "Simulator"). Parameters come from the
  * literature, to be fitted to real logs later; every one is part of the seed config, so a run is
  * reproducible. Block completion is a logistic model on the same features the app's model will
  * see, plus a per-subject avoidance the app does not know (it has to find it).

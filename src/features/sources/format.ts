@@ -35,7 +35,7 @@ export function statusLabel(
   t: TFunction,
   kind: Unit['kind'],
   level: number,
-  /** A chapter not read yet but started: "Djelimično · 2/9" (decision after 10b). */
+  /** A chapter not read yet but started: "Djelimično · 2/9" (decision after Sprint 12). */
   partial?: Pick<Unit, 'amount' | 'read_amount'>,
 ) {
   const l = Math.min(3, Math.max(0, Math.round(level))) as 0 | 1 | 2 | 3

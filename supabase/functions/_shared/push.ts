@@ -10,7 +10,7 @@ export interface DueJob {
   url: string | null
   send_at: string
   block_id?: string | null
-  /** Button texts and the "Preskočeno" notification, in the user's language (Stage 10c). */
+  /** Button texts and the "Preskočeno" notification, in the user's language (Sprint 13). */
   actions?: { start: string; skip: string; skippedTitle: string; skippedBody: string } | null
 }
 
