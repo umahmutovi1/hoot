@@ -15,7 +15,7 @@ Plan izvedbe od praznog foldera do `v1.0.0`. Specifikacija je u [PRD.md](PRD.md)
 
 **Commitovi i PR-ovi.** Na engleskom, Conventional Commits (`feat(subjects): add exam presets`), bez `Co-Authored-By` trailera. PR naslov u istom formatu, opis: Summary / Screenshots / Test plan.
 
-**Verzije.** Tag `v0.<sprint>.0` nakon svakog sprinta od Sprinta 17, `v1.0.0` nakon Sprinta 23. Tagovi do `v0.10.6` (Sprint 16) su po starim etapama, vidi tabelu ispod. GitHub Release sa kratkim changelogom.
+**Verzije.** Tag `v0.<sprint>.0` nakon svakog sprinta od Sprinta 17, `v1.0.0` nakon Sprinta 23. Tagovi do `v0.10.6` (Sprint 16) su po starim etapama, vidi tabelu ispod. Naslov GitHub Releasea je `<tag> — Sprint N: <naziv>` (i za stare tagove, od 2. nov 2026). GitHub Release sa kratkim changelogom.
 
 **Issues.** Jedan Milestone po sprintu, issue po feature-u iz PRD tabele. Labeli: `feat`, `bug`, `chore`, `ai`, `db`, `design`.
 
