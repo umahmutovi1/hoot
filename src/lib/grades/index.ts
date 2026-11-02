@@ -304,3 +304,33 @@ export function retakeStatus(makeup: GradeItem, items: readonly GradeItem[]): Re
 function sum(values: number[]) {
   return values.reduce((s, v) => s + v, 0)
 }
+
+/**
+ * Grade estimate from readiness (PRD "Projekcija ocjene" → Procjena ocjene iz spremnosti,
+ * Sprint 17): every remaining slot scores `share` of its points (the forecast's coverage × memory
+ * on the exam day); a slot whose threshold the share misses gives nothing. 5 = not passed.
+ */
+export function gradeFromShare(projection: Projection, subject: GradeSubject, share: number) {
+  const s = Math.max(0, Math.min(1, share))
+  const points =
+    projection.have +
+    sum(
+      projection.remainingSlots.map((slot) =>
+        s * 100 >= (slot.passMinPct ?? 0) - 1e-9 ? slot.worth * s : 0,
+      ),
+    )
+  return gradeFor((points / subject.pointsTotal) * 100, scaleOf(subject.scale))
+}
+
+/** The estimate as a range: grades at the 10th, 50th and 90th percentile of the score share. */
+export function gradeRange(
+  projection: Projection,
+  subject: GradeSubject,
+  score: { p10: number; p50: number; p90: number },
+) {
+  return {
+    low: gradeFromShare(projection, subject, score.p10),
+    likely: gradeFromShare(projection, subject, score.p50),
+    high: gradeFromShare(projection, subject, score.p90),
+  }
+}

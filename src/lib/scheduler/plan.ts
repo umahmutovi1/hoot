@@ -727,9 +727,19 @@ function run(
         const floor = Math.min(must.get(sid) ?? 0, poolMinutes(sid))
         let lack = floor - shares.get(sid)!
         if (lack <= 0) continue
-        // Unused minutes only as a piece the day would keep (whole block or the subject's end).
+        // Unused minutes only as a piece the day would keep: a new block of at least the minimum,
+        // a block that stays within one study interval or ends on whole intervals, or the
+        // subject's end. Sprint 17: a short day's remainder (27 min with a 20 min block) used to
+        // be dropped, so a feasible plan could end with a deficit.
+        const keeps = (add: number) => {
+          const own = shares.get(sid)!
+          const next = own + add
+          if (next >= poolMinutes(sid)) return true
+          if (own === 0) return add >= minBlock
+          return next <= interval || next % interval === 0
+        }
         let gained = Math.min(lack, Math.max(0, spare))
-        if (gained < minBlock && shares.get(sid)! + gained < poolMinutes(sid)) gained = 0
+        if (!keeps(gained)) gained = 0
         spare -= gained
         lack -= gained
         for (const [other] of [...top].reverse()) {
@@ -745,6 +755,12 @@ function run(
           lack -= taken
           gained += taken
           spare += give - taken
+        }
+        // What a dropped remainder freed above can still go to this subject.
+        const more = Math.min(lack, Math.max(0, spare))
+        if (more > 0 && (gained > 0 || keeps(more))) {
+          gained += more
+          spare -= more
         }
         shares.set(sid, shares.get(sid)! + gained)
       }

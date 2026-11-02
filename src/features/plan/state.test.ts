@@ -642,3 +642,36 @@ describe('scope after a partial exam (Sprint 17)', () => {
     )
   })
 })
+
+describe('slot signals in the plan (Sprint 17)', () => {
+  const session = (date: string, minutes: number, focus: number) => ({
+    startedAt: zonedInstant(date, minutes, TZ).toISOString(),
+    blockId: null,
+    minutes: 50,
+    focus,
+    focusReasons: null,
+    distractions: 0,
+    appLeaves: 0,
+    units: [],
+  })
+  const days = Array.from({ length: 10 }, (_, i) => addDays(TODAY, -1 - i))
+  const signals = {
+    sessions: days.flatMap((d) => [session(d, 20 * 60, 3), session(d, 9 * 60, 1)]),
+    plannedStart: new Map<string, string>(),
+  }
+
+  it('better focus in the evening raises its slot score; the hash follows', () => {
+    const plain = buildPlanState(inputs(), { now: NOW, boundary }).state
+    const nudged = buildPlanState(inputs({ signals }), { now: NOW, boundary }).state
+    const weekday = (s: typeof plain) => s.slotScores!.weekday
+    expect(weekday(nudged).evening).toBeGreaterThan(weekday(plain).evening)
+    expect(weekday(nudged).morning).toBeLessThan(weekday(plain).morning)
+    expect(inputHash(nudged)).not.toBe(inputHash(plain))
+    // No sessions: the same state as without signals.
+    const empty = buildPlanState(inputs({ signals: { sessions: [], plannedStart: new Map() } }), {
+      now: NOW,
+      boundary,
+    }).state
+    expect(inputHash(empty)).toBe(inputHash(plain))
+  })
+})

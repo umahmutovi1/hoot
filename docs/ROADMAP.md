@@ -384,11 +384,11 @@ Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj
 - [x] Studijski program s interneta (PRD „Fakultet s interneta“ → Studijski program s interneta): `FOUND_KINDS` + `study_program`, pretraga traži i cijeli program (isti poziv i keš), Nađeno → `study_program` pregled, pa kartica „Uvezi i detalje za N. godinu“ kroz plan i program; zalijepljen link / „Pogodi sama“ sa više godina → `study_program` (pravilo uz `looksLikeSyllabus`) + testovi
 - [ ] Progres po izvoru, ispitu, predmetu i temi; jačina po temama (`recharts`)
 - [ ] Statistika: sati vs plan, ispunjenost i ρ, fokus, efikasnost po dobu dana, poređenje predložaka sesije (SQL view / RPC)
-- [ ] `src/lib/slots/`: signali po terminu (fokus uz razloge, brzina normalizovana težinom, odrađenost Beta, kašnjenje starta, ometanja), ocjena termina sa shrinkage-om i polu-životom 6 sedmica, Thompson uzorkovanje sa seedom + testovi; ulaz u `placeTimes()` i `input_hash`
+- [x] `src/lib/slots/`: signali po terminu (fokus uz razloge, brzina normalizovana težinom, odrađenost Beta, kašnjenje starta, ometanja), ocjena termina sa shrinkage-om i polu-životom 6 sedmica, Thompson uzorkovanje sa seedom + testovi; ulaz u `placeTimes()` i `input_hash`
 - [ ] Kartice `avoid_slot` / `add_slot` (≥ 6 mjerenja), mapa termina na Napretku („Uči se… još N sesija“)
 - [ ] `forecast()` Monte Carlo (uzorci iz posteriora trajanja i odrađenosti bloka iz Sprinta 15; bootstrap dnevnih minuta dok modela nema, seed) + testovi; prognoza spremnosti kao raspon + vjerovatnoća na Danas i Napredak; procjena ocjene iz prognoze × R na dan ispita (PRD „Prognoza spremnosti“, „Projekcija ocjene“)
 - [ ] Spremnost dan prije ispita (`readiness_before`, bodovi su iz Sprinta 5), signal precjenjivanja; `celebrating` 120 px u toastu/modalu za položen ispit
-- [ ] `src/lib/strategist/`: kandidati akcija iz pravila sa izračunatim efektom + testovi
+- [x] `src/lib/strategist/`: kandidati akcija iz pravila sa izračunatim efektom + testovi
 - [ ] `strategist` edge funkcija (sedmično / na dugme): bira najviše 3 kandidata i objašnjava (Zod: `candidate_id`), bez refleksija dok je Gemini free tier; odobravanje akcija jednim tapom → replan; akcije `set_priority`, `boost_priority`, `set_mode`, `set_campaign_start`, `avoid_slot`, `add_slot`; zaostatak po predavanjima i jačina po temama u ulazu
 - [ ] Sedmični check-in (nedjelja): izuzeci za sljedeću sedmicu, prognoza, do 3 akcije; radi i bez AI-ja
 - [ ] Uvidi na Napretku (PRD „Termini učenja“ → Uvidi): najproduktivniji termini, ometanja (`visibilitychange` + „Ometena sam“; kolone `app_leaves` / `app_away_sec` iz Sprinta 15), ritam sesije, savjeti iz tabele Tehnike; svaki uvid sa jednom akcijom

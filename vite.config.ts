@@ -59,6 +59,28 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rolldownOptions: {
+      output: {
+        // The app chunk reached Workbox's 2 MiB precache limit (Sprint 17): libraries go to their
+        // own chunks, still precached, so each stays under it and changes less often.
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react',
+              test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/,
+            },
+            { name: 'supabase', test: /node_modules[\\/]@supabase[\\/]/ },
+            {
+              name: 'markdown',
+              test: /node_modules[\\/](katex|react-markdown|remark-[^\\/]+|rehype-[^\\/]+|micromark[^\\/]*|mdast-[^\\/]+|hast-[^\\/]+|unified|unist-[^\\/]+)[\\/]/,
+            },
+            { name: 'vendor', test: /node_modules[\\/]/ },
+          ],
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
