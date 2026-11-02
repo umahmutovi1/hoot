@@ -37,6 +37,7 @@ import {
   asProgress,
   materialOf,
   rateOf,
+  scopeExamOf,
   toScopeRows,
   type AssessmentUnit,
   type SourceWithUnits,
@@ -146,7 +147,8 @@ export function examDate(exam: Assessment, boundary: DayBoundary): LocalDate {
 /**
  * Rough sources (decision Sprint 9b): without manual scope rows, their parts are split in order
  * over the subject's partial exams that are not contingent (two partials: first half I, second
- * half II); `scope_all` exams cover everything anyway.
+ * half II); `scope_all` exams cover everything anyway. Past and passed partials count too
+ * (Sprint 17), so the first half stays with I after its date instead of moving to II.
  */
 export function roughScopeRows(
   units: { id: string }[],
@@ -355,8 +357,10 @@ export function buildPlanState(
       .map((a) => ({ a, on: examDate(a, boundary) }))
       .filter((x) => x.on > today)
       .sort((x, y) => (x.on < y.on ? -1 : x.on > y.on ? 1 : x.a.id.localeCompare(y.a.id)))
-    const partials = exams
-      .filter((x) => x.a.kind === 'partial' && !x.a.scope_all && !x.a.contingent)
+    const partials = subject.assessments
+      .filter((a) => a.kind === 'partial' && !a.scope_all && !a.contingent)
+      .map((a) => ({ a, on: examDate(a, boundary) }))
+      .sort((x, y) => (x.on < y.on ? -1 : x.on > y.on ? 1 : x.a.id.localeCompare(y.a.id)))
       .map((x) => x.a)
     const subjectSources = allSources.filter((s) => s.subject_id === subject.id)
     const extraRows = subjectSources
@@ -369,7 +373,9 @@ export function buildPlanState(
         ),
       )
     for (const { a, on } of exams) {
-      const scope = scopeOf({ id: a.id, scopeAll: a.scope_all }, allUnitsForScope, [
+      // A makeup covers what the exam it repeats covers.
+      const scoped = scopeExamOf(a, subject.assessments)
+      const scope = scopeOf({ id: scoped.id, scopeAll: scoped.scope_all }, allUnitsForScope, [
         ...rows,
         ...extraRows,
       ])

@@ -891,6 +891,7 @@
     },
     "retakeOf": "Popravni za",
     "retakeOfNone": "Prvo dodaj ispit koji popravni ponavlja.",
+    "makeupScope": "Isto gradivo kao {{title}}.",
     "makeupTitle": "Popravni: {{title}}",
     "steps": {
       "label": "Koraci",

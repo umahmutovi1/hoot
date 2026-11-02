@@ -209,7 +209,33 @@ export function shortExamLabel(title: string): string {
   return roman ? roman[1]! : title
 }
 
-/** Exams that take part of the material: the ones the ObimIspita segments choose between. */
-export function partialExams<T extends Pick<Assessment, 'scope_all' | 'at'>>(exams: T[]): T[] {
-  return exams.filter((e) => !e.scope_all).sort((a, b) => a.at.localeCompare(b.at))
+/**
+ * Exams that take part of the material: the ones the ObimIspita segments choose between. A makeup
+ * is not one: it inherits the scope of the exam it repeats (`scopeExamOf()`).
+ */
+export function partialExams<T extends Pick<Assessment, 'scope_all' | 'at' | 'kind'>>(
+  exams: T[],
+): T[] {
+  return exams
+    .filter((e) => !e.scope_all && e.kind !== 'makeup')
+    .sort((a, b) => a.at.localeCompare(b.at))
+}
+
+/**
+ * The exam whose scope rows an exam uses: a makeup the one it repeats (`retake_of`, also an
+ * integral's makeup), every other exam itself.
+ */
+export function scopeExamOf<T extends Pick<Assessment, 'id' | 'scope_all' | 'retake_of'>>(
+  exam: T,
+  all: T[],
+): T {
+  let current = exam
+  const seen = new Set([exam.id])
+  while (current.retake_of) {
+    const target = all.find((a) => a.id === current.retake_of)
+    if (!target || seen.has(target.id)) break
+    seen.add(target.id)
+    current = target
+  }
+  return current
 }

@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils'
 import { useScope, useSources } from '@/features/sources/api'
 import {
   examProgress,
+  scopeExamOf,
   materialOf,
   subjectMaterialProgress,
   toScopeRows,
@@ -134,7 +135,11 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
       replacesPartials={exam.kind === 'integral' && hasPartials}
       retakeNeeded={nested && retakeStatus(itemOf(exam.id), items) === 'needed'}
       highlight={exam.id === next?.id}
-      progress={hasMaterial ? examProgress(exam, materials, scopeRows).fraction : undefined}
+      progress={
+        hasMaterial
+          ? examProgress(scopeExamOf(exam, subject.assessments), materials, scopeRows).fraction
+          : undefined
+      }
       palette={palette}
       locale={locale}
       onOpen={() => setExamSheet({ open: true, id: exam.id })}

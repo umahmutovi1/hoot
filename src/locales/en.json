@@ -860,6 +860,7 @@
     },
     "retakeOf": "Make-up for",
     "retakeOfNone": "First add the exam this make-up repeats.",
+    "makeupScope": "Same material as {{title}}.",
     "makeupTitle": "Make-up: {{title}}",
     "steps": {
       "label": "Steps",
