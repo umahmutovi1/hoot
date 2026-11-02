@@ -23,7 +23,7 @@ from hoot_ml.data import block_examples, load, session_minutes
 
 
 def _week(values: pd.Series) -> pd.Series:
-    stamp = pd.to_datetime(values, utc=True).dt.tz_localize(None)
+    stamp = pd.to_datetime(values, utc=True, format="ISO8601").dt.tz_localize(None)
     return stamp.dt.to_period("W-SUN").dt.start_time.dt.date.astype(str)
 
 
@@ -73,7 +73,9 @@ def energy_weeks(tables) -> pd.DataFrame:
     if energy is None or energy.empty or sessions.empty:
         return pd.DataFrame(columns=columns)
     minutes = session_minutes(tables)
-    day = pd.to_datetime(sessions["started_at"], utc=True).dt.tz_convert("Europe/Sarajevo")
+    day = pd.to_datetime(sessions["started_at"], utc=True, format="ISO8601").dt.tz_convert(
+        "Europe/Sarajevo"
+    )
     studied = (
         pd.Series(
             minutes.reindex(sessions["id"]).fillna(0).to_numpy(), index=day.dt.date.astype(str)

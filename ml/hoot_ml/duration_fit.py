@@ -48,7 +48,7 @@ def samples_from_export(tables: dict[str, pd.DataFrame]) -> pd.DataFrame:
     frame = su.merge(units, on="unit_id").merge(sources, on="source_id").merge(sessions)
     mult = frame["difficulty"].fillna(3).map(difficulty_multiplier)
     frame["rate"] = frame["minutes"] / (frame["amount_done"] * mult)
-    frame["at"] = pd.to_datetime(frame["started_at"], utc=True)
+    frame["at"] = pd.to_datetime(frame["started_at"], utc=True, format="ISO8601")
     return frame[["session_id", "source_id", "kind", "base", "rate", "at"]].sort_values("at")
 
 

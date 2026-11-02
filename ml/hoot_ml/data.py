@@ -34,8 +34,12 @@ def late_blocks(tables: dict[str, pd.DataFrame]) -> set:
     blocks = tables["plan_blocks"]
     if "started_at" not in sessions or "planned_start" not in blocks:
         return set()
-    first = pd.to_datetime(sessions["started_at"], utc=True).groupby(sessions["block_id"]).min()
-    planned = pd.to_datetime(blocks.set_index("id")["planned_start"], utc=True)
+    first = (
+        pd.to_datetime(sessions["started_at"], utc=True, format="ISO8601")
+        .groupby(sessions["block_id"])
+        .min()
+    )
+    planned = pd.to_datetime(blocks.set_index("id")["planned_start"], utc=True, format="ISO8601")
     delay = (first - planned.reindex(first.index)).dt.total_seconds() / 60
     return set(delay[delay > LATE_AFTER_MIN].index)
 
@@ -93,5 +97,7 @@ def energy_of(tables: dict[str, pd.DataFrame], dates: pd.Series) -> list[str]:
 def session_minutes(tables: dict[str, pd.DataFrame]) -> pd.Series:
     """Active minutes per session from segment timestamps (open segments are left out)."""
     seg = tables["study_segments"].dropna(subset=["ended_at"])
-    span = pd.to_datetime(seg["ended_at"], utc=True) - pd.to_datetime(seg["started_at"], utc=True)
+    span = pd.to_datetime(seg["ended_at"], utc=True, format="ISO8601") - pd.to_datetime(
+        seg["started_at"], utc=True, format="ISO8601"
+    )
     return (span.dt.total_seconds() / 60).groupby(seg["session_id"]).sum()
