@@ -808,6 +808,17 @@ export const strategistRequestSchema = z
         }),
       )
       .max(40),
+    topics: z
+      .array(
+        z.strictObject({
+          id: z.string().max(100),
+          subject_id: z.string().max(100),
+          name: z.string().max(150),
+          strength: z.number().min(0).max(1).nullable(),
+          progress: z.number().min(0).max(1),
+        }),
+      )
+      .max(24),
     goals: z
       .array(
         z.strictObject({
@@ -826,6 +837,7 @@ export const strategistRequestSchema = z
           id: z.string().min(1).max(180),
           kind: z.enum([
             'set_priority',
+            'set_preset',
             'boost_priority',
             'set_mode',
             'set_campaign_start',

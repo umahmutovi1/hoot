@@ -1,3 +1,4 @@
+import { rhythmSuggestion, type SessionRhythm } from '@/lib/session/rhythm'
 import { addDays, diffDays, weekdayOf, type LocalDate } from '@/lib/day'
 import { mergeSlots, type Slot } from '@/lib/schedule'
 import {
@@ -21,6 +22,7 @@ import { MIN_SLOT_SESSIONS, type SlotSignals } from '@/lib/slots/signals'
  */
 
 export type StrategistAction =
+  | { kind: 'set_preset'; workMin: number; breakMin: number }
   | { kind: 'set_priority'; subjectId: string; priority: number }
   | { kind: 'boost_priority'; subjectId: string; until: LocalDate }
   | { kind: 'set_mode'; subjectId: string; mode: 'regular' | 'campaign' }
@@ -36,7 +38,7 @@ export type StrategistAction =
   | { kind: 'first_step'; subjectId: string; on: LocalDate; part: SlotPart }
 
 export type CandidateRule =
-  'deficit' | 'behind' | 'crowding' | 'slot' | 'read_untested' | 'avoidance'
+  'deficit' | 'behind' | 'crowding' | 'slot' | 'read_untested' | 'avoidance' | 'rhythm'
 
 export interface GoalEffect {
   goalId: string
@@ -64,6 +66,7 @@ export interface Candidate {
 }
 
 export interface CandidateInput {
+  rhythm?: SessionRhythm | null
   state: PlanState
   result: PlanResult
   today: LocalDate
@@ -115,6 +118,19 @@ export function applyAction(
   const subjects = (patch: (s: PlanState['subjects'][number]) => PlanState['subjects'][number]) =>
     state.subjects.map((s) => ('subjectId' in action && s.id === action.subjectId ? patch(s) : s))
   switch (action.kind) {
+    case 'set_preset':
+      return {
+        ...state,
+        preset: {
+          kind: 'cycle',
+          id: `rhythm:${action.workMin}:${action.breakMin}`,
+          steps: [
+            { kind: 'work', min: action.workMin },
+            { kind: 'break', min: action.breakMin },
+          ],
+          longBreak: null,
+        },
+      }
     case 'set_priority':
       return { ...state, subjects: subjects((s) => ({ ...s, priority: action.priority })) }
     case 'boost_priority':
@@ -237,6 +253,8 @@ function effectOf(
 
 function idOf(action: StrategistAction): string {
   switch (action.kind) {
+    case 'set_preset':
+      return `set_preset:${action.workMin}:${action.breakMin}`
     case 'set_priority':
       return `set_priority:${action.subjectId}:${action.priority}`
     case 'boost_priority':
@@ -382,6 +400,12 @@ function proposals(input: CandidateInput): { rule: CandidateRule; action: Strate
         action: { kind: 'first_step', subjectId, on: tomorrow, part: best },
       })
 
+  const rhythm = rhythmSuggestion(input.rhythm ?? null, state.preset)
+  if (rhythm)
+    out.push({
+      rule: 'rhythm',
+      action: { kind: 'set_preset', workMin: rhythm.workMin, breakMin: rhythm.breakMin },
+    })
   return out
 }
 

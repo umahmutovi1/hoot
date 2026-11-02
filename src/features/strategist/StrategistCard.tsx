@@ -39,6 +39,7 @@ export function StrategistCard({
       !data ||
       weekdayOf(data.today) !== 6 ||
       !strategy.list.length ||
+      !strategy.canGenerate ||
       strategy.cached ||
       availability.state !== 'ready'
     )
@@ -48,7 +49,16 @@ export function StrategistCard({
     attempted.current = key
     localStorage.setItem(key, '1')
     generate()
-  }, [data, strategy.list, strategy.cached, strategy.week, availability.state, userId, generate])
+  }, [
+    data,
+    strategy.list,
+    strategy.canGenerate,
+    strategy.cached,
+    strategy.week,
+    availability.state,
+    userId,
+    generate,
+  ])
   if (!data) return null
   if (
     compact &&
@@ -156,7 +166,10 @@ export function StrategistCard({
             type="button"
             className="min-h-11 rounded-full bg-white/40 px-3 text-sm text-brand"
             disabled={
-              !strategy.list.length || strategy.generate.isPending || availability.state !== 'ready'
+              !strategy.list.length ||
+              !strategy.canGenerate ||
+              strategy.generate.isPending ||
+              availability.state !== 'ready'
             }
             onClick={() => strategy.generate.mutate()}
           >

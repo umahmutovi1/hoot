@@ -10,6 +10,7 @@ const request: StrategistRequest = {
   week: '2026-11-02',
   rho: 0.8,
   subjects: [],
+  topics: [],
   goals: [],
   candidates: [
     {

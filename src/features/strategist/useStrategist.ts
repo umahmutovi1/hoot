@@ -1,5 +1,6 @@
+import { supabase } from '@/lib/supabase'
 import { useMemo } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { strategistOutputSchema, strategistRequestSchema } from '@shared/schemas.ts'
 import { useProgress } from '@/features/progress/useProgress'
@@ -19,6 +20,15 @@ export function useStrategist() {
     record = useRecordFeedback()
   const { locale } = useLocale(),
     { t } = useTranslation()
+  const topics = useQuery({
+    queryKey: ['progress', data?.inputs.profile.id, 'topics'],
+    enabled: Boolean(data),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('topics').select('*')
+      if (error) throw error
+      return data
+    },
+  })
   const list = useMemo(() => {
     if (!data) return []
     return candidates({
@@ -28,6 +38,10 @@ export function useStrategist() {
       behind: data.model.built.behind,
       slots: data.signals,
       slotCompletion: data.model.built.state.slotCompletion ?? null,
+      rhythm:
+        latestFeedback(feedback.data ?? [], 'first_break')?.status === 'not_useful'
+          ? null
+          : insight?.input.rhythm,
       avoided: insight?.list.filter((i) => i.kind === 'avoidance').map((i) => i.subjectId) ?? [],
     }).filter((c) => {
       const previous = latestFeedback(feedback.data ?? [], c.id)
@@ -63,7 +77,7 @@ export function useStrategist() {
   const generate = useMutation({
     meta: { silent: true },
     mutationFn: async () => {
-      if (!data || !list.length) return null
+      if (!data || !list.length || !topics.data) return null
       const state = data.model.built.state
       const request = strategistRequestSchema.parse({
         locale,
@@ -85,6 +99,36 @@ export function useStrategist() {
             behind_minutes:
               data.model.built.behind.find((b) => b.subjectId === s.id)?.behindMinutes ?? 0,
           })),
+        topics: topics.data
+          .map((topic) => {
+            const linked = new Set(
+              data.inputs.unitTopics.filter((l) => l.topic_id === topic.id).map((l) => l.unit_id),
+            )
+            const all = new Map(
+              data.inputs.sources.flatMap((s) => s.units.map((u) => [u.id, u] as const)),
+            )
+            const ids = state.units
+              .filter((u) => {
+                let id: string | null = u.id
+                const seen = new Set<string>()
+                while (id && !seen.has(id)) {
+                  if (linked.has(id)) return true
+                  seen.add(id)
+                  id = all.get(id)?.parent_id ?? null
+                }
+                return false
+              })
+              .map((u) => u.id)
+            return {
+              id: topic.id,
+              subject_id: topic.subject_id,
+              name: topic.name,
+              strength: data.strength(ids),
+              progress: data.progress(ids).fraction,
+            }
+          })
+          .sort((a, b) => (a.strength ?? 2) - (b.strength ?? 2))
+          .slice(0, 12),
         goals: data.forecasts.map((f) => ({
           id: f.goalId,
           subject_id: f.subject.id,
@@ -131,6 +175,7 @@ export function useStrategist() {
   const actionOutput = sameInput ? output : null
   return {
     list,
+    canGenerate: Boolean(topics.data),
     output,
     generate,
     week,
