@@ -638,7 +638,7 @@ Cilj: za ~3 minute od “Kako da te zovem?” do realne sedmice i, ako je unesen
 | 1 | Ime i jezik | postoji (“Kako da te zovem?”) + jezik | `display_name`, `locale`, `timezone` iz browsera |
 | 1b | Fakultet i godina (opcionalno, odluka oktobar 2026) | Fakultet, studijski program, godina studija i semestar; “Preskoči” uvijek vidljiv | `profiles.institution`, `study_program`, `year_of_study`, prva `academic_years`; pokrene “Fakultet s interneta” u pozadini, a nalaz čeka kao kartica u koraku 2 |
 | 2 | “Šta već imaš?” | Kartice: akademski kalendar (PDF/slika/tekst kroz `parse-document`), raspored nastave (ručno; slikom od Etape 10), povezani kalendar (iCal link), “Nemam ništa sad” | `academic_periods`, `timetable_entries`, `calendar_feeds`. Raspored bez akademskog kalendara pita samo “Kad počinje i završava semestar?” i pravi period nastave |
-| 3 | Ritam | “Kad obično ustaješ i liježeš?” (radni dan / vikend), “Kad ti je najlakše učiti?” (jutro / podne / popodne / veče / noć, više izbora) | `profiles.wake_min`, `sleep_min` (po 2: radni, vikend), `preferred_slots` (prior termina), prijedlog `day_start_min` |
+| 3 | Ritam | “Kad obično ustaješ i liježeš?” (radni dan / vikend), “Kad ti je najlakše učiti?” (jutro / podne / popodne / veče / noć / različito, više izbora), “Šta te najviše koči?” (do 3 čipa, preskočivo; vidi Dopune, 2. nov 2026) | `profiles.wake_min`, `sleep_min` (po 2: radni, vikend), `preferred_slots` (prior termina), `study_barriers`, prijedlog `day_start_min` |
 | 4 | Dani i periodi | Sedmica sa vremenskom osom: zauzeto šrafirano, predloženi periodi (budan − zauzeto, naglašeni najlakši termini). Tap uključi ili isključi dan; čipovi jutro / popodne / veče ili prevlačenje | `availability_rules` (zamjenjuju default) |
 | 5 | Koliko najviše | Klizač po grupi dana (radni / vikend), uz sedmični zbir (“To je 17 h sedmično”) i tekst “Plan ostavlja rezervu, bolje realno nego idealno” | `daily_cap_min` |
 | 6 | Pauze i podsjetnici | Predložak sesije (Standardno 50/15 označeno) i podsjetnik prije bloka (30 min označeno; 2 h / 1 h / 15 / 5 min, više izbora) | `default_preset`, `reminder_offsets_min` |
@@ -1002,6 +1002,30 @@ Modeli iz 11a su JSON artefakti sa verzijom. Dodaje se: GitHub Actions posao (ru
 
 - **Social (v2).** Dijeljenje kartica (deck) i sesija sa prijateljima, prijatelj za odgovornost (vidi da li je drugi učio danas, bez detalja gradiva). Traži dijeljenje mimo owner-only RLS-a.
 - **Study with me (Kasnije).** Uz timer opcionalna lofi muzika ili “study with me” stream (YouTube embed); iOS PWA ne pušta zvuk u pozadini, pa radi dok je app otvoren.
+
+## Dopune, 2. nov 2026: personalizacija i ML za više korisnika
+
+Obrazloženje i izvori: [RESEARCH-ML-2026-11.md](RESEARCH-ML-2026-11.md).
+
+### Ručni blokovi u modelu termina (Etapa 11e)
+
+Model odrađenosti danas uči samo iz AI blokova, pa termin koji korisnik uvijek bira ručno (npr. 6:00) nikad ne dobije mjerenje. Ručni blok sa vremenom ulazi kao primjer sa težinom `w_manual` (početno 0,5, u `src/lib/slots/priors.json`, fit u `ml/`) i obilježjem `manual`; računaju se i odrađeni i preskočeni. Pri ocjeni termina u `placeTimes()` je `manual = 0`. Model trajanja već koristi sve sesije, i ručne, i ostaje tako: brzina po jedinici ne zavisi od toga ko je odabrao termin.
+
+### „Šta te najviše koči?“ (Etapa 11e)
+
+Najčešće prepreke studenata su upravljanje vremenom i planiranje, pa odgađanje i stres. Jedno pitanje u onboarding koraku 3 (do 3 čipa, preskočivo, mijenja se u Postavke → Ritam): previše gradiva / ne znam odakle početi, odgađam, loše procijenim koliko traje, ometanja, izbjegavam jedan predmet, stres pred ispit, zaboravljam naučeno, nemam stalan raspored, ništa posebno. Spremanje: `profiles.study_barriers`. Svaki odgovor je prior postojećeg mehanizma, nikad nova postavka (tabela u RESEARCH-ML-2026-11 sekcija 5): npr. „odgađam“ → prvi blok dana 25/5, „kad i gdje“ podsjetnik i veći prior za `first_step`; „loše procijenim“ → jači prior optimizma; „stres“ → dan pred ispit rezervisan po defaultu. Prior je jak kao nekoliko mjerenja, pa ga podaci nadjačaju za 1–2 sedmice; promijenjeni priori ulaze u `input_hash`. Napredak jednim redom pokaže kad ponašanje odstupa od odgovora („Rekla si veče, a najviše odradiš ujutro · Prebaciti?“). „Kad ti je najlakše učiti?“ dobija „Različito / ne znam“ (bez pomaka priora).
+
+### Simulator za populaciju (Etapa 11e)
+
+Svaki seed izvuče studenta iz raspodjele tipova (hronotip, brzina, izbjegavani predmeti, kašnjenje, nepravilan raspored, ručni blokovi, odgovor na „Šta te koči“ sa šumom). Metrike po tipu (prosjek i najgori decil), hladni start (prve 2 sedmice) i oporavak od namjerno pogrešnog priora (najviše 3 sedmice). `baseline.json` i `--check` po tipu: promjena ne prolazi ako pokvari jedan tip, čak i kad popravi prosjek.
+
+### Alarm u praćenju (Etapa 11e)
+
+`ml-monitor.yml` otvara issue (labela `ml-alert`, jedan otvoren po metrici) kad je P80 pokrivenost van 0,7–0,9 (uz najmanje 20 mjerenja) ili kad je Brier odrađenosti gori od konstante dvije sedmice zaredom.
+
+### Zajednički trening (uz otvaranje za više korisnika)
+
+Prije drugog korisnika: izričit pristanak (opt-in, isključen po defaultu, `profiles.ml_consent_at`, povlačenje u Postavkama) i napomena o privatnosti; RLS ostaje owner-only, a `train.yml` dobija dovoljne statistike po korisniku kroz serversku agregaciju (bez ID-eva redova, datuma i teksta), samo za korisnike sa pristankom i dovoljno mjerenja. Zajednički prior se trenira tek uz ~10 takvih korisnika; do tada ostaje prior + lično učenje. Novi prior prolazi samo ako nije gori ni za jedan tip na populacijskom simulatoru, uključujući hladni start. Odgovori na „Šta te koči“ tada postaju obilježja populacijskog priora (prior po tipu).
 
 ## Tech stack
 

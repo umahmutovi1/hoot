@@ -379,7 +379,7 @@ Kod i baza su već spremni (svaka tabela ima `user_id` + RLS, profil se pravi au
 5. **Supabase URL Configuration.** Site URL i Redirect URLs dopuni novom domenom.
 6. **Rate limits.** Authentication → Rate Limits → provjeri „emails sent per hour" (sa custom SMTP-om je podesivo).
 7. **Registracija.** Allow new users to sign up → uključeno.
-8. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Etapi 6), napomena o privatnosti ako postoji admin pregled, demo nalog.
+8. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Etapi 6), napomena o privatnosti (admin pregled i zajednički ML trening uz pristanak, PRD „Dopune, 2. nov 2026“ → Zajednički trening), demo nalog.
 
 Besplatna alternativa bez domene: Gmail SMTP sa app passwordom (radi za bilo koji email, ~500 dnevno, ali šalje sa lične Gmail adrese).
 
