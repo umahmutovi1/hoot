@@ -80,7 +80,7 @@ export function endLevels(level: number): number[] {
 
 /**
  * How far a unit is read after this session: what earlier sessions read and the point reached now
- * (decision after Stage 10b: reading across sessions adds up; partial reading counts).
+ * (decision after Sprint 12: reading across sessions adds up; partial reading counts).
  */
 export function readAfter(
   unit: Pick<EndUnit, 'amount' | 'readAmount'>,
@@ -90,7 +90,7 @@ export function readAfter(
 }
 
 /**
- * A chapter read to its end becomes "Pročitano" if it was not started (PRD decision, Stage 7),
+ * A chapter read to its end becomes "Pročitano" if it was not started (PRD decision, Sprint 7),
  * also when its pages were read over several sessions.
  */
 export function defaultLevel(

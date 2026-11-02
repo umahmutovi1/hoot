@@ -57,7 +57,7 @@ import {
 /**
  * Predmet / PredmetKampanja: header with progress, priority and mode chips, the campaign card,
  * exams, sources and deadlines. Lectures, knowledge strength and weak topics come with their
- * stages.
+ * sprints.
  */
 export function SubjectPage() {
   const { id } = useParams()
@@ -74,7 +74,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const [now] = useState(() => new Date())
   const palette = paletteOf(subject.color)
   const next = nextAssessment(subject.assessments, now)
-  // A makeup appears once its exam is failed; archived exams are not loaded (after 10b).
+  // A makeup appears once its exam is failed; archived exams are not loaded (after Sprint 12).
   const exams = shownExams(subject.assessments).sort((a, b) => a.at.localeCompare(b.at))
   const archiveExam = useArchiveExam(subject.id)
   const show = useToast((s) => s.show)

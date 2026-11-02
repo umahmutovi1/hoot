@@ -75,7 +75,7 @@ function initialRanges(sources: SessionSource[], unitIds: (string | null)[]): Ra
     out.push({
       sourceId: s.source.id,
       fromUnit: from.id,
-      // A partly read unit continues after the pages already read (decision after 10b).
+      // A partly read unit continues after the pages already read (decision after Sprint 12).
       fromPage:
         from.page_start !== null && from.level === 0 && Number(from.read_amount ?? 0) > 0
           ? Math.min(from.page_end ?? from.page_start, from.page_start + Number(from.read_amount))

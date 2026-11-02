@@ -49,7 +49,7 @@ export interface LlmRequest<T> {
   schema: z.ZodType<T>
   maxTokens: number
   /**
-   * Web search (find-academic-info, Stage 10c): Google Search grounding on Gemini, the web
+   * Web search (find-academic-info, Sprint 13): Google Search grounding on Gemini, the web
    * search tool on Anthropic. The JSON then comes as text (search results carry citations,
    * which strict structured output does not allow) and is validated by the same schema.
    */

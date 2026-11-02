@@ -31,7 +31,7 @@ export interface ReplaceArgs {
     planned_minutes: number
     kind: PlanBlockRow['kind']
     reason: string
-    /** Features at plan time (block completion model, Stage 11a). */
+    /** Features at plan time (block completion model, Sprint 15). */
     day_load_min: number
     days_to_goal: number | null
     demand: number
@@ -109,8 +109,8 @@ export function replaceArgs(
 }
 
 /**
- * Today's not-started AI blocks that a `replaceToday` build placed at a new time (decision, Stage
- * 10b: today's free time changed). Their content stays; only `start_min` / `planned_start` move.
+ * Today's not-started AI blocks that a `replaceToday` build placed at a new time (decision, Sprint
+ * 12: today's free time changed). Their content stays; only `start_min` / `planned_start` move.
  */
 export function todayMoves(
   built: BuiltState,

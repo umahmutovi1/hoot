@@ -26,7 +26,7 @@ interface Loaded {
 const MAX_TOC_PAGES = 8
 
 /**
- * "PDF s uređaja" and "Google Drive" on Novi izvor (Materijali.dc.html, Stage 10c). A PDF with an
+ * "PDF s uređaja" and "Google Drive" on Novi izvor (Materijali.dc.html, Sprint 13). A PDF with an
  * outline becomes units without an AI call; without one only the table-of-contents pages go to
  * the model (`onAiText`). Presentations, and several PDFs at once, are one unit per file.
  */

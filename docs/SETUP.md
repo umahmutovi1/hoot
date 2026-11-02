@@ -10,13 +10,13 @@ Sve što se radi u dashboardima (Supabase, Cloudflare, Resend, Gemini, Anthropic
 | Cloudflare Pages | projekat `hoot` → `hoot-5ig.pages.dev`, production branch `main` | ✅ |
 | GitHub | repo `umahmutovi1/hoot`, ruleset `protect-main-dev`, secrets za keepalive | ✅ |
 | Resend | SMTP za auth emailove (kod za prijavu), šablon u stilu appa | ✅ |
-| Prijava | lozinka (min 8) i Google OAuth u Supabaseu (Etapa 11b, vidi 3a) | ⏳ koraci u 3a |
-| Gemini | API ključ (free tier) za AI dok nema Anthropic kartice | ⏳ treba za Etapu 6 |
-| Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (opcionalno, Etapa 10) |
+| Prijava | lozinka (min 8) i Google OAuth u Supabaseu (Sprint 16, vidi 3a) | ⏳ koraci u 3a |
+| Gemini | API ključ (free tier) za AI dok nema Anthropic kartice | ⏳ treba za Sprint 6 |
+| Anthropic | kredit, limit, workspace API ključ | ⏳ čeka karticu (opcionalno, Sprint 11) |
 | `pg_cron` | sinhronizacija povezanih kalendara svaka 3 h (`sync-calendar`), Web Push svake minute (`notify`) | ✅ |
 | Web Push | VAPID ključevi (secrets + Cloudflare Production i Preview), `notify` deployana, `pg_cron` svake minute | ✅ |
-| Sigurnost u CI | CodeQL, Dependabot, `npm audit`, gitleaks, RLS testovi, CSP u `public/_headers` (Etapa 10b, vidi 2a) | ⏳ koraci u 2a |
-| ML trening | GitHub secrets `SUPABASE_DB_URL`, `HOOT_USER_ID`, `ML_PR_TOKEN` za `train.yml` i `ml-monitor.yml` (Etapa 11a, vidi 5e) | ⏳ koraci u 5e |
+| Sigurnost u CI | CodeQL, Dependabot, `npm audit`, gitleaks, RLS testovi, CSP u `public/_headers` (Sprint 12, vidi 2a) | ⏳ koraci u 2a |
+| ML trening | GitHub secrets `SUPABASE_DB_URL`, `HOOT_USER_ID`, `ML_PR_TOKEN` za `train.yml` i `ml-monitor.yml` (Sprint 15, vidi 5e) | ⏳ koraci u 5e |
 | Domena | za emailove drugim korisnicima i vlastiti URL | kasnije |
 
 ---
@@ -39,7 +39,7 @@ npx supabase link --project-ref lpyyatqzvrvqgcmwiqfr
 npx supabase db push        # primijeni nove migracije
 npm run db:types            # regeneriši src/types/database.ts
 ```
-Lozinka baze ovdje ne treba (CLI koristi login); treba za `backup.yml` u Etapi 11.
+Lozinka baze ovdje ne treba (CLI koristi login); treba za `backup.yml` u Sprintu 23.
 
 **Authentication → URL Configuration**
 - Site URL: `https://hoot-5ig.pages.dev`
@@ -59,10 +59,10 @@ Lozinka baze ovdje ne treba (CLI koristi login); treba za `backup.yml` u Etapi 1
    - `VITE_SUPABASE_URL` = `https://lpyyatqzvrvqgcmwiqfr.supabase.co`
    - `VITE_SUPABASE_PUBLISHABLE_KEY` = `sb_publishable_…`
    - `NODE_VERSION` = `24`
-   - `VITE_VAPID_PUBLIC_KEY` = javni VAPID ključ (Etapa 9, vidi 5b)
+   - `VITE_VAPID_PUBLIC_KEY` = javni VAPID ključ (Sprint 10, vidi 5b)
 5. Rezultat: `main` → `hoot-5ig.pages.dev`, `dev` → `dev.hoot-5ig.pages.dev`, svaka druga grana dobija preview URL.
 
-## 2a. Sigurnost u CI i GitHubu (Etapa 10b)
+## 2a. Sigurnost u CI i GitHubu (Sprint 12)
 
 U repou (ništa ručno): `ci.yml` ima `npm audit --audit-level=high`, job `secrets` (gitleaks preko cijele historije) i job `db` (lokalni Supabase u CI-ju: `supabase db lint` i RLS testovi iz `supabase/tests/database/rls.test.sql`); `codeql.yml` (CodeQL JS/TS, i sedmično); `.github/dependabot.yml` (npm i GitHub Actions, PR-ovi u `dev`); `public/_headers` (CSP i sigurnosna zaglavlja za Cloudflare). Lokalno: `npx supabase start` pa `npx supabase test db` (treba Docker).
 
@@ -114,7 +114,7 @@ Subject:
 Hoot: kod za prijavu / sign-in code
 ```
 
-Body (Source): cijeli sadržaj fajla [`supabase/templates/magic_link.html`](../supabase/templates/magic_link.html) (Liquid Glass od Etape 11b: lavanda gradijent, staklena kartica, dugme u gradijentu appa). Kad se fajl promijeni, ponovo ga zalijepi ovdje. Isti fajl koristi lokalni Supabase (`supabase/config.toml` → `[auth.email.template.magic_link]`).
+Body (Source): cijeli sadržaj fajla [`supabase/templates/magic_link.html`](../supabase/templates/magic_link.html) (Liquid Glass od Sprinta 16: lavanda gradijent, staklena kartica, dugme u gradijentu appa). Kad se fajl promijeni, ponovo ga zalijepi ovdje. Isti fajl koristi lokalni Supabase (`supabase/config.toml` → `[auth.email.template.magic_link]`).
 
 Email-safe tabele i inline stilovi u bojama appa, bez `backdrop-filter` (email klijenti ga ne podržavaju): staklo je poluprozirna bijela kartica, a gdje klijent izbaci gradijent ostaje `bgcolor`. Ikonica je PNG sa produkcije (WebP ne podržavaju svi klijenti), font je sistemski (SF Pro / Segoe UI / Arial).
 
@@ -124,7 +124,7 @@ Email-safe tabele i inline stilovi u bojama appa, bez `backdrop-filter` (email k
 3. Prepiši kod iz emaila (ne otvaraj link) → „Prijavi se kodom".
 4. Ako email ne stigne: Resend → Emails / Logs.
 
-## 3a. Prijava lozinkom i Googleom (Etapa 11b)
+## 3a. Prijava lozinkom i Googleom (Sprint 16)
 
 Kod iz emaila ostaje za prvu prijavu i zaboravljenu lozinku. Poslije prve prijave kodom app jednom ponudi „Postavi lozinku“ (uz „Preskoči“); kasnije je to u Postavke → Lozinka. Apple prijava dolazi uz Capacitor (nema Apple Developer Programa), passkey uz vlastitu domenu (Relying Party ID je domena: promjena domene poništava sve passkeyeve).
 
@@ -178,21 +178,21 @@ unset GEMINI_API_KEY
 
 > **Modeli i limiti (stanje 20. 10. 2026).** Free tier ima limit po modelu: Gemini 2.5 Flash samo 5 zahtjeva u minuti i 20 dnevno, a `gemini-2.5-flash-lite` više nije dostupan novim nalozima (404). Zato je `LLM_MODEL=gemini-3.5-flash-lite`, a `LLM_FALLBACK_MODEL=gemini-2.5-flash` se koristi kad prvi vrati 429 ili 503 (kvote su po modelu). Trenutne limite vidiš u AI Studio → Rate Limit. Antigravity iz te liste je Googleov agent, ne model za API. Promjena modela je samo `secrets set`, bez deploya.
 
-**Lanac besplatnih AI-eva i privatni zadaci (Etapa 11b).** Javni zadaci (uvoz akademskog kalendara, rasporeda ispita, rasporeda, plana i programa, sadržaja knjige, web pretraga; lista `PUBLIC_TASKS` u `supabase/functions/_shared/chain.ts`) idu redom kroz `LLM_CHAIN`, a na 429 / kvotu prelaze na sljedeći model; iscrpljen model se preskače do reseta (Gemini ponoć po pacifičkom vremenu, ostali ponoć UTC; kratki 429 samo minut), što se čita iz `ai_runs`. Privatni zadaci (bilješke, pitanja, odgovori, dokumenti, chat, provjere, tekst iz knjige) nikad ne idu na lanac: samo `LLM_PROVIDER`, i to samo kad je plaćen (Anthropic) ili kad je `LLM_PRIVATE_FREE=allow`.
+**Lanac besplatnih AI-eva i privatni zadaci (Sprint 16).** Javni zadaci (uvoz akademskog kalendara, rasporeda ispita, rasporeda, plana i programa, sadržaja knjige, web pretraga; lista `PUBLIC_TASKS` u `supabase/functions/_shared/chain.ts`) idu redom kroz `LLM_CHAIN`, a na 429 / kvotu prelaze na sljedeći model; iscrpljen model se preskače do reseta (Gemini ponoć po pacifičkom vremenu, ostali ponoć UTC; kratki 429 samo minut), što se čita iz `ai_runs`. Privatni zadaci (bilješke, pitanja, odgovori, dokumenti, chat, provjere, tekst iz knjige) nikad ne idu na lanac: samo `LLM_PROVIDER`, i to samo kad je plaćen (Anthropic) ili kad je `LLM_PRIVATE_FREE=allow`.
 ```bash
 npx supabase secrets set LLM_PRIVATE_FREE=allow   # dok nema Anthropic ključa; bez ovoga privatni AI vraća „needs_paid“
 npx supabase secrets set LLM_CHAIN="gemini:gemini-3.5-flash-lite,gemini:gemini-2.5-flash"
 ```
 Kad dođe Anthropic (sekcija 5): `LLM_PROVIDER=anthropic`, pa `npx supabase secrets unset LLM_PRIVATE_FREE`.
 
-**Deploy poslije Etape 11b** (`_shared/llm.ts` se promijenio, pa sve AI funkcije): prvo `LLM_PRIVATE_FREE=allow` (gore), pa
+**Deploy poslije Sprinta 16** (`_shared/llm.ts` se promijenio, pa sve AI funkcije): prvo `LLM_PRIVATE_FREE=allow` (gore), pa
 ```bash
 for f in ai-status parse-document documents answer parse-toc parse-questions link-questions recall-questions propose-answer find-academic-info classify-events; do npx supabase functions deploy $f; done
 ```
 
 Groq i OpenRouter (opcionalno, besplatni nalozi): console.groq.com → API Keys → Create; openrouter.ai → Keys → Create (modeli sa `:free`). Ključeve `npx supabase secrets set GROQ_API_KEY=… OPENROUTER_API_KEY=…` (preko `read -rs` kao u 5d). Model ide u `LLM_CHAIN` tek kad prođe eval (`EVAL_MODEL=groq:llama-3.3-70b-versatile GROQ_API_KEY=… npm run eval`) i kad je dodan u `EVALUATED_MODELS` u `chain.ts` (PR); model iz lanca koji nije na toj listi se preskače. Groq/OpenRouter ne primaju PDF ni web pretragu: takav poziv ide sljedećem modelu u lancu.
 
-**4. Edge funkcije** (Etapa 6: `parse-document`, `documents`, `answer`, `ai-status`; Etapa 10: `embed`, vektori jedinica, kartica i tema bez LLM-a; `parse-toc`, `parse-questions`, `link-questions`, `recall-questions`, `propose-answer`; slike sadržaja i stranica se brišu iz `uploads/<user_id>/import/` i `…/recall/` odmah poslije poziva):
+**4. Edge funkcije** (Sprint 6: `parse-document`, `documents`, `answer`, `ai-status`; Sprint 11: `embed`, vektori jedinica, kartica i tema bez LLM-a; `parse-toc`, `parse-questions`, `link-questions`, `recall-questions`, `propose-answer`; slike sadržaja i stranica se brišu iz `uploads/<user_id>/import/` i `…/recall/` odmah poslije poziva):
 ```bash
 for f in ai-status parse-document documents answer embed parse-toc parse-questions link-questions recall-questions propose-answer; do npx supabase functions deploy $f; done
 ```
@@ -214,18 +214,18 @@ npm run eval          # evals/promptfooconfig.yaml: kalendar, raspored ispita, s
 unset GEMINI_API_KEY
 ```
 
-## 5. Anthropic (opcionalno, Etapa 10)
+## 5. Anthropic (opcionalno, Sprint 11)
 
 1. console.anthropic.com → Billing → Add credits (najmanji iznos), Auto-reload isključen.
 2. Settings → Limits → mjesečni spend limit (npr. $5).
 3. **Workspace** ključ: Settings → Workspaces → Default → API keys → Create → `sk-ant-api03-…`. Ne `sk-ant-usr-…` (korisnički ključ traži `anthropic-workspace-id` header).
 4. Ključ se unosi samo u terminal: `npx supabase secrets set ANTHROPIC_API_KEY=… LLM_PROVIDER=anthropic LLM_MODEL=claude-haiku-5-5`.
 
-## 5a. Povezani kalendari: `sync-calendar` i `pg_cron` (Etapa 8)
+## 5a. Povezani kalendari: `sync-calendar` i `pg_cron` (Sprint 9)
 
-`sync-calendar` povlači iCal linkove (Google, Outlook, iCloud, a od Etape 10 i Moodle „Rokovi“) u `external_events`. App je zove pri otvaranju i povratku u app (najviše jednom u 30 min, za svaki feed); `pg_cron` je zove svaka 3 h da plan ima svježu zauzetost i kad app nije otvoren. Bez LLM-a, ne troši AI limit. Tajni iCal link se nikad ne loguje; u `calendar_feeds.last_error` ide samo kod greške.
+`sync-calendar` povlači iCal linkove (Google, Outlook, iCloud, a od Sprinta 11 i Moodle „Rokovi“) u `external_events`. App je zove pri otvaranju i povratku u app (najviše jednom u 30 min, za svaki feed); `pg_cron` je zove svaka 3 h da plan ima svježu zauzetost i kad app nije otvoren. Bez LLM-a, ne troši AI limit. Tajni iCal link se nikad ne loguje; u `calendar_feeds.last_error` ide samo kod greške.
 
-**Realtime (Etapa 10d).** Migracija `0029_calendar_realtime.sql` dodaje `external_events` i `plan_blocks` u publikaciju `supabase_realtime`, pa upis sa servera stiže u otvoren app bez reloada. Provjera: Database → Publications → `supabase_realtime` sadrži obje tabele. Ništa se ne podešava ručno; Google Calendar API (OAuth klijent, scope-ovi, režim consent screena) dolazi uz PR 3 iz [CALENDAR-SYNC.md](CALENDAR-SYNC.md).
+**Realtime (Sprint 14).** Migracija `0029_calendar_realtime.sql` dodaje `external_events` i `plan_blocks` u publikaciju `supabase_realtime`, pa upis sa servera stiže u otvoren app bez reloada. Provjera: Database → Publications → `supabase_realtime` sadrži obje tabele. Ništa se ne podešava ručno; Google Calendar API (OAuth klijent, scope-ovi, režim consent screena) dolazi uz PR 3 iz [CALENDAR-SYNC.md](CALENDAR-SYNC.md).
 
 1. **Tajna za cron** (terminal, vrijednost ne ide u repo ni chat):
    ```sh
@@ -260,7 +260,7 @@ unset GEMINI_API_KEY
 6. **Promjena tajne:** novi `secrets set`, pa `select vault.update_secret((select id from vault.secrets where name = 'sync_calendar_cron_secret'), '<novi>');`. **Gašenje:** `select cron.unschedule('sync-calendar');`.
 
 
-## 5d. Google Calendar dvosmjerno (Etapa 10d)
+## 5d. Google Calendar dvosmjerno (Sprint 14)
 
 Detalji u [CALENDAR-SYNC.md](CALENDAR-SYNC.md). Koristi isti OAuth Web client kao Google Drive (5c).
 
@@ -299,9 +299,9 @@ Detalji u [CALENDAR-SYNC.md](CALENDAR-SYNC.md). Koristi isti OAuth Web client ka
    - Edge Functions → Logs ne smiju sadržavati token.
    Cron History: `{"synced": N, "failed": 0}`. **Gašenje:** `select cron.unschedule('google-calendar-sync');`.
 
-## 5b. Web Push: `notify` i `pg_cron` (Etapa 9)
+## 5b. Web Push: `notify` i `pg_cron` (Sprint 10)
 
-App sama upisuje kad je obavještenje na redu (`push_jobs`: podsjetnik prije bloka i „Kasniš 15 min“ od Etape 10c, kraj planirane pauze, probno), a `notify` svake minute šalje dospjela na sve uređaje korisnika preko standardnog Web Push-a (VAPID, bez vanjskog servisa). Tekstovi i adrese uređaja se ne loguju.
+App sama upisuje kad je obavještenje na redu (`push_jobs`: podsjetnik prije bloka i „Kasniš 15 min“ od Sprinta 13, kraj planirane pauze, probno), a `notify` svake minute šalje dospjela na sve uređaje korisnika preko standardnog Web Push-a (VAPID, bez vanjskog servisa). Tekstovi i adrese uređaja se ne loguju.
 
 **iPhone / iPad:** obavještenja rade samo kad je Hoot dodan na početni ekran (Safari → Dijeli → Dodaj na početni ekran, iOS 16.4+) i otvoren odatle; tek tad Postavke → Notifikacije → „Uključi obavještenja na ovom uređaju“ pita za dozvolu. Na Androidu i desktopu radi i u browseru.
 
@@ -335,10 +335,10 @@ App sama upisuje kad je obavještenje na redu (`push_jobs`: podsjetnik prije blo
    );
    ```
 6. **Provjera:** Postavke → Notifikacije → uključi na uređaju → „Pošalji probno obavještenje“ stiže za najviše minut. Integrations → Cron → `notify` → History; odgovor je `{"jobs": N, "sent": N, "failed": 0, "stale": 0, "gone": 0}`. Posao koji kasni više od 30 min se odbaci, ne šalje.
-7. **Podsjetnici i Preskoči (Etapa 10c):** od Etape 10c app piše podsjetnike prije svakog bloka i „Kasniš 15 min“ (umjesto prvog bloka dana), a notifikacija ima Započni / Preskoči. Poslije mergea: `npx supabase functions deploy notify` i `npx supabase functions deploy push-action` (`verify_jwt = false`, ključ je jednokratni token iz notifikacije; bez novih secreta). Provjera na Androidu: podsjetnik stiže sa dva dugmeta; Preskoči zamijeni notifikaciju sa „Preskočeno: …“, a blok se pomjeri kad se app otvori. Na iPhoneu dugmadi nema (tap otvara blok).
+7. **Podsjetnici i Preskoči (Sprint 13):** od Sprinta 13 app piše podsjetnike prije svakog bloka i „Kasniš 15 min“ (umjesto prvog bloka dana), a notifikacija ima Započni / Preskoči. Poslije mergea: `npx supabase functions deploy notify` i `npx supabase functions deploy push-action` (`verify_jwt = false`, ključ je jednokratni token iz notifikacije; bez novih secreta). Provjera na Androidu: podsjetnik stiže sa dva dugmeta; Preskoči zamijeni notifikaciju sa „Preskočeno: …“, a blok se pomjeri kad se app otvori. Na iPhoneu dugmadi nema (tap otvara blok).
 8. **Gašenje:** `select cron.unschedule('notify');`. **Novi ključevi:** ponovi 1–3; stare pretplate tad više ne rade, pa svaki uređaj ponovo uključi obavještenja.
 
-## 5c. Google Drive Picker (Etapa 10c)
+## 5c. Google Drive Picker (Sprint 13)
 
 > **Trenutno isključeno** (`DRIVE_ENABLED = false` u `src/features/sources/drive.ts`): `drive.file` ne daje pristup fajlovima u izabranom folderu, a `drive.readonly` traži Google-ovu sigurnosnu procjenu. Opcija „Google Drive“ se ne nudi dok se to ne odluči; podešavanje ispod ostaje za kasnije.
 
@@ -353,9 +353,9 @@ Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove
 7. Bez sve tri varijable app ne nudi opciju „Google Drive“ (ostaju PDF s uređaja, slika i kucanje). CSP u `public/_headers` već dozvoljava `apis.google.com`, `accounts.google.com/gsi`, `docs.google.com` (Picker iframe) i `www.googleapis.com` (preuzimanje); poslije dodavanja varijabli treba novi deploy (Retry deployment ili novi commit), jer Vite ih ugrađuje pri buildu.
 8. Provjera: Predmet → + Izvor → Google Drive → izaberi PDF → „Pregledaj jedinice“; na izvoru je „Otvori u Drive-u“.
 
-**Web pretraga za „Fakultet s interneta“ (Etapa 10c).** Poslije mergea: `npx supabase functions deploy find-academic-info` i ponovo `parse-document` (nova vrsta „Plan i program“); novih secreta nema, koristi `LLM_PROVIDER` / `LLM_MODEL` / ključ kao ostale AI funkcije. Eval za plan i program: `GEMINI_API_KEY=... npm run eval` (slučaj „syllabus of a programme“). Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
+**Web pretraga za „Fakultet s interneta“ (Sprint 13).** Poslije mergea: `npx supabase functions deploy find-academic-info` i ponovo `parse-document` (nova vrsta „Plan i program“); novih secreta nema, koristi `LLM_PROVIDER` / `LLM_MODEL` / ključ kao ostale AI funkcije. Eval za plan i program: `GEMINI_API_KEY=... npm run eval` (slučaj „syllabus of a programme“). Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
 
-## 5e. ML trening i praćenje: `train.yml`, `ml-monitor.yml` (Etapa 11a)
+## 5e. ML trening i praćenje: `train.yml`, `ml-monitor.yml` (Sprint 15)
 
 `train.yml` (ručno i 1. u mjesecu) izvozi tvoje podatke, trenira, pokreće backtest i simulator i otvara PR u `dev` sa novim `priors.json` samo kad nema pogoršanja; inače ostaje samo izvještaj u Actions → run → Summary. `ml-monitor.yml` (ponedjeljkom) u Summary piše sedmične metrike (pokrivenost P80, Brier odrađenosti, kalibracija FSRS-a). Izvoz čita bazu kao ti (RLS kao u appu: uloga `authenticated`, JWT `sub` = tvoj id), iste kolone kao ručni izvoz, bez slobodnog teksta; podaci ne napuštaju runner.
 
@@ -379,7 +379,11 @@ Kod i baza su već spremni (svaka tabela ima `user_id` + RLS, profil se pravi au
 5. **Supabase URL Configuration.** Site URL i Redirect URLs dopuni novom domenom.
 6. **Rate limits.** Authentication → Rate Limits → provjeri „emails sent per hour" (sa custom SMTP-om je podesivo).
 7. **Registracija.** Allow new users to sign up → uključeno.
-8. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Etapi 6), napomena o privatnosti (admin pregled i zajednički ML trening uz pristanak, PRD „Dopune, 2. nov 2026“ → Zajednički trening), demo nalog.
+   - **Anonimna prijava (Sprint 21, „Prvo plan, pa prijava“).** Authentication → Sign In / Providers → **Allow anonymous sign-ins** → uključeno; **Allow manual linking** → uključeno (treba za „Spasi svoj plan“ preko Googlea, `linkIdentity`). Lokalno isto u `supabase/config.toml` (`enable_anonymous_sign_ins`, `enable_manual_linking`). Provjeri da registracija (korak 7) mora biti uključena da anonimna prijava radi.
+   - **CAPTCHA.** Cloudflare → Turnstile → Add widget (domena app-a, mode Managed) → site key ide u `VITE_TURNSTILE_SITE_KEY` (Cloudflare Pages env), secret u Supabase → Authentication → Attack Protection → Enable CAPTCHA protection → Turnstile. Važi za sve prijave, pa i forma za email/lozinku šalje token.
+   - **Rate limit anonimnih prijava.** Authentication → Rate Limits → „anonymous sign-ins per hour“ (default 30 po IP-u) ostaje dok nema problema.
+   - **Čišćenje.** `pg_cron` posao iz migracije Sprinta 21 (sedmično, anonimni nalozi bez aktivnosti 30 dana); provjeri u Database → Cron Jobs da je aktivan.
+8. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Sprintu 6); anonimno najviše 5 poziva ukupno, samo uvoz (PRD „Prvo plan, pa prijava“), napomena o privatnosti (admin pregled i zajednički ML trening uz pristanak, PRD „Dopune, 2. nov 2026“ → Zajednički trening), demo nalog.
 
 Besplatna alternativa bez domene: Gmail SMTP sa app passwordom (radi za bilo koji email, ~500 dnevno, ali šalje sa lične Gmail adrese).
 

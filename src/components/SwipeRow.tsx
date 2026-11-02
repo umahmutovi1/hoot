@@ -30,7 +30,7 @@ const tones: Record<SwipeAction['tone'], string> = {
 }
 
 /**
- * Swipe left on a list row (design README, Stage 10b): a short swipe reveals the buttons (72 px
+ * Swipe left on a list row (design README, Sprint 12): a short swipe reveals the buttons (72 px
  * each, the row resists past them), a full swipe runs the first action. Long press, right click
  * or the hidden "Radnje" button (keyboard) open the same actions in a sheet. There is never a
  * confirmation dialog: every action has undo.

@@ -1,6 +1,6 @@
 # Povezani kalendari: klasifikacija, Google dvosmjerni sync i duplikati
 
-Odluka, oktobar 2026. Dopunjava PRD „Povezani kalendari i integracije“ i mijenja raniju odluku „Google Calendar API je Kasnije“. Ovdje je arhitektura i redoslijed; stavke za praćenje su u [ROADMAP.md](ROADMAP.md) (Etapa 10d).
+Odluka, oktobar 2026. Dopunjava PRD „Povezani kalendari i integracije“ i mijenja raniju odluku „Google Calendar API je Kasnije“. Ovdje je arhitektura i redoslijed; stavke za praćenje su u [ROADMAP.md](ROADMAP.md) (Sprint 14).
 
 ## Zašto
 
@@ -135,7 +135,7 @@ Odluka pri implementaciji: app računa šta treba biti u Google-u, a server samo
 
 - `source: { title: 'Hoot', url }`: Google Calendar prikaže klikabilan izvor na događaju.
 - Prvi red opisa: „▶ Započni u Hoot-u: <url>“, ispod gradivo bloka (jedinice, stranice).
-- Blok: `<origin>/?block=<id>` (`origin` je adresa app-a sa koje je Google povezan, `calendar_accounts.app_origin`). Taj deep link već postoji (podsjetnici, Etapa 10c) i otvara „Započeti sesiju sada?“ sa „Počni“. Ispit i rok: `<origin>/subjects/<id>`.
+- Blok: `<origin>/?block=<id>` (`origin` je adresa app-a sa koje je Google povezan, `calendar_accounts.app_origin`). Taj deep link već postoji (podsjetnici, Sprint 13) i otvara „Započeti sesiju sada?“ sa „Počni“. Ispit i rok: `<origin>/subjects/<id>`.
 - Na Androidu instalirana PWA otvara linkove iz svog scope-a direktno. Na iOS-u se link otvara u Safariju; prijava važi ako je Hoot otvaran u Safariju.
 
 ### Google → Hoot

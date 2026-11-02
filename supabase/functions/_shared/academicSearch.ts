@@ -1,4 +1,4 @@
-// "Fakultet s interneta" (PRD, Stage 10c), pure: the web search prompt, which found links to
+// "Fakultet s interneta" (PRD, Sprint 13), pure: the web search prompt, which found links to
 // keep, and HTML pages as text for parse-document. Tested with Vitest like the other _shared code.
 import type { LlmRequest, WebSource } from './llm.ts'
 import { findAcademicInfoOutputSchema } from './schemas.ts'

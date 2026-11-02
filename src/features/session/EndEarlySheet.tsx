@@ -11,7 +11,7 @@ import { useSessionWriter } from './api'
 export const ACCIDENTAL_MS = 2 * MINUTE
 
 /**
- * "Završi" always asks (decision, Stage 10b): finishing or discarding a session happens only
+ * "Završi" always asks (decision, Sprint 12): finishing or discarding a session happens only
  * here, never on one stray tap; back just leaves with the timer running. Before the planned time
  * the text says how much is left; right after the start it suggests discarding. Discard has undo.
  */

@@ -21,7 +21,7 @@ import {
 import type { CardForm, SourceForm } from './schemas'
 
 // IDs come from the client (crypto.randomUUID()), so writes are idempotent upserts that the
-// offline queue (Stage 6) can replay.
+// offline queue (Sprint 6) can replay.
 
 export const sourcesKey = (userId: string | undefined, subjectId: string | undefined) =>
   ['sources', userId, subjectId] as const
@@ -93,7 +93,7 @@ export function useArchivedSources(subjectId: string | undefined) {
 }
 
 /**
- * Archive (or restore) a source (swipe, Stage 10b): it leaves the plan, progress and scope, its
+ * Archive (or restore) a source (swipe, Sprint 12): it leaves the plan, progress and scope, its
  * units and history stay. Every list that reads sources is refreshed.
  */
 export function useArchiveSource(subjectId: string | undefined) {

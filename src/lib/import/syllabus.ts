@@ -1,4 +1,4 @@
-// Syllabus ("Plan i program", PRD "AI uvoz", Stage 10c) → a reviewable proposal per subject:
+// Syllabus ("Plan i program", PRD "AI uvoz", Sprint 13) → a reviewable proposal per subject:
 // literature → sources (offered, never preselected), topics or content chapters → topics and a
 // temporary "Predavanja" source with hour-long parts per chapter, grading → exams and points.
 // Elective options wait for the user's pick. Existing values the user entered are never

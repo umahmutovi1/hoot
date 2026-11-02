@@ -58,7 +58,7 @@ function writeRecent(list: string[]) {
 }
 
 /**
- * Search (Pretraga.dc.html, Stage 10b): a glass panel from the top like the menu. The field is
+ * Search (Pretraga.dc.html, Sprint 12): a glass panel from the top like the menu. The field is
  * focused at once; results are grouped (three per group, "Sve (N)" for the rest) with the match in
  * bold; a tap opens the screen or the action's sheet and keeps the query in recent searches (on
  * this device). An empty field shows the recent ones.

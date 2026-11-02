@@ -53,8 +53,8 @@ export function realization(history: DayHistory[], today: LocalDate): Realizatio
  * Base of the growth limit: average studied minutes per day over the last 7 days, counted from
  * the first day with a plan (days before it are not zeros) and without "Danas ne mogu" days,
  * divided by ρ: ρ already shrinks the capacity, so done minutes alone would punish twice and keep
- * the plan at the floor (decision after the Stage 11a simulator). A user without any planned day
- * in that window has no limit yet (new user, decision Stage 8b).
+ * the plan at the floor (decision after the Sprint 15 simulator). A user without any planned day
+ * in that window has no limit yet (new user, decision Sprint 9b).
  */
 export function growthBase(history: DayHistory[], today: LocalDate, rho: number): number | null {
   const from = addDays(today, -GROWTH_WINDOW_DAYS)
@@ -72,7 +72,7 @@ export function growthBase(history: DayHistory[], today: LocalDate, rho: number)
 /**
  * Most AI minutes (without the buffer before an exam) on the k-th planned day (0 = `from`):
  * the first day gets 1.25 × the 7-day average (at least 60 min), every next day 1.25× more
- * (decision Stage 8b: a ramp, so work slides to later days instead of piling onto tomorrow).
+ * (decision Sprint 9b: a ramp, so work slides to later days instead of piling onto tomorrow).
  */
 export function growthLimit(base: number | null, k: number): number {
   if (base === null) return Infinity

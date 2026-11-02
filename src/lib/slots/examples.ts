@@ -19,7 +19,7 @@ export interface ExampleBlock {
   kind: BlockKind
   status: BlockStatus
   origin: 'ai' | 'user'
-  /** Start the plan gave it (`plan_start_min`); null for blocks saved before Stage 11a. */
+  /** Start the plan gave it (`plan_start_min`); null for blocks saved before Sprint 15. */
   planStartMin: number | null
   plannedStart: string | null
   dayLoadMin: number | null

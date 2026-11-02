@@ -275,7 +275,7 @@ function buildWorks(state: PlanState): Work[] {
     const required = requiredUnits(own, coverageOf(subject))
     for (const unit of own) {
       const left = Math.round(
-        // A partly read unit only needs the rest (Stage 10b: reading continues where it stopped).
+        // A partly read unit only needs the rest (Sprint 12: reading continues where it stopped).
         unit.minutes * workShare(unit.kind, unit.level) * (1 - readOf(unit)) -
           (reserved.get(unit.id) ?? 0),
       )
@@ -778,7 +778,7 @@ function run(
     }
     /**
      * Required minutes each subject must get today so that its goals still fit the later days
-     * (ROADMAP 11a feasibility): later days are filled backwards, latest goal first, and what
+     * (ROADMAP Sprint 15 feasibility): later days are filled backwards, latest goal first, and what
      * does not fit is today's floor. Reviews and buffers of later days are not known here.
      */
     const mustToday = (k: number): Map<string, number> => {

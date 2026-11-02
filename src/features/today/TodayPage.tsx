@@ -41,7 +41,7 @@ import { TodaySchedule } from './TodaySchedule'
 import { usePlanToday, type PlanToday } from './usePlanToday'
 
 // "Znaš li?" is switched off for now: Today gets crowded once the plan and its cards arrive
-// (decision after Stage 7). The card and the facts stay; set to true to bring it back.
+// (decision after Sprint 7). The card and the facts stay; set to true to bring it back.
 const SHOW_FACT_CARD = false
 
 /**

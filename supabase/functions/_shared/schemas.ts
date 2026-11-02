@@ -95,7 +95,7 @@ export const parsedClassSchema = z.object({
 })
 export type ParsedClass = z.infer<typeof parsedClassSchema>
 
-/** One subject of a syllabus ("Plan i program", task parse_syllabus, Stage 10c). */
+/** One subject of a syllabus ("Plan i program", task parse_syllabus, Sprint 13). */
 export const parsedSyllabusSubjectSchema = z.object({
   subject_name: z.string().min(1).describe('Subject name exactly as written in the document'),
   subject_id: z
@@ -186,7 +186,7 @@ export const syllabusParseSchema = z.object({
 })
 
 /**
- * One subject of a whole study programme (Stage 11b, "Studijski program odjednom"): only where it
+ * One subject of a whole study programme (Sprint 16, "Studijski program odjednom"): only where it
  * belongs; books, topics and grading come later per subject (`syllabus`).
  */
 export const parsedProgramSubjectSchema = z.object({
@@ -233,9 +233,9 @@ export interface ParseResult {
   exams: ParsedExam[]
   /** Weekly classes; only for kind `timetable` (stored as an `other` document). */
   entries: ParsedClass[]
-  /** Per subject; only for kind `syllabus` (Stage 10c). */
+  /** Per subject; only for kind `syllabus` (Sprint 13). */
   syllabus: ParsedSyllabusSubject[]
-  /** Every subject of every year; only for kind `study_program` (Stage 11b). */
+  /** Every subject of every year; only for kind `study_program` (Sprint 16). */
   program?: ParsedProgramSubject[]
   warnings: string[]
 }
@@ -282,7 +282,7 @@ export const parseDocumentRequestSchema = z
 export type ParseDocumentRequest = z.infer<typeof parseDocumentRequestSchema>
 
 // ---------------------------------------------------------------------------
-// find-academic-info (Stage 10c): web search for the academic calendar and syllabus
+// find-academic-info (Sprint 13): web search for the academic calendar and syllabus
 // ---------------------------------------------------------------------------
 
 export const FOUND_KINDS = ['academic_calendar', 'syllabus', 'other'] as const
@@ -351,7 +351,7 @@ export const embedChunksRequestSchema = z.object({
 export type EmbedChunksRequest = z.infer<typeof embedChunksRequestSchema>
 
 // ---------------------------------------------------------------------------
-// parse-toc, parse-questions, link-questions (AI content import, Stage 10)
+// parse-toc, parse-questions, link-questions (AI content import, Sprint 11)
 // ---------------------------------------------------------------------------
 
 /** An uploaded image (or PDF) in `<user_id>/<folder>/…`; deleted by the function after reading. */
@@ -487,7 +487,7 @@ export interface LinkQuestionsResponse {
 }
 
 // ---------------------------------------------------------------------------
-// recall-questions, propose-answer (testing without the book's text, Stage 10)
+// recall-questions, propose-answer (testing without the book's text, Sprint 11)
 // ---------------------------------------------------------------------------
 
 /** Where AI questions come from (`review_logs.source` of their ratings). */
@@ -500,7 +500,7 @@ export const QUIZ_QUESTIONS = 6
 export const MAX_RECALL_QUESTIONS = 10
 /** Photos of a page or two (e.g. the chapter summary). */
 export const MAX_PAGE_PHOTOS = 2
-/** Pasted text of a chapter or a passage (Stage 11b): the same "page" source as a photo. */
+/** Pasted text of a chapter or a passage (Sprint 16): the same "page" source as a photo. */
 export const MAX_PASTED_CHARS = 12000
 
 export const recallQuestionsRequestSchema = z
@@ -613,7 +613,7 @@ export interface SearchNotesResponse {
 export const STATE_TOPICS = ['grades', 'exams', 'calendar', 'plan'] as const
 
 /**
- * What the app can do next to an answer (Stage 10 tools). The app runs it and shows a card; the
+ * What the app can do next to an answer (Sprint 11 tools). The app runs it and shows a card; the
  * assistant itself never changes anything.
  */
 export const OWL_ACTIONS = [

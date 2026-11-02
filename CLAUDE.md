@@ -6,7 +6,7 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 ## Source of truth
 - Specification: `docs/PRD.md` (Bosnian). Read the relevant section before implementing a feature.
 - Screen designs: `docs/design/` — see `docs/design/README.md` for the visual system (Liquid Glass) and screen flows.
-- Build order and Definition of Done: `docs/ROADMAP.md`. Work on one stage at a time.
+- Build order and Definition of Done: `docs/ROADMAP.md`. Work on one sprint at a time.
 - Manual service setup (Supabase, Cloudflare, Resend, Anthropic, opening to more users): `docs/SETUP.md`. Keep it updated when a dashboard setting changes.
 - The designs are mockups: port layout, colors and copy into React + Tailwind. Do NOT copy the HTML or the demo `<script>` logic.
 - If the PRD and the code disagree, or the PRD is ambiguous, ask instead of guessing.
@@ -22,7 +22,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 ## Layout
 - `src/app/` router, layout, providers, i18n setup
 - `src/features/<feature>/` screens, components and query hooks per feature (today, plan, schedule, subjects, sources, session, progress, settings)
-- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `schedule/` (timetable occurrences, availability), `grades/` (points, grade scale, grade projection), `session/` (timer from segments, coverage, minutes per unit), `slots/` (study-time slot scores), `strategist/` (rule-based action candidates), `ml/` (model labels and features; Stage 11a), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
+- `src/lib/` pure logic: `scheduler/`, `estimates/`, `srs/` (FSRS), `progress/` (progress + memory strength), `pace/` (lecture tracking), `schedule/` (timetable occurrences, availability), `grades/` (points, grade scale, grade projection), `session/` (timer from segments, coverage, minutes per unit), `slots/` (study-time slot scores), `strategist/` (rule-based action candidates), `ml/` (model labels and features; Sprint 15), `day.ts`, `sync/`, `supabase.ts`, `image.ts`
 - `src/types/database.ts` generated — never edit by hand
 - `supabase/migrations/` SQL migrations; `supabase/functions/_shared/` Zod schemas, `llm.ts`, prices, cors (imported by the frontend via `@shared/`)
 
@@ -30,8 +30,8 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `npm run dev` · `npm run build` · `npm run lint` (oxlint) · `npm run format` (Prettier) · `npm run typecheck` · `npm test`
 - `npx supabase db push` · `npm run db:types` (regenerates `src/types/database.ts` from the linked project)
 - `npx supabase functions serve` / `npx supabase functions deploy <name>`
-- `npm run sim -- [--seeds 100] [--estimator model|old] [--slots model|off] [--baseline] [--check] [--report sim.md] [--examples ml/data/sim_blocks.json]` (Stage 11a simulator: real `plan()` + student model; `scripts/sim/baseline.json` is the bar no model may fall below, `--check` fails when a metric is worse)
-- `npm run ml:cases` (refresh the TS = Python cases after a prior changes) · `cd ml && uv run python -m hoot_ml.train [--write]` / `hoot_ml.monitor` (Stage 11a MLOps; `train.yml` monthly, `ml-monitor.yml` weekly)
+- `npm run sim -- [--seeds 100] [--estimator model|old] [--slots model|off] [--baseline] [--check] [--report sim.md] [--examples ml/data/sim_blocks.json]` (Sprint 15 simulator: real `plan()` + student model; `scripts/sim/baseline.json` is the bar no model may fall below, `--check` fails when a metric is worse)
+- `npm run ml:cases` (refresh the TS = Python cases after a prior changes) · `cd ml && uv run python -m hoot_ml.train [--write]` / `hoot_ml.monitor` (Sprint 15 MLOps; `train.yml` monthly, `ml-monitor.yml` weekly)
 - `npm run landing:shots` (landing screenshots: real app on Vite + in-memory Supabase mock with demo data → `public/landing/today-<locale>.jpg`; rerun when Danas changes)
 - `npm run eval` (promptfoo evals for `parse-document`; needs `GEMINI_API_KEY` in the shell)
 
@@ -64,7 +64,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 ## Git workflow
 - Branches: `main` = production, `dev` = integration (default). Never commit directly to either.
 - Branch `feat/…`, `fix/…`, `chore/…`, `docs/…` off `dev`; open the PR into `dev`; squash merge after CI passes.
-- Release = PR `dev → main` (merge commit) at the end of a stage, then tag `v0.<stage>.0`.
+- Release = PR `dev → main` (merge commit) at the end of a sprint, then tag `v0.<sprint>.0`.
 - Hotfix = `hotfix/…` off `main` → PR into `main`, then merge `main` back into `dev`.
 - Conventional Commits (`feat(session): add pause segments`). Small focused commits.
 - No `Co-Authored-By` or other AI attribution trailers in commits or PRs.
@@ -74,4 +74,4 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `npm run lint && npm run format:check && npm run typecheck && npm test && npm run build` pass.
 - New strings exist in both locale files.
 - Check the screen against its mockup at 390 px.
-- Update `docs/ROADMAP.md` checkboxes if a stage item is done.
+- Update `docs/ROADMAP.md` checkboxes if a sprint item is done.

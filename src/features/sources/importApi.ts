@@ -13,7 +13,7 @@ import { compressImage } from '@/lib/image'
 import { supabase } from '@/lib/supabase'
 import { matchTopics, topicKey, unmatchedNames, type KnownTopic } from '@/lib/topics/dedupe'
 
-// AI content import (PRD "AI uvoz", Stage 10): photos go to `<user_id>/import/` only for the call
+// AI content import (PRD "AI uvoz", Sprint 11): photos go to `<user_id>/import/` only for the call
 // (the function deletes them), the result is reviewed like manual entry, and saving writes the
 // units (merge by label, sources/api.ts) plus the topics below.
 

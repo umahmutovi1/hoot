@@ -10,7 +10,7 @@ import priorsJson from './priors.json'
  *
  * x holds the part of the day (one coefficient per part, the intercept carries the mean),
  * weekend, block kind (learn is the reference), placement demand, day load, closeness of the
- * goal, a late previous block and the day's energy (Stage 11b; 0 until it exists). The subject
+ * goal, a late previous block and the day's energy (Sprint 16; 0 until it exists). The subject
  * intercept is the hierarchical effect behind the "Izbjegavanje" insight: shrunk to 0 until
  * the subject has blocks, and kept apart from a bad slot or an overloaded day because those
  * have their own coefficients.
@@ -64,7 +64,7 @@ export interface BlockFeatures {
   dayLoadMin: number
   daysToGoal: number | null
   prevLate: boolean
-  /** Stage 11b ("energija dana"); null until then. */
+  /** Sprint 16 ("energija dana"); null until then. */
   dayEnergy?: number | null
 }
 
@@ -287,7 +287,7 @@ export interface SubjectEffect {
   weight: number
 }
 
-/** Subject intercepts with their uncertainty: the input of "Izbjegavanje" (Stage 11). */
+/** Subject intercepts with their uncertainty: the input of "Izbjegavanje" (Sprint 17). */
 export function subjectEffects(post: CompletionPosterior): SubjectEffect[] {
   return post.subjects.map((subjectId, j) => {
     return {

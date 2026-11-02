@@ -202,7 +202,7 @@ function logRow(
     reviewed_at: ctx.at,
     source,
     recall,
-    // FSRS rating and the state before it, for personal FSRS parameters (Stage 11a).
+    // FSRS rating and the state before it, for personal FSRS parameters (Sprint 15).
     rating: ratingOf(recall),
     state_before: before ? before.state : null,
     difficulty_before: before ? round(before.difficulty) : null,

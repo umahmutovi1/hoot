@@ -1,14 +1,14 @@
 import { addDays, wallClock, type LocalDate } from '@/lib/day'
 
 /**
- * Web Push jobs (PRD "Timer, pauza" → kraj pauze, decision Stage 9): the app knows when a
+ * Web Push jobs (PRD "Timer, pauza" → kraj pauze, decision Sprint 10): the app knows when a
  * notification is due and writes it to `push_jobs` with its text; `notify` (pg_cron, every
  * minute) sends the due ones. Pure: what the jobs should be, and what to change to get there.
  */
 
 export type JobKind = 'first_block' | 'break_end' | 'test' | 'block_reminder' | 'block_late'
 
-/** Texts for the notification's buttons and the "Preskočeno" that replaces it (Stage 10c). */
+/** Texts for the notification's buttons and the "Preskočeno" that replaces it (Sprint 13). */
 export interface JobActions {
   start: string
   skip: string
@@ -68,7 +68,7 @@ export function isQuiet(
 }
 
 /**
- * Reminders before every timed planned block from today on (Stage 10c): one job per offset, and
+ * Reminders before every timed planned block from today on (Sprint 13): one job per offset, and
  * "Kasniš 15 min" once per block, only when that moment is ahead and outside quiet hours. Whether
  * the block (or the one before it) has started is checked by `notify` when it is due.
  */

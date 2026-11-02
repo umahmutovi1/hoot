@@ -147,7 +147,7 @@ function BlockForm({
   )
   const [day, setDay] = useState<LocalDate>(block?.on_date ?? date)
   const [minutes, setMinutes] = useState(block?.planned_minutes ?? initialMinutes ?? 45)
-  // A new block starts as the plan's suggestion (decision after 10b): only day, length and time
+  // A new block starts as the plan's suggestion (decision after Sprint 12): only day, length and time
   // are chosen; "Ručno" shows subject, type and units.
   const [suggesting, setSuggesting] = useState(!block)
   // After adding a block for today: "Započeti odmah?"
@@ -293,7 +293,7 @@ function BlockForm({
   }
 
   /**
-   * "Drugi predmet u ovo vrijeme" (decision, Stage 10b): the slot becomes a manual block of the
+   * "Drugi predmet u ovo vrijeme" (decision, Sprint 12): the slot becomes a manual block of the
    * other subject, same day, time and length, with the material `pickForTime()` picks for it; the
    * deleted block's material goes back to the plan from tomorrow.
    */

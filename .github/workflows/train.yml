@@ -1,6 +1,6 @@
 name: train
 
-# Stage 11a MLOps (PRD "Dopune" → MLOps): export as the user → fit → backtest → simulator. A new
+# Sprint 15 MLOps (PRD "Dopune" → MLOps): export as the user → fit → backtest → simulator. A new
 # model artefact goes to a PR into dev only when no backtest and no simulator metric got worse
 # than `scripts/sim/baseline.json`; otherwise the run only leaves its report. Revert = revert the
 # artefact commit (a new `version` in priors.json changes input_hash either way).

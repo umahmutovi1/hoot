@@ -12,7 +12,7 @@ import { asProgress, measureOf, type SourceMaterial } from './model'
 
 /**
  * "Izvori" on Predmet: one card per source with its progress bar. Swipe left archives a source
- * (Stage 10b: nothing with units on it is deleted); archived ones are listed below to restore.
+ * (Sprint 12: nothing with units on it is deleted); archived ones are listed below to restore.
  */
 export function SubjectSources({
   subjectId,

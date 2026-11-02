@@ -51,7 +51,7 @@ export function usePlanToday() {
       return Math.round(total / MINUTE)
     }
 
-    // Next exam and the subject's progress ("Spremnost" until the forecast in Stage 11).
+    // Next exam and the subject's progress ("Spremnost" until the forecast in Sprint 17).
     const exams = subjects
       .filter((s) => !s.archived)
       .flatMap((s) =>

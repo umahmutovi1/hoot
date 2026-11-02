@@ -144,7 +144,7 @@ export function examDate(exam: Assessment, boundary: DayBoundary): LocalDate {
 }
 
 /**
- * Rough sources (decision Stage 8b): without manual scope rows, their parts are split in order
+ * Rough sources (decision Sprint 9b): without manual scope rows, their parts are split in order
  * over the subject's partial exams that are not contingent (two partials: first half I, second
  * half II); `scope_all` exams cover everything anyway.
  */
@@ -233,7 +233,7 @@ export interface BuildOptions {
   now: Date
   boundary: DayBoundary
   /**
-   * Today's free time changed since the last run (decision, Stage 10b): today joins the planned
+   * Today's free time changed since the last run (decision, Sprint 12): today joins the planned
    * days with its not-started AI blocks fixed (same content, cap 0 so nothing is added), and
    * `placeTimes()` gives them new times from now (`fixedTimes`).
    */
@@ -609,7 +609,7 @@ export function gainedToday(previous: string, current: string, nowMin: number): 
   return Math.max(0, free(b.slots) - free(a.slots))
 }
 
-/** Partial reading (Stage 10b) as a rounded share; nothing when unread, so the hash stays put. */
+/** Partial reading (Sprint 12) as a rounded share; nothing when unread, so the hash stays put. */
 function readShareOf(u: { level: number; amount: number; read_amount: number | null }) {
   const read = Number(u.read_amount ?? 0)
   if (u.level !== 0 || read <= 0 || u.amount <= 0 || read >= u.amount) return {}

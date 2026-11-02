@@ -9,7 +9,7 @@ import { invokeAi } from '@/features/owl/api'
 import { useLocale } from '@/features/settings/useLocale'
 import { uploadImportFile } from '@/features/sources/importApi'
 
-// AI recall questions (PRD "Testiranje bez sadržaja literature", Stage 10). One call per chapter
+// AI recall questions (PRD "Testiranje bez sadržaja literature", Sprint 11). One call per chapter
 // and source; the answer stays cached for the visit, so going back and forth costs nothing.
 
 /** Questions from the notes or from general knowledge; runs once `enabled` (the user asked). */

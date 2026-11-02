@@ -1,5 +1,5 @@
 /**
- * Minutes per unit for `session_units.minutes` (PRD decision, Stage 7). A segment on unit U covers
+ * Minutes per unit for `session_units.minutes` (PRD decision, Sprint 7). A segment on unit U covers
  * U and the covered units of the same source after it, up to the next unit with its own segment:
  * tapping "5.1" once and reading through 5.3 splits the time over 5.1–5.3. Minutes are split in
  * proportion to the estimated time of the covered part (`weight`). Segments without a unit go to

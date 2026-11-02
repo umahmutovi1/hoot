@@ -69,7 +69,7 @@ export function StepImport(_props: StepProps) {
         </button>
       )}
       <div className="flex flex-col gap-2">
-        {/* Google first (Stage 10d): what is already in the calendar is not entered again. */}
+        {/* Google first (Sprint 14): what is already in the calendar is not entered again. */}
         <ImportCard
           icon={<CalendarIcon size={22} />}
           title={t('onboarding.import.google')}

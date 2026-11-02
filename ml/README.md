@@ -1,6 +1,6 @@
 # Hoot ML (`ml/`)
 
-Python trenira i radi backtest, a TS (`src/lib/`) izvršava. Artefakti su JSON sa `version`, koji ide u `input_hash`. Obrazloženje je u [RESEARCH-ML-2026-10.md](../docs/RESEARCH-ML-2026-10.md), a stavke u [ROADMAP.md](../docs/ROADMAP.md) (Etapa 11a).
+Python trenira i radi backtest, a TS (`src/lib/`) izvršava. Artefakti su JSON sa `version`, koji ide u `input_hash`. Obrazloženje je u [RESEARCH-ML-2026-10.md](../docs/RESEARCH-ML-2026-10.md), a stavke u [ROADMAP.md](../docs/ROADMAP.md) (Sprint 15).
 
 ## Postavljanje
 

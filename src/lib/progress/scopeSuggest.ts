@@ -1,7 +1,7 @@
 import type { ScopeChoice } from './scope'
 
 /**
- * AI prijedlog obima (PRD "Obim ispita", odluka Etapa 10): a rule, no LLM call. The top-level
+ * AI prijedlog obima (PRD "Obim ispita", odluka Sprint 11): a rule, no LLM call. The top-level
  * units of each source are split in order into equal parts by minutes, one part per partial exam
  * (I = the first part). When a whole-material exam (final, integral) follows and there is only one
  * partial, the material is split in two and the second half is left to that exam. Exam questions

@@ -5,7 +5,7 @@ import type { ProgramProposal, ProgramSubjectProposal } from '@/lib/import/progr
 const sectionTitle = 'px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase'
 
 /**
- * "Pregled uvoza · Studijski program" (Stage 11b): every semester with its subjects. New ones of
+ * "Pregled uvoza · Studijski program" (Sprint 16): every semester with its subjects. New ones of
  * this and later semesters are preselected; earlier semesters and electives wait for a tap; a
  * subject the student already has stays.
  */

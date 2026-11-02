@@ -46,7 +46,7 @@ export function inputHash(state: unknown): string {
   return hashString(canonicalJson(state))
 }
 
-/** Seed for any randomness (Thompson sampling, Stage 11) taken from the input hash. */
+/** Seed for any randomness (Thompson sampling, Sprint 17) taken from the input hash. */
 export function seedOf(hash: string): number {
   return Number.parseInt(hash.slice(0, 8), 16) >>> 0
 }

@@ -74,7 +74,7 @@ function SourceDetail({
       </div>
 
       {source.file_name && (
-        // Where the units came from (Stage 10c): the PDF's name, and the Drive link when picked there.
+        // Where the units came from (Sprint 13): the PDF's name, and the Drive link when picked there.
         <div className="flex items-center gap-3 rounded-[20px] glass p-3">
           <span
             aria-hidden="true"

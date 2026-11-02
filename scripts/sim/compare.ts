@@ -27,7 +27,7 @@ export const TOLERANCE: Record<keyof Summary, number> = {
 
 /**
  * Metrics that got worse than the baseline by more than their tolerance (relative, with an
- * absolute floor so a metric near 0 does not fail on noise). DoD of every Stage 11a model: none.
+ * absolute floor so a metric near 0 does not fail on noise). DoD of every Sprint 15 model: none.
  */
 export function worse(now: Summary, baseline: Summary): (keyof Summary)[] {
   return (Object.keys(BETTER) as (keyof Summary)[]).filter((k) => {

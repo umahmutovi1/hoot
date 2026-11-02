@@ -10,7 +10,7 @@ import { useGainedCard } from './useGainedCard'
 import type { PlanToday } from './usePlanToday'
 
 /**
- * "Imaš X min više danas" (PRD "Današnji dan se preslaže", Stage 10b): today's free time grew
+ * "Imaš X min više danas" (PRD "Današnji dan se preslaže", Sprint 12): today's free time grew
  * and there is urgent work, so the plan offers it instead of filling it silently. "Dodaj" opens
  * the "Imam još vremena" sheet on the gained time.
  */

@@ -17,7 +17,7 @@ import { blockJobs, diffJobs, isQuiet, PLAN_JOB_KINDS, type SavedJob } from './j
 const DEBOUNCE_MS = 3000
 
 /**
- * Keeps block reminders in step with the saved plan (Stage 10c, replaces "Prvi blok dana"): for
+ * Keeps block reminders in step with the saved plan (Sprint 13, replaces "Prvi blok dana"): for
  * the next 7 days, at each offset the user picked before every timed block, plus "Kasniš 15 min",
  * outside quiet hours and only while some device is subscribed. Old "first block" jobs are
  * removed. Needs the network (the jobs are for the server); it runs again when the plan changes.
