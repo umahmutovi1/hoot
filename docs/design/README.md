@@ -26,11 +26,11 @@ su jedna komponenta sa stanjem.
 
 ## Navigacija
 **Odluka nakon v0.7.2 (mockup `NavMeni.html`):** donje kapsule više nema (u Safariju je bila nepouzdana i sporija). Prvi red svakog taba:
-avatar (Postavke) → AI iskra odmah desno (otvara Chat) → ☰ u desnom uglu; AI i ☰ su samo ikone, a red nema pozadinu. **Odluka nakon 8b:** umjesto avatara je logo sove (`owl-pwa-icons/logo.svg`, prozirna pozadina, boja teksta) koji vodi na Danas; Postavke su u meniju. „✦ AI“ ima vrlo prozirnu staklenu pilulu da se vidi da je dugme; zatvaranje chata preko AI zatvara i meni. Sekcije menija se otvaraju nezavisno (otvaranje jedne ne zatvara drugu). Ispod su zaglavlje taba
+avatar (Postavke) → AI iskra odmah desno (otvara Chat) → ☰ u desnom uglu; AI i ☰ su samo ikone, a red nema pozadinu. **Odluka nakon Sprinta 9b:** umjesto avatara je logo sove (`owl-pwa-icons/logo.svg`, prozirna pozadina, boja teksta) koji vodi na Danas; Postavke su u meniju. „✦ AI“ ima vrlo prozirnu staklenu pilulu da se vidi da je dugme; zatvaranje chata preko AI zatvara i meni. Sekcije menija se otvaraju nezavisno (otvaranje jedne ne zatvara drugu). Ispod su zaglavlje taba
 i sadržaj do dna ekrana. ☰ otvara panel u staklu sheetova preko ekrana (isti prvi red, ☰ postaje ×): Danas, Plan, Predmeti, Napredak, Postavke;
 stavke sa podstranicama su harmonika (otvorena je sekcija trenutne stranice), a na dnu je samo „Odjavi se“. Podstranice: Plan → Kalendar,
 Dostupnost, Raspored nastave; Predmeti → aktivni predmeti, Svi predmeti; Napredak → Pregled, Sesije; Postavke → Sve postavke,
-Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stignu). Historija razgovora je u chatu. **Mrvice (odluka nakon 8b):** svaki ekran osim onboardinga, sesije u toku i forme kraja sesije ima isti prvi red (logo, AI, ☰). Ispod glavnih ekrana (Danas, Plan, Predmeti, Napredak, Chat) je drugi red: ‹ (nazad odakle si došla, bez historije jedan nivo gore) i putanja po mjestu u appu, npr. „Predmeti › Signali › Knjiga“; svaka mrvica iznad ekrana je link. Ekrani više nemaju svoje ‹ dugme. Sesija se pokreće iz kartice
+Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stignu). Historija razgovora je u chatu. **Mrvice (odluka nakon Sprinta 9b):** svaki ekran osim onboardinga, sesije u toku i forme kraja sesije ima isti prvi red (logo, AI, ☰). Ispod glavnih ekrana (Danas, Plan, Predmeti, Napredak, Chat) je drugi red: ‹ (nazad odakle si došla, bez historije jedan nivo gore) i putanja po mjestu u appu, npr. „Predmeti › Signali › Knjiga“; svaka mrvica iznad ekrana je link. Ekrani više nemaju svoje ‹ dugme. Sesija se pokreće iz kartice
 "Sljedeće" (dugme Počni) ili iz chata.
 
 ## Ekrani po toku
@@ -45,7 +45,7 @@ Akademski kalendar, Dokumenti (+ Povezani kalendari i Predlošci sesije kad stig
 - Sesija: PokreniSesiju (koliko vremena imaš, predložak) → Sesija ("Ometena sam", + Kartica) → KrajSesije
   ("Do koje stranice", status jedinice se tapom mijenja) / KrajSesijeFokus (razlozi kad je fokus Slab) → RecallGate;
   ProvjeraZnanja → ProvjeraSazetak; Sesije (historija po danima, "ručno") → SesijaDetalj (segmenti, uredi ocjene, obriši)
-- Plan (**odluka nakon 8b:** Kalendar i Satnica su jedan kalendar sa pogledima Dan, default i lijevo, i Mjesec; Dan je vremenska osa Satnice sa nastavom, zauzetošću i blokovima, „Vrati predloženo“ i „Dodaj blok“): Plan (Mjesec), PlanDan (Dan: pilule dana, vremenska osa, nastava i Google zauzetost šrafirano),
+- Plan (**odluka nakon Sprinta 9b:** Kalendar i Satnica su jedan kalendar sa pogledima Dan, default i lijevo, i Mjesec; Dan je vremenska osa Satnice sa nastavom, zauzetošću i blokovima, „Vrati predloženo“ i „Dodaj blok“): Plan (Mjesec), PlanDan (Dan: pilule dana, vremenska osa, nastava i Google zauzetost šrafirano),
   PlanDanTermin (detalji termina nastave), Satnica (vremena automatski, pomjeren blok = ručni), Replan, Dostupnost, Raspored,
   UrediBlokNovi / Uredi / Obrisi. Zaglavlje Plana ima Dostupnost i Raspored.
 - Predmeti: Predmeti, Predmet (Cilj: koliko ti je bitan, željena ocjena, kad kreće učenje, pojačanje ×; zaostatak u jedinici
@@ -66,13 +66,13 @@ Male staklene indigo pločice sa bijelom linijskom ikonom ostaju samo kao ikone 
 
 ## Odluke pri implementaciji redizajna (v0.7.2)
 - Redizajn mijenja izgled postojećih ekrana. Elementi za funkcije koje još ne postoje (pretraga i notifikacije u zaglavlju Danas,
-  plan i satnica u chatu, „Zašto ovako danas", prognoza, mapa termina, check-in…) dolaze u etapi kojoj pripadaju; pretraga je od oktobra 2026 u PRD-u (Etapa 10b).
-- Do schedulera (Etapa 8b) kartica „Sljedeće" na Danas nudi slobodnu sesiju (Počni → PokreniSesiju); dok sesija traje, ista kartica
+  plan i satnica u chatu, „Zašto ovako danas", prognoza, mapa termina, check-in…) dolaze u sprintu kojem pripadaju; pretraga je od oktobra 2026 u PRD-u (Sprint 12).
+- Do schedulera (Sprint 9b) kartica „Sljedeće" na Danas nudi slobodnu sesiju (Počni → PokreniSesiju); dok sesija traje, ista kartica
   pokazuje sesiju u toku i vraća u nju.
-- **Nakon 8b:** dan bez bloka više nije poseban prazan ekran (DanasSlobodno): Danas zadržava fokus traku, a kartica „Sljedeće“ kaže „Danas nema plana“, sljedeći blok (sutra ili kasnije) i nudi slobodnu sesiju (uz „Predmeti“ kad plan nema gradiva). Tako se ekran ne mijenja dok se plan učitava. Kartice ispita imaju „za X dana“ ispod datuma (od Etape 10b u redu datuma, vidi ispod); PokreniSesiju uz čipove nudi „+ Predmet“ i „+ Izvor“.
+- **Nakon Sprint 9b:** dan bez bloka više nije poseban prazan ekran (DanasSlobodno): Danas zadržava fokus traku, a kartica „Sljedeće“ kaže „Danas nema plana“, sljedeći blok (sutra ili kasnije) i nudi slobodnu sesiju (uz „Predmeti“ kad plan nema gradiva). Tako se ekran ne mijenja dok se plan učitava. Kartice ispita imaju „za X dana“ ispod datuma (od Sprinta 12 u redu datuma, vidi ispod); PokreniSesiju uz čipove nudi „+ Predmet“ i „+ Izvor“.
 - Ekrani preko cijelog ekrana i dalje imaju ljepljivo zaglavlje sa `env(safe-area-inset-top)`, a svaki sheet ima ×.
 
-## Odluke nakon v0.10.0 (oktobar 2026, Etapa 10b)
+## Odluke nakon v0.10.0 (oktobar 2026, Sprint 12)
 PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (default → jedan tap → tek onda postavka).
 - **Prvi red je ljepljiv** na svim ekranima sa prvim redom: `sticky top-0` + `env(safe-area-inset-top)`. **Izmjena (oktobar 2026):** umjesto
   gradijenta platna sadržaj ispod reda se zamuti kao na iOS-u: `backdrop-filter: blur(20px) saturate(180%)` uz vrlo blag sloj boje platna
@@ -90,7 +90,7 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   `prefers-reduced-motion` → samo fade 150 ms.
 - **Fokus kartica na Danas:** dva prstena kao u mockupu (80 px, debljina 9, track bijeli 0.6): vanjski r 32 plan danas (`brand-accent`),
   unutrašnji r 20 sedmica (pink deep); pored 2×2 statistika (Plan danas, Sedmica, Sljedeći ispit, Spremnost).
-- **Kartice ispita (izmijenjeno poslije pregleda 10b):** kvadratne (`aspect-square`), redoslijed kao `Danas.dc.html`: gore datum (velika slova, boja predmeta) i ime predmeta 14/600 (jedan red), dolje % 22/600 („—“ bez izvora) i traka 5 px (radijus 3, track 0.65); sve iste. Dani do ispita se za sada ne prikazuju.
+- **Kartice ispita (izmijenjeno poslije pregleda Sprinta 12):** kvadratne (`aspect-square`), redoslijed kao `Danas.dc.html`: gore datum (velika slova, boja predmeta) i ime predmeta 14/600 (jedan red), dolje % 22/600 („—“ bez izvora) i traka 5 px (radijus 3, track 0.65); sve iste. Dani do ispita se za sada ne prikazuju.
 - **Swipe ulijevo** na redu liste: crveno „Obriši“ / sivo-ljubičasto „Arhiviraj“ / „Preskoči“ dugmad 72 px se otkrivaju ispod reda,
   red prati prst (otpor poslije širine dugmadi), puni swipe izvrši prvu akciju; uvijek toast Poništi. Ne počinje s lijeve ivice (iOS nazad).
   Dok je red otvoren, red i dugmad su jedna ravna traka (desni uglovi reda nisu zaobljeni, bez razmaka).
@@ -106,8 +106,8 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   Kadulja (zelena, akcent #4F7A62), Okean (plava, akcent #3F6590); tačne vrijednosti se biraju u mockupu „Izgled“ uz kontrast ≥ 4.5:1.
   Boje predmeta ostaju iste u svim temama.
 - Mockupi za Pretragu, Izgled (teme), sheet „Započeti sesiju sada?“, Podsjetnike i pregled plana i programa rade se na početku
-  etape kojoj pripadaju (10b / 10c), u istom stilu kao postojeći `.dc.html`.
-- Mockupi Etape 10b: `Pretraga.dc.html` (panel, nedavne, grupe, bez rezultata), `Izgled.dc.html` (Postavke → Opće → Izgled, 5 tema sa
+  sprinta kojem pripadaju (Sprint 12 / 13), u istom stilu kao postojeći `.dc.html`.
+- Mockupi Sprinta 12: `Pretraga.dc.html` (panel, nedavne, grupe, bez rezultata), `Izgled.dc.html` (Postavke → Opće → Izgled, 5 tema sa
   tačnim tokenima i izračunatim kontrastom) i `StartSesije.dc.html` (sheet „Započeti sesiju sada?“, „+ Dodaj blok“, BlockSheet
   „Zadrži ovo vrijeme“ / „Vrati planu“, nazad iz sesije). Statični su (bez `support.js`), više stanja na jednoj tabli kao `NavMeni.html`.
 - **Odluke uz mockupe (oktobar 2026):** (1) Lavanda: svijetli kraj `glass-tint` je #645DB4 umjesto #6E67BE (bijeli tekst 4.09 → 4.64:1),
@@ -115,7 +115,7 @@ PRD „Navigacija, pretraga, teme i geste“. Vodeći princip: manje odluka (def
   ovaj dan, Imam još vremena) uz Ekrane, Postavke, Predmete, Ispite, Izvore, Jedinice i Dokumente. (3) Na AI bloku start sheet ima
   „Izbaci iz plana“, koje otvara postojeće pitanje „Obriši blok?“ iz Plana (kao u PRD-u).
 
-## Etapa 10c (oktobar 2026)
+## Sprint 13 (oktobar 2026)
 PRD „Akademska godina i semestar“, „AI uvoz“ (plan i program, fakultet s interneta), „Materijali“, „Dan pred ispit“, „Podsjetnici i notifikacije“.
 Statični mockupi (bez `support.js`), više stanja na jednoj tabli kao `StartSesije.dc.html`:
 - `AkademskaGodina.dc.html`: Predmeti po semestru (trenutni otvoren, ostali sklopljeni ispod „Ranije“, „prenesen“), kartica „Nova akademska
@@ -132,3 +132,7 @@ Statični mockupi (bez `support.js`), više stanja na jednoj tabli kao `StartSes
   izvor, svaki PDF jedna jedinica. (3) „Kasniš 15 min“ nema svoj prekidač: ide uz podsjetnike (bar jedan pomak).
 - **Poslije pregleda (oktobar 2026):** kartica „Sljedeće“ kad danas nema plana ima jedno dugme dole desno, „Dodaj sesiju“ (tok „Dodaj
   blok“: prijedlog plana, pa „Započeti odmah?“); slobodne sesije na kartici više nema (ostaje u chatu). Bez materijala dugme je „Dodaj materijal“.
+
+## Sprint 17 — Napredak
+
+- `SedmicaRetrovizor.dc.html`: odobren prije React implementacije (3. nov 2026). Sedmični pregled bez grafova, do tri uvida, predmeti u ogledalu, mapa termina, dva opcionalna osvrta i izuzeci za sljedeću sedmicu. Prsten za položen ispit ostaje postojeći, 120 px, bez maskote.

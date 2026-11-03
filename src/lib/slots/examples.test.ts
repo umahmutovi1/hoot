@@ -23,7 +23,7 @@ describe('completionExamples', () => {
       [
         block('a', { status: 'done' }),
         block('b', { planStartMin: 1200, plannedStart: '2026-10-27T19:00:00Z' }),
-        block('c', { planStartMin: null }), // saved before Stage 11a: no features
+        block('c', { planStartMin: null }), // saved before Sprint 15: no features
         block('d', { onDate: TODAY, status: 'planned' }), // open: no label yet
         block('m', { origin: 'user' }), // manual: not a plan example
       ],

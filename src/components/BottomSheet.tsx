@@ -23,7 +23,7 @@ interface BottomSheetProps {
 /**
  * Bottom sheet as in the UrediBlok mockups: white, 32 px top radius, handle, 22 px title, × to close.
  * It slides in on the iOS curve and follows the finger: dragging the handle down closes it (only
- * the handle, so forms, text selection and scrolling inside keep working; design README, 10b;
+ * the handle, so forms, text selection and scrolling inside keep working; design README, Sprint 12;
  * timing in index.css). The keyboard inset comes from `--vv-bottom`, so vaul does not reposition inputs.
  */
 export function BottomSheet({

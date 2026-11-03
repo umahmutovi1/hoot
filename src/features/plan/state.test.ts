@@ -1,9 +1,11 @@
+import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { addDays, zonedInstant } from '@/lib/day'
 import { inputHash, plan } from '@/lib/scheduler'
 import type { DayInput } from '@/lib/schedule'
 import { fitCompletion } from '@/lib/slots/completion'
 import { assessmentRow, subjectRow } from '@/features/subjects/fixtures'
+import type { Assessment } from '@/features/subjects/model'
 import type { SourceWithUnits, Unit } from '@/features/sources/model'
 import { applyReplace, reasonOf, replaceArgs, todayMoves } from './save'
 import {
@@ -520,4 +522,257 @@ describe('plan state helpers', () => {
     })
     expect(reasonOf({ reason: 'old text' })).toBeNull()
   })
+})
+
+describe('scope after a partial exam (Sprint 17)', () => {
+  const LATER = zonedInstant('2026-11-15', 600, TZ)
+  const at = (date: string) => zonedInstant(date, 540, TZ).toISOString()
+  const failed = { result_points: 10, result_max: 40, points_max: 40, pass_min_pct: 50 }
+  const exam1 = (patch: Partial<Assessment> = {}) =>
+    assessmentRow({ id: 'e1', subject_id: 's', at: at('2026-11-10'), ...patch })
+  const exam2 = assessmentRow({
+    id: 'e2',
+    subject_id: 's',
+    title: 'II parcijala',
+    at: at('2026-12-20'),
+  })
+  const makeup = assessmentRow({
+    id: 'm',
+    subject_id: 's',
+    kind: 'makeup',
+    title: 'Popravni',
+    retake_of: 'e1',
+    contingent: true,
+    at: at('2026-11-25'),
+  })
+  const integral = assessmentRow({
+    id: 'i',
+    subject_id: 's',
+    kind: 'integral',
+    title: 'Integralni',
+    scope_all: true,
+    contingent: true,
+    at: at('2027-01-20'),
+  })
+  /** Every part studied and due for review, so only scope keeps a part out of the plan. */
+  const studied = (parts: number) => {
+    const src = roughSource(parts)
+    src.units = src.units.map((u) => ({ ...u, level: 2, next_review_on: '2026-11-16' }))
+    return src
+  }
+  const run = (assessments: Assessment[], parts = 10, now = LATER) => {
+    const built = buildPlanState(
+      inputs({
+        subjects: [{ ...subjectRow({ id: 's' }), assessments }],
+        sources: [studied(parts)],
+      }),
+      { now, boundary },
+    )
+    const planned = new Set(plan(built.state).blocks.flatMap((b) => b.units.map((u) => u.unitId)))
+    return { goals: built.state.goals, planned }
+  }
+  const firstHalf = ['p0', 'p1', 'p2', 'p3', 'p4']
+  const secondHalf = ['p5', 'p6', 'p7', 'p8', 'p9']
+
+  it('after I, its half leaves the plan (no learning, no reviews), passed or not', () => {
+    for (const first of [exam1(), exam1({ passed: true, result_points: 30, result_max: 40 })]) {
+      const { goals, planned } = run([first, exam2])
+      expect(goals.map((g) => [g.id, g.unitIds])).toEqual([['e2', secondHalf]])
+      expect(firstHalf.some((id) => planned.has(id))).toBe(false)
+      expect(secondHalf.some((id) => planned.has(id))).toBe(true)
+    }
+  })
+
+  it('a makeup inherits the scope of the exam it repeats', () => {
+    const { goals, planned } = run([exam1(failed), exam2, makeup])
+    expect(goals.find((g) => g.id === 'm')!.unitIds).toEqual(firstHalf)
+    expect(goals.find((g) => g.id === 'e2')!.unitIds).toEqual(secondHalf)
+    expect(firstHalf.some((id) => planned.has(id))).toBe(true)
+  })
+
+  it('an integral’s makeup covers everything', () => {
+    const intMakeup = { ...makeup, retake_of: 'i', at: at('2027-02-01') }
+    const failedIntegral = { ...integral, at: at('2026-11-12'), ...failed }
+    const { goals } = run([exam1(failed), exam2, failedIntegral, intMakeup])
+    expect(goals.find((g) => g.id === 'm')!.unitIds).toEqual([...firstHalf, ...secondHalf])
+  })
+
+  it('an active integral or a final with the whole material keeps the first half', () => {
+    const final = assessmentRow({
+      id: 'f',
+      subject_id: 's',
+      kind: 'final',
+      scope_all: true,
+      at: at('2027-01-25'),
+    })
+    for (const extra of [integral, final]) {
+      const { goals, planned } = run([exam1(failed), exam2, extra])
+      expect(goals.find((g) => g.id === extra.id)!.unitIds).toEqual([...firstHalf, ...secondHalf])
+      expect(firstHalf.some((id) => planned.has(id))).toBe(true)
+    }
+  })
+
+  it('a subject with only an integral keeps everything until it', () => {
+    const { goals } = run([{ ...integral, contingent: false }])
+    expect(goals.map((g) => [g.id, g.unitIds])).toEqual([['i', [...firstHalf, ...secondHalf]]])
+  })
+
+  it('property: after I without a makeup or integral, no block holds I’s parts', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 14 }),
+        fc.integer({ min: 1, max: 30 }),
+        fc.constantFrom('none', 'passed', 'failed'),
+        (parts, after, result) => {
+          const first = exam1(
+            result === 'passed'
+              ? { passed: true, result_points: 30, result_max: 40 }
+              : result === 'failed'
+                ? failed
+                : {},
+          )
+          const now = zonedInstant(addDays('2026-11-10', after), 600, TZ)
+          const { planned } = run([first, exam2], parts, now)
+          for (let i = 0; i < parts; i++) {
+            if (Math.floor((i * 2) / parts) === 0) expect(planned.has(`p${i}`)).toBe(false)
+          }
+        },
+      ),
+      { numRuns: 30 },
+    )
+  })
+})
+
+describe('slot signals in the plan (Sprint 17)', () => {
+  const session = (date: string, minutes: number, focus: number) => ({
+    startedAt: zonedInstant(date, minutes, TZ).toISOString(),
+    blockId: null,
+    minutes: 50,
+    focus,
+    focusReasons: null,
+    distractions: 0,
+    appLeaves: 0,
+    units: [],
+  })
+  const days = Array.from({ length: 10 }, (_, i) => addDays(TODAY, -1 - i))
+  const signals = {
+    sessions: days.flatMap((d) => [session(d, 20 * 60, 3), session(d, 9 * 60, 1)]),
+    plannedStart: new Map<string, string>(),
+  }
+
+  it('better focus in the evening raises its slot score; the hash follows', () => {
+    const plain = buildPlanState(inputs(), { now: NOW, boundary }).state
+    const nudged = buildPlanState(inputs({ signals }), { now: NOW, boundary }).state
+    const weekday = (s: typeof plain) => s.slotScores!.weekday
+    expect(weekday(nudged).evening).toBeGreaterThan(weekday(plain).evening)
+    expect(weekday(nudged).morning).toBeLessThan(weekday(plain).morning)
+    expect(inputHash(nudged)).not.toBe(inputHash(plain))
+    // No sessions: the same state as without signals.
+    const empty = buildPlanState(inputs({ signals: { sessions: [], plannedStart: new Map() } }), {
+      now: NOW,
+      boundary,
+    }).state
+    expect(inputHash(empty)).toBe(inputHash(plain))
+  })
+})
+
+it('Sprint 17 keeps teaching signals out of exam-period scores and hashes the selected period', () => {
+  const signal = {
+    startedAt: zonedInstant('2026-10-18', 9 * 60, TZ).toISOString(),
+    blockId: null,
+    minutes: 50,
+    focus: 3,
+    focusReasons: [],
+    distractions: 0,
+    appLeaves: 0,
+    units: [],
+  }
+  const common = inputs({ signals: { sessions: [signal], plannedStart: new Map() } })
+  const teaching = buildPlanState(common, { now: NOW, boundary })
+  const exam = buildPlanState(
+    {
+      ...common,
+      dayInput: () => ({
+        ...dayInput(),
+        periods: [
+          {
+            id: 'p',
+            kind: 'exam',
+            examSession: 'regular',
+            title: 'Exam',
+            startsOn: TODAY,
+            endsOn: '2026-10-30',
+          },
+        ],
+      }),
+    },
+    { now: NOW, boundary },
+  )
+  expect(teaching.state.slotPeriod).toBe('teaching')
+  expect(exam.state.slotPeriod).toBe('exam')
+  expect(inputHash(teaching.state)).not.toBe(inputHash(exam.state))
+})
+
+it('Sprint 17 never repeats a completed recall shift when its blocks leave the 15-day window', () => {
+  const event = {
+    id: 'feedback',
+    user_id: 'u',
+    insight_id: 'recall_share',
+    candidate_id: null,
+    status: 'accepted',
+    payload: { action: { kind: 'questions_next', blocks: 2 } },
+    created_at: '2026-10-01T00:00:00Z',
+    updated_at: '2026-10-01T00:00:00Z',
+  }
+  const built = buildPlanState(
+    inputs({
+      feedback: [event],
+      shiftBlocks: [
+        {
+          id: 'b1',
+          status: 'done',
+          reason: JSON.stringify({ code: 'exam', recallShift: 'feedback' }),
+        },
+        {
+          id: 'b2',
+          status: 'done',
+          reason: JSON.stringify({ code: 'exam', recallShift: 'feedback' }),
+        },
+      ],
+    }),
+    { now: NOW, boundary },
+  )
+  expect(built.state.questionsNext).toBeNull()
+})
+
+it('Sprint 17 slot effects match persisted weekly edits, including busy time and explicit date slots', async () => {
+  const { applyAction } = await import('@/lib/strategist')
+  const { editWeeklySlots } = await import('@/lib/slots/availability')
+  const { rhythmFrom } = await import('@/lib/schedule/rhythm')
+  const tomorrow = addDays(TODAY, 1)
+  const input = inputs({
+    profile: profile({ wake_min: [480, 600], sleep_min: [1320, 1380] }),
+    dayInput: () => ({
+      ...dayInput(),
+      exceptions: [{ onDate: tomorrow, startMin: 480, endMin: 600, isBusy: true }],
+      days: [{ onDate: addDays(TODAY, 2), slots: [{ startMin: 840, endMin: 960 }], capMin: null }],
+    }),
+  })
+  const built = buildPlanState(input, { now: NOW, boundary })
+  for (const kind of ['add_slot', 'avoid_slot'] as const) {
+    const action = { kind, weekend: false, part: 'morning' as const }
+    const simulated = applyAction(built.state, action, TODAY)
+    const changed = buildPlanState(
+      {
+        ...input,
+        dayInput: (date) => ({
+          ...input.dayInput(date),
+          rules: editWeeklySlots(input.dayInput(date).rules, action, rhythmFrom(input.profile)),
+        }),
+      },
+      { now: NOW, boundary },
+    )
+    for (const day of simulated.days.filter((d) => d.date > TODAY))
+      expect(day.slots).toEqual(changed.state.days.find((d) => d.date === day.date)!.slots)
+  }
 })

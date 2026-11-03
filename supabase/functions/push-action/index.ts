@@ -1,4 +1,4 @@
-// push-action (Stage 10c): "Preskoči" on a block reminder, without opening the app. The service
+// push-action (Sprint 13): "Preskoči" on a block reminder, without opening the app. The service
 // worker posts the one-time token from the notification; no JWT, the token is the key (only its
 // hash is in push_jobs). The block gets skip_requested_at, its unsent jobs ("Kasniš") go, and the
 // app applies the same skipBlock() rule as the button when it next opens. Tokens are never logged.

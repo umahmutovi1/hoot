@@ -46,7 +46,7 @@ export function usePresets(): PresetChoices {
       profile?.default_preset && exists(profile.default_preset)
         ? profile.default_preset
         : DEFAULT_PRESET_ID
-    // Stage 7 ids (25/5, 50/10) are not offered any more, so they never come back as a suggestion.
+    // Sprint 7 ids (25/5, 50/10) are not offered any more, so they never come back as a suggestion.
     const suggestedId = low ? 'pomodoro' : last && exists(last) ? last : defaultId
     return {
       presets,

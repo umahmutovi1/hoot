@@ -17,7 +17,7 @@ import type {
 } from './model'
 
 // IDs come from the client (crypto.randomUUID()), so writes are idempotent upserts that the
-// offline queue (Stage 7) can replay.
+// offline queue (Sprint 7) can replay.
 
 type ScheduleTable =
   | 'academic_periods'

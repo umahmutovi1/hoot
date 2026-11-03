@@ -10,7 +10,7 @@ export interface ActualTime {
 }
 
 /**
- * When a done block was really studied (feedback after 10b): its latest finished session's start
+ * When a done block was really studied (feedback after Sprint 12): its latest finished session's start
  * and length, so Raspored and Plan → Dan show the actual time instead of the planned one.
  */
 export function useActualTimes(): Map<string, ActualTime> {

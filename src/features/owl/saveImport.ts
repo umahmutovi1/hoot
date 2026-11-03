@@ -71,14 +71,14 @@ export function useSaveImport(t: TFunction) {
   const { defaultTerm } = useAcademicTerm()
   const roughTexts = useRoughTexts()
   /**
-   * Syllabus (Stage 10c): a new subject when asked (the syllabus's semester, else the current
+   * Syllabus (Sprint 13): a new subject when asked (the syllabus's semester, else the current
    * one), picked books as rough sources until their contents come, topics, the chapters as a
    * temporary "Predavanja" source, exam points (only where none were entered) and the
    * subject's point total (only over the default). New exams take the matching period of the
    * academic calendar as a tentative date, else the end of the teaching period.
    */
   /**
-   * Study programme (Stage 11b): the academic years the picked subjects need (default dates),
+   * Study programme (Sprint 16): the academic years the picked subjects need (default dates),
    * then the subjects in their year and semester, without exams until their semester comes.
    */
   const saveProgram = async (program: ProgramProposal) => {

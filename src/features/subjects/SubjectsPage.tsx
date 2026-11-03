@@ -22,9 +22,9 @@ import { examDateLabel, relativeDays } from './format'
 import { nextAssessment, type SubjectWithAssessments } from './model'
 
 /**
- * Predmeti: active subjects by academic year and semester (Stage 10c, AkademskaGodina.dc.html):
+ * Predmeti: active subjects by academic year and semester (Sprint 13, AkademskaGodina.dc.html):
  * the current semester open, an unpassed older subject in it as "prenesen", other semesters
- * folded; archived ones behind a toggle. Swipe left archives a subject (Stage 10b), with undo.
+ * folded; archived ones behind a toggle. Swipe left archives a subject (Sprint 12), with undo.
  */
 export function SubjectsPage() {
   const { t } = useTranslation()

@@ -524,6 +524,86 @@
       "high_one": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takvog dana).",
       "high_few": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takva dana).",
       "high_other": "Kad si pun/a energije, plan ide do {{pct}}% običnog dana (iz {{count}} takvih dana)."
+    },
+    "forecast": {
+      "title": "Prognoza spremnosti",
+      "range": "Vjerovatno {{low}}–{{high}}%",
+      "chance": "{{pct}}% šanse da stigneš obavezno",
+      "grade": "Procjena ocjene {{likely}} · raspon {{low}}–{{high}}",
+      "noMemory": "Procjena ocjene nakon prve provjere znanja.",
+      "noScope": "Dodaj gradivo i obim ispita za prognozu.",
+      "hint": "Raspon je procjena, ne obećanje. Jačina se računa na dan ispita."
+    },
+    "breakdown": {
+      "title": "Progres po predmetima i izvorima"
+    },
+    "topics": {
+      "title": "Jačina po temama",
+      "filter": "Filter po predmetu",
+      "all": "Svi",
+      "strength": "Jačina",
+      "empty": "Teme će se pojaviti kad ih povežeš s gradivom."
+    },
+    "statistics": {
+      "title": "Statistika",
+      "week": "Prošla sedmica",
+      "month": "Mjesec",
+      "error": "Statistika se trenutno ne može učitati.",
+      "retry": "Pokušaj ponovo",
+      "loading": "Učitavanje statistike…",
+      "hours": "Sati vs plan",
+      "hoursValue": "{{actual}} / {{planned}} h",
+      "fulfilment": "Ispunjenost",
+      "blocks": "Odrađeni blokovi",
+      "focus": "Fokus",
+      "rho": "Faktor realizacije ρ",
+      "sessions": "Sesije",
+      "planned": "Plan",
+      "actual": "Učenje",
+      "efficiency": "Efikasnost po dobu dana",
+      "presets": "Predlošci sesije · fokus i brzina",
+      "more": "Još {{count}} do poređenja",
+      "presetSessions": "{{count}} sesija",
+      "speedHint": "Brzina je normalizovana težinom gradiva; 1,15× = 15% sporije nego inače. Poređenje predložaka nakon 5 sesija."
+    },
+    "parts": {
+      "morning": "Jutro",
+      "midday": "Podne",
+      "afternoon": "Popodne",
+      "evening": "Veče",
+      "night": "Noć"
+    },
+    "slots": {
+      "title": "Kad ti učenje ide",
+      "weekday": "Radni",
+      "weekend": "Vikend",
+      "hint": "Dodirni termin za fokus, odrađenost i broj sesija.",
+      "detail": "Fokus {{focus}}/3 · odrađenost {{completion}}% · {{count}} sesija",
+      "learning": "Uči se… još {{count}} sesija",
+      "exam": "Ispitni rok · odvojena mjerenja",
+      "teaching": "Nastava · odvojena mjerenja"
+    },
+    "rhythm": {
+      "title": "Ritam sesije",
+      "suggestion": "Tvoje sesije traju oko {{aboutMin}} min — prebaci na {{workMin}}/{{breakMin}}?",
+      "apply": "Prebaci na {{workMin}}/{{breakMin}}",
+      "name": "Moj ritam {{workMin}}/{{breakMin}}",
+      "later": "Ne sad",
+      "full": "Predlošci su popunjeni. U Postavkama oslobodi mjesto za svoj ritam."
+    },
+    "slotAction": {
+      "avoid_slot": "Ovaj termin ti manje odgovara",
+      "add_slot": "Dodati dobar termin?",
+      "detail": "{{days}} · {{part}} · {{start}}–{{end}} · fokus {{focus}}/3",
+      "persistent": "Mijenja sedmičnu dostupnost. Današnji raspored i tvoji izuzeci ostaju sačuvani.",
+      "remove": "Makni termin",
+      "add": "Dodaj termin"
+    },
+    "readiness": {
+      "title": "Spremnost pred ispit",
+      "question": "Ispit je sutra. Koliki rezultat očekuješ? Ako želiš, odaberi procjenu.",
+      "calibration": "Kod tebe procjena izgleda viša od rezultata za oko {{percentagePoints}} postotnih poena ({{pairs}} ispita). Provjera znanja može pomoći.",
+      "saved": "Procjena je spašena."
     }
   },
   "session": {
@@ -891,6 +971,7 @@
     },
     "retakeOf": "Popravni za",
     "retakeOfNone": "Prvo dodaj ispit koji popravni ponavlja.",
+    "makeupScope": "Isto gradivo kao {{title}}.",
     "makeupTitle": "Popravni: {{title}}",
     "steps": {
       "label": "Koraci",
@@ -2768,10 +2849,11 @@
       "title": "Nađeno na internetu",
       "crumb": "Nađeno",
       "year": "{{n}}. godina",
-      "searching": "Tražim akademski kalendar i plan i program…",
+      "searching": "Tražim akademski kalendar, plan i program i studijski program…",
       "kind": {
         "academic_calendar": "Akademski kalendar",
         "syllabus": "Plan i program",
+        "study_program": "Cijeli studijski program",
         "other": "Dokument"
       },
       "checkYear": "{{year}} · provjeri godinu",
@@ -2793,6 +2875,10 @@
       "cardTitle_few": "{{count}} dokumenta sa interneta",
       "cardTitle_other": "{{count}} dokumenata sa interneta",
       "cardSub": "Akademski kalendar i plan i program · pregledaš prije spašavanja"
+    },
+    "programDetails": {
+      "title": "Uvezi i detalje za {{n}}. godinu",
+      "sub": "Literatura, teme i bodovanje iz istog dokumenta"
     }
   },
   "googleCalendar": {
@@ -2944,5 +3030,105 @@
     "nextSubjects_one": "Sljedeći semestar: {{count}} predmet",
     "nextSubjects_few": "Sljedeći semestar: {{count}} predmeta",
     "nextSubjects_other": "Sljedeći semestar: {{count}} predmeta"
+  },
+  "strategist": {
+    "title": "Sedmični pregled",
+    "fallback": "Pravila su izdvojila prijedloge za tvoj plan. Odaberi samo ono što ti odgovara. Pregled radi i bez AI-ja.",
+    "apply": "Primijeni",
+    "applied": "Primijenjeno",
+    "cancel": "Poništi prijedlog",
+    "ask": "Pitaj AI za pregled",
+    "loading": "AI pregleda plan…",
+    "noActions": "Trenutno nema prijedloga za promjenu plana.",
+    "aiUnavailable": "AI trenutno nije dostupan. Prijedlozi iz pravila i dalje rade.",
+    "notReady": "Sačekaj da se plan učita.",
+    "noFirstSlot": "Sutra nema slobodnog termina od 15 min u predloženom dijelu dana. Uredi dostupnost pa pokušaj ponovo.",
+    "firstStep": "Prvi korak",
+    "applyError": "Promjena nije spašena. Pokušaj ponovo.",
+    "effect": "Manjak prije: {{before}} min · poslije: {{after}} min",
+    "strictGate": "Uključila si provjeru bez preskakanja za ovaj predmet. Odgovori na sve provjere; ovo možeš isključiti na Napretku.",
+    "actions": {
+      "set_priority": "{{subject}}: podigni prioritet na {{priority}}",
+      "boost_priority": "{{subject}}: pojačaj do {{until}}",
+      "set_mode": "{{subject}}: prebaci na redovno učenje",
+      "set_campaign_start": "{{subject}}: kampanja od {{start}}",
+      "add_hours": "Dodaj {{minutesPerDay}} min dnevno do {{until}}",
+      "drop_unit": "Smanji obim za {{count}} jedinica",
+      "change_buffer": "Bafer: {{days}} dana",
+      "reprioritize_unit": "{{subject}}: prvo provjeri pročitano gradivo",
+      "avoid_slot": "Makni termin · {{days}} · {{part}}",
+      "add_slot": "Dodaj termin · {{days}} · {{part}}",
+      "first_step": "{{subject}}: prvi korak od 15 min sutra",
+      "strict_recall_gate": "{{subject}}: provjera bez preskakanja",
+      "questions_next": "Sljedeća {{blocks}} bloka čitanja → pitanja",
+      "end_by": "Do ispita završi učenje do 23:00"
+    },
+    "active": "Aktivni prijedlozi"
+  },
+  "insights": {
+    "title": "Uvidi",
+    "loading": "Učitavanje uvida…",
+    "empty": "Uvidi se uče iz tvojih sesija. Pojavit će se kad bude dovoljno mjerenja.",
+    "notUseful": "Nije korisno",
+    "kinds": {
+      "avoidance": "Predmet čeka prvi korak",
+      "calibration": "Procjena i provjera",
+      "recall_share": "Više prostora za prisjećanje",
+      "late_before_exam": "Kasno pred ispit",
+      "best_slot": "Tvoj dobar termin",
+      "distraction": "Ometanja u terminu",
+      "first_break": "Tvoj ritam pauza",
+      "speed": "Tempo gradiva"
+    },
+    "copy": {
+      "avoidance": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgode u 14 dana. Mali prvi korak može pomoći.",
+      "calibration": "Kod tebe procjena za {{subject}} izgleda oko {{pct}} postotnih poena viša od provjere ({{count}} parova).",
+      "recall_share": "{{pct}}% od {{hours}} h u sedmici bili su pitanja, zadaci i ponavljanje. Dva bloka pitanja mogu dati više prostora prisjećanju.",
+      "late_before_exam": "U {{count}} večeri pred ispit učenje je završilo iza 00:30. Raniji kraj može ostaviti više prostora za san.",
+      "best_slot": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesija. Kod tebe ovaj termin izgleda dobar.",
+      "distraction": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesija.",
+      "first_break": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesija).",
+      "speed": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesija. Težina gradiva je uračunata."
+    },
+    "techniques": {
+      "self_testing": "Samotestiranje · Dunlosky i sar., 2013.",
+      "breaks": "Pauze koje tebi odgovaraju · Smits i sar., 2025.",
+      "implementation_intentions": "Namjera „kad i gdje“ · Gollwitzer i Sheeran, 2006.",
+      "calibration_feedback": "Procjena uz provjeru · Koriat i Bjork, 2006.",
+      "sleep": "San i rezultat su povezani · Okano i sar., 2019."
+    }
+  },
+  "checkin": {
+    "title": "Sedmica u retrovizoru",
+    "duration": "oko 2 minute",
+    "summaryTitle": "Tvoja sedmica",
+    "summary": "Ove sedmice si učila {{hours}}. Pogledaj šta je radilo i potvrdi samo promjene koje želiš ponijeti u sljedeću sedmicu.",
+    "vsPlan": "od {{hours}} plana",
+    "doneBlocks": "odrađenih blokova",
+    "recall": "udio prisjećanja",
+    "strength": "jačina · {{subject}}",
+    "minuteDelta": "min prema prošloj sedmici",
+    "blockDelta": "blokova prema prošloj sedmici",
+    "pp": "p.p. prema prošloj sedmici",
+    "subjects": "Predmeti u ogledalu",
+    "subjectLine": "Odrađenost {{completion}} · jačina {{strength}}",
+    "avoided": "Češće ostane za kasnije. Mali korak je dovoljan početak.",
+    "reflection": "Tvoj osvrt · ako želiš",
+    "worked": "Šta je radilo?",
+    "stuck": "Gdje je zapelo?",
+    "privacy": "Osvrt je opcionalan. Refleksije i razlozi fokusa se ne šalju AI-ju.",
+    "nextWeek": "Sljedeća sedmica",
+    "exceptionsHint": "Potvrdi samo ono što se mijenja: put, obaveze ili više vremena.",
+    "addException": "Uredi dan",
+    "editException": "Uredi izuzetak",
+    "save": "Spasi i završi pregled",
+    "saved": "Sedmični pregled je spašen.",
+    "chips": {
+      "tired": "Umor",
+      "phone": "Telefon",
+      "hard": "Teško gradivo",
+      "unmotivated": "Nemam volje",
+      "busy": "Obaveze"
+    }
   }
 }

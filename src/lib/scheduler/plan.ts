@@ -275,7 +275,7 @@ function buildWorks(state: PlanState): Work[] {
     const required = requiredUnits(own, coverageOf(subject))
     for (const unit of own) {
       const left = Math.round(
-        // A partly read unit only needs the rest (Stage 10b: reading continues where it stopped).
+        // A partly read unit only needs the rest (Sprint 12: reading continues where it stopped).
         unit.minutes * workShare(unit.kind, unit.level) * (1 - readOf(unit)) -
           (reserved.get(unit.id) ?? 0),
       )
@@ -727,9 +727,19 @@ function run(
         const floor = Math.min(must.get(sid) ?? 0, poolMinutes(sid))
         let lack = floor - shares.get(sid)!
         if (lack <= 0) continue
-        // Unused minutes only as a piece the day would keep (whole block or the subject's end).
+        // Unused minutes only as a piece the day would keep: a new block of at least the minimum,
+        // a block that stays within one study interval or ends on whole intervals, or the
+        // subject's end. Sprint 17: a short day's remainder (27 min with a 20 min block) used to
+        // be dropped, so a feasible plan could end with a deficit.
+        const keeps = (add: number) => {
+          const own = shares.get(sid)!
+          const next = own + add
+          if (next >= poolMinutes(sid)) return true
+          if (own === 0) return add >= minBlock
+          return next <= interval || next % interval === 0
+        }
         let gained = Math.min(lack, Math.max(0, spare))
-        if (gained < minBlock && shares.get(sid)! + gained < poolMinutes(sid)) gained = 0
+        if (!keeps(gained)) gained = 0
         spare -= gained
         lack -= gained
         for (const [other] of [...top].reverse()) {
@@ -745,6 +755,12 @@ function run(
           lack -= taken
           gained += taken
           spare += give - taken
+        }
+        // What a dropped remainder freed above can still go to this subject.
+        const more = Math.min(lack, Math.max(0, spare))
+        if (more > 0 && (gained > 0 || keeps(more))) {
+          gained += more
+          spare -= more
         }
         shares.set(sid, shares.get(sid)! + gained)
       }
@@ -778,7 +794,7 @@ function run(
     }
     /**
      * Required minutes each subject must get today so that its goals still fit the later days
-     * (ROADMAP 11a feasibility): later days are filled backwards, latest goal first, and what
+     * (ROADMAP Sprint 15 feasibility): later days are filled backwards, latest goal first, and what
      * does not fit is today's floor. Reviews and buffers of later days are not known here.
      */
     const mustToday = (k: number): Map<string, number> => {
@@ -1111,8 +1127,18 @@ export function plan(state: PlanState): PlanResult {
       (a.startMin ?? 9999) - (b.startMin ?? 9999) ||
       (a.key < b.key ? -1 : 1),
   )
+  let questionsLeft = state.questionsNext?.remaining ?? 0
+  const shifted = blocks.map((b) => {
+    if (questionsLeft <= 0 || b.kind !== 'learn') return b
+    questionsLeft--
+    return {
+      ...b,
+      kind: 'questions' as const,
+      reason: { ...b.reason, recallShift: state.questionsNext!.id },
+    }
+  })
   return {
-    blocks,
+    blocks: shifted,
     deficits,
     campaignStarts: Object.fromEntries([...starts].sort(([a], [b]) => (a < b ? -1 : 1))),
     computedStarts: Object.fromEntries(

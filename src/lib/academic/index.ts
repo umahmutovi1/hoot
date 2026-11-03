@@ -1,7 +1,7 @@
 import type { LocalDate } from '@/lib/day'
 
 /**
- * Academic year and semester (PRD "Akademska godina i semestar", Stage 10c). Pure: which year and
+ * Academic year and semester (PRD "Akademska godina i semestar", Sprint 13). Pure: which year and
  * semester a day falls in, the default semester of a new subject, how Predmeti groups subjects
  * ("prenesen" for an unpassed one with an active exam) and when to offer a new academic year.
  */

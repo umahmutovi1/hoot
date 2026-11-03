@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js'
 
-// Search (PRD "Navigacija, pretraga, teme i geste", Stage 10b): screens, settings and actions with
+// Search (PRD "Navigacija, pretraga, teme i geste", Sprint 12): screens, settings and actions with
 // synonyms, plus subjects, exams, sources, units and documents from the query cache. Runs on the
 // device with fuse.js, offline, without AI.
 

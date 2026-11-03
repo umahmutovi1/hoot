@@ -47,7 +47,7 @@ export function isSubjectColor(value: string | null): value is SubjectColor {
 /** Next upcoming assessment that is not passed; contingent ones only when nothing else is left. */
 /**
  * A makeup (popravni) is shown only once its exam is known to be failed: a result that does not
- * pass, or an annulled one (decision after 10b). Until then it lives in its exam's sheet.
+ * pass, or an annulled one (decision after Sprint 12). Until then it lives in its exam's sheet.
  */
 export function isShownExam(exam: Assessment, all: Assessment[]): boolean {
   if (!exam.retake_of && exam.kind !== 'makeup') return true

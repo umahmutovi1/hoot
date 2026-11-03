@@ -59,7 +59,7 @@ async function reviewLogs(): Promise<ReviewLog[]> {
 }
 
 /**
- * Personal FSRS parameters (ROADMAP 11a): once there are enough reviews, and again as they grow,
+ * Personal FSRS parameters (ROADMAP Sprint 15): once there are enough reviews, and again as they grow,
  * fits the weights in a worker and stores the result in `profiles.fsrs_params`. Once per app
  * start, online only; a failed fit is stored too (without weights), so it is not retried on
  * every start.

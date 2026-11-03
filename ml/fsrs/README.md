@@ -1,6 +1,6 @@
 # FSRS-6 prema GRU na uzorku `anki-revlogs-10k`
 
-Reprodukcija [srs-benchmarka](https://github.com/open-spaced-repetition/srs-benchmark) na 100 nasumičnih kolekcija (seed 42) iz [`anki-revlogs-10k`](https://huggingface.co/datasets/open-spaced-repetition/anki-revlogs-10k). Ovo je portfolio stavka iz [RESEARCH-ML-2026-10.md](../../docs/RESEARCH-ML-2026-10.md) 5.3 i ROADMAP-a (Etapa 11a). Hoot ništa od ovoga ne izvršava. Kod je u `hoot_ml/srsbench/`, a analiza u [`notebooks/fsrs_benchmark.ipynb`](../notebooks/fsrs_benchmark.ipynb).
+Reprodukcija [srs-benchmarka](https://github.com/open-spaced-repetition/srs-benchmark) na 100 nasumičnih kolekcija (seed 42) iz [`anki-revlogs-10k`](https://huggingface.co/datasets/open-spaced-repetition/anki-revlogs-10k). Ovo je portfolio stavka iz [RESEARCH-ML-2026-10.md](../../docs/RESEARCH-ML-2026-10.md) 5.3 i ROADMAP-a (Sprint 15). Hoot ništa od ovoga ne izvršava. Kod je u `hoot_ml/srsbench/`, a analiza u [`notebooks/fsrs_benchmark.ipynb`](../notebooks/fsrs_benchmark.ipynb).
 
 ## Pokretanje
 
@@ -64,4 +64,4 @@ Ponderisano brojem ponavljanja i udio korisnika kod kojih je GRU bolji: [`result
 - **Količina podataka.** Prosječna Anki kolekcija ima desetine hiljada ponavljanja, a Hoot korisnik u semestru stotine. Ovo ide u prilog FSRS-6 (21 parametar, default težine kao razuman prior) u odnosu na neuronske modele. GRU sa 503 parametra bez pretreninga na stotinama ponavljanja nema od čega da uči.
 - **Ponavljanja istog dana.** Hoot planira po danima, pa je postavka „without same-day“ ona koja odgovara.
 
-Zaključak za Hoot: FSRS-6 sa ličnim parametrima od ~100 ponavljanja (Etapa 11a) ostaje izbor. Neuronski model bi imao smisla tek uz pretrening na mnogo korisnika, a i tada je preteži za browser.
+Zaključak za Hoot: FSRS-6 sa ličnim parametrima od ~100 ponavljanja (Sprint 15) ostaje izbor. Neuronski model bi imao smisla tek uz pretrening na mnogo korisnika, a i tada je preteži za browser.

@@ -1,4 +1,4 @@
-"""Fit and backtest of the block completion model (RESEARCH-ML 5.2, ROADMAP 11a).
+"""Fit and backtest of the block completion model (RESEARCH-ML 5.2, ROADMAP Sprint 15).
 
 Examples are labelled AI blocks (`data.block_examples()` from the export, or the simulator's
 `ml/data/sim_blocks.json`). With one user the coefficient means stay heuristic: fitting them on

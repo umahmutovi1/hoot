@@ -152,6 +152,50 @@ const stateArb = fc
     })
   })
 
+describe('feasibility regressions', () => {
+  // fast-check seed 261898689 (Sprint 17): days of 27 min kept only a 20 min block, the other
+  // 7 min were dropped as too short for a new block, and a feasible plan ended 30 min short.
+  it('a short day’s remainder lengthens the block instead of being dropped', () => {
+    const caps = [3, 3, 1, 1, 1, 3, 0, 0, 0, 0, 3, 6, 4, 0, 0, 0, 0, 0]
+    const unit = (id: string, s: string, minutes: number, order: number) => ({
+      ...units(s, 1, minutes)[0]!,
+      id,
+      order,
+    })
+    const all = [
+      unit('u00', 's1', 20, 0),
+      unit('u01', 's2', 70, 1),
+      unit('u02', 's0', 20, 2),
+      unit('u03', 's0', 160, 3),
+      unit('u04', 's1', 20, 4),
+      unit('u05', 's0', 140, 5),
+    ]
+    const s = state({
+      days: days(DAYS, [{ startMin: 8 * 60, endMin: 22 * 60 }]).map((d, i) => ({
+        ...d,
+        cap: caps[i]! * 30,
+      })),
+      subjects: [
+        subject('s0', { priority: 1 }),
+        subject('s1', { priority: 1 }),
+        subject('s2', { priority: 3 }),
+      ],
+      units: all,
+      goals: [
+        exam('e0', 's0', addDays(FROM, 7), ['u02', 'u03', 'u05']),
+        exam('e1', 's1', addDays(FROM, 12), ['u00', 'u04']),
+        exam('e2', 's2', addDays(FROM, 14), ['u01']),
+      ],
+      settings: { ...state().settings, maxSubjectsPerDay: 4, minBlockMinutes: 10 },
+    })
+    expect(feasibility(s).feasible).toBe(true)
+    const r = plan(s)
+    expect(r.deficits).toEqual([])
+    const short = r.blocks.filter((b) => b.onDate === addDays(FROM, 2))
+    expect(short.reduce((n, b) => n + b.minutes, 0)).toBe(27)
+  })
+})
+
 describe('feasibility properties', () => {
   it('no plan beats the shortfall', () => {
     fc.assert(

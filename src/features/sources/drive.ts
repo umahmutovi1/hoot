@@ -1,7 +1,7 @@
 import { env } from '@/lib/env'
 
 /**
- * Google Drive (PRD "Materijali", Stage 10c): Google Picker with the `drive.file` scope, so the
+ * Google Drive (PRD "Materijali", Sprint 13): Google Picker with the `drive.file` scope, so the
  * app sees only the files the user picks. The token is short-lived and never stored; picked PDFs
  * are downloaded into the browser only to be read, like a PDF from the device.
  */

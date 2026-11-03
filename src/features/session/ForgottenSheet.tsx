@@ -9,7 +9,7 @@ import { useSessionUi } from './store'
 
 /**
  * Forgotten timer (> 3 h on one segment): "Jesi li učila do sad?" — keep going, or end the
- * session at the time the user really stopped (PRD decision, Stage 7).
+ * session at the time the user really stopped (PRD decision, Sprint 7).
  */
 export function ForgottenSheet({
   segment,

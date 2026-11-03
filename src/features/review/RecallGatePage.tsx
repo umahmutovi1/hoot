@@ -1,3 +1,5 @@
+import { useFeedback } from '@/features/strategist/feedback'
+import { activeDecisions, feedbackAction } from '@/features/strategist/feedbackInputs'
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -34,11 +36,13 @@ import { GateTest } from './GateTest'
 export function RecallGatePage() {
   const [params] = useSearchParams()
   const ids = useMemo(() => (params.get('units') ?? '').split(',').filter(Boolean), [params])
+  const feedbackState = useFeedback()
   const { data: sources } = useAllSources()
   const { data: links } = useTopicLinks()
   const { data: direct } = useQuestionLinks()
   const { data: cards, isPending: cardsPending } = useCardsOf(ids)
-  if (!sources || !links || !direct || (ids.length > 0 && cardsPending)) return <SplashScreen />
+  if (feedbackState.isPending || !sources || !links || !direct || (ids.length > 0 && cardsPending))
+    return <SplashScreen />
   return (
     <Gate
       ids={ids}
@@ -78,6 +82,14 @@ function Gate({
   const celebrate = useCelebration((s) => s.celebrate)
   const writer = useReviewWriter()
   const aiReady = useAiAvailability().state === 'ready'
+  const feedback = useFeedback().data ?? []
+  const strict = activeDecisions(feedback).some((r) => {
+    const a = feedbackAction(r)
+    return (
+      a?.kind === 'strict_recall_gate' &&
+      sources.some((s) => s.subject_id === a.subjectId && s.units.some((u) => ids.includes(u.id)))
+    )
+  })
   const { data: subjects } = useSubjects()
   const [at, setAt] = useState(0)
   const [answers, setAnswers] = useState<Record<string, GateAnswers>>({})
@@ -112,7 +124,8 @@ function Gate({
   const leafLabel = target.label ? `${subjectName} · ${target.label}` : subjectName
 
   const finish = async () => {
-    if (busy) return
+    if (busy || (strict && targets.some((x) => !answered(x, answers[x.key] ?? EMPTY_ANSWERS))))
+      return
     setBusy(true)
     const units: UnitReview[] = []
     const cardReviews: CardReview[] = []
@@ -159,7 +172,7 @@ function Gate({
         </span>
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || strict}
           onClick={() => void finish()}
           className="h-11 px-1 text-sm font-medium text-brand"
         >
@@ -167,6 +180,7 @@ function Gate({
         </button>
       </div>
 
+      {strict && <p className="text-xs text-ink-muted">{t('strategist.strictGate')}</p>}
       <div className="flex flex-col gap-1">
         <span className="text-[13px] text-brand-muted">
           {targets.length > 1
@@ -189,7 +203,9 @@ function Gate({
         footer={{
           label: last ? t('recall.finish') : t('recall.nextTest'),
           run: last ? () => void finish() : () => setAt(at + 1),
-          busy,
+          busy:
+            busy ||
+            (strict && last && targets.some((x) => !answered(x, answers[x.key] ?? EMPTY_ANSWERS))),
         }}
       />
     </div>

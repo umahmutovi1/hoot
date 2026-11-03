@@ -128,6 +128,7 @@ export function useUpdateProfile() {
           | 'recap_after_lecture'
           | 'lecture_pace_days'
           | 'daily_cap_min'
+          | 'buffer_days'
           | 'default_preset'
           | 'session_presets'
           | 'onboarding_step'

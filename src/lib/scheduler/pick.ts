@@ -24,7 +24,7 @@ export interface PickReview {
   unitId: string
   subjectId: string
   minutes: number
-  /** FSRS retrievability today (Stage 9); null = unknown, ranked after known ones. */
+  /** FSRS retrievability today (Sprint 10); null = unknown, ranked after known ones. */
   retrievability: number | null
   nextReviewOn: LocalDate
 }
@@ -38,7 +38,7 @@ export interface PickInput {
   dueReviews: PickReview[]
   /** Planned blocks after today. */
   laterBlocks: PickBlock[]
-  /** Only this subject ("Drugi predmet u ovo vrijeme", Stage 10b). */
+  /** Only this subject ("Drugi predmet u ovo vrijeme", Sprint 12). */
   subjectId?: string
 }
 

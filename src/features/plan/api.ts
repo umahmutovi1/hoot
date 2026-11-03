@@ -1,3 +1,7 @@
+import { readPages } from '@/lib/readPages'
+import { activeDecisions, feedbackAction } from '@/features/strategist/feedbackInputs'
+import { useFeedback } from '@/features/strategist/feedback'
+import { sameStudyPeriod } from '@/lib/slots/period'
 import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useAuth } from '@/features/auth/auth-context'
@@ -8,7 +12,7 @@ import { toSegment } from '@/features/session/model'
 import { useGlobalScale, useProfile } from '@/features/settings/profile'
 import { useDeadlines, useSubjects } from '@/features/subjects/api'
 import { rateOf, type AssessmentUnit, type SourceWithUnits } from '@/features/sources/model'
-import { addDays, localDay, type DayBoundary, type LocalDate } from '@/lib/day'
+import { addDays, dayStartInstant, localDay, type DayBoundary, type LocalDate } from '@/lib/day'
 import { activeMs, MINUTE } from '@/lib/session/timer'
 import { fitCompletion } from '@/lib/slots/completion'
 import { completionExamples, type ExampleBlock, type ExampleSkip } from '@/lib/slots/examples'
@@ -48,7 +52,7 @@ export function useAllSources() {
       const { data, error } = await supabase
         .from('sources')
         .select('*, units(*)')
-        // An archived source is out of the plan, progress and scope (Stage 10b).
+        // An archived source is out of the plan, progress and scope (Sprint 12).
         .is('archived_at', null)
         .order('created_at')
       if (error) throw error
@@ -149,10 +153,11 @@ function useCompletionHistory(boundary: DayBoundary) {
       today: LocalDate
       blocks: ExampleBlock[]
       skips: ExampleSkip[]
+      units: SessionUnitDone[]
     }> => {
       const today = localDay(new Date(), boundary)
       const since = addDays(today, -COMPLETION_DAYS)
-      const [blocks, skips] = await Promise.all([
+      const [blocks, skips, units] = await Promise.all([
         supabase
           .from('plan_blocks')
           .select(
@@ -164,9 +169,15 @@ function useCompletionHistory(boundary: DayBoundary) {
           .from('block_skips')
           .select('subject_id, on_date, kind, start_min, day_load_min, days_to_goal, demand')
           .gte('on_date', since),
+        // Material done per session, for the speed signal of slots (Sprint 17).
+        supabase
+          .from('session_units')
+          .select('session_id, unit_id, minutes, amount_done, study_sessions!inner(started_at)')
+          .gte('study_sessions.started_at', dayStartInstant(since, boundary).toISOString()),
       ])
       if (blocks.error) throw blocks.error
       if (skips.error) throw skips.error
+      if (units.error) throw units.error
       return {
         today,
         blocks: blocks.data.map((b) => ({
@@ -191,9 +202,22 @@ function useCompletionHistory(boundary: DayBoundary) {
           daysToGoal: x.days_to_goal,
           demand: x.demand,
         })),
+        units: units.data.map((u) => ({
+          sessionId: u.session_id,
+          unitId: u.unit_id,
+          minutes: Number(u.minutes),
+          amountDone: u.amount_done === null ? null : Number(u.amount_done),
+        })),
       }
     },
   })
+}
+
+interface SessionUnitDone {
+  sessionId: string
+  unitId: string
+  minutes: number
+  amountDone: number | null
 }
 
 export interface PlanRun {
@@ -201,7 +225,7 @@ export interface PlanRun {
   input_hash: string
   deficit: unknown
   created_at: string
-  /** `todaySlotsKey` of the run (Stage 10b); null for older runs. */
+  /** `todaySlotsKey` of the run (Sprint 12); null for older runs. */
   today_slots: string | null
 }
 
@@ -236,6 +260,21 @@ export function invalidatePlanInputs(queryClient: QueryClient, userId: string | 
 
 /** Everything `buildPlanState()` needs; null until every query has data. */
 export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
+  const feedback = useFeedback().data
+  const userId = useUserId()
+  const shiftHistory = useQuery({
+    queryKey: [...planBlocksKey(userId), 'recall-shifts'],
+    enabled: Boolean(userId),
+    queryFn: () =>
+      readPages((from, to) =>
+        supabase
+          .from('plan_blocks')
+          .select('id,status,reason')
+          .like('reason', '%recallShift%')
+          .order('id')
+          .range(from, to),
+      ),
+  })
   const profile = useProfile().data
   const subjects = useSubjects().data
   const deadlines = useDeadlines().data
@@ -276,10 +315,19 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       history.today,
     )
     const parts = preferred ? (preferred.split(',') as SlotPart[]) : []
-    return fitCompletion(examples, history.today, parts)
-  }, [history, sessionList, preferred])
+    return fitCompletion(
+      sameStudyPeriod(examples, history.today, schedule.periods),
+      history.today,
+      parts,
+    )
+  }, [history, sessionList, preferred, schedule.periods])
 
   return useMemo(() => {
+    if (
+      activeDecisions(feedback ?? []).some((r) => feedbackAction(r)?.kind === 'questions_next') &&
+      !shiftHistory.data
+    )
+      return null
     if (
       !completion ||
       !profile ||
@@ -304,7 +352,32 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
           activeMs(s.study_segments.map(toSegment), new Date(s.ended_at!)) / MINUTE,
         ),
       }))
+    const unitsBySession = new Map<string, SessionUnitDone[]>()
+    for (const u of history?.units ?? [])
+      unitsBySession.set(u.sessionId, [...(unitsBySession.get(u.sessionId) ?? []), u])
+    const signals: PlanInputs['signals'] = {
+      sessions: sessionList
+        .filter((s) => s.ended_at && s.origin === 'timer')
+        .map((s) => ({
+          startedAt: s.started_at,
+          blockId: s.block_id,
+          minutes: Math.round(
+            activeMs(s.study_segments.map(toSegment), new Date(s.ended_at!)) / MINUTE,
+          ),
+          focus: s.focus,
+          focusReasons: s.focus_reasons,
+          distractions: s.distractions,
+          appLeaves: s.app_leaves,
+          units: unitsBySession.get(s.id) ?? [],
+        })),
+      plannedStart: new Map(
+        (history?.blocks ?? []).flatMap((b) => (b.plannedStart ? [[b.id, b.plannedStart]] : [])),
+      ),
+    }
     return {
+      feedback,
+      shiftBlocks: shiftHistory.data,
+      signals,
       profile,
       subjects,
       deadlines,
@@ -322,6 +395,8 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       energy,
     }
   }, [
+    feedback,
+    shiftHistory.data,
     energy,
     completion,
     profile,
@@ -334,6 +409,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
     cards,
     blocks,
     sessionList,
+    history,
     globalScale,
     schedule,
   ])

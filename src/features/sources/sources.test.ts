@@ -6,13 +6,16 @@ import {
   examProgress,
   levelsFor,
   materialOf,
+  partialExams,
   relatedUnits,
+  scopeExamOf,
   shortExamLabel,
   toScopeRows,
   type SourceWithUnits,
   type Unit,
 } from './model'
 import { cardFormSchema, sourceFormSchema, unitFormSchema } from './schemas'
+import { assessmentRow } from '@/features/subjects/fixtures'
 
 const ID = '7f1c2b4e-1a2b-4c3d-8e9f-0a1b2c3d4e5f'
 const SUBJECT = '2b1c2b4e-1a2b-4c3d-8e9f-0a1b2c3d4e5f'
@@ -237,5 +240,30 @@ describe('shortExamLabel', () => {
       'Završni',
       'IV',
     ])
+  })
+})
+
+describe('partial exams and makeups (Sprint 17)', () => {
+  const first = assessmentRow({ id: 'I', at: '2026-11-10T08:00:00Z' })
+  const second = assessmentRow({ id: 'II', at: '2026-12-20T08:00:00Z' })
+  const integral = assessmentRow({ id: 'int', kind: 'integral', scope_all: true })
+  const makeup = assessmentRow({
+    id: 'm',
+    kind: 'makeup',
+    retake_of: 'I',
+    at: '2026-11-25T08:00:00Z',
+  })
+  const intMakeup = assessmentRow({ id: 'mi', kind: 'makeup', retake_of: 'int' })
+  const all = [second, makeup, first, integral, intMakeup]
+
+  it('a makeup is not a column of ObimIspita', () => {
+    expect(partialExams(all).map((e) => e.id)).toEqual(['I', 'II'])
+  })
+
+  it('a makeup uses the scope of the exam it repeats', () => {
+    expect(scopeExamOf(makeup, all).id).toBe('I')
+    expect(scopeExamOf(intMakeup, all)).toBe(integral)
+    expect(scopeExamOf(second, all)).toBe(second)
+    expect(scopeExamOf({ ...makeup, retake_of: 'gone' }, all).id).toBe('m')
   })
 })

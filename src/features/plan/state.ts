@@ -1,4 +1,14 @@
-import { addDays, localDay, wallClock, type DayBoundary, type LocalDate } from '@/lib/day'
+import { activeDecisions, feedbackAction } from '@/features/strategist/feedbackInputs'
+import type { Feedback } from '@/features/strategist/feedback'
+import { sameStudyPeriod, studyPeriod } from '@/lib/slots/period'
+import {
+  addDays,
+  localDay,
+  wallClock,
+  weekdayOf,
+  type DayBoundary,
+  type LocalDate,
+} from '@/lib/day'
 import { energyFactors, type EnergyFactors } from '@/lib/energy'
 import { questionsByChapter } from '@/lib/questions/links'
 import { project, retakeStatus } from '@/lib/grades'
@@ -15,7 +25,7 @@ import {
 import { leavesOf } from '@/lib/progress'
 import { scopeOf, type ScopeRow } from '@/lib/progress/scope'
 import { capFor, classesOn, freeSlotsOn, type DayInput } from '@/lib/schedule'
-import { SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
+import { awakeSlot, rhythmFrom, SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
 import {
   growthBase,
   realization,
@@ -31,12 +41,14 @@ import {
 import { resolvePreset, type CustomPresetRow } from '@/lib/session/timer'
 import type { CompletionPosterior } from '@/lib/slots/completion'
 import { exploreDays, slotCompletion, slotScores } from '@/lib/slots/score'
+import { slotObservations, slotSignals, withSignals, type SignalSession } from '@/lib/slots/signals'
 import { paramsOf } from '@/lib/srs/optimize'
 import type { Tables } from '@/types/database'
 import {
   asProgress,
   materialOf,
   rateOf,
+  scopeExamOf,
   toScopeRows,
   type AssessmentUnit,
   type SourceWithUnits,
@@ -68,6 +80,8 @@ export interface SessionMinutes {
 export type CardReview = Pick<Tables<'cards'>, 'id' | 'unit_id' | 'next_review_on'> & MemoryRow
 
 export interface PlanInputs {
+  feedback?: Feedback[]
+  shiftBlocks?: Pick<PlanBlockRow, 'id' | 'status' | 'reason'>[]
   profile: Profile
   subjects: SubjectWithAssessments[]
   deadlines: Deadline[]
@@ -88,6 +102,11 @@ export interface PlanInputs {
   dayInput: (date: LocalDate) => DayInput
   /** `day_energy` rows (low / high days); every other date is normal. */
   energy: { on_date: LocalDate; energy: string }[]
+  /**
+   * Timer sessions with focus, distractions and material done, and the planned start of AI
+   * blocks: the slot signals (Sprint 17) that nudge `placeTimes()`. Absent = no nudge.
+   */
+  signals?: { sessions: SignalSession[]; plannedStart: Map<string, string> }
 }
 
 /** Longest planning horizon (days). */
@@ -144,9 +163,10 @@ export function examDate(exam: Assessment, boundary: DayBoundary): LocalDate {
 }
 
 /**
- * Rough sources (decision Stage 8b): without manual scope rows, their parts are split in order
+ * Rough sources (decision Sprint 9b): without manual scope rows, their parts are split in order
  * over the subject's partial exams that are not contingent (two partials: first half I, second
- * half II); `scope_all` exams cover everything anyway.
+ * half II); `scope_all` exams cover everything anyway. Past and passed partials count too
+ * (Sprint 17), so the first half stays with I after its date instead of moving to II.
  */
 export function roughScopeRows(
   units: { id: string }[],
@@ -233,7 +253,7 @@ export interface BuildOptions {
   now: Date
   boundary: DayBoundary
   /**
-   * Today's free time changed since the last run (decision, Stage 10b): today joins the planned
+   * Today's free time changed since the last run (decision, Sprint 12): today joins the planned
    * days with its not-started AI blocks fixed (same content, cap 0 so nothing is added), and
    * `placeTimes()` gives them new times from now (`fixedTimes`).
    */
@@ -273,6 +293,8 @@ export function buildPlanState(
   const paces = new Map<string, (SourcePace | null)[]>()
   const leafIdsBySource = new Map<string, string[]>()
   const allUnitsForScope: { id: string; parentId: string | null }[] = []
+  // Estimated minutes per unit of measure (difficulty included), for the slots' speed signal.
+  const expectedPerAmount = new Map<string, number>()
   for (const source of allSources) {
     const material = materialOf(source, rateOf(source, allSources).mean)
     const leaves = leavesOf(asProgress(material.units))
@@ -317,6 +339,7 @@ export function buildPlanState(
     )
     for (const u of material.units) {
       if (!leafIds.has(u.id)) continue
+      if (Number(u.amount) > 0) expectedPerAmount.set(u.id, u.minutes / Number(u.amount))
       units.push({
         id: u.id,
         subjectId: source.subject_id,
@@ -355,8 +378,10 @@ export function buildPlanState(
       .map((a) => ({ a, on: examDate(a, boundary) }))
       .filter((x) => x.on > today)
       .sort((x, y) => (x.on < y.on ? -1 : x.on > y.on ? 1 : x.a.id.localeCompare(y.a.id)))
-    const partials = exams
-      .filter((x) => x.a.kind === 'partial' && !x.a.scope_all && !x.a.contingent)
+    const partials = subject.assessments
+      .filter((a) => a.kind === 'partial' && !a.scope_all && !a.contingent)
+      .map((a) => ({ a, on: examDate(a, boundary) }))
+      .sort((x, y) => (x.on < y.on ? -1 : x.on > y.on ? 1 : x.a.id.localeCompare(y.a.id)))
       .map((x) => x.a)
     const subjectSources = allSources.filter((s) => s.subject_id === subject.id)
     const extraRows = subjectSources
@@ -369,7 +394,9 @@ export function buildPlanState(
         ),
       )
     for (const { a, on } of exams) {
-      const scope = scopeOf({ id: a.id, scopeAll: a.scope_all }, allUnitsForScope, [
+      // A makeup covers what the exam it repeats covers.
+      const scoped = scopeExamOf(a, subject.assessments)
+      const scope = scopeOf({ id: scoped.id, scopeAll: scoped.scope_all }, allUnitsForScope, [
         ...rows,
         ...extraRows,
       ])
@@ -475,11 +502,17 @@ export function buildPlanState(
 
   const end = [lastGoal, addDays(today, HORIZON_DAYS)].sort()[0]!
   const days: PlanDay[] = []
+  const rhythm = rhythmFrom(profile)
   for (let d = from; d <= end; d = addDays(d, 1)) {
     const dayInput = input.dayInput(d)
     days.push({
       date: d,
       slots: freeSlotsOn(d, dayInput),
+      slotAdditions: freeSlotsOn(d, {
+        ...dayInput,
+        rules: [{ weekday: weekdayOf(d), ...awakeSlot(rhythm, weekdayOf(d)) }],
+      }),
+      slotPreserved: freeSlotsOn(d, { ...dayInput, rules: [] }),
       // Re-placing today only moves its blocks; it never adds work (that is the "Imaš X min više
       // danas" card).
       // With today's energy the day is rebuilt: what was already studied today counts against it.
@@ -539,12 +572,52 @@ export function buildPlanState(
     rho: rho.rho,
     growthBase: growthBase(history, today, rho.rho),
     preferredParts: [...parts].sort(),
+    rhythm,
+    slotPeriod: studyPeriod(today, input.dayInput(today).periods),
     slotCompletion: slotCompletion(input.completion),
-    slotScores: slotScores(input.completion),
+    slotScores: input.signals
+      ? withSignals(
+          slotScores(input.completion),
+          slotSignals(
+            sameStudyPeriod(
+              slotObservations(
+                input.signals.sessions,
+                input.signals.plannedStart,
+                expectedPerAmount,
+                boundary,
+              ),
+              today,
+              input.dayInput(today).periods,
+            ),
+            today,
+          ),
+        )
+      : slotScores(input.completion),
     // Seeded by the user and the week: the exploring day stays put across replans.
     explore: exploreDays(input.completion, from, end, profile.id),
     fsrsParams: paramsOf(profile.fsrs_params),
     energyFactors: { low: energy.low, high: energy.high },
+  }
+  const shift = activeDecisions(input.feedback ?? []).find(
+    (r) => feedbackAction(r)?.kind === 'questions_next',
+  )
+  if (shift) {
+    const marked = (b: Pick<PlanBlockRow, 'reason'>) => {
+      try {
+        return b.reason && JSON.parse(b.reason).recallShift === shift.id
+      } catch {
+        return false
+      }
+    }
+    const shiftBlocks = [
+      ...new Map([...(input.shiftBlocks ?? []), ...input.blocks].map((b) => [b.id, b])).values(),
+    ]
+    const consumed = shiftBlocks.filter((b) => b.status === 'done' && marked(b)).length
+    const reserved = input.blocks.filter(
+      (b) => state.fixed.some((f) => f.id === b.id) && marked(b),
+    ).length
+    const remaining = Math.max(0, 2 - consumed - reserved)
+    state.questionsNext = remaining ? { id: shift.id, remaining } : null
   }
   const behind: SubjectBehindInput[] = []
   for (const subject of subjects) {
@@ -609,7 +682,7 @@ export function gainedToday(previous: string, current: string, nowMin: number): 
   return Math.max(0, free(b.slots) - free(a.slots))
 }
 
-/** Partial reading (Stage 10b) as a rounded share; nothing when unread, so the hash stays put. */
+/** Partial reading (Sprint 12) as a rounded share; nothing when unread, so the hash stays put. */
 function readShareOf(u: { level: number; amount: number; read_amount: number | null }) {
   const read = Number(u.read_amount ?? 0)
   if (u.level !== 0 || read <= 0 || u.amount <= 0 || read >= u.amount) return {}

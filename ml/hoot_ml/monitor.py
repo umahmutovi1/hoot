@@ -1,4 +1,4 @@
-"""Weekly monitoring of the Stage 11a models (PRD "Dopune" → MLOps, `ml-monitor.yml`).
+"""Weekly monitoring of the Sprint 15 models (PRD "Dopune" → MLOps, `ml-monitor.yml`).
 
 Per ISO week, from the export: P80 coverage of the duration model (target ~0.8), Brier score
 of block completion (model, and the done share so far as the bar), FSRS calibration from

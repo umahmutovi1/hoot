@@ -862,3 +862,19 @@ describe('plan: determinism', () => {
     expect(inputHash({ ...s, subjects: [subject('a', { priority: 4 })] })).not.toBe(inputHash(s))
   })
 })
+
+describe('Sprint 17 approved recall shift', () => {
+  it('changes only the next two new learning blocks and keeps all capacity and deficits', () => {
+    const input = oneSubject()
+    const original = plan(input)
+    const shifted = plan({ ...input, questionsNext: { id: 'feedback', remaining: 2 } })
+    const marked = shifted.blocks.filter((b) => b.reason.recallShift === 'feedback')
+    expect(marked).toHaveLength(2)
+    expect(marked.every((b) => b.kind === 'questions')).toBe(true)
+    expect(shifted.blocks.map((b) => b.minutes)).toEqual(original.blocks.map((b) => b.minutes))
+    expect(shifted.deficits).toEqual(original.deficits)
+    expect(inputHash({ ...input, questionsNext: { id: 'feedback', remaining: 2 } })).not.toBe(
+      inputHash(input),
+    )
+  })
+})

@@ -286,16 +286,19 @@ function ExamForm({
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-4">
-      <Segmented
-        label={t('exams.steps.label')}
-        options={([1, 2] as const).map((n) => ({
-          value: String(n) as '1' | '2',
-          label: t(`exams.steps.${n}`, { n }),
-        }))}
-        value={String(step) as '1' | '2'}
-        onChange={(v) => (v === '2' ? next() : setStep(1))}
-      />
-      {step === 2 ? (
+      {/* A makeup inherits its exam's scope, so it has no "Gradivo" step. */}
+      {kind !== 'makeup' && (
+        <Segmented
+          label={t('exams.steps.label')}
+          options={([1, 2] as const).map((n) => ({
+            value: String(n) as '1' | '2',
+            label: t(`exams.steps.${n}`, { n }),
+          }))}
+          value={String(step) as '1' | '2'}
+          onChange={(v) => (v === '2' ? next() : setStep(1))}
+        />
+      )}
+      {step === 2 && kind !== 'makeup' ? (
         <ExamSources
           materials={materials}
           picks={picks}
@@ -327,6 +330,11 @@ function ExamForm({
               ) : (
                 <span className="text-xs leading-[1.4] text-ink-muted">
                   {t('exams.retakeOfNone')}
+                </span>
+              )}
+              {retakeTarget && (
+                <span className="text-xs leading-[1.4] text-ink-muted">
+                  {t('exams.makeupScope', { title: retakeTarget.title })}
                 </span>
               )}
               {errors.retakeOf && (

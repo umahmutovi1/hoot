@@ -147,7 +147,7 @@ describe('normalizeParse', () => {
   })
 })
 
-describe('study programme (Stage 11b)', () => {
+describe('study programme (Sprint 16)', () => {
   it('asks for every subject with its whole-programme semester, on the public task', () => {
     const r = parseRequest(request({ kind: 'study_program' }), [])
     expect(r.task).toBe('parse_study_program')

@@ -1,5 +1,5 @@
 /**
- * Exam question ↔ chapter (PRD "Izvor Pitanja", odluka Etapa 10): a question belongs to a chapter
+ * Exam question ↔ chapter (PRD "Izvor Pitanja", odluka Sprint 11): a question belongs to a chapter
  * through a shared topic or a direct link (`question_links`). A direct link with `linked = false`
  * is the user saying "not this chapter" and wins over a shared topic.
  */

@@ -1,3 +1,7 @@
+import { StrategistCard } from '@/features/strategist/StrategistCard'
+import { ReadinessCard } from '@/features/progress/ReadinessCard'
+import { ProgressProvider } from '@/features/progress/useProgress'
+import { ForecastCard } from '@/features/progress/ForecastCard'
 import { MoodleCard } from '@/features/calendars/MoodleCard'
 import { CalendarImportCard } from '@/features/calendars/CalendarImportCard'
 import { useCalendarProposals } from '@/features/calendars/matches'
@@ -41,7 +45,7 @@ import { TodaySchedule } from './TodaySchedule'
 import { usePlanToday, type PlanToday } from './usePlanToday'
 
 // "Znaš li?" is switched off for now: Today gets crowded once the plan and its cards arrive
-// (decision after Stage 7). The card and the facts stay; set to true to bring it back.
+// (decision after Sprint 7). The card and the facts stay; set to true to bring it back.
 const SHOW_FACT_CARD = false
 
 /**
@@ -115,6 +119,11 @@ export function TodayPage() {
           <ActionCards plan={plan} />
           {!dayOff && <WhyToday plan={plan} />}
           <TodaySchedule plan={plan} />
+          <ProgressProvider>
+            <ForecastCard compact />
+            <ReadinessCard />
+            <StrategistCard compact />
+          </ProgressProvider>
           <ExamTiles now={plan.now} />
           <BlockSheet
             open={params.get('extra') === '1'}

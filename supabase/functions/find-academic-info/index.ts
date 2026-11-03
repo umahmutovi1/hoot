@@ -1,4 +1,4 @@
-// find-academic-info (Stage 10c, PRD "Fakultet s interneta"). `search`: a web search (Gemini
+// find-academic-info (Sprint 13, PRD "Fakultet s interneta"). `search`: a web search (Gemini
 // Google Search grounding / Anthropic web search through the LLM wrapper) for the faculty's
 // academic calendar and syllabus; only the faculty, programme and year go into it. One call per
 // change: the same search returns the saved result without an AI call. Links are kept only when

@@ -39,7 +39,7 @@ function shortName(name: string) {
 /**
  * "Raspored" on Today: the day's blocks and classes by time. Done blocks are ticked, the next one
  * is highlighted (manual blocks carry "ručno"). A tap on an open block asks "Započeti sesiju
- * sada?" first (decision, Stage 10b), a missed one offers "Odradila sam bez timera"; "+ Dodaj blok"
+ * sada?" first (decision, Sprint 12), a missed one offers "Odradila sam bez timera"; "+ Dodaj blok"
  * adds a block today.
  */
 export function TodaySchedule({ plan }: { plan: PlanToday }) {
@@ -55,7 +55,7 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
     (b.status === 'done' ? actual.get(b.id)?.startMin : undefined) ?? b.start_min
   const { data: active } = useActiveSession()
   const [picked, setPicked] = useState<PlanBlockRow | null>(null)
-  // "Započni" / tap on a block reminder (Stage 10c): `/?block=<id>` opens its start sheet.
+  // "Započni" / tap on a block reminder (Sprint 13): `/?block=<id>` opens its start sheet.
   const [params, setParams] = useSearchParams()
   const linkedId = params.get('block')
   const linked = linkedId ? plan.todayBlocks.find((b) => b.id === linkedId && isOpen(b)) : undefined
@@ -98,7 +98,7 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
         title: `${shortName(name(c.subjectId))} · ${t(`timetable.kind.${c.kind}`).toLowerCase()}`,
         sub: t('today.schedule.classUntil', { time: formatClock(c.endMin) }),
       })),
-    // Busy time from connected calendars (Stage 10b: Raspored shows everything on the calendar).
+    // Busy time from connected calendars (Sprint 12: Raspored shows everything on the calendar).
     ...agenda
       .busyFor(plan.today)
       .filter((x) => !x.ignored)
@@ -210,7 +210,7 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
               {divider}
               {isOpen(b) ? (
                 // Swipe left: Preskoči (AI block, the same sheet as on the card) or Obriši
-                // (manual block, with undo), Stage 10b.
+                // (manual block, with undo), Sprint 12.
                 <SwipeRow
                   actions={[
                     b.origin === 'user'

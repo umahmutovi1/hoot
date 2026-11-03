@@ -1,4 +1,4 @@
--- RLS (PRD "AI integracija" → "Sigurnosno skeniranje", Stage 10b): every table is closed to anon
+-- RLS (PRD "AI integracija" → "Sigurnosno skeniranje", Sprint 12): every table is closed to anon
 -- and to other users. Run with `npx supabase test db` against a local stack (CI job `db`).
 begin;
 create extension if not exists pgtap with schema extensions;

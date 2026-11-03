@@ -1,7 +1,7 @@
 import priorsJson from './priors.json'
 
 /**
- * Duration model (RESEARCH-ML 5.1, ROADMAP 11a): hierarchical log-normal minutes per unit of
+ * Duration model (RESEARCH-ML 5.1, ROADMAP Sprint 15): hierarchical log-normal minutes per unit of
  * measure, at difficulty 3 (difficulty stays the multiplier table of `estimateUnits()`):
  *
  *   log rate = μ + t_source + ε,   t_source = b_user + b_source,   ε ~ N(0, σ²)

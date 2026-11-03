@@ -1,4 +1,4 @@
-// Colour themes (PRD "Teme boja", Stage 10b). The tokens live in index.css per `data-theme`; this
+// Colour themes (PRD "Teme boja", Sprint 12). The tokens live in index.css per `data-theme`; this
 // only names the themes and applies one to <html>.
 
 export const THEMES = ['lavender', 'graphite', 'sand', 'sage', 'ocean'] as const

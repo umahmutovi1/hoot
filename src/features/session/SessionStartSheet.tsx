@@ -29,7 +29,7 @@ const NEXT_COUNT = 4
 
 /**
  * "Šta učiš sad?" (PokreniSesiju), opened by the timer button when no session runs. The
- * recommended block comes with the day plan (Stage 8); until then its slot stays empty and a
+ * recommended block comes with the day plan (Sprint 9); until then its slot stays empty and a
  * free session picks the subject, optionally a source and a unit.
  */
 export function SessionStartSheet() {

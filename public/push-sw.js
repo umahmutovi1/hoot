@@ -1,6 +1,6 @@
 // Web Push for Hoot, imported into the generated service worker (vite.config.ts →
 // workbox.importScripts). `notify` sends { title, body, url, tag } and, for a block reminder
-// (Stage 10c), `actions` (Započni / Preskoči) and `skip` { endpoint, token, title, body }.
+// (Sprint 13), `actions` (Započni / Preskoči) and `skip` { endpoint, token, title, body }.
 self.addEventListener('push', (event) => {
   let data = {}
   try {

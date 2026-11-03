@@ -80,7 +80,7 @@ export function pauseStats(
  * Session presets (PRD "Timer, pauza i rekalibracija" → Predlošci sesije). A preset is a cycle of
  * study and break steps with an optional long break, Flowtime (break = study / 5) or free.
  * `study_sessions.timer_mode` stores the preset id. Presets are reminders only: the countdown
- * never opens or closes a segment (decision, Stage 7).
+ * never opens or closes a segment (decision, Sprint 7).
  */
 export interface PresetStep {
   kind: 'work' | 'break'
@@ -124,7 +124,7 @@ export const BUILT_IN_PRESETS: Preset[] = [
   { kind: 'free', id: 'free' },
 ]
 
-/** Fixed modes from Stage 7; still valid for old sessions, never offered in pickers. */
+/** Fixed modes from Sprint 7; still valid for old sessions, never offered in pickers. */
 const LEGACY_PRESETS: Preset[] = [cycle('pomodoro25', 25, 5), cycle('pomodoro50', 50, 10)]
 
 export function isBuiltInPreset(id: string): boolean {
@@ -212,7 +212,7 @@ export interface IntervalReminder {
 
 /**
  * A pause this close to the end of the study interval (or after it) is the preset's break;
- * earlier it is a free pause (decision after 8b).
+ * earlier it is a free pause (decision after Sprint 9b).
  */
 export const BREAK_GRACE_MS = 5 * MINUTE
 

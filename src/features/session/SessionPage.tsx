@@ -239,7 +239,7 @@ export function SessionPage() {
           </button>
           <button
             type="button"
-            // Finishing or discarding only happens here, and never on one stray tap (10b).
+            // Finishing or discarding only happens here, and never on one stray tap (Sprint 12).
             onClick={() => setEndSheet(true)}
             className="flex h-14 items-center gap-2 rounded-full btn-primary px-[26px] text-base font-semibold"
           >

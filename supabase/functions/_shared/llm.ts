@@ -7,6 +7,7 @@ import { PUBLIC_TASKS, type ChainEntry } from './chain.ts'
 import { costUsd } from './prices.ts'
 
 export type AiTask =
+  | 'strategist'
   | 'parse_academic_calendar'
   | 'parse_exam_schedule'
   | 'parse_document'
@@ -49,7 +50,7 @@ export interface LlmRequest<T> {
   schema: z.ZodType<T>
   maxTokens: number
   /**
-   * Web search (find-academic-info, Stage 10c): Google Search grounding on Gemini, the web
+   * Web search (find-academic-info, Sprint 13): Google Search grounding on Gemini, the web
    * search tool on Anthropic. The JSON then comes as text (search results carry citations,
    * which strict structured output does not allow) and is validated by the same schema.
    */

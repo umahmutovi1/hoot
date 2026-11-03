@@ -6,7 +6,7 @@ import { sessionSources } from './material'
 
 /**
  * Speed calibration of a subject's sources, recomputed from every saved timer session (PRD
- * decision after Stage 7). Reads the server, so it runs only online with an empty queue; the
+ * decision after Sprint 7). Reads the server, so it runs only online with an empty queue; the
  * columns on `sources` and `source_mode_rates` are a cache of this result.
  */
 export async function recalibrationOps(subjectId: string): Promise<Op[]> {

@@ -1,7 +1,7 @@
 [project]
 name = "hoot-ml"
 version = "0.1.0"
-description = "Hoot: training and backtests for the Stage 11a models (inference runs in TS)"
+description = "Hoot: training and backtests for the Sprint 15 models (inference runs in TS)"
 requires-python = ">=3.12,<3.14"
 dependencies = [
   "httpx>=0.28",

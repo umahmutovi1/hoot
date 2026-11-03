@@ -21,7 +21,7 @@ export function useDeadlineProposals(): DeadlineProposal[] {
   const [now] = useState(() => new Date())
   return useMemo(() => {
     if (!feeds || !events || !deadlines || !subjects) return []
-    // Moodle feeds, and deadlines found in any calendar (classification, Stage 10d).
+    // Moodle feeds, and deadlines found in any calendar (classification, Sprint 14).
     const feedIds = new Set(feeds.filter((f) => f.kind === 'deadlines').map((f) => f.id))
     return proposeDeadlines(
       events

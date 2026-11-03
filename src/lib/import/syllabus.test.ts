@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   chapterParts,
+  looksLikeStudyProgram,
   looksLikeSyllabus,
   pagesForYear,
   mergeSyllabi,
@@ -199,6 +200,30 @@ describe('looksLikeSyllabus', () => {
     expect(looksLikeSyllabus([{ text: 'Akademski kalendar 2026/27, zimski semestar, ECTS' }])).toBe(
       false,
     )
+  })
+})
+
+describe('looksLikeStudyProgram', () => {
+  const plan = (years: string[]) => [
+    { text: 'NASTAVNI PLAN I PROGRAM\nPredmeti N Naziv Šifra ECTS H/S' },
+    ...years.map((y) => ({
+      text: `${y}\nNaziv modula Matematika\nECTS 7\nSadržaj modula\n1. Brojevi`,
+    })),
+  ]
+
+  it('a study plan that names two or more years is a whole programme', () => {
+    expect(looksLikeStudyProgram(plan(['Prva godina', 'Druga godina']))).toBe(true)
+    expect(looksLikeStudyProgram(plan(['I godina', 'II godina', 'III godina']))).toBe(true)
+    expect(looksLikeStudyProgram(plan(['Godina studija 1', 'Godina studija 2']))).toBe(true)
+    expect(looksLikeStudyProgram(plan(['Year 1', 'Year 2']))).toBe(true)
+  })
+
+  it('one year, or a document that is not a study plan, is not', () => {
+    expect(looksLikeStudyProgram(plan(['Druga godina', 'Druga godina']))).toBe(false)
+    expect(looksLikeStudyProgram(plan(['Godina studija 2']))).toBe(false)
+    expect(
+      looksLikeStudyProgram([{ text: 'Akademski kalendar: prva godina, druga godina, ECTS' }]),
+    ).toBe(false)
   })
 })
 

@@ -84,7 +84,7 @@ describe('simulate', () => {
     expect(flat.completionNeutral).toBeGreaterThan(s.completionNeutral - 0.05)
   })
 
-  it('no baseline metric got worse (DoD of every Stage 11a model)', () => {
+  it('no baseline metric got worse (DoD of every Sprint 15 model)', () => {
     const runs = Array.from({ length: baseline.seeds }, (_, i) => simulate(i + 1).metrics)
     expect(worse(summarize(runs), baseline.summary)).toEqual([])
   }, 60_000)

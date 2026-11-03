@@ -11,7 +11,7 @@ import { questionLinksKey } from '@/features/plan/api'
 import { useLocale } from '@/features/settings/useLocale'
 import { supabase } from '@/lib/supabase'
 
-// Exam question ↔ chapter suggestions (PRD "Izvor Pitanja", odluka Etapa 10): vectors first (no
+// Exam question ↔ chapter suggestions (PRD "Izvor Pitanja", odluka Sprint 11): vectors first (no
 // LLM), then one AI call per 60 questions picks among the nearest chapters. Nothing is written
 // until the user saves the review.
 

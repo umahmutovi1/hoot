@@ -1,4 +1,4 @@
-// A whole study programme (PRD "Dopune, 29. okt 2026" → Studijski program odjednom, Stage 11b)
+// A whole study programme (PRD "Dopune, 29. okt 2026" → Studijski program odjednom, Sprint 16)
 // → every year and semester with its subjects, reviewed before saving. Years that do not exist
 // yet are created with the default dates; subjects come without exams until their semester.
 // Earlier semesters and elective options are offered but not preselected. Nothing is written here.

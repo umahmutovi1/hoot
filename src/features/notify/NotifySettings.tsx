@@ -11,8 +11,8 @@ import { pushSupport, useDeviceEndpoint, usePushActions, useSubscriptions } from
 const row = 'flex items-center justify-between gap-3 border-b border-canvas py-2.5'
 
 /**
- * Postavke → Notifikacije (Podsjetnici.dc.html 1): reminders before every block (offsets, Stage
- * 10c; "Kasniš 15 min" comes with them), end of a planned break, and Web Push on this device.
+ * Postavke → Notifikacije (Podsjetnici.dc.html 1): reminders before every block (offsets, Sprint
+ * 13; "Kasniš 15 min" comes with them), end of a planned break, and Web Push on this device.
  * On iPhone it works only in the installed PWA, so that is said.
  */
 export function NotifySettings() {

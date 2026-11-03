@@ -8,7 +8,7 @@ import { useSubjects } from '@/features/subjects/api'
 import type { PlanToday } from './usePlanToday'
 
 /**
- * "Preskoči" (decision after 8b): skip this block and, if there is one, start the next block of
+ * "Preskoči" (decision after Sprint 9b): skip this block and, if there is one, start the next block of
  * today right away (the day is pulled earlier); the skipped material keeps its place in the plan.
  */
 export function SkipSheet({

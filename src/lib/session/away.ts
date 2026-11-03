@@ -1,5 +1,5 @@
 /**
- * Leaving the app during a running session (RESEARCH-ML 5.2, Stage 11 "Uvidi" → ometanja). Only
+ * Leaving the app during a running session (RESEARCH-ML 5.2, Sprint 17 "Uvidi" → ometanja). Only
  * leaves with the timer running count, and a glance shorter than `MIN_AWAY_SEC` (a lock screen,
  * a notification) is not a leave. Times come from timestamps, never from ticks.
  */

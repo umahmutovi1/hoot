@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { ProgramDetailsCard } from '@/features/academic/ProgramDetailsCard'
 import { useSubjects } from '@/features/subjects/api'
 import type { ProposalStatus } from '@/lib/import'
 import { cn } from '@/lib/utils'
@@ -127,9 +128,12 @@ export function ImportCard({
         </div>
       ))}
       {proposal.savedCount !== null ? (
-        <p className="px-2.5 pt-1 pb-2 text-sm font-semibold text-success">
-          {t('owl.saved', { count: proposal.savedCount })}
-        </p>
+        <>
+          <p className="px-2.5 pt-1 pb-2 text-sm font-semibold text-success">
+            {t('owl.saved', { count: proposal.savedCount })}
+          </p>
+          <ProgramDetailsCard proposal={proposal} />
+        </>
       ) : (
         <div className="flex gap-2 px-1 pt-2 pb-1">
           <Button
