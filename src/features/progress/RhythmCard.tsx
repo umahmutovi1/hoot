@@ -1,4 +1,4 @@
-import { useRecordFeedback } from '@/features/strategist/feedback'
+import { activeDecision, useFeedback, useRecordFeedback } from '@/features/strategist/feedback'
 import { useProgress } from './useProgress'
 import { weekWindow } from '@/lib/progress/week'
 import { useState } from 'react'
@@ -21,7 +21,7 @@ export function RhythmCard() {
   const presets = usePresets()
   const update = useUpdateProfile()
   const replan = usePlanStore((s) => s.replanNow)
-  const [dismissed, setDismissed] = useState(false)
+  const feedback = useFeedback().data ?? []
   const suggestion = rhythmSuggestion(
     sessionRhythm(
       sessions
@@ -35,7 +35,8 @@ export function RhythmCard() {
     ),
     presets.resolve(presets.defaultId),
   )
-  if (!suggestion || dismissed) return null
+  // "Ne sad", an accepted card and "Nije korisno" in the insights all hide it, and stay hidden.
+  if (!suggestion || !data || activeDecision(feedback, 'first_break', data.today)) return null
   const { workMin, breakMin, aboutMin } = suggestion
   const full = presets.custom.length >= MAX_CUSTOM_PRESETS
   return (
@@ -96,7 +97,6 @@ export function RhythmCard() {
             status: 'rejected',
             payload: { action: { kind: 'set_preset', workMin, breakMin } },
           })
-          setDismissed(true)
         }}
       >
         {t('progress.rhythm.later')}

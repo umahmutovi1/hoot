@@ -6,7 +6,7 @@ import { usePlanStore } from '@/features/plan/store'
 import { useInsightData } from './useInsights'
 import { actionLabel, insightCopy, techniqueLinks } from './copy'
 import { useApplyAction } from './useApplyAction'
-import { latestFeedback, useRecordFeedback } from './feedback'
+import { activeDecision, useRecordFeedback } from './feedback'
 
 export function InsightsPanel({ review = false }: { review?: boolean }) {
   const { t } = useTranslation()
@@ -29,7 +29,7 @@ export function InsightsPanel({ review = false }: { review?: boolean }) {
             'subjectId' in i
               ? (data.inputs.subjects.find((s) => s.id === i.subjectId)?.name ?? '')
               : ''
-          const accepted = latestFeedback(insight.feedback, i.id)?.status === 'accepted'
+          const accepted = activeDecision(insight.feedback, i.id, data.today)?.status === 'accepted'
           return (
             <article key={i.id} className="flex flex-col gap-2 rounded-[18px] bg-white/40 p-3.5">
               <h3 className="text-sm font-semibold">{t(`insights.kinds.${i.kind}`)}</h3>

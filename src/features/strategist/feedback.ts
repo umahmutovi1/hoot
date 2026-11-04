@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { syncQueueFor } from '@/app/sync'
 import { useAuth } from '@/features/auth/auth-context'
+import { diffDays } from '@/lib/day'
 import { supabase } from '@/lib/supabase'
 import type { Row } from '@/lib/sync'
 import type { Json, Tables } from '@/types/database'
@@ -70,4 +71,18 @@ export function latestFeedback(rows: Feedback[], id: string) {
   return rows
     .filter((r) => r.insight_id === id || r.candidate_id === id)
     .sort((a, b) => b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id))[0]
+}
+
+/** Days an accepted or declined suggestion stays decided before it can be offered again. */
+export const DECISION_DAYS = 14
+
+/**
+ * The latest decision for a key while it still holds: "not useful" hides for good, accepted and
+ * declined only for `DECISION_DAYS`, so a new episode weeks later can be acted on.
+ */
+export function activeDecision(rows: Feedback[], id: string, today: string) {
+  const latest = latestFeedback(rows, id)
+  if (!latest) return undefined
+  if (latest.status === 'not_useful') return latest
+  return diffDays(latest.created_at.slice(0, 10), today) < DECISION_DAYS ? latest : undefined
 }

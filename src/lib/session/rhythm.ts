@@ -101,7 +101,7 @@ export function rhythmSuggestion(
   rhythm: SessionRhythm | null,
   preset: Preset,
 ): { workMin: number; breakMin: number; aboutMin: number } | null {
-  if (!rhythm || preset.kind !== 'cycle') return null
+  if (!rhythm || preset.kind !== 'cycle' || !Number.isFinite(rhythm.firstBreakMin)) return null
   const work = preset.steps.find((s) => s.kind === 'work')?.min
   const pause = preset.steps.find((s) => s.kind === 'break')?.min ?? 10
   if (!work) return null

@@ -81,7 +81,9 @@ function WeeklyReview() {
   })
   if (!data || !window) return <p className="text-sm text-ink-muted">{t('insights.loading')}</p>
   const fmt = (date: string) =>
-    format(toDisplayDate(date), 'd. MMM', { locale: dateFnsLocales[locale] })
+    format(toDisplayDate(date), locale === 'en' ? 'MMM d' : 'd. MMM', {
+      locale: dateFnsLocales[locale],
+    })
   const sum = (from: string, to: string) =>
     stats.data
       ?.filter((d) => d.day >= from && d.day <= to)
@@ -144,7 +146,7 @@ function WeeklyReview() {
   const delta = (a: number | null | undefined, b: number | null | undefined, suffix: string) =>
     a == null || b == null
       ? '—'
-      : `${a > b ? '↑' : a < b ? '↓' : '→'} ${Math.round(Math.abs(a - b))} ${suffix}`
+      : `${Math.round(Math.abs(a - b)) === 0 ? '→' : a > b ? '↑' : '↓'} ${Math.round(Math.abs(a - b))} ${suffix}`
   return (
     <div className="flex flex-col gap-4">
       <PageTitle>{t('checkin.title')}</PageTitle>

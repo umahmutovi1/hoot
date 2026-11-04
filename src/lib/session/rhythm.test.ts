@@ -75,6 +75,7 @@ describe('rhythmSuggestion', () => {
 
   it('no card without a clear difference, for flow / free presets, or without data', () => {
     expect(rhythmSuggestion(rhythm(45), standard)).toBeNull()
+    expect(rhythmSuggestion(rhythm(Number.NaN), standard)).toBeNull()
     expect(rhythmSuggestion(rhythm(30), BUILT_IN_PRESETS[2]!)).toBeNull()
     expect(rhythmSuggestion(null, standard)).toBeNull()
   })
