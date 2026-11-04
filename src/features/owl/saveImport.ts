@@ -85,7 +85,24 @@ export function useSaveImport(t: TFunction) {
     const yearIds = new Map(
       program.semesters.flatMap((s) => (s.yearId && s.yearLabel ? [[s.yearLabel, s.yearId]] : [])),
     )
-    for (const y of programYears(program)) {
+    const newYears = programYears(program)
+    // A retry after a half-finished save finds the years it already wrote instead of doubling them.
+    const { data: saved, error: readError } = newYears.length
+      ? await supabase
+          .from('academic_years')
+          .select('id,label')
+          .in(
+            'label',
+            newYears.map((y) => y.label),
+          )
+      : { data: [], error: null }
+    if (readError) throw readError
+    for (const y of newYears) {
+      const found = saved?.find((x) => x.label === y.label)
+      if (found) {
+        yearIds.set(y.label, found.id)
+        continue
+      }
       const yearId = crypto.randomUUID()
       const { error } = await supabase.from('academic_years').insert({
         id: yearId,

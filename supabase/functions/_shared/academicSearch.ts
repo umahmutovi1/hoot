@@ -75,7 +75,12 @@ const REDIRECT_HOST = 'vertexaisearch.cloud.google.com'
 const hostOf = (url: string, schemes = ['https:']): string | null => {
   try {
     const u = new URL(url)
-    return schemes.includes(u.protocol) ? u.hostname.toLowerCase().replace(/^www\./, '') : null
+    return schemes.includes(u.protocol)
+      ? u.hostname
+          .toLowerCase()
+          .replace(/\.+$/, '')
+          .replace(/^www\./, '')
+      : null
   } catch {
     return null
   }
@@ -84,6 +89,9 @@ const hostOf = (url: string, schemes = ['https:']): string | null => {
 const isPublicHost = (host: string | null): boolean => {
   if (!host || !host.includes('.')) return false
   if (/^\d+\.\d+\.\d+\.\d+$/.test(host) || host.includes(':') || host.startsWith('[')) return false
+  // An IPv4 address inside the name (127.0.0.1.nip.io) resolves to that address.
+  if (/(^|\.)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\.|$)/.test(host)) return false
+  if (/(^|\.)(nip|sslip|xip)\.io$/.test(host)) return false
   return !/(^|\.)localhost$|\.local$|\.internal$/.test(host)
 }
 

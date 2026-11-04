@@ -45,10 +45,12 @@ async function fetchPublic(url: string): Promise<Response | null> {
 }
 
 async function opens(url: string): Promise<boolean> {
+  // A redirect is not followed (it could lead to an internal host); a 3xx already means it opens.
+  if (!isPublicLink(url)) return false
   const attempt = async (method: 'HEAD' | 'GET') => {
     const res = await fetch(url, {
       method,
-      redirect: 'follow',
+      redirect: 'manual',
       signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
       headers: method === 'GET' ? { range: 'bytes=0-1023' } : {},
     })

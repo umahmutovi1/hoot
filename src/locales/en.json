@@ -2952,6 +2952,7 @@
     "title": "Weekly review",
     "fallback": "Rules have found suggestions for your plan. Choose what works for you. This review works without AI.",
     "apply": "Apply",
+    "done": "Applied. Your plan is being rebuilt.",
     "applied": "Applied",
     "cancel": "Cancel suggestion",
     "ask": "Ask AI for a review",

@@ -117,12 +117,15 @@ const normalize = (s: string) =>
 export function matchSubject(
   exam: { subject_id: string | null; subject_name: string },
   subjects: readonly ImportSubject[],
+  { exactOnly = false }: { exactOnly?: boolean } = {},
 ): string | null {
   if (exam.subject_id && subjects.some((s) => s.id === exam.subject_id)) return exam.subject_id
   const target = normalize(exam.subject_name)
   if (!target) return null
   const exact = subjects.find((s) => normalize(s.name) === target)
   if (exact) return exact.id
+  // "Matematika 2" is not "Matematika 1": a programme lists numbered subjects side by side.
+  if (exactOnly) return null
   const fuse = new Fuse(
     subjects.map((s) => ({ id: s.id, name: normalize(s.name) })),
     { keys: ['name'], threshold: 0.3, ignoreLocation: true, includeScore: true },
