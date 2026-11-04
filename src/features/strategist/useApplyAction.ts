@@ -1,6 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { usePatchSubject, useRaiseCaps, useCutScope, useSaveBlock } from '@/features/plan/actions'
+import {
+  usePatchSubject,
+  useRaiseCaps,
+  useCutScope,
+  useSaveBlock,
+  useQueueWrite,
+} from '@/features/plan/actions'
 import { invalidatePlanInputs } from '@/features/plan/api'
 import { usePlanStore } from '@/features/plan/store'
 import { useUpdateProfile } from '@/features/settings/profile'
@@ -9,7 +15,6 @@ import { useApplySlot } from '@/features/progress/slotActions'
 import { useProgress } from '@/features/progress/useProgress'
 import { addDays } from '@/lib/day'
 import { PART_RANGES } from '@/lib/schedule/rhythm'
-import { supabase } from '@/lib/supabase'
 import type { StrategistAction } from '@/lib/strategist'
 import type { InsightAction } from '@/lib/insights'
 import { usePresets } from '@/features/session/presets'
@@ -27,6 +32,7 @@ export function useApplyAction() {
     profile = useUpdateProfile(),
     slot = useApplySlot()
   const saveBlock = useSaveBlock()
+  const write = useQueueWrite()
   const presets = usePresets()
   const replan = usePlanStore((s) => s.replanNow)
   return useMutation({
@@ -68,12 +74,20 @@ export function useApplyAction() {
           )
           break
         case 'reprioritize_unit': {
-          const { error } = await supabase
-            .from('units')
-            .update({ next_review_on: today })
-            .in('id', action.unitIds)
-            .or(`next_review_on.is.null,next_review_on.gt.${today}`)
-          if (error) throw error
+          const due = new Map(data.model.built.state.units.map((u) => [u.id, u.nextReviewOn]))
+          await write(
+            action.unitIds
+              .filter((id) => {
+                const next = due.get(id)
+                return next === null || (next !== undefined && next > today)
+              })
+              .map((id) => ({
+                kind: 'update' as const,
+                table: 'units',
+                match: { id },
+                patch: { next_review_on: today },
+              })),
+          )
           await invalidatePlanInputs(queryClient, userId)
           break
         }
@@ -82,9 +96,13 @@ export function useApplyAction() {
           await slot.mutateAsync(action)
           break
         case 'set_preset': {
+          const id = `custom:rhythm-${action.workMin}-${action.breakMin}`
+          if (presets.custom.some((p) => p.id === id)) {
+            await profile.mutateAsync({ default_preset: id })
+            break
+          }
           if (presets.custom.length >= MAX_CUSTOM_PRESETS)
             throw new Error(t('progress.rhythm.full'))
-          const id = `custom:${crypto.randomUUID()}`
           await profile.mutateAsync({
             default_preset: id,
             session_presets: [
@@ -145,10 +163,7 @@ export function useApplyAction() {
               end_min: 1440,
               is_busy: true,
             })
-          if (rows.length) {
-            const { error } = await supabase.from('availability_exceptions').upsert(rows)
-            if (error) throw error
-          }
+          if (rows.length) await write([{ kind: 'upsert', table: 'availability_exceptions', rows }])
           await queryClient.invalidateQueries({ queryKey: ['availability_exceptions'] })
           break
         }

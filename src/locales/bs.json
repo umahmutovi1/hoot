@@ -3035,6 +3035,7 @@
     "title": "Sedmični pregled",
     "fallback": "Pravila su izdvojila prijedloge za tvoj plan. Odaberi samo ono što ti odgovara. Pregled radi i bez AI-ja.",
     "apply": "Primijeni",
+    "done": "Primijenjeno. Plan se preračunava.",
     "applied": "Primijenjeno",
     "cancel": "Poništi prijedlog",
     "ask": "Pitaj AI za pregled",

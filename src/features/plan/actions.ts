@@ -34,7 +34,7 @@ function useUserId() {
 }
 
 /** Writes through the offline queue and refreshes the plan's own queries once sent. */
-function useQueueWrite() {
+export function useQueueWrite() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useCallback(
@@ -83,7 +83,13 @@ export function useSetEnergy() {
       await write([
         energy === 'normal'
           ? { kind: 'delete', table: 'day_energy', match: { id } }
-          : { kind: 'upsert', table: 'day_energy', rows: [{ id, on_date: date, energy }] },
+          : {
+              kind: 'upsert',
+              table: 'day_energy',
+              rows: [{ id, on_date: date, energy }],
+              // The cache may miss a row another device wrote; the date is unique per user.
+              onConflict: 'user_id,on_date',
+            },
       ])
       void queryClient.invalidateQueries({ queryKey: key })
       replanNow()
