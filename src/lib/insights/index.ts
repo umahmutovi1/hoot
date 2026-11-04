@@ -133,7 +133,7 @@ function avoidance(input: InsightInput): Insight[] {
     const postponed = counts.get(subjectId) ?? 0
     const others = subjects.filter((s) => s !== subjectId)
     const othersAverage = others.reduce((s, x) => s + (counts.get(x) ?? 0), 0) / others.length
-    if (postponed < AVOID_MIN || postponed < AVOID_RATIO * othersAverage) continue
+    if (!(postponed >= AVOID_MIN && postponed >= AVOID_RATIO * othersAverage)) continue
     // With enough blocks the model must agree, so a bad slot or a full day is not blamed on it.
     const e = effects.get(subjectId)
     if (e && e.weight >= AVOID_MIN && e.sd > 0 && e.mean / e.sd >= AVOID_Z) continue
@@ -180,7 +180,7 @@ function calibration(input: InsightInput): Insight[] {
   }
   const out: Insight[] = []
   for (const [subjectId, { over, n }] of [...by].sort(([a], [b]) => (a < b ? -1 : 1))) {
-    if (n < CALIBRATION_MIN_PAIRS || over / n < CALIBRATION_OVER) continue
+    if (!(n >= CALIBRATION_MIN_PAIRS && over / n >= CALIBRATION_OVER)) continue
     out.push({
       id: `calibration:${subjectId}`,
       kind: 'calibration',

@@ -3081,14 +3081,24 @@
       "speed": "Tempo gradiva"
     },
     "copy": {
-      "avoidance": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgode u 14 dana. Mali prvi korak može pomoći.",
+      "avoidance_one": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgoda u 14 dana. Mali prvi korak može pomoći.",
+      "avoidance_few": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgode u 14 dana. Mali prvi korak može pomoći.",
+      "avoidance_other": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgoda u 14 dana. Mali prvi korak može pomoći.",
       "calibration": "Kod tebe procjena za {{subject}} izgleda oko {{pct}} postotnih poena viša od provjere ({{count}} parova).",
       "recall_share": "{{pct}}% od {{hours}} h u sedmici bili su pitanja, zadaci i ponavljanje. Dva bloka pitanja mogu dati više prostora prisjećanju.",
       "late_before_exam": "U {{count}} večeri pred ispit učenje je završilo iza 00:30. Raniji kraj može ostaviti više prostora za san.",
-      "best_slot": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesija. Kod tebe ovaj termin izgleda dobar.",
-      "distraction": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesija.",
-      "first_break": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesija).",
-      "speed": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesija. Težina gradiva je uračunata."
+      "best_slot_one": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesiju. Kod tebe ovaj termin izgleda dobar.",
+      "best_slot_few": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesije. Kod tebe ovaj termin izgleda dobar.",
+      "best_slot_other": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesija. Kod tebe ovaj termin izgleda dobar.",
+      "distraction_one": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesiju.",
+      "distraction_few": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesije.",
+      "distraction_other": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesija.",
+      "first_break_one": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesija).",
+      "first_break_few": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesije).",
+      "first_break_other": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesija).",
+      "speed_one": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesiju. Težina gradiva je uračunata.",
+      "speed_few": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesije. Težina gradiva je uračunata.",
+      "speed_other": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesija. Težina gradiva je uračunata."
     },
     "techniques": {
       "self_testing": "Samotestiranje · Dunlosky i sar., 2013.",
