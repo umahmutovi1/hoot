@@ -980,8 +980,9 @@ Po uzoru na Notilo i Gizmo, ali nije poseban kutak: tutor je način učenja u po
 - **Ulazi.** Iz bloka (“Uči sa tutorom”), iz sesije (dugme uz timer) i sa jedinice. Asistent na Danas ostaje za plan i dokumente; razgovor o gradivu vodi tutor.
 - **Načini.** Objasni (iz teksta izvora, sa citatom stranice), Ispitaj me (pitanja iz ispitnih pitanja, kartica i teksta), Usmeni (tutor pita glasom, student odgovara glasom, tutor ocijeni), Feynman (student objasni, tutor nađe rupe).
 - **Veza sa FSRS-om.** Odgovori u Ispitaj me i Usmenom su recall: ocjena 0/1/2 ide u `review_logs` i `levelAfter()` kao u recall gateu. Tutor koristi isti izbor pitanja kao gate (jedinice na redu, slabe teme, obim ispita). Vrijeme sa tutorom je vrijeme sesije (segmenti, način `tutor`).
-- **Glas.** TTS i STT kroz edge funkciju (`voice`): ElevenLabs (bs i en; Scribe za STT) do free tiera (~10k znakova mjesečno, broji se iz `ai_runs`), pa Web Speech API iz preglednika. Ključ samo u Supabase secrets. Plaćeni plan tek uz Pretplatu.
+- **Glas.** TTS i STT kroz edge funkciju (`voice`): Azure Speech (bs `bs-BA` Vesna/Goran i en; STT `bs-BA` i en) do free tiera (~0.5M znakova TTS i 5 h STT mjesečno, broji se iz `ai_runs`), pa Web Speech API iz preglednika (odluka 4. nov 2026, umjesto ElevenLabs free tiera od ~10k znakova; vidi „Dopune, 4. nov 2026“ → Trošak glasa). Ključ samo u Supabase secrets. Plaćeni plan tek uz Pretplatu.
 - Svaki poziv kroz `_shared/llm.ts`, Zod izlaz, `ai_runs` (i znakovi glasa).
+- **Dopuna (4. nov 2026):** tutor je uvijek dostupan u sesiji, uz formate predavanje, skripta, podcast i čitanje naglas, i „Nastavi“ preko plana; vidi „Dopune, 4. nov 2026“.
 
 ### Prijava (Sprint 16)
 
@@ -1088,6 +1089,109 @@ Ekran za prijavu na startu tjera nove korisnike ([RESEARCH-ML-2026-10.md](RESEAR
 - **AI bez naloga.** Samo uvoz (raspored, akademski kalendar, plan i program, studijski program, fakultet s interneta, sadržaj izvora), najviše 5 AI poziva ukupno, brojano iz `ai_runs`. Edge funkcije čitaju `is_anonymous` iz JWT-a (`_shared/`) i za ostalo vraćaju `needs_account`. Recall gate bez AI pitanja radi kao samoprocjena; asistent, tutor i kviz traže nalog.
 - **Čišćenje.** `pg_cron` sedmično briše anonimne naloge bez aktivnosti 30 dana; tabele se brišu kaskadno (`on delete cascade`), a fajlove u `uploads` posao briše posebno (Storage nema kaskadu).
 - **Otvaranje.** Anonimni nalog je novi korisnik, pa ovaj sprint otvara app: domena, Resend domena, registracija (SETUP 6), politika privatnosti i uslovi korištenja (Pravno), i pristanak za zajednički trening (`profiles.ml_consent_at`, vidi Zajednički trening) prije Sprinta 22.
+
+## Dopune, 4. nov 2026: tutor u sesiji, formati i nastavak
+
+Dopuna sekcije „AI tutor (Sprint 18)“. Tutor nije poseban način sesije ni izbor „sam/a ili sa tutorom“: svaka sesija je obična sesija, a tutor je uvijek jedan tap daleko. Redoslijed u Sprintu 18 je u ROADMAP.md; dijeljenje je v2.
+
+### Tekst izvora prije sesije (Sprint 18)
+
+Tutor pomaže iz tvoje knjige, pa mu treba tekst jedinice (Tekst izvora, `source_chunks`).
+
+- **Kad se pita.** Samo kad izvor bloka nema tekst za jedinice sesije: jedan red u PokreniSesiju „Dodaj PDF da ti AI može pomoći ako zapneš“ · Dodaj / Ne sad. Izvor sa tekstom ne pita ništa.
+- **„Ne sad“** važi za tu sesiju (sljedeća sesija istog izvora pita ponovo). Ne blokira start.
+- **Usred sesije.** „Pitaj tutora“ bez teksta izvora nudi samo uvoz (PDF s uređaja ili Drive, ili slika stranice / zalijepljen tekst za tu jedinicu); tutor ne odgovara iz općeg znanja. Timer radi dalje dok se tekst čita na uređaju.
+
+### Tutor uvijek dostupan (Sprint 18)
+
+- **Dugme „Pitaj tutora“** na ekranu Sesija, uz timer. Otvara tutora nad jedinicom na kojoj trenutno radiš (segment), sa citatom stranice u odgovoru.
+- **Prompt na početku (opcionalno).** U PokreniSesiju, kad jedinica ima tekst, jedan red čipova „Hoćeš li da ti tutor pripremi…“: Predavanje · Skripta · Podcast · Čitaj naglas. Ništa nije označeno: tap na „Počni“ bez čipa je obična sesija, pa nema nove odluke.
+- **Vrijeme sa tutorom je vrijeme sesije** (segmenti; `timer_mode` ostaje predložak, način bloka `tutor` kao u sekciji AI tutor). Kalibracija brzine ga broji odvojeno (par izvor × način), jer slušanje predavanja nije isto što i čitanje.
+
+### Formati (Sprint 18)
+
+| Format | Šta je | Izlaz | Glas |
+| --- | --- | --- | --- |
+| **Predavanje** | Tutor objasni jedinicu dio po dio, iz teksta izvora | tekst po odjeljcima sa citatom stranice | jedan glas |
+| **Skripta** | Pisane bilješke / sažetak jedinice za čitanje | markdown (KaTeX) sa citatima | bez glasa (opcionalno „Čitaj naglas“) |
+| **Podcast** | Dva glasa razgovaraju o gradivu (jedan pita, drugi objašnjava); pasivno slušanje | dijalog po replikama (`speaker`) | dva glasa |
+| **Čitaj izvor naglas** | Doslovan tekst jedinice, bez ikakve izmjene | tekst iz `source_chunks`, bez LLM-a | jedan glas |
+
+- **Detaljnost.** Četiri nivoa: Doslovno (= Čitaj izvor naglas), Kratko, Standardno, Detaljno. Default se izvodi bez pitanja: prioritet 1–2 ili deficit vremena → Kratko; teška jedinica (procijenjena težina) ili jedinica na kojoj je provjera pala → Detaljno; inače Standardno. U toku predavanja / skripte „Kraće“ i „Detaljnije“ jednim tapom ponovo generišu ostatak od trenutnog odjeljka. Čista funkcija `defaultDetail()` u `src/lib/session/` sa testovima.
+- **Kontrola tokom slušanja.** Tap na plejer = stop glasa, pa „Pitaj“ (drži i govori, STT, ili tipkaj); tutor odgovori kratko sa citatom, pa „Nastavi predavanje“ kreće od mjesta gdje je stalo. „Pauza“ sesije pauzira i timer i glas (jedna radnja). Prekid glasom dok tutor govori (barge-in) je Kasnije (traži poništavanje jeke).
+- **Generisanje.** Jedan AI poziv po formatu i jedinici kroz `_shared/llm.ts`, Zod izlaz (odjeljci ili replike, svaka sa rasponom stranica), `ai_runs`. Samo plaćeni model (tekst knjige, vidi Rotacija). Ispituje se kroz `npm run eval`: bez tvrdnji kojih nema u tekstu jedinice, citat stranice uz svaki odjeljak.
+- **Locale.** Prompt dobija `locale` korisnika; jezik izvora može biti drugi (engleska knjiga, bosansko predavanje), naslovi ostaju kako piše u knjizi.
+
+### Čuvanje i brisanje (Sprint 18)
+
+- **Spašeno uz jedinicu.** Nova tabela `tutor_artifacts` (`unit_id`, `kind`: `lecture` / `script` / `podcast`, `detail`, `locale`, `text_hash`, `prompt_version`, sadržaj jsonb, opcionalno `audio_path`, `voice_provider`, `chars`, `shared_from`). Keš ključ je `text_hash` + vrsta + detaljnost + locale + verzija prompta: ista kombinacija se ne generiše ponovo. Doslovno čitanje se ne sprema (tekst već postoji u `source_chunks`).
+- **Na jedinici** lista „Od tutora“ (predavanje, skripta, podcast) za ponavljanje, uz brisanje pojedinačno.
+- **Položen predmet** (i kraj semestra): kartica „Obriši materijale od tutora za X? (N stavki, Y MB)“ · Obriši / Zadrži. Isto u Postavke → Podaci (ukupna veličina, brisanje po predmetu).
+- **Audio fajl** postoji samo uz plaćeni glas (Web Speech ne daje fajl, vidi Glas). ~29 MB po satu (64 kbps mono), pa Supabase free 1 GB brzo ponestane; spremanje audija ide uz Pretplatu (Cloudflare R2 ili Supabase Pro, provjeriti).
+
+### Glas: bs i en od starta (Sprint 18)
+
+- **Za sad Web Speech API** za duge formate (predavanje, podcast, čitanje naglas), uz Azure free tier za kratke odgovore tutora dok traje (vidi AI tutor). TTS i STT moraju raditi na **bs i en od prvog dana**.
+- **Bosanski u pregledniku nije svugdje.** Glas `bs-BA` često ne postoji (iOS ima hrvatski glas); tada se koristi `hr-HR`, pa `sr-Latn`, bez pitanja, sa jednim redom u Postavkama „Glas: hrvatski (nema bosanskog na uređaju)“. STT (`SpeechRecognition`) radi u Chromeu, ograničeno u Safariju; gdje ga nema, „Pitaj“ je tipkanje. Matrica uređaja (iOS Safari PWA, Android Chrome, desktop Chrome/Safari) × bs/en je dio DoD-a.
+- **Ograničenja Web Speech-a:** nema fajla (ništa se ne kešira kao audio, svaki put se čita iznova, besplatno), ne svira sa zaključanim ekranom na iOS-u, a podcast na bs vjerovatno ima samo jedan sistemski glas (dvije replike se razlikuju visinom i brzinom). „Podcast u prevozu“ sa zaključanim ekranom zato traži plaćeni glas.
+- **Plaćeni glas = Premium** (vidi Trošak glasa).
+
+### Trošak glasa (projekcija, 4. nov 2026)
+
+Pretpostavka: 1 h govora ≈ 9 000 riječi ≈ 58 000 znakova. Cijene su iz dokumentacije i sa sajtova trećih strana (službene stranice Azure-a i ElevenLabsa se nisu dale pročitati), pa ih provjeriti u kalkulatoru prije odluke.
+
+**TTS**
+
+| Provajder | Bosanski | Cijena | 1 h audija | Besplatno |
+| --- | --- | --- | --- | --- |
+| **Gemini 3.8 Flash-Lite TTS** | da (bez koda `bs-BA`, jezik se prepoznaje sam) | $0.0015 / 10 s audija do 31. 12. 2026, $0.003 od 1. 1. 2027 (+ ulaz $0.50→$1.00 / 1M tokena teksta) | ~$0.54, od 2027 ~$1.08 | free tier postoji, ali nije za tekst knjige (vidi Rotacija) |
+| **Azure Neural (standard)** | da: `bs-BA-VesnaNeural` (ž) i `bs-BA-GoranNeural` (m) | ~$15 / 1M znakova | ~$0.87 | ~0.5M znakova mjesečno (≈ 8.6 h za cijeli app, ne po korisniku) |
+| OpenAI gpt-4o-mini-tts | nije potvrđeno | ~$0.018 / min | ~$1.08 | ne |
+| Google Cloud Chirp 3 HD | nije potvrđeno (ima `hr-HR`, `sr-RS`) | ~$30 / 1M znakova | ~$1.74 | — |
+| ElevenLabs Flash v2.5 | da | ~$0.04–0.05 / 1k znakova | ~$2.3–2.9 | 10k znakova mjesečno |
+| ElevenLabs Multilingual v2 | da | ~$0.10 / 1k znakova | ~$5.8 | isto |
+
+- **Gemini Flash-Lite** je najjeftiniji i ide kroz isti ključ i wrapper koji Hoot već koristi (`LLM_PROVIDER=gemini`), ali je namijenjen govoru jednog glasa; podcast sa dva glasa je na `gemini-3.8-flash-tts` (cijenu provjeriti). Cijena se udvostručuje od januara 2027.
+- **Azure** jedini ima prave bosanske glasove, i to muški i ženski, pa podcast na bs ima dva glasa. Uz to je i STT za `bs-BA` (vidi ispod). Glasovi nemaju stilove (ton je ravniji od ElevenLabsa).
+- **ElevenLabs** je 3–6× skuplji od Azure-a i Gemini-ja; ima smisla samo ako slijepa proba pokaže da je bosanski primjetno bolji.
+
+**STT** (pitanja tutoru glasom; student govori ~10% vremena, pa je trošak po satu sesije zanemariv kod svih)
+
+| Provajder | Bosanski | Cijena | Napomena |
+| --- | --- | --- | --- |
+| Groq Whisper large-v3-turbo | Whisper zna bosanski; kvalitet provjeriti | $0.04 / h | naplata najmanje 10 s po zahtjevu (kratka pitanja); samo plaćeni nivo za privatni govor |
+| ElevenLabs Scribe v2 Realtime | da (WER ~13% na FLEURS) | $0.39 / h | |
+| Azure real-time | da, `bs-BA` (real-time, batch, fast) | ~$1 / h | 5 h mjesečno besplatno |
+
+**Po Premium korisniku mjesečno**
+
+| Upotreba | Audio | Gemini Flash-Lite (2026 / 2027) | Azure | ElevenLabs Flash |
+| --- | --- | --- | --- | --- |
+| Malo (4 predavanja po 10 min + 2 podcasta po 15 min) | ~1.2 h | ~$0.65 / ~$1.30 | ~$1.05 | ~$3 |
+| Srednje | 4 h | ~$2.2 / ~$4.3 | ~$3.5 | ~$12 |
+| Ispitni rok | 10 h | ~$5.4 / ~$10.8 | ~$8.7 | ~$29 |
+
+**Zaključak.** Uz Azure ili Gemini u Pro (€7.99, AI ~$1–3) stane ~3 h plaćenog glasa mjesečno (sa ElevenLabsom ~1 h); preko toga Web Speech. Ponovno slušanje spašenog audija ne troši ništa, a dijeljenje (v2) dijeli trošak jednog generisanja. Prijedlog: **Azure kao prvi izbor za bs** (pravi bs glasovi, dva glasa za podcast, isti provajder za STT), Gemini Flash-Lite za en i kao rezerva, uz slijepu probu istog odlomka od 2 min na bs (Azure Vesna/Goran, Gemini, ElevenLabs) prije odluke. Kratki odgovori tutora i STT idu na Azure free tier (0.5M znakova, 5 h STT mjesečno) umjesto ElevenLabs free tiera (~10k znakova je premalo i za jedno predavanje); isti free tier pokriva razvoj i probu (odluka 4. nov 2026).
+
+### „Nastavi“ kad ne završiš (Sprint 18)
+
+Tri slučaja, bez postavke:
+
+1. **Produži sad.** Kad istekne planirano vrijeme bloka, značka kaže „Vrijeme bloka je isteklo“ uz „+15 min“ (ponavlja se) i „Završi“. Produžetak ostaje u istoj sesiji i bloku.
+2. **Nastavi gdje si stala.** Završiš sesiju prije kraja gradiva bloka: nedovršen dio (jedinica i stranica iz „do koje stranice“) je prvo gradivo sljedećeg bloka tog predmeta, a kartica bloka kaže „Nastavi gdje si stala · str. 47“. Preostale minute se već vraćaju u bazen; dodaje se samo pravilo da djelimična jedinica ide prva u sljedećem bloku predmeta (provjeriti da `plan()` to već radi; property test).
+3. **Nastavi dalje s ovim predmetom.** I kad je sljedeći blok drugi predmet: „Nastavi dalje“ na kraju bloka (i u potvrdi „Završi“) uzima sljedeće gradivo istog predmeta iz plana (posao unaprijed). Dok produžetak traje, plan se ne dira (Timer radi → Nikad replan). **Pri završetku produžetka** Hoot sam pomjeri istisnute blokove: kasnije danas ako ima mjesta u dostupnosti, inače replan od sutra; toast „Fizika pomjerena na 18:00 · Poništi“. Dodatno vrijeme se računa kao odrađen posao ovog predmeta, pa replan smanji njegove buduće blokove. Ručni blok (`origin = 'user'`) se nikad ne pomjera sam: ostaje, a toast nudi „Pomjeri“ jednim tapom. Ovo je izuzetak od „današnja lista se ne mijenja ispod tebe“ jer ga je pokrenuo korisnik.
+
+### Dijeljenje generisanog (v2, uz Social)
+
+- Predavanje, skriptu ili podcast jedinice možeš poslati prijatelju koji sluša isti predmet, da ne generiše isto ponovo.
+- Primalac otvori link → app nađe odgovarajuću jedinicu (isti izvor po naslovu i autoru, pa oznaka jedinice, `fuse.js`) → pregled „Uvezi uz: Poglavlje 3 · Termodinamika“ · Uvezi / Izaberi drugu. Uvezeno je kopija u primaočevim `tutor_artifacts` (`shared_from`), briše se nezavisno.
+- Dijeli se samo generisani sadržaj, nikad tekst knjige: „Čitaj izvor naglas“ i odlomci izvora se ne dijele.
+- Traži dijeljenje mimo owner-only RLS-a (link sa tokenom kroz edge funkciju, kao ostali Social), pa ide uz otvaranje za više korisnika.
+
+### Otvorena pitanja
+
+- Premium glas: Azure, Gemini ili ElevenLabs, poslije slijepe probe bs uzorka; koliko sati mjesečno ulazi u Pro.
+- Mockupi tek poslije redizajna koji je u toku: PokreniSesiju (red za uvoz + čipovi formata), Sesija sa plejerom tutora (Pitaj, Kraće/Detaljnije, Nastavi predavanje), kartica „Vrijeme bloka je isteklo“, lista „Od tutora“ na Jedinici.
 
 ## Tech stack
 
@@ -2077,7 +2181,7 @@ Kasnije: read-only demo nalog sa seed podacima za portfolio; prstenovi i izazovi
 | Start iz liste | Tap na blok → “Započeti sesiju sada?”; nazad u sesiji → Nastavi / Izađi / Završi ranije / Odbaci |
 | Energija dana | Nemam / pun/a energije jednim tapom; mijenja obim (~60% / do limita rasta) i sadržaj (lakše / teže prvo); ulaz u `plan()` (29. okt 2026) |
 | Ručno “Razumijem” | Dozvoljeno uz napomenu o iskrenosti; nivo 2 bez FSRS memorije, provjera za 2 dana; “Ponovljeno” samo kroz provjere |
-| AI tutor | Sprint 18, prije v1.0; dio toka učenja (blok, sesija, jedinica), recall upisuje u FSRS; glas ElevenLabs free tier + Web Speech rezerva |
+| AI tutor | Sprint 18, prije v1.0; dio toka učenja (blok, sesija, jedinica), recall upisuje u FSRS; glas Azure Speech free tier + Web Speech rezerva |
 | Tekst izvora | Samo tekst po jedinici + embeddings; PDF se ne čuva |
 | Prijava | Kod + lozinka, Google, Apple, passkey (Apple i passkey uz uslove) |
 | Besplatni AI | Lanac provajdera samo za javni sadržaj; privatni tekst samo na plaćeni model |

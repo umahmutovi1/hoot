@@ -399,14 +399,20 @@ Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj
 
 ## Sprint 18 — Tekst izvora i AI tutor
 
-PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model (Haiku) za privatni tekst; ElevenLabs nalog (free tier).
+PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model (Haiku) za privatni tekst; Azure Speech resurs (free tier F0).
 
 - [ ] Tekst izvora: PDF (uređaj ili Drive) → tekst po jedinici prema rasponu stranica, `source_chunks` sa embeddings; original se ne čuva; poruka za skenirani PDF
 - [ ] Sažetak jedinice / poglavlja (keš po hashu teksta); opcija „sažetak umjesto čitanja“ kod deficita za prioritet 1–2
 - [ ] Kartice iz gradiva: AI prijedlog 5–15 kartica iz teksta, bilješki ili zalijepljenog teksta → pregled → FSRS kartice
 - [ ] Tutor: ulazi iz bloka, sesije i jedinice; načini Objasni (citat stranice), Ispitaj me, Usmeni, Feynman; isti izbor pitanja kao recall gate; ocjene u `review_logs` i `levelAfter()`; vrijeme kao sesija (način `tutor`); mockup prije koda
-- [ ] Glas: edge funkcija `voice` (ElevenLabs TTS bs/en, Scribe STT), budžet free tiera iz `ai_runs`, rezerva Web Speech API
+- [ ] Glas: edge funkcija `voice` (Azure Speech: TTS `bs-BA` Vesna/Goran i en, STT `bs-BA` / en), budžet free tiera (0.5M znakova, 5 h STT mjesečno) iz `ai_runs`, rezerva Web Speech API; prije toga slijepa proba bs uzorka (Azure, Gemini Flash-Lite TTS, ElevenLabs)
 - [ ] Asistent na Danas ostaje za plan i dokumente; pitanja o gradivu vode u tutora
+- [ ] Tekst izvora prije sesije (PRD „Dopune, 4. nov 2026“): red u PokreniSesiju samo kad izvor nema tekst („Ne sad“ za tu sesiju), uvoz i usred sesije iz „Pitaj tutora“ (bez teksta tutor nudi samo uvoz)
+- [ ] Tutor uvijek dostupan („Pitaj tutora“ uz timer) + opcionalni čipovi formata u PokreniSesiju: Predavanje, Skripta, Podcast, Čitaj izvor naglas; detaljnost Doslovno / Kratko / Standardno / Detaljno (`defaultDetail()` + Kraće/Detaljnije u toku); stop → pitanje → „Nastavi predavanje“; pauza = timer + glas
+- [ ] `tutor_artifacts` (keš po `text_hash` + vrsta + detaljnost + locale + verzija prompta), lista „Od tutora“ na Jedinici, brisanje pojedinačno, po predmetu (Postavke → Podaci) i kartica pri „položeno“ / kraju semestra
+- [ ] Glas bs i en od starta: Web Speech za duge formate (rezerva `hr-HR` / `sr-Latn` kad nema `bs-BA`, tipkanje kad nema STT), matrica uređaja × jezik u DoD-u
+- [ ] „Nastavi“: +15 min kad blok istekne; „Nastavi gdje si stala“ (djelimična jedinica prva u sljedećem bloku predmeta, property test); „Nastavi dalje s ovim predmetom“ preko plana, pri završetku istisnuti blokovi kasnije danas ili od sutra uz toast Poništi (ručni blokovi ostaju)
+- [ ] Mockupi (poslije redizajna koji je u toku): PokreniSesiju (uvoz + formati), Sesija sa plejerom tutora, „Vrijeme bloka je isteklo“, „Od tutora“ na Jedinici
 - **DoD** → `v0.18.0`
 
 ## Sprint 19 — Uvoz gotovog plana i termina
@@ -481,7 +487,8 @@ PRD „Dopune, 2. nov 2026“, [RESEARCH-ML-2026-11.md](RESEARCH-ML-2026-11.md).
 
 - **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a): dijeljenje sesija i kartica, prijatelj za odgovornost (dopuna 29. okt 2026).
 - Study with me uz timer: lofi muzika ili stream (YouTube embed), samo dok je app otvoren na iOS-u (PRD „Dopune“).
-- OCR skeniranih PDF-ova za tekst izvora; ElevenLabs plaćeni plan uz Pretplatu.
+- OCR skeniranih PDF-ova za tekst izvora; plaćeni glas (prijedlog Azure za bs, Gemini Flash-Lite TTS za en i rezervu, ElevenLabs samo ako slijepa proba pokaže bolji bs; PRD „Dopune, 4. nov 2026“ → Trošak glasa) kao Premium uz Pretplatu, ~3 h mjesečno u Pro, spremanje audija (R2 ili Supabase Pro); prekid glasom (barge-in).
+- Dijeljenje predavanja, skripte i podcasta jedinice s prijateljem (v2, uz Social): link → uparivanje izvora i jedinice → uvoz kopije; nikad tekst knjige.
 - Tamni režim (teme iz Sprinta 12 su svijetle).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
