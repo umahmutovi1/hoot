@@ -422,6 +422,22 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - [ ] `plan()`: tvrd redoslijed modula uvezenog izvora i meki rokovi modula (i iz nepinovanih termina) u ulazu i `input_hash` + property testovi; pinovani termini su ručni blokovi
 - [ ] Ekrani: pregled sadržaja i „Tvoji termini“, onboarding korak 7 „Imam svoj plan“ (pa korak 8), Plan → „Uvezi plan“, asistent; UrediBlok „Fiksiraj“ / skini pin
 - [ ] Kartica „ispred / iza plana“ na Danas; ponovni uvoz spaja po oznaci (ručno mijenjani blokovi ostaju)
+
+**Redizajn (PRD „Dopune, 5. nov 2026: redizajn“; mockupi u Hoot redesign canvasu):**
+
+- [ ] Cilj predmeta: prekidač Uslovni + željena ocjena umjesto „Koliko ti je bitan“; `priorityFromGoal()` u `src/lib/` (uslovni → 5, ocjena 6 → 2, 7–8 → 3, 9–10 → 4, bez ocjene 3) + testovi; stari ručni prioritet se ne prepisuje; NoviPredmet i Predmet → Cilj
+- [ ] NoviPredmet: sekcija „Prvi izvor“ (PDF / nađi sadržaj / slika) umjesto Malo / Srednje / Puno; „Izvor dodajem kasnije“ = grubi izvor ~25 h
+- [ ] Sadržaj izvora s interneta: web search kroz wrapper (naslov, autor, izdanje), poglavlja kao jedinice + link i upozorenje za izdanje, pregled prije snimanja, keš po naslovu, `ai_runs`; prazan rezultat → ručni unos ili slika sadržaja; eval
+- [ ] Literatura iz plana i programa: „Koje od ovoga koristiš?“ u Dodaj izvor i pregledu uvoza (ništa unaprijed označeno)
+- [ ] Onboarding: „Plan i program“ u koraku 2; korak 7 (prvi predmet) preskočen kad uvoz da bar jedan predmet
+- [ ] Popravni na Predmetu kao red ispita sa „Samo ako zatreba“ (i dalje van plana dok se ne aktivira)
+- [ ] Danas: ikona „Prilagodi dan“ (energija, Imam samo, slobodna sesija, Imam više vremena, Danas ne mogu); link „Ili započni slobodnu sesiju sada“ ispod kartice Sljedeće
+- [ ] Slobodna sesija: trajanje → Hoot predloži (`pickForTime()`, Druga ideja) / Biram sam → pauze u jednom redu; sheet planiranog bloka pokazuje zadani ritam uz Promijeni (bez čipova) i „Uči sa tutorom“ kao ista sesija
+- [ ] Prijedlozi: „Potvrdi N“ potvrđuje i ono što je Hoot već uradio
+- [ ] Bodovi: olovka po predmetu → stavke, rezultati i posebna skala ocjena; jasniji „Upiši rezultat“
+- [ ] Sesije: graf planirano / odrađeno vidljiv na istoj skali
+- [ ] Navigacija: traka s oznakama, pozadina aktivnog taba klizi (reduced motion bez animacije); ikonska dugmad (olovka, X, pretraga, postavke) bez pozadine i teksta, ≥ 44 px
+- [ ] Brisanje svuda: odmah + toast „Poništi“; sheet „Potvrda brisanja“ samo za nepovratne radnje (nalog, svi podaci)
 - **DoD** → `v0.19.0`
 
 ## Sprint 20 — Ispiti iza tebe i pridruživanje usred semestra
