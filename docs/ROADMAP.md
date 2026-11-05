@@ -438,6 +438,7 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - [ ] Sesije: graf planirano / odrađeno vidljiv na istoj skali
 - [ ] Navigacija: traka s oznakama, pozadina aktivnog taba klizi (reduced motion bez animacije); ikonska dugmad (olovka, X, pretraga, postavke) bez pozadine i teksta, ≥ 44 px
 - [ ] Brisanje svuda: odmah + toast „Poništi“; sheet „Potvrda brisanja“ samo za nepovratne radnje (nalog, svi podaci)
+- [ ] Tekst sa boardova po [design/copy-redesign-nov5.md](design/copy-redesign-nov5.md) (bs + en); uz to stalni banner kad sinhronizacija ne uspije („Pokušaj ponovo“), toast poslije Replana i toast „Predložak je obrisan“ umjesto trenutnog brisanja bez traga
 - **DoD** → `v0.19.0`
 
 ## Sprint 20 — Ispiti iza tebe i pridruživanje usred semestra
