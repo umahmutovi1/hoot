@@ -426,12 +426,12 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 **Redizajn (PRD „Dopune, 5. nov 2026: redizajn“; mockupi u Hoot redesign canvasu):**
 
 - [ ] Vizuelni sistem Noćna sova: Figtree + Bricolage, tokeni i ravne površine umjesto stakla u `src/index.css`, teme Noć (zadana) / Grafit / Mahovina / Šljiva / Kesten, boje predmeta sa DSBoje; zaglavlje s talasom
-- [ ] Cilj predmeta: prekidač Uslovni + željena ocjena umjesto „Koliko ti je bitan“; `priorityFromGoal()` u `src/lib/` (uslovni → 5, ocjena 6 → 2, 7–8 → 3, 9–10 → 4, bez ocjene 3) + testovi; stari ručni prioritet se ne prepisuje; NoviPredmet i Predmet → Cilj
+- [x] Cilj predmeta: prekidač Uslovni + željena ocjena umjesto „Koliko ti je bitan“; `priorityFromGoal()` u `src/lib/` (uslovni → 5, ocjena 6 → 2, 7–8 → 3, 9–10 → 4, bez ocjene 3) + testovi; stari ručni prioritet se ne prepisuje; NoviPredmet i Predmet → Cilj
 - [ ] NoviPredmet: sekcija „Prvi izvor“ (PDF / nađi sadržaj / slika) umjesto Malo / Srednje / Puno; „Izvor dodajem kasnije“ = grubi izvor ~25 h
 - [ ] Sadržaj izvora s interneta: web search kroz wrapper (naslov, autor, izdanje), poglavlja kao jedinice + link i upozorenje za izdanje, pregled prije snimanja, keš po naslovu, `ai_runs`; prazan rezultat → ručni unos ili slika sadržaja; eval
 - [ ] Literatura iz plana i programa: „Koje od ovoga koristiš?“ u Dodaj izvor i pregledu uvoza (ništa unaprijed označeno)
 - [ ] Onboarding: „Plan i program“ u koraku 2; korak 7 (prvi predmet) preskočen kad uvoz da bar jedan predmet
-- [ ] Popravni na Predmetu kao red ispita sa „Samo ako zatreba“ (i dalje van plana dok se ne aktivira)
+- [x] Popravni na Predmetu kao red ispita sa „Samo ako zatreba“ (i dalje van plana dok se ne aktivira)
 - [x] Danas: ikona „Prilagodi dan“ (energija, Imam samo, slobodna sesija, Imam više vremena, Danas ne mogu); link „Ili započni slobodnu sesiju sada“ ispod kartice Sljedeće
 - [ ] Slobodna sesija: trajanje → Hoot predloži (`pickForTime()`, Druga ideja) / Biram sam → pauze u jednom redu; sheet planiranog bloka pokazuje zadani ritam uz Promijeni (bez čipova) i „Uči sa tutorom“ kao ista sesija
 - [ ] Prijedlozi: „Potvrdi N“ potvrđuje i ono što je Hoot već uradio

@@ -35,7 +35,6 @@ const input = (over: Partial<SuggestionInput>): SuggestionInput => {
     result: plan(s),
     today: FROM,
     behind: [],
-    targetGrade: [],
     examPeriods: [],
     missedStreak: 0,
     previousDeficit: null,
@@ -128,16 +127,6 @@ describe('suggestions', () => {
     )
     expect(list.map((x) => x.kind)).toEqual(['exam_period', 'campaign_soon'])
     expect(list[1]).toMatchObject({ start: day(2), days: 2 })
-  })
-
-  it('target grade out of reach suggests "Važan"', () => {
-    const s = crowded()
-    expect(
-      suggestions(input({ state: s, targetGrade: ['a'] })).find((x) => x.kind === 'target_grade'),
-    ).toMatchObject({
-      subjectId: 'a',
-      priority: 4,
-    })
   })
 })
 

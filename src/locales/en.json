@@ -295,6 +295,16 @@
     }
   },
   "subjects": {
+    "firstSource": {
+      "title": "First source",
+      "pdf": "I have a PDF of the book or script",
+      "pdfSub": "Hoot reads the contents and splits them into units",
+      "photo": "Photograph the contents",
+      "photoSub": "A photo of the contents page is enough",
+      "hint": "From the source Hoot knows how much material there is and how long it takes, so you don't have to guess.",
+      "later": "I'll add a source later",
+      "laterHint": "Without a source Hoot plans roughly, about 25 h, until you add one."
+    },
     "title": "Subjects",
     "empty": "No subjects yet. Add your first one: a name and an exam date are enough.",
     "examTitle": {
@@ -380,6 +390,10 @@
       }
     },
     "form": {
+      "newSub": "Rough is fine, you can change everything later",
+      "editSub": "The plan is recalculated when you save.",
+      "conditional": "Required to progress",
+      "conditionalSub": "Must be passed to enrol further. Hoot gives it priority and more buffer before the exam.",
       "newTitle": "New subject",
       "editTitle": "Edit subject",
       "name": "Name",
@@ -467,18 +481,20 @@
       "part": "Part {{n}}"
     },
     "goal": {
+      "targetHint": {
+        "none": "Without a target, Hoot plans as usual.",
+        "low": "For a 6, Hoot covers the most important material first.",
+        "mid": "For a {{grade}}, Hoot plans as usual, with reviews before the exam.",
+        "high": "For a {{grade}}, Hoot plans more reviews and all of the material."
+      },
       "title": "Goal",
       "edit": "Edit",
-      "howImportant": "How important is it?",
-      "importantRow": "How important",
       "targetRow": "Target grade",
       "whenRow": "Studying starts",
       "target": "Target grade",
       "optional": "(optional)",
       "noTarget": "—",
       "targetChip": "target {{grade}}",
-      "nudge": "A {{grade}} usually needs “{{level}}”",
-      "change": "Change",
       "when": "When does studying start?",
       "computedOn": "Computed · ~{{date}}",
       "fromToday": "From today",
@@ -498,13 +514,6 @@
           "sub": "The app computes when to start and tells you 3 days before"
         }
       },
-      "priorityDescription": {
-        "1": "Easy, passing is enough",
-        "2": "Less important, no big ambitions",
-        "3": "The usual share of time and slack",
-        "4": "Important, I want a good grade",
-        "5": "Must pass"
-      },
       "effect": "The plan covers {{coverage}}% of the material and reviews {{often}}.",
       "often": {
         "low": "less often",
@@ -513,8 +522,7 @@
       },
       "boost": "+{{minutes}} min a day until {{date}}",
       "boostSimple": "More time until {{date}}",
-      "endBoost": "Remove the boost",
-      "unreachable": "The target grade is out of reach with the points left."
+      "endBoost": "Remove the boost"
     }
   },
   "progress": {
@@ -2117,7 +2125,6 @@
   },
   "suggestions": {
     "later": "Later",
-    "change": "Change",
     "ok": "OK",
     "fresh": {
       "title": "Let's start over",
@@ -2142,11 +2149,6 @@
       "doneTake": "{{subject}} gets {{minutes}} min a day from {{donor}} until {{date}}.",
       "doneEarlier": "The campaign starts {{date}}. The plan is recomputed.",
       "doneAdd": "Until {{date}} you have {{minutes}} more min a day."
-    },
-    "grade": {
-      "title": "Your target grade in {{subject}} needs more",
-      "sub": "A grade like that usually needs “{{level}}”.",
-      "done": "The subject is now “{{level}}”. The plan is recomputed."
     },
     "period": {
       "title": "Exam period ahead — raise the maximum to {{hours}} h until {{date}}?",

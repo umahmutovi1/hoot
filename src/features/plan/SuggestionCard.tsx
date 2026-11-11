@@ -178,26 +178,6 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
           {laterButton}
         </Card>
       )
-    case 'target_grade':
-      return (
-        <Card
-          icon={<ChartIcon size={18} />}
-          title={t('suggestions.grade.title', { subject: name(suggestion.subjectId) })}
-          sub={t('suggestions.grade.sub', { level: levelName(suggestion.priority) })}
-        >
-          <button
-            type="button"
-            className={primary}
-            onClick={() => {
-              patch.mutate({ id: suggestion.subjectId, patch: { priority: suggestion.priority } })
-              setDone(t('suggestions.grade.done', { level: levelName(suggestion.priority) }))
-            }}
-          >
-            {t('suggestions.change')}
-          </button>
-          {laterButton}
-        </Card>
-      )
     case 'exam_period':
       return (
         <Card

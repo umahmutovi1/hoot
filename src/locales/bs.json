@@ -307,6 +307,16 @@
     }
   },
   "subjects": {
+    "firstSource": {
+      "title": "Prvi izvor",
+      "pdf": "Imam PDF knjige ili skripte",
+      "pdfSub": "Hoot pročita sadržaj i podijeli ga na jedinice",
+      "photo": "Slikaj sadržaj",
+      "photoSub": "Fotografija stranice sa sadržajem je dovoljna",
+      "hint": "Iz izvora Hoot zna koliko je gradiva i koliko traje, pa ne moraš pogađati.",
+      "later": "Izvor dodajem kasnije",
+      "laterHint": "Bez izvora Hoot planira okvirno, oko 25h, dok ga ne dodaš."
+    },
     "title": "Predmeti",
     "empty": "Još nemaš predmeta. Dodaj prvi: naziv i datum ispita su dovoljni.",
     "examTitle": {
@@ -394,6 +404,10 @@
       }
     },
     "form": {
+      "newSub": "Dovoljno je grubo, sve se kasnije mijenja",
+      "editSub": "Plan se preračuna kad spasiš.",
+      "conditional": "Uslovni predmet",
+      "conditionalSub": "Mora se položiti za upis dalje. Hoot mu daje prednost i više rezerve pred ispit.",
       "newTitle": "Novi predmet",
       "editTitle": "Uredi predmet",
       "name": "Naziv",
@@ -481,18 +495,20 @@
       "part": "Dio {{n}}"
     },
     "goal": {
+      "targetHint": {
+        "none": "Bez ocjene Hoot planira standardno.",
+        "low": "Za 6 Hoot prvo pokriva najvažnije gradivo.",
+        "mid": "Za {{grade}} Hoot planira standardno, sa ponavljanjem prije ispita.",
+        "high": "Za {{grade}} Hoot planira više ponavljanja i cijelo gradivo."
+      },
       "title": "Cilj",
       "edit": "Uredi",
-      "howImportant": "Koliko ti je bitan?",
-      "importantRow": "Koliko ti je bitan",
       "targetRow": "Željena ocjena",
       "whenRow": "Kad kreće učenje",
       "target": "Željena ocjena",
       "optional": "(opcionalno)",
       "noTarget": "—",
       "targetChip": "cilj {{grade}}",
-      "nudge": "Za {{grade}} obično treba „{{level}}“",
-      "change": "Promijeni",
       "when": "Kad kreće učenje?",
       "computedOn": "Izračunat · ~{{date}}",
       "fromToday": "Od danas",
@@ -512,13 +528,6 @@
           "sub": "App izračuna kad krenuti i najavi 3 dana prije"
         }
       },
-      "priorityDescription": {
-        "1": "Lagano, dovoljno je proći",
-        "2": "Manje bitan, bez velikih ambicija",
-        "3": "Uobičajen udio vremena i rezerve",
-        "4": "Važan, želim dobru ocjenu",
-        "5": "Uslovni, mora se položiti"
-      },
       "effect": "Plan pokriva {{coverage}}% gradiva i ponavlja {{often}}.",
       "often": {
         "low": "rjeđe",
@@ -527,8 +536,7 @@
       },
       "boost": "+{{minutes}} min dnevno do {{date}}",
       "boostSimple": "Više vremena do {{date}}",
-      "endBoost": "Ukloni pojačanje",
-      "unreachable": "Željena ocjena više nije dostižna sa preostalim bodovima."
+      "endBoost": "Ukloni pojačanje"
     }
   },
   "progress": {
@@ -2181,7 +2189,6 @@
   },
   "suggestions": {
     "later": "Kasnije",
-    "change": "Promijeni",
     "ok": "U redu",
     "fresh": {
       "title": "Krenimo ispočetka",
@@ -2206,11 +2213,6 @@
       "doneTake": "{{subject}} dobija {{minutes}} min dnevno od {{donor}} do {{date}}.",
       "doneEarlier": "Kampanja kreće {{date}}. Plan je preračunat.",
       "doneAdd": "Do {{date}} imaš {{minutes}} min dnevno više."
-    },
-    "grade": {
-      "title": "Željena ocjena iz {{subject}} traži više",
-      "sub": "Za takvu ocjenu obično treba „{{level}}“.",
-      "done": "Predmet je sad „{{level}}“. Plan je preračunat."
     },
     "period": {
       "title": "Ulaziš u ispitni rok — povećati maksimum na {{hours}} h do {{date}}?",

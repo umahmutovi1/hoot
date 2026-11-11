@@ -116,8 +116,6 @@ export interface BuiltState {
   state: PlanState
   /** Today (local day at the boundary). */
   today: LocalDate
-  /** Subjects whose target grade is out of reach or needs > 90% below "Važan". */
-  targetGrade: string[]
   realization: ReturnType<typeof realization>
   /** What low / high days mean for this user ("Kad nemaš energije…"). */
   energy: EnergyFactors
@@ -367,7 +365,6 @@ export function buildPlanState(
 
   // Goals.
   const goals: PlanGoal[] = []
-  const targetGrade: string[] = []
   const planSubjects: PlanSubject[] = []
   const rows = toScopeRows(input.scope)
   const subjectOfUnit = new Map(units.map((u) => [u.id, u.subjectId]))
@@ -430,8 +427,6 @@ export function buildPlanState(
       if (on > lastGoal) lastGoal = on
     }
     const grade = requiredShareOf(subject, input.deadlines, input.globalScale)
-    if (grade.unreachable || (grade.share !== null && grade.share > 0.9))
-      targetGrade.push(subject.id)
     planSubjects.push({
       id: subject.id,
       priority: subject.priority,
@@ -634,7 +629,6 @@ export function buildPlanState(
   return {
     state,
     today,
-    targetGrade,
     realization: rho,
     keepToday,
     energy,

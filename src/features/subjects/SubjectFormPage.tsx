@@ -1,6 +1,4 @@
 import { useCreateRoughSource } from '@/features/sources/api'
-import type { RoughSize } from '@/lib/estimates/rough'
-import { RoughSizeField } from './RoughSizeField'
 import { SemesterField } from '@/features/academic/SemesterField'
 import { useAcademicTerm } from '@/features/academic/api'
 import { useRoughTexts } from './roughTexts'
@@ -10,7 +8,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { CalendarIcon, ChevronDownIcon, CloseIcon, PlusIcon } from '@/components/icons'
+import {
+  CalendarIcon,
+  CameraIcon,
+  ChevronDownIcon,
+  CheckIcon,
+  ChevronRightIcon,
+  CloseIcon,
+  DocIcon,
+  PlusIcon,
+} from '@/components/icons'
+import { InHeader } from '@/app/layout/ScreenHeader'
 import { RadioCard } from '@/components/RadioCard'
 import { SplashScreen } from '@/components/SplashScreen'
 import { Switch } from '@/components/Switch'
@@ -21,15 +29,16 @@ import { useDayBoundary } from '@/features/settings/profile'
 import { useLocale } from '@/features/settings/useLocale'
 import { usePlanStore } from '@/features/plan/store'
 import { GRADES } from '@/lib/grades'
+import { isConditional, priorityFromGoal } from '@/lib/scheduler'
 import { localDay } from '@/lib/day'
 import { assignExamPeriods, type Period } from '@/lib/schedule'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
-import { useArchiveSubject, useSaveSubject, useSubject } from './api'
+import { useArchiveSubject, useSaveSubject, useSubject, useSubjects } from './api'
 import { ColorSwatch } from './fields'
 import { subjectToForm } from './mappers'
-import { asPriority, EXAM_FORMATS, examKindDefaults, PRIORITIES, SUBJECT_COLORS } from './model'
+import { EXAM_FORMATS, examKindDefaults, SUBJECT_COLORS } from './model'
 import { EXAM_PRESETS, presetExams, type ExamPreset } from './presets'
 import {
   EXAM_GRADE_DEFAULTS,
@@ -62,7 +71,13 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
   const [params] = useSearchParams()
   // "Uredi" on the subject's Cilj card opens the form with Napredno open.
   const [advancedOpen, setAdvancedOpen] = useState(params.get('goal') === '1')
-  const [roughSize, setRoughSize] = useState<RoughSize | null>('medium')
+  // NoviPredmet → Prvi izvor: where "Kreiraj predmet" continues (the source editor's mode).
+  const [firstSource, setFirstSource] = useState<FirstSource>('pdf')
+  const { data: subjects = [] } = useSubjects()
+  // The next free colour, so a new subject needs no choice (like a quick subject).
+  const [freeColor] = useState(
+    () => SUBJECT_COLORS.find((c) => !subjects.some((x) => x.color === c)) ?? 'pink',
+  )
   const createRough = useCreateRoughSource()
   const roughTexts = useRoughTexts()
   const { defaultTerm } = useAcademicTerm()
@@ -87,7 +102,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
     defaultValues: initial ?? {
       id: crypto.randomUUID(),
       name: '',
-      color: 'pink',
+      color: freeColor,
       priority: 3,
       studyMode: 'regular',
       campaignStartOn: null,
@@ -96,9 +111,9 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
     },
   })
   const exams = useFieldArray({ control: form.control, name: 'assessments', keyName: 'key' })
-  const [color, priority, studyMode, targetGrade, academicYearId, semesterNo] = useWatch({
+  const [color, studyMode, academicYearId, semesterNo] = useWatch({
     control: form.control,
-    name: ['color', 'priority', 'studyMode', 'targetGrade', 'academicYearId', 'semesterNo'],
+    name: ['color', 'studyMode', 'academicYearId', 'semesterNo'],
   })
   const nameError = form.formState.errors.name?.message
   const boundary = useDayBoundary()
@@ -142,16 +157,24 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
     })
   }
 
-  const submit = form.handleSubmit((values) => {
-    const size = isEdit ? null : roughSize
-    // A new subject without a picked semester gets the current one.
-    const term = values.academicYearId === undefined ? (defaultTerm ?? {}) : {}
-    // The rough source needs the subject row first.
-    void save.mutateAsync({ ...values, ...term }).then(() => {
-      if (size) createRough.mutate({ subjectId: values.id, size, ...roughTexts(size) })
+  /** Saves; a new subject goes on to its first source, or gets the rough ~25 h one ("kasnije"). */
+  const submit = (later: boolean) =>
+    form.handleSubmit((values) => {
+      // A new subject without a picked semester gets the current one.
+      const term = values.academicYearId === undefined ? (defaultTerm ?? {}) : {}
+      const rough = !isEdit && later
+      // The rough source needs the subject row first.
+      void save.mutateAsync({ ...values, ...term }).then(() => {
+        if (rough)
+          createRough.mutate({ subjectId: values.id, size: 'medium', ...roughTexts('medium') })
+      })
+      navigate(
+        isEdit || later
+          ? `/subjects/${values.id}`
+          : `/subjects/${values.id}/sources/new?mode=${firstSource}`,
+        { replace: true },
+      )
     })
-    navigate(`/subjects/${values.id}`, { replace: true })
-  })
 
   const toggleArchive = () => {
     archive.mutate({ id: initial!.id, archived: !archived })
@@ -159,12 +182,15 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
   }
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-1 flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-[26px] leading-tight font-bold tracking-[-0.4px]">
+    <form onSubmit={submit(false)} noValidate className="flex flex-1 flex-col gap-4">
+      <InHeader>
+        <h1 className="text-[36px] leading-[1.02] font-bold">
           {t(isEdit ? 'subjects.form.editTitle' : 'subjects.form.newTitle')}
         </h1>
-      </div>
+        <p className="mt-2 text-[15px] text-ground/85">
+          {t(isEdit ? 'subjects.form.editSub' : 'subjects.form.newSub')}
+        </p>
+      </InHeader>
 
       <label className="flex flex-col gap-2">
         <span className={sectionLabel}>{t('subjects.form.name')}</span>
@@ -282,7 +308,9 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
         <span className="px-1 text-xs text-ink-muted">{t('subjects.form.scopeLater')}</span>
       </div>
 
-      {!isEdit && <RoughSizeField value={roughSize} onChange={setRoughSize} />}
+      <GoalFields control={form.control} setValue={form.setValue} />
+
+      {!isEdit && <FirstSourceField value={firstSource} onChange={setFirstSource} />}
 
       <div className="flex flex-col rounded-card surface">
         <button
@@ -294,13 +322,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
           <span className="flex flex-1 flex-col gap-0.5">
             <span className="text-[15px] font-semibold">{t('subjects.form.advanced')}</span>
             <span className="text-[13px] text-ink-muted">
-              {[
-                t(`subjects.priority.${asPriority(priority)}.name`),
-                targetGrade ? t('subjects.goal.targetChip', { grade: targetGrade }) : null,
-                t(`subjects.goal.modeShort.${studyMode}`),
-              ]
-                .filter(Boolean)
-                .join(' · ')}
+              {t(`subjects.goal.modeShort.${studyMode}`)}
             </span>
           </span>
           <ChevronDownIcon
@@ -321,6 +343,21 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
         <Button type="submit" size="pill" className="btn-primary">
           {t(isEdit ? 'common.save' : 'subjects.form.create')}
         </Button>
+        {!isEdit && (
+          <>
+            <Button
+              type="button"
+              variant="link"
+              className="h-12 font-bold text-brand-strong"
+              onClick={() => void submit(true)()}
+            >
+              {t('subjects.firstSource.later')}
+            </Button>
+            <span className="px-1 text-center text-[13px] text-ink-secondary">
+              {t('subjects.firstSource.laterHint')}
+            </span>
+          </>
+        )}
         {isEdit && (
           <Button type="button" variant="link" className="h-12 text-ink" onClick={toggleArchive}>
             {t(archived ? 'subjects.form.unarchive' : 'subjects.form.archive')}
@@ -512,9 +549,9 @@ function AdvancedFields({
 }) {
   const { t } = useTranslation()
   const { locale } = useLocale()
-  const [priority, studyMode, campaignStartOn, targetGrade] = useWatch({
+  const [studyMode, campaignStartOn] = useWatch({
     control,
-    name: ['priority', 'studyMode', 'campaignStartOn', 'targetGrade'],
+    name: ['studyMode', 'campaignStartOn'],
   })
   const computed = usePlanStore((s) =>
     subjectId ? s.model?.result.computedStarts[subjectId] : undefined,
@@ -522,75 +559,10 @@ function AdvancedFields({
   const set = { shouldDirty: true } as const
   const date = (d: string) =>
     format(new Date(`${d}T12:00`), 'd. MMM', { locale: dateFnsLocales[locale] })
-  // Usklađivanje na licu mjesta: a high target usually needs "Važan".
-  const nudge = targetGrade !== null && targetGrade >= 9 && priority < 4
 
   return (
     <div className="flex flex-col gap-3 border-t border-canvas px-4 pt-3.5 pb-[18px]">
-      <span className={sectionLabel}>{t('subjects.goal.title')}</span>
-      <span className="text-[15px] font-semibold">{t('subjects.goal.howImportant')}</span>
-      <div
-        role="radiogroup"
-        aria-label={t('subjects.goal.howImportant')}
-        className="flex flex-wrap gap-1.5"
-      >
-        {PRIORITIES.map((n) => (
-          <button
-            key={n}
-            type="button"
-            role="radio"
-            aria-checked={priority === n}
-            onClick={() => setValue('priority', n, set)}
-            className={cn(
-              'flex h-10 items-center rounded-full px-3.5 text-[13px] font-semibold',
-              priority === n ? 'bg-brand text-white' : 'bg-canvas',
-            )}
-          >
-            {t(`subjects.priority.${n}.name`)}
-          </button>
-        ))}
-      </div>
-      <span className="text-[13px] text-ink-muted">
-        {t(`subjects.goal.priorityDescription.${asPriority(priority)}`)}
-      </span>
-
-      <span className="mt-1.5 text-[15px] font-semibold">
-        {t('subjects.goal.target')}{' '}
-        <span className="text-xs font-normal text-ink-muted">{t('subjects.goal.optional')}</span>
-      </span>
-      <div role="radiogroup" aria-label={t('subjects.goal.target')} className="flex gap-1.5">
-        {GRADES.map((g) => (
-          <button
-            key={g}
-            type="button"
-            role="radio"
-            aria-checked={targetGrade === g}
-            onClick={() => setValue('targetGrade', targetGrade === g ? null : g, set)}
-            className={cn(
-              'h-11 flex-1 rounded-[14px] text-base font-semibold',
-              targetGrade === g ? 'bg-brand text-white' : 'bg-canvas',
-            )}
-          >
-            {g}
-          </button>
-        ))}
-      </div>
-      {nudge && (
-        <div className="flex items-center justify-between gap-2 rounded-[16px] bg-warning-soft py-1.5 pr-1.5 pl-3.5">
-          <span className="text-[13px] text-warning-ink">
-            {t('subjects.goal.nudge', { grade: targetGrade, level: t('subjects.priority.4.name') })}
-          </span>
-          <button
-            type="button"
-            onClick={() => setValue('priority', 4, set)}
-            className="flex min-h-10 items-center rounded-full px-3 text-[13px] font-semibold text-brand"
-          >
-            {t('subjects.goal.change')}
-          </button>
-        </div>
-      )}
-
-      <span className="mt-1.5 text-[15px] font-semibold">{t('subjects.goal.when')}</span>
+      <span className="text-[15px] font-semibold">{t('subjects.goal.when')}</span>
       <div role="radiogroup" className="flex flex-col gap-2">
         {(['regular', 'campaign'] as const).map((m) => (
           <RadioCard
@@ -645,6 +617,144 @@ function AdvancedFields({
           </span>
         </>
       )}
+    </div>
+  )
+}
+
+type FirstSource = 'pdf' | 'photo'
+
+/**
+ * Cilj (PRD "Dopune, 5. nov 2026"): "Uslovni predmet" and the optional target grade instead of
+ * "Koliko ti je bitan". Changing either sets the priority through `priorityFromGoal()`; a manual
+ * priority from before stays until then.
+ */
+function GoalFields({
+  control,
+  setValue,
+}: {
+  control: Control<SubjectForm>
+  setValue: ReturnType<typeof useForm<SubjectForm>>['setValue']
+}) {
+  const { t } = useTranslation()
+  const [priority, targetGrade] = useWatch({ control, name: ['priority', 'targetGrade'] })
+  const conditional = isConditional(priority)
+  const set = { shouldDirty: true } as const
+  const apply = (goal: { conditional: boolean; targetGrade: number | null }) => {
+    setValue('targetGrade', goal.targetGrade, set)
+    setValue('priority', priorityFromGoal(goal), set)
+  }
+  const hint =
+    targetGrade === null
+      ? t('subjects.goal.targetHint.none')
+      : targetGrade <= 6
+        ? t('subjects.goal.targetHint.low')
+        : targetGrade <= 8
+          ? t('subjects.goal.targetHint.mid', { grade: targetGrade })
+          : t('subjects.goal.targetHint.high', { grade: targetGrade })
+
+  return (
+    <>
+      <div className="surface flex min-h-[72px] items-center gap-3 rounded-card py-2 pr-3 pl-4">
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-[15px] font-bold">{t('subjects.form.conditional')}</span>
+          <span className="text-[13px] leading-[1.35] text-ink-secondary">
+            {t('subjects.form.conditionalSub')}
+          </span>
+        </span>
+        <Switch
+          checked={conditional}
+          label={t('subjects.form.conditional')}
+          hideLabel
+          onChange={(on) => apply({ conditional: on, targetGrade })}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="px-1 text-sm font-bold">
+          {t('subjects.goal.target')}{' '}
+          <span className="font-medium text-ink-secondary">{t('subjects.goal.optional')}</span>
+        </span>
+        <div
+          role="radiogroup"
+          aria-label={t('subjects.goal.target')}
+          className="grid grid-cols-5 gap-2"
+        >
+          {GRADES.map((g) => (
+            <button
+              key={g}
+              type="button"
+              role="radio"
+              aria-checked={targetGrade === g}
+              onClick={() => apply({ conditional, targetGrade: targetGrade === g ? null : g })}
+              className={cn(
+                'h-11 rounded-[14px] text-sm font-bold',
+                targetGrade === g ? 'bg-brand text-ground' : 'surface',
+              )}
+            >
+              {g}
+            </button>
+          ))}
+        </div>
+        <span className="px-1 text-[13px] leading-[1.4] text-ink-secondary">{hint}</span>
+      </div>
+    </>
+  )
+}
+
+/** NoviPredmet → Prvi izvor: a PDF or a photo of the contents instead of guessing the size. */
+function FirstSourceField({
+  value,
+  onChange,
+}: {
+  value: FirstSource
+  onChange: (v: FirstSource) => void
+}) {
+  const { t } = useTranslation()
+  const options: { id: FirstSource; tile: string; icon: ReactNode }[] = [
+    { id: 'pdf', tile: 'bg-subject-blue-soft text-subject-blue-ink', icon: <DocIcon size={20} /> },
+    { id: 'photo', tile: 'bg-ai-soft text-warning-ink', icon: <CameraIcon size={20} /> },
+  ]
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="px-1 text-sm font-bold">{t('subjects.firstSource.title')}</span>
+      <div
+        role="radiogroup"
+        aria-label={t('subjects.firstSource.title')}
+        className="surface flex flex-col overflow-hidden rounded-card"
+      >
+        {options.map((o) => (
+          <button
+            key={o.id}
+            type="button"
+            role="radio"
+            aria-checked={value === o.id}
+            onClick={() => onChange(o.id)}
+            className="flex min-h-16 items-center gap-3 border-hairline py-2.5 pr-3 pl-3.5 text-left not-first:border-t aria-checked:bg-raised"
+          >
+            <span
+              className={cn(
+                'flex size-10 shrink-0 items-center justify-center rounded-[13px]',
+                o.tile,
+              )}
+            >
+              {o.icon}
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <b className="text-[15px]">{t(`subjects.firstSource.${o.id}`)}</b>
+              <span className="text-[13px] leading-[1.35] text-ink-secondary">
+                {t(`subjects.firstSource.${o.id}Sub`)}
+              </span>
+            </span>
+            {value === o.id ? (
+              <CheckIcon size={20} className="shrink-0 text-brand" />
+            ) : (
+              <ChevronRightIcon size={20} className="shrink-0 text-ink-secondary" />
+            )}
+          </button>
+        ))}
+      </div>
+      <span className="px-1 text-[13px] leading-[1.4] text-ink-secondary">
+        {t('subjects.firstSource.hint')}
+      </span>
     </div>
   )
 }

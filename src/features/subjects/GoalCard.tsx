@@ -6,13 +6,13 @@ import { usePlanStore } from '@/features/plan/store'
 import { useLocale } from '@/features/settings/useLocale'
 import { toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
-import { coverageOf, priorityRule } from '@/lib/scheduler'
-import { asPriority, type SubjectWithAssessments } from './model'
+import { coverageOf, isConditional, priorityRule } from '@/lib/scheduler'
+import type { SubjectWithAssessments } from './model'
 
 /**
- * "Cilj" on Predmet (PRD "Prioritet i režim učenja" → Šta korisnik vidi): how important the
- * subject is (a name, no number), the target grade and when studying starts; the boost as a chip
- * with ×; one line to align a high target with "Važan"; the consequences in small print.
+ * "Cilj" on Predmet (PRD "Dopune, 5. nov 2026"): "Uslovni predmet" when it is, the target grade
+ * and when studying starts; the boost as a chip with ×; the consequences in small print. The
+ * priority comes from the goal (`priorityFromGoal()`), so there is no alignment line any more.
  */
 export function GoalCard({ subject, today }: { subject: SubjectWithAssessments; today: string }) {
   const { t } = useTranslation()
@@ -20,12 +20,9 @@ export function GoalCard({ subject, today }: { subject: SubjectWithAssessments; 
   const patch = usePatchSubject()
   const model = usePlanStore((s) => s.model)
   const planSubject = model?.built.state.subjects.find((s) => s.id === subject.id)
-  const unreachable = model?.built.targetGrade.includes(subject.id) ?? false
   const start = model?.result.campaignStarts[subject.id] ?? subject.campaign_start_on
   const date = (d: string) => format(toDisplayDate(d), 'd. MMM', { locale: dateFnsLocales[locale] })
-  const level = (p: number) => t(`subjects.priority.${asPriority(p)}.name`)
   const boosted = subject.priority_boost_until !== null && subject.priority_boost_until >= today
-  const nudge = subject.target_grade !== null && subject.target_grade >= 9 && subject.priority < 4
   const coverage = Math.round(
     (planSubject ? coverageOf(planSubject) : priorityRule(subject.priority).coverage) * 100,
   )
@@ -50,7 +47,11 @@ export function GoalCard({ subject, today }: { subject: SubjectWithAssessments; 
           {t('subjects.goal.edit')} ›
         </Link>
       </div>
-      {row(t('subjects.goal.importantRow'), level(subject.priority))}
+      {isConditional(subject.priority) && (
+        <span className="mt-0.5 flex h-7 items-center self-start rounded-full bg-brand-soft px-3 text-[13px] font-bold text-brand-strong">
+          {t('subjects.form.conditional')}
+        </span>
+      )}
       {row(
         t('subjects.goal.targetRow'),
         subject.target_grade === null ? t('subjects.goal.noTarget') : String(subject.target_grade),
@@ -75,24 +76,6 @@ export function GoalCard({ subject, today }: { subject: SubjectWithAssessments; 
             ×
           </button>
         </span>
-      )}
-      {(nudge || unreachable) && (
-        <div className="mt-1.5 flex items-center justify-between gap-2 rounded-[16px] bg-warning-soft py-1.5 pr-1.5 pl-3.5">
-          <span className="text-[13px] text-warning-ink">
-            {nudge
-              ? t('subjects.goal.nudge', { grade: subject.target_grade, level: level(4) })
-              : t('subjects.goal.unreachable')}
-          </span>
-          {subject.priority < 4 && (
-            <button
-              type="button"
-              onClick={() => patch.mutate({ id: subject.id, patch: { priority: 4 } })}
-              className="flex min-h-10 shrink-0 items-center rounded-full px-3 text-[13px] font-semibold text-brand"
-            >
-              {t('subjects.goal.change')}
-            </button>
-          )}
-        </div>
       )}
       <span className="mt-1 text-xs text-ink-muted">
         {t('subjects.goal.effect', { coverage, often: t(`subjects.goal.often.${often}`) })}
