@@ -2944,31 +2944,47 @@
   "landing": {
     "signIn": "Sign in",
     "start": "Get started",
-    "lead": "Hoot turns your exam dates, books and exam questions into a daily study plan, and fixes it by itself when you miss something.",
-    "devices": "Works on phone and computer · add it to your home screen",
-    "shotAlt": "Hoot's Today screen: the next block, a review and an exam in 12 days",
-    "what": {
-      "title": "You study, Hoot plans",
-      "plan": "A plan from your deadlines",
-      "planBody": "Snap the book's table of contents and add exam dates. Hoot spreads the material over the days, around classes and your free time.",
-      "adapt": "Adapts by itself",
-      "adaptBody": "Missed a day or low on energy? One tap and the plan is redone, no guilt and no moving things by hand.",
-      "remember": "Remembers for you",
-      "rememberBody": "A short check after studying, and reviews come right when the material would start to fade, up to exam day."
+    "haveAccount": "I already have an account",
+    "headline": "You study.\nHoot plans.",
+    "lead": "Add your exams and books. Hoot lays out every day and fixes it on its own when the day goes differently.",
+    "owl": "Hoot the owl",
+    "day": {
+      "title": "Open it in the morning.\nThe day is already planned.",
+      "alt": "Animation: the day's cards shuffle like a deck; the front card flies out to the right and goes to the back, the next block comes forward",
+      "next": "Next · {{time}}",
+      "minutes": "{{n}} min",
+      "chapter": "Chapter {{n}}",
+      "subject": "Subject {{n}} · {{exam}}",
+      "examIn_one": "exam in {{count}} day",
+      "examIn_other": "exam in {{count}} days",
+      "reading": "Reading"
     },
-    "how": {
-      "title": "How to start",
-      "signIn": "Sign in",
-      "signInBody": "with email or Google.",
-      "subjects": "Add subjects:",
-      "subjectsBody": "import the academic calendar and timetable, or just enter your exams.",
-      "today": "Open Today",
-      "todayBody": "and start the first block."
+    "learn": {
+      "title": "A plan that learns\nalong with you.",
+      "ml": "Machine learning",
+      "mlBody": "A model tracks how long each chapter really takes you and estimates time more precisely every day.",
+      "mlChip": "Ch. 3 · estimate 45 → 38 min",
+      "adapt": "Adaptive rescheduling",
+      "adaptBody": "When the day changes, the plan rearranges itself. Chapters stay in order and exams stay covered.",
+      "adaptChip": {
+        "missed": "Missed day",
+        "less": "Less time",
+        "deadline": "New deadline"
+      },
+      "progress": "Progress reports",
+      "progressBody": "See how ready each subject is and where you're behind, before it becomes a problem.",
+      "weekly": "Weekly report"
     },
-    "cta": {
-      "title": "Next exam period, no panic",
-      "body": "Your data stays yours: export it any time.",
-      "button": "Get started"
+    "replan": {
+      "title": "Day not going according to plan?\nNo problem.",
+      "cant": "I can't today",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "free": "free",
+      "chapter": "Ch. {{n}}",
+      "ok": "Everything moved by one day",
+      "okSub": "Chapters stay in order, exams covered",
+      "alt": "Animation: today is freed and the chapters of both subjects move by a day, still in order: Subject 1 chapters 1, 2, 3 and Subject 2 chapters 1, 2"
     }
   },
   "semesterEnd": {
