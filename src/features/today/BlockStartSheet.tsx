@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
-import { CircleMinusIcon, PencilIcon, SkipIcon, TrashIcon } from '@/components/icons'
 import { useToast } from '@/components/toast-store'
 import { useDeleteBlock, useStartBlock } from '@/features/plan/actions'
 import { blockMode, blockPages, blockTitle, useGoalTitle } from '@/features/plan/model'
 import type { PlanBlockRow } from '@/features/plan/state'
-import { presetName, usePresets } from '@/features/session/presets'
+import { usePresets } from '@/features/session/presets'
+import { RhythmRow } from '@/features/session/RhythmRow'
 import { formatDuration } from '@/features/sources/format'
 import { useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import type { PlanToday } from './usePlanToday'
 
 const secondary =
-  'flex h-16 flex-1 flex-col items-center justify-center gap-1 rounded-[20px] bg-white/55 text-[13px] font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.7),inset_0_1px_1px_rgba(255,255,255,0.9)]'
+  'flex h-12 flex-1 items-center justify-center text-[15px] font-bold text-brand-strong'
 
 /**
  * "Započeti sesiju sada?" (StartSesije.dc.html, PRD "Blok na listi Danas"): a tap on a block in
@@ -94,7 +94,9 @@ function Body({
   const start = useStartBlock()
   const remove = useDeleteBlock()
   const show = useToast((s) => s.show)
-  const { resolve, suggestedId } = usePresets()
+  const { suggestedId } = usePresets()
+  // The default rhythm, read-only until "Promijeni" (PRD "Dopune, 5. nov 2026").
+  const [presetId, setPresetId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const subject = subjects.find((s) => s.id === block.subject_id)
   const manual = block.origin === 'user'
@@ -134,31 +136,33 @@ function Body({
           {blockTitle(t, block, plan.units, goalTitle(block.deadline_id ?? ''))}
         </span>
         <span className="text-[13px] text-ink-secondary">{meta}</span>
-        <span className="text-[13px] text-ink-muted">
-          {t('today.start.pauses', { preset: presetName(t, resolve(suggestedId)) })}
-        </span>
       </div>
+      <RhythmRow
+        value={presetId ?? suggestedId}
+        onChange={setPresetId}
+        sub={presetId ? undefined : t('today.start.rhythmSub')}
+      />
       {canStart && (
         <button
           type="button"
           disabled={busy}
           onClick={() => {
             setBusy(true)
-            void start(block, plan.units).finally(() => setBusy(false))
+            void start(block, plan.units, { timerMode: presetId ?? suggestedId }).finally(() =>
+              setBusy(false),
+            )
           }}
-          className="btn-primary flex h-14 items-center justify-center gap-2 rounded-full text-base font-semibold"
+          className="btn-primary flex h-14 items-center justify-center gap-2.5 rounded-[18px] text-[17px] font-bold"
         >
           <PlayIcon />
           {t('today.start.begin')}
         </button>
       )}
-      <div className="flex gap-2">
+      <div className="-mt-1 flex gap-1">
         <button type="button" onClick={() => onEdit(block)} className={secondary}>
-          <PencilIcon size={18} className="text-brand" />
           {t('today.start.edit')}
         </button>
         <button type="button" onClick={() => onSkip(block)} className={secondary}>
-          <SkipIcon size={18} className="text-brand" />
           {t('today.start.skip')}
         </button>
         {manual ? (
@@ -167,7 +171,6 @@ function Body({
             onClick={() => void deleteNow()}
             className={cn(secondary, 'text-danger')}
           >
-            <TrashIcon size={18} />
             {t('today.start.delete')}
           </button>
         ) : (
@@ -176,7 +179,6 @@ function Body({
             onClick={() => onDrop(block)}
             className={cn(secondary, 'text-danger')}
           >
-            <CircleMinusIcon size={18} />
             {t('today.start.drop')}
           </button>
         )}

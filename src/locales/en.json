@@ -64,6 +64,7 @@
   },
   "today": {
     "adjust": {
+      "freeSub": "Outside the plan, Hoot suggests or you pick",
       "open": "Adjust the day: energy, only a little time, can't today",
       "title": "Adjust the day",
       "feel": "How do you feel?",
@@ -192,8 +193,8 @@
       "fromNotification": "Skipped from a notification: {{title}}"
     },
     "start": {
+      "rhythmSub": "Your default, Hoot built the block on it",
       "title": "Start a session now?",
-      "pauses": "Breaks: {{preset}}",
       "begin": "Start",
       "edit": "Edit",
       "skip": "Skip",
@@ -619,32 +620,22 @@
   "session": {
     "title": "Study session",
     "start": {
-      "title": "What are you studying?",
-      "subtitle": "Pick a subject, and a unit if you like.",
-      "recommendedEmpty": "Recommended block",
-      "recommendedSoon": "Comes with the daily plan",
-      "tagRecommended": "Recommended",
+      "freeLead": "Outside the plan · takes no block off Today",
+      "what": "What are you studying?",
+      "auto": "Hoot suggests",
+      "manual": "I'll pick",
+      "another": "Another idea · {{n}}/{{total}}",
+      "why": "Why: {{why}}",
+      "manualHint": "You can change the unit during the session too, under “Working on”.",
       "free": "Free session",
-      "freeSub": "Outside the plan · pick a subject",
-      "tagFree": "No plan",
       "noSubjects": "Add a subject first.",
       "addSubject": "Add subject",
       "subject": "Subject",
       "source": "Source",
       "unit": "Unit",
       "allUnits": "Show all ({{count}})",
-      "freeHint": "You can change the unit during the session (\"Working on\"). The time counts for calibration but does not tick off a planned block.",
-      "go": "Start",
       "breaks": "Breaks",
-      "breaksHint": "Your last preset is suggested. Change the default in Settings.",
-      "nextBlock": "Next block",
-      "laterToday": "Later today",
-      "tagPlan": "Plan",
       "howLong": "How much time do you have?",
-      "wholeBlock": "Whole block",
-      "onlyHint": "Only {{minutes}} min → {{title}}. The rest of the block goes into the plan from tomorrow.",
-      "subtitlePlan": "The next block of today's plan is suggested.",
-      "newSubject": "+ Subject",
       "newSource": "+ Source",
       "addFirstSource": "+ Add a source (book, notes…)"
     },
@@ -911,6 +902,7 @@
     "scaleOrder": "Each threshold must be higher than the one before"
   },
   "common": {
+    "change": "Change",
     "cancel": "Cancel",
     "save": "Save",
     "close": "Close",

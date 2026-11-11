@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { format } from 'date-fns'
 import { BottomSheet } from '@/components/BottomSheet'
 import { ChevronRightIcon, ClockIcon, MoonIcon, PlusIcon } from '@/components/icons'
 import { BlockSheet } from '@/features/plan/BlockSheet'
@@ -13,10 +12,9 @@ import { isOpen, useGoalTitle } from '@/features/plan/model'
 import { formatDuration } from '@/features/sources/format'
 import { useLocale } from '@/features/settings/useLocale'
 import { useSubjects } from '@/features/subjects/api'
-import { toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { cn } from '@/lib/utils'
-import { ONLY_MINUTES, pickFor, pickTitle, useStartPick } from './pick'
+import { ONLY_MINUTES, pickFor, pickTitle, pickWhy, useStartPick } from './pick'
 import type { PlanToday } from './usePlanToday'
 
 /** Energy of the day as the three tiles show it (`lib/energy` levels). */
@@ -152,7 +150,7 @@ export function AdjustDaySheet({
             <span className={cn(tile, 'bg-subject-lavender-soft text-subject-lavender-ink')}>
               <PlayIcon />
             </span>
-            <RowText title={t('session.start.free')} sub={t('session.start.freeSub')} />
+            <RowText title={t('session.start.free')} sub={t('today.adjust.freeSub')} />
           </button>
           <button
             type="button"
@@ -264,19 +262,7 @@ function OnlyForm({
       : undefined
   const subjectName = subjects.find((s) => s.id === pick?.subjectId)?.name ?? ''
 
-  const why = !pick
-    ? null
-    : pick.from === 'review'
-      ? t('today.only.whyReview', { minutes: formatDuration(t, pick.minutes) })
-      : pick.from === 'today'
-        ? block && pick.minutes < block.planned_minutes
-          ? t('today.only.whyPart')
-          : t('today.only.whyWhole')
-        : t('today.only.whyNext', {
-            day: later
-              ? format(toDisplayDate(later.on_date), 'EEEE', { locale: dateFnsLocales[locale] })
-              : '',
-          })
+  const why = pick ? pickWhy(t, plan, pick, dateFnsLocales[locale]) : null
 
   const start = async () => {
     if (!pick) return

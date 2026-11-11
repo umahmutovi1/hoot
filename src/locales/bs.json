@@ -66,6 +66,7 @@
   },
   "today": {
     "adjust": {
+      "freeSub": "Van plana, Hoot predloži ili biraš sam",
       "open": "Prilagodi dan: energija, imam samo malo vremena, danas ne mogu",
       "title": "Prilagodi dan",
       "feel": "Kako se osjećaš?",
@@ -199,8 +200,8 @@
       "fromNotification": "Preskočeno iz notifikacije: {{title}}"
     },
     "start": {
+      "rhythmSub": "Tvoj zadani, Hoot je po njemu složio blok",
       "title": "Započeti sesiju sada?",
-      "pauses": "Pauze: {{preset}}",
       "begin": "Počni",
       "edit": "Uredi",
       "skip": "Preskoči",
@@ -635,32 +636,22 @@
   "session": {
     "title": "Sesija učenja",
     "start": {
-      "title": "Šta učiš sad?",
-      "subtitle": "Izaberi predmet, a jedinicu po želji.",
-      "recommendedEmpty": "Preporučeni blok",
-      "recommendedSoon": "Dolazi s dnevnim planom",
-      "tagRecommended": "Preporučeno",
+      "freeLead": "Van plana · ne skida nijedan blok sa Danas",
+      "what": "Šta učiš?",
+      "auto": "Hoot predloži",
+      "manual": "Biram sam",
+      "another": "Druga ideja · {{n}}/{{total}}",
+      "why": "Zašto: {{why}}",
+      "manualHint": "Jedinicu možeš promijeniti i u sesiji, na „Sad radim na“.",
       "free": "Slobodna sesija",
-      "freeSub": "Van plana · izaberi predmet",
-      "tagFree": "Bez plana",
       "noSubjects": "Prvo dodaj predmet.",
       "addSubject": "Dodaj predmet",
       "subject": "Predmet",
       "source": "Izvor",
       "unit": "Jedinica",
       "allUnits": "Prikaži sve ({{count}})",
-      "freeHint": "Jedinicu možeš promijeniti u sesiji („Sad radim na“). Vrijeme se računa u kalibraciju, ali ne skida blok iz plana.",
-      "go": "Počni",
       "breaks": "Pauze",
-      "breaksHint": "Zadnji korišten predložak je predložen. Default mijenjaš u Postavkama.",
-      "nextBlock": "Sljedeći blok",
-      "laterToday": "Kasnije danas",
-      "tagPlan": "Plan",
       "howLong": "Koliko vremena imaš?",
-      "wholeBlock": "Cijeli blok",
-      "onlyHint": "Imam samo {{minutes}} min → {{title}}. Ostatak bloka ide u plan od sutra.",
-      "subtitlePlan": "Predložen je sljedeći blok iz današnjeg plana.",
-      "newSubject": "+ Predmet",
       "newSource": "+ Izvor",
       "addFirstSource": "+ Dodaj izvor (knjiga, skripta…)"
     },
@@ -942,6 +933,7 @@
     "scaleOrder": "Svaki prag mora biti veći od prethodnog"
   },
   "common": {
+    "change": "Promijeni",
     "cancel": "Odustani",
     "save": "Spasi",
     "close": "Zatvori",

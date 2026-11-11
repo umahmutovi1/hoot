@@ -1,4 +1,8 @@
+import type { TFunction } from 'i18next'
 import { useNavigate } from 'react-router-dom'
+import { format, type Locale } from 'date-fns'
+import { formatDuration } from '@/features/sources/format'
+import { toDisplayDate } from '@/lib/day'
 import type { useTranslation } from 'react-i18next'
 import { useStartBlock } from '@/features/plan/actions'
 import { blockTitle, isOpen, type UnitInfo } from '@/features/plan/model'
@@ -60,6 +64,27 @@ export function pickFor(plan: PlanToday, minutes: number, subjectId?: string): P
 }
 
 /**
+ * Slobodna sesija → "Hoot predloži" with "Druga ideja": the best piece for the time, then the best
+ * piece of each other subject that has one, up to `limit` (all from `pickForTime()`, no AI).
+ */
+export function picksFor(
+  plan: PlanToday,
+  minutes: number,
+  subjectIds: string[],
+  limit = 3,
+): Pick[] {
+  const first = pickFor(plan, minutes)
+  const out = first ? [first] : []
+  for (const id of subjectIds) {
+    if (out.length >= limit) break
+    if (out.some((p) => p.subjectId === id)) continue
+    const pick = pickFor(plan, minutes, id)
+    if (pick) out.push(pick)
+  }
+  return out
+}
+
+/**
  * "Imam još vremena": the pick filled up to `minutes` with the next units of the same subject from
  * its later blocks (in plan order), so 90 min are not cut to one 50 min block.
  */
@@ -79,6 +104,24 @@ export function fillPick(plan: PlanToday, pick: Pick, minutes: number): Pick {
       total += m
     }
   return { ...pick, units, minutes: total }
+}
+
+/** Why the piece was picked: a check due, (part of) today's block, or a later block's day. */
+export function pickWhy(t: TFunction, plan: PlanToday, pick: Pick, dfLocale: Locale): string {
+  if (pick.from === 'review')
+    return t('today.only.whyReview', { minutes: formatDuration(t, pick.minutes) })
+  if (pick.from === 'today') {
+    const block = plan.blocks.find((b) => b.id === pick.blockId)
+    return block && pick.minutes < block.planned_minutes
+      ? t('today.only.whyPart')
+      : t('today.only.whyWhole')
+  }
+  const later = plan.blocks.find(
+    (b) => isOpen(b) && b.on_date > plan.today && b.subject_id === pick.subjectId,
+  )
+  return t('today.only.whyNext', {
+    day: later ? format(toDisplayDate(later.on_date), 'EEEE', { locale: dfLocale }) : '',
+  })
 }
 
 /** Title of a picked piece: subject and the units it covers. */
