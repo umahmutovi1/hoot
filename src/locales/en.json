@@ -3119,5 +3119,51 @@
       "unmotivated": "Unmotivated",
       "busy": "Commitments"
     }
+  },
+  "proposals": {
+    "title": "Suggestions",
+    "lastWeek": "From last week · {{range}}",
+    "thisWeek": "From this week · {{range}}",
+    "pending_one": "{{count}} waiting for a decision",
+    "pending_other": "{{count}} waiting for a decision",
+    "allDecided": "All decided",
+    "applied_one": "{{count}} applied",
+    "applied_other": "{{count}} applied",
+    "confirm": "Confirm {{count}}",
+    "more_one": "{{count}} more suggestion",
+    "more_other": "{{count}} more suggestions",
+    "less": "Show less",
+    "notNow": "Not now",
+    "ok": "OK",
+    "undo": "Undo",
+    "takeBack": "Take back",
+    "applyAgain": "Apply anyway",
+    "restore": "Restore",
+    "skipped": "Skipped · {{title}}",
+    "appliedEffect": "Applied. The plan is updated.",
+    "alreadyDone": "Hoot already did this",
+    "rules": {
+      "deficit": "Plan shortfall",
+      "behind": "Falling behind",
+      "crowding": "Crowded before exams",
+      "slot": "Study time",
+      "read_untested": "Review",
+      "avoidance": "First step",
+      "rhythm": "Rhythm"
+    },
+    "moved": {
+      "title": "Missed a {{minutes}} block.",
+      "body": "The material moved to {{when}}.",
+      "effect": "{{when}} · {{subject}} {{minutes}} stays in the plan.",
+      "undone": "Undone. The material is out of the plan, and {{subject}} is still behind."
+    },
+    "limit": "3 suggestions were applied this week. The rest wait for next week.",
+    "entry_one": "{{count}} suggestion waiting for your decision",
+    "entry_other": "{{count}} suggestions waiting for your decision",
+    "entryNone": "Suggestions for your plan",
+    "entrySub": "From last week · approve each with one tap",
+    "entryNoneSub": "Nothing waiting for a decision",
+    "today": "today",
+    "tomorrow": "tomorrow"
   }
 }

@@ -250,21 +250,29 @@ export function useRaiseCaps() {
       cap: (current: number) => number
     }) => {
       const rows: { id: string; on_date: string; slots: unknown; cap_min: number }[] = []
+      // What puts the days back as they were ("Vrati odluku" on Prijedlozi).
+      const revert: Op[] = []
       for (let d = from; d <= until; d = addDays(d, 1)) {
         const existing = schedule.dayRows.find((r) => r.on_date === d)
         const current = capFor(d, schedule.dayInput(d))
         const next = Math.min(1440, cap(current))
         if (next === current) continue
-        rows.push({
-          id: existing?.id ?? crypto.randomUUID(),
-          on_date: d,
-          slots: existing?.slots ?? null,
-          cap_min: next,
-        })
+        const id = existing?.id ?? crypto.randomUUID()
+        rows.push({ id, on_date: d, slots: existing?.slots ?? null, cap_min: next })
+        revert.push(
+          existing
+            ? {
+                kind: 'upsert',
+                table: 'availability_days',
+                rows: [{ id, on_date: d, slots: existing.slots, cap_min: existing.cap_min }],
+              }
+            : { kind: 'delete', table: 'availability_days', match: { id } },
+        )
       }
-      if (rows.length === 0) return
+      if (rows.length === 0) return revert
       const { error } = await supabase.from('availability_days').upsert(rows as never)
       if (error) throw error
+      return revert
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: scheduleKey('availability_days', userId) })

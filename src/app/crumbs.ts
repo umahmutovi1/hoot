@@ -61,7 +61,9 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
       return own
     }
     case 'progress':
-      return second === 'week' ? [progress, { label: t('checkin.title'), to: pathname }] : []
+      if (second === 'week') return [progress, { label: t('checkin.title'), to: pathname }]
+      if (second === 'suggestions') return [progress, { label: t('proposals.title'), to: pathname }]
+      return []
     case 'sessions': {
       const list = [progress, { label: t('menu.sessions'), to: '/sessions' }]
       return second
