@@ -1,4 +1,4 @@
-# Prompt evals for parse-document, parse-toc and parse-questions. Run before changing a prompt or
+# Prompt evals for parse-document, parse-toc, parse-questions and find-toc. Run before changing a prompt or
 # model:
 #   GEMINI_API_KEY=... npm run eval
 # Every case must pass the Zod schema (the provider validates) and match the expected
@@ -118,3 +118,25 @@ tests:
             sis.some((x) => x.weekday === 0 && x.start === '09:00' && x.end === '11:00') &&
             lab?.weekday === 3 && lab?.week_parity === 'odd' && lab?.location === 'Lab 1' &&
             e.filter((x) => x.subject_id === null).length === 2
+  - description: book contents from the web, a well-known textbook with its edition
+    vars:
+      task: find-toc
+      kind: auto
+      fixture: find-toc
+      query: Oppenheim, Willsky, Signals and Systems, 2nd edition
+    assert:
+      - type: javascript
+        value: |
+          const t = output.toc
+          return t !== null && t.units.length >= 8 && t.source_url.startsWith('https://') &&
+            t.units.some((u) => /fourier/i.test(u.title)) &&
+            t.units.every((u) => u.page_end === null || u.page_start === null || u.page_end >= u.page_start)
+  - description: book contents from the web, an unpublished script is not invented
+    vars:
+      task: find-toc
+      kind: auto
+      fixture: find-toc
+      query: Interna skripta za vježbe iz Osnova elektrotehnike 3, verzija 2026
+    assert:
+      - type: javascript
+        value: output.toc === null

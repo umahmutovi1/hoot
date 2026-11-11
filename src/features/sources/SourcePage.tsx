@@ -1,4 +1,4 @@
-import { DocIcon } from '@/components/icons'
+import { DocIcon, GlobeIcon } from '@/components/icons'
 import { useRates } from '@/features/plan/api'
 import { useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
@@ -98,6 +98,29 @@ function SourceDetail({
               {t('sources.pdf.openDrive')}
             </a>
           )}
+        </div>
+      )}
+      {!source.file_name && source.external_url && (
+        // Chapters found on the web (Sprint 19): the page they came from, to check the edition.
+        <div className="flex items-center gap-3 rounded-[20px] surface p-3">
+          <span
+            aria-hidden="true"
+            className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
+          >
+            <GlobeIcon size={18} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('sources.web.sourceRow')}</span>
+            <span className="truncate text-xs text-ink-muted">{hostOf(source.external_url)}</span>
+          </span>
+          <a
+            href={source.external_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-11 shrink-0 items-center px-1 text-[13px] font-semibold text-brand"
+          >
+            {t('sources.web.open')}
+          </a>
         </div>
       )}
 
@@ -282,4 +305,12 @@ function Archived({ subjectId, source }: { subjectId: string; source: SourceWith
       )}
     </>
   )
+}
+
+function hostOf(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
 }

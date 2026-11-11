@@ -1,5 +1,6 @@
-// promptfoo provider: the same prompts and schemas as the parse-document, parse-toc and
-// parse-questions Edge Functions (var `task`, default parse-document).
+// promptfoo provider: the same prompts and schemas as the parse-document, parse-toc,
+// parse-questions and find-toc Edge Functions (var `task`, default parse-document). find-toc
+// searches the live web, so its cases check shape and honesty, not exact chapters.
 // GEMINI_API_KEY set -> calls Gemini directly (LLM_MODEL, default gemini-2.5-flash).
 // EVAL_MODEL=groq:<model> or openrouter:<model> (+ GROQ_API_KEY / OPENROUTER_API_KEY) -> that
 // free-chain model; it goes into EVALUATED_MODELS (`_shared/chain.ts`) only after this passes.
@@ -17,6 +18,7 @@ import {
   tocRequest,
 } from '../supabase/functions/_shared/contentPrompts.ts'
 import { normalizeParse, parseRequest } from '../supabase/functions/_shared/prompts.ts'
+import { keepToc, tocSearchRequest } from '../supabase/functions/_shared/tocSearch.ts'
 import type {
   ImportKind,
   ParseDocumentRequest,
@@ -31,9 +33,11 @@ const SUBJECTS = [
 ]
 
 interface Vars {
-  task?: 'parse-document' | 'parse-toc' | 'parse-questions'
+  task?: 'parse-document' | 'parse-toc' | 'parse-questions' | 'find-toc'
   kind: ImportKind
   fixture: string
+  /** find-toc: the book as the user would type it. */
+  query?: string
   subject?: string
   topics?: string[]
 }
@@ -84,6 +88,29 @@ async function contentCall(
   return { output: normalizeQuestions(req, result.data), result }
 }
 
+/** find-toc against Gemini with Google Search grounding; the output is what the app gets. */
+async function findToc(vars: Vars) {
+  const key = process.env.GEMINI_API_KEY
+  if (!key) return { error: 'find-toc evals need GEMINI_API_KEY' }
+  try {
+    const result = await generate(
+      {
+        provider: evalProvider(key),
+        privateFree: true,
+        countRecentRuns: async () => 0,
+        logRun: async () => {},
+      },
+      tocSearchRequest({ query: vars.query ?? '', locale: 'bs' }),
+    )
+    return {
+      output: { toc: keepToc(result.data, result.sources) },
+      tokenUsage: { prompt: result.inputTokens, completion: result.outputTokens },
+    }
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : String(err) }
+  }
+}
+
 export default class ParseDocumentProvider {
   id() {
     return 'hoot-parse-document'
@@ -91,6 +118,7 @@ export default class ParseDocumentProvider {
 
   async callApi(_prompt: string, context: { vars: Vars }) {
     const vars = context.vars
+    if (vars.task === 'find-toc') return await findToc(vars)
     const { kind, fixture } = vars
     const path = new URL(`./fixtures/${fixture}`, import.meta.url)
     const isImage = fixture.endsWith('.png')

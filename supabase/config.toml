@@ -478,6 +478,10 @@ import_map = "./functions/deno.json"
 verify_jwt = false
 import_map = "./functions/deno.json"
 
+[functions.find-toc]
+verify_jwt = false
+import_map = "./functions/deno.json"
+
 [functions.google-calendar]
 verify_jwt = false
 import_map = "./functions/deno.json"

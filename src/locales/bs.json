@@ -312,6 +312,8 @@
       "title": "Prvi izvor",
       "pdf": "Imam PDF knjige ili skripte",
       "pdfSub": "Hoot pročita sadržaj i podijeli ga na jedinice",
+      "web": "Nemam PDF, nađi sadržaj",
+      "webSub": "Upiši naslov, Hoot na internetu traži bar poglavlja",
       "photo": "Slikaj sadržaj",
       "photoSub": "Fotografija stranice sa sadržajem je dovoljna",
       "hint": "Iz izvora Hoot zna koliko je gradiva i koliko traje, pa ne moraš pogađati.",
@@ -1050,7 +1052,8 @@
         "photo": "Slikaj sadržaj",
         "text": "Ukucaj",
         "pdf": "PDF s uređaja",
-        "drive": "Google Drive"
+        "drive": "Google Drive",
+        "web": "Nađi na internetu"
       },
       "outline": "Sadržaj",
       "placeholder": {
@@ -1073,7 +1076,8 @@
         "pdf": "Poglavlja i broj stranica iz fajla · fajl ostaje kod tebe",
         "drive": "Jedan ili više PDF-ova · izvor pamti link na Drive",
         "photo": "Stranice sadržaja, najviše 4",
-        "text": "Jedno poglavlje po liniji"
+        "text": "Jedno poglavlje po liniji",
+        "web": "Nemaš PDF, Hoot traži sadržaj"
       }
     },
     "section": "Izvori",
@@ -1206,6 +1210,37 @@
       "originDrive": "PDF · Google Drive",
       "originDevice": "PDF s uređaja · fajl je kod tebe",
       "openDrive": "Otvori u Drive-u"
+    },
+    "web": {
+      "query": "Naslov i autor",
+      "placeholder": "npr. Haykin, Signals and Systems, 2. izdanje",
+      "onlyTitle": "Na internet ide samo naslov, autor i izdanje.",
+      "search": "Nađi sadržaj",
+      "searching": "Tražim sadržaj na internetu…",
+      "chapters_one": "{{count}} poglavlje",
+      "chapters_few": "{{count}} poglavlja",
+      "chapters_other": "{{count}} poglavlja",
+      "found": "Našla sam sadržaj: {{chapters}}",
+      "foundPages": "Našla sam sadržaj: {{chapters}}, {{pages}} str.",
+      "from": {
+        "publisher": "Sa stranice izdavača",
+        "library": "Iz kataloga biblioteke",
+        "store": "Sa stranice knjižare",
+        "other": "Sa interneta"
+      },
+      "origin": "{{from}}.",
+      "originEdition": "{{from}}, {{edition}}. izdanje.",
+      "checkEdition": "Provjeri da je isto izdanje kao tvoje, broj stranica zavisi od toga.",
+      "save_one": "Spasi {{count}} poglavlje",
+      "save_few": "Spasi {{count}} poglavlja",
+      "save_other": "Spasi {{count}} poglavlja",
+      "havePdf": "Ipak imam PDF",
+      "missTitle": "Nisam našla sadržaj ove knjige.",
+      "missBody": "Upiši poglavlja ručno, dovoljni su naslovi i stranice. Ili uslikaj stranicu sa sadržajem, to je najbrže.",
+      "typeInstead": "Upiši poglavlja",
+      "photoInstead": "Uslikaj sadržaj",
+      "sourceRow": "Sadržaj s interneta",
+      "open": "Otvori"
     }
   },
   "time": {
