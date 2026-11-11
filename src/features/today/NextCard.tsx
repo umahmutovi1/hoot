@@ -22,18 +22,21 @@ import { useActiveSession } from '@/features/session/api'
 import { formatClock, toSegment } from '@/features/session/model'
 import { useNow } from '@/features/session/useNow'
 import { useLocale } from '@/features/settings/useLocale'
+import { formatDuration } from '@/features/sources/format'
 import { useSubject, useSubjects } from '@/features/subjects/api'
 import { addDays, toDisplayDate } from '@/lib/day'
 import { dateFnsLocales } from '@/lib/locale'
 import { LATE_AFTER_MIN } from '@/lib/scheduler'
-import { activeMs, MINUTE, openSegment } from '@/lib/session/timer'
+import { activeMs, openSegment } from '@/lib/session/timer'
 import type { ActiveSession } from '@/features/session/model'
 import { SkipSheet } from './SkipSheet'
 import type { PlanToday } from './usePlanToday'
 
-const label = 'text-xs font-semibold tracking-[0.6px] text-white/88 uppercase'
+const label = 'text-sm font-bold text-brand-strong'
 const action =
-  'flex h-12 items-center gap-2 rounded-full bg-white/94 px-6 text-base font-semibold text-brand-strong shadow-[inset_0_1px_1px_#fff,0_6px_16px_rgba(30,20,80,0.2)]'
+  'btn-primary flex h-[52px] items-center gap-2.5 rounded-2xl px-6 text-[17px] font-bold'
+/** The title of the card's block or state (30 px display, DanasA). */
+const title = 'font-display text-[30px] leading-[1.05] font-bold tracking-[-0.02em]'
 
 function PlayIcon() {
   return (
@@ -60,9 +63,9 @@ export function NextCard({ plan }: { plan: PlanToday }) {
 function PendingCard() {
   const { t } = useTranslation()
   return (
-    <section className="hero flex min-h-[176px] flex-col gap-4 rounded-card-lg p-5">
+    <section className="next-card flex min-h-[176px] flex-col gap-4 rounded-card-lg p-5">
       <span className={label}>{t('today.next.label')}</span>
-      <span className="h-6 w-2/3 animate-pulse rounded-full bg-white/20" />
+      <span className="h-6 w-2/3 animate-pulse rounded-full bg-ground/60" />
     </section>
   )
 }
@@ -71,10 +74,12 @@ function PendingCard() {
 export function DayOffCard({ moved }: { moved: number }) {
   const { t } = useTranslation()
   return (
-    <section className="hero flex flex-col gap-1 rounded-card p-4">
+    <section className="next-card flex flex-col gap-1.5 rounded-card-lg p-5">
       <span className={label}>{t('today.cant.label')}</span>
-      <span className="text-[22px] font-bold">{t('today.cant.title')}</span>
-      <span className="text-sm text-white/82">{t('today.cant.moved', { count: moved })}</span>
+      <span className={title}>{t('today.cant.title')}</span>
+      <span className="text-[15px] text-brand-strong">
+        {t('today.cant.moved', { count: moved })}
+      </span>
     </section>
   )
 }
@@ -97,8 +102,8 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
     block.status === 'planned' && block.start_min !== null ? plan.nowMin - block.start_min : 0
   const late = lateMin > LATE_AFTER_MIN
   return (
-    <section className="hero flex flex-col gap-4 rounded-card-lg p-5">
-      <div className="flex items-center justify-between">
+    <section className="next-card flex flex-col gap-4 rounded-card-lg p-5">
+      <div className="flex items-center justify-between gap-3">
         <span className={label}>
           {late
             ? t('today.skip.late', { min: lateMin })
@@ -106,40 +111,31 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
               ? t('today.next.labelAt', { time: clock })
               : t('today.next.label')}
         </span>
-        <div className="flex items-center gap-1.5">
-          {block.status === 'planned' && (
-            <button
-              type="button"
-              onClick={() => setSkipping(true)}
-              className="-my-2.5 flex h-11 items-center px-1"
-            >
-              <span className="flex h-[26px] items-center rounded-full bg-white/94 px-3 text-xs font-semibold text-brand-strong">
-                {t('today.skip.button')}
-              </span>
-            </button>
-          )}
-          <span className="flex h-[26px] items-center rounded-full bg-white/18 px-2.5 text-xs font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]">
-            {t(
-              `planBlocks.mode.${block.kind === 'learn' ? blockMode(block, plan.units) : block.kind}`,
-            )}
-          </span>
-        </div>
+        <span className="flex h-7 items-center rounded-full bg-ground/70 px-3 text-[13px] font-bold text-brand-strong tabular-nums">
+          {formatDuration(t, block.planned_minutes)}
+        </span>
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-sm text-white/88">{subject?.name}</span>
-        <span className="text-[22px] leading-[1.2] font-semibold tracking-[-0.5px]">
+        <span className={title}>
           {blockTitle(t, block, plan.units, goalTitle(block.deadline_id ?? ''))}
         </span>
+        <span className="text-[15px] text-brand-strong">
+          {[
+            subject?.name,
+            t(
+              `planBlocks.mode.${block.kind === 'learn' ? blockMode(block, plan.units) : block.kind}`,
+            ),
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </span>
         {(pages || why) && (
-          <span className="text-[13px] text-white/84">
+          <span className="text-[13px] text-ink-secondary">
             {[pages, why].filter(Boolean).join(' · ')}
           </span>
         )}
       </div>
-      <div className="flex items-center justify-between">
-        <span className="text-[40px] font-semibold tracking-[-1.2px] tabular-nums">
-          {formatClock(block.planned_minutes * MINUTE)}
-        </span>
+      <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={() => void start(block, plan.units)}
@@ -148,6 +144,15 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
           <PlayIcon />
           {late ? t('today.skip.startNow') : t('today.next.start')}
         </button>
+        {block.status === 'planned' && (
+          <button
+            type="button"
+            onClick={() => setSkipping(true)}
+            className="flex h-[52px] items-center px-3.5 text-[15px] font-bold text-brand-strong"
+          >
+            {t('today.skip.button')}
+          </button>
+        )}
       </div>
       <SkipSheet block={skipping ? block : null} plan={plan} onClose={() => setSkipping(false)} />
     </section>
@@ -179,7 +184,7 @@ function FreeCard({ plan }: { plan: PlanToday }) {
       ? t('today.free.tomorrow')
       : format(toDisplayDate(later.on_date), 'EEEE', { locale: dateFnsLocales[locale] })
     : null
-  const title = done
+  const heading = done
     ? t('today.next.allDone')
     : noMaterial
       ? t('today.free.noMaterialTitle')
@@ -196,21 +201,21 @@ function FreeCard({ plan }: { plan: PlanToday }) {
         ? t('today.next.allDoneSub')
         : t('today.next.freeSub')
   return (
-    <section className="hero flex min-h-[176px] flex-col gap-4 rounded-card-lg p-5">
+    <section className="next-card flex min-h-[176px] flex-col gap-4 rounded-card-lg p-5">
       <span className={label}>{t('today.next.label')}</span>
       <div className="flex flex-col gap-1">
-        <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">{title}</span>
-        <span className="text-[13px] text-white/84">{sub}</span>
+        <span className={title}>{heading}</span>
+        <span className="text-[15px] text-brand-strong">{sub}</span>
       </div>
       {/* One button bottom right, like "Počni" on a block (feedback after Sprint 13): "Dodaj sesiju" is
           the add-block flow (the plan's suggestion, then "Započeti odmah?"), which replaced the
           free session here; without material it leads to Predmeti. */}
       {noMaterial ? (
-        <Link to="/subjects" className={cn(action, 'self-end')}>
+        <Link to="/subjects" className={cn(action, 'self-start')}>
           {t('today.free.addMaterial')}
         </Link>
       ) : (
-        <button type="button" onClick={() => setExtra(true)} className={cn(action, 'self-end')}>
+        <button type="button" onClick={() => setExtra(true)} className={cn(action, 'self-start')}>
           <PlusIcon size={16} />
           {t('today.free.addSession')}
         </button>
@@ -239,7 +244,9 @@ function RunningCard({ data }: { data: ActiveSession }) {
       aria-label={t('today.next.open')}
       className="hero flex flex-col gap-4 rounded-card-lg p-5 active:scale-[0.99]"
     >
-      <span className={label}>{running ? t('today.next.running') : t('today.next.paused')}</span>
+      <span className="text-sm font-bold text-ground/80">
+        {running ? t('today.next.running') : t('today.next.paused')}
+      </span>
       <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">
         {subject?.name ?? t('session.title')}
       </span>
@@ -247,7 +254,7 @@ function RunningCard({ data }: { data: ActiveSession }) {
         <span className="text-[40px] font-semibold tracking-[-1.2px] tabular-nums">
           {formatClock(activeMs(list, now))}
         </span>
-        <span className="flex size-12 items-center justify-center rounded-full bg-white/18">
+        <span className="flex size-12 items-center justify-center rounded-full bg-ground/18">
           <ChevronRightIcon size={22} />
         </span>
       </div>

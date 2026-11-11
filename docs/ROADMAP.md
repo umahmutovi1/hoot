@@ -432,7 +432,7 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - [ ] Literatura iz plana i programa: „Koje od ovoga koristiš?“ u Dodaj izvor i pregledu uvoza (ništa unaprijed označeno)
 - [ ] Onboarding: „Plan i program“ u koraku 2; korak 7 (prvi predmet) preskočen kad uvoz da bar jedan predmet
 - [ ] Popravni na Predmetu kao red ispita sa „Samo ako zatreba“ (i dalje van plana dok se ne aktivira)
-- [ ] Danas: ikona „Prilagodi dan“ (energija, Imam samo, slobodna sesija, Imam više vremena, Danas ne mogu); link „Ili započni slobodnu sesiju sada“ ispod kartice Sljedeće
+- [x] Danas: ikona „Prilagodi dan“ (energija, Imam samo, slobodna sesija, Imam više vremena, Danas ne mogu); link „Ili započni slobodnu sesiju sada“ ispod kartice Sljedeće
 - [ ] Slobodna sesija: trajanje → Hoot predloži (`pickForTime()`, Druga ideja) / Biram sam → pauze u jednom redu; sheet planiranog bloka pokazuje zadani ritam uz Promijeni (bez čipova) i „Uči sa tutorom“ kao ista sesija
 - [ ] Prijedlozi: „Potvrdi N“ potvrđuje i ono što je Hoot već uradio
 - [ ] Bodovi: olovka po predmetu → stavke, rezultati i posebna skala ocjena; jasniji „Upiši rezultat“

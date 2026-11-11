@@ -11,7 +11,7 @@ import { InHeader } from '@/app/layout/ScreenHeader'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { SparkleIcon } from '@/components/icons'
+import { SlidersIcon, SparkleIcon } from '@/components/icons'
 import { blockTitle, movedBlocks, nextBlock, reasonText, useGoalTitle } from '@/features/plan/model'
 import { ReplanSheet } from '@/features/plan/ReplanSheet'
 import type { PlanBlockRow } from '@/features/plan/state'
@@ -41,7 +41,8 @@ import { useActiveSession } from '@/features/session/api'
 import { GainedCard } from './GainedCard'
 import { useGainedCard } from './useGainedCard'
 import { DayOffCard, NextCard } from './NextCard'
-import { QuickActions } from './QuickActions'
+import { AdjustDaySheet } from './AdjustDaySheet'
+import { useSessionUi } from '@/features/session/store'
 import { TodaySchedule } from './TodaySchedule'
 import { usePlanToday, type PlanToday } from './usePlanToday'
 
@@ -65,6 +66,8 @@ export function TodayPage() {
   useMilestones(plan, Boolean(active))
   // `?extra=1` (search: "Imam još vremena") opens that sheet.
   const [params, setParams] = useSearchParams()
+  const [adjusting, setAdjusting] = useState(false)
+  const openStart = useSessionUi((st) => st.openStart)
   const name = profile?.display_name ?? ''
   const { periods, dayRows } = useScheduleData()
   const status = calendarStatus(plan.today, periods)
@@ -79,7 +82,21 @@ export function TodayPage() {
   return (
     <div className="flex flex-col pb-8">
       <InHeader>
-        <h1 className="text-[44px] leading-none font-bold tracking-[-0.03em]">{t('nav.today')}</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-[44px] leading-none font-bold tracking-[-0.03em]">
+            {t('nav.today')}
+          </h1>
+          {hasSubjects && (
+            <button
+              type="button"
+              onClick={() => setAdjusting(true)}
+              aria-label={t('today.adjust.open')}
+              className="-mr-2 flex size-11 shrink-0 items-center justify-center"
+            >
+              <SlidersIcon size={24} />
+            </button>
+          )}
+        </div>
         <span className="mt-1.5 block text-base text-ground/80">
           {format(toDisplayDate(plan.today), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
           {status && (
@@ -100,20 +117,30 @@ export function TodayPage() {
 
       {hasSubjects ? (
         <>
-          <div>
+          {dayOff ? (
+            <DayOffCard moved={plan.todayBlocks.filter((b) => b.status === 'skipped').length} />
+          ) : (
+            <NextCard plan={plan} />
+          )}
+          {!dayOff && !active && (
+            <button
+              type="button"
+              onClick={openStart}
+              className="mt-1 flex min-h-11 items-center self-center px-3 text-sm font-semibold text-brand-strong"
+            >
+              {t('today.adjust.freeLink')}
+            </button>
+          )}
+          {dayOff && <MovedCard plan={plan} />}
+          <div className="mt-3">
             <FocusBar plan={plan} />
           </div>
-          <div className="mt-3.5">
-            {dayOff ? (
-              <DayOffCard moved={plan.todayBlocks.filter((b) => b.status === 'skipped').length} />
-            ) : (
-              <NextCard plan={plan} />
-            )}
-          </div>
-          {dayOff && <MovedCard plan={plan} />}
-          <div className="mt-3 empty:hidden">
-            <QuickActions plan={plan} dayOff={dayOff} />
-          </div>
+          <AdjustDaySheet
+            open={adjusting}
+            onOpenChange={setAdjusting}
+            plan={plan}
+            dayOff={dayOff}
+          />
           <SemesterEndCard />
           <ActionCards plan={plan} />
           {!dayOff && <WhyToday plan={plan} />}
