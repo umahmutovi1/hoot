@@ -212,6 +212,11 @@ html[data-keyboard] {
     0 -1px 0 rgb(23 24 31 / 0.08),
     0 -10px 24px rgb(23 24 31 / 0.05);
 }
+/* "Sljedeće" on Danas: the next step in sky with dark text (DanasA). */
+@utility next-card {
+  color: var(--color-ink);
+  background-color: var(--hoot-sky);
+}
 /* The one big thing on a screen in the brand colour (session, active AI). */
 @utility hero {
   color: var(--color-ground);

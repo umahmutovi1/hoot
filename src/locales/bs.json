@@ -65,6 +65,28 @@
     "skip": "Preskoči"
   },
   "today": {
+    "adjust": {
+      "open": "Prilagodi dan: energija, imam samo malo vremena, danas ne mogu",
+      "title": "Prilagodi dan",
+      "feel": "Kako se osjećaš?",
+      "level": {
+        "low": "Malo",
+        "lowSub": "lakši dan",
+        "normal": "Normalno",
+        "normalSub": "po planu",
+        "high": "Puno",
+        "highSub": "mogu više"
+      },
+      "keep_one": "Plan ostaje kakav jeste: {{count}} blok, {{time}}.",
+      "keep_few": "Plan ostaje kakav jeste: {{count}} bloka, {{time}}.",
+      "keep_other": "Plan ostaje kakav jeste: {{count}} blokova, {{time}}.",
+      "only": "Imam samo malo vremena",
+      "onlySub": "Hoot bira najvažnije, ostatak ide u plan",
+      "more": "Imam više vremena",
+      "moreSub": "Dodaj blok, Hoot bira gradivo",
+      "cantSub": "Današnje gradivo se rasporedi na naredne dane",
+      "freeLink": "Ili započni slobodnu sesiju sada"
+    },
     "greeting": {
       "morning": "Dobro jutro, {{name}}",
       "day": "Dobar dan, {{name}}",
@@ -123,7 +145,6 @@
       "onTrack": "Ništa ne kasni za ispite."
     },
     "only": {
-      "button": "Imam samo 30 min",
       "title": "Imam samo…",
       "best": "Najviše ti donosi sad",
       "start": "Počni · {{minutes}} min",
@@ -201,8 +222,6 @@
       "later": "Ne sad"
     },
     "energy": {
-      "low": "Nemam energije",
-      "high": "Pun/a sam energije",
       "toast": {
         "low": "Danas lakše: kraći blokovi, ponavljanja prvo",
         "high": "Danas malo više, najteže gradivo prvo",

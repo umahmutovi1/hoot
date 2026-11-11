@@ -63,6 +63,27 @@
     "skip": "Skip"
   },
   "today": {
+    "adjust": {
+      "open": "Adjust the day: energy, only a little time, can't today",
+      "title": "Adjust the day",
+      "feel": "How do you feel?",
+      "level": {
+        "low": "Low",
+        "lowSub": "easier day",
+        "normal": "Normal",
+        "normalSub": "as planned",
+        "high": "High",
+        "highSub": "I can do more"
+      },
+      "keep_one": "The plan stays as it is: {{count}} block, {{time}}.",
+      "keep_other": "The plan stays as it is: {{count}} blocks, {{time}}.",
+      "only": "I only have a little time",
+      "onlySub": "Hoot picks what matters most, the rest goes back into the plan",
+      "more": "I have more time",
+      "moreSub": "Add a block, Hoot picks the material",
+      "cantSub": "Today's material is spread over the next days",
+      "freeLink": "Or start a free session now"
+    },
     "greeting": {
       "morning": "Good morning, {{name}}",
       "day": "Good afternoon, {{name}}",
@@ -119,7 +140,6 @@
       "onTrack": "Nothing is late for exams."
     },
     "only": {
-      "button": "Only 30 min",
       "title": "I only have…",
       "best": "Most valuable now",
       "start": "Start · {{minutes}} min",
@@ -195,8 +215,6 @@
       "later": "Not now"
     },
     "energy": {
-      "low": "Low on energy",
-      "high": "Full of energy",
       "toast": {
         "low": "Lighter today: shorter blocks, reviews first",
         "high": "A bit more today, hardest material first",

@@ -306,3 +306,11 @@ export const ProgressTabIcon = (p: IconProps) => (
     <path d="M12 21C7.76 21 5.64 21 4.32 19.68C3 18.36 3 16.24 3 12C3 7.76 3 5.64 4.32 4.32C5.64 3 7.76 3 12 3C16.24 3 18.36 3 19.68 4.32C21 5.64 21 7.76 21 12C21 16.24 21 18.36 19.68 19.68C18.36 21 16.24 21 12 21Z M8 17V10M12 17L12 7M16 17V13" />
   </Icon>
 )
+/** "Prilagodi dan" next to the Danas title (DanasA). */
+export const SlidersIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 7H11M17 7H20M4 17H7M13 17H20" />
+    <circle cx="14" cy="7" r="2.5" />
+    <circle cx="10" cy="17" r="2.5" />
+  </Icon>
+)
