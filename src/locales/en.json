@@ -300,6 +300,8 @@
       "title": "First source",
       "pdf": "I have a PDF of the book or script",
       "pdfSub": "Hoot reads the contents and splits them into units",
+      "web": "No PDF, find the contents",
+      "webSub": "Type the title, Hoot looks for at least the chapters on the web",
       "photo": "Photograph the contents",
       "photoSub": "A photo of the contents page is enough",
       "hint": "From the source Hoot knows how much material there is and how long it takes, so you don't have to guess.",
@@ -1018,7 +1020,8 @@
         "photo": "Photograph contents",
         "text": "Type",
         "pdf": "PDF from this device",
-        "drive": "Google Drive"
+        "drive": "Google Drive",
+        "web": "Find on the web"
       },
       "outline": "Contents",
       "placeholder": {
@@ -1041,7 +1044,8 @@
         "pdf": "Chapters and pages from the file · the file stays with you",
         "drive": "One or more PDFs · the source keeps the Drive link",
         "photo": "Contents pages, up to 4",
-        "text": "One chapter per line"
+        "text": "One chapter per line",
+        "web": "No PDF, Hoot looks for the contents"
       }
     },
     "section": "Sources",
@@ -1167,6 +1171,35 @@
       "originDrive": "PDF · Google Drive",
       "originDevice": "PDF from your device · the file stays with you",
       "openDrive": "Open in Drive"
+    },
+    "web": {
+      "query": "Title and author",
+      "placeholder": "e.g. Haykin, Signals and Systems, 2nd edition",
+      "onlyTitle": "Only the title, author and edition go to the web.",
+      "search": "Find contents",
+      "searching": "Looking for the contents on the web…",
+      "chapters_one": "{{count}} chapter",
+      "chapters_other": "{{count}} chapters",
+      "found": "Found the contents: {{chapters}}",
+      "foundPages": "Found the contents: {{chapters}}, {{pages}} pages",
+      "from": {
+        "publisher": "From the publisher's site",
+        "library": "From a library catalogue",
+        "store": "From a bookshop's site",
+        "other": "From the web"
+      },
+      "origin": "{{from}}.",
+      "originEdition": "{{from}}, edition {{edition}}.",
+      "checkEdition": "Check that it is the same edition as yours, the page numbers depend on it.",
+      "save_one": "Save {{count}} chapter",
+      "save_other": "Save {{count}} chapters",
+      "havePdf": "I have the PDF after all",
+      "missTitle": "I couldn't find the contents of this book.",
+      "missBody": "Type the chapters, titles and pages are enough. Or photograph the contents page, that's quickest.",
+      "typeInstead": "Type the chapters",
+      "photoInstead": "Photograph the contents",
+      "sourceRow": "Contents from the web",
+      "open": "Open"
     }
   },
   "time": {

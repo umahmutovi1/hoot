@@ -16,11 +16,11 @@ import {
   titleFromUrl,
 } from '../_shared/academicSearch.ts'
 import { llmDeps, readJson, serve } from '../_shared/edge.ts'
+import { opens } from '../_shared/linkCheck.ts'
 import { generate } from '../_shared/llm.ts'
 import { findAcademicInfoRequestSchema } from '../_shared/schemas.ts'
 import type { AcademicSearch, FoundDocument } from '../_shared/schemas.ts'
 
-const CHECK_TIMEOUT_MS = 6000
 const FETCH_TIMEOUT_MS = 20000
 const MAX_FILE_BYTES = 15 * 1024 * 1024
 const MAX_REDIRECTS = 5
@@ -42,26 +42,6 @@ async function fetchPublic(url: string): Promise<Response | null> {
     next = new URL(location, next).toString()
   }
   return null
-}
-
-async function opens(url: string): Promise<boolean> {
-  // A redirect is not followed (it could lead to an internal host); a 3xx already means it opens.
-  if (!isPublicLink(url)) return false
-  const attempt = async (method: 'HEAD' | 'GET') => {
-    const res = await fetch(url, {
-      method,
-      redirect: 'manual',
-      signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
-      headers: method === 'GET' ? { range: 'bytes=0-1023' } : {},
-    })
-    await res.body?.cancel()
-    return res.status < 400
-  }
-  try {
-    return (await attempt('HEAD')) || (await attempt('GET'))
-  } catch {
-    return false
-  }
 }
 
 Deno.serve(

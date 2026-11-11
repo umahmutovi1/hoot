@@ -16,6 +16,7 @@ import {
   ChevronRightIcon,
   CloseIcon,
   DocIcon,
+  GlobeIcon,
   PlusIcon,
 } from '@/components/icons'
 import { InHeader } from '@/app/layout/ScreenHeader'
@@ -621,7 +622,7 @@ function AdvancedFields({
   )
 }
 
-type FirstSource = 'pdf' | 'photo'
+type FirstSource = 'pdf' | 'web' | 'photo'
 
 /**
  * Cilj (PRD "Dopune, 5. nov 2026"): "Uslovni predmet" and the optional target grade instead of
@@ -711,6 +712,11 @@ function FirstSourceField({
   const { t } = useTranslation()
   const options: { id: FirstSource; tile: string; icon: ReactNode }[] = [
     { id: 'pdf', tile: 'bg-subject-blue-soft text-subject-blue-ink', icon: <DocIcon size={20} /> },
+    {
+      id: 'web',
+      tile: 'bg-subject-lavender-soft text-subject-lavender-ink',
+      icon: <GlobeIcon size={20} />,
+    },
     { id: 'photo', tile: 'bg-ai-soft text-warning-ink', icon: <CameraIcon size={20} /> },
   ]
   return (

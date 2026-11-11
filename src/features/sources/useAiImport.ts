@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import type { FoundToc } from '@shared/schemas.ts'
 import { AiCallError } from '@/features/owl/api'
 import { useAuth } from '@/features/auth/auth-context'
 import { useLocale } from '@/features/settings/useLocale'
 import { fromAi, withRatings } from '@/lib/outline/ai'
 import type { Measure, ParsedOutline } from '@/lib/outline/parse'
 import type { SourceForm } from './schemas'
-import { parseQuestions, parseToc, subjectTopicNames, uploadImportFile } from './importApi'
+import { findToc, parseQuestions, parseToc, subjectTopicNames, uploadImportFile } from './importApi'
 
 export interface AiResult {
   outline: ParsedOutline
@@ -61,6 +62,33 @@ export function useAiImport(subject: { id: string; name: string }) {
       })
       if (input.kind === 'rate') return { ...withRatings(input.outline, out.units), warnings: [] }
       return { ...fromAi(out.units, measure), warnings: out.warnings }
+    } catch (err) {
+      setError(err instanceof AiCallError ? err.code : 'failed')
+      return null
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return { run, busy, error }
+}
+
+/**
+ * "Nađi na internetu" (Sprint 19): the book's contents from the web, or `{ toc: null }` when none
+ * was found; null on an error (shown through `error`).
+ */
+export function useWebToc() {
+  const { locale } = useLocale()
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const run = async (query: string): Promise<{ toc: FoundToc | null } | null> => {
+    if (busy) return null
+    setBusy(true)
+    setError(null)
+    try {
+      const { toc } = await findToc({ query, locale })
+      return { toc }
     } catch (err) {
       setError(err instanceof AiCallError ? err.code : 'failed')
       return null

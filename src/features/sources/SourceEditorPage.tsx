@@ -11,6 +11,7 @@ import {
   ChevronLeftIcon,
   CloseIcon,
   DocIcon,
+  GlobeIcon,
   SparkleIcon,
   TextIcon,
   WarningIcon,
@@ -58,10 +59,11 @@ import {
   type UnitForm,
 } from './schemas'
 import { UnitSheet } from './UnitSheet'
-import { useAiImport, type AiResult } from './useAiImport'
+import { useAiImport, useWebToc, type AiResult } from './useAiImport'
 import { driveAvailable } from './drive'
 import { PdfImport, type PdfOrigin } from './PdfImport'
-import type { AiOutline } from '@/lib/outline/ai'
+import { fromAi, type AiOutline } from '@/lib/outline/ai'
+import type { FoundToc } from '@shared/schemas.ts'
 
 /**
  * DodajIzvor → Parsiranje for manual entry: /subjects/:id/sources/new, and "Uredi sadržaj" at
@@ -78,7 +80,8 @@ export function SourceEditorPage() {
   return <SourceEditor key={sourceId ?? 'new'} subject={subject} source={source} />
 }
 
-type Step = { kind: 'input' } | ({ kind: 'review' } & AiResult)
+/** `found`: the chapters came from the web ("Nađi na internetu"), shown with their page. */
+type Step = { kind: 'input' } | ({ kind: 'review'; found?: FoundToc } & AiResult)
 
 const NO_AI = { topics: {}, warnings: [] }
 
@@ -108,21 +111,28 @@ function SourceEditor({
           minutesPerItem: null,
         },
   })
-  const [kind, measure] = useWatch({ control: form.control, name: ['kind', 'measure'] })
+  const [kind, measure, title] = useWatch({
+    control: form.control,
+    name: ['kind', 'measure', 'title'],
+  })
   const [text, setText] = useState(() =>
     source ? formatOutline(toFormattable(existing), measure) : '',
   )
   const [textError, setTextError] = useState<string | null>(null)
   const [step, setStep] = useState<Step>({ kind: 'input' })
-  // NoviPredmet → Prvi izvor opens the editor on the picked way in (`?mode=pdf|photo`).
+  // NoviPredmet → Prvi izvor opens the editor on the picked way in (`?mode=pdf|web|photo`).
   const [params] = useSearchParams()
   const [mode, setMode] = useState<InputMode>(() => {
     if (isEdit) return 'text'
     const asked = params.get('mode')
-    return asked === 'photo' ? 'photo' : 'pdf'
+    return asked === 'photo' || asked === 'web' ? asked : 'pdf'
   })
   const [files, setFiles] = useState<File[]>([])
   const ai = useAiImport(subject)
+  const web = useWebToc()
+  // The query the web found nothing for; typing another one hides the miss.
+  const [missed, setMissed] = useState<string | null>(null)
+  const webMissed = missed !== null && missed === title.trim()
   const { state: aiState } = useAiAvailability()
   const aiReady = aiState === 'ready'
 
@@ -156,7 +166,23 @@ function SourceEditor({
       window.scrollTo(0, 0)
     })()
 
-  /** Where the units came from (PDF, Drive): kept on the source when it is saved. */
+  /** "Nađi sadržaj": the chapters go to review with their page; nothing is saved before. */
+  const findOnWeb = form.handleSubmit(async (values) => {
+    const query = values.title.trim()
+    const result = await web.run(query)
+    if (!result) return
+    if (!result.toc) return setMissed(query)
+    const found = result.toc
+    keepOrigin({ fileName: null, driveFileId: null, externalUrl: found.source_url })
+    const outline = fromAi(
+      found.units.map((u) => ({ ...u, topics: [] })),
+      measure,
+    )
+    setStep({ kind: 'review', ...outline, warnings: [], found })
+    window.scrollTo(0, 0)
+  })
+
+  /** Where the units came from (PDF, Drive, web): kept on the source when it is saved. */
   const keepOrigin = (origin: PdfOrigin) => {
     form.setValue('fileName', origin.fileName)
     form.setValue('driveFileId', origin.driveFileId)
@@ -231,8 +257,18 @@ function SourceEditor({
           setText(formatOutline(step.outline.units, measure))
           setStep({ kind: 'input' })
         }}
+        found={step.found}
+        onHavePdf={() => {
+          keepOrigin({ fileName: null, driveFileId: null, externalUrl: null })
+          setMode('pdf')
+          setStep({ kind: 'input' })
+        }}
         onSave={onSave}
-        saveLabel={t(splitByExam ? 'sources.review.saveAndSplit' : 'common.save')}
+        saveLabel={
+          step.found && !splitByExam
+            ? t('sources.web.save', { count: step.outline.units.length })
+            : t(splitByExam ? 'sources.review.saveAndSplit' : 'common.save')
+        }
       />
     )
   }
@@ -323,10 +359,14 @@ function SourceEditor({
       )}
 
       <label className="flex flex-col gap-2">
-        <span className={fieldLabel}>{t('sources.editor.title')}</span>
+        <span className={fieldLabel}>
+          {t(mode === 'web' ? 'sources.web.query' : 'sources.editor.title')}
+        </span>
         <input
           maxLength={120}
-          placeholder={t('sources.editor.titlePlaceholder')}
+          placeholder={t(
+            mode === 'web' ? 'sources.web.placeholder' : 'sources.editor.titlePlaceholder',
+          )}
           aria-invalid={Boolean(errors.title)}
           className={cn(fieldInput, 'h-[52px] surface')}
           {...form.register('title')}
@@ -366,14 +406,37 @@ function SourceEditor({
             busy={ai.busy}
           />
         )}
+        web={
+          <WebSearch
+            busy={web.busy}
+            missed={webMissed}
+            aiReady={aiReady}
+            onType={() => setMode('text')}
+            onPhoto={() => setMode('photo')}
+          />
+        }
       />
 
-      {ai.error && (
+      {(mode === 'web' ? web.error : ai.error) && (
         <span role="alert" className="text-sm text-danger">
-          {t(`owl.error.${ai.error as 'failed'}`)}
+          {t(`owl.error.${(mode === 'web' ? web.error : ai.error) as 'failed'}`)}
         </span>
       )}
-      {mode === 'pdf' || mode === 'drive' ? null : mode === 'photo' ? (
+      {mode === 'pdf' || mode === 'drive' || (mode === 'web' && webMissed) ? null : mode ===
+        'web' ? (
+        <>
+          <span className="text-center text-xs text-ink-muted">{t('sources.web.onlyTitle')}</span>
+          <Button
+            type="button"
+            size="pill"
+            disabled={!aiReady || web.busy || title.trim().length < 3}
+            onClick={() => void findOnWeb()}
+            className="btn-primary"
+          >
+            {t('sources.web.search')}
+          </Button>
+        </>
+      ) : mode === 'photo' ? (
         <>
           <span className="text-center text-xs text-ink-muted">
             {t('sources.import.deletedAfter')}
@@ -404,11 +467,12 @@ function SourceEditor({
   )
 }
 
-type InputMode = 'pdf' | 'drive' | 'photo' | 'text'
-const INPUT_MODES: InputMode[] = ['pdf', 'drive', 'photo', 'text']
+type InputMode = 'pdf' | 'drive' | 'web' | 'photo' | 'text'
+const INPUT_MODES: InputMode[] = ['pdf', 'drive', 'web', 'photo', 'text']
 const MODE_ICONS: Record<InputMode, ReactNode> = {
   pdf: <DocIcon size={18} />,
   drive: <ArchiveIcon size={18} />,
+  web: <GlobeIcon size={18} />,
   photo: <CameraIcon size={18} />,
   text: <TextIcon size={18} />,
 }
@@ -426,6 +490,7 @@ function OutlineInput({
   aiReady,
   onAiText,
   pdf,
+  web,
 }: {
   measure: Measure
   mode: InputMode
@@ -439,14 +504,17 @@ function OutlineInput({
   aiReady: boolean
   onAiText: () => void
   pdf: (source: 'pdf' | 'drive') => ReactNode
+  web: ReactNode
 }) {
   const { t } = useTranslation()
   const { state } = useAiAvailability()
-  // A PDF's outline and pages make sense for pages and slides; question lists are typed or photographed.
-  const modes = INPUT_MODES.filter(
-    (m) =>
-      (m !== 'pdf' && m !== 'drive') ||
-      ((measure === 'pages' || measure === 'slides') && (m !== 'drive' || driveAvailable())),
+  // A PDF's outline and pages make sense for pages and slides; a book's contents on the web for
+  // pages; question lists are typed or photographed.
+  const modes = INPUT_MODES.filter((m) =>
+    m === 'web'
+      ? measure === 'pages'
+      : (m !== 'pdf' && m !== 'drive') ||
+        ((measure === 'pages' || measure === 'slides') && (m !== 'drive' || driveAvailable())),
   )
   const current = modes.includes(mode) ? mode : modes[0]!
   return (
@@ -487,6 +555,8 @@ function OutlineInput({
 
       {current === 'pdf' || current === 'drive' ? (
         pdf(current)
+      ) : current === 'web' ? (
+        web
       ) : current === 'photo' ? (
         <>
           <ImportPhotos files={files} onChange={onFiles} disabled={busy} />
@@ -534,6 +604,78 @@ function OutlineInput({
   )
 }
 
+/** "Nađi na internetu" while searching, and when nothing was found (IzvorInternet). */
+function WebSearch({
+  busy,
+  missed,
+  aiReady,
+  onType,
+  onPhoto,
+}: {
+  busy: boolean
+  missed: boolean
+  aiReady: boolean
+  onType: () => void
+  onPhoto: () => void
+}) {
+  const { t } = useTranslation()
+  const { state } = useAiAvailability()
+  if (!aiReady)
+    return (
+      <span className="text-[13px] text-ink-muted">
+        {t(state === 'offline' ? 'owl.offline' : 'sources.import.noAi')}
+      </span>
+    )
+  if (busy)
+    return (
+      <div
+        role="status"
+        className="flex items-center gap-2.5 py-2 text-[15px] font-semibold text-brand-strong"
+      >
+        <span aria-hidden="true" className="flex gap-1">
+          {[0, 150, 300].map((delay) => (
+            <span
+              key={delay}
+              style={{ animationDelay: `${delay}ms` }}
+              className="size-1.5 animate-pulse rounded-full bg-brand motion-reduce:animate-none"
+            />
+          ))}
+        </span>
+        {t('sources.web.searching')}
+      </div>
+    )
+  if (!missed) return null
+  return (
+    <div className="flex flex-col gap-2">
+      <div
+        role="status"
+        className="flex flex-col gap-1 rounded-[20px] bg-warning-soft p-3.5 text-warning-ink"
+      >
+        <span className="text-[15px] font-bold">{t('sources.web.missTitle')}</span>
+        <span className="text-[13px] leading-[1.4]">{t('sources.web.missBody')}</span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          variant="link"
+          className="h-11 font-bold text-brand-strong"
+          onClick={onType}
+        >
+          {t('sources.web.typeInstead')}
+        </Button>
+        <Button
+          type="button"
+          variant="link"
+          className="h-11 font-bold text-brand-strong"
+          onClick={onPhoto}
+        >
+          {t('sources.web.photoInstead')}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 function DeleteSource({ subjectId, sourceId }: { subjectId: string; sourceId: string }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -574,6 +716,8 @@ function Review({
   onTopics,
   rate,
   onBack,
+  found,
+  onHavePdf,
   onSave,
   saveLabel,
 }: {
@@ -588,6 +732,8 @@ function Review({
   /** "Procijeni težinu AI-jem"; null when AI is not available. */
   rate: { busy: boolean; error: string | null; run: () => Promise<void> } | null
   onBack: () => void
+  found?: FoundToc
+  onHavePdf: () => void
   onSave: (units: OutlineUnit[], topics: Record<string, string[]>) => void
   saveLabel: string
 }) {
@@ -654,29 +800,37 @@ function Review({
         </button>
       </div>
 
-      <div className="flex items-center gap-3.5 rounded-card surface p-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-brand-soft text-brand">
-          <BookIcon />
+      {found ? (
+        <FoundCard
+          found={found}
+          chapters={units.length}
+          pages={units.some((u) => u.pageStart !== null) ? totalAmount : null}
+        />
+      ) : (
+        <div className="flex items-center gap-3.5 rounded-card surface p-4">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-brand-soft text-brand">
+            <BookIcon />
+          </div>
+          <div className="flex flex-1 flex-col gap-0.5">
+            <span className="text-base font-semibold">
+              {t('sources.review.summary', { count: units.length })}
+              {measure !== 'questions' && measure !== 'items' && (
+                <> · {amountLabel(t, measure, totalAmount)}</>
+              )}
+            </span>
+            <span className="text-xs text-ink-muted">
+              {t(
+                Object.keys(topics).length > 0
+                  ? 'sources.review.estimateAi'
+                  : 'sources.review.estimate',
+                {
+                  time: formatDuration(t, totalMinutes),
+                },
+              )}
+            </span>
+          </div>
         </div>
-        <div className="flex flex-1 flex-col gap-0.5">
-          <span className="text-base font-semibold">
-            {t('sources.review.summary', { count: units.length })}
-            {measure !== 'questions' && measure !== 'items' && (
-              <> · {amountLabel(t, measure, totalAmount)}</>
-            )}
-          </span>
-          <span className="text-xs text-ink-muted">
-            {t(
-              Object.keys(topics).length > 0
-                ? 'sources.review.estimateAi'
-                : 'sources.review.estimate',
-              {
-                time: formatDuration(t, totalMinutes),
-              },
-            )}
-          </span>
-        </div>
-      </div>
+      )}
 
       {aiWarnings.map((w, i) => (
         <div
@@ -851,6 +1005,16 @@ function Review({
       >
         {saveLabel}
       </Button>
+      {found && (
+        <Button
+          type="button"
+          variant="link"
+          className="h-12 font-bold text-brand-strong"
+          onClick={onHavePdf}
+        >
+          {t('sources.web.havePdf')}
+        </Button>
+      )}
 
       <UnitSheet
         open={sheet.open}
@@ -861,6 +1025,50 @@ function Review({
         takenLabels={new Set(units.map((u) => u.label).filter((l) => l !== editing?.label))}
         onSubmit={(values) => onChange(upsertUnit(units, values, editing?.label ?? null, measure))}
       />
+    </div>
+  )
+}
+
+/** Where the web contents came from, with the edition warning (IzvorInternet). */
+function FoundCard({
+  found,
+  chapters,
+  pages,
+}: {
+  found: FoundToc
+  chapters: number
+  pages: number | null
+}) {
+  const { t } = useTranslation()
+  const count = t('sources.web.chapters', { count: chapters })
+  const from = t(`sources.web.from.${found.site_kind}`)
+  let host = found.source_url
+  try {
+    host = new URL(found.source_url).hostname.replace(/^www\./, '')
+  } catch {
+    // Checked on the server; the raw link is still a fine label.
+  }
+  return (
+    <div className="next-card flex flex-col gap-1 rounded-[20px] px-3.5 py-3">
+      <span className="text-[15px] font-bold">
+        {pages === null
+          ? t('sources.web.found', { chapters: count })
+          : t('sources.web.foundPages', { chapters: count, pages })}
+      </span>
+      <span className="text-[13px] leading-[1.4]">
+        {found.edition === null
+          ? t('sources.web.origin', { from })
+          : t('sources.web.originEdition', { from, edition: found.edition })}{' '}
+        {t('sources.web.checkEdition')}
+      </span>
+      <a
+        href={found.source_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex min-h-11 items-center self-start text-[13px] font-bold underline-offset-2 hover:underline"
+      >
+        {found.source_title ? `${host} · ${found.source_title}` : host}
+      </a>
     </div>
   )
 }

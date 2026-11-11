@@ -326,6 +326,60 @@ export interface AcademicSearch {
 }
 
 // ---------------------------------------------------------------------------
+// find-toc (Sprint 19): a book's table of contents from the web, for a source without a PDF
+// ---------------------------------------------------------------------------
+
+export const TOC_SITE_KINDS = ['publisher', 'library', 'store', 'other'] as const
+
+export const webTocUnitSchema = z.object({
+  label: z
+    .string()
+    .min(1)
+    .max(20)
+    .describe('Chapter number as listed ("4", "4.1"); when there is none, the position "1", "2"'),
+  title: z.string().min(1).max(200),
+  page_start: z.int().min(1).nullable().describe('First page as listed; null if not listed'),
+  page_end: z.int().min(1).nullable().describe('Last page only when listed, else null'),
+})
+export type WebTocUnit = z.infer<typeof webTocUnitSchema>
+
+export const findTocOutputSchema = z.object({
+  units: z
+    .array(webTocUnitSchema)
+    .max(300)
+    .describe('The chapters exactly as listed on the page; empty when no contents were found'),
+  source_url: z
+    .string()
+    .nullable()
+    .describe('Full https URL of the page the contents come from, exactly as found'),
+  source_title: z.string().nullable().describe('Title of that page as shown'),
+  site_kind: z.enum(TOC_SITE_KINDS).describe('Who published that page'),
+  edition: z.int().min(1).max(50).nullable().describe('Edition number of the listed contents'),
+})
+export type FindTocOutput = z.infer<typeof findTocOutputSchema>
+
+/** Only what the user typed (title, author, edition) goes to the web search (PRD). */
+export const findTocRequestSchema = z.object({
+  query: z.string().trim().min(3).max(200),
+  locale: localeSchema,
+})
+export type FindTocRequest = z.infer<typeof findTocRequestSchema>
+
+/** Found contents with a checked link; null when nothing usable was found. */
+export interface FoundToc {
+  units: WebTocUnit[]
+  source_url: string
+  source_title: string | null
+  site_kind: (typeof TOC_SITE_KINDS)[number]
+  edition: number | null
+}
+
+export interface FindTocResponse {
+  toc: FoundToc | null
+  cached: boolean
+}
+
+// ---------------------------------------------------------------------------
 // documents (chunks + embeddings, no LLM)
 // ---------------------------------------------------------------------------
 

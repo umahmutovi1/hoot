@@ -187,7 +187,7 @@ Kad dođe Anthropic (sekcija 5): `LLM_PROVIDER=anthropic`, pa `npx supabase secr
 
 **Deploy poslije Sprinta 16** (`_shared/llm.ts` se promijenio, pa sve AI funkcije): prvo `LLM_PRIVATE_FREE=allow` (gore), pa
 ```bash
-for f in ai-status parse-document documents answer parse-toc parse-questions link-questions recall-questions propose-answer find-academic-info classify-events; do npx supabase functions deploy $f; done
+for f in ai-status parse-document documents answer parse-toc parse-questions link-questions recall-questions propose-answer find-academic-info find-toc classify-events; do npx supabase functions deploy $f; done
 ```
 
 Groq i OpenRouter (opcionalno, besplatni nalozi): console.groq.com → API Keys → Create; openrouter.ai → Keys → Create (modeli sa `:free`). Ključeve `npx supabase secrets set GROQ_API_KEY=… OPENROUTER_API_KEY=…` (preko `read -rs` kao u 5d). Model ide u `LLM_CHAIN` tek kad prođe eval (`EVAL_MODEL=groq:llama-3.3-70b-versatile GROQ_API_KEY=… npm run eval`) i kad je dodan u `EVALUATED_MODELS` u `chain.ts` (PR); model iz lanca koji nije na toj listi se preskače. Groq/OpenRouter ne primaju PDF ni web pretragu: takav poziv ide sljedećem modelu u lancu.
@@ -354,6 +354,8 @@ Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove
 8. Provjera: Predmet → + Izvor → Google Drive → izaberi PDF → „Pregledaj jedinice“; na izvoru je „Otvori u Drive-u“.
 
 **Web pretraga za „Fakultet s interneta“ (Sprint 13).** Poslije mergea: `npx supabase functions deploy find-academic-info` i ponovo `parse-document` (nova vrsta „Plan i program“); novih secreta nema, koristi `LLM_PROVIDER` / `LLM_MODEL` / ključ kao ostale AI funkcije. Eval za plan i program: `GEMINI_API_KEY=... npm run eval` (slučaj „syllabus of a programme“). Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
+
+**Sadržaj knjige s interneta (Sprint 19).** Poslije mergea: `npx supabase db push` (migracija `0041_toc_searches.sql`: vrsta AI poziva `find_toc` i keš `toc_searches`), `npm run db:types`, pa `npx supabase functions deploy find-toc` i ponovo `find-academic-info` (dijele provjeru linka). Novih secreta nema; isti web search kao gore. Jedan poziv po naslovu (i prazan rezultat ostaje u kešu). Eval: `GEMINI_API_KEY=... npm run eval` (slučajevi „book contents from the web“, traže živi internet).
 
 ## 5e. ML trening i praćenje: `train.yml`, `ml-monitor.yml` (Sprint 15)
 

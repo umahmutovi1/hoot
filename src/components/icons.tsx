@@ -228,6 +228,13 @@ export const SearchIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const GlobeIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" />
+  </Icon>
+)
+
 export const TrashIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13" />

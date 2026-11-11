@@ -21,6 +21,7 @@ export type AiTask =
   | 'parse_syllabus'
   | 'parse_study_program'
   | 'find_academic_info'
+  | 'find_toc'
   | 'classify_events'
 
 export type LlmMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'application/pdf'

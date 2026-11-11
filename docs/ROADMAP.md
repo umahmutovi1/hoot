@@ -427,8 +427,8 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 
 - [ ] Vizuelni sistem Noćna sova: Figtree + Bricolage, tokeni i ravne površine umjesto stakla u `src/index.css`, teme Noć (zadana) / Grafit / Mahovina / Šljiva / Kesten, boje predmeta sa DSBoje; zaglavlje s talasom
 - [x] Cilj predmeta: prekidač Uslovni + željena ocjena umjesto „Koliko ti je bitan“; `priorityFromGoal()` u `src/lib/` (uslovni → 5, ocjena 6 → 2, 7–8 → 3, 9–10 → 4, bez ocjene 3) + testovi; stari ručni prioritet se ne prepisuje; NoviPredmet i Predmet → Cilj
-- [ ] NoviPredmet: sekcija „Prvi izvor“ (PDF / nađi sadržaj / slika) umjesto Malo / Srednje / Puno; „Izvor dodajem kasnije“ = grubi izvor ~25 h
-- [ ] Sadržaj izvora s interneta: web search kroz wrapper (naslov, autor, izdanje), poglavlja kao jedinice + link i upozorenje za izdanje, pregled prije snimanja, keš po naslovu, `ai_runs`; prazan rezultat → ručni unos ili slika sadržaja; eval
+- [x] NoviPredmet: sekcija „Prvi izvor“ (PDF / nađi sadržaj / slika) umjesto Malo / Srednje / Puno; „Izvor dodajem kasnije“ = grubi izvor ~25 h
+- [x] Sadržaj izvora s interneta: web search kroz wrapper (naslov, autor, izdanje), poglavlja kao jedinice + link i upozorenje za izdanje, pregled prije snimanja, keš po naslovu, `ai_runs`; prazan rezultat → ručni unos ili slika sadržaja; eval
 - [ ] Literatura iz plana i programa: „Koje od ovoga koristiš?“ u Dodaj izvor i pregledu uvoza (ništa unaprijed označeno)
 - [ ] Onboarding: „Plan i program“ u koraku 2; korak 7 (prvi predmet) preskočen kad uvoz da bar jedan predmet
 - [x] Popravni na Predmetu kao red ispita sa „Samo ako zatreba“ (i dalje van plana dok se ne aktivira)
