@@ -15,7 +15,7 @@ export function Toast() {
     <div
       key={toast.id}
       role={toast.kind === 'error' ? 'alert' : 'status'}
-      className="toast animate-in fade-in slide-in-from-bottom-2 fixed inset-x-0 bottom-[calc(24px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-50 mx-auto flex min-h-14 w-[calc(100%-36px)] max-w-[394px] items-center gap-2.5 rounded-full py-2 pr-2 pl-5 text-white motion-reduce:animate-none"
+      className="toast animate-in fade-in slide-in-from-bottom-2 fixed inset-x-0 bottom-[calc(24px+var(--nav-offset,0px)+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-50 mx-auto flex min-h-14 w-[calc(100%-36px)] max-w-[394px] items-center gap-2.5 rounded-full py-2 pr-2 pl-5 text-white motion-reduce:animate-none"
     >
       {toast.kind === 'success' && <CheckIcon size={18} className="shrink-0 text-white/90" />}
       {toast.kind === 'error' && <WarningIcon size={18} className="shrink-0 text-white/90" />}

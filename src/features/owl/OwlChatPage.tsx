@@ -98,7 +98,7 @@ export function OwlChatPage() {
         <div ref={end} className="scroll-mb-24" />
       </div>
 
-      <div className="sticky bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-10 keyboard:bottom-[calc(8px+var(--vv-bottom,0px))] flex flex-col gap-2">
+      <div className="sticky bottom-[calc(16px+var(--nav-offset,0px)+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-10 keyboard:bottom-[calc(8px+var(--vv-bottom,0px))] flex flex-col gap-2">
         {enabled && messages.length === 0 && (
           <div className="-mx-5 flex gap-2 overflow-x-auto px-5 py-0.5 [scrollbar-width:none]">
             {suggestions.map((sug) => (

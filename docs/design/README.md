@@ -27,6 +27,16 @@ boardova: [copy-redesign-nov5.md](copy-redesign-nov5.md). Odluke: PRD „Dopune,
 Tokeni i utility klase su u `src/index.css`: `surface` (kartica), `surface-raised` (polje, navigacija), `sheet`, `header-bar` (ljepljivo
 zaglavlje), `hero` (jedna velika stvar u boji brenda), `btn-primary`, `toast`, `icon-tile`. `[data-theme]` mijenja samo `--hoot-*` tokene.
 
+## Ljuska (NavVarijante B, Meni, DanasA, Izgled)
+- **Plavo zaglavlje** (`ScreenHeader`) na svakom ekranu u app shellu. Glavni ekrani: znak i „hoot“ (Danas), pretraga i Postavke kao ikone;
+  ekrani ispod njih: „‹ roditelj“ (iz mrvica) umjesto toga. Naslov ekrana (`PageTitle` 44 px, `ScreenTitle` 36 px ili `InHeader`)
+  se kroz portal crta u zaglavlju, a ispod je talas. Mrvice se više ne prikazuju kao red; služe samo za „‹ roditelj“.
+- **Donja traka** (`BottomNav`): Danas, Plan, AI, Predmeti, Napredak; ikona i naziv, jedna pilula (nebo, na AI ćilibar) klizi
+  0.32 s, bez animacije uz smanjen pokret. Tap na aktivni tab sa podstranicama otvara tamni meni iznad trake (Plan: Kalendar,
+  Dostupnost, Raspored nastave, Povezani kalendari; Predmeti: aktivni predmeti, Svi predmeti; Napredak: Pregled, Sedmica u
+  retrovizoru, Sesije). Uz tastaturu traka nestaje. Stvari fiksirane pri dnu (toast, polje chata) koriste `--nav-offset`.
+- Meni ☰ i gornji red sa AI pilulom (Sprint 12) su ukinuti; „Odjavi se“ je u Postavkama.
+
 ---
 
 # Zamijenjeno: Liquid Glass (Lavanda magla, do Sprinta 18)

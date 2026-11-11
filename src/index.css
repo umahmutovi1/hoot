@@ -54,8 +54,8 @@
   --hoot-level-1: #bcaea3;
 }
 :root {
-  /* Safari's status bar and toolbar colour (src/features/settings/theme.ts). */
-  --hoot-edge: #fbf5e6;
+  /* Safari's status bar colour (src/features/settings/theme.ts): the blue header runs under it. */
+  --hoot-edge: var(--hoot-brand);
 }
 
 @theme {
@@ -96,6 +96,7 @@
   /* AI and energy: amber, always with dark text; `ai-ink` is amber text on ground. */
   --color-ai: #e3a23f;
   --color-ai-ink: #8a5a12;
+  --color-ai-soft: #f6e3b0;
 
   /* Subjects (board DSBoje): strong (bar, dot), soft (tiles, hero), track (bar background),
      deep (icons, "in 9 days" on ground, ≥ 4.5:1), ink (text on soft). Orange is Terakota;
@@ -195,6 +196,21 @@
     mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent);
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent);
   }
+}
+/* Height of the bottom tab bar above the safe area, for things fixed to the bottom (toast, chat
+   field); 0 outside the app shell and while the keyboard hides the bar. */
+html:has(.bottom-nav) {
+  --nav-offset: 76px;
+}
+html[data-keyboard] {
+  --nav-offset: 0px;
+}
+/* Bottom tab bar: raised, a hairline and a faint shadow above it. */
+@utility bottom-nav {
+  background-color: var(--color-raised);
+  box-shadow:
+    0 -1px 0 rgb(23 24 31 / 0.08),
+    0 -10px 24px rgb(23 24 31 / 0.05);
 }
 /* The one big thing on a screen in the brand colour (session, active AI). */
 @utility hero {
@@ -311,8 +327,9 @@ html [data-vaul-overlay] {
   html {
     @apply font-sans antialiased;
     -webkit-tap-highlight-color: transparent;
-    /* Safari paints its status bar and toolbar areas with this colour. */
-    background-color: var(--hoot-edge);
+    /* Overscroll and Safari's toolbar areas: the ground, so the bottom bar never shows navy. The
+       status bar takes `theme-color` (the brand) and a fixed brand strip in the app shell. */
+    background-color: var(--color-ground);
   }
   body {
     @apply bg-ground text-ink;

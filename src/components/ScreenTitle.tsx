@@ -1,4 +1,10 @@
-/** Title of a screen below the main ones; ‹ and the path are in the breadcrumbs above it. */
+import { InHeader } from '@/app/layout/ScreenHeader'
+
+/** Title of a screen below the main ones, in the blue header under ‹ (board Izgled). */
 export function ScreenTitle({ title }: { title: string }) {
-  return <h1 className="text-[26px] leading-tight font-bold tracking-[-0.4px]">{title}</h1>
+  return (
+    <InHeader>
+      <h1 className="text-[36px] leading-[1.02] font-bold">{title}</h1>
+    </InHeader>
+  )
 }

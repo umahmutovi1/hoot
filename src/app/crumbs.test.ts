@@ -40,6 +40,10 @@ describe('crumbsFor', () => {
       'menu.documents@/settings/documents',
       'Kalendar 2026@/settings/documents/d1',
     ])
+    expect(path('/settings/appearance')).toEqual([
+      'settings.title@/settings',
+      'appearance.title@/settings/appearance',
+    ])
     expect(path('/plan/timetable')).toEqual(['nav.plan@/plan', 'menu.timetable@/plan/timetable'])
     expect(path('/chat/history')).toEqual(['owl.name@/chat', 'owl.history.title@/chat/history'])
     expect(path('/sessions/a')).toEqual([

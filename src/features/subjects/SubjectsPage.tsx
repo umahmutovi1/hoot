@@ -47,28 +47,19 @@ export function SubjectsPage() {
   return (
     <div className="flex flex-col">
       <PageTitle
-        actions={
-          <Link
-            to="/subjects/new"
-            className="btn-primary flex h-11 items-center gap-1.5 rounded-full px-4 text-sm font-semibold"
-          >
-            <PlusIcon size={16} />
-            {t('subjects.new')}
-          </Link>
-        }
-      >
-        {t('subjects.title')}
-      </PageTitle>
-      <p className="mt-1.5 mb-4 text-sm text-ink-secondary">
-        {!isPending &&
+        sub={
+          !isPending &&
           (term.current
             ? t('academic.subtitle', {
                 active: activeLabel,
                 n: term.current.semester,
                 year: term.current.year.label,
               })
-            : activeLabel)}
-      </p>
+            : activeLabel)
+        }
+      >
+        {t('subjects.title')}
+      </PageTitle>
 
       <div className="flex flex-col gap-3">
         <NewYearCard />
@@ -112,6 +103,15 @@ export function SubjectsPage() {
         ) : (
           // Without academic years the list stays flat.
           grouped.none.map((s) => card(s.subject))
+        )}
+        {!isPending && (
+          <Link
+            to="/subjects/new"
+            className="flex h-14 items-center justify-center gap-2 rounded-row border-[1.5px] border-dashed border-brand/45 text-[15px] font-bold text-brand-strong"
+          >
+            <PlusIcon size={18} />
+            {t('crumbs.newSubject')}
+          </Link>
         )}
         {archived.length > 0 && (
           <button
