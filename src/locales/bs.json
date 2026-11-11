@@ -3042,33 +3042,50 @@
     }
   },
   "landing": {
-    "signIn": "Prijavi se",
+    "signIn": "Prijava",
     "start": "Počni",
-    "lead": "Hoot od tvojih rokova, literature i ispitnih pitanja napravi dnevni plan učenja i sam ga prepravi kad nešto propustiš.",
-    "devices": "Radi na telefonu i računaru · dodaj na početni ekran",
-    "shotAlt": "Ekran Danas u Hootu: sljedeći blok, ponavljanje i ispit za 12 dana",
-    "what": {
-      "title": "Ti učiš, Hoot planira",
-      "plan": "Plan iz tvojih rokova",
-      "planBody": "Uslikaj sadržaj knjige i dodaj datume ispita. Hoot rasporedi gradivo po danima, oko nastave i tvog slobodnog vremena.",
-      "adapt": "Sam se prilagodi",
-      "adaptBody": "Propušten dan ili dan bez energije? Jedan tap i plan se prepravi, bez krivnje i bez ručnog premještanja.",
-      "remember": "Pamti umjesto tebe",
-      "rememberBody": "Kratka provjera poslije učenja, a ponavljanja stižu baš kad bi gradivo počelo blijediti, do dana ispita."
+    "haveAccount": "Već imam nalog",
+    "headline": "Ti učiš.\nHoot planira.",
+    "lead": "Upiši ispite i knjige. Hoot složi svaki dan i sam ga prepravi kad dan krene drugačije.",
+    "owl": "Sova Hoot",
+    "day": {
+      "title": "Ujutro otvoriš.\nDan je već složen.",
+      "alt": "Animacija: kartice dana se miješaju kao špil; prednja kartica izleti udesno i vrati se na dno, sljedeći blok dođe naprijed",
+      "next": "Sljedeće · {{time}}",
+      "minutes": "{{n}} min",
+      "chapter": "Poglavlje {{n}}",
+      "subject": "Predmet {{n}} · {{exam}}",
+      "examIn_one": "ispit za {{count}} dan",
+      "examIn_few": "ispit za {{count}} dana",
+      "examIn_other": "ispit za {{count}} dana",
+      "reading": "Čitanje"
     },
-    "how": {
-      "title": "Kako počinješ",
-      "signIn": "Prijavi se",
-      "signInBody": "emailom ili Googleom.",
-      "subjects": "Dodaj predmete:",
-      "subjectsBody": "uvezi akademski kalendar i raspored ili samo upiši ispite.",
-      "today": "Otvori Danas",
-      "todayBody": "i počni prvi blok."
+    "learn": {
+      "title": "Plan koji uči\nzajedno s tobom.",
+      "ml": "Mašinsko učenje",
+      "mlBody": "Model prati koliko ti stvarno treba po poglavlju i sa svakim danom preciznije procjenjuje vrijeme.",
+      "mlChip": "Pog. 3 · procjena 45 → 38 min",
+      "adapt": "Adaptivno preraspoređivanje",
+      "adaptBody": "Kad se dan promijeni, plan se sam preslaže. Poglavlja ostaju po redu, a ispiti pokriveni.",
+      "adaptChip": {
+        "missed": "Propušten dan",
+        "less": "Manje vremena",
+        "deadline": "Novi rok"
+      },
+      "progress": "Izvještaji o napretku",
+      "progressBody": "Vidiš koliko je spremno po predmetu i gdje kasniš, prije nego postane problem.",
+      "weekly": "Sedmični izvještaj"
     },
-    "cta": {
-      "title": "Sljedeći ispitni rok, bez panike",
-      "body": "Tvoji podaci ostaju tvoji: izvoz u svakom trenutku.",
-      "button": "Počni"
+    "replan": {
+      "title": "Dan ne ide po planu?\nNema veze.",
+      "cant": "Danas ne mogu",
+      "today": "Danas",
+      "tomorrow": "Sutra",
+      "free": "slobodno",
+      "chapter": "Pog. {{n}}",
+      "ok": "Sve pomjereno za jedan dan",
+      "okSub": "Poglavlja ostaju po redu, ispiti pokriveni",
+      "alt": "Animacija: Danas se oslobodi, a poglavlja oba predmeta se pomjere za dan, i dalje po redu: Predmet 1 poglavlja 1, 2, 3 i Predmet 2 poglavlja 1, 2"
     }
   },
   "semesterEnd": {

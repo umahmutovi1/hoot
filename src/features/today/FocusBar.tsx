@@ -49,7 +49,8 @@ function Stat({
     <div className="flex flex-col gap-px">
       <span className={`text-xs font-semibold ${tone}`}>{label}</span>
       <span className="text-xl font-semibold tabular-nums">
-        {value}
+        {/* "1h 35" stays on one line; only "/ 15h 01" may wrap below it. */}
+        <span className="whitespace-nowrap">{value}</span>
         {rest && (
           <span className="text-sm font-medium whitespace-nowrap text-ink-secondary">
             {' '}

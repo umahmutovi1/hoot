@@ -7,10 +7,18 @@ type Props = {
   onChange: (locale: Locale) => void
   /** "short" = BS/EN chips on the login hero, "long" = full names in settings. */
   variant?: 'short' | 'long'
+  /** "dark" = on the blue header (landing): light text, the picked one on the ground colour. */
+  tone?: 'light' | 'dark'
   className?: string
 }
 
-export function LocaleToggle({ value, onChange, variant = 'long', className }: Props) {
+export function LocaleToggle({
+  value,
+  onChange,
+  variant = 'long',
+  tone = 'light',
+  className,
+}: Props) {
   const { t } = useTranslation()
   return (
     <div
@@ -26,9 +34,15 @@ export function LocaleToggle({ value, onChange, variant = 'long', className }: P
           aria-checked={value === locale}
           onClick={() => onChange(locale)}
           className={cn(
-            'rounded-[15px] text-[13px] font-semibold text-ink transition-colors',
+            'rounded-[15px] text-[13px] font-semibold transition-colors',
             variant === 'short' ? 'h-8 px-3' : 'h-[34px] px-3.5',
-            value === locale ? 'surface' : 'bg-transparent',
+            tone === 'dark'
+              ? value === locale
+                ? 'bg-ground text-brand-strong'
+                : 'bg-transparent text-ground/80'
+              : value === locale
+                ? 'surface text-ink'
+                : 'bg-transparent text-ink',
           )}
         >
           {t(variant === 'short' ? `locale.${locale}Short` : `locale.${locale}`)}

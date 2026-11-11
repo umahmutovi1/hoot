@@ -1,0 +1,438 @@
+/*
+ * Landing animations (board "Landing · A Noćna sova", Main.dc.html): the day's cards shuffle like
+ * a deck, and "Danas ne mogu" moves the chapters by one day. They run once the section is in view
+ * (`.ld-on`, LandingPage) and never with prefers-reduced-motion (the class is not set).
+ */
+.ld-tap,
+.ld-free,
+.ld-ok {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ld-free,
+  .ld-ok {
+    opacity: 1;
+  }
+  .ld-finger {
+    opacity: 0;
+  }
+  /* Without the animation the chapters already sit where "Danas ne mogu" moved them. */
+  .ld-a3 {
+    translate: 0 36px;
+  }
+  .ld-b2 {
+    translate: 109px -36px;
+  }
+  .ld-a2 {
+    translate: 0 72px;
+  }
+  .ld-a1,
+  .ld-b1 {
+    translate: 109px 0;
+  }
+}
+
+.ld-on .ld-chip {
+  animation: ld-chip 10s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.ld-on .ld-tap {
+  animation: ld-tap 10s ease-out infinite;
+}
+.ld-on .ld-finger {
+  animation: ld-finger 10s linear infinite;
+}
+.ld-on .ld-a3 {
+  animation: ld-a3 10s linear infinite;
+}
+.ld-on .ld-b2 {
+  animation: ld-b2 10s linear infinite;
+}
+.ld-on .ld-a2 {
+  animation: ld-a2 10s linear infinite;
+}
+.ld-on .ld-a1 {
+  animation: ld-a1 10s linear infinite;
+}
+.ld-on .ld-b1 {
+  animation: ld-b1 10s linear infinite;
+}
+.ld-on .ld-free {
+  animation: ld-free 10s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.ld-on .ld-ok {
+  animation: ld-ok 10s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.ld-on .ld-today {
+  animation: ld-today 10s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes ld-finger {
+  0%,
+  1% {
+    opacity: 0;
+    translate: 90px 46px;
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  3% {
+    opacity: 1;
+  }
+  8% {
+    translate: 0 0;
+    scale: 1;
+  }
+  10% {
+    scale: 0.78;
+  }
+  12% {
+    scale: 1;
+    opacity: 1;
+  }
+  16%,
+  100% {
+    translate: 0 0;
+    opacity: 0;
+    scale: 1;
+  }
+}
+@keyframes ld-chip {
+  0%,
+  9% {
+    background: transparent;
+    color: var(--color-ground);
+    scale: 1;
+  }
+  10.5% {
+    background: transparent;
+    color: var(--color-ground);
+    scale: 0.94;
+  }
+  13%,
+  86% {
+    background: var(--color-ground);
+    color: var(--color-brand-strong);
+    scale: 1;
+  }
+  94%,
+  100% {
+    background: transparent;
+    color: var(--color-ground);
+    scale: 1;
+  }
+}
+@keyframes ld-tap {
+  0%,
+  9.5% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  11% {
+    opacity: 0.5;
+    transform: scale(0.6);
+  }
+  20%,
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+@keyframes ld-a3 {
+  0%,
+  20% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  27% {
+    scale: 1.05;
+  }
+  34%,
+  86% {
+    translate: 0 36px;
+    scale: 1;
+    opacity: 1;
+  }
+  92% {
+    translate: 0 36px;
+    opacity: 0;
+  }
+  93% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  99%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes ld-b2 {
+  0%,
+  24% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  31% {
+    scale: 1.05;
+  }
+  38%,
+  86% {
+    translate: 109px -36px;
+    scale: 1;
+    opacity: 1;
+  }
+  92% {
+    translate: 109px -36px;
+    opacity: 0;
+  }
+  93% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  99%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes ld-a2 {
+  0%,
+  28% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  35% {
+    scale: 1.05;
+  }
+  42%,
+  86% {
+    translate: 0 72px;
+    scale: 1;
+    opacity: 1;
+  }
+  92% {
+    translate: 0 72px;
+    opacity: 0;
+  }
+  93% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  99%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes ld-a1 {
+  0%,
+  40% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  48% {
+    scale: 1.05;
+  }
+  56%,
+  86% {
+    translate: 109px 0;
+    scale: 1;
+    opacity: 1;
+  }
+  92% {
+    translate: 109px 0;
+    opacity: 0;
+  }
+  93% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  99%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes ld-b1 {
+  0%,
+  46% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  54% {
+    scale: 1.05;
+  }
+  62%,
+  86% {
+    translate: 109px 0;
+    scale: 1;
+    opacity: 1;
+  }
+  92% {
+    translate: 109px 0;
+    opacity: 0;
+  }
+  93% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  99%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes ld-free {
+  0%,
+  58% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  66%,
+  86% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  92%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ld-ok {
+  0%,
+  64% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  72%,
+  86% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+@keyframes ld-today {
+  0%,
+  13% {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+  18%,
+  58% {
+    box-shadow: inset 0 0 0 2px var(--color-ai);
+  }
+  66%,
+  100% {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+}
+
+/* The deck: the front card flies out to the right and goes to the back, the next comes forward. */
+.ld-on .ld-s0 {
+  animation: ld-s0 9s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+.ld-on .ld-s1 {
+  animation: ld-s1 9s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+.ld-on .ld-s2 {
+  animation: ld-s2 9s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+@keyframes ld-s0 {
+  0%,
+  24% {
+    transform: translate(0, 0) rotate(-2deg);
+    z-index: 3;
+  }
+  29% {
+    transform: translate(250px, -18px) rotate(16deg);
+    z-index: 3;
+  }
+  30% {
+    transform: translate(250px, -18px) rotate(16deg);
+    z-index: 0;
+  }
+  33.33%,
+  57% {
+    transform: translate(28px, 30px) rotate(7deg);
+    z-index: 1;
+  }
+  66.67%,
+  90% {
+    transform: translate(14px, 15px) rotate(3deg);
+    z-index: 2;
+  }
+  100% {
+    transform: translate(0, 0) rotate(-2deg);
+    z-index: 3;
+  }
+}
+@keyframes ld-s1 {
+  0%,
+  24% {
+    transform: translate(14px, 15px) rotate(3deg);
+    z-index: 2;
+  }
+  33.33%,
+  57% {
+    transform: translate(0, 0) rotate(-2deg);
+    z-index: 3;
+  }
+  62% {
+    transform: translate(250px, -18px) rotate(16deg);
+    z-index: 3;
+  }
+  63% {
+    transform: translate(250px, -18px) rotate(16deg);
+    z-index: 0;
+  }
+  66.67%,
+  90% {
+    transform: translate(28px, 30px) rotate(7deg);
+    z-index: 1;
+  }
+  100% {
+    transform: translate(14px, 15px) rotate(3deg);
+    z-index: 2;
+  }
+}
+@keyframes ld-s2 {
+  0%,
+  24% {
+    transform: translate(28px, 30px) rotate(7deg);
+    z-index: 1;
+  }
+  33.33%,
+  57% {
+    transform: translate(14px, 15px) rotate(3deg);
+    z-index: 2;
+  }
+  66.67%,
+  90% {
+    transform: translate(0, 0) rotate(-2deg);
+    z-index: 3;
+  }
+  95% {
+    transform: translate(250px, -18px) rotate(16deg);
+    z-index: 3;
+  }
+  96% {
+    transform: translate(250px, -18px) rotate(16deg);
+    z-index: 0;
+  }
+  100% {
+    transform: translate(28px, 30px) rotate(7deg);
+    z-index: 1;
+  }
+}
