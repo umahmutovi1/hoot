@@ -1,7 +1,14 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CalendarIcon, CapIcon, ChevronRightIcon, DocIcon, LinkIcon } from '@/components/icons'
+import {
+  BookIcon,
+  CalendarIcon,
+  CapIcon,
+  ChevronRightIcon,
+  DocIcon,
+  LinkIcon,
+} from '@/components/icons'
 import { useCalendarFeeds } from '@/features/calendars/api'
 import { connectGoogle, useGoogleAccount } from '@/features/calendars/google'
 import { useCalendarProposals } from '@/features/calendars/matches'
@@ -10,10 +17,11 @@ import { GiveDocumentSheet } from '@/features/owl/GiveDocumentSheet'
 import { useOwlStore } from '@/features/owl/store'
 import { useScheduleData } from '@/features/schedule/useScheduleData'
 import { useAcademicSearch } from '@/features/academic/search'
+import { useSubjects } from '@/features/subjects/api'
 import { StepTitle, type StepProps } from './OnboardingPage'
 
 /**
- * Step 2 "Šta već imaš?": import first, so classes and other commitments are taken before the
+ * Step 2 "Šta već imaš?" (board OnbUvoz): import first, so classes and other commitments are taken before the
  * free periods are picked. Each card opens the existing flow (the academic calendar through
  * `parse-document`); coming back returns to this step. Google comes first: lectures and exams
  * already in the calendar are reviewed once ("Iz kalendara") instead of being entered again.
@@ -28,6 +36,8 @@ export function StepImport(_props: StepProps) {
   const { data: google } = useGoogleAccount()
   const fromCalendar = useCalendarProposals()
   const show = useToast((s) => s.show)
+  // A subject from the plan i program keeps its literature (`syllabus_literature`).
+  const fromSyllabus = (useSubjects().data ?? []).some((x) => x.syllabus_literature != null)
   const [params, setParams] = useSearchParams()
   const [connecting, setConnecting] = useState(false)
   // Lectures and exams already in Google: one review instead of entering them again.
@@ -69,7 +79,16 @@ export function StepImport(_props: StepProps) {
         </button>
       )}
       <div className="flex flex-col gap-2">
-        {/* Google first (Sprint 14): what is already in the calendar is not entered again. */}
+        {/* The plan i program first (Sprint 19): subjects, literature and points at once, so the
+            first-subject step is skipped. */}
+        <ImportCard
+          icon={<BookIcon size={22} />}
+          title={t('onboarding.import.syllabus')}
+          sub={t('onboarding.import.syllabusSub')}
+          done={fromSyllabus}
+          onClick={() => openSheet('syllabus')}
+        />
+        {/* Google next (Sprint 14): what is already in the calendar is not entered again. */}
         <ImportCard
           icon={<CalendarIcon size={22} />}
           title={t('onboarding.import.google')}
@@ -140,7 +159,7 @@ export function StepImport(_props: StepProps) {
         />
       </div>
       <span className="px-1 text-xs leading-[1.45] text-ink-muted">
-        {t('onboarding.import.none')}
+        {t('onboarding.import.syllabusHint')} {t('onboarding.import.none')}
       </span>
       <GiveDocumentSheet />
     </>
