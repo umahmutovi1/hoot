@@ -26,7 +26,7 @@ interface Section {
 }
 
 /**
- * The menu (docs/design/NavMeni.html): the first row grows into a glass panel over the screen.
+ * The menu (docs/design/NavMeni.html): the first row grows into a surface panel over the screen.
  * Section names link to their main page; sections with subpages have a separate 44 px chevron
  * that opens them as an animated accordion (the section of the current page starts open; opening
  * another keeps it open). At the bottom only "Odjavi se". Closes on ×, a tap outside, Escape and on
@@ -57,7 +57,7 @@ export function NavMenu({
         <Dialog.Overlay className="fixed inset-0 z-50 bg-scrim backdrop-blur-[2px] duration-150 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
         <Dialog.Content
           aria-describedby={undefined}
-          className="glass-sheet fixed inset-x-3 top-[calc(16px+env(safe-area-inset-top))] bottom-[calc(12px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-50 mx-auto flex max-w-[406px] origin-top flex-col overflow-hidden rounded-[30px] duration-200 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-open:slide-in-from-top-2 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]"
+          className="sheet fixed inset-x-3 top-[calc(16px+env(safe-area-inset-top))] bottom-[calc(12px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-50 mx-auto flex max-w-[406px] origin-top flex-col overflow-hidden rounded-[30px] duration-200 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-open:slide-in-from-top-2 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]"
         >
           <Dialog.Title className="sr-only">{t('menu.title')}</Dialog.Title>
           <div className="px-2 pt-2">
@@ -223,7 +223,7 @@ function MenuBody({ pathname, onNavigate }: { pathname: string; onNavigate: () =
         <button
           type="button"
           onClick={() => void signOut()}
-          className="glass flex h-12 w-full items-center justify-center gap-2 rounded-full text-[15px] font-semibold text-danger"
+          className="surface flex h-12 w-full items-center justify-center gap-2 rounded-full text-[15px] font-semibold text-danger"
         >
           <SignOutIcon size={18} />
           {t('settings.signOut')}

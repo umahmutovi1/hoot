@@ -8,7 +8,7 @@ import { matchSubject } from '@/lib/import'
 import { findChapter } from './findChapter'
 import { useOwlStore, type OwlAction } from './store'
 
-const card = 'flex flex-col gap-2 rounded-card glass p-3.5'
+const card = 'flex flex-col gap-2 rounded-card surface p-3.5'
 const button =
   'flex h-11 items-center justify-center gap-2 rounded-full btn-primary px-4 text-sm font-semibold'
 

@@ -59,7 +59,7 @@ export function SessionsPage() {
             type="button"
             onClick={() => setAdding(true)}
             aria-label={t('session.history.add')}
-            className="flex size-11 shrink-0 items-center justify-center rounded-full glass text-brand"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full surface text-brand"
           >
             <PlusIcon size={20} />
           </button>
@@ -100,7 +100,7 @@ export function SessionsPage() {
             </span>
           </div>
           {/* Rows reach the card's edges, so a swiped row's button is flush (like Raspored). */}
-          <div className="flex flex-col overflow-hidden rounded-[24px] glass">
+          <div className="flex flex-col overflow-hidden rounded-[24px] surface">
             {items.map((s) => {
               const subject = subjects?.find((x) => x.id === s.subject_id)
               return (

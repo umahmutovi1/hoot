@@ -71,7 +71,7 @@ export function OwlChatPage() {
           <Link
             to="/chat/history"
             aria-label={t('owl.history.title')}
-            className="glass flex size-11 items-center justify-center rounded-full text-ink"
+            className="surface flex size-11 items-center justify-center rounded-full text-ink"
           >
             <ClockIcon size={18} />
           </Link>
@@ -81,7 +81,7 @@ export function OwlChatPage() {
               onClick={newConversation}
               disabled={busy}
               aria-label={t('owl.history.new')}
-              className="glass flex size-11 items-center justify-center rounded-full text-ink disabled:opacity-60"
+              className="surface flex size-11 items-center justify-center rounded-full text-ink disabled:opacity-60"
             >
               <PencilIcon size={18} />
             </button>
@@ -107,7 +107,7 @@ export function OwlChatPage() {
                 type="button"
                 disabled={busy}
                 onClick={() => (sug.kind ? openSheet(sug.kind) : void owl.ask(sug.ask))}
-                className="glass-flat h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
+                className="surface h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
               >
                 {sug.label}
               </button>
@@ -116,7 +116,7 @@ export function OwlChatPage() {
         )}
         <form
           onSubmit={submit}
-          className="glass-strong flex h-14 items-center gap-2 rounded-full px-1.5"
+          className="surface-raised flex h-14 items-center gap-2 rounded-full px-1.5"
         >
           <button
             type="button"
@@ -179,13 +179,13 @@ function Message({ message: m }: { message: OwlMessage }) {
   switch (m.type) {
     case 'text':
       return (
-        <div className="max-w-[80%] self-end glass-tint rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-[15px] leading-[1.35] whitespace-pre-wrap">
+        <div className="max-w-[80%] self-end hero rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-[15px] leading-[1.35] whitespace-pre-wrap">
           {m.text}
         </div>
       )
     case 'file':
       return (
-        <div className="flex max-w-[80%] flex-col gap-1.5 self-end glass-tint rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-sm">
+        <div className="flex max-w-[80%] flex-col gap-1.5 self-end hero rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-sm">
           <span className="flex min-w-0 items-center gap-2">
             <DocIcon size={18} className="shrink-0" />
             <span className="truncate">{m.name}</span>

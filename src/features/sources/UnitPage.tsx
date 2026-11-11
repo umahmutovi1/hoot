@@ -137,7 +137,7 @@ function UnitDetail({
           type="button"
           onClick={() => setMenuOpen(true)}
           aria-label={t('units.detail.more')}
-          className="flex size-11 items-center justify-center rounded-full glass"
+          className="flex size-11 items-center justify-center rounded-full surface"
         >
           <MoreIcon />
         </button>
@@ -156,7 +156,7 @@ function UnitDetail({
       {children.length > 0 ? (
         <SubUnits material={material} unit={unit} subjectId={subject.id} />
       ) : (
-        <div className="flex flex-col gap-3 rounded-card glass p-4">
+        <div className="flex flex-col gap-3 rounded-card surface p-4">
           <span className="text-sm font-semibold">{t('units.detail.status')}</span>
           <div role="radiogroup" aria-label={t('units.detail.status')} className="flex gap-1.5">
             {levelsFor(unit.kind).map((level) => {
@@ -212,7 +212,7 @@ function UnitDetail({
         <button
           type="button"
           onClick={() => setDifficultyOpen(true)}
-          className="flex flex-col gap-1.5 rounded-[22px] glass p-3.5 text-left"
+          className="flex flex-col gap-1.5 rounded-[22px] surface p-3.5 text-left"
         >
           <span className="text-xs text-ink-muted">{t('units.detail.difficulty')}</span>
           <span className="flex items-baseline gap-1.5">
@@ -244,7 +244,7 @@ function UnitDetail({
             ))}
           </span>
         </button>
-        <div className="flex flex-col gap-1.5 rounded-[22px] glass p-3.5">
+        <div className="flex flex-col gap-1.5 rounded-[22px] surface p-3.5">
           <span className="text-xs text-ink-muted">{t('units.detail.estimate')}</span>
           <span className="text-[22px] font-bold">
             {formatDuration(
@@ -422,7 +422,7 @@ function SubUnits({
   return (
     <div className="flex flex-col gap-2">
       <span className="text-sm font-semibold">{t('units.detail.subUnits')}</span>
-      <div className="flex flex-col rounded-[20px] glass px-3.5 py-1">
+      <div className="flex flex-col rounded-[20px] surface px-3.5 py-1">
         {children.map((c, i) => (
           <Link
             key={c.id}
@@ -462,7 +462,7 @@ function Topics({ subjectId, unit }: { subjectId: string; unit: Unit }) {
         {mine.map((topic) => (
           <span
             key={topic.id}
-            className="flex h-8 items-center rounded-full glass px-3 text-[13px]"
+            className="flex h-8 items-center rounded-full surface px-3 text-[13px]"
           >
             {topic.name}
           </span>
@@ -517,7 +517,7 @@ function Related({
         {t(questions ? 'units.detail.relatedQuestions' : 'units.detail.relatedChapters')}{' '}
         <span className="font-normal text-ink-muted">· {related.length}</span>
       </span>
-      <div className="flex flex-col rounded-[20px] glass px-3.5 py-1">
+      <div className="flex flex-col rounded-[20px] surface px-3.5 py-1">
         {related.map((r, i) => {
           const source = sources.find((s) => s.id === r.source_id)
           return (
@@ -582,7 +582,7 @@ function TextSection({
           <button
             type="button"
             onClick={() => setDraft(value ?? '')}
-            className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
+            className="flex h-9 items-center rounded-full surface px-3 text-[13px] font-semibold text-brand"
           >
             {t('units.detail.editText')}
           </button>
@@ -592,7 +592,7 @@ function TextSection({
         <button
           type="button"
           onClick={() => setDraft(value ?? '')}
-          className="rounded-[20px] glass p-4 text-left"
+          className="rounded-[20px] surface p-4 text-left"
         >
           {value ? (
             <LazyMarkdown>{value}</LazyMarkdown>
@@ -601,7 +601,7 @@ function TextSection({
           )}
         </button>
       ) : (
-        <div className="flex flex-col gap-2 rounded-[20px] glass p-3">
+        <div className="flex flex-col gap-2 rounded-[20px] surface p-3">
           <textarea
             autoFocus
             rows={8}

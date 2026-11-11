@@ -181,7 +181,7 @@ export function PdfImport({
           variant="outline"
           disabled={reading}
           onClick={() => (source === 'pdf' ? input.current?.click() : void fromDrive())}
-          className="glass"
+          className="surface"
         >
           {reading
             ? t('sources.pdf.reading')
@@ -314,7 +314,7 @@ export function PdfImport({
 function FileRow({ name, sub, onChange }: { name: string; sub: string; onChange: () => void }) {
   const { t } = useTranslation()
   return (
-    <div className="flex items-center gap-3 rounded-[20px] glass p-3">
+    <div className="flex items-center gap-3 rounded-[20px] surface p-3">
       <span
         aria-hidden="true"
         className="flex size-10 shrink-0 items-center justify-center rounded-[12px] bg-danger/10 text-danger"
@@ -359,7 +359,7 @@ function PageInput({
         const n = Math.round(Number(e.target.value))
         if (Number.isFinite(n) && n >= 1 && n <= max) onChange(n)
       }}
-      className="h-12 w-20 rounded-input glass text-center text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+      className="h-12 w-20 rounded-input surface text-center text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
     />
   )
 }

@@ -58,7 +58,7 @@ function writeRecent(list: string[]) {
 }
 
 /**
- * Search (Pretraga.dc.html, Sprint 12): a glass panel from the top like the menu. The field is
+ * Search (Pretraga.dc.html, Sprint 12): a surface panel from the top like the menu. The field is
  * focused at once; results are grouped (three per group, "Sve (N)" for the rest) with the match in
  * bold; a tap opens the screen or the action's sheet and keeps the query in recent searches (on
  * this device). An empty field shows the recent ones.
@@ -77,7 +77,7 @@ export function SearchPanel({
         <Dialog.Overlay className="fixed inset-0 z-50 bg-scrim duration-150 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
         <Dialog.Content
           aria-describedby={undefined}
-          className="glass-sheet fixed inset-x-3 top-[calc(16px+env(safe-area-inset-top))] z-50 mx-auto flex max-h-[calc(100dvh-32px-env(safe-area-inset-top)-var(--vv-bottom,0px))] max-w-[406px] origin-top flex-col overflow-hidden rounded-[30px] duration-200 data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-top-2 data-closed:animate-out data-closed:fade-out-0"
+          className="sheet fixed inset-x-3 top-[calc(16px+env(safe-area-inset-top))] z-50 mx-auto flex max-h-[calc(100dvh-32px-env(safe-area-inset-top)-var(--vv-bottom,0px))] max-w-[406px] origin-top flex-col overflow-hidden rounded-[30px] duration-200 data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-top-2 data-closed:animate-out data-closed:fade-out-0"
         >
           <Dialog.Title className="sr-only">{t('search.open')}</Dialog.Title>
           {open && <Body onClose={() => onOpenChange(false)} />}

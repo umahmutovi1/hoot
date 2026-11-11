@@ -268,7 +268,7 @@ function SourceEditor({
                 onClick={() => pickKind(k)}
                 className={cn(
                   'flex h-16 flex-col items-center justify-center gap-0.5 rounded-[18px] border-2 text-sm font-semibold',
-                  kind === k ? 'border-brand-accent bg-canvas-soft' : 'border-surface glass',
+                  kind === k ? 'border-brand-accent bg-canvas-soft' : 'border-surface surface',
                 )}
               >
                 {t(`sources.kind.${k}`)}
@@ -303,7 +303,7 @@ function SourceEditor({
                 min={1}
                 max={600}
                 aria-invalid={Boolean(errors.minutesPerItem)}
-                className={cn(fieldInput, 'glass')}
+                className={cn(fieldInput, 'surface')}
                 {...form.register('minutesPerItem', {
                   setValueAs: (v: string) => (v === '' ? null : Number(v)),
                 })}
@@ -322,7 +322,7 @@ function SourceEditor({
           maxLength={120}
           placeholder={t('sources.editor.titlePlaceholder')}
           aria-invalid={Boolean(errors.title)}
-          className={cn(fieldInput, 'h-[52px] glass')}
+          className={cn(fieldInput, 'h-[52px] surface')}
           {...form.register('title')}
         />
         {errors.title && (
@@ -460,7 +460,7 @@ function OutlineInput({
               aria-checked={current === m}
               onClick={() => onMode(m)}
               className={cn(
-                'flex min-h-14 items-center gap-3 rounded-[20px] border-2 glass p-3 text-left',
+                'flex min-h-14 items-center gap-3 rounded-[20px] border-2 surface p-3 text-left',
                 current === m ? 'border-brand-accent' : 'border-surface',
               )}
             >
@@ -491,7 +491,7 @@ function OutlineInput({
           )}
         </>
       ) : (
-        <div className="flex flex-col gap-2 rounded-card-lg glass p-4">
+        <div className="flex flex-col gap-2 rounded-card-lg surface p-4">
           <textarea
             rows={9}
             value={text}
@@ -634,7 +634,7 @@ function Review({
           type="button"
           onClick={onBack}
           aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full glass"
+          className="flex size-11 items-center justify-center rounded-full surface"
         >
           <ChevronLeftIcon size={20} />
         </button>
@@ -642,13 +642,13 @@ function Review({
         <button
           type="button"
           onClick={() => setSheet({ open: true, label: null })}
-          className="flex h-11 items-center rounded-full glass px-3.5 text-sm font-semibold text-brand"
+          className="flex h-11 items-center rounded-full surface px-3.5 text-sm font-semibold text-brand"
         >
           {t('sources.review.add')}
         </button>
       </div>
 
-      <div className="flex items-center gap-3.5 rounded-card glass p-4">
+      <div className="flex items-center gap-3.5 rounded-card surface p-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-brand-soft text-brand">
           <BookIcon />
         </div>
@@ -687,7 +687,7 @@ function Review({
           type="button"
           disabled={rate.busy}
           onClick={() => void rate.run()}
-          className="flex min-h-11 items-center justify-center gap-1.5 rounded-full glass px-4 text-sm font-semibold text-brand disabled:opacity-50"
+          className="flex min-h-11 items-center justify-center gap-1.5 rounded-full surface px-4 text-sm font-semibold text-brand disabled:opacity-50"
         >
           <SparkleIcon size={16} />
           {rate.busy ? t('sources.import.rating') : t('sources.import.rate')}
@@ -715,9 +715,11 @@ function Review({
       ))}
 
       {units.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.review.empty')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">
+          {t('sources.review.empty')}
+        </p>
       ) : (
-        <div className="flex flex-col rounded-card glass p-1.5">
+        <div className="flex flex-col rounded-card surface p-1.5">
           {units.map((u) => {
             const status = existing ? statusOf.get(u.label) : undefined
             const guessed = u.amountGuessed && leafLabels.has(u.label)
@@ -823,7 +825,7 @@ function Review({
       )}
 
       {merge.archive.length > 0 && (
-        <div className="flex flex-col gap-1.5 rounded-card glass p-4">
+        <div className="flex flex-col gap-1.5 rounded-card surface p-4">
           <span className="text-sm font-semibold">
             {t('sources.review.archiving', { count: merge.archive.length })}
           </span>

@@ -19,7 +19,7 @@ export function ActiveInputs() {
   )
   if (!data || !rows.length) return null
   return (
-    <section className="glass flex flex-col gap-3 rounded-card p-4">
+    <section className="surface flex flex-col gap-3 rounded-card p-4">
       <h2 className="text-base font-semibold">{t('strategist.active')}</h2>
       {rows.map((row) => {
         const action = feedbackAction(row)!

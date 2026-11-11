@@ -163,7 +163,7 @@ function Gate({
           type="button"
           onClick={() => (at > 0 ? setAt(at - 1) : goBack(navigate, to))}
           aria-label={t('recall.back')}
-          className="flex size-11 items-center justify-center rounded-full glass"
+          className="flex size-11 items-center justify-center rounded-full surface"
         >
           <ChevronLeftIcon size={20} />
         </button>

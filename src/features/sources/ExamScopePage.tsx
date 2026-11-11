@@ -168,11 +168,11 @@ function ScopeEditor({
       </div>
 
       {withUnits.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('scope.noUnits')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">{t('scope.noUnits')}</p>
       ) : (
         <>
           {partials.length > 0 && (
-            <div className="grid grid-cols-2 gap-x-2 gap-y-3 rounded-[20px] glass px-3.5 py-3">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-3 rounded-[20px] surface px-3.5 py-3">
               {partials.map((e) => (
                 <div key={e.id} className="flex min-w-0 flex-col gap-0.5">
                   <span className="truncate text-xs font-semibold text-brand uppercase">
@@ -199,7 +199,7 @@ function ScopeEditor({
                   onClick={() => setSourceId(m.source.id)}
                   className={cn(
                     'h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
-                    m.source.id === sourceId ? 'bg-ink text-white' : 'glass',
+                    m.source.id === sourceId ? 'bg-ink text-white' : 'surface',
                   )}
                 >
                   {t(`sources.kind.${m.source.kind}`)} ·{' '}
@@ -221,7 +221,7 @@ function ScopeEditor({
             {hasScopeAll && <span>{t('scope.legendAll')}</span>}
           </div>
 
-          <div className="flex flex-col rounded-card glass p-1.5">
+          <div className="flex flex-col rounded-card surface p-1.5">
             {top.map((u, i) => {
               const c = choice(u.id)
               const by = draft.has(u.id)
@@ -265,7 +265,7 @@ function ScopeEditor({
                           onClick={() => setDraft((d) => new Map(d).set(u.id, s.choice))}
                           className={cn(
                             'h-[30px] min-w-0 flex-1 truncate rounded-[11px] px-1 text-xs font-semibold',
-                            on ? 'glass text-brand-strong' : 'text-ink-muted',
+                            on ? 'surface text-brand-strong' : 'text-ink-muted',
                           )}
                         >
                           {s.label}

@@ -37,13 +37,13 @@ export function SubjectSources({
         <h2 className="text-lg font-semibold">{t('sources.section')}</h2>
         <Link
           to={`/subjects/${subjectId}/sources/new`}
-          className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
+          className="flex h-9 items-center rounded-full surface px-3 text-[13px] font-semibold text-brand"
         >
           {t('sources.add')}
         </Link>
       </div>
       {materials.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.none')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">{t('sources.none')}</p>
       ) : (
         materials
           // A rough source whose parts were archived (real content arrived) is gone.
@@ -78,7 +78,7 @@ function ArchivedSources({ subjectId }: { subjectId: string }) {
   const show = useToast((s) => s.show)
   if (archived.length === 0) return null
   return (
-    <details className="group rounded-card glass px-4 py-1">
+    <details className="group rounded-card surface px-4 py-1">
       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-sm font-semibold text-ink-secondary">
         {t('swipe.archivedSources')} ({archived.length})
       </summary>
@@ -118,7 +118,7 @@ function SourceCard({ subjectId, material }: { subjectId: string; material: Sour
   return (
     <Link
       to={`/subjects/${subjectId}/sources/${source.id}`}
-      className="flex flex-col gap-2.5 rounded-card glass p-4"
+      className="flex flex-col gap-2.5 rounded-card surface p-4"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-0.5">

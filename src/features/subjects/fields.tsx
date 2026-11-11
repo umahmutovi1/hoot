@@ -69,7 +69,7 @@ export function Segmented<T extends string>({
           onClick={() => onChange(o.value)}
           className={cn(
             'flex h-10 flex-1 items-center justify-center rounded-[13px] px-3 text-[13px] font-semibold whitespace-nowrap',
-            value === o.value ? 'glass text-ink' : 'text-ink-muted',
+            value === o.value ? 'surface text-ink' : 'text-ink-muted',
           )}
         >
           {o.label}

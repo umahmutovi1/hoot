@@ -175,7 +175,7 @@ function MovedCard({ plan }: { plan: PlanToday }) {
   const growth = plan.model?.built.state.growthBase !== null
   const onTrack = (plan.model?.result.deficits.length ?? 0) === 0
   return (
-    <section className="glass mt-3 flex flex-col gap-2.5 rounded-card p-4">
+    <section className="surface mt-3 flex flex-col gap-2.5 rounded-card p-4">
       <span className="text-[15px] font-semibold">{t('today.cant.whatMoved')}</span>
       <div className="flex flex-col gap-2 text-sm">
         {moved.map(({ block, to }) => (

@@ -78,14 +78,14 @@ export function StrategistCard({
     return (
       <Link
         to="/progress/week"
-        className="glass flex min-h-11 items-center justify-between rounded-card p-4 text-sm text-brand"
+        className="surface flex min-h-11 items-center justify-between rounded-card p-4 text-sm text-brand"
       >
         <span>{t('checkin.title')}</span>
         <span>›</span>
       </Link>
     )
   return (
-    <section className="glass flex flex-col gap-3 rounded-card p-4">
+    <section className="surface flex flex-col gap-3 rounded-card p-4">
       {!inReview && <h2 className="text-base font-semibold">{t('strategist.title')}</h2>}
       {!inReview && (
         <p className="text-sm text-ink-secondary">

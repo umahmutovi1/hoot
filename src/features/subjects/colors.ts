@@ -14,7 +14,7 @@ export interface SubjectPalette {
 
 export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
   pink: {
-    hex: '#C026B0',
+    hex: '#D97AA0',
     bar: 'bg-subject-pink',
     border: 'border-subject-pink',
     stroke: 'stroke-subject-pink',
@@ -24,7 +24,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     inkText: 'text-subject-pink-ink',
   },
   lavender: {
-    hex: '#7C6BD6',
+    hex: '#8C84E0',
     bar: 'bg-subject-lavender',
     border: 'border-subject-lavender',
     stroke: 'stroke-subject-lavender',
@@ -34,7 +34,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     inkText: 'text-subject-lavender-ink',
   },
   blue: {
-    hex: '#2563EB',
+    hex: '#6FA3D6',
     bar: 'bg-subject-blue',
     border: 'border-subject-blue',
     stroke: 'stroke-subject-blue',
@@ -44,7 +44,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     inkText: 'text-subject-blue-ink',
   },
   green: {
-    hex: '#1F8A70',
+    hex: '#6FAE8A',
     bar: 'bg-subject-green',
     border: 'border-subject-green',
     stroke: 'stroke-subject-green',
@@ -54,7 +54,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     inkText: 'text-subject-green-ink',
   },
   orange: {
-    hex: '#D97706',
+    hex: '#D9774B',
     bar: 'bg-subject-orange',
     border: 'border-subject-orange',
     stroke: 'stroke-subject-orange',
@@ -64,7 +64,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     inkText: 'text-subject-orange-ink',
   },
   slate: {
-    hex: '#475569',
+    hex: '#7B8494',
     bar: 'bg-subject-slate',
     border: 'border-subject-slate',
     stroke: 'stroke-subject-slate',

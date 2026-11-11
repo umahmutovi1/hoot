@@ -104,7 +104,7 @@ export function StepWeek({
         </div>
       )}
       {next && first.status !== 'none' && (
-        <section className="glass-tint flex flex-col gap-3 rounded-card-lg p-5">
+        <section className="hero flex flex-col gap-3 rounded-card-lg p-5">
           {first.status === 'block' ? (
             <>
               <span className="text-xs font-semibold tracking-[0.6px] text-white/88 uppercase">
@@ -138,7 +138,7 @@ export function StepWeek({
         </section>
       )}
       {next && first.status === 'none' && (
-        <section className="glass-tint flex flex-col gap-3 rounded-card-lg p-5">
+        <section className="hero flex flex-col gap-3 rounded-card-lg p-5">
           <span className="text-xs font-semibold tracking-[0.6px] text-white/88 uppercase">
             {t('onboarding.week.firstSession')}
           </span>
@@ -180,7 +180,7 @@ export function StepWeek({
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-[22px] glass p-4">
+    <div className="flex flex-col gap-0.5 rounded-[22px] surface p-4">
       <span className="text-[26px] font-bold tracking-[-0.5px]">{value}</span>
       <span className="text-xs text-ink-muted">{label}</span>
     </div>

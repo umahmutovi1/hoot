@@ -57,7 +57,7 @@ export function SubjectLectures({
 
   return (
     <>
-      <div className="flex flex-col gap-3 rounded-card glass p-4">
+      <div className="flex flex-col gap-3 rounded-card surface p-4">
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold">{t('lectures.section')}</span>
           <Link to="/plan/timetable" className="py-2.5 text-[13px] font-medium text-brand">

@@ -81,7 +81,7 @@ export function FacultyPage() {
       {(current.institution.trim() || initial.institution) && (
         <Link
           to="/settings/academic/found?search=1"
-          className="flex h-11 items-center gap-2 self-start rounded-full glass px-4 text-sm font-semibold text-brand"
+          className="flex h-11 items-center gap-2 self-start rounded-full surface px-4 text-sm font-semibold text-brand"
         >
           {t('academic.found.searchButton')}
         </Link>
@@ -90,7 +90,7 @@ export function FacultyPage() {
       <h2 className="px-1 pt-2 text-[13px] font-semibold text-ink-muted uppercase">
         {t('academic.years.title')}
       </h2>
-      <div className="flex flex-col rounded-card glass px-4 py-1">
+      <div className="flex flex-col rounded-card surface px-4 py-1">
         {[...years]
           .sort((a, b) => (a.startsOn < b.startsOn ? 1 : -1))
           .map((y) => (

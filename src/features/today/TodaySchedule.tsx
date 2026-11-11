@@ -116,7 +116,7 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
       <h2 className="mx-1.5 mt-[26px] mb-2.5 text-xl font-bold tracking-[-0.4px]">
         {t('today.schedule.title')}
       </h2>
-      <div className="glass overflow-hidden rounded-[26px]">
+      <div className="surface overflow-hidden rounded-[26px]">
         {rows.map((row, i) => {
           const divider = i > 0 && <div className="ml-[72px] h-px bg-line/90" />
           if (row.kind === 'class')

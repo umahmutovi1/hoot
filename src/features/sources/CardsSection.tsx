@@ -36,27 +36,27 @@ export function CardsSection({ unitId }: { unitId: string }) {
           <button
             type="button"
             onClick={() => setImporting(true)}
-            className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
+            className="flex h-9 items-center rounded-full surface px-3 text-[13px] font-semibold text-brand"
           >
             {t('units.cards.import')}
           </button>
           <button
             type="button"
             onClick={() => setSheet({ open: true })}
-            className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
+            className="flex h-9 items-center rounded-full surface px-3 text-[13px] font-semibold text-brand"
           >
             {t('units.cards.add')}
           </button>
         </span>
       </div>
       {cards.length === 0 ? (
-        <p className="rounded-[20px] glass p-4 text-sm text-ink-muted">{t('units.cards.none')}</p>
+        <p className="rounded-[20px] surface p-4 text-sm text-ink-muted">{t('units.cards.none')}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {cards.map((c) => {
             const back = flipped.has(c.id)
             return (
-              <div key={c.id} className="flex items-stretch gap-1 rounded-[20px] glass">
+              <div key={c.id} className="flex items-stretch gap-1 rounded-[20px] surface">
                 <button
                   type="button"
                   onClick={() =>

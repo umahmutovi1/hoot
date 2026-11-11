@@ -2742,7 +2742,7 @@
       "appearance": {
         "title": "Izgled",
         "sub": "Postavke › Opće · tema",
-        "syn": "tema, boja, boje, izgled, lavanda, grafit, pijesak, kadulja, okean"
+        "syn": "tema, boja, boje, izgled, noć, grafit, mahovina, šljiva, kesten"
       },
       "faculty": {
         "title": "Fakultet i godina",
@@ -2760,25 +2760,20 @@
     "row": "Izgled",
     "rowSub": "tema boja",
     "theme": {
-      "lavender": {
-        "name": "Lavanda",
-        "sub": "zadana · ljubičasta magla"
+      "ocean": {
+        "name": "Noć"
       },
       "graphite": {
-        "name": "Grafit",
-        "sub": "neutralna · topla siva"
-      },
-      "sand": {
-        "name": "Pijesak",
-        "sub": "topla · bež"
+        "name": "Grafit"
       },
       "sage": {
-        "name": "Kadulja",
-        "sub": "smirena · zelena"
+        "name": "Mahovina"
       },
-      "ocean": {
-        "name": "Okean",
-        "sub": "hladna · plava"
+      "lavender": {
+        "name": "Šljiva"
+      },
+      "sand": {
+        "name": "Kesten"
       }
     }
   },

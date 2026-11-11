@@ -392,7 +392,7 @@ function BlockForm({
                   onClick={() => setOtherId(s.id)}
                   className={cn(
                     'flex h-11 items-center gap-2 rounded-full px-4 text-[15px] font-semibold',
-                    on ? 'bg-ink text-white' : 'glass',
+                    on ? 'bg-ink text-white' : 'surface',
                   )}
                 >
                   <span className={cn('size-2 rounded-full', paletteOf(s.color).bar)} />
@@ -761,7 +761,7 @@ function BlockForm({
       </div>
 
       {suggesting && (
-        <div className="glass flex flex-col gap-1 rounded-[20px] px-4 py-3.5">
+        <div className="surface flex flex-col gap-1 rounded-[20px] px-4 py-3.5">
           <span className="text-xs font-semibold tracking-[0.4px] text-ink-secondary uppercase">
             {t('blockSheet.suggestion')}
           </span>
@@ -790,7 +790,7 @@ function BlockForm({
       )}
 
       {block && !suggesting && (
-        <div className="glass flex flex-col gap-2 rounded-[20px] px-3.5 py-3">
+        <div className="surface flex flex-col gap-2 rounded-[20px] px-3.5 py-3">
           <span className="text-[15px] font-semibold">{t('blockSheet.modeTitle')}</span>
           <div role="radiogroup" aria-label={t('blockSheet.modeTitle')} className="flex gap-1.5">
             {(['auto', 'fixed'] as const).map((m) => (
@@ -831,7 +831,7 @@ function BlockForm({
             onDone()
             void skip(block, units, false)
           }}
-          className="flex h-12 items-center justify-center rounded-full glass text-[15px] font-semibold"
+          className="flex h-12 items-center justify-center rounded-full surface text-[15px] font-semibold"
         >
           {t('today.skip.button')}
         </button>

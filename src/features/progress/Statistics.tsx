@@ -83,7 +83,7 @@ export function Statistics() {
     { minutes: 0, planned: 0, done: 0, blocks: 0 },
   )
   return (
-    <section className="glass flex flex-col gap-3 rounded-card p-4">
+    <section className="surface flex flex-col gap-3 rounded-card p-4">
       <h2 className="text-base font-semibold">{t('progress.statistics.title')}</h2>
       <div className="flex rounded-full bg-white/30 p-1">
         {[7, 30].map((n) => (

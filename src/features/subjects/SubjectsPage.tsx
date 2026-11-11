@@ -166,7 +166,7 @@ function Folded({ title, sub, children }: { title: string; sub: string; children
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex min-h-[52px] items-center justify-between gap-3 rounded-card-lg glass px-[18px] text-left text-[15px]"
+        className="flex min-h-[52px] items-center justify-between gap-3 rounded-card-lg surface px-[18px] text-left text-[15px]"
       >
         <span>
           {title} <span className="text-[13px] text-ink-muted">· {sub}</span>
@@ -195,7 +195,7 @@ function NewYearCard() {
   if ((snoozed[key] ?? '') >= term.today) return null
   const previous = [...term.years].sort((a, b) => (a.startsOn < b.startsOn ? 1 : -1))[0]
   return (
-    <div className="flex flex-col gap-3 rounded-card glass p-4">
+    <div className="flex flex-col gap-3 rounded-card surface p-4">
       <div className="flex items-start gap-3">
         <span
           className="icon-tile flex size-[38px] shrink-0 items-center justify-center rounded-[12px]"
@@ -301,7 +301,7 @@ function SubjectCard({
     <Link
       to={`/subjects/${subject.id}`}
       className={cn(
-        'flex flex-col gap-3.5 rounded-card-lg glass p-[18px]',
+        'flex flex-col gap-3.5 rounded-card-lg surface p-[18px]',
         subject.archived && 'opacity-70',
       )}
     >

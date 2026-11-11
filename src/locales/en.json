@@ -2667,7 +2667,7 @@
       "appearance": {
         "title": "Appearance",
         "sub": "Settings › General · theme",
-        "syn": "theme, colour, color, look, lavender, graphite, sand, sage, ocean"
+        "syn": "theme, colour, color, look, night, graphite, moss, plum, chestnut"
       },
       "faculty": {
         "title": "Faculty and year",
@@ -2685,25 +2685,20 @@
     "row": "Appearance",
     "rowSub": "colour theme",
     "theme": {
-      "lavender": {
-        "name": "Lavender",
-        "sub": "default · purple mist"
+      "ocean": {
+        "name": "Night"
       },
       "graphite": {
-        "name": "Graphite",
-        "sub": "neutral · warm grey"
-      },
-      "sand": {
-        "name": "Sand",
-        "sub": "warm · beige"
+        "name": "Graphite"
       },
       "sage": {
-        "name": "Sage",
-        "sub": "calm · green"
+        "name": "Moss"
       },
-      "ocean": {
-        "name": "Ocean",
-        "sub": "cool · blue"
+      "lavender": {
+        "name": "Plum"
+      },
+      "sand": {
+        "name": "Chestnut"
       }
     }
   },

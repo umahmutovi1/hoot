@@ -40,7 +40,7 @@ export function RhythmCard() {
   const { workMin, breakMin, aboutMin } = suggestion
   const full = presets.custom.length >= MAX_CUSTOM_PRESETS
   return (
-    <section className="glass flex flex-col gap-3 rounded-card p-4">
+    <section className="surface flex flex-col gap-3 rounded-card p-4">
       <h2 className="text-base font-semibold">{t('progress.rhythm.title')}</h2>
       <p className="text-sm text-ink-secondary">
         {t('progress.rhythm.suggestion', { aboutMin, workMin, breakMin })}

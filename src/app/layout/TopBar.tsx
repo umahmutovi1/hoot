@@ -5,13 +5,13 @@ import { AiSparkIcon, CloseIcon, MenuIcon, SearchIcon } from '@/components/icons
 import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/utils'
 
-/** Faint glass pill behind the AI icon and the right-hand group (design README, Sprint 12). */
+/** Faint surface pill behind the AI icon and the right-hand group (design README, Sprint 12). */
 const pill = 'rounded-full bg-white/30 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.6)]'
 
 /**
  * First row of every screen (docs/design/NavMeni.html): the owl logo (home = Danas), the assistant
  * right next to it, and search with the menu on one pill in the corner. The AI spark is an icon on a faint pill; while the
- * chat is open it turns into the session purple (`glass-tint`) with a white icon and closes the
+ * chat is open it turns into the brand colour (`hero`) with a white icon and closes the
  * chat again. Inside the open menu the same row repeats with × in place of ☰, so nothing moves
  * when it opens; leaving through the logo or AI closes the menu too.
  */
@@ -54,7 +54,7 @@ export function TopBar({
         aria-pressed={inChat}
         className={cn(
           'flex size-11 shrink-0 items-center justify-center transition-transform active:scale-95',
-          inChat ? 'glass-tint rounded-full text-white' : cn(pill, 'text-brand-accent'),
+          inChat ? 'hero rounded-full text-white' : cn(pill, 'text-brand-accent'),
         )}
       >
         <AiSparkIcon size={22} />

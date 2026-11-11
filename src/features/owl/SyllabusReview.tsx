@@ -108,7 +108,7 @@ export function SyllabusReview({
       <h3 className="px-1 text-[22px] leading-tight font-bold">{nameOf(item)}</h3>
 
       {!item.subjectId && item.electiveGroup && (
-        <div className="flex flex-col gap-3 rounded-card glass p-4">
+        <div className="flex flex-col gap-3 rounded-card surface p-4">
           <div className="flex flex-col gap-0.5">
             <span className="text-[15px] font-semibold">
               {t('owl.syllabus.electiveTitle', { group: item.electiveGroup })}
@@ -145,7 +145,7 @@ export function SyllabusReview({
       )}
 
       {!item.subjectId && !item.electiveGroup && (
-        <div className="flex flex-col gap-3 rounded-card glass p-4">
+        <div className="flex flex-col gap-3 rounded-card surface p-4">
           <div className="flex flex-col gap-0.5">
             <span className="text-[15px] font-semibold">{t('owl.syllabus.addTitle')}</span>
             <span className="text-[13px] leading-[1.4] text-ink-muted">
@@ -305,7 +305,7 @@ function List({ title, children }: { title: string; children: ReactNode }) {
   return (
     <>
       <h4 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">{title}</h4>
-      <div className="flex flex-col divide-y divide-hairline rounded-card glass">{children}</div>
+      <div className="flex flex-col divide-y divide-hairline rounded-card surface">{children}</div>
     </>
   )
 }

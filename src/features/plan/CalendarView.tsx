@@ -133,7 +133,7 @@ export function CalendarView() {
                 aria-label={t('plan.openMonth', {
                   month: format(selected, 'LLLL yyyy', { locale: dateFnsLocales[locale] }),
                 })}
-                className="flex h-10 items-center gap-1 rounded-full glass pr-4 pl-2.5 text-[15px] font-semibold text-ink"
+                className="flex h-10 items-center gap-1 rounded-full surface pr-4 pl-2.5 text-[15px] font-semibold text-ink"
               >
                 <ChevronLeftIcon size={16} />
                 <span className="first-letter:uppercase">
@@ -147,7 +147,7 @@ export function CalendarView() {
             <button
               type="button"
               onClick={() => setEditOpen(true)}
-              className="flex h-11 shrink-0 items-center gap-1.5 rounded-full glass px-3.5 text-sm font-semibold text-ink"
+              className="flex h-11 shrink-0 items-center gap-1.5 rounded-full surface px-3.5 text-sm font-semibold text-ink"
             >
               <PencilIcon size={16} className="text-brand" />
               {t('plan.editDay.button')}
@@ -155,7 +155,7 @@ export function CalendarView() {
           </div>
           <div
             data-timeline-scroll
-            className="max-h-[52dvh] overflow-y-auto overscroll-contain rounded-card-lg glass p-3 pr-2"
+            className="max-h-[52dvh] overflow-y-auto overscroll-contain rounded-card-lg surface p-3 pr-2"
           >
             {dayBlocks.loaded ? (
               <DayTimeline
@@ -266,7 +266,7 @@ function MonthGrid({
   const weekdays = cells.slice(0, 7).map((c) => format(c.date, 'EEEEE', { locale: dfLocale }))
 
   return (
-    <div className="flex flex-col gap-3 rounded-card-lg glass p-4">
+    <div className="flex flex-col gap-3 rounded-card-lg surface p-4">
       <div className="flex items-center justify-between">
         <h2 className="pl-1 text-lg font-semibold first-letter:uppercase" aria-live="polite">
           {format(month, 'LLLL yyyy', { locale: dfLocale })}
@@ -356,7 +356,7 @@ function MonthGrid({
           {t('plan.legendExam')}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full border-[1.5px] border-ink-muted glass" />
+          <span className="size-2 rounded-full border-[1.5px] border-ink-muted surface" />
           {t('plan.legendPossibleExam')}
         </span>
         <span className="flex items-center gap-1.5">
@@ -416,7 +416,7 @@ function DayDetails({
       </div>
       <div className="flex flex-col gap-2">
         {empty && (
-          <p className="rounded-[20px] glass px-4 py-3.5 text-sm text-ink-muted">
+          <p className="rounded-[20px] surface px-4 py-3.5 text-sm text-ink-muted">
             {t('plan.dayEmpty')}
           </p>
         )}
@@ -451,7 +451,7 @@ function DayDetails({
           return (
             <div
               key={exam.id}
-              className="flex items-center gap-3 rounded-[20px] border-[1.5px] border-dashed border-line glass px-4 py-3.5"
+              className="flex items-center gap-3 rounded-[20px] border-[1.5px] border-dashed border-line surface px-4 py-3.5"
             >
               <span className={cn('size-2.5 shrink-0 rounded-full', palette.bar)} />
               <div className="flex flex-col gap-0.5">
@@ -472,7 +472,7 @@ function DayDetails({
               type="button"
               key={c.id}
               onClick={() => onPickClass(c)}
-              className="flex items-center gap-3 rounded-[20px] glass px-4 py-3.5 text-left"
+              className="flex items-center gap-3 rounded-[20px] surface px-4 py-3.5 text-left"
             >
               <span className={cn('w-1 self-stretch rounded-full', palette.bar)} />
               <div className="flex min-w-0 flex-col gap-0.5">
@@ -500,7 +500,7 @@ function DayDetails({
               type="button"
               key={b.block.id}
               onClick={() => onPickBlock(b.block)}
-              className="flex items-center gap-3 rounded-[20px] glass px-4 py-3.5 text-left"
+              className="flex items-center gap-3 rounded-[20px] surface px-4 py-3.5 text-left"
             >
               <span className={cn('w-1 self-stretch rounded-full', palette.bar)} />
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">

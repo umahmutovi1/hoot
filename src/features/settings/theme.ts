@@ -1,7 +1,7 @@
 // Colour themes (PRD "Teme boja", Sprint 12). The tokens live in index.css per `data-theme`; this
 // only names the themes and applies one to <html>.
 
-export const THEMES = ['lavender', 'graphite', 'sand', 'sage', 'ocean'] as const
+export const THEMES = ['ocean', 'graphite', 'sage', 'lavender', 'sand'] as const
 export type Theme = (typeof THEMES)[number]
 
 const CACHE_KEY = 'hoot.theme'
@@ -13,7 +13,7 @@ export function isTheme(value: unknown): value is Theme {
 /** Sets the theme on <html> and Safari's bar colour (`theme-color`), and remembers it locally. */
 export function applyTheme(theme: Theme) {
   const root = document.documentElement
-  if (theme === 'lavender') delete root.dataset.theme
+  if (theme === 'ocean') delete root.dataset.theme
   else root.dataset.theme = theme
   const edge = getComputedStyle(root).getPropertyValue('--hoot-edge').trim()
   if (edge) setBarColor(edge)
@@ -26,7 +26,7 @@ export function applyTheme(theme: Theme) {
 
 /**
  * iOS Safari and the home-screen app keep the first `theme-color` they saw when the existing tag's
- * `content` is edited, so the bar behind the Dynamic Island stays lavender. A fresh tag is read
+ * `content` is edited, so the bar behind the Dynamic Island keeps the old colour. A fresh tag is read
  * again. The `html` background (the bar colour on iOS 26) is re-set to force a repaint.
  */
 function setBarColor(color: string) {
@@ -41,12 +41,12 @@ function setBarColor(color: string) {
   requestAnimationFrame(() => root.style.removeProperty('background-color'))
 }
 
-/** The theme of the last session, applied before the profile loads (no lavender flash). */
+/** The theme of the last session, applied before the profile loads (no flash of the default). */
 export function applyCachedTheme() {
   try {
     const cached = localStorage.getItem(CACHE_KEY)
     if (isTheme(cached)) applyTheme(cached)
   } catch {
-    // Default lavender.
+    // Default Noć (ocean).
   }
 }

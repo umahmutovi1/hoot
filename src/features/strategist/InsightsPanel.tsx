@@ -17,7 +17,7 @@ export function InsightsPanel({ review = false }: { review?: boolean }) {
   const replan = usePlanStore((s) => s.replanNow)
   if (!data) return null
   return (
-    <section className="glass flex flex-col gap-3 rounded-card p-4">
+    <section className="surface flex flex-col gap-3 rounded-card p-4">
       <h2 className="text-base font-semibold">{t('insights.title')}</h2>
       {!insight ? (
         <p className="text-sm text-ink-muted">{t('insights.loading')}</p>
