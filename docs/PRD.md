@@ -76,7 +76,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju, osim stavki označenih
 | Opće | Jezik | Bosanski i engleski |
 | Opće | Rezultat ispita | Bodovi (Sprint 5) + spremnost dan prije (Napredak); zatvara krug za prognozu |
 | Opće | Pretraga | Jedno polje (ikona u gornjem redu) nalazi bilo koji ekran, postavku, predmet, ispit, izvor, jedinicu ili dokument i vodi direktno tamo; offline, bez AI-ja |
-| Opće | Teme boja | Lavanda (default), Grafit, Pijesak, Kadulja, Okean; mijenja se u Postavkama |
+| Opće | Teme boja | Noć (default), Grafit, Mahovina, Šljiva, Kesten (od Sprinta 19); mijenja se u Postavkama |
 | Opće | Swipe akcije | Swipe ulijevo na stavci liste: arhiviraj / obriši / preskoči, uz Poništi |
 | Opće | Podsjetnici | Prije svakog bloka (2 h / 1 h / 30 / 15 / 5 min, default 30), “kasniš 15 min”, akcije Započni / Preskoči |
 | Raspored | Akademska godina i semestar | Predmeti grupisani po godini studija i semestru; završen semestar se sklopi, nepoložen predmet se prenosi |
@@ -937,7 +937,7 @@ Odluke, oktobar 2026 (Sprint 12). Izgled je u design/README.md.
 - **Sheetovi** klize odozdo kao na iOS-u (fizička kriva, ~400 ms) i zatvaraju se povlačenjem nadolje.
 - **Pretraga.** Ikona u gornjem redu otvara polje preko ekrana. Indeks: svi ekrani i postavke sa sinonimima (“više vremena”, “pauze”, “boja”), plus predmeti, ispiti, izvori, jedinice i dokumenti iz keša; `fuse.js`, offline, bez AI-ja. Rezultat vodi direktno na ekran ili otvara sheet; prazno polje pokazuje nedavne.
 - **Swipe ulijevo** na stavci liste (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): kratki swipe otkriva dugmad, puni izvršava prvu akciju; uvijek toast Poništi, bez dijaloga potvrde. Arhiviraj: predmet, izvor (ništa na čemu stoje jedinice se ne briše). Obriši: sesija (kalibracija se preračuna), termin nastave, ručni blok, rok, dokument. Preskoči: AI blok (isto kao Preskoči na kartici). Iste akcije su i u “⋯” / dugom pritisku (pristupačnost, desktop).
-- **Teme boja.** Lavanda (default), Grafit (neutralna), Pijesak, Kadulja, Okean, u Postavkama → Općenito → Izgled (`profiles.theme`, sinhronizuje se). Mijenjaju brand boje, ljubičastu karticu sesije, dugmad i pozadinsku maglu; boje predmeta ostaju. Tamni režim je Kasnije.
+- **Teme boja.** Lavanda (default), Grafit (neutralna), Pijesak, Kadulja, Okean, u Postavkama → Općenito → Izgled (`profiles.theme`, sinhronizuje se). Mijenjaju brand boje, ljubičastu karticu sesije, dugmad i pozadinsku maglu; boje predmeta ostaju. Tamni režim je Kasnije. *Zamijenjeno 5. nov 2026: teme Noćne sove, vidi Dopune, 5. nov 2026.*
 - **Više vremena za određeni dan.** Model postoji (`availability_days`); akcija “Više vremena ovaj dan” je na Plan → Dan, u kartici Dan pred ispit i u pretrazi.
 
 ## Dopune, 29. okt 2026: energija, tutor, prijava i doživljaj
@@ -1095,6 +1095,8 @@ Odluke iz pregleda redizajna („Noćna sova“). Ulaze u Sprint 19 uz uvoz goto
 
 ### Ispravke postojećeg
 
+- **Vizuelni sistem „Noćna sova“ umjesto Liquid Glass.** Krem podloga, navy brend, ćilibar za AI i energiju, pastelne boje predmeta; Figtree za tekst i Bricolage Grotesque za naslove; ravne površine bez stakla, blura i gradijenata; plavo zaglavlje s talasom. Vrijednosti su u `docs/design/README.md`.
+- **Teme (odluka 11. nov 2026).** Noć (zadana), Grafit, Mahovina, Šljiva, Kesten; vrijednosti u `profiles.theme` ostaju iste (`ocean`, `graphite`, `sage`, `lavender`, `sand`). Profili na staroj zadanoj Lavandi prelaze na Noć. Boje predmeta su iste u svim temama: Narandžasta je Terakota #D9774B (ćilibar ostaje samo za AI), Siva #7B8494. Tamni režim ostaje Kasnije.
 - **Cilj predmeta: uslovni + željena ocjena.** Umjesto 5 opcija „Koliko ti je bitan“ (vidi Prioritet i režim → Šta korisnik vidi) UI pita dvije stvari: prekidač **Uslovni predmet** („mora se položiti za upis dalje“) i **Željena ocjena** (6–10, opcionalno). `subjects.priority` ostaje u bazi i kodu i računa se iz toga: uslovni → 5; inače bez ocjene 3, ocjena 6 → 2, 7–8 → 3, 9–10 → 4. Prioritet 1 („dovoljno je proći“) ne nudi se kao izbor; ostaje za AI prijedlog i postojeće predmete. Mapiranje je čista funkcija u `src/lib/` sa testovima; ručno postavljen prioritet (stari predmeti) se ne prepisuje dok korisnik ne promijeni prekidač ili ocjenu. Kartica usklađivanja („Za 9 obično treba Važan“) otpada.
 - **Novi predmet traži prvi izvor, ne veličinu gradiva.** „Koliko je gradiva? Malo / Srednje / Puno“ otpada. Na NoviPredmet je sekcija **Prvi izvor**: PDF, „Nemam PDF, nađi sadržaj“ (vidi ispod) ili slika sadržaja. „Izvor dodajem kasnije“ ostavlja grubi izvor od ~25 h (`is_rough`), kao do sad default.
 - **Popravni na predmetu.** Popravni se prikazuje na Predmetu kao red ispita (datum, naziv), sa podtekstom „Samo ako zatreba“; ne ulazi u plan dok se ne aktivira (pravilo `contingent` ostaje). Zamjenjuje odluku „Popravni se ne prikazuje nigdje dok…“ iz Sprinta 12.
