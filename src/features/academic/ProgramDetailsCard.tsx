@@ -50,7 +50,7 @@ export function ProgramDetailsCard({ proposal }: { proposal: ImportProposal }) {
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-card glass p-4">
+    <div className="flex flex-col gap-2 rounded-card surface p-4">
       <div className="flex items-center gap-3">
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="text-[15px] leading-snug font-semibold">

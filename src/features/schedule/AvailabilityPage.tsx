@@ -55,7 +55,7 @@ export function AvailabilityPage() {
 
       <DayStrip selected={selected} today={toDisplayDate(today)} onSelect={setSelected} />
 
-      <div className="flex flex-col gap-3 rounded-card-lg glass p-4">
+      <div className="flex flex-col gap-3 rounded-card-lg surface p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-col gap-1">
             <span className="text-base font-semibold first-letter:uppercase">

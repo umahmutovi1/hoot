@@ -93,7 +93,7 @@ export function LandingPage() {
       </section>
 
       <section className="px-[18px] pt-8">
-        <div className="glass-tint flex flex-col gap-3 rounded-card-lg px-5 py-6 text-white">
+        <div className="hero flex flex-col gap-3 rounded-card-lg px-5 py-6 text-white">
           <h2 className="text-xl font-bold">{t('landing.cta.title')}</h2>
           <p className="text-sm leading-snug text-white/88">{t('landing.cta.body')}</p>
           <Link
@@ -110,7 +110,7 @@ export function LandingPage() {
 
 function Feature({ icon, title, body }: { icon: ReactNode; title: string; body: string }) {
   return (
-    <div className="glass flex gap-3.5 rounded-[26px] p-[18px]">
+    <div className="surface flex gap-3.5 rounded-[26px] p-[18px]">
       <span className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[13px]">
         <svg
           width="20"

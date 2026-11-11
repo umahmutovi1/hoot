@@ -14,12 +14,11 @@
   },
   "nav": {
     "label": "Main navigation",
+    "ai": "AI",
     "today": "Today",
     "plan": "Plan",
     "subjects": "Subjects",
     "progress": "Progress",
-    "aiLabel": "AI assistant",
-    "aiClose": "Close the assistant",
     "home": "Hoot, go to Today"
   },
   "auth": {
@@ -1865,19 +1864,14 @@
     "body": "This loads from the internet the first time. The timer and a started session work offline; changes are sent when you are back online."
   },
   "menu": {
-    "title": "Menu",
-    "open": "Open menu",
-    "close": "Close menu",
     "calendar": "Calendar",
     "timetable": "Class timetable",
     "allSubjects": "All subjects",
     "overview": "Overview",
     "sessions": "Sessions",
     "settings": "Settings",
-    "allSettings": "All settings",
     "academicCalendar": "Academic calendar",
-    "documents": "Documents",
-    "subpages": "Pages in {{section}}"
+    "documents": "Documents"
   },
   "feeds": {
     "title": "Connected calendars",
@@ -2244,7 +2238,6 @@
     "modeFixedSub": "Locked: the plan doesn't move or delete it, it plans around it. Switch back to Automatic any time."
   },
   "crumbs": {
-    "label": "Breadcrumb",
     "fresh": "Fresh start",
     "newSubject": "New subject",
     "edit": "Edit",
@@ -2667,7 +2660,7 @@
       "appearance": {
         "title": "Appearance",
         "sub": "Settings › General · theme",
-        "syn": "theme, colour, color, look, lavender, graphite, sand, sage, ocean"
+        "syn": "theme, colour, color, look, night, graphite, moss, plum, chestnut"
       },
       "faculty": {
         "title": "Faculty and year",
@@ -2685,25 +2678,20 @@
     "row": "Appearance",
     "rowSub": "colour theme",
     "theme": {
-      "lavender": {
-        "name": "Lavender",
-        "sub": "default · purple mist"
+      "ocean": {
+        "name": "Night"
       },
       "graphite": {
-        "name": "Graphite",
-        "sub": "neutral · warm grey"
-      },
-      "sand": {
-        "name": "Sand",
-        "sub": "warm · beige"
+        "name": "Graphite"
       },
       "sage": {
-        "name": "Sage",
-        "sub": "calm · green"
+        "name": "Moss"
       },
-      "ocean": {
-        "name": "Ocean",
-        "sub": "cool · blue"
+      "lavender": {
+        "name": "Plum"
+      },
+      "sand": {
+        "name": "Chestnut"
       }
     }
   },

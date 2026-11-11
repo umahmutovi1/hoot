@@ -304,7 +304,7 @@ function EndForm({
         const set = (patch: Partial<RangeDraft>) =>
           setRanges((r) => r.map((x, j) => (j === i ? { ...x, ...patch } : x)))
         return (
-          <div key={d.sourceId + i} className="flex flex-col gap-3 rounded-[24px] glass p-4">
+          <div key={d.sourceId + i} className="flex flex-col gap-3 rounded-[24px] surface p-4">
             <span className="text-[15px] font-semibold">{s.source.title}</span>
             <RangeRow
               label={t('session.end.from')}
@@ -334,7 +334,7 @@ function EndForm({
                 key={s.source.id}
                 type="button"
                 onClick={() => addRange(s)}
-                className="flex h-11 items-center rounded-full glass px-4 text-[13px] font-semibold text-brand"
+                className="flex h-11 items-center rounded-full surface px-4 text-[13px] font-semibold text-brand"
               >
                 + {s.source.title}
               </button>
@@ -352,7 +352,7 @@ function EndForm({
         const readNow = readAfter(progress, covered.get(unit.id))
         const options = endLevels(unit.level)
         return (
-          <div key={unit.id} className="flex flex-col gap-3 rounded-[24px] glass p-4">
+          <div key={unit.id} className="flex flex-col gap-3 rounded-[24px] surface p-4">
             <div className="flex items-start justify-between gap-2">
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="text-[15px] font-semibold">{unitTitle(unit)}</span>
@@ -473,7 +473,7 @@ function EndForm({
           value={reflection}
           onChange={(e) => setReflection(e.target.value)}
           placeholder={t('session.end.reflectionPlaceholder')}
-          className="resize-none rounded-[20px] glass px-4 py-3.5 text-[15px] placeholder:text-ink-placeholder"
+          className="resize-none rounded-[20px] surface px-4 py-3.5 text-[15px] placeholder:text-ink-placeholder"
         />
       </label>
 
@@ -491,7 +491,7 @@ function EndForm({
             type="button"
             onClick={() => void save(false)}
             disabled={busy}
-            className="h-12 rounded-full glass text-[15px] font-semibold text-brand disabled:opacity-50"
+            className="h-12 rounded-full surface text-[15px] font-semibold text-brand disabled:opacity-50"
           >
             {t('sessionEnd.saveOnly')}
           </button>
@@ -512,7 +512,7 @@ function EndForm({
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 rounded-[20px] glass p-3">
+    <div className="flex flex-col items-center gap-0.5 rounded-[20px] surface p-3">
       <span className="text-xl font-bold">{value}</span>
       <span className="text-center text-xs text-ink-muted">{label}</span>
     </div>

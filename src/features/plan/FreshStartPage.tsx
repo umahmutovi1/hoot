@@ -65,7 +65,7 @@ export function FreshStartPage() {
         <p className="text-[15px] leading-[1.4] text-ink-secondary">{t('fresh.body')}</p>
       </div>
 
-      <section className="glass-tint flex flex-col gap-1 rounded-card p-4">
+      <section className="hero flex flex-col gap-1 rounded-card p-4">
         <span className="text-xs font-bold tracking-[1px] text-white/75 uppercase">
           {t('fresh.thisWeek')}
         </span>
@@ -78,7 +78,7 @@ export function FreshStartPage() {
       </section>
 
       {goals.length > 0 && (
-        <section className="glass flex flex-col gap-2.5 rounded-card p-4">
+        <section className="surface flex flex-col gap-2.5 rounded-card p-4">
           <span className="text-[15px] font-semibold">{t('fresh.untilExams')}</span>
           {goals.map((g) => {
             const d = deficits.get(g.id)
@@ -118,7 +118,7 @@ export function FreshStartPage() {
           <button
             type="button"
             onClick={() => setSolve(true)}
-            className="glass flex h-12 items-center justify-center rounded-full text-[15px] font-semibold text-brand"
+            className="surface flex h-12 items-center justify-center rounded-full text-[15px] font-semibold text-brand"
           >
             {t('fresh.solve', { subject: subjectName(firstDeficit.subjectId) })}
           </button>

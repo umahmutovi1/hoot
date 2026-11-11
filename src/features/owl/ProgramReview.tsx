@@ -28,7 +28,7 @@ export function ProgramReview({
             {t('owl.program.semester', { n: s.semester, year: s.yearLabel ?? '' }).trim()}
             {s.past && ` · ${t('owl.program.past')}`}
           </h2>
-          <div className="flex flex-col rounded-card glass px-4 py-1">
+          <div className="flex flex-col rounded-card surface px-4 py-1">
             {s.subjects.map((x: ProgramSubjectProposal) => (
               <div
                 key={x.key}

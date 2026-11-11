@@ -49,7 +49,7 @@ export function ProgressBreakdown() {
     .sort((a, b) => (a.strength ?? 2) - (b.strength ?? 2))
   return (
     <>
-      <section className="glass flex flex-col gap-3 rounded-card p-4">
+      <section className="surface flex flex-col gap-3 rounded-card p-4">
         <h2 className="text-base font-semibold">{t('progress.breakdown.title')}</h2>
         {subjects.map((s) => {
           const sources = data.inputs.sources.filter((x) => x.subject_id === s.id)
@@ -98,7 +98,7 @@ export function ProgressBreakdown() {
           )
         })}
       </section>
-      <section className="glass flex flex-col gap-3 rounded-card p-4">
+      <section className="surface flex flex-col gap-3 rounded-card p-4">
         <h2 className="text-base font-semibold">{t('progress.topics.title')}</h2>
         <div
           className="flex flex-wrap gap-1.5"

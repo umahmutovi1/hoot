@@ -48,7 +48,7 @@ export function TimerSheet({
             <button
               type="button"
               onClick={() => setConfirm(false)}
-              className="h-11 flex-1 rounded-full glass text-sm font-semibold"
+              className="h-11 flex-1 rounded-full surface text-sm font-semibold"
             >
               {t('common.cancel')}
             </button>

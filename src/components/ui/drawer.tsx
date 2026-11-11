@@ -35,7 +35,7 @@ function DrawerContent({
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
-        className={cn('glass-sheet fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col', className)}
+        className={cn('sheet fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col', className)}
         {...props}
       >
         {children}

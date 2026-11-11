@@ -44,7 +44,7 @@ function PlayIcon() {
 }
 
 /**
- * "Sljedeće" on Today (glass-tint card): the session running now, else the next block of today's
+ * "Sljedeće" on Today (hero card): the session running now, else the next block of today's
  * plan (Počni starts its session with its planned length), else a free session.
  */
 export function NextCard({ plan }: { plan: PlanToday }) {
@@ -60,7 +60,7 @@ export function NextCard({ plan }: { plan: PlanToday }) {
 function PendingCard() {
   const { t } = useTranslation()
   return (
-    <section className="glass-tint flex min-h-[176px] flex-col gap-4 rounded-card-lg p-5">
+    <section className="hero flex min-h-[176px] flex-col gap-4 rounded-card-lg p-5">
       <span className={label}>{t('today.next.label')}</span>
       <span className="h-6 w-2/3 animate-pulse rounded-full bg-white/20" />
     </section>
@@ -71,7 +71,7 @@ function PendingCard() {
 export function DayOffCard({ moved }: { moved: number }) {
   const { t } = useTranslation()
   return (
-    <section className="glass-tint flex flex-col gap-1 rounded-card p-4">
+    <section className="hero flex flex-col gap-1 rounded-card p-4">
       <span className={label}>{t('today.cant.label')}</span>
       <span className="text-[22px] font-bold">{t('today.cant.title')}</span>
       <span className="text-sm text-white/82">{t('today.cant.moved', { count: moved })}</span>
@@ -97,7 +97,7 @@ function BlockCard({ block, plan }: { block: PlanBlockRow; plan: PlanToday }) {
     block.status === 'planned' && block.start_min !== null ? plan.nowMin - block.start_min : 0
   const late = lateMin > LATE_AFTER_MIN
   return (
-    <section className="glass-tint flex flex-col gap-4 rounded-card-lg p-5">
+    <section className="hero flex flex-col gap-4 rounded-card-lg p-5">
       <div className="flex items-center justify-between">
         <span className={label}>
           {late
@@ -196,7 +196,7 @@ function FreeCard({ plan }: { plan: PlanToday }) {
         ? t('today.next.allDoneSub')
         : t('today.next.freeSub')
   return (
-    <section className="glass-tint flex min-h-[176px] flex-col gap-4 rounded-card-lg p-5">
+    <section className="hero flex min-h-[176px] flex-col gap-4 rounded-card-lg p-5">
       <span className={label}>{t('today.next.label')}</span>
       <div className="flex flex-col gap-1">
         <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">{title}</span>
@@ -237,7 +237,7 @@ function RunningCard({ data }: { data: ActiveSession }) {
     <Link
       to="/session"
       aria-label={t('today.next.open')}
-      className="glass-tint flex flex-col gap-4 rounded-card-lg p-5 active:scale-[0.99]"
+      className="hero flex flex-col gap-4 rounded-card-lg p-5 active:scale-[0.99]"
     >
       <span className={label}>{running ? t('today.next.running') : t('today.next.paused')}</span>
       <span className="text-[22px] leading-tight font-semibold tracking-[-0.5px]">

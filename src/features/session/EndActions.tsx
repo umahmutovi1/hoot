@@ -7,7 +7,7 @@ import type { ActiveSession } from './model'
 import { useSessionWriter } from './api'
 
 const choice =
-  'flex flex-col gap-0.5 rounded-[20px] glass px-4 py-3.5 text-left disabled:opacity-60'
+  'flex flex-col gap-0.5 rounded-[20px] surface px-4 py-3.5 text-left disabled:opacity-60'
 
 /**
  * Right under "Sesija završena" (decision after Sprint 9b): undo an end that came too early or by
@@ -44,7 +44,7 @@ export function EndActions({ data, studiedMin }: { data: ActiveSession; studiedM
     })
 
   return (
-    <section className="flex flex-col gap-2.5 rounded-card glass p-4">
+    <section className="flex flex-col gap-2.5 rounded-card surface p-4">
       <span className="text-sm text-ink-secondary">{t('session.endActions.hint')}</span>
       <div className="flex flex-wrap gap-2">
         <button
@@ -120,7 +120,7 @@ export function EndActions({ data, studiedMin }: { data: ActiveSession; studiedM
           <button
             type="button"
             onClick={() => setSheet(null)}
-            className="h-12 flex-1 rounded-full glass text-[15px] font-semibold"
+            className="h-12 flex-1 rounded-full surface text-[15px] font-semibold"
           >
             {t('common.cancel')}
           </button>

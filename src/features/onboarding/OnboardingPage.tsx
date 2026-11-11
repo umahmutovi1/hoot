@@ -94,13 +94,13 @@ export function OnboardingPage() {
 
   return (
     <div className="flex min-h-[calc(100dvh-24px)] flex-col gap-4">
-      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between glass-bar px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2">
+      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between header-bar px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2">
         {step > 1 ? (
           <button
             type="button"
             onClick={() => go(step - 1)}
             aria-label={t('app.back')}
-            className="flex size-11 items-center justify-center rounded-full glass"
+            className="flex size-11 items-center justify-center rounded-full surface"
           >
             <ChevronLeftIcon size={20} />
           </button>
@@ -109,7 +109,7 @@ export function OnboardingPage() {
             type="button"
             onClick={() => goBack(navigate, '/')}
             aria-label={t('app.back')}
-            className="flex size-11 items-center justify-center rounded-full glass"
+            className="flex size-11 items-center justify-center rounded-full surface"
           >
             <ChevronLeftIcon size={20} />
           </button>

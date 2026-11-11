@@ -173,7 +173,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
           maxLength={80}
           placeholder={t('subjects.form.namePlaceholder')}
           aria-invalid={Boolean(nameError)}
-          className="h-[54px] rounded-input border-2 border-transparent glass px-4 text-base outline-none focus-visible:border-brand-accent aria-invalid:border-danger"
+          className="h-[54px] rounded-input border-2 border-transparent surface px-4 text-base outline-none focus-visible:border-brand-accent aria-invalid:border-danger"
           {...form.register('name')}
         />
         {nameError && (
@@ -284,7 +284,7 @@ function SubjectForm({ initial, archived }: { initial?: SubjectForm; archived?: 
 
       {!isEdit && <RoughSizeField value={roughSize} onChange={setRoughSize} />}
 
-      <div className="flex flex-col rounded-card glass">
+      <div className="flex flex-col rounded-card surface">
         <button
           type="button"
           onClick={() => setAdvancedOpen((o) => !o)}
@@ -383,7 +383,7 @@ function ExamEditor({
     .join(' · ')
 
   return (
-    <div className="flex flex-col gap-1 rounded-[20px] glass px-4 pt-3.5 pb-1.5">
+    <div className="flex flex-col gap-1 rounded-[20px] surface px-4 pt-3.5 pb-1.5">
       <div className="flex items-center gap-2.5">
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <input

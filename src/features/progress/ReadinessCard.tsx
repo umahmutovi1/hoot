@@ -30,7 +30,7 @@ export function ReadinessCard() {
   )
   if (!exams.length && !signal) return null
   return (
-    <section className="glass flex flex-col gap-3 rounded-card p-4">
+    <section className="surface flex flex-col gap-3 rounded-card p-4">
       <h2 className="text-base font-semibold">{t('progress.readiness.title')}</h2>
       {signal && (
         <p className="text-sm text-ink-secondary">{t('progress.readiness.calibration', signal)}</p>

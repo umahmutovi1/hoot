@@ -18,7 +18,7 @@ import { ONLY_MINUTES, pickFor, pickTitle, useStartPick } from './pick'
 import type { PlanToday } from './usePlanToday'
 
 const button =
-  'glass flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-semibold'
+  'surface flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-semibold'
 
 /**
  * "Danas ne mogu" and "Imam samo 30 min" under the next block (PRD "Brze akcije dana"), and below
@@ -151,7 +151,7 @@ function OnlyForm({ plan, onDone }: { plan: PlanToday; onDone: () => void }) {
             onClick={() => setMinutes(m)}
             className={cn(
               'h-12 flex-1 rounded-full text-[15px] font-semibold',
-              m === minutes ? 'bg-ink text-white' : 'glass-flat text-ink',
+              m === minutes ? 'bg-ink text-white' : 'surface text-ink',
             )}
           >
             {t('time.minutes', { m })}

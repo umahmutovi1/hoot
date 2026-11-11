@@ -60,7 +60,7 @@ function SourceDetail({
       <div className="flex items-center justify-end">
         <Link
           to={`${base}/edit`}
-          className="flex h-11 items-center rounded-full glass px-4 text-sm font-semibold"
+          className="flex h-11 items-center rounded-full surface px-4 text-sm font-semibold"
         >
           {t('sources.detail.editContent')}
         </Link>
@@ -75,7 +75,7 @@ function SourceDetail({
 
       {source.file_name && (
         // Where the units came from (Sprint 13): the PDF's name, and the Drive link when picked there.
-        <div className="flex items-center gap-3 rounded-[20px] glass p-3">
+        <div className="flex items-center gap-3 rounded-[20px] surface p-3">
           <span
             aria-hidden="true"
             className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
@@ -101,7 +101,7 @@ function SourceDetail({
         </div>
       )}
 
-      <div className="flex flex-col gap-3 rounded-card glass p-4">
+      <div className="flex flex-col gap-3 rounded-card surface p-4">
         <LevelBar
           minutes={levelMinutes(leaves)}
           questions={source.kind === 'questions'}
@@ -133,7 +133,7 @@ function SourceDetail({
               onClick={() => setFilter(f.id)}
               className={cn(
                 'h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
-                filter === f.id ? 'bg-ink text-white' : 'glass',
+                filter === f.id ? 'bg-ink text-white' : 'surface',
               )}
             >
               {f.title}
@@ -143,7 +143,9 @@ function SourceDetail({
       )}
 
       {material.units.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.detail.empty')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">
+          {t('sources.detail.empty')}
+        </p>
       ) : (
         <UnitList material={material} base={base} visible={visible} />
       )}
@@ -187,13 +189,13 @@ function UnitList({
 
   if (units.length === 0) {
     return (
-      <p className="rounded-card glass p-4 text-sm text-ink-muted">
+      <p className="rounded-card surface p-4 text-sm text-ink-muted">
         {t('sources.detail.noneInExam')}
       </p>
     )
   }
   return (
-    <div className="flex flex-col rounded-card glass p-1.5">
+    <div className="flex flex-col rounded-card surface p-1.5">
       {units.map((u, i) => {
         const d = depth.get(u.id) ?? 0
         // A parent shows the lowest status of its sub-units ("whole chapter read").
@@ -260,7 +262,7 @@ function Archived({ subjectId, source }: { subjectId: string; source: SourceWith
         {t('sources.detail.archived', { count: archived.length })}
       </button>
       {open && (
-        <div className="flex flex-col rounded-card glass p-1.5">
+        <div className="flex flex-col rounded-card surface p-1.5">
           {archived.map((u) => (
             <div key={u.id} className="flex items-center gap-3 py-1.5 pr-1 pl-2.5">
               <span className="w-[30px] shrink-0 text-[13px] font-semibold text-ink-muted">

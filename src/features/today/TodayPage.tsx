@@ -7,6 +7,7 @@ import { CalendarImportCard } from '@/features/calendars/CalendarImportCard'
 import { useCalendarProposals } from '@/features/calendars/matches'
 import { useDeadlineProposals } from '@/features/calendars/moodle'
 import { useState } from 'react'
+import { InHeader } from '@/app/layout/ScreenHeader'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
@@ -77,31 +78,29 @@ export function TodayPage() {
 
   return (
     <div className="flex flex-col pb-8">
-      <div className="mt-1.5 flex flex-col gap-0.5 px-1">
-        <span className="text-[13px] font-semibold tracking-[0.2px] text-ink-secondary">
-          <span className="uppercase">
-            {format(toDisplayDate(plan.today), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
-          </span>
+      <InHeader>
+        <h1 className="text-[44px] leading-none font-bold tracking-[-0.03em]">{t('nav.today')}</h1>
+        <span className="mt-1.5 block text-base text-ground/80">
+          {format(toDisplayDate(plan.today), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
           {status && (
             <>
               {' · '}
-              <Link to="/settings/calendar" className="text-brand">
+              <Link to="/settings/calendar" className="font-semibold text-ground underline">
                 {statusLabel(t, status)}
               </Link>
             </>
           )}
         </span>
-        <h1 className="text-[36px] leading-[1.1] font-bold tracking-[-0.9px]">{t('nav.today')}</h1>
         {firstRun && (
-          <span className="mt-1 text-[17px] font-semibold">
+          <span className="mt-1 block text-[17px] font-semibold">
             {t(`today.greeting.${greetingPart(plan.now.getHours())}`, { name })}
           </span>
         )}
-      </div>
+      </InHeader>
 
       {hasSubjects ? (
         <>
-          <div className="mt-4">
+          <div>
             <FocusBar plan={plan} />
           </div>
           <div className="mt-3.5">
@@ -175,7 +174,7 @@ function MovedCard({ plan }: { plan: PlanToday }) {
   const growth = plan.model?.built.state.growthBase !== null
   const onTrack = (plan.model?.result.deficits.length ?? 0) === 0
   return (
-    <section className="glass mt-3 flex flex-col gap-2.5 rounded-card p-4">
+    <section className="surface mt-3 flex flex-col gap-2.5 rounded-card p-4">
       <span className="text-[15px] font-semibold">{t('today.cant.whatMoved')}</span>
       <div className="flex flex-col gap-2 text-sm">
         {moved.map(({ block, to }) => (

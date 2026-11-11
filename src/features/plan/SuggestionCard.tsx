@@ -36,7 +36,7 @@ function Card({
     <div
       className={cn(
         'flex flex-col gap-3 rounded-card p-4',
-        tone === 'warning' ? 'bg-warning-soft' : 'glass',
+        tone === 'warning' ? 'bg-warning-soft' : 'surface',
       )}
     >
       <div className="flex items-start gap-3">

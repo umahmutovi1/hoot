@@ -21,7 +21,7 @@ import { dateFnsLocales } from '@/lib/locale'
 import { formatClock } from '@/lib/schedule'
 import { cn } from '@/lib/utils'
 
-const card = 'glass flex flex-col overflow-hidden rounded-[22px]'
+const card = 'surface flex flex-col overflow-hidden rounded-[22px]'
 const divider = <div className="mx-4 h-px bg-line/90" />
 
 /**

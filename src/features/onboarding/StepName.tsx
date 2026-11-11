@@ -36,7 +36,7 @@ export function StepName({ setSave, setReady }: StepProps) {
         autoComplete="given-name"
         aria-label={t('profile.nameLabel')}
         placeholder={t('profile.nameLabel')}
-        className="h-[54px] rounded-input glass px-4 text-[17px] outline-none focus:ring-2 focus:ring-brand-accent"
+        className="h-[54px] rounded-input surface px-4 text-[17px] outline-none focus:ring-2 focus:ring-brand-accent"
       />
       <div className="flex flex-col gap-1.5">
         <span className="px-1 text-xs font-semibold text-ink-muted uppercase">

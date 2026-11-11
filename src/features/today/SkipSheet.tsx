@@ -73,7 +73,7 @@ export function SkipSheet({
           type="button"
           disabled={busy}
           onClick={() => void run(false)}
-          className="h-12 rounded-full glass text-[15px] font-semibold disabled:opacity-60"
+          className="h-12 rounded-full surface text-[15px] font-semibold disabled:opacity-60"
         >
           {t('today.skip.only')}
         </button>

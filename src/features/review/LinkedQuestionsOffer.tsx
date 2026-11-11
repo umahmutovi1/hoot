@@ -26,7 +26,7 @@ export function LinkedQuestionsOffer({ unitId }: { unitId: string }) {
   ).length
   if (count === 0) return null
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[24px] glass px-4 py-3">
+    <div className="flex items-center justify-between gap-3 rounded-[24px] surface px-4 py-3">
       <span className="text-sm text-ink-secondary">{t('recall.offerQuestions', { count })}</span>
       <Link
         to={`/session/recall?units=${unit.id}&to=${encodeURIComponent('/session')}`}

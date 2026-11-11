@@ -23,7 +23,8 @@
     "eval": "npx -y promptfoo@0.124.1 eval -c evals/promptfooconfig.yaml --no-cache"
   },
   "dependencies": {
-    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/figtree": "^5.3.0",
     "@hookform/resolvers": "^6.0.0",
     "@open-spaced-repetition/binding-wasm32-wasip1": "0.6.0",
     "@supabase/supabase-js": "^2.118.0",

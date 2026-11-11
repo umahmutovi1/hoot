@@ -1,4 +1,47 @@
-# Dizajn · Liquid Glass (Lavanda magla)
+# Dizajn · Noćna sova (od Sprinta 19)
+
+Mockupi od Sprinta 19 su u Hoot redesign canvasu (claude.ai Design artifact `Met9BSajCuFGTUtLpiLb5U`); svaki `project/<Ime>.dc.html` je jedan
+ekran od 390 px sa stanjima (`stanje`). Prenesi raspored, boje i tekst u React + Tailwind, ne kopiraj HTML ni DCLogic skripte. Tekst sa
+boardova: [copy-redesign-nov5.md](copy-redesign-nov5.md). Odluke: PRD „Dopune, 5. nov 2026: redizajn“.
+
+## Vizuelni sistem (boardovi DSPregled, DSBoje, DSTipografija, DSOblik)
+- **Fontovi:** Figtree za tekst, Bricolage Grotesque 700 (-0.02em) za naslove i velike brojeve; oba lokalno (`@fontsource-variable`), brojevi `tabular-nums`.
+- **Podloga:** krem #FBF5E6 (ekran), pijesak #F3EBD6 (kartica, lista), mlijeko #FFFDF7 (polje, sheet, red na kartici). Nikad čisto bijela.
+- **Tekst:** tinta #17181F, #4A4A57 (sekundarni), #5B5A66 (meta), #64636D (najtiši; ≥ 4.5:1 i na pijesku).
+- **Brend (tema Noć):** navy #34527A (akcija, zaglavlje), duboki #22395A (tekst na nebu), nebo #C4DCF2 (sljedeći korak, izabrano).
+- **Ćilibar** #E3A23F je AI i energija, uvijek s tamnim tekstom; tamni ćilibar #8A5A12 za tekst.
+- **Stanja:** urađeno #D2EBDB / #1F4A31, pažnja #F6E3B0 / #4A3406, propušteno #A63D35 (pozadina #F7D9D4).
+- **Predmeti** (jaka · blaga · tamna): Roza #D97AA0 · #F5D3E0 · #5A2A40, Lavanda #8C84E0 · #D8D3F5 · #2A2560, Plava #6FA3D6 · #CFE2F5 · #1F3D63,
+  Zelena #6FAE8A · #D2EBDB · #1F4A31, Narandžasta (Terakota) #D9774B · #F6D5C4 · #5A2610, Siva #7B8494 · #DEE0E4 · #2F3238. Uz to `deep` za tekst na kremu.
+- **Teme** (`profiles.theme`, board Izgled): Noć `ocean` (zadana) #34527A, Grafit `graphite` #3F414C, Mahovina `sage` #3D5F4C, Šljiva `lavender` #5B3F6C,
+  Kesten `sand` #6B4A33. Tamna, akcent (+10 % prema bijeloj) i nebo su izvedeni iz glavne boje. Boje predmeta su iste u svim temama.
+- **Oblik:** tag 8, čip 14, dugme 16–18, red i polje 18, kartica 24–28, bento i sheet 32 (gore). Primarno dugme 56 px, radijus 18. Unutrašnji radijus = vanjski − razmak.
+- **Dubina** dolazi od površine, ne sjene: kartice su ravne, samo sheet, navigacija i toast imaju meku sjenu. Bez stakla, blura i gradijenata.
+- **Potpis ivice:** plavo zaglavlje s talasom na dnu, samo na vrhu ekrana.
+- **Motion:** „smiri se“ `cubic-bezier(.22,1,.36,1)`, 160 dodir / 240 promjena / 400 ulaz; uz smanjen pokret sve je fade od 150 ms. Nikad beskonačno vrtenje ni treperenje.
+- **Ikonska dugmad** (X, olovka, pretraga, postavke, Prilagodi dan, kebab): samo ikona, bez pozadine i teksta, 44 px, `aria-label`.
+- **Bez maskote:** sova sa boardova se ne prenosi; mali logo od dvije elipse je u redu.
+- **Tamna tema** (board DSDanasNoc, DSBoje „Noć · tamna“) je za kasniji sprint.
+
+## U kodu
+Tokeni i utility klase su u `src/index.css`: `surface` (kartica), `surface-raised` (polje, navigacija), `sheet`, `header-bar` (ljepljivo
+zaglavlje), `hero` (jedna velika stvar u boji brenda), `btn-primary`, `toast`, `icon-tile`. `[data-theme]` mijenja samo `--hoot-*` tokene.
+
+## Ljuska (NavVarijante B, Meni, DanasA, Izgled)
+- **Plavo zaglavlje** (`ScreenHeader`) na svakom ekranu u app shellu. Glavni ekrani: znak i „hoot“ (Danas), pretraga i Postavke kao ikone;
+  ekrani ispod njih: „‹ roditelj“ (iz mrvica) umjesto toga. Naslov ekrana (`PageTitle` 44 px, `ScreenTitle` 36 px ili `InHeader`)
+  se kroz portal crta u zaglavlju, a ispod je talas. Mrvice se više ne prikazuju kao red; služe samo za „‹ roditelj“.
+- **Donja traka** (`BottomNav`): Danas, Plan, AI, Predmeti, Napredak; ikona i naziv, jedna pilula (nebo, na AI ćilibar) klizi
+  0.32 s, bez animacije uz smanjen pokret. Tap na aktivni tab sa podstranicama otvara tamni meni iznad trake (Plan: Kalendar,
+  Dostupnost, Raspored nastave, Povezani kalendari; Predmeti: aktivni predmeti, Svi predmeti; Napredak: Pregled, Sedmica u
+  retrovizoru, Sesije). Uz tastaturu traka nestaje. Stvari fiksirane pri dnu (toast, polje chata) koriste `--nav-offset`.
+- Meni ☰ i gornji red sa AI pilulom (Sprint 12) su ukinuti; „Odjavi se“ je u Postavkama.
+
+---
+
+# Zamijenjeno: Liquid Glass (Lavanda magla, do Sprinta 18)
+
+*Vizuelni sistem ispod je zamijenjen Noćnom sovom (Sprint 19). Tokovi ekrana i odluke ispod i dalje važe ako ih PRD dopune ne mijenjaju.*
 
 Svaki `.dc.html` je jedan ekran (390 px, mobilni). Ovo su mockupi: prenesi raspored, boje, tekstove i tokove u React + Tailwind,
 ne kopiraj HTML. `<script>` na dnu fajla je samo demo interakcija. Varijante istog ekrana (UrediBlok*, Provjera*, NoviPredmet*)

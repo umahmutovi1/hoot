@@ -8,7 +8,7 @@ export function ForecastCard({ compact = false }: { compact?: boolean }) {
   if (!data || !data.forecasts.length) return null
   const rows = compact ? data.forecasts.slice(0, 1) : data.forecasts
   return (
-    <section className="glass flex flex-col gap-3 rounded-card p-4">
+    <section className="surface flex flex-col gap-3 rounded-card p-4">
       <h2 className="text-base font-semibold">{t('progress.forecast.title')}</h2>
       {rows.map((f) => (
         <Link

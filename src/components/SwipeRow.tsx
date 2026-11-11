@@ -98,7 +98,7 @@ export function SwipeRow({
   const first = actions[0]
   return (
     <div ref={row} className={cn('relative overflow-hidden', className)}>
-      {/* Only as wide as the gap the row leaves: rows are translucent glass. */}
+      {/* Only as wide as the gap the row leaves: rows are opaque cards. */}
       <div
         className="absolute inset-y-0 right-0 flex justify-end overflow-hidden"
         style={{ width: Math.max(0, -dx) }}
@@ -228,7 +228,7 @@ export function SwipeRow({
               onClick={() => runAction(a)}
               className={cn(
                 'flex h-12 items-center justify-center gap-2 rounded-full text-[15px] font-semibold',
-                a.tone === 'danger' ? 'bg-danger text-white' : 'glass text-ink',
+                a.tone === 'danger' ? 'bg-danger text-white' : 'surface text-ink',
               )}
             >
               {a.icon}

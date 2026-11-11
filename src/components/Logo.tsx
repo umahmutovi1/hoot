@@ -17,3 +17,21 @@ export function Logo({ size = 32, className }: { size?: number; className?: stri
     </svg>
   )
 }
+
+/** The small two-eye mark from the redesign header (DSPregled); eyes in the current colour. */
+export function LogoMark({ width = 26, className }: { width?: number; className?: string }) {
+  return (
+    <svg
+      width={width}
+      height={(width * 18) / 30}
+      viewBox="0 0 30 18"
+      aria-hidden="true"
+      className={className}
+    >
+      <ellipse cx="8" cy="9" rx="6" ry="8" fill="currentColor" />
+      <ellipse cx="22" cy="9" rx="6" ry="8" fill="currentColor" />
+      <circle cx="9.5" cy="6" r="2" fill="var(--hoot-brand)" />
+      <circle cx="23.5" cy="6" r="2" fill="var(--hoot-brand)" />
+    </svg>
+  )
+}

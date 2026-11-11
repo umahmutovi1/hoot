@@ -57,7 +57,7 @@ export function StepImport(_props: StepProps) {
         <button
           type="button"
           onClick={() => navigate('/settings/academic/found')}
-          className="glass-tint flex flex-col gap-2 rounded-card p-4 text-left"
+          className="hero flex flex-col gap-2 rounded-card p-4 text-left"
         >
           <span className="text-xs font-semibold tracking-[0.6px] text-white/88 uppercase">
             {t('academic.found.title')}
@@ -168,7 +168,7 @@ function ImportCard({
       type="button"
       onClick={onClick}
       disabled={busy}
-      className="flex items-center gap-3 rounded-[22px] glass p-3.5 text-left disabled:opacity-60"
+      className="flex items-center gap-3 rounded-[22px] surface p-3.5 text-left disabled:opacity-60"
     >
       <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-brand-soft text-brand">
         {icon}

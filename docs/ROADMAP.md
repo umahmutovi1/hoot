@@ -425,6 +425,7 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 
 **Redizajn (PRD „Dopune, 5. nov 2026: redizajn“; mockupi u Hoot redesign canvasu):**
 
+- [ ] Vizuelni sistem Noćna sova: Figtree + Bricolage, tokeni i ravne površine umjesto stakla u `src/index.css`, teme Noć (zadana) / Grafit / Mahovina / Šljiva / Kesten, boje predmeta sa DSBoje; zaglavlje s talasom
 - [ ] Cilj predmeta: prekidač Uslovni + željena ocjena umjesto „Koliko ti je bitan“; `priorityFromGoal()` u `src/lib/` (uslovni → 5, ocjena 6 → 2, 7–8 → 3, 9–10 → 4, bez ocjene 3) + testovi; stari ručni prioritet se ne prepisuje; NoviPredmet i Predmet → Cilj
 - [ ] NoviPredmet: sekcija „Prvi izvor“ (PDF / nađi sadržaj / slika) umjesto Malo / Srednje / Puno; „Izvor dodajem kasnije“ = grubi izvor ~25 h
 - [ ] Sadržaj izvora s interneta: web search kroz wrapper (naslov, autor, izdanje), poglavlja kao jedinice + link i upozorenje za izdanje, pregled prije snimanja, keš po naslovu, `ai_runs`; prazan rezultat → ručni unos ili slika sadržaja; eval
@@ -499,7 +500,7 @@ PRD „Dopune, 2. nov 2026“, [RESEARCH-ML-2026-11.md](RESEARCH-ML-2026-11.md).
 - **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a): dijeljenje sesija i kartica, prijatelj za odgovornost (dopuna 29. okt 2026).
 - Study with me uz timer: lofi muzika ili stream (YouTube embed), samo dok je app otvoren na iOS-u (PRD „Dopune“).
 - OCR skeniranih PDF-ova za tekst izvora; ElevenLabs plaćeni plan uz Pretplatu.
-- Tamni režim (teme iz Sprinta 12 su svijetle).
+- Tamni režim (teme su svijetle): vrijednosti na boardovima DSBoje „Noć · tamna“ i DSDanasNoc, izbor Svijetla / Tamna / Kao telefon u Izgledu (odluka 11. nov 2026).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
 - Prijedlog obima parcijale iz onoga što je pređeno na predavanjima do datuma parcijale.

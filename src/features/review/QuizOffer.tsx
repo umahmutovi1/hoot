@@ -26,7 +26,7 @@ export function QuizOffer({
     <Link
       to={`/session/recall?units=${unitIds.join(',')}&quiz=1&to=${encodeURIComponent(to)}`}
       className={cn(
-        'flex h-12 items-center justify-center gap-2 rounded-full border-2 border-brand glass text-[15px] font-semibold text-brand',
+        'flex h-12 items-center justify-center gap-2 rounded-full border-2 border-brand surface text-[15px] font-semibold text-brand',
         className,
       )}
     >

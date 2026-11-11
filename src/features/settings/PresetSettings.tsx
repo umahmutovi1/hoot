@@ -22,7 +22,7 @@ export function PresetSettings() {
     update.mutate({ session_presets: list, default_preset: nextDefault })
 
   return (
-    <div className="flex flex-col gap-2 rounded-card glass p-4">
+    <div className="flex flex-col gap-2 rounded-card surface p-4">
       <span className="text-[15px]">{t('settings.presets.title')}</span>
       <div
         role="radiogroup"

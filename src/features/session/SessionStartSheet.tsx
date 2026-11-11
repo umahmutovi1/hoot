@@ -339,7 +339,7 @@ function OptionCard({
       onClick={onSelect}
       className={cn(
         'flex items-center gap-3 rounded-[20px] border-2 p-3.5 text-left',
-        checked ? 'border-brand-accent bg-canvas-soft' : 'border-hairline glass',
+        checked ? 'border-brand-accent bg-canvas-soft' : 'border-hairline surface',
       )}
     >
       <span

@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { ScreenTitle } from '@/components/ScreenTitle'
 import { useToast } from '@/components/toast-store'
-import { cn } from '@/lib/utils'
+import { CheckIcon } from '@/components/icons'
 import { useProfile, useUpdateProfile } from './profile'
 import { applyTheme, isTheme, THEMES, type Theme } from './theme'
 
 /**
- * Postavke → Opće → Izgled (Izgled.dc.html, Sprint 12): five light themes. A tap applies the theme
+ * Postavke → Opće → Izgled (Izgled.dc.html, Sprint 12; Noćna sova, Sprint 19): five light themes. A tap applies the theme
  * at once (no Save) and syncs it through `profiles.theme`; the toast can undo it.
  */
 export function AppearancePage() {
@@ -14,7 +14,7 @@ export function AppearancePage() {
   const { data: profile } = useProfile()
   const update = useUpdateProfile()
   const show = useToast((s) => s.show)
-  const current: Theme = isTheme(profile?.theme) ? profile.theme : 'lavender'
+  const current: Theme = isTheme(profile?.theme) ? profile.theme : 'ocean'
 
   const pick = (theme: Theme) => {
     if (theme === current) return
@@ -39,7 +39,11 @@ export function AppearancePage() {
       <h2 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">
         {t('appearance.themes')}
       </h2>
-      <div role="radiogroup" aria-label={t('appearance.themes')} className="flex flex-col gap-2">
+      <div
+        role="radiogroup"
+        aria-label={t('appearance.themes')}
+        className="surface flex flex-col overflow-hidden rounded-card"
+      >
         {THEMES.map((theme) => {
           const on = theme === current
           return (
@@ -49,26 +53,13 @@ export function AppearancePage() {
               role="radio"
               aria-checked={on}
               onClick={() => pick(theme)}
-              className={cn(
-                'flex items-center gap-3 rounded-[20px] border-2 p-3 text-left',
-                on ? 'border-brand-accent bg-white/40' : 'border-line/60 bg-white/55',
-              )}
+              className="flex min-h-14 items-center gap-3 border-hairline py-2 pr-3 pl-4 text-left not-first:border-t"
             >
               <ThemeSwatch theme={theme} />
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="text-[15px] font-semibold">
-                  {t(`appearance.theme.${theme}.name`)}
-                </span>
-                <span className="text-xs text-ink-muted">{t(`appearance.theme.${theme}.sub`)}</span>
+              <span className="min-w-0 flex-1 text-[15px] font-bold">
+                {t(`appearance.theme.${theme}.name`)}
               </span>
-              <span
-                className={cn(
-                  'flex size-[22px] shrink-0 items-center justify-center rounded-full border-2',
-                  on ? 'border-brand' : 'border-radio-ring',
-                )}
-              >
-                {on && <span className="size-2.5 rounded-full bg-brand" />}
-              </span>
+              {on && <CheckIcon size={22} className="text-brand" />}
             </button>
           )
         })}
@@ -78,28 +69,19 @@ export function AppearancePage() {
   )
 }
 
-/** The theme's mist with its button colour, drawn from its own tokens (`data-theme` on the tile). */
+/** The theme's brand colour, drawn from its own tokens (`data-theme` on the tile). */
 export function ThemeSwatch({ theme, size = 40 }: { theme: Theme; size?: number }) {
   return (
     <span
       data-theme={theme}
       aria-hidden="true"
-      className="flex shrink-0 items-end justify-end rounded-xl p-[5px] shadow-[inset_0_0_0_0.5px_rgba(58,51,96,0.12)]"
+      className="shrink-0"
       style={{
         width: size,
         height: size,
-        background:
-          'radial-gradient(120% 90% at 0% 0%, rgb(var(--hoot-mist-1) / 0.9), rgb(var(--hoot-mist-1) / 0) 70%), radial-gradient(90% 80% at 100% 30%, rgb(var(--hoot-mist-2) / 0.85), rgb(var(--hoot-mist-2) / 0) 70%), linear-gradient(180deg, var(--hoot-canvas-top), var(--hoot-canvas-bottom))',
+        borderRadius: size * 0.325,
+        background: 'var(--hoot-brand)',
       }}
-    >
-      <span
-        className="rounded-full"
-        style={{
-          width: size * 0.4,
-          height: size * 0.4,
-          background: 'linear-gradient(160deg, var(--hoot-btn-from), var(--hoot-btn-to))',
-        }}
-      />
-    </span>
+    />
   )
 }

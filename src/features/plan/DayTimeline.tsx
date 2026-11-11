@@ -132,7 +132,7 @@ export function DayTimeline({
         // "Statistika — Poglavlje 5": the dash stays with the subject when the title wraps.
         title: b.title.replace(' — ', '\u00a0— '),
         lines: b.sub ? [b.sub] : [],
-        surface: 'glass',
+        surface: 'surface',
         border: palette.border,
         timeText: 'text-ink-muted',
         titleText: 'text-ink',
@@ -253,7 +253,7 @@ export function DayTimeline({
               card.tone === 'busy' && !open && HATCH,
               card.tone !== 'busy' && 'border-l-4',
               card.border,
-              open ? 'z-20 glass-strong shadow-lg' : card.surface,
+              open ? 'z-20 surface-raised shadow-lg' : card.surface,
               card.faded && !open && 'opacity-55',
             )}
             style={position}

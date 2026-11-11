@@ -4,7 +4,7 @@ import { isWinter } from '@/lib/academic'
 import { semestersOf, YEARS_OF_STUDY, type FacultyValue } from './faculty'
 
 const input =
-  'h-[54px] rounded-input glass px-4 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-accent'
+  'h-[54px] rounded-input surface px-4 text-base outline-none focus-visible:ring-2 focus-visible:ring-brand-accent'
 
 /** Fakultet, studijski program, godina studija (and, in onboarding, semestar). */
 export function FacultyFields({

@@ -40,7 +40,7 @@ export function GoalCard({ subject, today }: { subject: SubjectWithAssessments; 
   )
 
   return (
-    <section className="glass flex flex-col gap-1 rounded-card p-4">
+    <section className="surface flex flex-col gap-1 rounded-card p-4">
       <div className="flex items-center justify-between">
         <span className="text-base font-semibold">{t('subjects.goal.title')}</span>
         <Link

@@ -26,10 +26,10 @@ export function ImportJobBanner({ top = false }: { top?: boolean }) {
         // Onboarding and the session keep their main button at the bottom.
         top
           ? 'top-[calc(12px+env(safe-area-inset-top))]'
-          : 'bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))]',
+          : 'bottom-[calc(16px+var(--nav-offset,0px)+env(safe-area-inset-bottom)+var(--vv-bottom,0px))]',
       )}
     >
-      <div className="flex flex-col gap-2.5 rounded-card glass-strong p-4 shadow-lg">
+      <div className="flex flex-col gap-2.5 rounded-card surface-raised p-4 shadow-lg">
         {job.status === 'running' ? (
           <>
             <span className="truncate animate-pulse text-[15px] font-semibold">

@@ -45,7 +45,7 @@ export function StepDays({ setSave }: StepProps) {
   return (
     <>
       <StepTitle title={t('onboarding.days.title')} sub={t('onboarding.days.sub')} />
-      <div className="flex gap-1 rounded-card glass p-3">
+      <div className="flex gap-1 rounded-card surface p-3">
         <div className="relative w-6 shrink-0" style={{ height: (TO - FROM) * PX + 28 }}>
           {[6, 12, 18, 24].map((h) => (
             <span

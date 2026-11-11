@@ -6,7 +6,7 @@ import { CalendarIcon, ChevronRightIcon } from '@/components/icons'
 export function CalendarImportCard({ lectures, exams }: { lectures: number; exams: number }) {
   const { t } = useTranslation()
   return (
-    <Link to="/today/calendar" className="flex items-center gap-3 rounded-card glass p-4">
+    <Link to="/today/calendar" className="flex items-center gap-3 rounded-card surface p-4">
       <span
         className="icon-tile flex size-[38px] shrink-0 items-center justify-center rounded-[12px]"
         aria-hidden="true"

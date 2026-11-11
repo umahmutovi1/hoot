@@ -66,7 +66,7 @@ export function FocusBar({ plan }: { plan: PlanToday }) {
   const { t } = useTranslation()
   const ratio = (done: number, planned: number) => (planned > 0 ? done / planned : 0)
   return (
-    <section className="glass flex items-center gap-4 rounded-card-lg p-[18px]">
+    <section className="surface flex items-center gap-4 rounded-card-lg p-[18px]">
       <Rings
         today={ratio(plan.doneToday, plan.plannedToday)}
         week={ratio(plan.doneWeek, plan.plannedWeek)}

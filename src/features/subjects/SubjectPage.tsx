@@ -155,7 +155,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         <Link
           to={editPath}
           aria-label={t('subjects.detail.edit')}
-          className="absolute top-3 right-3 flex size-11 items-center justify-center rounded-full glass"
+          className="absolute top-3 right-3 flex size-11 items-center justify-center rounded-full surface"
         >
           <PencilIcon size={18} />
         </Link>
@@ -174,7 +174,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
             <Link
               to={editPath}
               className={cn(
-                'flex h-7 items-center rounded-full glass px-2.5 text-xs font-semibold',
+                'flex h-7 items-center rounded-full surface px-2.5 text-xs font-semibold',
                 palette.inkText,
               )}
             >
@@ -190,7 +190,7 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
             <Link
               to={editPath}
               className={cn(
-                'flex h-7 items-center rounded-full glass px-2.5 text-xs font-semibold',
+                'flex h-7 items-center rounded-full surface px-2.5 text-xs font-semibold',
                 palette.inkText,
               )}
             >
@@ -233,17 +233,17 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         <button
           type="button"
           onClick={() => setExamSheet({ open: true })}
-          className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
+          className="flex h-9 items-center rounded-full surface px-3 text-[13px] font-semibold text-brand"
         >
           {t('subjects.detail.addExam')}
         </button>
       </div>
       {exams.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">
           {t('subjects.detail.noExams')}
         </p>
       ) : (
-        <div className="flex flex-col overflow-hidden rounded-card glass">
+        <div className="flex flex-col overflow-hidden rounded-card surface">
           {exams
             .filter((e) => !isNested(e))
             .map((exam, i) => (
@@ -285,15 +285,15 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         <button
           type="button"
           onClick={() => setDeadlineSheet({ open: true })}
-          className="flex h-9 items-center rounded-full glass px-3 text-[13px] font-semibold text-brand"
+          className="flex h-9 items-center rounded-full surface px-3 text-[13px] font-semibold text-brand"
         >
           {t('deadlines.add')}
         </button>
       </div>
       {deadlines.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('deadlines.none')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">{t('deadlines.none')}</p>
       ) : (
-        <div className="flex flex-col overflow-hidden rounded-card glass">
+        <div className="flex flex-col overflow-hidden rounded-card surface">
           {deadlines.map((d, i) => (
             <div key={d.id}>
               {i > 0 && <div className="mx-3 h-px bg-hairline" />}
@@ -501,7 +501,7 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
   return (
     <div className="flex flex-col gap-3 rounded-card bg-brand-soft p-[18px]">
       <div className="flex items-center gap-3">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] glass text-brand">
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] surface text-brand">
           <FlagIcon />
         </div>
         <div className="flex flex-col gap-0.5">
@@ -524,7 +524,7 @@ function CampaignCard({ subject, now }: { subject: SubjectWithAssessments; now: 
       <div className="flex gap-2">
         <Link
           to={`/subjects/${subject.id}/edit`}
-          className="flex h-11 items-center rounded-full glass px-[18px] text-sm font-semibold"
+          className="flex h-11 items-center rounded-full surface px-[18px] text-sm font-semibold"
         >
           {t('subjects.campaign.move')}
         </Link>
@@ -556,7 +556,7 @@ function ArchivedExams({ subjectId }: { subjectId: string }) {
   const show = useToast((s) => s.show)
   if (archived.length === 0) return null
   return (
-    <details className="rounded-card glass px-4 py-1">
+    <details className="rounded-card surface px-4 py-1">
       <summary className="flex min-h-11 cursor-pointer list-none items-center text-sm font-semibold text-ink-secondary">
         {t('swipe.archivedExams')} ({archived.length})
       </summary>

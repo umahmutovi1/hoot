@@ -33,7 +33,7 @@ export function SemesterEndCard() {
   if ((snoozed[key] ?? '') >= term.today) return null
   const name = (id: string) => subjects.find((s) => s.id === id)?.name ?? ''
   return (
-    <section className="glass flex flex-col gap-3 rounded-card-lg p-[18px]">
+    <section className="surface flex flex-col gap-3 rounded-card-lg p-[18px]">
       <div className="flex items-start gap-3">
         <span
           className="icon-tile flex size-[38px] shrink-0 items-center justify-center rounded-[12px]"

@@ -90,7 +90,7 @@ export function StepSubject({ setSave }: StepProps) {
     })
   }, [name, exam, date, usePeriod, size, period, existing, sources, defaultTerm]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const field = 'h-12 rounded-input glass px-4 text-[15px] outline-none'
+  const field = 'h-12 rounded-input surface px-4 text-[15px] outline-none'
   return (
     <>
       <StepTitle title={t('onboarding.subject.title')} sub={t('onboarding.subject.sub')} />
@@ -134,7 +134,7 @@ export function StepSubject({ setSave }: StepProps) {
           </div>
         )}
         {period && usePeriod ? (
-          <span className="rounded-[18px] glass px-4 py-3 text-[15px]">
+          <span className="rounded-[18px] surface px-4 py-3 text-[15px]">
             <span className="font-semibold">
               {dateRangeLabel(period.startsOn, period.endsOn, dateFnsLocales[locale])}
             </span>

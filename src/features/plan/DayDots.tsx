@@ -28,7 +28,7 @@ export function DayDots({
             'size-[6px] rounded-full',
             m.kind === 'exam' && paletteOf(m.color).bar,
             m.kind === 'possible' && 'border-[1.5px]',
-            m.kind === 'possible' && (light ? 'bg-ink' : 'glass'),
+            m.kind === 'possible' && (light ? 'bg-ink' : 'surface'),
             m.kind === 'possible' && paletteOf(m.color).border,
             m.kind === 'deadline' && 'bg-warning',
           )}

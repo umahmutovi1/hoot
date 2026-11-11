@@ -190,7 +190,7 @@ function Quiz({
           disabled={busy}
           onClick={() => void finish(ratings)}
           aria-label={t('review.close')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full glass"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full surface"
         >
           <CloseIcon size={20} />
         </button>
@@ -220,7 +220,7 @@ function Quiz({
       )}
       <UnitLine item={item} cards={cards} today={today} />
 
-      <div className="flex flex-col gap-3.5 rounded-card-lg glass p-5">
+      <div className="flex flex-col gap-3.5 rounded-card-lg surface p-5">
         <span className="text-xs font-semibold text-brand-muted">{sourceLabel(t, item)}</span>
         <p className="text-[19px] leading-[1.35] font-semibold">
           {item.source === 'notes' || item.source === 'recall'
@@ -251,7 +251,7 @@ function Quiz({
           <button
             type="button"
             onClick={() => setRevealed((s) => new Set(s).add(item.key))}
-            className="h-12 rounded-full border-2 border-brand glass text-[15px] font-semibold text-brand"
+            className="h-12 rounded-full border-2 border-brand surface text-[15px] font-semibold text-brand"
           >
             {t('recall.reveal')}
           </button>
@@ -352,7 +352,7 @@ function Summary({ summary }: { summary: CheckSummary & { minutes: number } }) {
           })}
         </span>
       </div>
-      <div className="flex flex-col rounded-card glass px-4">
+      <div className="flex flex-col rounded-card surface px-4">
         {summary.changes.map((c) => {
           // A band and when the next check comes read clearer than two percentages (a test
           // repeated the same day would even show a "drop" from 100% to tomorrow's value).

@@ -38,7 +38,7 @@ export function StepMax({ setSave }: StepProps) {
       <StepTitle title={t('onboarding.max.title')} sub={t('onboarding.max.sub')} />
       <div className="flex flex-col gap-2">
         {rows.map((r) => (
-          <div key={r.label} className="flex flex-col gap-2.5 rounded-[22px] glass p-4">
+          <div key={r.label} className="flex flex-col gap-2.5 rounded-[22px] surface p-4">
             <div className="flex items-center justify-between">
               <span className="text-[15px] font-semibold">{r.label}</span>
               <span className="text-[22px] font-semibold tabular-nums">

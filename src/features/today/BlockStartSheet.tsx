@@ -117,7 +117,7 @@ function Body({
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="glass flex flex-col gap-1.5 rounded-[22px] px-4 py-3.5">
+      <div className="surface flex flex-col gap-1.5 rounded-[22px] px-4 py-3.5">
         <div className="flex items-center gap-2">
           <span
             className={cn('size-2.5 shrink-0 rounded-full', paletteOf(subject?.color ?? null).bar)}
