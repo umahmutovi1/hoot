@@ -1199,7 +1199,21 @@
       "typeInstead": "Type the chapters",
       "photoInstead": "Photograph the contents",
       "sourceRow": "Contents from the web",
-      "open": "Open"
+      "open": "Open",
+      "findForRough": "Find the contents on the web"
+    },
+    "syllabus": {
+      "from": "From the syllabus",
+      "fromAt": "From the syllabus · {{institution}}",
+      "title": "Which of these do you use?",
+      "group": "Literature from the syllabus",
+      "required": "Required",
+      "extra": "Supplementary",
+      "add_one": "Add {{count}} source",
+      "add_other": "Add {{count}} sources",
+      "pick": "Tick what you use",
+      "none": "I use none of them",
+      "hint": "Add the PDF of each if you have it. If not, Hoot finds at least the contents on the web."
     }
   },
   "time": {
