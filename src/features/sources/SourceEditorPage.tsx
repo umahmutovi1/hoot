@@ -2,7 +2,7 @@ import type { TFunction } from 'i18next'
 import { useMemo, useState, type ReactNode } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   ArchiveIcon,
@@ -114,7 +114,13 @@ function SourceEditor({
   )
   const [textError, setTextError] = useState<string | null>(null)
   const [step, setStep] = useState<Step>({ kind: 'input' })
-  const [mode, setMode] = useState<InputMode>(isEdit ? 'text' : 'pdf')
+  // NoviPredmet → Prvi izvor opens the editor on the picked way in (`?mode=pdf|photo`).
+  const [params] = useSearchParams()
+  const [mode, setMode] = useState<InputMode>(() => {
+    if (isEdit) return 'text'
+    const asked = params.get('mode')
+    return asked === 'photo' ? 'photo' : 'pdf'
+  })
   const [files, setFiles] = useState<File[]>([])
   const ai = useAiImport(subject)
   const { state: aiState } = useAiAvailability()

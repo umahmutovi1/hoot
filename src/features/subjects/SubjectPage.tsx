@@ -19,7 +19,7 @@ import {
   toScopeRows,
 } from '@/features/sources/model'
 import { SubjectLectures } from '@/features/schedule/SubjectLectures'
-import { ProgressRing, SubjectSources } from '@/features/sources/SubjectSources'
+import { SubjectSources } from '@/features/sources/SubjectSources'
 import {
   useArchiveExam,
   useArchivedExams,
@@ -46,17 +46,13 @@ import { useRates } from '@/features/plan/api'
 import { ResultSheet } from './ResultSheet'
 import { ScaleSheet } from './ScaleSheet'
 import { retakeStatus, type GradeItem } from '@/lib/grades'
-import {
-  asPriority,
-  localDateOf,
-  nextAssessment,
-  shownExams,
-  type Assessment,
-  type SubjectWithAssessments,
-} from './model'
+import { isConditional } from '@/lib/scheduler'
+import { InHeader } from '@/app/layout/ScreenHeader'
+import { localDateOf, nextAssessment, type Assessment, type SubjectWithAssessments } from './model'
 
 /**
- * Predmet / PredmetKampanja: header with progress, priority and mode chips, the campaign card,
+ * Predmet / PredmetKampanja (PredmetDetalj): the blue header with the goal line, name, progress and
+ * next exam, the campaign card,
  * exams, sources and deadlines. Lectures, knowledge strength and weak topics come with their
  * sprints.
  */
@@ -75,8 +71,9 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const [now] = useState(() => new Date())
   const palette = paletteOf(subject.color)
   const next = nextAssessment(subject.assessments, now)
-  // A makeup appears once its exam is failed; archived exams are not loaded (after Sprint 12).
-  const exams = shownExams(subject.assessments).sort((a, b) => a.at.localeCompare(b.at))
+  // Every exam with its makeup as its own row: "samo ako zatreba" until it is needed (PRD "Dopune,
+  // 5. nov 2026"; it stays out of the plan until then). Archived exams are not loaded.
+  const exams = [...subject.assessments].sort((a, b) => a.at.localeCompare(b.at))
   const archiveExam = useArchiveExam(subject.id)
   const show = useToast((s) => s.show)
   const archiveRow = (exam: Assessment) => ({
@@ -120,20 +117,18 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
   const todayDate = localDateOf(now.toISOString())
   const suggestions = useSuggestions(subject.id).filter((s) => s.kind !== 'campaign_soon')
   const isDue = (iso: string) => localDateOf(iso) <= todayDate
-  // Makeups are listed under the exam they repeat.
-  const isNested = (a: Assessment) => a.kind === 'makeup' && exams.some((e) => e.id === a.retake_of)
   const hasPartials = exams.some((e) => e.kind === 'partial')
   const resultExam = subject.assessments.find((a) => a.id === resultSheet.id)
   const resultDeadline = deadlines.find((d) => d.id === resultSheet.id)
-  const examRow = (exam: Assessment, nested = false) => (
+  const examRow = (exam: Assessment) => (
     <ExamRow
       exam={exam}
       item={itemOf(exam.id)}
       worth={worth(exam.id)}
       due={isDue(exam.at)}
-      nested={nested}
+      nested={false}
       replacesPartials={exam.kind === 'integral' && hasPartials}
-      retakeNeeded={nested && retakeStatus(itemOf(exam.id), items) === 'needed'}
+      retakeNeeded={exam.kind === 'makeup' && retakeStatus(itemOf(exam.id), items) === 'needed'}
       highlight={exam.id === next?.id}
       progress={
         hasMaterial
@@ -149,66 +144,45 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div
-        className={cn('relative flex items-center gap-4 rounded-[32px] p-5 pr-16', palette.soft)}
-      >
-        <Link
-          to={editPath}
-          aria-label={t('subjects.detail.edit')}
-          className="absolute top-3 right-3 flex size-11 items-center justify-center rounded-full surface"
-        >
-          <PencilIcon size={18} />
-        </Link>
-        {hasMaterial && (
-          <ProgressRing
-            fraction={subjectMaterialProgress(materials)}
-            strokeClass={palette.stroke}
-            textClass={palette.inkText}
-          />
-        )}
-        <div className="flex min-w-0 flex-col gap-2">
-          <h1 className={cn('text-[23px] leading-[1.15] font-bold', palette.inkText)}>
-            {subject.name}
-          </h1>
-          <div className="flex flex-wrap gap-1.5">
-            <Link
-              to={editPath}
-              className={cn(
-                'flex h-7 items-center rounded-full surface px-2.5 text-xs font-semibold',
-                palette.inkText,
-              )}
-            >
-              {[
-                t(`subjects.priority.${asPriority(subject.priority)}.name`),
-                subject.target_grade
-                  ? t('subjects.goal.targetChip', { grade: subject.target_grade })
-                  : null,
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-            </Link>
-            <Link
-              to={editPath}
-              className={cn(
-                'flex h-7 items-center rounded-full surface px-2.5 text-xs font-semibold',
-                palette.inkText,
-              )}
-            >
-              {t(
-                `subjects.mode.${subject.study_mode === 'campaign' ? 'campaign' : 'regular'}.title`,
-              )}
-            </Link>
-          </div>
-          {next && (
-            <span className={cn('text-[13px] leading-[1.35]', palette.inkText)}>
-              {t('subjects.detail.nextExam', {
-                title: next.title,
-                when: relativeDays(t, differenceInCalendarDays(new Date(next.at), now)),
-              })}
-            </span>
-          )}
+      <InHeader>
+        <span className="flex items-center gap-2 text-sm font-bold text-ground/82">
+          <span className={cn('size-2.5 shrink-0 rounded-full', palette.bar)} />
+          {[
+            isConditional(subject.priority) && t('subjects.form.conditional'),
+            subject.target_grade && t('subjects.goal.targetChip', { grade: subject.target_grade }),
+            t(`subjects.mode.${subject.study_mode === 'campaign' ? 'campaign' : 'regular'}.title`),
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </span>
+        <div className="mt-1.5 flex items-center gap-1">
+          <h1 className="min-w-0 text-[36px] leading-[1.02] font-bold">{subject.name}</h1>
+          <Link
+            to={editPath}
+            aria-label={t('subjects.detail.edit')}
+            className="flex size-11 shrink-0 items-center justify-center"
+          >
+            <PencilIcon size={18} />
+          </Link>
         </div>
-      </div>
+        {(hasMaterial || next) && (
+          <div className="mt-3 flex items-baseline gap-2">
+            {hasMaterial && (
+              <span className="font-display text-[40px] leading-none font-bold tabular-nums">
+                {Math.round(subjectMaterialProgress(materials) * 100)}%
+              </span>
+            )}
+            {next && (
+              <span className="text-[15px] font-semibold">
+                {t('subjects.detail.nextExam', {
+                  title: next.title,
+                  when: relativeDays(t, differenceInCalendarDays(new Date(next.at), now)),
+                })}
+              </span>
+            )}
+          </div>
+        )}
+      </InHeader>
 
       {subject.study_mode === 'campaign' && <CampaignCard subject={subject} now={now} />}
 
@@ -244,23 +218,14 @@ function SubjectDetail({ subject }: { subject: SubjectWithAssessments }) {
         </p>
       ) : (
         <div className="flex flex-col overflow-hidden rounded-card surface">
-          {exams
-            .filter((e) => !isNested(e))
-            .map((exam, i) => (
-              <div key={exam.id}>
-                {i > 0 && <div className="mx-3 h-px bg-hairline" />}
-                <SwipeRow actions={[archiveRow(exam)]}>
-                  <div className="px-1.5">{examRow(exam)}</div>
-                </SwipeRow>
-                {exams
-                  .filter((m) => m.kind === 'makeup' && m.retake_of === exam.id)
-                  .map((m) => (
-                    <SwipeRow key={m.id} actions={[archiveRow(m)]}>
-                      <div className="px-1.5">{examRow(m, true)}</div>
-                    </SwipeRow>
-                  ))}
-              </div>
-            ))}
+          {exams.map((exam, i) => (
+            <div key={exam.id}>
+              {i > 0 && <div className="mx-3 h-px bg-hairline" />}
+              <SwipeRow actions={[archiveRow(exam)]}>
+                <div className="px-1.5">{examRow(exam)}</div>
+              </SwipeRow>
+            </div>
+          ))}
           {hasMaterial && (
             <>
               <div className="mx-3 h-px bg-hairline" />
