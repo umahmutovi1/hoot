@@ -143,7 +143,7 @@ const EXAM_KINDS: Partial<Record<GradingKind, ExamKind>> = {
  * A book the subject already has: a close title, and when the syllabus names authors, one of
  * their surnames in the existing title too (two books can share a title, "Signals and Systems").
  */
-function similar(title: string, authors: string | null, titles: string[]): boolean {
+export function similar(title: string, authors: string | null, titles: string[]): boolean {
   const target = norm(title)
   if (!target || titles.length === 0) return false
   const surnames = norm(authors ?? '')
@@ -491,4 +491,43 @@ export function syllabusSaveCount(proposals: readonly SyllabusProposal[]): numbe
       (p.pointsTotal && p.pointsTotal.status !== 'unchanged' ? 1 : 0)
     )
   }, 0)
+}
+
+/** A syllabus book as `subjects.syllabus_literature` keeps it. */
+export interface SyllabusBook {
+  title: string
+  authors: string | null
+  required: boolean
+}
+
+/** A source title for a syllabus book ("Haykin — Signals and Systems"). */
+export const bookTitle = (b: { title: string; authors: string | null }) =>
+  (b.authors ? `${b.authors} — ${b.title}` : b.title).slice(0, 120)
+
+/**
+ * Dodaj izvor → "Koje od ovoga koristiš?": the subject's syllabus books that are not a source
+ * yet, required ones first, each with its place in the saved list (a stable id for the queue).
+ * Anything that is not a book list (old or broken JSON) is ignored.
+ */
+export function unusedLiterature(
+  saved: unknown,
+  sourceTitles: string[],
+): (SyllabusBook & { index: number })[] {
+  if (!Array.isArray(saved)) return []
+  const books = saved.flatMap((x, index): (SyllabusBook & { index: number })[] => {
+    if (!x || typeof x !== 'object') return []
+    const b = x as Record<string, unknown>
+    if (typeof b.title !== 'string' || !b.title.trim()) return []
+    return [
+      {
+        title: b.title.trim(),
+        authors: typeof b.authors === 'string' && b.authors.trim() ? b.authors.trim() : null,
+        required: b.required === true,
+        index,
+      },
+    ]
+  })
+  return books
+    .filter((b) => !similar(b.title, b.authors, sourceTitles))
+    .sort((a, b) => Number(b.required) - Number(a.required))
 }

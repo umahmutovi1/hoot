@@ -19,7 +19,8 @@ import {
 import { SplashScreen } from '@/components/SplashScreen'
 import { Button } from '@/components/ui/button'
 import { useAiAvailability } from '@/features/owl/api'
-import { useSubject } from '@/features/subjects/api'
+import { useProfile } from '@/features/settings/profile'
+import { useSubject, useUpdateSubject } from '@/features/subjects/api'
 import { ChipGroup, fieldInput, fieldLabel } from '@/features/subjects/fields'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
 import {
@@ -39,7 +40,9 @@ import {
 import { leavesOf } from '@/lib/progress'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
-import { useDeleteSource, useSaveOutline, useSource } from './api'
+import { bookTitle, unusedLiterature } from '@/lib/import/syllabus'
+import { useDeleteSource, useSaveOutline, useSource, useSources } from './api'
+import { SyllabusBooks } from './SyllabusBooks'
 import { amountLabel, formatDuration } from './format'
 import { carryDifficulty, sourceToForm, toFormattable, toStoredUnits } from './mappers'
 import {
@@ -71,13 +74,16 @@ import type { FoundToc } from '@shared/schemas.ts'
  */
 export function SourceEditorPage() {
   const { id, sourceId } = useParams()
+  const [params] = useSearchParams()
   const { data: subject, isPending } = useSubject(id)
   const { data: source, isPending: sourcePending } = useSource(id, sourceId)
 
   if (isPending || (sourceId && sourcePending)) return <SplashScreen />
   if (!subject) return <Navigate to="/subjects" replace />
   if (sourceId && !source) return <Navigate to={`/subjects/${subject.id}`} replace />
-  return <SourceEditor key={sourceId ?? 'new'} subject={subject} source={source} />
+  // Each syllabus book in the queue (`?books=`) is a fresh editor.
+  const key = sourceId ?? `new:${params.get('books') ?? ''}`
+  return <SourceEditor key={key} subject={subject} source={source} />
 }
 
 /** `found`: the chapters came from the web ("Nađi na internetu"), shown with their page. */
@@ -97,6 +103,16 @@ function SourceEditor({
   const save = useSaveOutline()
   const isEdit = Boolean(source)
   const existing = useMemo(() => (source ? activeUnits(source) : []), [source])
+  const [params] = useSearchParams()
+  // Syllabus books picked in "Koje od ovoga koristiš?" (`?books=2,0`), opened one after another,
+  // or a book title from a rough source (`?title=`): both start on the web search.
+  const queue = (params.get('books') ?? '')
+    .split(',')
+    .filter(Boolean)
+    .map(Number)
+    .filter(Number.isInteger)
+  const book = unusedLiterature(subject.syllabus_literature, []).find((b) => b.index === queue[0])
+  const askedTitle = book ? bookTitle(book) : (params.get('title')?.slice(0, 120) ?? '')
 
   const form = useForm<SourceForm>({
     resolver: zodResolver(sourceFormSchema),
@@ -106,7 +122,7 @@ function SourceEditor({
           id: crypto.randomUUID(),
           subjectId: subject.id,
           kind: 'book',
-          title: '',
+          title: askedTitle,
           measure: 'pages',
           minutesPerItem: null,
         },
@@ -121,9 +137,9 @@ function SourceEditor({
   const [textError, setTextError] = useState<string | null>(null)
   const [step, setStep] = useState<Step>({ kind: 'input' })
   // NoviPredmet → Prvi izvor opens the editor on the picked way in (`?mode=pdf|web|photo`).
-  const [params] = useSearchParams()
   const [mode, setMode] = useState<InputMode>(() => {
     if (isEdit) return 'text'
+    if (askedTitle) return 'web'
     const asked = params.get('mode')
     return asked === 'photo' || asked === 'web' ? asked : 'pdf'
   })
@@ -135,6 +151,16 @@ function SourceEditor({
   const webMissed = missed !== null && missed === title.trim()
   const { state: aiState } = useAiAvailability()
   const aiReady = aiState === 'ready'
+  const { data: sources } = useSources(subject.id)
+  const institution = useProfile().data?.institution ?? null
+  const updateSubject = useUpdateSubject()
+  const books =
+    isEdit || askedTitle || !sources
+      ? []
+      : unusedLiterature(
+          subject.syllabus_literature,
+          sources.map((s) => s.title),
+        )
 
   const toReview = form.handleSubmit(() => {
     const checked = outlineTextSchema.safeParse(text)
@@ -210,6 +236,12 @@ function SourceEditor({
     const values = form.getValues()
     const merge = mergeOutline(toStoredUnits(source?.units ?? []), units, () => crypto.randomUUID())
     save.mutate({ form: values, measure, merge, topics })
+    if (queue.length > 1) {
+      navigate(`/subjects/${subject.id}/sources/new?books=${queue.slice(1).join(',')}`, {
+        replace: true,
+      })
+      return
+    }
     // Questions go on to their chapter links (AI suggestions for review), then the exam scope.
     const linkable =
       measure === 'questions' && aiReady && merge.units.some((u) => u.status !== 'unchanged')
@@ -296,6 +328,21 @@ function SourceEditor({
           </h1>
         </div>
       </div>
+
+      {books.length > 0 && (
+        <SyllabusBooks
+          books={books}
+          institution={institution}
+          onAdd={(indexes) =>
+            navigate(`/subjects/${subject.id}/sources/new?books=${indexes.join(',')}`, {
+              replace: true,
+            })
+          }
+          onNone={() =>
+            updateSubject.mutate({ id: subject.id, patch: { syllabus_literature: [] } })
+          }
+        />
+      )}
 
       {!isEdit && (
         <div className="flex flex-col gap-2">

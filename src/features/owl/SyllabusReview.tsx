@@ -193,7 +193,7 @@ export function SyllabusReview({
       )}
 
       {item.literature.length > 0 && (
-        <List title={t('owl.syllabus.literature')}>
+        <List title={t('owl.syllabus.literature')} question={t('sources.syllabus.title')}>
           {item.literature.map((l) => (
             <Row
               key={l.key}
@@ -301,10 +301,20 @@ function gradeSub(t: TFunction, g: GradingProposal) {
   return undefined
 }
 
-function List({ title, children }: { title: string; children: ReactNode }) {
+function List({
+  title,
+  question,
+  children,
+}: {
+  title: string
+  /** Asked right under the title ("Koje od ovoga koristiš?" for literature). */
+  question?: string
+  children: ReactNode
+}) {
   return (
     <>
       <h4 className="px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase">{title}</h4>
+      {question && <p className="px-1 font-display text-[17px] font-bold">{question}</p>}
       <div className="flex flex-col divide-y divide-hairline rounded-card surface">{children}</div>
     </>
   )

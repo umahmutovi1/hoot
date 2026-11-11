@@ -8,6 +8,7 @@ import {
   pickElective,
   proposeSyllabus,
   syllabusSaveCount,
+  unusedLiterature,
   type ParsedSyllabus,
 } from './syllabus'
 
@@ -251,5 +252,27 @@ describe('pagesForYear', () => {
 
   it('leaves a document with one year or none as it is', () => {
     expect(pagesForYear([page('Silabus'), page('Godina studija 2')], 1)).toHaveLength(2)
+  })
+})
+
+describe('unusedLiterature', () => {
+  const saved = [
+    { title: 'Signals and Systems', authors: 'Haykin', required: false },
+    { title: 'Signals and Systems', authors: 'Oppenheim, Willsky', required: true },
+    { title: 'Skripta s predavanja', authors: null, required: true },
+    { title: '  ', authors: null, required: true },
+    'broken',
+  ]
+
+  it('offers the books that are not a source yet, required first', () => {
+    expect(unusedLiterature(saved, ['Oppenheim — Signals and Systems'])).toEqual([
+      { title: 'Skripta s predavanja', authors: null, required: true, index: 2 },
+      { title: 'Signals and Systems', authors: 'Haykin', required: false, index: 0 },
+    ])
+  })
+
+  it('nothing to offer without a syllabus or after "Ne koristim nijednu"', () => {
+    expect(unusedLiterature(null, [])).toEqual([])
+    expect(unusedLiterature([], [])).toEqual([])
   })
 })

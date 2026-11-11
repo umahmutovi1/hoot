@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next'
 import { DocIcon, GlobeIcon } from '@/components/icons'
 import { useRates } from '@/features/plan/api'
 import { useState } from 'react'
@@ -6,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { DetailSkeleton } from '@/components/Skeleton'
 import { useSubject } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
+import { ROUGH_SIZES } from '@/lib/estimates/rough'
 import { levelMinutes, leavesOf, subtreeLeaves } from '@/lib/progress'
 import { scopeOf } from '@/lib/progress/scope'
 import { cn } from '@/lib/utils'
@@ -72,6 +74,25 @@ function SourceDetail({
         </span>
         <h1 className="text-[26px] leading-[1.15] font-bold">{source.title}</h1>
       </div>
+
+      {source.is_rough && isBook(t, source.title) && (
+        // A syllabus book kept as a rough source: its contents can come from the web (Sprint 19).
+        <Link
+          to={`/subjects/${subject.id}/sources/new?title=${encodeURIComponent(source.title)}`}
+          className="flex min-h-14 items-center gap-3 rounded-[20px] next-card p-3"
+        >
+          <span
+            aria-hidden="true"
+            className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
+          >
+            <GlobeIcon size={18} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('sources.web.findForRough')}</span>
+            <span className="text-xs text-ink-secondary">{t('sources.rough.hint')}</span>
+          </span>
+        </Link>
+      )}
 
       {source.file_name && (
         // Where the units came from (Sprint 13): the PDF's name, and the Drive link when picked there.
@@ -313,4 +334,13 @@ function hostOf(url: string) {
   } catch {
     return url
   }
+}
+
+/** A rough source named after a book (from the syllabus), not a rough size or the chapters. */
+function isBook(t: TFunction, title: string) {
+  const generic = [
+    ...ROUGH_SIZES.map((z) => t(`subjects.rough.sourceTitle.${z}`)),
+    t('owl.syllabus.chaptersSource'),
+  ]
+  return !generic.includes(title)
 }

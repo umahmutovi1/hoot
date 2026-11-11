@@ -1240,7 +1240,22 @@
       "typeInstead": "Upiši poglavlja",
       "photoInstead": "Uslikaj sadržaj",
       "sourceRow": "Sadržaj s interneta",
-      "open": "Otvori"
+      "open": "Otvori",
+      "findForRough": "Nađi sadržaj na internetu"
+    },
+    "syllabus": {
+      "from": "Iz plana i programa",
+      "fromAt": "Iz plana i programa · {{institution}}",
+      "title": "Koje od ovoga koristiš?",
+      "group": "Literatura iz plana i programa",
+      "required": "Obavezna",
+      "extra": "Dopunska",
+      "add_one": "Dodaj {{count}} izvor",
+      "add_few": "Dodaj {{count}} izvora",
+      "add_other": "Dodaj {{count}} izvora",
+      "pick": "Označi šta koristiš",
+      "none": "Ne koristim nijednu",
+      "hint": "Za svaku dodaš PDF ako ga imaš. Ako nemaš, Hoot na internetu nađe bar sadržaj."
     }
   },
   "time": {
