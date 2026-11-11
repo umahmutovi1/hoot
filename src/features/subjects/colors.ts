@@ -10,6 +10,8 @@ export interface SubjectPalette {
   track: string
   deepText: string
   inkText: string
+  /** Filled button on a soft subject card. */
+  inkBg: string
 }
 
 export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
@@ -22,6 +24,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     track: 'bg-subject-pink-track',
     deepText: 'text-subject-pink-deep',
     inkText: 'text-subject-pink-ink',
+    inkBg: 'bg-subject-pink-ink',
   },
   lavender: {
     hex: '#8C84E0',
@@ -32,6 +35,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     track: 'bg-subject-lavender-track',
     deepText: 'text-subject-lavender-deep',
     inkText: 'text-subject-lavender-ink',
+    inkBg: 'bg-subject-lavender-ink',
   },
   blue: {
     hex: '#6FA3D6',
@@ -42,6 +46,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     track: 'bg-subject-blue-track',
     deepText: 'text-subject-blue-deep',
     inkText: 'text-subject-blue-ink',
+    inkBg: 'bg-subject-blue-ink',
   },
   green: {
     hex: '#6FAE8A',
@@ -52,6 +57,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     track: 'bg-subject-green-track',
     deepText: 'text-subject-green-deep',
     inkText: 'text-subject-green-ink',
+    inkBg: 'bg-subject-green-ink',
   },
   orange: {
     hex: '#D9774B',
@@ -62,6 +68,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     track: 'bg-subject-orange-track',
     deepText: 'text-subject-orange-deep',
     inkText: 'text-subject-orange-ink',
+    inkBg: 'bg-subject-orange-ink',
   },
   slate: {
     hex: '#7B8494',
@@ -72,6 +79,7 @@ export const SUBJECT_PALETTES: Record<SubjectColor, SubjectPalette> = {
     track: 'bg-subject-slate-track',
     deepText: 'text-subject-slate-deep',
     inkText: 'text-subject-slate-ink',
+    inkBg: 'bg-subject-slate-ink',
   },
 }
 

@@ -81,6 +81,33 @@ export function useApplySlot() {
         ])
       if (navigator.onLine) await queue.flush()
       replan()
+      // What puts the week back as it was ("Vrati odluku" on Prijedlozi).
+      const revert: Op[] = [
+        ...rows.map((r) => ({
+          kind: 'delete' as const,
+          table: 'availability_rules',
+          match: { id: r.id },
+        })),
+        ...(removed.length
+          ? [{ kind: 'upsert' as const, table: 'availability_rules', rows: removed }]
+          : []),
+        ...(snapshot
+          ? [
+              previous
+                ? {
+                    kind: 'upsert' as const,
+                    table: 'availability_days',
+                    rows: [{ ...previous }],
+                  }
+                : {
+                    kind: 'delete' as const,
+                    table: 'availability_days',
+                    match: { id: snapshot.id },
+                  },
+            ]
+          : []),
+      ]
+      return revert
     },
   })
 }

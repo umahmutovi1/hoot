@@ -3212,5 +3212,55 @@
       "unmotivated": "Nemam volje",
       "busy": "Obaveze"
     }
+  },
+  "proposals": {
+    "title": "Prijedlozi",
+    "lastWeek": "Iz prošle sedmice · {{range}}",
+    "thisWeek": "Iz ove sedmice · {{range}}",
+    "pending_one": "{{count}} čeka odluku",
+    "pending_few": "{{count}} čekaju odluku",
+    "pending_other": "{{count}} čeka odluku",
+    "allDecided": "Sve je odlučeno",
+    "applied_one": "{{count}} primijenjen",
+    "applied_few": "{{count}} primijenjena",
+    "applied_other": "{{count}} primijenjeno",
+    "confirm": "Potvrdi {{count}}",
+    "more_one": "Još {{count}} prijedlog",
+    "more_few": "Još {{count}} prijedloga",
+    "more_other": "Još {{count}} prijedloga",
+    "less": "Prikaži manje",
+    "notNow": "Ne sada",
+    "ok": "U redu",
+    "undo": "Poništi",
+    "takeBack": "Vrati odluku",
+    "applyAgain": "Ipak primijeni",
+    "restore": "Vrati",
+    "skipped": "Preskočeno · {{title}}",
+    "appliedEffect": "Primijenjeno. Plan je preračunat.",
+    "alreadyDone": "Hoot je već uradio",
+    "rules": {
+      "deficit": "Manjak u planu",
+      "behind": "Zaostatak",
+      "crowding": "Gužva pred ispit",
+      "slot": "Vrijeme učenja",
+      "read_untested": "Ponavljanje",
+      "avoidance": "Prvi korak",
+      "rhythm": "Ritam"
+    },
+    "moved": {
+      "title": "Propušten blok od {{minutes}}.",
+      "body": "Gradivo je prebačeno na {{when}}.",
+      "effect": "{{when}} · {{subject}} {{minutes}} ostaje u planu.",
+      "undone": "Vraćeno. Gradivo je izbačeno iz plana, a {{subject}} i dalje kasni."
+    },
+    "limit": "Ove sedmice su primijenjena 3 prijedloga. Ostali čekaju sljedeću sedmicu.",
+    "entry_one": "{{count}} prijedlog čeka tvoju odluku",
+    "entry_few": "{{count}} prijedloga čekaju tvoju odluku",
+    "entry_other": "{{count}} prijedloga čeka tvoju odluku",
+    "entryNone": "Prijedlozi za tvoj plan",
+    "entrySub": "Iz prošle sedmice · svaki se odobri jednim tapom",
+    "entryNoneSub": "Ništa ne čeka odluku",
+    "today": "danas",
+    "tomorrow": "sutra"
   }
 }

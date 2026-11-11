@@ -73,6 +73,15 @@ export function latestFeedback(rows: Feedback[], id: string) {
     .sort((a, b) => b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id))[0]
 }
 
+/**
+ * "Vrati odluku" / "Vrati" on Prijedlozi: the decision is taken back and the suggestion is open
+ * again. Stored as a rejection (so inputs from an accepted row switch off) marked `reverted`.
+ */
+export function isReverted(row: Feedback) {
+  const p = row.payload
+  return Boolean(p && typeof p === 'object' && !Array.isArray(p) && p.reverted === true)
+}
+
 /** Days an accepted or declined suggestion stays decided before it can be offered again. */
 export const DECISION_DAYS = 14
 
@@ -82,7 +91,7 @@ export const DECISION_DAYS = 14
  */
 export function activeDecision(rows: Feedback[], id: string, today: string) {
   const latest = latestFeedback(rows, id)
-  if (!latest) return undefined
+  if (!latest || isReverted(latest)) return undefined
   if (latest.status === 'not_useful') return latest
   return diffDays(latest.created_at.slice(0, 10), today) < DECISION_DAYS ? latest : undefined
 }

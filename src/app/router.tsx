@@ -1,4 +1,5 @@
 import { WeeklyReviewPage } from '@/features/strategist/WeeklyReviewPage'
+import { ProposalsPage } from '@/features/strategist/ProposalsPage'
 import { CalendarFeedsPage } from '@/features/calendars/CalendarFeedsPage'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
               { path: 'subjects', element: <SubjectsPage /> },
               { path: 'progress', element: <ProgressPage /> },
               { path: 'progress/week', element: <WeeklyReviewPage /> },
+              { path: 'progress/suggestions', element: <ProposalsPage /> },
               { path: 'chat', element: <OwlChatPage /> },
               { path: 'owl', element: <Navigate to="/chat" replace /> },
               { path: 'welcome', element: <Navigate to="/onboarding" replace /> },

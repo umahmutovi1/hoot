@@ -1,6 +1,5 @@
 import { ActiveInputs } from '@/features/strategist/ActiveInputs'
-import { InsightsPanel } from '@/features/strategist/InsightsPanel'
-import { StrategistCard } from '@/features/strategist/StrategistCard'
+import { ProposalsEntry } from '@/features/strategist/ProposalsEntry'
 import { ReadinessCard } from './ReadinessCard'
 import { SlotCards } from './SlotCards'
 import { ProgressProvider, useProgress } from './useProgress'
@@ -57,6 +56,7 @@ function ProgressBody() {
         <Statistics />
       </Suspense>
       <ForecastCard />
+      <ProposalsEntry />
       <ReadinessCard />
       <ProgressBreakdown />
       <SlotMap />
@@ -64,8 +64,6 @@ function ProgressBody() {
       <RhythmCard />
       <SessionsCard />
       <GradesOverview />
-      <StrategistCard />
-      <InsightsPanel />
       <ActiveInputs />
       <EnergyInsight />
     </div>

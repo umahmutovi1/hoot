@@ -434,7 +434,7 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - [x] Popravni na Predmetu kao red ispita sa „Samo ako zatreba“ (i dalje van plana dok se ne aktivira)
 - [x] Danas: ikona „Prilagodi dan“ (energija, Imam samo, slobodna sesija, Imam više vremena, Danas ne mogu); link „Ili započni slobodnu sesiju sada“ ispod kartice Sljedeće
 - [ ] Slobodna sesija: trajanje → Hoot predloži (`pickForTime()`, Druga ideja) / Biram sam → pauze u jednom redu; sheet planiranog bloka pokazuje zadani ritam uz Promijeni (bez čipova) i „Uči sa tutorom“ kao ista sesija
-- [ ] Prijedlozi: „Potvrdi N“ potvrđuje i ono što je Hoot već uradio
+- [x] Prijedlozi: „Potvrdi N“ potvrđuje i ono što je Hoot već uradio (ekran `/progress/suggestions`; „već uradio“ = propušteni blok koji je replan premjestio, Poništi ga izbacuje iz plana za ispit; Vrati odluku vraća ulaze iz zapamćenog stanja)
 - [ ] Bodovi: olovka po predmetu → stavke, rezultati i posebna skala ocjena; jasniji „Upiši rezultat“
 - [ ] Sesije: graf planirano / odrađeno vidljiv na istoj skali
 - [ ] Navigacija: traka s oznakama, pozadina aktivnog taba klizi (reduced motion bez animacije); ikonska dugmad (olovka, X, pretraga, postavke) bez pozadine i teksta, ≥ 44 px
