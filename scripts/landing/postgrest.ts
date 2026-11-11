@@ -55,13 +55,22 @@ function compare(a: unknown, b: unknown): number {
   return String(a).localeCompare(String(b))
 }
 
+const safeDecode = (s: string) => {
+  try {
+    return decodeURIComponent(s)
+  } catch {
+    return s
+  }
+}
+
 /** One `col=op.value` filter; unknown operators keep the row. */
 function test(row: Row, col: string, expr: string): boolean {
   const negate = expr.startsWith('not.')
   if (negate) expr = expr.slice(4)
   const dot = expr.indexOf('.')
   const op = expr.slice(0, dot)
-  const raw = decodeURIComponent(expr.slice(dot + 1))
+  // URLSearchParams already decoded it; a literal `%` (ilike) is not an escape.
+  const raw = safeDecode(expr.slice(dot + 1))
   const v = row[col]
   let ok: boolean
   switch (op) {

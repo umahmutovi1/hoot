@@ -2,13 +2,16 @@ import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { LocaleToggle } from '@/components/LocaleToggle'
-import { Logo } from '@/components/Logo'
+import { LogoMark } from '@/components/Logo'
+import { cn } from '@/lib/utils'
 import { useLocale } from '@/features/settings/useLocale'
 
 /**
- * Public `/` for signed-out visitors (Landing.dc.html): what Hoot does, a screenshot of Danas and
- * "Počni". One column, centred on wide screens. The screenshot is a JPEG per locale in
- * `public/landing/` (`npm run landing:shots`); without it the frame is left out.
+ * Public `/` for signed-out visitors, in the Noćna sova style (Sprint 19; no board, built from the
+ * system in docs/design/README.md): the blue header with the wave, the promise and "Počni", a
+ * screenshot of Danas over the wave, what Hoot does, how to start and a sky closing card. One
+ * column, centred on wide screens. The screenshot is a JPEG per locale in `public/landing/`
+ * (`npm run landing:shots`); without it the frame is left out.
  */
 export function LandingPage() {
   const { t } = useTranslation()
@@ -16,105 +19,143 @@ export function LandingPage() {
   const [shot, setShot] = useState(true)
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col pb-10">
-      <header className="flex h-16 items-center gap-2.5 px-[18px] pt-[env(safe-area-inset-top)]">
-        <Logo size={28} />
-        <span className="flex-1 text-lg font-bold">Hoot</span>
-        <LocaleToggle value={locale} onChange={setLocale} variant="short" className="bg-white/60" />
-        <Link
-          to="/login"
-          className="flex h-11 items-center pr-1 pl-2 text-[15px] font-semibold text-brand"
-        >
-          {t('landing.signIn')}
-        </Link>
-      </header>
-
-      <section className="flex flex-col gap-3.5 px-6 pt-7">
-        <h1 className="text-[34px] leading-[1.1] font-bold whitespace-pre-line">
-          {t('auth.headline')}
-        </h1>
-        <p className="text-base leading-[1.45] text-ink-secondary">{t('landing.lead')}</p>
-        <Link
-          to="/login"
-          className="btn-primary mt-1.5 flex h-14 items-center justify-center rounded-full text-base font-semibold"
-        >
-          {t('landing.start')}
-        </Link>
-        <span className="text-center text-xs text-ink-muted">{t('landing.devices')}</span>
-      </section>
-
-      {shot && (
-        <div className="flex justify-center pt-6 pb-2">
-          <div className="w-[250px] rounded-[40px] bg-ink p-2 shadow-[0_24px_60px_rgb(58_51_96/0.3)]">
-            <img
-              src={`/landing/today-${locale}.jpg`}
-              alt={t('landing.shotAlt')}
-              width={234}
-              height={507}
-              loading="lazy"
-              onError={() => setShot(false)}
-              className="block h-auto w-full rounded-[33px]"
+    <div className="min-h-dvh bg-ground pb-12 text-ink">
+      <section
+        className={cn(
+          'relative bg-brand text-ground',
+          shot ? 'pb-36' : 'pb-16',
+          'pt-[env(safe-area-inset-top)]',
+        )}
+      >
+        <div className="mx-auto flex w-full max-w-[440px] flex-col px-4">
+          <header className="flex h-16 items-center gap-2">
+            <span className="flex flex-1 items-center gap-2 font-display text-[22px] font-bold tracking-[-0.02em]">
+              <LogoMark />
+              hoot
+            </span>
+            <LocaleToggle
+              value={locale}
+              onChange={setLocale}
+              variant="short"
+              tone="dark"
+              className="bg-ground/12"
             />
-          </div>
-        </div>
-      )}
+            <Link
+              to="/login"
+              className="flex h-11 items-center pr-1 pl-2 text-[15px] font-semibold"
+            >
+              {t('landing.signIn')}
+            </Link>
+          </header>
 
-      <section className="flex flex-col gap-3 px-[18px] pt-7">
-        <h2 className="px-1.5 text-[22px] leading-tight font-bold">{t('landing.what.title')}</h2>
-        <Feature
-          icon={<CalendarPath />}
-          title={t('landing.what.plan')}
-          body={t('landing.what.planBody')}
-        />
-        <Feature
-          icon={<ReplanPath />}
-          title={t('landing.what.adapt')}
-          body={t('landing.what.adaptBody')}
-        />
-        <Feature
-          icon={<BulbPath />}
-          title={t('landing.what.remember')}
-          body={t('landing.what.rememberBody')}
-        />
-      </section>
-
-      <section className="flex flex-col gap-3.5 px-6 pt-7">
-        <h2 className="text-[22px] leading-tight font-bold">{t('landing.how.title')}</h2>
-        <ol className="flex flex-col gap-3.5">
-          {(['signIn', 'subjects', 'today'] as const).map((step, i) => (
-            <li key={step} className="flex items-baseline gap-3 text-[15px] leading-snug">
-              <span className="w-[18px] shrink-0 font-bold text-brand-accent">{i + 1}</span>
-              <span>
-                <b>{t(`landing.how.${step}`)}</b> {t(`landing.how.${step}Body`)}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="px-[18px] pt-8">
-        <div className="hero flex flex-col gap-3 rounded-card-lg px-5 py-6 text-white">
-          <h2 className="text-xl font-bold">{t('landing.cta.title')}</h2>
-          <p className="text-sm leading-snug text-white/88">{t('landing.cta.body')}</p>
+          <h1 className="mt-8 px-1 text-[44px] leading-[1.02] font-bold whitespace-pre-line">
+            {t('auth.headline')}
+          </h1>
+          <p className="mt-4 px-1 text-[17px] leading-[1.45] text-ground/85">{t('landing.lead')}</p>
           <Link
             to="/login"
-            className="flex h-14 items-center justify-center rounded-full bg-white text-base font-semibold text-brand"
+            className="mt-6 flex h-14 items-center justify-center rounded-[16px] bg-ground text-[17px] font-bold text-brand-strong"
+          >
+            {t('landing.start')}
+          </Link>
+          <span className="mt-3 text-center text-[13px] text-ground/75">
+            {t('landing.devices')}
+          </span>
+        </div>
+        <svg
+          viewBox="0 0 390 40"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          className="absolute inset-x-0 -bottom-px block h-10 w-full text-ground"
+        >
+          <path
+            d="M0 22 C 48 2, 104 2, 150 18 C 176 28, 214 28, 240 18 C 286 2, 342 2, 390 22 V40 H0 Z"
+            fill="currentColor"
+          />
+        </svg>
+      </section>
+
+      <div className="mx-auto flex w-full max-w-[440px] flex-col px-4">
+        {shot && (
+          <div className="relative z-10 -mt-28 flex justify-center">
+            <div className="w-[252px] rounded-[42px] bg-ink p-2 shadow-[0_24px_60px_rgb(23_24_31/0.28)]">
+              <img
+                src={`/landing/today-${locale}.jpg`}
+                alt={t('landing.shotAlt')}
+                width={236}
+                height={511}
+                loading="lazy"
+                onError={() => setShot(false)}
+                className="block h-auto w-full rounded-[34px]"
+              />
+            </div>
+          </div>
+        )}
+
+        <section className="flex flex-col gap-2.5 pt-10">
+          <h2 className="px-1 pb-1 text-[26px] leading-tight font-bold">
+            {t('landing.what.title')}
+          </h2>
+          <Feature
+            icon={<CalendarPath />}
+            title={t('landing.what.plan')}
+            body={t('landing.what.planBody')}
+          />
+          <Feature
+            icon={<ReplanPath />}
+            title={t('landing.what.adapt')}
+            body={t('landing.what.adaptBody')}
+          />
+          <Feature
+            icon={<BulbPath />}
+            title={t('landing.what.remember')}
+            body={t('landing.what.rememberBody')}
+          />
+        </section>
+
+        <section className="flex flex-col gap-4 pt-10">
+          <h2 className="px-1 text-[26px] leading-tight font-bold">{t('landing.how.title')}</h2>
+          <ol className="flex flex-col gap-3">
+            {(['signIn', 'subjects', 'today'] as const).map((step, i) => (
+              <li key={step} className="flex items-start gap-3.5 px-1">
+                <span className="next-card flex size-9 shrink-0 items-center justify-center rounded-full font-display text-[17px] font-bold tabular-nums">
+                  {i + 1}
+                </span>
+                <span className="pt-1.5 text-[15px] leading-snug">
+                  <b>{t(`landing.how.${step}`)}</b> {t(`landing.how.${step}Body`)}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="next-card mt-10 flex flex-col gap-3 rounded-card p-5">
+          <h2 className="text-[24px] leading-tight font-bold">{t('landing.cta.title')}</h2>
+          <p className="text-[15px] leading-snug text-brand-strong">{t('landing.cta.body')}</p>
+          <Link
+            to="/login"
+            className="btn-primary mt-1 flex h-14 items-center justify-center rounded-[16px] text-[17px] font-bold"
           >
             {t('landing.cta.button')}
           </Link>
-        </div>
-      </section>
+        </section>
+
+        <footer className="flex items-center justify-center gap-2 pt-8 text-[13px] text-ink-muted">
+          <LogoMark width={20} />
+          Hoot
+        </footer>
+      </div>
     </div>
   )
 }
 
 function Feature({ icon, title, body }: { icon: ReactNode; title: string; body: string }) {
   return (
-    <div className="surface flex gap-3.5 rounded-[26px] p-[18px]">
-      <span className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[13px]">
+    <div className="surface flex gap-3.5 rounded-card p-4">
+      <span className="icon-tile flex size-11 shrink-0 items-center justify-center rounded-[14px]">
         <svg
-          width="20"
-          height="20"
+          width="22"
+          height="22"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -127,8 +168,8 @@ function Feature({ icon, title, body }: { icon: ReactNode; title: string; body: 
         </svg>
       </span>
       <div className="flex flex-col gap-1">
-        <h3 className="text-base font-semibold">{title}</h3>
-        <p className="text-sm leading-[1.4] text-ink-secondary">{body}</p>
+        <h3 className="font-display text-[18px] leading-tight font-bold">{title}</h3>
+        <p className="text-[15px] leading-[1.4] text-ink-secondary">{body}</p>
       </div>
     </div>
   )
