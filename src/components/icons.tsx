@@ -80,6 +80,12 @@ export const PlusIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const MinusIcon = (p: IconProps) => (
+  <Icon strokeWidth={2.2} {...p}>
+    <path d="M5 12h14" />
+  </Icon>
+)
+
 export const CloseIcon = (p: IconProps) => (
   <Icon strokeWidth={2} {...p}>
     <path d="M6 6l12 12M18 6L6 18" />

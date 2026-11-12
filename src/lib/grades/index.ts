@@ -311,15 +311,29 @@ function sum(values: number[]) {
  * on the exam day); a slot whose threshold the share misses gives nothing. 5 = not passed.
  */
 export function gradeFromShare(projection: Projection, subject: GradeSubject, share: number) {
+  const points = pointsFromShare(projection, share)
+  return gradeFor((points / subject.pointsTotal) * 100, scaleOf(subject.scale))
+}
+
+/** Points at the end when every remaining slot scores `share` (gradeFromShare's sum). */
+export function pointsFromShare(projection: Projection, share: number) {
   const s = Math.max(0, Math.min(1, share))
-  const points =
+  return (
     projection.have +
     sum(
       projection.remainingSlots.map((slot) =>
         s * 100 >= (slot.passMinPct ?? 0) - 1e-9 ? slot.worth * s : 0,
       ),
     )
-  return gradeFor((points / subject.pointsTotal) * 100, scaleOf(subject.scale))
+  )
+}
+
+/** Forecast of the final points (board Bodovi "Prognoza 69–80") from the score's 10th–90th. */
+export function pointsRange(projection: Projection, score: { p10: number; p90: number }) {
+  return {
+    low: pointsFromShare(projection, score.p10),
+    high: pointsFromShare(projection, score.p90),
+  }
 }
 
 /** The estimate as a range: grades at the 10th, 50th and 90th percentile of the score share. */

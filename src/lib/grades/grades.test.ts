@@ -9,6 +9,7 @@ import {
   gradeRange,
   isValidScale,
   itemWorth,
+  pointsRange,
   project,
   retakeStatus,
   slotsOf,
@@ -384,5 +385,12 @@ describe('grade from readiness (Sprint 17)', () => {
       likely: 8,
       high: 9,
     })
+  })
+
+  it('points range from the 10th and 90th percentile', () => {
+    // 0.4 misses II parcijala: 46 + 2.4; 46 + 0.9 × 46 = 87.4
+    const r = pointsRange(p, { p10: 0.4, p90: 0.9 })
+    expect(r.low).toBeCloseTo(48.4)
+    expect(r.high).toBeCloseTo(87.4)
   })
 })
