@@ -2024,6 +2024,9 @@
     "import": {
       "title": "What do you already have?",
       "sub": "Import what exists, so classes and commitments are taken before you pick free time.",
+      "syllabus": "Syllabus",
+      "syllabusSub": "Subjects, literature and grading at once",
+      "syllabusHint": "With the syllabus you don't type the subjects in.",
       "calendar": "Academic calendar",
       "calendarSub": "PDF, photo or text · classes, exam periods, holidays",
       "timetable": "Class timetable",

@@ -6,7 +6,8 @@ import { ChevronLeftIcon } from '@/components/icons'
 import { useSessionUi } from '@/features/session/store'
 import { useProfile, useUpdateProfile } from '@/features/settings/profile'
 import { cn } from '@/lib/utils'
-import { ONBOARDING_STEPS } from './steps'
+import { ONBOARDING_STEPS, skipsSubjectStep, stepFrom } from './steps'
+import { useSubjects } from '@/features/subjects/api'
 import { StepDays } from './StepDays'
 import { StepFaculty } from './StepFaculty'
 import { StepImport } from './StepImport'
@@ -47,6 +48,7 @@ export function OnboardingPage() {
   const setReady = (r: boolean) => setReadyOf({ step, ready: r })
   const [busy, setBusy] = useState(false)
   const setSave: StepProps['setSave'] = (fn) => setSaveState({ fn })
+  const skipSubject = skipsSubjectStep(useSubjects().data ?? [])
 
   const go = (next: number) => {
     setReadyOf(null)
@@ -67,7 +69,7 @@ export function OnboardingPage() {
     } finally {
       setBusy(false)
     }
-    if (step < ONBOARDING_STEPS) go(step + 1)
+    if (step < ONBOARDING_STEPS) go(stepFrom(step, 1, skipSubject))
   }
 
   const props: StepProps = { setSave, setReady }
@@ -98,7 +100,7 @@ export function OnboardingPage() {
         {step > 1 ? (
           <button
             type="button"
-            onClick={() => go(step - 1)}
+            onClick={() => go(stepFrom(step, -1, skipSubject))}
             aria-label={t('app.back')}
             className="flex size-11 items-center justify-center rounded-full surface"
           >
@@ -117,7 +119,7 @@ export function OnboardingPage() {
         {step < ONBOARDING_STEPS && (
           <button
             type="button"
-            onClick={() => go(step + 1)}
+            onClick={() => go(stepFrom(step, 1, skipSubject))}
             className="h-11 rounded-full px-3 text-[15px] font-semibold text-ink-secondary"
           >
             {t('onboarding.skip')}
@@ -147,7 +149,7 @@ export function OnboardingPage() {
       </div>
 
       {step < ONBOARDING_STEPS && (
-        <div className="sticky bottom-[calc(12px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] flex flex-col items-center gap-1 pt-2">
+        <div className="sticky bottom-[calc(12px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] -mx-5 flex flex-col items-center gap-1 bg-ground px-5 pt-2">
           <button
             type="button"
             onClick={next}

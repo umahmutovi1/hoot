@@ -2084,6 +2084,9 @@
     "import": {
       "title": "Šta već imaš?",
       "sub": "Uvezi ono što postoji, da nastava i obaveze budu zauzete prije nego biraš slobodno vrijeme.",
+      "syllabus": "Plan i program",
+      "syllabusSub": "Predmeti, literatura i bodovanje odjednom",
+      "syllabusHint": "S planom i programom predmete ne upisuješ ručno.",
       "calendar": "Akademski kalendar",
       "calendarSub": "PDF, slika ili tekst · nastava, rokovi, neradni dani",
       "timetable": "Raspored nastave",

@@ -430,7 +430,7 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - [x] NoviPredmet: sekcija „Prvi izvor“ (PDF / nađi sadržaj / slika) umjesto Malo / Srednje / Puno; „Izvor dodajem kasnije“ = grubi izvor ~25 h
 - [x] Sadržaj izvora s interneta: web search kroz wrapper (naslov, autor, izdanje), poglavlja kao jedinice + link i upozorenje za izdanje, pregled prije snimanja, keš po naslovu, `ai_runs`; prazan rezultat → ručni unos ili slika sadržaja; eval
 - [x] Literatura iz plana i programa: „Koje od ovoga koristiš?“ u Dodaj izvor i pregledu uvoza (ništa unaprijed označeno)
-- [ ] Onboarding: „Plan i program“ u koraku 2; korak 7 (prvi predmet) preskočen kad uvoz da bar jedan predmet
+- [x] Onboarding: „Plan i program“ u koraku 2; korak 7 (prvi predmet) preskočen kad uvoz da bar jedan predmet
 - [x] Popravni na Predmetu kao red ispita sa „Samo ako zatreba“ (i dalje van plana dok se ne aktivira)
 - [x] Danas: ikona „Prilagodi dan“ (energija, Imam samo, slobodna sesija, Imam više vremena, Danas ne mogu); link „Ili započni slobodnu sesiju sada“ ispod kartice Sljedeće
 - [ ] Slobodna sesija: trajanje → Hoot predloži (`pickForTime()`, Druga ideja) / Biram sam → pauze u jednom redu; sheet planiranog bloka pokazuje zadani ritam uz Promijeni (bez čipova) i „Uči sa tutorom“ kao ista sesija
