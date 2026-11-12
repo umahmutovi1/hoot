@@ -18,9 +18,10 @@ export function activeDecisions(rows: Feedback[]) {
   return [...latest.values()].filter((r) => r.status === 'accepted')
 }
 
+/** Actions accepted for `week` that still hold (a later "Vrati odluku" frees the slot). */
 export function acceptedThisWeek(rows: Feedback[], week: string) {
   const keys = new Set<string>()
-  for (const row of rows) {
+  for (const row of activeDecisions(rows)) {
     const p = row.payload
     if (
       row.status === 'accepted' &&

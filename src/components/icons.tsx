@@ -80,6 +80,12 @@ export const PlusIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const MinusIcon = (p: IconProps) => (
+  <Icon strokeWidth={2.2} {...p}>
+    <path d="M5 12h14" />
+  </Icon>
+)
+
 export const CloseIcon = (p: IconProps) => (
   <Icon strokeWidth={2} {...p}>
     <path d="M6 6l12 12M18 6L6 18" />
@@ -151,6 +157,12 @@ export const CheckIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const UndoIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 21a9 9 0 1 0-7.8-13.5" />
+    <path d="M3 3v1.3c0 2.2 0 3.3.7 3.9.7.6 1.8.4 4 0L9 8" />
+  </Icon>
+)
 export const ClockIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="8" />
