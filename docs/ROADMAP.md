@@ -436,7 +436,7 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - [ ] Slobodna sesija: trajanje → Hoot predloži (`pickForTime()`, Druga ideja) / Biram sam → pauze u jednom redu; sheet planiranog bloka pokazuje zadani ritam uz Promijeni (bez čipova) i „Uči sa tutorom“ kao ista sesija
 - [x] Prijedlozi: „Potvrdi N“ potvrđuje i ono što je Hoot već uradio (ekran `/progress/suggestions`; „već uradio“ = propušteni blok koji je replan premjestio, Poništi ga izbacuje iz plana za ispit; Vrati odluku vraća ulaze iz zapamćenog stanja)
 - [x] Bodovi: olovka po predmetu → stavke, rezultati i posebna skala ocjena; jasniji „Upiši rezultat“ (ekrani `/progress/points` i `/progress/points/:id`, red „Bodovi“ na Napretku)
-- [ ] Sesije: graf planirano / odrađeno vidljiv na istoj skali
+- [x] Sesije: graf planirano / odrađeno vidljiv na istoj skali (sedmica po sedmica sa ‹ ›, sljedeća sedmica prikazuje plan; red Sesije na Napretku „X od Y“)
 - [ ] Navigacija: traka s oznakama, pozadina aktivnog taba klizi (reduced motion bez animacije); ikonska dugmad (olovka, X, pretraga, postavke) bez pozadine i teksta, ≥ 44 px
 - [ ] Brisanje svuda: odmah + toast „Poništi“; sheet „Potvrda brisanja“ samo za nepovratne radnje (nalog, svi podaci)
 - [ ] Tekst sa boardova po [design/copy-redesign-nov5.md](design/copy-redesign-nov5.md) (bs + en); uz to stalni banner kad sinhronizacija ne uspije („Pokušaj ponovo“), toast poslije Replana i toast „Predložak je obrisan“ umjesto trenutnog brisanja bez traga

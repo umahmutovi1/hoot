@@ -171,7 +171,7 @@ export function seed(locale: Locale): Record<string, Row[]> {
       mode: 'reading',
       origin: 'timer',
       planned_minutes: 50,
-      focus: 4,
+      focus: 3,
     },
     {
       id: id('e', 1),
@@ -181,7 +181,7 @@ export function seed(locale: Locale): Record<string, Row[]> {
       mode: 'problems',
       origin: 'timer',
       planned_minutes: 45,
-      focus: 3,
+      focus: 2,
     },
   ]
   const study_segments: Row[] = study_sessions.map((s, i) => ({
