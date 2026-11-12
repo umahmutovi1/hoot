@@ -806,10 +806,7 @@
       "units_other": "jedinica",
       "count_one": "{{count}} sesija",
       "count_few": "{{count}} sesije",
-      "count_other": "{{count}} sesija",
-      "thisWeek_one": "{{count}} sesija ove sedmice",
-      "thisWeek_few": "{{count}} sesije ove sedmice",
-      "thisWeek_other": "{{count}} sesija ove sedmice"
+      "count_other": "{{count}} sesija"
     },
     "preset": {
       "standard": "Standardno",
@@ -859,6 +856,31 @@
       "discardSub": "Sesija se briše kao da nije ni počela; ništa se ne računa",
       "discarded": "Sesija je odbačena",
       "finishNow": "Završi sesiju"
+    },
+    "week": {
+      "prev": "Prethodna sedmica",
+      "next": "Sljedeća sedmica",
+      "now": "Ova sedmica",
+      "doneOf": "{{done}} od {{planned}}",
+      "count_one": "{{count}} sesija",
+      "count_few": "{{count}} sesije",
+      "count_other": "{{count}} sesija",
+      "plannedOnly": "{{planned}} planirano",
+      "ariaDay": "{{day}} {{done}} od {{planned}}",
+      "ariaPlan": "{{day}} plan {{planned}}",
+      "done": "Odrađeno",
+      "planned": "Planirano",
+      "free": "slobodno",
+      "freeDay": "Slobodan dan, ništa nije planirano.",
+      "today": "Danas",
+      "manual": "ručno upisano",
+      "more_one": "Prikaži još {{count}} dan",
+      "more_few": "Prikaži još {{count}} dana",
+      "more_other": "Prikaži još {{count}} dana",
+      "less": "Prikaži manje",
+      "addManual": "Upiši sesiju ručno",
+      "emptyWeek": "Ove sedmice nije bilo sesija.",
+      "thisWeekOf": "Ova sedmica {{done}} od {{planned}}"
     }
   },
   "settings": {

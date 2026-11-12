@@ -779,9 +779,7 @@
       "units_one": "unit",
       "units_other": "units",
       "count_one": "{{count}} session",
-      "count_other": "{{count}} sessions",
-      "thisWeek_one": "{{count}} session this week",
-      "thisWeek_other": "{{count}} sessions this week"
+      "count_other": "{{count}} sessions"
     },
     "preset": {
       "standard": "Standard",
@@ -831,6 +829,29 @@
       "discardSub": "The session is deleted as if it never started; nothing counts",
       "discarded": "Session discarded",
       "finishNow": "End session"
+    },
+    "week": {
+      "prev": "Previous week",
+      "next": "Next week",
+      "now": "This week",
+      "doneOf": "{{done}} of {{planned}}",
+      "count_one": "{{count}} session",
+      "count_other": "{{count}} sessions",
+      "plannedOnly": "{{planned}} planned",
+      "ariaDay": "{{day}} {{done}} of {{planned}}",
+      "ariaPlan": "{{day}} plan {{planned}}",
+      "done": "Done",
+      "planned": "Planned",
+      "free": "free",
+      "freeDay": "Free day, nothing planned.",
+      "today": "Today",
+      "manual": "entered by hand",
+      "more_one": "Show {{count}} more day",
+      "more_other": "Show {{count}} more days",
+      "less": "Show less",
+      "addManual": "Add a session by hand",
+      "emptyWeek": "No sessions that week.",
+      "thisWeekOf": "This week {{done}} of {{planned}}"
     }
   },
   "settings": {
