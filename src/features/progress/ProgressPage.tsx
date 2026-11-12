@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { PageTitle } from '@/components/PageTitle'
 import { SessionsCard } from '@/features/session/SessionsCard'
 import { EnergyInsight } from './EnergyInsight'
-import { GradesOverview } from './GradesOverview'
+import { PointsEntry } from './PointsEntry'
 
 const Statistics = lazy(() => import('./Statistics').then((m) => ({ default: m.Statistics })))
 
@@ -63,7 +63,7 @@ function ProgressBody() {
       <SlotCards />
       <RhythmCard />
       <SessionsCard />
-      <GradesOverview />
+      <PointsEntry />
       <ActiveInputs />
       <EnergyInsight />
     </div>
