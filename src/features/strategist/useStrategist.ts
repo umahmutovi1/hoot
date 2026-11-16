@@ -1,3 +1,4 @@
+import { readPages } from '@/lib/readPages'
 import { supabase } from '@/lib/supabase'
 import { useMemo } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -24,9 +25,9 @@ export function useStrategist() {
     queryKey: ['progress', data?.inputs.profile.id, 'topics'],
     enabled: Boolean(data),
     queryFn: async () => {
-      const { data, error } = await supabase.from('topics').select('*')
-      if (error) throw error
-      return data
+      return readPages((from, to) =>
+        supabase.from('topics').select('*').order('id').range(from, to),
+      )
     },
   })
   const list = useMemo(() => {

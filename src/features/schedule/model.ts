@@ -25,7 +25,6 @@ export type ClassKind = TimetableRow['kind']
 export const PERIOD_KINDS = ['teaching', 'exam', 'holiday'] as const
 export const EXAM_SESSIONS = ['partial', 'regular', 'makeup'] as const
 export const CLASS_KINDS = ['lecture', 'exercise', 'lab', 'other'] as const
-export const WEEK_PARITIES = ['odd', 'even'] as const
 
 export function toPeriod(row: PeriodRow): Period {
   return {
@@ -91,12 +90,6 @@ export function cancelledOn(date: string, logs: LectureLogRow[]): Set<string> {
       .filter((l) => l.cancelled && l.on_date === date && l.timetable_entry_id)
       .map((l) => l.timetable_entry_id!),
   )
-}
-
-/** Which of the three exception kinds a row is (Dostupnost → Izuzeci). */
-export function exceptionType(e: Pick<ExceptionRow, 'is_busy' | 'start_min'>) {
-  if (!e.is_busy) return 'extraFree' as const
-  return e.start_min === null ? ('busyDay' as const) : ('busyTime' as const)
 }
 
 /** Stored shape of `availability_days.slots`. */

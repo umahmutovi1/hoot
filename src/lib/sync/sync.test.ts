@@ -119,6 +119,10 @@ describe('SyncQueue', () => {
     expect(await queue.pendingCount()).toBe(0)
     expect((await db.queue.toArray())[0]!.failed).toBe(true)
     expect(await queue.failedCount()).toBe(1)
+    // The rejected row is not on the server: it must not be marked as synced.
+    const rows = await db.rows.toArray()
+    expect(rows.find((r) => r.id === 'bad')!.pending).toBe(true)
+    expect(rows.find((r) => r.id === 'good')!.pending).toBe(false)
   })
 
   it('applies updates and deletes to the mirror', async () => {

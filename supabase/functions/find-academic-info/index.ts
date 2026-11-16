@@ -9,40 +9,20 @@ import { json } from '../_shared/cors.ts'
 import {
   academicSearchRequest,
   htmlToPages,
-  isPublicLink,
   keepFound,
   normalizeYear,
   searchKey,
   titleFromUrl,
 } from '../_shared/academicSearch.ts'
 import { llmDeps, readJson, serve } from '../_shared/edge.ts'
-import { opens } from '../_shared/linkCheck.ts'
+import { fetchPublic, opens } from '../_shared/linkCheck.ts'
 import { generate } from '../_shared/llm.ts'
 import { findAcademicInfoRequestSchema } from '../_shared/schemas.ts'
 import type { AcademicSearch, FoundDocument } from '../_shared/schemas.ts'
 
 const FETCH_TIMEOUT_MS = 20000
 const MAX_FILE_BYTES = 15 * 1024 * 1024
-const MAX_REDIRECTS = 5
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
-
-/** Follows redirects by hand, so every hop is checked to be a public host. */
-async function fetchPublic(url: string): Promise<Response | null> {
-  let next = url
-  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-    if (!isPublicLink(next)) return null
-    const res = await fetch(next, {
-      redirect: 'manual',
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      headers: { 'user-agent': 'Mozilla/5.0 (compatible; Hoot)' },
-    })
-    const location = res.headers.get('location')
-    if (res.status < 300 || res.status >= 400 || !location) return res
-    await res.body?.cancel()
-    next = new URL(location, next).toString()
-  }
-  return null
-}
 
 Deno.serve(
   serve(Deno.env, async (req, ctx) => {
@@ -80,7 +60,10 @@ Deno.serve(
     const title = found?.title ?? titleFromUrl(url)
     let res: Response | null
     try {
-      res = await fetchPublic(url)
+      res = await fetchPublic(url, {
+        timeoutMs: FETCH_TIMEOUT_MS,
+        headers: { 'user-agent': 'Mozilla/5.0 (compatible; Hoot)' },
+      })
     } catch {
       return json({ error: 'failed' }, 502)
     }

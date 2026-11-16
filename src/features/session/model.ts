@@ -26,12 +26,6 @@ export function bySegmentStart(a: SegmentRow, b: SegmentRow) {
   return a.started_at.localeCompare(b.started_at)
 }
 
-/** The unit of the last segment: what "Sad radim na" shows as active. */
-export function currentUnitId(segments: SegmentRow[]): string | null {
-  const last = [...segments].sort(bySegmentStart).at(-1)
-  return last?.unit_id ?? null
-}
-
 /** "23:41", "1:05:09" */
 export function formatClock(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000))

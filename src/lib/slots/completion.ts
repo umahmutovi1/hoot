@@ -310,7 +310,3 @@ export function sampleFixed(post: CompletionPosterior, normal: () => number): Co
   )
   return { ...post, mean, cov: post.cov.map((r) => r.map(() => 0)) }
 }
-
-/** Days between a block and its goal as the features want them (null without a goal). */
-export const daysToGoalOf = (onDate: LocalDate, goalOn: LocalDate | null) =>
-  goalOn === null ? null : diffDays(onDate, goalOn)

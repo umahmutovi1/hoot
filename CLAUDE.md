@@ -17,7 +17,7 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 - AI prompts receive the user's `locale`; source titles stay as written in the book.
 
 ## Stack
-React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router · TanStack Query (server state) · Zustand (UI state) · React Hook Form + Zod · date-fns (own calendar grid, no FullCalendar) · ts-fsrs (spaced repetition) · react-markdown + KaTeX · Dexie (offline queue) · vite-plugin-pwa · Supabase (Postgres + RLS, Auth, Storage, Edge Functions/Deno) · Claude Haiku 5.5 via LLM wrapper (structured outputs) · Vitest + fast-check (+ Playwright later) · Cloudflare Pages · GitHub Actions.
+React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router · TanStack Query (server state) · Zustand (UI state) · React Hook Form + Zod · date-fns (own calendar grid, no FullCalendar) · ts-fsrs (spaced repetition) · react-markdown + KaTeX · Dexie (offline queue) · vite-plugin-pwa · Supabase (Postgres + RLS, Auth, Storage, Edge Functions/Deno) · LLM wrapper with the provider from secrets (Gemini free tier today, Claude Haiku 5.5 as the paid model; structured outputs) · Vitest + fast-check (+ Playwright later) · Cloudflare Pages · GitHub Actions.
 
 ## Layout
 - `src/app/` router, layout, providers, i18n setup
@@ -70,7 +70,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - Hotfix = `hotfix/…` off `main` → PR into `main`, then merge `main` back into `dev`.
 - Conventional Commits (`feat(session): add pause segments`). Small focused commits.
 - No `Co-Authored-By` or other AI attribution trailers in commits or PRs.
-- Never commit `.env*` files or secrets. `VITE_SUPABASE_ANON_KEY` is public by design; service-role and Anthropic keys live only in Supabase secrets.
+- Never commit `.env*` files or secrets. `VITE_SUPABASE_PUBLISHABLE_KEY` is public by design; service-role and Anthropic keys live only in Supabase secrets.
 
 ## Before finishing a task
 - `npm run lint && npm run format:check && npm run typecheck && npm test && npm run build` pass.

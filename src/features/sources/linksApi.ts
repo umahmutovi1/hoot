@@ -86,18 +86,3 @@ export function useSaveLinks() {
     onSettled: () => queryClient.invalidateQueries({ queryKey: questionLinksKey(userId) }),
   })
 }
-
-/** The user links or unlinks one question and chapter by hand (always 'user', never replaced). */
-export function useSetLink() {
-  const userId = useAuth().session?.user.id
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (link: { question_id: string; unit_id: string; linked: boolean }) => {
-      const { error } = await supabase
-        .from('question_links')
-        .upsert({ ...link, assigned_by: 'user' }, { onConflict: 'question_id,unit_id' })
-      if (error) throw error
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: questionLinksKey(userId) }),
-  })
-}

@@ -170,13 +170,6 @@ export function isBehind(b: SubjectBehind): boolean {
 export type PaceAction =
   'raise_priority' | 'take_time_from' | 'switch_to_regular' | 'start_earlier' | 'add_minutes'
 
-/** Actions that need `plan()` (a plan diff or a computed day) and wait for the scheduler. */
-export const NEEDS_PLAN: ReadonlySet<PaceAction> = new Set([
-  'take_time_from',
-  'start_earlier',
-  'add_minutes',
-])
-
 export interface PaceSubject {
   priority: number
   studyMode: 'regular' | 'campaign'

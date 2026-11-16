@@ -54,13 +54,6 @@ export const TimerIcon = (p: IconProps) => (
   </Icon>
 )
 
-export const BellIcon = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z" />
-    <path d="M10 20.5a2 2 0 0 0 4 0" />
-  </Icon>
-)
-
 export const GearIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="3" />
@@ -219,13 +212,6 @@ export const SkipIcon = (p: IconProps) => (
   </Icon>
 )
 
-export const CircleMinusIcon = (p: IconProps) => (
-  <Icon {...p}>
-    <circle cx="12" cy="12" r="8.5" />
-    <path d="M8.5 12h7" />
-  </Icon>
-)
-
 export const ArchiveIcon = (p: IconProps) => (
   <Icon {...p}>
     <rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5" />
@@ -268,18 +254,6 @@ export const AiSparkIcon = ({ size = 22, ...props }: IconProps) => (
   </svg>
 )
 
-export const MenuIcon = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M4 7h16M4 12h16M4 17h16" />
-  </Icon>
-)
-
-export const SignOutIcon = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 17l5-5-5-5M21 12H9" />
-  </Icon>
-)
-
 export const LockIcon = (p: IconProps) => (
   <Icon {...p}>
     <rect x="5" y="11" width="14" height="9" rx="2" />
@@ -290,12 +264,6 @@ export const LockIcon = (p: IconProps) => (
 export const MoonIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
-  </Icon>
-)
-
-export const BoltIcon = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M13 3L5 13.5h6L10 21l8-10.5h-6z" />
   </Icon>
 )
 

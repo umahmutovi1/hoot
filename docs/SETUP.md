@@ -114,7 +114,7 @@ Subject:
 Hoot: kod za prijavu / sign-in code
 ```
 
-Body (Source): cijeli sadržaj fajla [`supabase/templates/magic_link.html`](../supabase/templates/magic_link.html) (Liquid Glass od Sprinta 16: lavanda gradijent, staklena kartica, dugme u gradijentu appa). Kad se fajl promijeni, ponovo ga zalijepi ovdje. Isti fajl koristi lokalni Supabase (`supabase/config.toml` → `[auth.email.template.magic_link]`).
+Body (Source): cijeli sadržaj fajla [`supabase/templates/magic_link.html`](../supabase/templates/magic_link.html) (Noćna sova: ravna podloga, kartica i dugme u boji brenda). Kad se fajl promijeni, ponovo ga zalijepi ovdje. Isti fajl koristi lokalni Supabase (`supabase/config.toml` → `[auth.email.template.magic_link]`).
 
 Email-safe tabele i inline stilovi u bojama appa, bez `backdrop-filter` (email klijenti ga ne podržavaju): staklo je poluprozirna bijela kartica, a gdje klijent izbaci gradijent ostaje `bgcolor`. Ikonica je PNG sa produkcije (WebP ne podržavaju svi klijenti), font je sistemski (SF Pro / Segoe UI / Arial).
 
