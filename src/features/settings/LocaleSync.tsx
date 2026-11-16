@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { setAddressGender } from '@/app/i18n'
-import { isGender, storeGender } from '@/lib/address'
+import { isGender } from '@/lib/address'
 import { isLocale, storeLocale, takePendingLocale } from '@/lib/locale'
 import { useProfile, useUpdateLocale } from './profile'
 
@@ -30,11 +30,10 @@ export function LocaleSync() {
     }
   }, [profile, i18n, updateLocale])
 
-  // The address form follows the profile on every device (and is cached for the next start).
+  // The address form follows the profile on every device.
   const gender = profile ? (isGender(profile.gender) ? profile.gender : null) : undefined
   useEffect(() => {
     if (gender === undefined) return
-    storeGender(gender)
     setAddressGender(gender)
   }, [gender])
 

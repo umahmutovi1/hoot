@@ -2,7 +2,7 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import bs from '@/locales/bs.json'
 import en from '@/locales/en.json'
-import { addressContext, getStoredGender, type Gender } from '@/lib/address'
+import { addressContext, type Gender } from '@/lib/address'
 import { DEFAULT_LOCALE, getStoredLocale } from '@/lib/locale'
 
 export const resources = {
@@ -21,7 +21,7 @@ void i18n.use(initReactI18next).init({
 // Address form (src/lib/address.ts): every `t()` gets the user's form as its i18next context, so
 // a string with a `_male` variant picks it and every other string is untouched. Screens do not
 // pass it themselves; a context given by a caller wins.
-let gender: Gender | null = getStoredGender()
+let gender: Gender | null = null
 const translate = i18n.t.bind(i18n) as unknown as (...args: unknown[]) => unknown
 const withAddress = (key: unknown, ...rest: unknown[]) => {
   const context = addressContext(gender)

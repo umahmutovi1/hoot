@@ -1,7 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { setAddressGender } from '@/app/i18n'
-import { storeGender } from '@/lib/address'
 import { supabase } from '@/lib/supabase'
 import { AuthContext, type AuthState } from './auth-context'
 
@@ -17,7 +16,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (event === 'SIGNED_OUT') {
         queryClient.clear()
         // The next person on this device starts with the default form.
-        storeGender(null)
         setAddressGender(null)
       }
       setState({ session, loading: false })
