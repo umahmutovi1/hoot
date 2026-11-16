@@ -4,8 +4,6 @@ export type Subject = Tables<'subjects'>
 export type Assessment = Tables<'assessments'>
 export type Deadline = Tables<'deadlines'>
 export type AssessmentKind = Enums<'assessment_kind'>
-export type ExamFormat = Enums<'exam_format'>
-export type DeadlineKind = Enums<'deadline_kind'>
 
 export type SubjectWithAssessments = Subject & { assessments: Assessment[] }
 

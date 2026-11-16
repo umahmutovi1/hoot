@@ -1,3 +1,4 @@
+import { readPages } from '@/lib/readPages'
 import { BAND_BG, BANDS } from '@/features/review/bands'
 import { strengthBand } from '@/lib/srs'
 import { useState } from 'react'
@@ -20,9 +21,9 @@ export function ProgressBreakdown() {
     queryKey: ['progress', userId, 'topics'],
     enabled: Boolean(userId),
     queryFn: async () => {
-      const { data, error } = await supabase.from('topics').select('*')
-      if (error) throw error
-      return data
+      return readPages((from, to) =>
+        supabase.from('topics').select('*').order('id').range(from, to),
+      )
     },
   })
   const [filter, setFilter] = useState('all')

@@ -20,6 +20,7 @@ import {
 } from '../_shared/push.ts'
 
 const BATCH = 200
+const RETRY_MS = 5 * 60_000
 
 interface Sub {
   id: string
@@ -115,7 +116,12 @@ Deno.serve(async (req) => {
     const gone = new Set<string>()
     let sent = 0
     let failed = 0
+    // Jobs no subscription took because of a passing error: left unsent, so the next runs (a
+    // minute apart) try again for RETRY_MS; later than that the notification is no longer news.
+    const retry = new Set<string>()
     for (const job of send) {
+      let delivered = 0
+      let errors = 0
       for (const sub of (subs as Sub[]).filter((s) => s.user_id === job.user_id)) {
         if (gone.has(sub.id)) continue
         try {
@@ -128,18 +134,22 @@ Deno.serve(async (req) => {
             { TTL: 600, urgency: 'high' },
           )
           sent++
+          delivered++
         } catch (err) {
           const status = (err as { statusCode?: number }).statusCode
           if (isGone(status)) gone.add(sub.id)
           else {
             failed++
+            errors++
             console.error('push failed', status ?? 'no status')
           }
         }
       }
+      const fresh = now.getTime() - Date.parse(job.send_at) < RETRY_MS
+      if (delivered === 0 && errors > 0 && fresh) retry.add(job.id)
     }
 
-    const done = [...send, ...stale].map((j) => j.id)
+    const done = [...send, ...stale].map((j) => j.id).filter((id) => !retry.has(id))
     if (done.length)
       await admin.from('push_jobs').update({ sent_at: now.toISOString() }).in('id', done)
     if (gone.size)
@@ -147,7 +157,14 @@ Deno.serve(async (req) => {
         .from('push_subscriptions')
         .delete()
         .in('id', [...gone])
-    return json({ jobs: send.length, sent, failed, stale: stale.length, gone: gone.size })
+    return json({
+      jobs: send.length,
+      sent,
+      failed,
+      stale: stale.length,
+      gone: gone.size,
+      retry: retry.size,
+    })
   } catch (err) {
     console.error('notify failed', err instanceof Error ? err.name : typeof err)
     return json({ error: 'failed' }, 500)

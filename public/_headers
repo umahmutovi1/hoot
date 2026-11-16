@@ -1,5 +1,5 @@
 # Cloudflare Pages security headers (PRD "Sigurnosno skeniranje", Sprint 12).
-# Scripts, styles, fonts (Geist, KaTeX) and workers are all same-origin; Supabase is the only
+# Scripts, styles, fonts (Figtree, Bricolage Grotesque, KaTeX) and workers are all same-origin; Supabase is the only
 # backend (REST, Storage signed URLs, Realtime). Inline styles stay allowed for React style props.
 # Google Drive Picker (Sprint 13): Google sign-in and Picker scripts and frames, Drive API
 # downloads (which may redirect to googleusercontent.com).

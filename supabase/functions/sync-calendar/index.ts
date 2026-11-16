@@ -11,6 +11,7 @@ import { corsHeaders, json } from '../_shared/cors.ts'
 import { readJson } from '../_shared/edge.ts'
 import { replaceFeedEvents } from '../_shared/externalEvents.ts'
 import { IcsError, parseIcs } from '../_shared/ics.ts'
+import { fetchPublic } from '../_shared/linkCheck.ts'
 
 const HORIZON_DAYS = 120
 const PAST_DAYS = 7
@@ -38,16 +39,17 @@ type SyncError =
 
 async function download(url: string): Promise<string> {
   const target = url.replace(/^webcal:\/\//i, 'https://')
-  let res: Response
+  // The link is the user's: only public hosts, on every redirect hop (no internal addresses).
+  let res: Response | null
   try {
-    res = await fetch(target, {
-      redirect: 'follow',
-      signal: AbortSignal.timeout(15_000),
+    res = await fetchPublic(target, {
+      timeoutMs: 15_000,
       headers: { accept: 'text/calendar, text/plain;q=0.9, */*;q=0.1' },
     })
   } catch {
     throw 'fetch_failed' satisfies SyncError
   }
+  if (!res) throw 'fetch_failed' satisfies SyncError
   if (!res.ok) throw 'http_error' satisfies SyncError
   const length = Number(res.headers.get('content-length') ?? 0)
   if (length > MAX_BYTES) throw 'too_large' satisfies SyncError

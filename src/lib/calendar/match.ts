@@ -16,8 +16,6 @@ export interface MatchEvent {
   inSeries: boolean
 }
 
-export type MatchDecision = 'linked' | 'distinct' | 'skipped' | 'hoot'
-
 export interface MatchRow {
   feed_id: string
   match_key: string

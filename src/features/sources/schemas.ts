@@ -52,7 +52,6 @@ export const unitFormSchema = z
 export type UnitForm = z.infer<typeof unitFormSchema>
 
 export const NOTES_MAX_LENGTH = 20000
-export const notesSchema = z.string().max(NOTES_MAX_LENGTH, 'validation.tooLong')
 
 export const cardFormSchema = z.object({
   id: z.uuid(),

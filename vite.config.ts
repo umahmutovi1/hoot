@@ -21,8 +21,9 @@ export default defineConfig({
         start_url: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ECE9F4',
-        theme_color: '#ECE9F4',
+        // Noćna sova (src/index.css): the splash is the ground, the bar the brand (as index.html).
+        background_color: '#FBF5E6',
+        theme_color: '#34527A',
         // Android "Podijeli" → Hoot: a PDF or image from Viber, WhatsApp, Moodle or Gmail opens
         // "Daj dokument" with it (public/share-sw.js). iOS does not support share targets.
         share_target: {
@@ -80,6 +81,10 @@ export default defineConfig({
               includeDependenciesRecursively: false,
               test: /node_modules[\\/](recharts|recharts-scale|d3-[^\\/]+|victory-vendor|@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|reselect|immer)[\\/]/,
             },
+            // Dynamically imported only (a PDF given to the AI or a source): its own chunk, or the
+            // catch-all below pulls it into the vendor chunk every screen loads. The name matches
+            // `globIgnores` above.
+            { name: 'pdf', test: /node_modules[\\/]pdfjs-dist[\\/]/ },
             { name: 'vendor', test: /node_modules[\\/]/ },
           ],
         },

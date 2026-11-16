@@ -1,3 +1,4 @@
+import { readPages } from '@/lib/readPages'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo } from 'react'
 import { syncQueueFor } from '@/app/sync'
@@ -23,8 +24,6 @@ export const activeSessionKey = (userId: string | undefined) =>
   ['session', 'active', userId] as const
 export const sessionKey = (userId: string | undefined, id: string | undefined) =>
   ['session', 'one', userId, id] as const
-export const modeRatesKey = (userId: string | undefined, subjectId: string | undefined) =>
-  ['session', 'modeRates', userId, subjectId] as const
 
 function useUserId() {
   return useAuth().session?.user.id
@@ -98,27 +97,41 @@ export function useSessions() {
     networkMode: 'always',
     queryFn: async (): Promise<SessionListItem[]> => {
       const queue = syncQueueFor(userId!)
-      const { data, error } = await supabase
-        .from('study_sessions')
-        .select(`${SESSION_COLUMNS}, study_segments(${SEGMENT_COLUMNS})`)
-        .not('ended_at', 'is', null)
-        .order('started_at', { ascending: false })
-        .limit(500)
-      const remote = (error ? [] : data) as unknown as SessionListItem[]
-      const merged = (error
+      // The whole history in pages: a fixed limit would drop the oldest sessions from the
+      // statistics and the plan's signals after a few months.
+      let remote: SessionListItem[] | null
+      try {
+        remote = (await readPages((from, to) =>
+          supabase
+            .from('study_sessions')
+            .select(`${SESSION_COLUMNS}, study_segments(${SEGMENT_COLUMNS})`)
+            .not('ended_at', 'is', null)
+            .order('started_at', { ascending: false })
+            .order('id')
+            .range(from, to),
+        )) as unknown as SessionListItem[]
+      } catch {
+        remote = null
+      }
+      const merged = (remote === null
         ? (await queue.local('study_sessions')).map((r) => r.row)
         : await queue.merge(
             'study_sessions',
             remote as unknown as Row[],
           )) as unknown as SessionListItem[]
+      // One read of the local segments for all sessions, not one per session.
+      const localSegs = new Map<string, SegmentRow[]>()
+      for (const r of await queue.local('study_segments')) {
+        const seg = r.row as unknown as SegmentRow
+        localSegs.set(seg.session_id, [...(localSegs.get(seg.session_id) ?? []), seg])
+      }
+      const remoteSegs = new Map((remote ?? []).map((r) => [r.id, r.study_segments ?? []]))
       const out: SessionListItem[] = []
       for (const s of merged) {
         if (!s.ended_at) continue
-        const local = (await queue.local('study_segments', { session_id: s.id })).map(
-          (r) => r.row as unknown as SegmentRow,
+        const segs = new Map(
+          [...(remoteSegs.get(s.id) ?? []), ...(localSegs.get(s.id) ?? [])].map((x) => [x.id, x]),
         )
-        const remoteSegs = remote.find((r) => r.id === s.id)?.study_segments ?? []
-        const segs = new Map([...remoteSegs, ...local].map((x) => [x.id, x]))
         out.push({ ...s, study_segments: [...segs.values()] })
       }
       return out.sort((a, b) => b.started_at.localeCompare(a.started_at))
@@ -141,28 +154,6 @@ export function useSessionUnits(sessionId: string | undefined) {
           'session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty, recall_skipped',
         )
         .eq('session_id', sessionId!)
-      if (error) throw error
-      return data
-    },
-  })
-}
-
-export type ModeRate = Pick<
-  Tables<'source_mode_rates'>,
-  'source_id' | 'mode' | 'min_per_unit' | 'samples'
->
-
-/** Calibration per source × mode of a subject's sources; null offline without a cached copy. */
-export function useModeRates(subjectId: string | undefined, sourceIds: string[]) {
-  const userId = useUserId()
-  return useQuery({
-    queryKey: [...modeRatesKey(userId, subjectId), sourceIds.join(',')],
-    enabled: Boolean(userId && subjectId) && sourceIds.length > 0,
-    queryFn: async (): Promise<ModeRate[]> => {
-      const { data, error } = await supabase
-        .from('source_mode_rates')
-        .select('source_id, mode, min_per_unit, samples')
-        .in('source_id', sourceIds)
       if (error) throw error
       return data
     },

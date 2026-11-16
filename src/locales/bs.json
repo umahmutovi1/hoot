@@ -2,9 +2,9 @@
   "app": {
     "name": "Hoot",
     "loading": "Učitavanje…",
-    "comingSoon": "Uskoro",
     "back": "Nazad",
-    "error": "Nešto nije u redu. Pokušaj ponovo."
+    "error": "Nešto nije u redu. Pokušaj ponovo.",
+    "reload": "Učitaj ponovo"
   },
   "locale": {
     "bs": "Bosanski",
@@ -22,7 +22,6 @@
     "home": "Hoot, idi na Danas"
   },
   "auth": {
-    "headline": "Uči pametnije,\nne duže.",
     "email": "Email",
     "emailPlaceholder": "ime@primjer.ba",
     "emailInvalid": "Upiši ispravan email.",
@@ -107,9 +106,6 @@
       "exam": "{{title}} · {{week}}. sedmica",
       "holiday": "Neradni dan · {{title}}"
     },
-    "planSoonTitle": "Dnevni plan učenja stiže uskoro",
-    "planSoonBody": "Dok app ne računa plan, sesiju pokrećeš ovdje, a nastavu i ispite vidiš u kalendaru.",
-    "todayInCalendar": "Danas u kalendaru",
     "next": {
       "label": "Sljedeće",
       "freeSub": "Izaberi predmet i koliko vremena imaš",
@@ -196,8 +192,7 @@
       "toToday": "Prebačeno na danas u {{time}}",
       "toTomorrow": "Danas nema mjesta: prvi blok sutra u {{time}}",
       "toLater": "Prebačeno na prvi slobodan dan u {{time}}",
-      "carried": "prebačeno",
-      "fromNotification": "Preskočeno iz notifikacije: {{title}}"
+      "carried": "prebačeno"
     },
     "start": {
       "rhythmSub": "Tvoj zadani, Hoot je po njemu složio blok",
@@ -232,7 +227,6 @@
   },
   "plan": {
     "title": "Plan",
-    "scheduleEmpty": "Satnica raspoređuje današnje blokove u slobodne termine.",
     "prevMonth": "Prethodni mjesec",
     "nextMonth": "Sljedeći mjesec",
     "legendExam": "Ispit",
@@ -328,7 +322,6 @@
       "partial2": "II parcijala",
       "integral": "Integralni"
     },
-    "new": "Novi",
     "activeCount_one": "{{count}} aktivan",
     "activeCount_few": "{{count}} aktivna",
     "activeCount_other": "{{count}} aktivnih",
@@ -427,14 +420,9 @@
       "pickDate": "Datum",
       "removeExam": "Ukloni ispit",
       "contingent": "Samo ako zatreba",
-      "dateTentative": "Okvirni datum (još nije objavljen)",
       "notPlannedAhead": "ne planira se unaprijed",
       "dateNotConfirmed": "datum nije objavljen",
       "advanced": "Napredno",
-      "advancedSummary": "Prioritet {{priority}} · {{mode}}",
-      "priority": "Prioritet",
-      "priorityDescription": "{{n}} · {{name}}: {{description}}",
-      "howStudied": "Kako učiš ovaj predmet?",
       "campaignStart": "Početak",
       "campaignStartComputed": "Izračunava se iz plana",
       "campaignStartManual": "Ručno · {{date}}",
@@ -455,13 +443,11 @@
     },
     "detail": {
       "edit": "Uredi predmet",
-      "priorityChip": "Prioritet {{n}} · {{name}}",
       "nextExam": "{{title}} {{when}}.",
       "addExam": "+ Ispit",
       "noExams": "Još nema ispita.",
       "tentative": "datum okvirno",
       "contingent": "samo ako zatreba",
-      "passed": "položen",
       "tentativeUntil": "datum okvirno, najkasnije {{date}}"
     },
     "campaign": {
@@ -537,7 +523,6 @@
         "mid": "uobičajeno",
         "high": "češće"
       },
-      "boost": "+{{minutes}} min dnevno do {{date}}",
       "boostSimple": "Više vremena do {{date}}",
       "endBoost": "Ukloni pojačanje"
     }
@@ -772,11 +757,9 @@
     },
     "history": {
       "title": "Sesije",
-      "add": "Dodaj sesiju",
       "all": "Svi",
       "emptyTitle": "Još nema sesija",
       "empty": "Završene sesije se pojavljuju ovdje. Učila si bez timera? Dodaj sesiju sa +.",
-      "manual": "ručno",
       "addTitle": "Dodaj sesiju",
       "addSubtitle": "Učila si bez timera? Upiši kad.",
       "date": "Datum",
@@ -969,7 +952,6 @@
   "profile": {
     "nameLabel": "Ime",
     "namePlaceholder": "npr. Uma",
-    "continue": "Nastavi",
     "saveFailed": "Spašavanje nije uspjelo. Pokušaj ponovo.",
     "editName": "Promijeni ime"
   },
@@ -987,8 +969,6 @@
       "other": "Ostalo"
     },
     "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
-    "inPeriod": "U roku",
-    "manualRange": "Ručni raspon",
     "showInCalendar": "Prikaži u kalendaru",
     "dateMode": {
       "label": "Kad je ispit?",
@@ -1609,22 +1589,6 @@
     "barLabel": "Ti si na {{you}}. dijelu, predavanja na {{lecture}}. od {{total}}",
     "youShort": "Ti · {{n}}",
     "lectureShort": "Predavanje · {{n}}",
-    "warnLectures_one": "Zaostaješ {{count}} predavanje",
-    "warnLectures_few": "Zaostaješ {{count}} predavanja",
-    "warnLectures_other": "Zaostaješ {{count}} predavanja",
-    "warnBody": "Pređeno na predavanjima, a još nije počelo: {{amount}} (~{{time}}).",
-    "action": {
-      "raise_priority": "Podigni prioritet na {{n}}",
-      "switch_to_regular": "Prebaci na redovno",
-      "take_time_from": "Uzmi vrijeme od drugog predmeta",
-      "start_earlier": "Kreni ranije",
-      "add_minutes": "Dodaj vrijeme dnevno"
-    },
-    "done": {
-      "raise_priority": "Prioritet je sada {{n}}.",
-      "switch_to_regular": "Predmet je sada u redovnom režimu."
-    },
-    "later": "Kasnije",
     "promptSub": "Dokle ste stigli? · {{time}}",
     "contextDate": "{{kind}} · {{date}} {{time}}",
     "behindTime": "~{{time}} učenja"
@@ -1684,7 +1648,6 @@
       "of": "od",
       "percent": "Procenat",
       "rescaleHint": "Ako je test bodovan drugačije (npr. od 50), upiši to; doprinos se preračuna na {{points}} bodova.",
-      "pct": "{{pct}}%",
       "passedLine": "{{pct}}% · položeno",
       "failedLine": "{{pct}}% · nije položeno",
       "thresholdNote": "prag {{pct}}%",
@@ -1724,10 +1687,6 @@
       "thresholdFor": "Prag za ocjenu {{grade}}",
       "below": "ispod {{pct}}%",
       "reset": "Vrati bosansku skalu",
-      "target": "Željena ocjena",
-      "noTarget": "bez cilja",
-      "targetHint": "Plan će podići ciljnu pokrivenost da stigneš do {{grade}}.",
-      "noTargetHint": "Bez cilja plan prati samo prioritet predmeta.",
       "globalSubtitle": "Za sve predmete",
       "applies": "Za koje predmete važi",
       "appliesAll": "Za sve predmete",
@@ -1740,8 +1699,6 @@
     "name": "Asistent",
     "tagline": "zna tvoje dokumente i plan",
     "ask": "Pitaj asistenta…",
-    "askEmpty": "Daj mi raspored ispita…",
-    "open": "Otvori razgovor sa asistentom",
     "offline": "Asistent je offline. Vraća se kad se povežeš.",
     "disabled": "Asistent još nije podešen (nema AI ključa).",
     "add": "Daj dokument",
@@ -1750,9 +1707,7 @@
     "suggest": {
       "important": "Šta je danas najvažnije?",
       "importExams": "Uvezi raspored ispita",
-      "makeup": "Kad je popravni?",
-      "addSubject": "+ Dodaj predmet",
-      "importCalendar": "Uvezi akademski kalendar"
+      "makeup": "Kad je popravni?"
     },
     "sheet": {
       "title": "Daj dokument",
@@ -2494,7 +2449,6 @@
     "discardProposal": "Odbaci"
   },
   "review": {
-    "title": "Provjera znanja",
     "progress": "Provjera znanja · {{n}} od {{total}}",
     "close": "Zatvori",
     "strength": "jačina {{pct}} · zadnji put {{last}}",
@@ -2562,7 +2516,6 @@
     "empty": "Jačina se računa kad poglavlje prođe prvi test (recall gate ili provjeru pročitanog).",
     "nextReview": "Sljedeće ponavljanje",
     "step": "korak {{n}} od 4",
-    "unitStrength": "jačina {{pct}} · {{band}}",
     "unlock": "„Razumijem” se otključava kroz",
     "unlockLink": "test pamćenja",
     "unlockQuestion": "„Znam” se otključava kroz",
@@ -3062,7 +3015,7 @@
     "haveAccount": "Već imam nalog",
     "headline": "Ti učiš.\nHoot planira.",
     "lead": "Upiši ispite i knjige. Hoot složi svaki dan i sam ga prepravi kad dan krene drugačije.",
-    "owl": "Sova Hoot",
+    "owl": "Hoot",
     "day": {
       "title": "Ujutro otvoriš.\nDan je već složen.",
       "alt": "Animacija: kartice dana se miješaju kao špil; prednja kartica izleti udesno i vrati se na dno, sljedeći blok dođe naprijed",

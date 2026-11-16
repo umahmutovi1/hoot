@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { availableChain, BUSY_SKIP_MS, exhausted, nextReset, parseChain } from './chain.ts'
+import {
+  availableChain,
+  BUSY_SKIP_MS,
+  countsTowardLimit,
+  exhausted,
+  nextReset,
+  parseChain,
+} from './chain.ts'
 
 describe('parseChain', () => {
   it('reads provider:model pairs, keeps the model colons and drops unknown providers', () => {
@@ -70,5 +77,15 @@ describe('exhausted / availableChain', () => {
       },
     ]
     expect(exhausted(runs).size).toBe(0)
+  })
+})
+
+describe('countsTowardLimit', () => {
+  it('counts answers and real failures, not a model that was out of quota or busy', () => {
+    expect(countsTowardLimit({ ok: true, error: null })).toBe(true)
+    expect(countsTowardLimit({ ok: false, error: 'invalid_output: bad json' })).toBe(true)
+    expect(countsTowardLimit({ ok: false, error: null })).toBe(true)
+    expect(countsTowardLimit({ ok: false, error: 'quota_exhausted: 429' })).toBe(false)
+    expect(countsTowardLimit({ ok: false, error: 'provider_busy: 503' })).toBe(false)
   })
 })

@@ -95,6 +95,16 @@ export function nextReset(provider: string, at: Date): Date {
   return new Date(midnight - offset)
 }
 
+/**
+ * Whether a run uses one of the user's daily AI calls. A model that was out of quota or busy
+ * gave the user nothing and the chain moved on, so one request that fell through three free
+ * models counts once (the run that answered, or the last error), not three times.
+ */
+export function countsTowardLimit(run: { ok: boolean; error: string | null }): boolean {
+  if (run.ok) return true
+  return !(run.error?.startsWith('quota_exhausted') || run.error?.startsWith('provider_busy'))
+}
+
 /** Until when each model is left out, from its failed runs (quota: next reset; busy: a minute). */
 export function exhausted(runs: FailedRun[]): Map<string, Date> {
   const out = new Map<string, Date>()
