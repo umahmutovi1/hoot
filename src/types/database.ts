@@ -1498,6 +1498,7 @@ export type Database = {
           display_name: string | null
           exam_eve_end_min: number
           fsrs_params: Json | null
+          gender: string | null
           grade_scale: Json | null
           ics_token: string | null
           id: string
@@ -1536,6 +1537,7 @@ export type Database = {
           display_name?: string | null
           exam_eve_end_min?: number
           fsrs_params?: Json | null
+          gender?: string | null
           grade_scale?: Json | null
           ics_token?: string | null
           id: string
@@ -1574,6 +1576,7 @@ export type Database = {
           display_name?: string | null
           exam_eve_end_min?: number
           fsrs_params?: Json | null
+          gender?: string | null
           grade_scale?: Json | null
           ics_token?: string | null
           id?: string

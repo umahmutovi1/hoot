@@ -1,3 +1,5 @@
+import { AddressToggle } from '@/components/AddressToggle'
+import { useAddress } from './useAddress'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -29,6 +31,7 @@ export function SettingsPage() {
   const { data: profile } = useProfile()
   const theme = isTheme(profile?.theme) ? profile.theme : 'ocean'
   const { locale, setLocale } = useLocale()
+  const { gender, setGender } = useAddress()
   const name = profile?.display_name ?? ''
   const [editingName, setEditingName] = useState(false)
   const [scaleOpen, setScaleOpen] = useState(false)
@@ -82,6 +85,12 @@ export function SettingsPage() {
           <span className="text-[15px]">{t('settings.language')}</span>
           <LocaleToggle value={locale} onChange={setLocale} className="bg-canvas" />
         </div>
+        {locale === 'bs' && (
+          <div className="flex items-center justify-between border-b border-canvas py-2.5">
+            <span className="text-[15px]">{t('settings.address')}</span>
+            <AddressToggle value={gender} onChange={setGender} className="bg-canvas" />
+          </div>
+        )}
         {emailAccount && (
           <button
             type="button"

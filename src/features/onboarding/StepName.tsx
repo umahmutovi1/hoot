@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AddressToggle } from '@/components/AddressToggle'
 import { LocaleToggle } from '@/components/LocaleToggle'
 import { useProfile, useUpdateDisplayName, useUpdateProfile } from '@/features/settings/profile'
+import { useAddress } from '@/features/settings/useAddress'
 import { useLocale } from '@/features/settings/useLocale'
 import { StepTitle, type StepProps } from './OnboardingPage'
 import { browserTimeZone } from './steps'
 
-/** Step 1: name, language and the time zone from the browser. */
+/** Step 1: name, language, the address form (Bosnian) and the time zone from the browser. */
 export function StepName({ setSave, setReady }: StepProps) {
   const { t } = useTranslation()
   const { data: profile } = useProfile()
   const { locale, setLocale } = useLocale()
+  const { gender, setGender } = useAddress()
   const updateName = useUpdateDisplayName()
   const update = useUpdateProfile()
   const [name, setName] = useState(profile?.display_name ?? '')
@@ -44,6 +47,15 @@ export function StepName({ setSave, setReady }: StepProps) {
         </span>
         <LocaleToggle value={locale} onChange={setLocale} className="self-start bg-brand-soft" />
       </div>
+      {/* Only Bosnian has gendered forms; in English there is nothing to ask. */}
+      {locale === 'bs' && (
+        <div className="flex flex-col gap-1.5">
+          <span className="px-1 text-xs font-semibold text-ink-muted uppercase">
+            {t('onboarding.name.address')}
+          </span>
+          <AddressToggle value={gender} onChange={setGender} className="self-start bg-brand-soft" />
+        </div>
+      )}
       <span className="px-1 text-xs text-ink-muted">{t('onboarding.name.zone', { zone })}</span>
     </>
   )
