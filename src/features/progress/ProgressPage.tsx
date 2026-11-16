@@ -1,6 +1,5 @@
 import { ActiveInputs } from '@/features/strategist/ActiveInputs'
-import { InsightsPanel } from '@/features/strategist/InsightsPanel'
-import { StrategistCard } from '@/features/strategist/StrategistCard'
+import { ProposalsEntry } from '@/features/strategist/ProposalsEntry'
 import { ReadinessCard } from './ReadinessCard'
 import { SlotCards } from './SlotCards'
 import { ProgressProvider, useProgress } from './useProgress'
@@ -14,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { PageTitle } from '@/components/PageTitle'
 import { SessionsCard } from '@/features/session/SessionsCard'
 import { EnergyInsight } from './EnergyInsight'
-import { GradesOverview } from './GradesOverview'
+import { PointsEntry } from './PointsEntry'
 
 const Statistics = lazy(() => import('./Statistics').then((m) => ({ default: m.Statistics })))
 
@@ -57,15 +56,14 @@ function ProgressBody() {
         <Statistics />
       </Suspense>
       <ForecastCard />
+      <ProposalsEntry />
       <ReadinessCard />
       <ProgressBreakdown />
       <SlotMap />
       <SlotCards />
       <RhythmCard />
       <SessionsCard />
-      <GradesOverview />
-      <StrategistCard />
-      <InsightsPanel />
+      <PointsEntry />
       <ActiveInputs />
       <EnergyInsight />
     </div>

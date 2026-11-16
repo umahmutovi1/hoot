@@ -9,7 +9,7 @@ import { invokeAi } from '@/features/owl/api'
 import { candidates } from '@/lib/strategist'
 import { diffDays, localDay } from '@/lib/day'
 import { actionLabel } from './copy'
-import { latestFeedback, useFeedback, useRecordFeedback } from './feedback'
+import { isReverted, latestFeedback, useFeedback, useRecordFeedback } from './feedback'
 import { useInsightData } from './useInsights'
 import { weekWindow } from '@/lib/progress/week'
 
@@ -47,6 +47,7 @@ export function useStrategist() {
       const previous = latestFeedback(feedback.data ?? [], c.id)
       return (
         !previous ||
+        isReverted(previous) ||
         diffDays(
           localDay(new Date(previous.created_at), {
             timeZone: data.inputs.profile.timezone,
