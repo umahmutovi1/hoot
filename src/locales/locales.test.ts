@@ -9,8 +9,10 @@ function keys(value: unknown, prefix = ''): string[] {
 
 // Plural forms differ per language (bs has one/few/other, en one/other), so compare base keys.
 const PLURAL = /_(zero|one|two|few|many|other)$/
+// The address form (src/lib/address.ts): only bs has gendered words, as `key_male` variants.
+const ADDRESS = /_male$/
 const baseKeys = (file: unknown) =>
-  [...new Set(keys(file).map((k) => k.replace(PLURAL, '')))].sort()
+  [...new Set(keys(file).map((k) => k.replace(PLURAL, '').replace(ADDRESS, '')))].sort()
 
 describe('locale files', () => {
   it('bs and en have the same keys', () => {
@@ -23,6 +25,13 @@ describe('locale files', () => {
       const plurals = keys(file).filter((k) => PLURAL.test(k))
       for (const k of plurals) expect(all.has(k.replace(PLURAL, '_other'))).toBe(true)
     }
+  })
+
+  it('every _male variant has its base string, and only bs has them', () => {
+    const all = new Set(keys(bs))
+    for (const k of keys(bs).filter((x) => ADDRESS.test(x)))
+      expect(all.has(k.replace(ADDRESS, ''))).toBe(true)
+    expect(keys(en).filter((x) => ADDRESS.test(x))).toEqual([])
   })
 
   it('has no empty strings', () => {

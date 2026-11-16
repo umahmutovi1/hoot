@@ -886,7 +886,8 @@
       "quizletHint": "Copies text for Quizlet → Import (tab, new line)",
       "copy": "Copy",
       "copied": "Cards copied. Paste them into Quizlet → Import."
-    }
+    },
+    "address": "Address form"
   },
   "validation": {
     "required": "Required",
@@ -1983,6 +1984,9 @@
     "name": {
       "title": "What should I call you?",
       "sub": "The plan and reminders will use your name.",
+      "address": "How should Bosnian text address you?",
+      "addressFemale": "Spremna si",
+      "addressMale": "Spreman si",
       "zone": "Time zone: {{zone}} (from the browser)"
     },
     "import": {

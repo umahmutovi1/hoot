@@ -205,9 +205,12 @@
     },
     "noTimer": {
       "link": "Odradila sam bez timera",
+      "link_male": "Odradio sam bez timera",
       "title": "Odradila si bez timera?",
+      "title_male": "Odradio si bez timera?",
       "body": "{{title}}. Blok se označi kao odrađen; vrijeme ide u napredak, ali ne u kalibraciju.",
       "howLong": "Koliko si učila?",
+      "howLong_male": "Koliko si učio?",
       "next": "Dalje"
     },
     "replaced": "Danas je presložen: {{subject}} sad u {{time}}",
@@ -688,9 +691,11 @@
     },
     "forgotten": {
       "title": "Jesi li učila do sad?",
+      "title_male": "Jesi li učio do sad?",
       "body": "Timer radi od {{time}} ({{duration}}).",
       "yes": "Da, nastavi",
       "stoppedAt": "Završila sam u",
+      "stoppedAt_male": "Završio sam u",
       "finishAt": "Završi u {{time}}"
     },
     "end": {
@@ -705,6 +710,7 @@
         "items": "min / jedinica"
       },
       "howFar": "Dokle si stigla?",
+      "howFar_male": "Dokle si stigao?",
       "from": "od",
       "to": "do",
       "unit": "Jedinica ({{label}})",
@@ -726,6 +732,7 @@
       "reflection": "Šta je bilo teško?",
       "optional": "(opcionalno)",
       "reflectionPlaceholder": "npr. nisam skontala razliku 3NF i BCNF",
+      "reflectionPlaceholder_male": "npr. nisam skontao razliku 3NF i BCNF",
       "studied_one": "{{count}} min učenja",
       "studied_few": "{{count}} min učenja",
       "studied_other": "{{count}} min učenja",
@@ -749,10 +756,12 @@
       "whyLow": "Šta je smetalo?",
       "reason": {
         "tired": "Umorna",
+        "tired_male": "Umoran",
         "phone": "Telefon",
         "noise": "Buka",
         "hard": "Teško gradivo",
-        "sleep": "Loše spavala"
+        "sleep": "Loše spavala",
+        "sleep_male": "Loše spavao"
       }
     },
     "history": {
@@ -760,8 +769,10 @@
       "all": "Svi",
       "emptyTitle": "Još nema sesija",
       "empty": "Završene sesije se pojavljuju ovdje. Učila si bez timera? Dodaj sesiju sa +.",
+      "empty_male": "Završene sesije se pojavljuju ovdje. Učio si bez timera? Dodaj sesiju sa +.",
       "addTitle": "Dodaj sesiju",
       "addSubtitle": "Učila si bez timera? Upiši kad.",
+      "addSubtitle_male": "Učio si bez timera? Upiši kad.",
       "date": "Datum",
       "from": "Od",
       "to": "Do",
@@ -777,6 +788,7 @@
         "overlap": "Segmenti se preklapaju."
       },
       "studied": "Šta si učila",
+      "studied_male": "Šta si učio",
       "noUnits": "Bez jedinica. Dodaj ih kroz „Uredi ocjene“.",
       "deleteConfirm": "Sesija se briše sa svim segmentima. Statusi jedinica ostaju kakvi jesu.",
       "delete": "Obriši sesiju",
@@ -918,7 +930,8 @@
       "quizletHint": "Kopira tekst za Quizlet → Uvezi (tab, nova linija)",
       "copy": "Kopiraj",
       "copied": "Kartice su kopirane. Zalijepi ih u Quizlet → Uvezi."
-    }
+    },
+    "address": "Obraćanje"
   },
   "validation": {
     "required": "Obavezno polje",
@@ -969,6 +982,7 @@
       "other": "Ostalo"
     },
     "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
+    "rangeHint_male": "Plan se pravi prema najranijem mogućem datumu, da budeš spreman i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
     "showInCalendar": "Prikaži u kalendaru",
     "dateMode": {
       "label": "Kad je ispit?",
@@ -1208,6 +1222,7 @@
       "tocTo": "Do stranice",
       "tocHint": "Nađene po riječi „Sadržaj“; ispravi ako treba. Šalje se samo tekst ovih stranica (najviše 8).",
       "typeInstead": "Ukucaj sama",
+      "typeInstead_male": "Ukucaj sam",
       "privacy": "Fajl se ne uploaduje; izvor pamti naziv fajla i broj stranica.",
       "originDrive": "PDF · Google Drive",
       "originDevice": "PDF s uređaja · fajl je kod tebe",
@@ -1566,6 +1581,7 @@
     "context": "{{kind}} · danas {{time}}",
     "date": "Datum predavanja",
     "noSources": "Ovaj predmet još nema izvor sa jedinicama. Dodaj izvor da bi bilježila dokle se stiglo.",
+    "noSources_male": "Ovaj predmet još nema izvor sa jedinicama. Dodaj izvor da bi bilježio dokle se stiglo.",
     "hint": "Tapni zadnju jedinicu koja je obrađena.",
     "coveredUpTo": "Obrađeno do",
     "note": "Bilješka",
@@ -1989,6 +2005,7 @@
     "name": "Naziv",
     "newLink": "Novi link (opcionalno)",
     "newLinkPlaceholder": "zalijepi samo ako si ga obnovila",
+    "newLinkPlaceholder_male": "zalijepi samo ako si ga obnovio",
     "remove": "Ukloni kalendar",
     "removeConfirm": "Ukloniti ovaj kalendar? Njegovi događaji nestaju iz plana.",
     "synced": "sinhronizovano {{when}}",
@@ -2043,6 +2060,9 @@
     "name": {
       "title": "Kako da te zovem?",
       "sub": "Plan i podsjetnici će ti se obraćati imenom.",
+      "address": "Kako da ti se obraćam?",
+      "addressFemale": "Spremna si",
+      "addressMale": "Spreman si",
       "zone": "Vremenska zona: {{zone}} (iz browsera)"
     },
     "import": {
@@ -2106,6 +2126,7 @@
     "presets": {
       "title": "Pauze i podsjetnici",
       "sub": "Ovo je samo podsjetnik. Pauzu uvijek tapneš sama, a za svaku sesiju možeš izabrati drugi.",
+      "sub_male": "Ovo je samo podsjetnik. Pauzu uvijek tapneš sam, a za svaku sesiju možeš izabrati drugi.",
       "recommended": "preporučeno",
       "own": "Vlastiti niz (npr. 45 → 10 → 45 → 20) složiš u Postavkama.",
       "reminders": "Podsjetnik prije bloka",
@@ -2124,6 +2145,7 @@
     "week": {
       "title": "Tvoja sedmica",
       "sub": "Ovako izgleda plan s onim što si unijela.",
+      "sub_male": "Ovako izgleda plan s onim što si unio.",
       "free": "slobodno sedmično",
       "needed": "potrebno do: {{exam}}",
       "noExam": "nema ispita s datumom",
@@ -2385,9 +2407,11 @@
     "answerSaved": "Odgovor je spašen",
     "outlineLabel": "PO STRUKTURI POGLAVLJA",
     "outlineHint": "Za svaki podnaslov označi da li si ga mogla objasniti bez gledanja.",
+    "outlineHint_male": "Za svaki podnaslov označi da li si ga mogao objasniti bez gledanja.",
     "outlineYes": "Da",
     "outlineNo": "Ne",
     "outlineAria": "Da li si mogla objasniti: {{title}}",
+    "outlineAria_male": "Da li si mogao objasniti: {{title}}",
     "blurtLabel": "NAPIŠI SVE ČEGA SE SJEĆAŠ",
     "blurtPlaceholder": "Bez gledanja u knjigu ili bilješke…",
     "blurtHint": "Kad istekne vrijeme, uporedi sa svojim bilješkama pa se ocijeni.",
@@ -2395,6 +2419,7 @@
     "blurtCompareLabel": "BILJEŠKE I PODNASLOVI",
     "blurtNothing": "Za ovo poglavlje nema bilješki ni podnaslova — uporedi sa knjigom.",
     "howMuch": "Koliko si se sjetila?",
+    "howMuch_male": "Koliko si se sjetio?",
     "recall": {
       "0": "Ne",
       "1": "Djelimično",
@@ -3081,6 +3106,7 @@
     "applyError": "Promjena nije spašena. Pokušaj ponovo.",
     "effect": "Manjak prije: {{before}} min · poslije: {{after}} min",
     "strictGate": "Uključila si provjeru bez preskakanja za ovaj predmet. Odgovori na sve provjere; ovo možeš isključiti na Napretku.",
+    "strictGate_male": "Uključio si provjeru bez preskakanja za ovaj predmet. Odgovori na sve provjere; ovo možeš isključiti na Napretku.",
     "actions": {
       "set_priority": "{{subject}}: podigni prioritet na {{priority}}",
       "boost_priority": "{{subject}}: pojačaj do {{until}}",
@@ -3147,6 +3173,7 @@
     "duration": "oko 2 minute",
     "summaryTitle": "Tvoja sedmica",
     "summary": "Ove sedmice si učila {{hours}}. Pogledaj šta je radilo i potvrdi samo promjene koje želiš ponijeti u sljedeću sedmicu.",
+    "summary_male": "Ove sedmice si učio {{hours}}. Pogledaj šta je radilo i potvrdi samo promjene koje želiš ponijeti u sljedeću sedmicu.",
     "vsPlan": "od {{hours}} plana",
     "doneBlocks": "odrađenih blokova",
     "recall": "udio prisjećanja",

@@ -142,6 +142,7 @@ export function useUpdateProfile() {
           | 'notify_first_block'
           | 'notify_break_end'
           | 'theme'
+          | 'gender'
           | 'institution'
           | 'study_program'
           | 'year_of_study'
