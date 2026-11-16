@@ -45,7 +45,6 @@ export function AvailabilityPage() {
     <div className="flex flex-col gap-4">
       <ScreenTitle title={t('availability.title')} />
       <div className="flex flex-col gap-1">
-        <h1 className="text-[26px] leading-tight font-bold">{t('availability.heading')}</h1>
         <p className="text-sm leading-[1.45] text-ink-muted">
           {t('availability.totalBefore')}{' '}
           <b className="text-ink">{formatDuration(t, data.weekMinutes(date))}</b>{' '}

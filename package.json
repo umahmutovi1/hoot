@@ -19,7 +19,6 @@
     "db:types": "supabase gen types typescript --linked > src/types/database.ts",
     "sim": "tsx --tsconfig tsconfig.scripts.json scripts/sim/cli.ts",
     "ml:cases": "tsx --tsconfig tsconfig.scripts.json scripts/ml/cases.ts && prettier --write src/lib/estimates/model.cases.json src/lib/slots/completion.cases.json",
-    "landing:shots": "tsx --tsconfig tsconfig.scripts.json scripts/landing/shots.ts",
     "eval": "npx -y promptfoo@0.124.1 eval -c evals/promptfooconfig.yaml --no-cache"
   },
   "dependencies": {
