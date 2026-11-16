@@ -34,7 +34,7 @@ export function LocaleToggle({
           aria-checked={value === locale}
           onClick={() => onChange(locale)}
           className={cn(
-            'rounded-[15px] text-[13px] font-semibold transition-colors',
+            'tap rounded-[15px] text-[13px] font-semibold transition-colors',
             variant === 'short' ? 'h-8 px-3' : 'h-[34px] px-3.5',
             tone === 'dark'
               ? value === locale

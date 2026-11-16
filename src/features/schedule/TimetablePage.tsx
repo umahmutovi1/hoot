@@ -1,3 +1,4 @@
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -56,32 +57,32 @@ export function TimetablePage() {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="flex items-center justify-between">
-        <span className="text-base font-semibold">{t('timetable.title')}</span>
-        <button
-          type="button"
-          onClick={addClass}
-          aria-label={t('timetable.add')}
-          className="flex size-11 items-center justify-center rounded-full surface text-brand"
-        >
-          <PlusIcon size={18} strokeWidth={2.2} />
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <h1 className="text-[26px] leading-tight font-bold">{t('timetable.heading')}</h1>
-        {current ? (
-          <Link to="/settings/calendar" className="text-sm text-ink-muted">
-            {t('timetable.periodLine', {
-              title: current.title,
-              date: format(toDisplayDate(current.endsOn), 'd. MMM', {
-                locale: dateFnsLocales[locale],
-              }),
-              count: Math.round(weeklyClassCount(entries.map(toClass))),
-            })}
-          </Link>
-        ) : null}
-      </div>
+      <ScreenTitle
+        title={t('timetable.title')}
+        sub={
+          current ? (
+            <Link to="/settings/calendar" className="inline-flex min-h-11 items-center">
+              {t('timetable.periodLine', {
+                title: current.title,
+                date: format(toDisplayDate(current.endsOn), 'd. MMM', {
+                  locale: dateFnsLocales[locale],
+                }),
+                count: Math.round(weeklyClassCount(entries.map(toClass))),
+              })}
+            </Link>
+          ) : undefined
+        }
+        actions={
+          <button
+            type="button"
+            onClick={addClass}
+            aria-label={t('timetable.add')}
+            className="flex size-11 items-center justify-center"
+          >
+            <PlusIcon size={22} />
+          </button>
+        }
+      />
 
       {aiReady && (
         <button

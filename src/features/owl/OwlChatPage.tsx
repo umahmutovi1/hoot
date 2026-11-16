@@ -1,3 +1,4 @@
+import { PageTitle } from '@/components/PageTitle'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -56,38 +57,39 @@ export function OwlChatPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-col">
-          <h1 className="truncate text-[30px] font-bold tracking-[-0.6px]">{t('owl.name')}</h1>
-          <span className="truncate text-[13px] text-ink-secondary">
-            {state === 'ready'
-              ? t('owl.tagline')
-              : state === 'offline'
-                ? t('owl.offline')
-                : t('owl.disabled')}
-          </span>
-        </div>
-        <div className="flex shrink-0 gap-2">
-          <Link
-            to="/chat/history"
-            aria-label={t('owl.history.title')}
-            className="surface flex size-11 items-center justify-center rounded-full text-ink"
-          >
-            <ClockIcon size={18} />
-          </Link>
-          {messages.length > 0 && (
-            <button
-              type="button"
-              onClick={newConversation}
-              disabled={busy}
-              aria-label={t('owl.history.new')}
-              className="surface flex size-11 items-center justify-center rounded-full text-ink disabled:opacity-60"
+      <PageTitle
+        sub={
+          state === 'ready'
+            ? t('owl.tagline')
+            : state === 'offline'
+              ? t('owl.offline')
+              : t('owl.disabled')
+        }
+        actions={
+          <>
+            <Link
+              to="/chat/history"
+              aria-label={t('owl.history.title')}
+              className="flex size-11 items-center justify-center"
             >
-              <PencilIcon size={18} />
-            </button>
-          )}
-        </div>
-      </div>
+              <ClockIcon size={22} />
+            </Link>
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={newConversation}
+                disabled={busy}
+                aria-label={t('owl.history.new')}
+                className="flex size-11 items-center justify-center disabled:opacity-60"
+              >
+                <PencilIcon size={22} />
+              </button>
+            )}
+          </>
+        }
+      >
+        {t('owl.name')}
+      </PageTitle>
 
       <ChatPlan />
       <div className="flex flex-1 flex-col justify-end gap-3 pb-2" aria-live="polite">
@@ -107,7 +109,7 @@ export function OwlChatPage() {
                 type="button"
                 disabled={busy}
                 onClick={() => (sug.kind ? openSheet(sug.kind) : void owl.ask(sug.ask))}
-                className="surface h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
+                className="surface h-11 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
               >
                 {sug.label}
               </button>

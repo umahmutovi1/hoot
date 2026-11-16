@@ -24,7 +24,7 @@ export function OffsetChips({
               onChange(on ? value.filter((x) => x !== o) : [...value, o].sort((a, b) => b - a))
             }
             className={cn(
-              'flex h-[38px] min-w-11 items-center justify-center rounded-full px-3 text-[13px] font-semibold',
+              'tap flex h-[38px] min-w-11 items-center justify-center rounded-full px-3 text-[13px] font-semibold',
               on ? 'bg-ink text-white' : 'bg-white/50 text-ink',
             )}
           >

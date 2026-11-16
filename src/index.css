@@ -229,6 +229,20 @@ html[data-keyboard] {
     background-color: rgb(var(--hoot-brand-rgb) / 0.35);
   }
 }
+/* A control drawn lower than 44 px (chips, tags, links in a line of text) still takes a 44 px
+   tap: the hit area grows above and below it, the look stays. Not inside a scroller that would
+   scroll by it. */
+@utility tap {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+}
 /* Dark floating toast (undo after "Danas ne mogu", block changes). */
 @utility toast {
   color: var(--color-ground);

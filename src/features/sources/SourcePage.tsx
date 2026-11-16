@@ -1,3 +1,4 @@
+import { ScreenTitle } from '@/components/ScreenTitle'
 import type { TFunction } from 'i18next'
 import { DocIcon, GlobeIcon } from '@/components/icons'
 import { useRates } from '@/features/plan/api'
@@ -68,12 +69,10 @@ function SourceDetail({
         </Link>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <span className="text-[13px] text-brand-muted">
-          {subject.name} · {t(`sources.kind.${source.kind}`)}
-        </span>
-        <h1 className="text-[26px] leading-[1.15] font-bold">{source.title}</h1>
-      </div>
+      <ScreenTitle
+        title={source.title}
+        sub={`${subject.name} · ${t(`sources.kind.${source.kind}`)}`}
+      />
 
       {source.is_rough && isBook(t, source.title) && (
         // A syllabus book kept as a rough source: its contents can come from the web (Sprint 19).
@@ -176,7 +175,7 @@ function SourceDetail({
               aria-pressed={filter === f.id}
               onClick={() => setFilter(f.id)}
               className={cn(
-                'h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
+                'tap h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
                 filter === f.id ? 'bg-ink text-white' : 'surface',
               )}
             >

@@ -1,3 +1,4 @@
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -20,7 +21,6 @@ import { reallocate, summarize } from './end'
 import { findUnit, sessionSources, toEndSources, unitTitle } from './material'
 import { STUDY_MODES, type ActiveSession } from './model'
 import { fromDrafts, toDrafts, type SegmentDraft } from './segmentDrafts'
-import { SessionHeader } from './SessionHeader'
 import { useSessionUi } from './store'
 
 /** A saved session: times per segment, units, "Uredi ocjene", delete. */
@@ -86,9 +86,9 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
 
   return (
     <div className="flex flex-col gap-4">
-      <SessionHeader
+      <ScreenTitle
         title={subject?.name ?? t('session.title')}
-        subtitle={format(toDisplayDate(day), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
+        sub={format(toDisplayDate(day), 'EEEE, d. MMMM', { locale: dateFnsLocales[locale] })}
       />
 
       <div className="grid grid-cols-3 gap-2">
@@ -152,7 +152,7 @@ function Detail({ data, saved }: { data: ActiveSession; saved: SessionUnitRow[] 
                   setDirty(true)
                 }}
                 aria-label={t('session.history.removeSegment')}
-                className="flex size-11 shrink-0 items-center justify-center rounded-full surface text-ink-muted"
+                className="flex size-11 shrink-0 items-center justify-center text-ink-muted"
               >
                 <CloseIcon size={16} />
               </button>
