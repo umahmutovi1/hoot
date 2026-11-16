@@ -49,6 +49,7 @@ const profile = (patch: Partial<Profile> = {}): Profile => ({
   sleep_min: null,
   wake_min: null,
   theme: 'lavender',
+  gender: null,
   review_cap_pct: 40,
   fsrs_params: null,
   notify_first_block: true,
