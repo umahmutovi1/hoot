@@ -1531,8 +1531,7 @@
     "photoHint": "AI prepozna termine; pregledaš prije spašavanja"
   },
   "availability": {
-    "title": "Dostupnost",
-    "heading": "Kad možeš učiti?",
+    "title": "Kad mogu učiti",
     "totalBefore": "Ove sedmice do",
     "totalAfter": "učenja. Plan nikad ne prelazi slobodne termine ni dnevni maksimum.",
     "perWeek": "{{hours}} sedmično",

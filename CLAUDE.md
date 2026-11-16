@@ -32,7 +32,6 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `npx supabase functions serve` / `npx supabase functions deploy <name>`
 - `npm run sim -- [--seeds 100] [--estimator model|old] [--slots model|off] [--baseline] [--check] [--report sim.md] [--examples ml/data/sim_blocks.json]` (Sprint 15 simulator: real `plan()` + student model; `scripts/sim/baseline.json` is the bar no model may fall below, `--check` fails when a metric is worse)
 - `npm run ml:cases` (refresh the TS = Python cases after a prior changes) · `cd ml && uv run python -m hoot_ml.train [--write]` / `hoot_ml.monitor` (Sprint 15 MLOps; `train.yml` monthly, `ml-monitor.yml` weekly)
-- `npm run landing:shots` (landing screenshots: real app on Vite + in-memory Supabase mock with demo data → `public/landing/today-<locale>.jpg`; rerun when Danas changes)
 - `npm run eval` (promptfoo evals for `parse-document`; needs `GEMINI_API_KEY` in the shell)
 
 ## Product principle
@@ -61,7 +60,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - Icon buttons (X, pencil, search, settings, kebab) are icon-only: no background, no text, 44 px hit area, `aria-label`. Exceptions: timer side controls and undo buttons with text.
 - Target 390 px width first; touch targets ≥ 44 px; stroke icons 1.8 px.
 - Prefer shadcn/ui primitives (Dialog, Sheet, Tabs) styled to match the mockups.
-- No mascot or illustrations (the small two-ellipse logo is fine): empty states are text and a button. The assistant is called "AI" / "asistent" in the UI, never "sova".
+- The owl (board DSSova, style A: only eyes and a beak on the surface, as on the landing and the app icon) appears where it carries a feeling: landing, energy on the first entry, an empty or free day, the end of a session, onboarding, and the plan updated after a missed day. Never in lists, Plan, settings, errors or chat answers; at most one owl on a screen, never in a loop. Its expression changes with the shape of the eye, the highlight and the beak. No other illustrations. The assistant is called "AI" / "asistent" in the UI, never "sova".
 
 ## Git workflow
 - Branches: `main` = production, `dev` = integration (default). Never commit directly to either.

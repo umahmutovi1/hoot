@@ -20,7 +20,7 @@ boardova: [copy-redesign-nov5.md](copy-redesign-nov5.md). Odluke: PRD „Dopune,
 - **Potpis ivice:** plavo zaglavlje s talasom na dnu, samo na vrhu ekrana.
 - **Motion:** „smiri se“ `cubic-bezier(.22,1,.36,1)`, 160 dodir / 240 promjena / 400 ulaz; uz smanjen pokret sve je fade od 150 ms. Nikad beskonačno vrtenje ni treperenje.
 - **Ikonska dugmad** (X, olovka, pretraga, postavke, Prilagodi dan, kebab): samo ikona, bez pozadine i teksta, 44 px, `aria-label`.
-- **Bez maskote:** sova sa boardova se ne prenosi; mali logo od dvije elipse je u redu.
+- **Sova** (board DSSova, stil A: samo oči i kljun na podlozi, kao na landingu i ikoni aplikacije): landing, energija na prvom ulazu, prazan i slobodan dan, kraj sesije, onboarding, plan ažuriran poslije propuštenog dana. Ne u listama, Planu, postavkama, greškama ni odgovorima chata; najviše jedna na ekranu, nikad u petlji. Izraz se mijenja oblikom oka, odsjajem i kljunom. Asistent se u tekstu zove „AI“ / „asistent“, nikad „sova“.
 - **Tamna tema** (board DSDanasNoc, DSBoje „Noć · tamna“) je za kasniji sprint.
 
 ## U kodu

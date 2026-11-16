@@ -1484,8 +1484,7 @@
     "photoHint": "The AI finds the classes; you review them before saving"
   },
   "availability": {
-    "title": "Availability",
-    "heading": "When can you study?",
+    "title": "When I can study",
     "totalBefore": "This week up to",
     "totalAfter": "of study. The plan never goes beyond your free slots or daily maximum.",
     "perWeek": "{{hours}} a week",
