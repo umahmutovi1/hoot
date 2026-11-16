@@ -142,7 +142,7 @@ export function SessionPage() {
           type="button"
           onClick={() => goBack(navigate, '/')}
           aria-label={t('app.back')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full surface"
+          className="flex size-11 shrink-0 items-center justify-center"
         >
           <ChevronLeftIcon size={20} />
         </button>
@@ -158,7 +158,7 @@ export function SessionPage() {
           type="button"
           onClick={() => setTimerSheet(true)}
           aria-label={t('session.timer.settings')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full surface"
+          className="flex size-11 shrink-0 items-center justify-center"
         >
           <svg
             width="20"

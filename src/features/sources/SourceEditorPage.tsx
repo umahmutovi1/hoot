@@ -1,3 +1,4 @@
+import { ScreenTitle } from '@/components/ScreenTitle'
 import type { TFunction } from 'i18next'
 import { useMemo, useState, type ReactNode } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
@@ -320,14 +321,10 @@ function SourceEditor({
 
   return (
     <form onSubmit={toReview} noValidate className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-[13px] text-brand-muted">{subject.name}</span>
-          <h1 className="text-[26px] leading-tight font-bold tracking-[-0.4px]">
-            {t(isEdit ? 'sources.editor.editTitle' : 'sources.editor.newTitle')}
-          </h1>
-        </div>
-      </div>
+      <ScreenTitle
+        title={t(isEdit ? 'sources.editor.editTitle' : 'sources.editor.newTitle')}
+        sub={subject.name}
+      />
 
       {books.length > 0 && (
         <SyllabusBooks
@@ -833,7 +830,7 @@ function Review({
           type="button"
           onClick={onBack}
           aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full surface"
+          className="flex size-11 items-center justify-center"
         >
           <ChevronLeftIcon size={20} />
         </button>

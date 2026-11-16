@@ -190,7 +190,7 @@ function Quiz({
           disabled={busy}
           onClick={() => void finish(ratings)}
           aria-label={t('review.close')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full surface"
+          className="flex size-11 shrink-0 items-center justify-center"
         >
           <CloseIcon size={20} />
         </button>

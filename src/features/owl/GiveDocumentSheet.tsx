@@ -404,7 +404,7 @@ function SheetBody({
                 aria-checked={kind === k}
                 onClick={() => setKind(k)}
                 className={cn(
-                  'h-[38px] rounded-full px-3 text-xs font-semibold',
+                  'tap h-[38px] rounded-full px-3 text-xs font-semibold',
                   kind === k ? 'bg-ink text-white' : 'bg-white/50 text-ink',
                 )}
               >

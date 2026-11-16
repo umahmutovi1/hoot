@@ -102,7 +102,7 @@ export function TodayPage() {
           {status && (
             <>
               {' · '}
-              <Link to="/settings/calendar" className="font-semibold text-ground underline">
+              <Link to="/settings/calendar" className="tap font-semibold text-ground underline">
                 {statusLabel(t, status)}
               </Link>
             </>
@@ -275,7 +275,7 @@ function ActionCards({ plan }: { plan: PlanToday }) {
             type="button"
             onClick={() => setMore(!more)}
             aria-expanded={more}
-            className="h-9 text-[13px] font-semibold text-brand"
+            className="h-11 text-[13px] font-semibold text-brand"
           >
             {more ? t('today.moreHide') : t('today.more', { count: cards.length - 1 })}
           </button>

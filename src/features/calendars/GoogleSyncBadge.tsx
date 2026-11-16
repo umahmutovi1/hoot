@@ -24,6 +24,7 @@ export function GoogleSyncBadge() {
     <Link
       to="/settings/feeds"
       className={cn(
+        'tap',
         'flex min-h-7 shrink-0 items-center rounded-full px-2.5 text-xs font-semibold',
         warn ? 'bg-warning-soft text-warning-ink' : 'bg-brand-soft text-brand',
       )}

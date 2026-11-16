@@ -13,7 +13,7 @@ import { syllabusExisting } from './actions'
 import { StatusChip } from './ImportCard'
 
 const sectionTitle = 'px-1 pt-1 text-[13px] font-semibold text-ink-muted uppercase'
-const chip = 'flex h-[38px] shrink-0 items-center rounded-full px-3.5 text-[13px] font-semibold'
+const chip = 'tap flex h-[38px] shrink-0 items-center rounded-full px-3.5 text-[13px] font-semibold'
 
 /**
  * "Pregled uvoza · Plan i program" (PlanIProgram.dc.html 3–4): one subject at a time, with

@@ -102,7 +102,7 @@ export function OnboardingPage() {
             type="button"
             onClick={() => go(stepFrom(step, -1, skipSubject))}
             aria-label={t('app.back')}
-            className="flex size-11 items-center justify-center rounded-full surface"
+            className="flex size-11 items-center justify-center"
           >
             <ChevronLeftIcon size={20} />
           </button>
@@ -111,7 +111,7 @@ export function OnboardingPage() {
             type="button"
             onClick={() => goBack(navigate, '/')}
             aria-label={t('app.back')}
-            className="flex size-11 items-center justify-center rounded-full surface"
+            className="flex size-11 items-center justify-center"
           >
             <ChevronLeftIcon size={20} />
           </button>

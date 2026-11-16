@@ -1,3 +1,4 @@
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { useQuestionLinks, useRates } from '@/features/plan/api'
 import type { TFunction } from 'i18next'
 import { useState } from 'react'
@@ -131,21 +132,23 @@ function UnitDetail({
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="flex items-center justify-between">
-        <span className="text-[13px] text-ink-muted">{positionLabel(t, material, unit)}</span>
-        <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          aria-label={t('units.detail.more')}
-          className="flex size-11 items-center justify-center rounded-full surface"
-        >
-          <MoreIcon />
-        </button>
-      </div>
+      <ScreenTitle
+        title={unit.title}
+        sub={subtitle}
+        actions={
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-label={t('units.detail.more')}
+            className="flex size-11 items-center justify-center"
+          >
+            <MoreIcon />
+          </button>
+        }
+      />
 
       <div className="flex flex-col gap-1">
-        <span className="text-[13px] text-brand-muted">{subtitle}</span>
-        <h1 className="text-[28px] leading-[1.1] font-bold">{unit.title}</h1>
+        <span className="text-[13px] text-ink-muted">{positionLabel(t, material, unit)}</span>
         {unit.archived_at && (
           <span className="mt-1 self-start rounded-full bg-warning-soft px-2.5 py-1 text-xs font-semibold text-warning-ink">
             {t('units.detail.archivedBadge')}

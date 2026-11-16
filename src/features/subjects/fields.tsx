@@ -26,7 +26,7 @@ export function ChipGroup<T extends string>({ options, value, onChange }: ChipGr
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'flex h-[38px] items-center gap-2 rounded-full px-3 text-[13px] font-semibold',
+            'tap flex h-[38px] items-center gap-2 rounded-full px-3 text-[13px] font-semibold',
             value === o.value ? 'bg-ink text-white' : 'bg-white/50 text-ink',
           )}
         >

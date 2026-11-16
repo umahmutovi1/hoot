@@ -38,22 +38,22 @@ export function DayStrip({
             {format(selected, 'LLLL yyyy', { locale: dfLocale })}
           </h2>
         )}
-        <div className="flex gap-1.5">
+        <div className="-mr-2 flex">
           <button
             type="button"
             aria-label={t('plan.prevWeek')}
             onClick={() => onSelect(addWeeks(selected, -1))}
-            className="flex size-10 items-center justify-center rounded-full border border-line surface"
+            className="flex size-11 items-center justify-center"
           >
-            <ChevronLeftIcon size={16} />
+            <ChevronLeftIcon size={20} />
           </button>
           <button
             type="button"
             aria-label={t('plan.nextWeek')}
             onClick={() => onSelect(addWeeks(selected, 1))}
-            className="flex size-10 items-center justify-center rounded-full border border-line surface"
+            className="flex size-11 items-center justify-center"
           >
-            <ChevronRightIcon size={16} />
+            <ChevronRightIcon size={20} />
           </button>
         </div>
       </div>

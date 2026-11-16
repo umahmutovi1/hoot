@@ -228,7 +228,7 @@ export function PdfImport({
                     aria-pressed={shift === on}
                     onClick={() => setShift(on)}
                     className={cn(
-                      'h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
+                      'tap h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
                       shift === on ? 'bg-ink text-white' : 'bg-white/50',
                     )}
                   >

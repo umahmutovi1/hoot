@@ -46,7 +46,7 @@ export function SessionHeader({
         type="button"
         onClick={() => goBack(navigate, fallback)}
         aria-label={t('app.back')}
-        className="flex size-11 shrink-0 items-center justify-center rounded-full surface"
+        className="flex size-11 shrink-0 items-center justify-center"
       >
         <ChevronLeftIcon size={20} />
       </button>

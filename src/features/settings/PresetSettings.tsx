@@ -45,7 +45,7 @@ export function PresetSettings() {
                 role="radio"
                 aria-checked={on}
                 onClick={() => update.mutate({ default_preset: p.id })}
-                className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                className="tap flex min-w-0 flex-1 items-center gap-3 text-left"
               >
                 <span
                   className={cn(

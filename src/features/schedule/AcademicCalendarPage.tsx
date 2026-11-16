@@ -23,10 +23,7 @@ export function AcademicCalendarPage() {
   return (
     <div className="flex flex-col gap-3.5">
       <ScreenTitle title={t('calendar.title')} />
-      <div className="flex flex-col gap-1">
-        <h1 className="text-[26px] leading-tight font-bold">{t('calendar.heading')}</h1>
-        <p className="text-sm leading-[1.45] text-ink-muted">{t('calendar.intro')}</p>
-      </div>
+      <p className="text-sm leading-[1.45] text-ink-muted">{t('calendar.intro')}</p>
 
       {PERIOD_KINDS.map((kind) => {
         const list = periods.filter((p) => p.kind === kind)

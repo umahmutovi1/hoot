@@ -68,7 +68,7 @@ export function TopicsSheet({
                   })
                 }
                 className={cn(
-                  'flex h-[38px] items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold',
+                  'tap flex h-[38px] items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold',
                   on ? 'bg-ink text-white' : 'bg-white/50 text-ink',
                 )}
               >

@@ -1392,7 +1392,6 @@
   },
   "calendar": {
     "title": "Academic calendar",
-    "heading": "Academic year",
     "intro": "When classes run, when partial exams and exam periods are, and which days are holidays. Dates of single exams go on the subject.",
     "add": "+ Add",
     "newTitle": "New period",
@@ -1439,7 +1438,6 @@
   },
   "timetable": {
     "title": "Class timetable",
-    "heading": "Lectures and exercises",
     "periodLine_one": "{{title}} · until {{date}} · {{count}} class a week",
     "periodLine_other": "{{title}} · until {{date}} · {{count}} classes a week",
     "noPeriodTitle": "Add a semester first",

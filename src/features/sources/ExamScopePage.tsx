@@ -198,7 +198,7 @@ function ScopeEditor({
                   aria-selected={m.source.id === sourceId}
                   onClick={() => setSourceId(m.source.id)}
                   className={cn(
-                    'h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
+                    'tap h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
                     m.source.id === sourceId ? 'bg-ink text-white' : 'surface',
                   )}
                 >

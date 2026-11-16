@@ -1438,7 +1438,6 @@
   },
   "calendar": {
     "title": "Akademski kalendar",
-    "heading": "Akademska godina",
     "intro": "Kad traje nastava, kad su parcijale i ispitni rokovi i koji su dani neradni. Datume pojedinih ispita unosiš na predmetu.",
     "add": "+ Dodaj",
     "newTitle": "Novi period",
@@ -1485,7 +1484,6 @@
   },
   "timetable": {
     "title": "Raspored nastave",
-    "heading": "Predavanja i vježbe",
     "periodLine_one": "{{title}} · važi do {{date}} · {{count}} termin sedmično",
     "periodLine_few": "{{title}} · važi do {{date}} · {{count}} termina sedmično",
     "periodLine_other": "{{title}} · važi do {{date}} · {{count}} termina sedmično",
