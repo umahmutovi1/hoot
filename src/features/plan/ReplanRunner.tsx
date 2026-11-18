@@ -56,11 +56,14 @@ export function ReplanRunner() {
   const day = useLocalDay(boundary)
 
   // Any successful mutation can change a plan input that the plan's own queries do not watch.
+  // Writes that never do (chat, locale, theme, address form, check-in text) say so with
+  // `meta: { planInput: false }`; everything else refetches, as a missed input is worse.
   useEffect(() => {
     if (!userId) return
     let timer: ReturnType<typeof setTimeout> | undefined
     return queryClient.getMutationCache().subscribe((event) => {
       if (event.type !== 'updated' || event.mutation.state.status !== 'success') return
+      if (event.mutation.options.meta?.planInput === false) return
       clearTimeout(timer)
       timer = setTimeout(() => void invalidatePlanInputs(queryClient, userId), 300)
     })

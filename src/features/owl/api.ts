@@ -225,6 +225,7 @@ export function useDeleteConversation() {
   const userId = useAuth().session?.user.id
   const queryClient = useQueryClient()
   return useMutation({
+    meta: { planInput: false },
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('owl_conversations').delete().eq('id', id)
       if (error) throw error

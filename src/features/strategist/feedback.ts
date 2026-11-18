@@ -40,10 +40,12 @@ export type FeedbackDraft = {
   status: Feedback['status']
   payload?: unknown
 }
-export function useRecordFeedback() {
+/** `planInput: false` for feedback that is only text (the weekly check-in reflection). */
+export function useRecordFeedback({ planInput = true }: { planInput?: boolean } = {}) {
   const userId = useAuth().session?.user.id
   const queryClient = useQueryClient()
   return useMutation({
+    meta: { planInput },
     networkMode: 'always',
     mutationFn: async (draft: FeedbackDraft) => {
       if (!userId) throw new Error('Authentication required')

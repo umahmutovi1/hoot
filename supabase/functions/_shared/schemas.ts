@@ -764,6 +764,8 @@ export const AI_ERRORS = [
   'failed',
   /** A private task without a paid model (PRD: private text never goes to a free tier). */
   'needs_paid',
+  /** The daily limit of links downloaded by find-academic-info (`FETCH_DAILY_LIMIT`). */
+  'fetch_limited',
 ] as const
 export type AiErrorCode = (typeof AI_ERRORS)[number]
 

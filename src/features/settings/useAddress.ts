@@ -5,7 +5,7 @@ import { useProfile, useUpdateProfile } from './profile'
 /** The user's address form (`profiles.gender`) and how to change it: at once, then saved. */
 export function useAddress() {
   const { data: profile } = useProfile()
-  const update = useUpdateProfile()
+  const update = useUpdateProfile({ planInput: false })
   const gender = isGender(profile?.gender) ? profile.gender : null
   const setGender = (next: Gender) => {
     setAddressGender(next)

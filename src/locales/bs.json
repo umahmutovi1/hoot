@@ -1777,6 +1777,7 @@
     "error": {
       "offline": "Nema interneta. Pokušaj kad se povežeš.",
       "rate_limited": "Za danas je dosta: iskorišteno je 30 AI poziva. Sutra nastavljamo.",
+      "fetch_limited": "Za danas je dosta linkova: preuzeto ih je 40. Sutra nastavljamo.",
       "provider_busy": "AI servis je trenutno zauzet. Pokušaj za minut.",
       "no_key": "AI još nije podešen.",
       "invalid_output": "Nisam uspjela pročitati ovaj dokument. Probaj ponovo; ako je slika, pošalji jasniju.",

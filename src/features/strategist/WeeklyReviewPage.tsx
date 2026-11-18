@@ -51,7 +51,7 @@ function WeeklyReview() {
     insight = useInsightData(),
     feedback = useFeedback()
   const navigate = useNavigate(),
-    record = useRecordFeedback(),
+    record = useRecordFeedback({ planInput: false }),
     toast = useToast((s) => s.show)
   const schedule = useScheduleData()
   const [editDate, setEditDate] = useState<string | null>(null)
