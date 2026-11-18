@@ -624,7 +624,12 @@
       "breaks": "Breaks",
       "howLong": "How much time do you have?",
       "newSource": "+ Source",
-      "addFirstSource": "+ Add a source (book, notes…)"
+      "addFirstSource": "+ Add a source (book, notes…)",
+      "other": "Other",
+      "duration": "Duration",
+      "durationLess": "{{count}} minutes less",
+      "durationMore": "{{count}} minutes more",
+      "who": "Who picks the material"
     },
     "mode": {
       "label": "Study mode",
@@ -835,6 +840,24 @@
       "addManual": "Add a session by hand",
       "emptyWeek": "No sessions that week.",
       "thisWeekOf": "This week {{done}} of {{planned}}"
+    },
+    "rhythm": {
+      "label": "Study and break rhythm",
+      "done": "Done",
+      "yourDefault": "your default",
+      "own": "Your rhythm",
+      "ownSub": "you set it",
+      "value": "{{work}} · {{pause}}",
+      "minutes": "{{count}} min",
+      "study": "Study",
+      "break": "Break",
+      "studyLess": "Shorter study",
+      "studyMore": "Longer study",
+      "breakLess": "Shorter break",
+      "breakMore": "Longer break",
+      "keep": "Use from now on",
+      "keepSub": "Hoot will plan blocks in this rhythm",
+      "keepLabel": "Use this rhythm from now on"
     }
   },
   "settings": {

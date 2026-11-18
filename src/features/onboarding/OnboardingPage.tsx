@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { goBack } from '@/app/navigation'
 import { ChevronLeftIcon } from '@/components/icons'
-import { useSessionUi } from '@/features/session/store'
 import { useProfile, useUpdateProfile } from '@/features/settings/profile'
 import { cn } from '@/lib/utils'
 import { ONBOARDING_STEPS, skipsSubjectStep, stepFrom } from './steps'
@@ -85,8 +84,8 @@ export function OnboardingPage() {
     9: (
       <StepWeek
         onStart={() => {
-          useSessionUi.getState().openStart()
           finish('/')
+          navigate('/today/free')
         }}
         onToday={() => finish('/')}
         onBlockStart={() => finish()}

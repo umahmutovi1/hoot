@@ -10,7 +10,9 @@ import {
   flowBreakMin,
   planIntervalMin,
   presetReminder,
+  parseRhythmId,
   resolvePreset,
+  rhythmId,
   MINUTE,
   msByUnit,
   pauseStats,
@@ -264,5 +266,28 @@ describe('closeAt', () => {
     const { keep, drop } = closeAt([seg('a', 0, 20), seg('b', 25, null)], at(10))
     expect(drop).toEqual(['b'])
     expect(keep).toEqual([{ ...seg('a', 0, 20), endedAt: at(10) }])
+  })
+})
+
+describe('rhythm ids (Svoj ritam)', () => {
+  it('round-trips study and break minutes', () => {
+    expect(rhythmId(40, 10)).toBe('rhythm:40:10')
+    expect(parseRhythmId('rhythm:40:10')).toEqual({ work: 40, pause: 10 })
+    expect(resolvePreset('rhythm:40:10')).toEqual({
+      kind: 'cycle',
+      id: 'rhythm:40:10',
+      steps: [
+        { kind: 'work', min: 40 },
+        { kind: 'break', min: 10 },
+      ],
+      longBreak: null,
+    })
+  })
+
+  it('falls back to Standardno for a rhythm out of range or malformed', () => {
+    expect(parseRhythmId('rhythm:5:10')).toBeNull()
+    expect(parseRhythmId('rhythm:40:31')).toBeNull()
+    expect(parseRhythmId('rhythm:40')).toBeNull()
+    expect(resolvePreset('rhythm:200:10').id).toBe('standard')
   })
 })

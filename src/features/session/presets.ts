@@ -3,13 +3,14 @@ import { useDayEnergy } from '@/features/schedule/api'
 import { useDayBoundary } from '@/features/settings/profile'
 import { localDay } from '@/lib/day'
 import type { TFunction } from 'i18next'
-import { sessionPresetsSchema, type SessionPreset } from '@shared/schemas.ts'
-import { useProfile } from '@/features/settings/profile'
+import { MAX_CUSTOM_PRESETS, sessionPresetsSchema, type SessionPreset } from '@shared/schemas.ts'
+import { useProfile, useUpdateProfile } from '@/features/settings/profile'
 import {
   BUILT_IN_PRESETS,
   customPreset,
   DEFAULT_PRESET_ID,
   isBuiltInPreset,
+  parseRhythmId,
   resolvePreset,
   type Preset,
 } from '@/lib/session/timer'
@@ -61,11 +62,14 @@ export function usePresets(): PresetChoices {
 /** "Standardno", "25/5", or the custom preset's own name. */
 export function presetName(t: TFunction, preset: Preset): string {
   if (preset.kind === 'cycle' && preset.name) return preset.name
+  if (parseRhythmId(preset.id)) return t('session.rhythm.own')
   return t(`session.preset.${preset.id as 'standard'}`)
 }
 
 /** One line under a preset: "50 min učenja / 15 pauze", "45 → 10 → 45 → 20, ponovi". */
 export function presetSummary(t: TFunction, preset: Preset): string {
+  const rhythm = parseRhythmId(preset.id)
+  if (rhythm) return t('session.rhythm.value', rhythm)
   if (preset.kind !== 'cycle' || !preset.name) {
     if (isBuiltInPreset(preset.id)) return t(`session.presetSub.${preset.id as 'standard'}`)
   }
@@ -78,4 +82,41 @@ export function presetSummary(t: TFunction, preset: Preset): string {
         min: preset.longBreak.min,
       })
     : t('session.presetSub.custom', { steps })
+}
+
+/**
+ * "Koristi i ubuduće" on "Svoj ritam": the rhythm becomes a saved preset (an equal one is reused)
+ * and the default, so Hoot plans blocks in it. Returns the id the session starts with; any other
+ * id, or a full preset list, comes back as it is.
+ */
+export function useKeepRhythm() {
+  const { data: profile } = useProfile()
+  const update = useUpdateProfile()
+  return async (id: string): Promise<string> => {
+    const rhythm = parseRhythmId(id)
+    if (!rhythm) return id
+    const custom = parseCustomPresets(profile?.session_presets)
+    const same = custom.find(
+      (p) =>
+        !p.long_break &&
+        p.steps.length === 2 &&
+        p.steps[0]!.min === rhythm.work &&
+        p.steps[1]!.min === rhythm.pause,
+    )
+    if (!same && custom.length >= MAX_CUSTOM_PRESETS) return id
+    const preset: SessionPreset = same ?? {
+      id: `custom:${crypto.randomUUID()}`,
+      name: `${rhythm.work} · ${rhythm.pause}`,
+      steps: [
+        { kind: 'work', min: rhythm.work },
+        { kind: 'break', min: rhythm.pause },
+      ],
+      long_break: null,
+    }
+    await update.mutateAsync({
+      session_presets: same ? custom : [...custom, preset],
+      default_preset: preset.id,
+    })
+    return preset.id
+  }
 }

@@ -84,4 +84,35 @@ describe('pickForTime', () => {
     expect(pickForTime(input())).toBeNull()
     expect(pickForTime(input({ minutes: 0, todayBlocks: [block('b')] }))).toBeNull()
   })
+
+  describe('preferFill (Slobodna sesija)', () => {
+    const due = [
+      { unitId: 'u1', subjectId: 'b', minutes: 5, retrievability: 0.6, nextReviewOn: TODAY },
+    ]
+
+    it('prefers a block that fills the time over a short check', () => {
+      const r = pickForTime(
+        input({ todayBlocks: [block('b1')], dueReviews: due, preferFill: true }),
+      )
+      expect(r).toMatchObject({ from: 'today', blockId: 'b1', minutes: 30 })
+    })
+
+    it('keeps the check when nothing longer fits', () => {
+      const r = pickForTime(
+        input({ todayBlocks: [block('b1', { minutes: 5 })], dueReviews: due, preferFill: true }),
+      )
+      expect(r).toMatchObject({ from: 'review', minutes: 5 })
+      expect(pickForTime(input({ dueReviews: due, preferFill: true }))).toMatchObject({
+        from: 'review',
+      })
+    })
+
+    it('keeps a check that fills the time', () => {
+      const long = [{ ...due[0]!, minutes: 30 }]
+      const r = pickForTime(
+        input({ todayBlocks: [block('b1')], dueReviews: long, preferFill: true }),
+      )
+      expect(r).toMatchObject({ from: 'review', minutes: 30 })
+    })
+  })
 })

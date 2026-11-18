@@ -83,6 +83,10 @@ export const router = createBrowserRouter([
                 lazy: page(() => import('@/features/settings/SettingsPage'), 'SettingsPage'),
               },
               {
+                path: 'today/free',
+                lazy: page(() => import('@/features/session/FreeSessionPage'), 'FreeSessionPage'),
+              },
+              {
                 path: 'today/fresh',
                 lazy: page(() => import('@/features/plan/FreshStartPage'), 'FreshStartPage'),
               },

@@ -143,11 +143,37 @@ export function customPreset(row: CustomPresetRow): Preset {
   return { kind: 'cycle', id: row.id, name: row.name, steps: row.steps, longBreak: row.long_break }
 }
 
+/** Limits of "Svoj ritam" (PokreniSesiju): study 10 to 90 min, a break of 3 to 30 min. */
+export const RHYTHM_WORK = { min: 10, max: 90 } as const
+export const RHYTHM_BREAK = { min: 3, max: 30 } as const
+
+/**
+ * "Svoj ritam" for one session, kept in the session's `timer_mode` as `rhythm:<study>:<break>`,
+ * so it needs no saved preset ("Koristi i ubuduće" saves one).
+ */
+export function rhythmId(work: number, pause: number): string {
+  return `rhythm:${work}:${pause}`
+}
+
+/** The study and break minutes of a `rhythm:` id; null for any other id or a value out of range. */
+export function parseRhythmId(
+  id: string | null | undefined,
+): { work: number; pause: number } | null {
+  const m = /^rhythm:(\d{1,3}):(\d{1,3})$/.exec(id ?? '')
+  if (!m) return null
+  const work = Number(m[1])
+  const pause = Number(m[2])
+  const inRange = (v: number, r: { min: number; max: number }) => v >= r.min && v <= r.max
+  return inRange(work, RHYTHM_WORK) && inRange(pause, RHYTHM_BREAK) ? { work, pause } : null
+}
+
 /** The preset behind an id; an unknown or deleted custom preset falls back to Standardno. */
 export function resolvePreset(
   id: string | null | undefined,
   custom: CustomPresetRow[] = [],
 ): Preset {
+  const rhythm = parseRhythmId(id)
+  if (rhythm) return cycle(id!, rhythm.work, rhythm.pause)
   const found =
     [...BUILT_IN_PRESETS, ...LEGACY_PRESETS].find((p) => p.id === id) ??
     custom.filter((c) => c.id === id).map(customPreset)[0]

@@ -4,10 +4,6 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 // UI state of the session flow. The timer itself is never here: it is in the database (segments).
 
 interface SessionUiState {
-  /** "Šta učiš sad?" is open (Today hides the owl bar meanwhile). */
-  startOpen: boolean
-  openStart: () => void
-  closeStart: () => void
   /** Last timer mode picked; a new session starts with it. */
   /** Preset id. */
   timerMode: string
@@ -30,9 +26,6 @@ interface SessionUiState {
 export const useSessionUi = create<SessionUiState>()(
   persist(
     (set) => ({
-      startOpen: false,
-      openStart: () => set({ startOpen: true }),
-      closeStart: () => set({ startOpen: false }),
       timerMode: 'pomodoro25',
       setTimerMode: (timerMode) => set({ timerMode }),
       nextUnit: null,

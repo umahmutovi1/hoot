@@ -222,7 +222,7 @@ function ClassCard({
     <button
       type="button"
       onClick={onOpen}
-      className="flex items-center gap-3.5 rounded-[22px] surface px-4 py-3.5 text-left"
+      className="flex w-full items-center gap-3.5 rounded-[22px] surface px-4 py-3.5 text-left"
     >
       <div className="flex w-[46px] flex-col items-end text-[13px]">
         <span className="font-bold">{formatClock(entry.start_min)}</span>

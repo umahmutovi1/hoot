@@ -8,7 +8,7 @@ import { useCalendarProposals } from '@/features/calendars/matches'
 import { useDeadlineProposals } from '@/features/calendars/moodle'
 import { useState } from 'react'
 import { InHeader } from '@/app/layout/ScreenHeader'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { SlidersIcon, SparkleIcon } from '@/components/icons'
@@ -42,7 +42,6 @@ import { GainedCard } from './GainedCard'
 import { useGainedCard } from './useGainedCard'
 import { DayOffCard, NextCard } from './NextCard'
 import { AdjustDaySheet } from './AdjustDaySheet'
-import { useSessionUi } from '@/features/session/store'
 import { TodaySchedule } from './TodaySchedule'
 import { usePlanToday, type PlanToday } from './usePlanToday'
 
@@ -59,6 +58,7 @@ const SHOW_FACT_CARD = false
  */
 export function TodayPage() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { locale } = useLocale()
   const { data: profile } = useProfile()
   const plan = usePlanToday()
@@ -67,7 +67,6 @@ export function TodayPage() {
   // `?extra=1` (search: "Imam još vremena") opens that sheet.
   const [params, setParams] = useSearchParams()
   const [adjusting, setAdjusting] = useState(false)
-  const openStart = useSessionUi((st) => st.openStart)
   const name = profile?.display_name ?? ''
   const { periods, dayRows } = useScheduleData()
   const status = calendarStatus(plan.today, periods)
@@ -125,7 +124,7 @@ export function TodayPage() {
           {!dayOff && !active && (
             <button
               type="button"
-              onClick={openStart}
+              onClick={() => navigate('/today/free')}
               className="mt-1 flex min-h-11 items-center self-center px-3 text-sm font-semibold text-brand-strong"
             >
               {t('today.adjust.freeLink')}
