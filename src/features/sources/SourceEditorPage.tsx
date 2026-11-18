@@ -42,7 +42,9 @@ import { leavesOf } from '@/lib/progress'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
 import { bookTitle, unusedLiterature } from '@/lib/import/syllabus'
-import { useDeleteSource, useSaveOutline, useSource, useSources } from './api'
+import { useArchiveRough, useDeleteSource, useSaveOutline, useSource, useSources } from './api'
+import { BottomSheet } from '@/components/BottomSheet'
+import { otherRough } from '@/lib/estimates/rough'
 import { SyllabusBooks } from './SyllabusBooks'
 import { amountLabel, formatDuration } from './format'
 import { carryDifficulty, sourceToForm, toFormattable, toStoredUnits } from './mappers'
@@ -153,6 +155,13 @@ function SourceEditor({
   const { state: aiState } = useAiAvailability()
   const aiReady = aiState === 'ready'
   const { data: sources } = useSources(subject.id)
+  const archiveRough = useArchiveRough(subject.id)
+  // After the last save: the subject's other rough sources, offered for archiving.
+  const [askRough, setAskRough] = useState<{
+    titles: string[]
+    ids: string[]
+    merge: ReturnType<typeof mergeOutline>
+  } | null>(null)
   const institution = useProfile().data?.institution ?? null
   const updateSubject = useUpdateSubject()
   const books =
@@ -237,6 +246,20 @@ function SourceEditor({
     const values = form.getValues()
     const merge = mergeOutline(toStoredUnits(source?.units ?? []), units, () => crypto.randomUUID())
     save.mutate({ form: values, measure, merge, topics })
+    // The last book saved: the subject's other rough sources are offered for archiving at once.
+    const rest = otherRough(
+      (sources ?? []).filter((s) => s.id !== values.id && s.units.some((u) => !u.archived_at)),
+      values.title,
+    )
+    if (queue.length <= 1 && rest.length > 0) {
+      setAskRough({ titles: rest.map((s) => s.title), ids: rest.map((s) => s.id), merge })
+      return
+    }
+    goNext(merge)
+  }
+
+  const goNext = (merge: ReturnType<typeof mergeOutline>) => {
+    const values = form.getValues()
     if (queue.length > 1) {
       navigate(`/subjects/${subject.id}/sources/new?books=${queue.slice(1).join(',')}`, {
         replace: true,
@@ -256,53 +279,102 @@ function SourceEditor({
     )
   }
 
+  const roughSheet = (
+    <BottomSheet
+      open={askRough !== null}
+      onOpenChange={(open) => {
+        if (open || !askRough) return
+        setAskRough(null)
+        goNext(askRough.merge)
+      }}
+      title={t('sources.rough.otherTitle')}
+      subtitle={t('sources.rough.otherBody', { count: askRough?.ids.length ?? 0 })}
+    >
+      <div className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-1 rounded-[20px] surface p-3 text-[15px]">
+          {askRough?.titles.map((title) => (
+            <li key={title} className="truncate">
+              {title}
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          className="btn-primary flex h-14 items-center justify-center rounded-[18px] text-[17px] font-bold"
+          onClick={() => {
+            if (!askRough) return
+            archiveRough.mutate(askRough.ids)
+            setAskRough(null)
+            goNext(askRough.merge)
+          }}
+        >
+          {t('sources.rough.archiveOthers')}
+        </button>
+        <button
+          type="button"
+          className="flex h-12 items-center justify-center text-[15px] font-bold text-brand-strong"
+          onClick={() => {
+            if (!askRough) return
+            setAskRough(null)
+            goNext(askRough.merge)
+          }}
+        >
+          {t('sources.rough.keepOthers')}
+        </button>
+      </div>
+    </BottomSheet>
+  )
+
   if (step.kind === 'review') {
     return (
-      <Review
-        outline={step.outline}
-        topics={step.topics}
-        aiWarnings={step.warnings}
-        measure={measure}
-        minutesRate={
-          measure === 'items'
-            ? (form.getValues('minutesPerItem') ?? DEFAULT_ITEM_MINUTES)
-            : baseMinPerUnit(kind, measure)
-        }
-        existing={source}
-        onChange={(outline) => setStep({ ...step, outline })}
-        onTopics={(topics) => setStep({ ...step, topics })}
-        rate={
-          aiReady
-            ? {
-                busy: ai.busy,
-                error: ai.error,
-                run: async () => {
-                  const result = await ai.run(form.getValues(), measure, {
-                    kind: 'rate',
-                    outline: step.outline,
-                  })
-                  if (result) setStep({ ...step, ...result, warnings: step.warnings })
-                },
-              }
-            : null
-        }
-        onBack={() => {
-          setText(formatOutline(step.outline.units, measure))
-          setStep({ kind: 'input' })
-        }}
-        found={step.found}
-        onHavePdf={() => {
-          keepOrigin({ fileName: null, driveFileId: null, externalUrl: null })
-          setMode('pdf')
-          setStep({ kind: 'input' })
-        }}
-        onSave={onSave}
-        saveLabel={
-          step.found && !splitByExam
-            ? t('sources.web.save', { count: step.outline.units.length })
-            : t(splitByExam ? 'sources.review.saveAndSplit' : 'common.save')
-        }
-      />
+      <>
+        {roughSheet}
+        <Review
+          outline={step.outline}
+          topics={step.topics}
+          aiWarnings={step.warnings}
+          measure={measure}
+          minutesRate={
+            measure === 'items'
+              ? (form.getValues('minutesPerItem') ?? DEFAULT_ITEM_MINUTES)
+              : baseMinPerUnit(kind, measure)
+          }
+          existing={source}
+          onChange={(outline) => setStep({ ...step, outline })}
+          onTopics={(topics) => setStep({ ...step, topics })}
+          rate={
+            aiReady
+              ? {
+                  busy: ai.busy,
+                  error: ai.error,
+                  run: async () => {
+                    const result = await ai.run(form.getValues(), measure, {
+                      kind: 'rate',
+                      outline: step.outline,
+                    })
+                    if (result) setStep({ ...step, ...result, warnings: step.warnings })
+                  },
+                }
+              : null
+          }
+          onBack={() => {
+            setText(formatOutline(step.outline.units, measure))
+            setStep({ kind: 'input' })
+          }}
+          found={step.found}
+          onHavePdf={() => {
+            keepOrigin({ fileName: null, driveFileId: null, externalUrl: null })
+            setMode('pdf')
+            setStep({ kind: 'input' })
+          }}
+          onSave={onSave}
+          saveLabel={
+            step.found && !splitByExam
+              ? t('sources.web.save', { count: step.outline.units.length })
+              : t(splitByExam ? 'sources.review.saveAndSplit' : 'common.save')
+          }
+        />
+      </>
     )
   }
 

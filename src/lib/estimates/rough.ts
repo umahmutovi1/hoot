@@ -30,7 +30,38 @@ export function roughSource(size: RoughSize): RoughSourcePlan {
   }
 }
 
-/** A subject's rough source is replaced once it has any real, non-rough source. */
-export function roughToArchive<T extends { id: string; is_rough: boolean }>(sources: T[]): T[] {
-  return sources.some((s) => !s.is_rough) ? sources.filter((s) => s.is_rough) : []
+const normalizeTitle = (s: string) =>
+  s
+    .toLocaleLowerCase()
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
+
+/** The same book: one title contains the other ("Oppenheim, Signals" ⊂ "Oppenheim, Signals and Systems"). */
+export function sameBook(a: string, b: string): boolean {
+  const x = normalizeTitle(a)
+  const y = normalizeTitle(b)
+  if (x.length < 4 || y.length < 4) return x === y && x.length > 0
+  return x.includes(y) || y.includes(x)
+}
+
+/**
+ * Rough sources replaced by the real content saved under `title`: only the one for the same book
+ * (a syllabus book saved as rough). The others stay; the user is asked about them
+ * (`otherRough`).
+ */
+export function roughToArchive<T extends { id: string; is_rough: boolean; title: string }>(
+  sources: T[],
+  title: string,
+): T[] {
+  return sources.filter((s) => s.is_rough && sameBook(s.title, title))
+}
+
+/** Rough sources still in the plan after saving `title`: offered for archiving in one tap. */
+export function otherRough<T extends { id: string; is_rough: boolean; title: string }>(
+  sources: T[],
+  title: string,
+): T[] {
+  return sources.filter((s) => s.is_rough && !sameBook(s.title, title))
 }

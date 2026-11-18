@@ -1,6 +1,6 @@
 import { ScreenTitle } from '@/components/ScreenTitle'
 import type { TFunction } from 'i18next'
-import { DocIcon, GlobeIcon } from '@/components/icons'
+import { ChevronRightIcon, DocIcon, GlobeIcon, TextIcon } from '@/components/icons'
 import { useRates } from '@/features/plan/api'
 import { useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
@@ -142,6 +142,32 @@ function SourceDetail({
             {t('sources.web.open')}
           </a>
         </div>
+      )}
+
+      {!source.is_rough && source.kind !== 'questions' && material.units.length > 0 && (
+        // Tekst izvora (Sprint 18): the book's text per unit, for the tutor and summaries.
+        <Link
+          to={`${base}/text`}
+          className="flex min-h-14 items-center gap-3 rounded-[20px] surface p-3"
+        >
+          <span
+            aria-hidden="true"
+            className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
+          >
+            <TextIcon size={18} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('sources.text.title')}</span>
+            <span className="text-xs text-ink-secondary">
+              {source.text_pages
+                ? t('sources.text.rowHave', { count: source.text_pages })
+                : source.text_read_at
+                  ? t('sources.text.rowPasted')
+                  : t('sources.text.rowEmpty')}
+            </span>
+          </span>
+          <ChevronRightIcon size={20} />
+        </Link>
       )}
 
       <div className="flex flex-col gap-3 rounded-card surface p-4">
