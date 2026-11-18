@@ -23,6 +23,8 @@ export type AiTask =
   | 'find_academic_info'
   | 'find_toc'
   | 'classify_events'
+  /** find-academic-info `fetch`: a server download, not an AI call (own limit, `chain.ts`). */
+  | 'fetch_document'
 
 export type LlmMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'application/pdf'
 

@@ -88,4 +88,12 @@ describe('countsTowardLimit', () => {
     expect(countsTowardLimit({ ok: false, error: 'quota_exhausted: 429' })).toBe(false)
     expect(countsTowardLimit({ ok: false, error: 'provider_busy: 503' })).toBe(false)
   })
+
+  it('never counts a downloaded link: it has its own daily limit', () => {
+    expect(countsTowardLimit({ task: 'fetch_document', ok: true, error: null })).toBe(false)
+    expect(countsTowardLimit({ task: 'fetch_document', ok: false, error: '502: failed' })).toBe(
+      false,
+    )
+    expect(countsTowardLimit({ task: 'find_academic_info', ok: true, error: null })).toBe(true)
+  })
 })

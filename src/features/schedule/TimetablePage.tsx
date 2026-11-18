@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { CameraIcon, ChevronRightIcon, PlusIcon, TrashIcon } from '@/components/icons'
 import { SwipeRow } from '@/components/SwipeRow'
+import { Switch } from '@/components/Switch'
 import { useAiAvailability } from '@/features/owl/api'
 import { useOwlStore } from '@/features/owl/store'
 import { useDayBoundary, useProfile, useUpdateProfile } from '@/features/settings/profile'
@@ -179,19 +180,12 @@ export function TimetablePage() {
             <span className="text-[15px]">{t('timetable.recapTitle')}</span>
             <span className="text-xs text-ink-muted">{t('timetable.recapHint')}</span>
           </span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={recap}
-            aria-label={t('timetable.recapTitle')}
-            onClick={() => updateProfile.mutate({ recap_after_lecture: !recap })}
-            className={cn(
-              'flex h-8 w-[52px] shrink-0 rounded-full p-[3px] transition-colors',
-              recap ? 'justify-end bg-brand' : 'justify-start bg-radio-ring',
-            )}
-          >
-            <span className="size-[26px] rounded-full surface" />
-          </button>
+          <Switch
+            checked={recap}
+            label={t('timetable.recapTitle')}
+            hideLabel
+            onChange={(on) => updateProfile.mutate({ recap_after_lecture: on })}
+          />
         </div>
       </div>
 

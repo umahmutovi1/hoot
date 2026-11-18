@@ -1712,6 +1712,7 @@
     "error": {
       "offline": "No internet. Try again when you're online.",
       "rate_limited": "That's enough for today: all 30 AI calls are used. More tomorrow.",
+      "fetch_limited": "That's enough links for today: 40 were downloaded. More tomorrow.",
       "provider_busy": "The AI service is busy. Try again in a minute.",
       "no_key": "AI is not set up yet.",
       "invalid_output": "I could not read this document. Try again; if it is a photo, send a clearer one.",

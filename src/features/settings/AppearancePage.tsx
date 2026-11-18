@@ -12,7 +12,7 @@ import { applyTheme, isTheme, THEMES, type Theme } from './theme'
 export function AppearancePage() {
   const { t } = useTranslation()
   const { data: profile } = useProfile()
-  const update = useUpdateProfile()
+  const update = useUpdateProfile({ planInput: false })
   const show = useToast((s) => s.show)
   const current: Theme = isTheme(profile?.theme) ? profile.theme : 'ocean'
 
