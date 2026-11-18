@@ -5,7 +5,7 @@ import { useToast } from '@/components/toast-store'
 import { useDeleteBlock, useStartBlock } from '@/features/plan/actions'
 import { blockMode, blockPages, blockTitle, useGoalTitle } from '@/features/plan/model'
 import type { PlanBlockRow } from '@/features/plan/state'
-import { usePresets } from '@/features/session/presets'
+import { useKeepRhythm, usePresets } from '@/features/session/presets'
 import { RhythmRow } from '@/features/session/RhythmRow'
 import { formatDuration } from '@/features/sources/format'
 import { useSubjects } from '@/features/subjects/api'
@@ -97,6 +97,8 @@ function Body({
   const { suggestedId } = usePresets()
   // The default rhythm, read-only until "Promijeni" (PRD "Dopune, 5. nov 2026").
   const [presetId, setPresetId] = useState<string | null>(null)
+  const [keep, setKeep] = useState(false)
+  const keepRhythm = useKeepRhythm()
   const [busy, setBusy] = useState(false)
   const subject = subjects.find((s) => s.id === block.subject_id)
   const manual = block.origin === 'user'
@@ -141,6 +143,8 @@ function Body({
         value={presetId ?? suggestedId}
         onChange={setPresetId}
         sub={presetId ? undefined : t('today.start.rhythmSub')}
+        keep={keep}
+        onKeepChange={setKeep}
       />
       {canStart && (
         <button
@@ -148,9 +152,10 @@ function Body({
           disabled={busy}
           onClick={() => {
             setBusy(true)
-            void start(block, plan.units, { timerMode: presetId ?? suggestedId }).finally(() =>
-              setBusy(false),
-            )
+            const mode = presetId ?? suggestedId
+            void (keep ? keepRhythm(mode) : Promise.resolve(mode))
+              .then((timerMode) => start(block, plan.units, { timerMode }))
+              .finally(() => setBusy(false))
           }}
           className="btn-primary flex h-14 items-center justify-center gap-2.5 rounded-[18px] text-[17px] font-bold"
         >

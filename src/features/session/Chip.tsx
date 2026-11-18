@@ -24,8 +24,8 @@ export function Chip({
         'flex h-11 items-center rounded-full px-4 text-[13px] font-semibold',
         selected
           ? tone === 'dark'
-            ? 'bg-ink text-white'
-            : 'bg-brand text-white'
+            ? 'bg-ink text-ground'
+            : 'bg-brand text-ground'
           : tone === 'dark'
             ? 'bg-canvas text-ink'
             : 'border border-line surface font-normal text-ink',

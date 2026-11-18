@@ -7,7 +7,6 @@ import { ImportJobBanner } from '@/features/owl/ImportJobBanner'
 import { ContinueOnboarding } from '@/features/onboarding/ContinueOnboarding'
 import { PendingSkipRunner } from '@/features/notify/PendingSkipRunner'
 import { ForgottenGuard } from '@/features/session/ForgottenGuard'
-import { SessionStartSheet } from '@/features/session/SessionStartSheet'
 import { SearchPanel } from '@/features/search/SearchPanel'
 import { LocaleSync } from '@/features/settings/LocaleSync'
 import { ThemeSync } from '@/features/settings/ThemeSync'
@@ -37,7 +36,6 @@ export function AppShell() {
         <Outlet />
         <BottomNav />
         <SearchPanel open={searching} onOpenChange={setSearching} />
-        <SessionStartSheet />
         {/* Inside the router: applying a skip can start the next block (navigation). */}
         <PendingSkipRunner />
         <ForgottenGuard />

@@ -35,7 +35,12 @@ export function toPickBlock(b: PlanBlockRow): PickBlock {
 }
 
 /** `pickForTime()` over today's plan, the checks due and the next blocks (optionally one subject). */
-export function pickFor(plan: PlanToday, minutes: number, subjectId?: string): Pick | null {
+export function pickFor(
+  plan: PlanToday,
+  minutes: number,
+  subjectId?: string,
+  preferFill = false,
+): Pick | null {
   const sourceOf = new Map([...plan.units.values()].map((i) => [i.unit.id, i.source]))
   const dueReviews = dueUnits(
     [...plan.units.values()].map((i) => i.unit),
@@ -60,12 +65,14 @@ export function pickFor(plan: PlanToday, minutes: number, subjectId?: string): P
     dueReviews,
     laterBlocks: plan.blocks.filter((b) => b.on_date > plan.today && isOpen(b)).map(toPickBlock),
     subjectId,
+    preferFill,
   })
 }
 
 /**
- * Slobodna sesija → "Hoot predloži" with "Druga ideja": the best piece for the time, then the best
- * piece of each other subject that has one, up to `limit` (all from `pickForTime()`, no AI).
+ * Slobodna sesija → "Hoot predloži" with "Druga ideja": the piece that best fills the time, a
+ * short check due (when it was not first), then the best piece of each other subject, up to
+ * `limit` (all from `pickForTime()`, no AI). A later block is filled up to the time.
  */
 export function picksFor(
   plan: PlanToday,
@@ -73,14 +80,17 @@ export function picksFor(
   subjectIds: string[],
   limit = 3,
 ): Pick[] {
-  const first = pickFor(plan, minutes)
-  const out = first ? [first] : []
-  for (const id of subjectIds) {
-    if (out.length >= limit) break
-    if (out.some((p) => p.subjectId === id)) continue
-    const pick = pickFor(plan, minutes, id)
-    if (pick) out.push(pick)
+  const out: Pick[] = []
+  const add = (pick: Pick | null) => {
+    if (!pick || out.length >= limit) return
+    const same = (p: Pick) =>
+      p.subjectId === pick.subjectId && p.from === pick.from && p.blockId === pick.blockId
+    if (!out.some(same)) out.push(fillPick(plan, pick, minutes))
   }
+  add(pickFor(plan, minutes, undefined, true))
+  add(pickFor(plan, minutes))
+  for (const id of subjectIds)
+    if (!out.some((p) => p.subjectId === id)) add(pickFor(plan, minutes, id, true))
   return out
 }
 
@@ -124,7 +134,7 @@ export function pickWhy(t: TFunction, plan: PlanToday, pick: Pick, dfLocale: Loc
   })
 }
 
-/** Title of a picked piece: subject and the units it covers. */
+/** Title of a picked piece: subject (when given) and the units it covers. */
 export function pickTitle(
   t: ReturnType<typeof useTranslation>['t'],
   pick: Pick,
@@ -149,7 +159,7 @@ export function pickTitle(
     units,
     goalTitle,
   )
-  return `${subjectName} · ${title}`
+  return subjectName ? `${subjectName} · ${title}` : title
 }
 
 /**

@@ -643,7 +643,12 @@
       "breaks": "Pauze",
       "howLong": "Koliko vremena imaš?",
       "newSource": "+ Izvor",
-      "addFirstSource": "+ Dodaj izvor (knjiga, skripta…)"
+      "addFirstSource": "+ Dodaj izvor (knjiga, skripta…)",
+      "other": "Drugo",
+      "duration": "Trajanje",
+      "durationLess": "Manje {{count}} minuta",
+      "durationMore": "Više {{count}} minuta",
+      "who": "Ko bira gradivo"
     },
     "mode": {
       "label": "Način učenja",
@@ -876,6 +881,24 @@
       "addManual": "Upiši sesiju ručno",
       "emptyWeek": "Ove sedmice nije bilo sesija.",
       "thisWeekOf": "Ova sedmica {{done}} od {{planned}}"
+    },
+    "rhythm": {
+      "label": "Ritam učenja i pauza",
+      "done": "Gotovo",
+      "yourDefault": "tvoj zadani",
+      "own": "Svoj ritam",
+      "ownSub": "ti odrediš",
+      "value": "{{work}} · {{pause}}",
+      "minutes": "{{count}} min",
+      "study": "Učenje",
+      "break": "Pauza",
+      "studyLess": "Kraće učenje",
+      "studyMore": "Duže učenje",
+      "breakLess": "Kraća pauza",
+      "breakMore": "Duža pauza",
+      "keep": "Koristi i ubuduće",
+      "keepSub": "Hoot će planirati blokove u ovom ritmu",
+      "keepLabel": "Koristi ovaj ritam i ubuduće"
     }
   },
   "settings": {

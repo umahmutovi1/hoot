@@ -1,9 +1,9 @@
+import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { ChevronRightIcon, ClockIcon, MoonIcon, PlusIcon } from '@/components/icons'
 import { BlockSheet } from '@/features/plan/BlockSheet'
-import { useSessionUi } from '@/features/session/store'
 import { useToast } from '@/components/toast-store'
 import { useCantToday, useSetEnergy } from '@/features/plan/actions'
 import { useDayEnergy } from '@/features/schedule/api'
@@ -44,7 +44,7 @@ export function AdjustDaySheet({
   const { t } = useTranslation()
   const cantToday = useCantToday()
   const setEnergy = useSetEnergy()
-  const openStart = useSessionUi((s) => s.openStart)
+  const navigate = useNavigate()
   const show = useToast((s) => s.show)
   const [only, setOnly] = useState<number | null>(null)
   const [adding, setAdding] = useState(false)
@@ -144,7 +144,7 @@ export function AdjustDaySheet({
           )}
           <button
             type="button"
-            onClick={() => then(openStart)}
+            onClick={() => then(() => navigate('/today/free'))}
             className={cn(row, 'border-t border-hairline first:border-t-0')}
           >
             <span className={cn(tile, 'bg-subject-lavender-soft text-subject-lavender-ink')}>
