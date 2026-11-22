@@ -73,6 +73,8 @@ const source = (units: Unit[], extra: Partial<SourceWithUnits> = {}): SourceWith
   measured_sessions: 0,
   is_rough: false,
   file_name: null,
+  text_pages: null,
+  text_read_at: null,
   drive_file_id: null,
   external_url: null,
   created_at: '',

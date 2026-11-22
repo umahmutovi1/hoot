@@ -613,7 +613,8 @@ export type ProposeAnswerOutput = z.infer<typeof proposeAnswerOutputSchema>
 // embed (gte-small vectors of units, cards and topics; no LLM)
 // ---------------------------------------------------------------------------
 
-export const EMBED_KINDS = ['unit', 'card', 'topic'] as const
+/** `chunk`: a passage of a source's text (`source_chunks`, Sprint 18). */
+export const EMBED_KINDS = ['unit', 'card', 'topic', 'chunk'] as const
 export type EmbedKind = (typeof EMBED_KINDS)[number]
 
 /** Rows sent per `embed` call; the function stops earlier when the text budget is used up. */
