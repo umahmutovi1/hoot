@@ -151,7 +151,7 @@ export function useSessionUnits(sessionId: string | undefined) {
       const { data, error } = await supabase
         .from('session_units')
         .select(
-          'session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty, recall_skipped',
+          'session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty, recall_skipped, summary_words',
         )
         .eq('session_id', sessionId!)
       if (error) throw error

@@ -18,6 +18,8 @@ const unit = (id: string, extra: Partial<Unit> = {}): Unit => ({
   title: id,
   page_start: null,
   read_amount: null,
+  use_summary: false,
+  read_via: null,
   page_end: null,
   amount: 1,
   ai_difficulty: null,

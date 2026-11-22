@@ -498,3 +498,7 @@ import_map = "./functions/deno.json"
 [functions.strategist]
 verify_jwt = false
 import_map = "./functions/deno.json"
+
+[functions.material]
+verify_jwt = false
+import_map = "./functions/deno.json"

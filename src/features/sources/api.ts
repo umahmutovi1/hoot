@@ -374,6 +374,8 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     next_review_on: null,
     archived_at: null,
     read_amount: null,
+    use_summary: false,
+    read_via: null,
   } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title'>
 }
 

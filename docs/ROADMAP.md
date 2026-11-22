@@ -460,6 +460,7 @@ PRD „Dopune, 2. nov 2026: novi korisnik i ispiti iza tebe“ → Obim poslije 
 PRD „Dopune, 2. nov 2026: novi korisnik i ispiti iza tebe“ → Prvo plan, pa prijava; [SETUP.md](SETUP.md#6-otvaranje-aplikacije-za-više-korisnika). Otvara app za više korisnika, pa ide prije Sprinta 22.
 
 - [ ] Mockup `docs/design/SpasiPlan.dc.html` prije koda: landing „Počni“ bez prijave, kartica „Spasi svoj plan“, sheet (Google / email i lozinka / „Već imam nalog“), stanje „Ovo traži nalog“
+- [ ] Jezik bez koraka: zadan iz jezika telefona (bs/hr/sr → bs, ostalo → en), prekidač BS | EN na landingu; locale ide u `user_metadata` pri prijavi, a šablon maila grana po `{{ .Data.locale }}` (samo jedan jezik u mailu)
 - [ ] Anonimna prijava: landing „Počni“ → `signInAnonymously()` uz Turnstile (CAPTCHA važi za sve prijave), pa onboarding i prvi plan bez emaila; „Već imam nalog“ vodi na postojeću prijavu
 - [ ] „Spasi svoj plan“: Google (`linkIdentity`, uključeno ručno povezivanje), email + lozinka (`updateUser`, potvrda emailom); isti `user_id`, ništa se ne kopira; email koji već ima nalog → „Prijavi se“ uz upozorenje da se ovaj plan ne spaja
 - [ ] Kad se traži: kartica poslije „Tvoja sedmica“ (Kasnije → vraća se 3. i 7. dan), a obavezno prije instalacije PWA (početni ekran na iOS-u ima drugu memoriju, pa bi se plan izgubio), notifikacija, Google kalendara i Drive-a, i AI-ja preko limita
