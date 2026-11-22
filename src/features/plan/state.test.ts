@@ -118,6 +118,8 @@ const roughSource = (parts: number): SourceWithUnits => ({
   weight: null,
   is_rough: true,
   file_name: null,
+  text_pages: null,
+  text_read_at: null,
   drive_file_id: null,
   external_url: null,
   created_at: '',

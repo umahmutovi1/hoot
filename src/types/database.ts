@@ -1906,6 +1906,86 @@ export type Database = {
           },
         ]
       }
+      source_chunk_embeddings: {
+        Row: {
+          chunk_id: string
+          embedding: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chunk_id: string
+          embedding: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          chunk_id?: string
+          embedding?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "source_chunk_embeddings_chunk_id_fkey"
+            columns: ["chunk_id"]
+            isOneToOne: true
+            referencedRelation: "source_chunks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      source_chunks: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          page: number
+          position: number
+          source_id: string
+          unit_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id: string
+          page: number
+          position: number
+          source_id: string
+          unit_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          page?: number
+          position?: number
+          source_id?: string
+          unit_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "source_chunks_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_chunks_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       source_mode_rates: {
         Row: {
           min_per_unit: number
@@ -1958,6 +2038,8 @@ export type Database = {
           measure: string
           measured_sessions: number
           subject_id: string
+          text_pages: number | null
+          text_read_at: string | null
           title: string
           updated_at: string
           user_id: string
@@ -1979,6 +2061,8 @@ export type Database = {
           measure?: string
           measured_sessions?: number
           subject_id: string
+          text_pages?: number | null
+          text_read_at?: string | null
           title: string
           updated_at?: string
           user_id?: string
@@ -2000,6 +2084,8 @@ export type Database = {
           measure?: string
           measured_sessions?: number
           subject_id?: string
+          text_pages?: number | null
+          text_read_at?: string | null
           title?: string
           updated_at?: string
           user_id?: string
@@ -2574,6 +2660,20 @@ export type Database = {
           unit_id: string
         }[]
       }
+      match_source_chunks: {
+        Args: {
+          match_count?: number
+          query_embedding: string
+          unit_ids: string[]
+        }
+        Returns: {
+          content: string
+          id: string
+          page: number
+          similarity: number
+          unit_id: string
+        }[]
+      }
       progress_statistics: {
         Args: { p_from: string; p_rates?: Json; p_to: string }
         Returns: Json
@@ -2625,6 +2725,7 @@ export type Database = {
         | "classify_events"
         | "parse_study_program"
         | "find_toc"
+        | "fetch_document"
       assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
       assigned_by: "ai" | "user"
       block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
@@ -2791,6 +2892,7 @@ export const Constants = {
         "classify_events",
         "parse_study_program",
         "find_toc",
+        "fetch_document",
       ],
       assessment_kind: ["partial", "final", "integral", "makeup", "other"],
       assigned_by: ["ai", "user"],
