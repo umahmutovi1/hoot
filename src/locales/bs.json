@@ -2589,7 +2589,8 @@
       "exam_question": "ISPITNO PITANJE {{label}}",
       "card": "KARTICA",
       "recall": "PRISJETI SE",
-      "question": "ISPITNO PITANJE"
+      "question": "ISPITNO PITANJE",
+      "source_text": "IZ TEKSTA IZVORA"
     },
     "recallPrompt": "Šta znaš o: {{title}}?",
     "answer": "ODGOVOR",

@@ -28,6 +28,7 @@ const PRECISION: RecallSource[] = [
   'outline',
   'exam_question',
   'notes',
+  'source_text',
   'page_photo',
   'card',
   'blurt',

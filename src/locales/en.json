@@ -2491,7 +2491,8 @@
       "exam_question": "EXAM QUESTION {{label}}",
       "card": "CARD",
       "recall": "RECALL",
-      "question": "EXAM QUESTION"
+      "question": "EXAM QUESTION",
+      "source_text": "FROM THE SOURCE TEXT"
     },
     "recallPrompt": "What do you know about: {{title}}?",
     "answer": "ANSWER",
