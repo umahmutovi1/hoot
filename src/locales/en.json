@@ -1816,7 +1816,8 @@
       "file": "I can't read this. Send an image, a PDF or text.",
       "link": "This link could not be opened. Check that it is public (no sign-in) and leads to a PDF, an image or a page.",
       "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET).",
-      "needs_paid": "This AI feature only works with the paid model: your text never goes to free services."
+      "needs_paid": "This AI feature only works with the paid model: your text never goes to free services.",
+      "no_text": "This unit has no source text yet. Add the PDF on the source."
     },
     "document": {
       "stored": "I saved “{{title}}” to Documents.",
@@ -3274,5 +3275,25 @@
     "rowNeeds": "{{grade}} needs {{points}} more",
     "or": "or",
     "gradesSpan": "{{low}} to {{high}}"
+  },
+  "summary": {
+    "instead": {
+      "tag": "Deficit",
+      "title": "You won't get through all the reading",
+      "how": "What next",
+      "body_one": "{{days}} days are left until the {{subject}} exam and {{count}} chapter is unread. Passing is enough for this subject, so a summary can replace the reading.",
+      "body_other": "{{days}} days are left until the {{subject}} exam and {{count}} chapters are unread. Passing is enough for this subject, so a summary can replace the reading.",
+      "read": "Read it all",
+      "readSub": "{{time}} · won't fit before the exam",
+      "use": "Summary instead of reading",
+      "useFits": "{{time}} · fits before the exam",
+      "useShort": "{{time}} · still {{short}} short",
+      "hint": "Those chapters get marked “Read (summary)” and the first check comes in 2 days. You can read them in full when you have time left.",
+      "apply": "Use summaries",
+      "keep": "Keep the plan as it is",
+      "open": "Summary instead of reading",
+      "done_one": "{{count}} chapter goes through its summary",
+      "done_other": "{{count}} chapters go through their summaries"
+    }
   }
 }

@@ -872,6 +872,8 @@ export const AI_ERRORS = [
   'needs_paid',
   /** The daily limit of links downloaded by find-academic-info (`FETCH_DAILY_LIMIT`). */
   'fetch_limited',
+  /** Summary, cards or tutor from the text of a unit that has no source text (Sprint 18). */
+  'no_text',
 ] as const
 export type AiErrorCode = (typeof AI_ERRORS)[number]
 

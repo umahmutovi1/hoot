@@ -240,6 +240,38 @@ describe('planEnd: recall gate', () => {
   })
 })
 
+describe('planEnd: summary (Sprint 18)', () => {
+  const whole = [seg('1', 'a', 0, 20)]
+  const viaSummary = { ...answers, ranges: [], summaryWords: { a: 400 } }
+
+  it('a unit studied through its summary is "Pročitano (sažetak)" with a check in 2 days', () => {
+    const plan = planEnd(session, whole, [source()], viaSummary, new Date(), [], '2026-10-21')
+    expect(plan.gate).toEqual(['a'])
+    const [su] = opOf(plan.ops, 'session_units')
+    // No pages: the reading pace stays clean; the words teach the summary pace.
+    expect(su?.kind === 'upsert' && su.rows).toEqual([
+      expect.objectContaining({ unit_id: 'a', amount_done: 0, level_after: 1, summary_words: 400 }),
+    ])
+    expect(opOf(plan.ops, 'units', 'update')[0]).toMatchObject({
+      match: { id: 'a' },
+      patch: { level: 1, read_via: 'summary', next_review_on: '2026-10-23' },
+    })
+  })
+
+  it('reading the chapter in full later clears "(sažetak)"', () => {
+    const read = source({
+      units: source().units.map((u) =>
+        u.id === 'a' ? { ...u, level: 1, readVia: 'summary', completedAt: iso(-60) } : u,
+      ),
+    })
+    const plan = planEnd(session, [seg('1', 'a', 0, 50)], [read], answers)
+    expect(opOf(plan.ops, 'units', 'update')[0]).toMatchObject({
+      match: { id: 'a' },
+      patch: { read_via: null },
+    })
+  })
+})
+
 describe('endLevels', () => {
   it('offers "Razumijem"/"Ponovljeno" only to keep them', () => {
     expect(endLevels(1)).toEqual([0, 1])
