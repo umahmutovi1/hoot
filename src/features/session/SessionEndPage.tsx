@@ -30,6 +30,7 @@ import {
 } from './end'
 import { toEndSources, sessionSources, unitTitle, type SessionSource } from './material'
 import { useSessionUi } from './store'
+import { useSummaryInputs } from '@/features/sources/summaryApi'
 import { EndActions } from './EndActions'
 import { SessionHeader } from './SessionHeader'
 
@@ -163,6 +164,19 @@ function EndForm({
   const [reasons, setReasons] = useState<string[]>(session.focus_reasons ?? [])
   const [reflection, setReflection] = useState(session.reflection ?? '')
   const [busy, setBusy] = useState(false)
+  // Units studied through their summary (Sprint 18): from this session's choice, or as saved.
+  const summaryUi = useSessionUi((s) => s.summary)
+  const summaryLengths = useSummaryInputs().data?.words
+  const summaryWords: Record<string, number> = Object.fromEntries(
+    saved.length > 0
+      ? saved.flatMap((r) => (r.summary_words ? [[r.unit_id, r.summary_words]] : []))
+      : summaryUi?.sessionId === session.id
+        ? summaryUi.unitIds.flatMap((id) => {
+            const words = summaryLengths?.get(id)
+            return words ? [[id, words]] : []
+          })
+        : [],
+  )
 
   const answers: EndAnswers = {
     ranges: ranges.flatMap((d) => {
@@ -174,6 +188,7 @@ function EndForm({
     focus,
     focusReasons: reasons,
     reflection,
+    summaryWords,
   }
   const boundary = useDayBoundary()
   const endedAt = new Date(session.ended_at!)

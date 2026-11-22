@@ -130,8 +130,7 @@ export async function llmDeps(ctx: EdgeContext): Promise<LlmDeps> {
   return {
     provider,
     chain,
-    providerPaid: (ctx.env.get('LLM_PROVIDER') ?? 'gemini') === 'anthropic',
-    privateFree: ctx.env.get('LLM_PRIVATE_FREE') === 'allow',
+    ...privateAccess(ctx.env),
     countRecentRuns: () => countRecentRuns(ctx),
     logRun: async (run) => {
       const { error } = await ctx.admin.from('ai_runs').insert({ ...run, user_id: ctx.userId })
@@ -205,5 +204,13 @@ export async function withUploads<T>(
       const { error } = await ctx.db.storage.from('uploads').remove(files.map((f) => f.path))
       if (error) console.error('upload cleanup failed', error.message)
     }
+  }
+}
+
+/** Whether private tasks may run: a paid provider, or free use allowed during the beta. */
+export function privateAccess(env: LlmEnv): { providerPaid: boolean; privateFree: boolean } {
+  return {
+    providerPaid: (env.get('LLM_PROVIDER') ?? 'gemini') === 'anthropic',
+    privateFree: env.get('LLM_PRIVATE_FREE') === 'allow',
   }
 }

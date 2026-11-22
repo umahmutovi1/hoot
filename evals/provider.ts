@@ -19,6 +19,12 @@ import {
 } from '../supabase/functions/_shared/contentPrompts.ts'
 import { normalizeParse, parseRequest } from '../supabase/functions/_shared/prompts.ts'
 import { keepToc, tocSearchRequest } from '../supabase/functions/_shared/tocSearch.ts'
+import {
+  cardsRequest,
+  normalizeCards,
+  normalizeSummary,
+  summaryRequest,
+} from '../supabase/functions/_shared/materialPrompts.ts'
 import type {
   ImportKind,
   ParseDocumentRequest,
@@ -33,7 +39,13 @@ const SUBJECTS = [
 ]
 
 interface Vars {
-  task?: 'parse-document' | 'parse-toc' | 'parse-questions' | 'find-toc'
+  task?:
+    | 'parse-document'
+    | 'parse-toc'
+    | 'parse-questions'
+    | 'find-toc'
+    | 'material-summary'
+    | 'material-cards'
   kind: ImportKind
   fixture: string
   /** find-toc: the book as the user would type it. */
@@ -111,6 +123,37 @@ async function findToc(vars: Vars) {
   }
 }
 
+/** material (summary, cards) on a chapter's text with [p. N] markers, as the function sends it. */
+async function material(vars: Vars) {
+  const key = process.env.GEMINI_API_KEY ?? (process.env.EVAL_MODEL ? 'chain' : undefined)
+  if (!key) return { error: 'material evals need GEMINI_API_KEY' }
+  const text = readFileSync(new URL(`./fixtures/${vars.fixture}`, import.meta.url), 'utf8')
+  const pages = new Set([...text.matchAll(/\[p\. (\d+)\]/g)].map((m) => Number(m[1])))
+  const meta = { subject: 'Signali i sistemi', title: 'Fourierov red', label: '4' }
+  const deps: Deps = {
+    provider: evalProvider(key),
+    privateFree: true,
+    countRecentRuns: async () => 0,
+    logRun: async () => {},
+  }
+  try {
+    if (vars.task === 'material-summary') {
+      const result = await generate(deps, summaryRequest(meta, text, 'bs'))
+      return {
+        output: normalizeSummary(result.data, pages),
+        tokenUsage: { prompt: result.inputTokens, completion: result.outputTokens },
+      }
+    }
+    const result = await generate(deps, cardsRequest(meta, 'text', text, 'bs'))
+    return {
+      output: { cards: normalizeCards(result.data, pages) },
+      tokenUsage: { prompt: result.inputTokens, completion: result.outputTokens },
+    }
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : String(err) }
+  }
+}
+
 export default class ParseDocumentProvider {
   id() {
     return 'hoot-parse-document'
@@ -119,6 +162,8 @@ export default class ParseDocumentProvider {
   async callApi(_prompt: string, context: { vars: Vars }) {
     const vars = context.vars
     if (vars.task === 'find-toc') return await findToc(vars)
+    if (vars.task === 'material-summary' || vars.task === 'material-cards')
+      return await material(vars)
     const { kind, fixture } = vars
     const path = new URL(`./fixtures/${fixture}`, import.meta.url)
     const isImage = fixture.endsWith('.png')

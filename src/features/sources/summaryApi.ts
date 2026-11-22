@@ -12,6 +12,8 @@ import { useLocale } from '@/features/settings/useLocale'
 import type { LearnedRate } from '@/lib/estimates/calibration'
 import { summaryPace } from '@/lib/estimates/summary'
 import { readPages } from '@/lib/readPages'
+import { cardsKey } from './api'
+import { embedAfterImport } from './importApi'
 import { supabase } from '@/lib/supabase'
 
 // Summary and cards from the source text (PRD "Tekst izvora, sažetak i kartice", Sprint 18).
@@ -105,6 +107,34 @@ export function useProposeCards() {
       })
       return r.cards
     },
+  })
+}
+
+/** Saves the kept cards as the unit's cards (origin `ai`), first review on `firstReview`. */
+export function useAddMaterialCards() {
+  const userId = useAuth().session?.user.id
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (args: {
+      unitId: string
+      cards: { front: string; back: string }[]
+      firstReview: string
+    }) => {
+      const rows = args.cards.map((c) => ({
+        id: crypto.randomUUID(),
+        unit_id: args.unitId,
+        front: c.front.slice(0, 500),
+        back: c.back.slice(0, 2000),
+        origin: 'ai' as const,
+        next_review_on: args.firstReview,
+      }))
+      const { error } = await supabase.from('cards').insert(rows)
+      if (error) throw error
+      embedAfterImport()
+      return rows.length
+    },
+    onSettled: (_d, _e, args) =>
+      queryClient.invalidateQueries({ queryKey: cardsKey(userId, args.unitId) }),
   })
 }
 

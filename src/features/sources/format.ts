@@ -36,9 +36,11 @@ export function statusLabel(
   kind: Unit['kind'],
   level: number,
   /** A chapter not read yet but started: "Djelimično · 2/9" (decision after Sprint 12). */
-  partial?: Pick<Unit, 'amount' | 'read_amount'>,
+  partial?: Pick<Unit, 'amount' | 'read_amount'> & Partial<Pick<Unit, 'read_via'>>,
 ) {
   const l = Math.min(3, Math.max(0, Math.round(level))) as 0 | 1 | 2 | 3
+  // Read through its summary (Sprint 18): "Pročitano (sažetak)" until read in full.
+  if (kind === 'chapter' && l === 1 && partial?.read_via === 'summary') return t('summary.readVia')
   const read = Number(partial?.read_amount ?? 0)
   if (kind === 'chapter' && l === 0 && partial && read > 0 && read < partial.amount)
     return t('units.status.partial', { done: read, total: partial.amount })

@@ -11,6 +11,8 @@ import { formatDuration } from '@/features/sources/format'
 import { useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
 import { formatClock } from '@/lib/schedule'
+import { Switch } from '@/components/Switch'
+import { useUnitsWithText } from '@/features/sources/summaryApi'
 import { cn } from '@/lib/utils'
 import type { PlanToday } from './usePlanToday'
 
@@ -100,6 +102,20 @@ function Body({
   const [keep, setKeep] = useState(false)
   const keepRhythm = useKeepRhythm()
   const [busy, setBusy] = useState(false)
+  // "Koristi sažetak" (Sprint 18): unread chapters of a reading block that have source text.
+  const withText = useUnitsWithText().data
+  const summaryUnits =
+    block.kind === 'learn'
+      ? block.plan_block_units
+          .map((u) => plan.units.get(u.unit_id)?.unit)
+          .filter(
+            (u): u is NonNullable<typeof u> =>
+              !!u && u.kind === 'chapter' && u.level === 0 && !!withText?.has(u.id),
+          )
+      : []
+  const [useSummary, setUseSummary] = useState<boolean | null>(null)
+  const summaryOn =
+    useSummary ?? (summaryUnits.length > 0 && summaryUnits.every((u) => u.use_summary))
   const subject = subjects.find((s) => s.id === block.subject_id)
   const manual = block.origin === 'user'
   const mode = block.kind === 'learn' ? blockMode(block, plan.units) : block.kind
@@ -146,6 +162,20 @@ function Body({
         keep={keep}
         onKeepChange={setKeep}
       />
+      {summaryUnits.length > 0 && (
+        <div className="surface flex items-center justify-between gap-3 rounded-[20px] py-2.5 pr-3 pl-4">
+          <span className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-[15px] font-bold">{t('summary.useSummary')}</span>
+            <span className="text-[13px] text-ink-secondary">{t('summary.useSummaryHint')}</span>
+          </span>
+          <Switch
+            checked={summaryOn}
+            onChange={setUseSummary}
+            label={t('summary.useSummary')}
+            hideLabel
+          />
+        </div>
+      )}
       {canStart && (
         <button
           type="button"
@@ -154,7 +184,12 @@ function Body({
             setBusy(true)
             const mode = presetId ?? suggestedId
             void (keep ? keepRhythm(mode) : Promise.resolve(mode))
-              .then((timerMode) => start(block, plan.units, { timerMode }))
+              .then((timerMode) =>
+                start(block, plan.units, {
+                  timerMode,
+                  ...(summaryOn ? { summaryUnits: summaryUnits.map((u) => u.id) } : {}),
+                }),
+              )
               .finally(() => setBusy(false))
           }}
           className="btn-primary flex h-14 items-center justify-center gap-2.5 rounded-[18px] text-[17px] font-bold"

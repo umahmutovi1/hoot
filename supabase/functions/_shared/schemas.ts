@@ -856,6 +856,11 @@ export interface AiStatus {
   /** AI calls left in the rolling 24 h window. */
   remaining: number
   limit: number
+  /**
+   * Private tasks (book text: summary, cards, tutor) can run: the paid model, or the beta switch
+   * LLM_PRIVATE_FREE. Absent from an older function = unknown, treated as available.
+   */
+  private?: boolean
 }
 
 /** Error codes returned by Edge Functions as `{ error: code }`. */

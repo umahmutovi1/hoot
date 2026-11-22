@@ -73,7 +73,7 @@ export function SummaryInsteadSheet({
           aria-hidden="true"
           className={cn(
             'flex size-[22px] shrink-0 items-center justify-center rounded-full',
-            on ? 'bg-brand text-canvas' : 'shadow-[inset_0_0_0_2px_var(--color-radio-ring)]',
+            on ? 'bg-brand text-ground' : 'shadow-[inset_0_0_0_2px_var(--color-radio-ring)]',
           )}
         >
           {on && <CheckIcon size={14} />}

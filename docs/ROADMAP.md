@@ -402,8 +402,8 @@ Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj
 PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model (Haiku) za privatni tekst; ElevenLabs nalog (free tier).
 
 - [ ] Tekst izvora: PDF (uređaj ili Drive) → tekst po jedinici prema rasponu stranica, `source_chunks` sa embeddings; original se ne čuva; poruka za skenirani PDF
-- [ ] Sažetak jedinice / poglavlja (keš po hashu teksta); opcija „sažetak umjesto čitanja“ kod deficita za prioritet 1–2
-- [ ] Kartice iz gradiva: AI prijedlog 5–15 kartica iz teksta, bilješki ili zalijepljenog teksta → pregled → FSRS kartice
+- [x] Sažetak jedinice / poglavlja (keš po hashu teksta); opcija „sažetak umjesto čitanja“ kod deficita za prioritet 1–2 i „Koristi sažetak“ na početku sesije; procjena 20% čitanja → dužina sažetka → naučeni tempo iz sesija (`summary_words`)
+- [x] Kartice iz gradiva: AI prijedlog 5–15 kartica iz teksta, bilješki ili zalijepljenog teksta → pregled → FSRS kartice
 - [ ] Tutor: ulazi iz bloka, sesije i jedinice; načini Objasni (citat stranice), Ispitaj me, Usmeni, Feynman; isti izbor pitanja kao recall gate; ocjene u `review_logs` i `levelAfter()`; vrijeme kao sesija (način `tutor`); mockup prije koda
 - [ ] Glas: edge funkcija `voice` (ElevenLabs TTS bs/en, Scribe STT), budžet free tiera iz `ai_runs`, rezerva Web Speech API
 - [ ] Asistent na Danas ostaje za plan i dokumente; pitanja o gradivu vode u tutora
@@ -474,6 +474,7 @@ PRD „Dopune, 2. nov 2026: novi korisnik i ispiti iza tebe“ → Prvo plan, pa
 
 PRD „Dopune, 2. nov 2026“, [RESEARCH-ML-2026-11.md](RESEARCH-ML-2026-11.md).
 
+- [ ] Sažetak u modelu trajanja: obilježje `summary` (sesija iz sažetka, `session_units.summary_words`) u modelu trajanja i `ml/` zajedno (paritet), kad bude dovoljno sesija sa sažetkom; do tad Bayesov tempo iz `src/lib/estimates/summary.ts`
 - [ ] Ručni blokovi u modelu odrađenosti: težina `w_manual` i obilježje `manual` u `src/lib/slots/examples.ts` i `ml/hoot_ml/data.py` zajedno (paritet `completion.cases.json`), `manual = 0` pri ocjeni termina; `w_manual` u `priors.json` (verzija u `input_hash`), fit u `ml/`
 - [ ] Simulator za populaciju: tipovi studenata iz raspodjele po seedu, student sa ručnim blokovima, metrike po tipu (prosjek i najgori decil), hladni start (2 sedmice), test pogrešnog priora (oporavak ≤ 3 sedmice); `baseline.json` i `--check` po tipu; `train.yml` gate na populaciji
 - [ ] Migracija: `profiles.study_barriers`; onboarding korak 3 „Šta te najviše koči?“ (do 3 čipa) i „Različito / ne znam“ uz „Kad ti je najlakše učiti?“; Postavke → Ritam; regenerisan `database.ts`

@@ -972,6 +972,7 @@ Zamjenjuje “Puni sadržaj materijala za asistenta” (Materijali, faza 3).
 - **Sažetak.** Po jedinici ili poglavlju, na zahtjev, keširan po hashu teksta. Kod deficita, za gradivo prioriteta 1–2, opcija “sažetak umjesto čitanja” uz manju procjenu vremena.
 - **Kartice iz gradiva.** AI predloži 5–15 kartica iz teksta jedinice, bilješki ili zalijepljenog teksta; pregled (zadrži / izmijeni / izbaci) pa postaju FSRS kartice jedinice (Sprint 10).
 - Tekst knjige je privatan sadržaj: ne ide na besplatne tierove (vidi Rotacija). Uslov: plaćeni model (Haiku) za ove zadatke.
+- **Odluka (22. nov 2026).** Sažetak se pravi samo na tap („Napravi sažetak“, Jedinica / Cijelo poglavlje) i čuva u `unit_summaries` dok je tekst isti. Koristi se na dva načina: „Koristi sažetak“ na početku sesije čitanja (sheet bloka ili u sesiji) za nepročitano poglavlje sa tekstom, i prijedlog kod deficita (kartica deficita → „Sažetak umjesto čitanja“, probni `plan()` kaže stiže li). Poglavlje učeno iz sažetka je „Pročitano (sažetak)“ (`units.read_via`) sa provjerom za 2 dana; čitanje u cijelosti skida oznaku. Procjena bloka sa sažetkom (`units.use_summary`, ulaz u `plan()`): 20% vremena čitanja dok sažetak ne postoji, pa dužina sažetka × tempo (3 min / 100 riječi), a tempo se uči iz sesija sa sažetkom (`session_units.summary_words`, isto skupljanje kao tempo čitanja). Obilježje u ML modelu trajanja dolazi u Sprintu 22. Dok je beta zatvorena, `LLM_PRIVATE_FREE=allow` pušta ove zadatke na Gemini radi testiranja; gasi se prije otvaranja (SETUP 6).
 
 ### AI tutor (Sprint 18)
 

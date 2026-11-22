@@ -190,6 +190,12 @@ Kad dođe Anthropic (sekcija 5): `LLM_PROVIDER=anthropic`, pa `npx supabase secr
 for f in ai-status parse-document documents answer parse-toc parse-questions link-questions recall-questions propose-answer find-academic-info find-toc classify-events; do npx supabase functions deploy $f; done
 ```
 
+**Sprint 18: tekst izvora (sažetak, kartice iz gradiva, tutor).** Šalju tekst knjige, pa su privatni zadaci: rade samo sa plaćenim modelom (`LLM_PROVIDER=anthropic`) ili dok je uključen beta prekidač `LLM_PRIVATE_FREE=allow` (zatvorena beta, testira samo vlasnik). `ai-status` vraća `private`, pa app bez toga pokaže „samo sa plaćenim modelom“ umjesto dugmeta. Deploy nove funkcije `material` (i `ai-status`, jer javlja `private`):
+```bash
+for f in material ai-status; do npx supabase functions deploy $f || break; done
+```
+Evali za sažetak i kartice (uz ostale): `GEMINI_API_KEY=… npm run eval`.
+
 Groq i OpenRouter (opcionalno, besplatni nalozi): console.groq.com → API Keys → Create; openrouter.ai → Keys → Create (modeli sa `:free`). Ključeve `npx supabase secrets set GROQ_API_KEY=… OPENROUTER_API_KEY=…` (preko `read -rs` kao u 5d). Model ide u `LLM_CHAIN` tek kad prođe eval (`EVAL_MODEL=groq:llama-3.3-70b-versatile GROQ_API_KEY=… npm run eval`) i kad je dodan u `EVALUATED_MODELS` u `chain.ts` (PR); model iz lanca koji nije na toj listi se preskače. Groq/OpenRouter ne primaju PDF ni web pretragu: takav poziv ide sljedećem modelu u lancu.
 
 **4. Edge funkcije** (Sprint 6: `parse-document`, `documents`, `answer`, `ai-status`; Sprint 11: `embed`, vektori jedinica, kartica i tema bez LLM-a; `parse-toc`, `parse-questions`, `link-questions`, `recall-questions`, `propose-answer`; slike sadržaja i stranica se brišu iz `uploads/<user_id>/import/` i `…/recall/` odmah poslije poziva):
@@ -385,7 +391,8 @@ Kod i baza su već spremni (svaka tabela ima `user_id` + RLS, profil se pravi au
    - **CAPTCHA.** Cloudflare → Turnstile → Add widget (domena app-a, mode Managed) → site key ide u `VITE_TURNSTILE_SITE_KEY` (Cloudflare Pages env), secret u Supabase → Authentication → Attack Protection → Enable CAPTCHA protection → Turnstile. Važi za sve prijave, pa i forma za email/lozinku šalje token.
    - **Rate limit anonimnih prijava.** Authentication → Rate Limits → „anonymous sign-ins per hour“ (default 30 po IP-u) ostaje dok nema problema.
    - **Čišćenje.** `pg_cron` posao iz migracije Sprinta 21 (sedmično, anonimni nalozi bez aktivnosti 30 dana); provjeri u Database → Cron Jobs da je aktivan.
-8. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Sprintu 6); anonimno najviše 5 poziva ukupno, samo uvoz (PRD „Prvo plan, pa prijava“), napomena o privatnosti (admin pregled i zajednički ML trening uz pristanak, PRD „Dopune, 2. nov 2026“ → Zajednički trening), demo nalog.
+8. **Beta prekidač za privatni AI.** Prije otvaranja: `npx supabase secrets unset LLM_PRIVATE_FREE` (uz `LLM_PROVIDER=anthropic`), da tekst knjige, bilješke i tutor drugih korisnika nikad ne idu na besplatni Gemini (PRD „Rotacija besplatnih AI-eva“).
+9. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Sprintu 6); anonimno najviše 5 poziva ukupno, samo uvoz (PRD „Prvo plan, pa prijava“), napomena o privatnosti (admin pregled i zajednički ML trening uz pristanak, PRD „Dopune, 2. nov 2026“ → Zajednički trening), demo nalog.
 
 Besplatna alternativa bez domene: Gmail SMTP sa app passwordom (radi za bilo koji email, ~500 dnevno, ali šalje sa lične Gmail adrese).
 
