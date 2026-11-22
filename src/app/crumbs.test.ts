@@ -26,6 +26,13 @@ describe('crumbsFor', () => {
     ])
   })
 
+  it('summary and cards of a unit go back to the unit', () => {
+    expect(path('/subjects/s1/sources/src1/units/u1/summary').slice(-2)).toEqual([
+      '3.1 Uvod@/subjects/s1/sources/src1/units/u1',
+      'summary.title@/subjects/s1/sources/src1/units/u1/summary',
+    ])
+  })
+
   it('falls back to a generic name while a record is not loaded', () => {
     expect(path('/subjects/x/sources/y')).toEqual([
       'nav.subjects@/subjects',
