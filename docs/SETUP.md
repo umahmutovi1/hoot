@@ -194,6 +194,10 @@ for f in ai-status parse-document documents answer parse-toc parse-questions lin
 ```bash
 for f in material ai-status; do npx supabase functions deploy $f || break; done
 ```
+Tutor (Sprint 18, ista pravila za plaćeni model):
+```bash
+npx supabase functions deploy tutor
+```
 Evali za sažetak i kartice (uz ostale): `GEMINI_API_KEY=… npm run eval`.
 
 Groq i OpenRouter (opcionalno, besplatni nalozi): console.groq.com → API Keys → Create; openrouter.ai → Keys → Create (modeli sa `:free`). Ključeve `npx supabase secrets set GROQ_API_KEY=… OPENROUTER_API_KEY=…` (preko `read -rs` kao u 5d). Model ide u `LLM_CHAIN` tek kad prođe eval (`EVAL_MODEL=groq:llama-3.3-70b-versatile GROQ_API_KEY=… npm run eval`) i kad je dodan u `EVALUATED_MODELS` u `chain.ts` (PR); model iz lanca koji nije na toj listi se preskače. Groq/OpenRouter ne primaju PDF ni web pretragu: takav poziv ide sljedećem modelu u lancu.

@@ -404,7 +404,7 @@ PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model
 - [ ] Tekst izvora: PDF (uređaj ili Drive) → tekst po jedinici prema rasponu stranica, `source_chunks` sa embeddings; original se ne čuva; poruka za skenirani PDF
 - [x] Sažetak jedinice / poglavlja (keš po hashu teksta); opcija „sažetak umjesto čitanja“ kod deficita za prioritet 1–2 i „Koristi sažetak“ na početku sesije; procjena 20% čitanja → dužina sažetka → naučeni tempo iz sesija (`summary_words`)
 - [x] Kartice iz gradiva: AI prijedlog 5–15 kartica iz teksta, bilješki ili zalijepljenog teksta → pregled → FSRS kartice
-- [ ] Tutor: ulazi iz bloka, sesije i jedinice; načini Objasni (citat stranice), Ispitaj me, Usmeni, Feynman; isti izbor pitanja kao recall gate; ocjene u `review_logs` i `levelAfter()`; vrijeme kao sesija (način `tutor`); mockup prije koda
+- [x] Tutor: ulazi iz bloka, sesije i jedinice; načini Objasni (citat stranice), Ispitaj me, Usmeni, Feynman; isti izbor pitanja kao recall gate; ocjene u `review_logs` i `levelAfter()`; vrijeme kao sesija (`study_segments.kind = 'tutor'`); po Tutor* boardovima (Usmeni sa glasom u stavci Glas)
 - [ ] Glas: edge funkcija `voice` (ElevenLabs TTS bs/en, Scribe STT), budžet free tiera iz `ai_runs`, rezerva Web Speech API
 - [ ] Asistent na Danas ostaje za plan i dokumente; pitanja o gradivu vode u tutora
 - **DoD** → `v0.18.0`
