@@ -31,6 +31,7 @@ import {
   type UnitPatch,
 } from './api'
 import { CardsSection } from './CardsSection'
+import { UnitStudyRows } from './UnitStudyRows'
 import { formatDuration, pagesLabel, STATUS_CHIP, statusLabel } from './format'
 import {
   asProgress,
@@ -292,6 +293,14 @@ function UnitDetail({
         onSave={(notes) => patch({ notes: notes || null })}
       />
       <CardsSection unitId={unit.id} />
+      {!unit.archived_at && (
+        <UnitStudyRows
+          unit={unit}
+          subUnitIds={children.map((c) => c.id)}
+          base={`/subjects/${subject.id}/sources/${source.id}/units/${unit.id}`}
+          readingMinutes={estimate?.minutes}
+        />
+      )}
       {!unit.archived_at && (
         <Link
           to={gateUrl}

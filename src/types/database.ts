@@ -1864,6 +1864,7 @@ export type Database = {
           minutes: number
           recall_skipped: boolean
           session_id: string
+          summary_words: number | null
           unit_id: string
           user_id: string
         }
@@ -1875,6 +1876,7 @@ export type Database = {
           minutes: number
           recall_skipped?: boolean
           session_id: string
+          summary_words?: number | null
           unit_id: string
           user_id?: string
         }
@@ -1886,6 +1888,7 @@ export type Database = {
           minutes?: number
           recall_skipped?: boolean
           session_id?: string
+          summary_words?: number | null
           unit_id?: string
           user_id?: string
         }
@@ -2105,6 +2108,7 @@ export type Database = {
         Row: {
           ended_at: string | null
           id: string
+          kind: string
           session_id: string
           started_at: string
           unit_id: string | null
@@ -2113,6 +2117,7 @@ export type Database = {
         Insert: {
           ended_at?: string | null
           id?: string
+          kind?: string
           session_id: string
           started_at: string
           unit_id?: string | null
@@ -2121,6 +2126,7 @@ export type Database = {
         Update: {
           ended_at?: string | null
           id?: string
+          kind?: string
           session_id?: string
           started_at?: string
           unit_id?: string | null
@@ -2475,6 +2481,50 @@ export type Database = {
           },
         ]
       }
+      unit_summaries: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          scope: string
+          text_hash: string
+          unit_id: string
+          updated_at: string
+          user_id: string
+          words: number
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          id?: string
+          scope: string
+          text_hash: string
+          unit_id: string
+          updated_at?: string
+          user_id?: string
+          words: number
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          scope?: string
+          text_hash?: string
+          unit_id?: string
+          updated_at?: string
+          user_id?: string
+          words?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_summaries_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unit_topics: {
         Row: {
           assigned_by: Database["public"]["Enums"]["assigned_by"]
@@ -2540,10 +2590,12 @@ export type Database = {
           parent_id: string | null
           position: number
           read_amount: number | null
+          read_via: string | null
           review_streak: number
           source_id: string
           title: string
           updated_at: string
+          use_summary: boolean
           user_difficulty: number | null
           user_id: string
         }
@@ -2575,10 +2627,12 @@ export type Database = {
           parent_id?: string | null
           position: number
           read_amount?: number | null
+          read_via?: string | null
           review_streak?: number
           source_id: string
           title: string
           updated_at?: string
+          use_summary?: boolean
           user_difficulty?: number | null
           user_id?: string
         }
@@ -2610,10 +2664,12 @@ export type Database = {
           parent_id?: string | null
           position?: number
           read_amount?: number | null
+          read_via?: string | null
           review_streak?: number
           source_id?: string
           title?: string
           updated_at?: string
+          use_summary?: boolean
           user_difficulty?: number | null
           user_id?: string
         }
@@ -2726,6 +2782,9 @@ export type Database = {
         | "parse_study_program"
         | "find_toc"
         | "fetch_document"
+        | "unit_summary"
+        | "material_cards"
+        | "tutor"
       assessment_kind: "partial" | "final" | "integral" | "makeup" | "other"
       assigned_by: "ai" | "user"
       block_kind: "learn" | "review" | "questions" | "recap" | "deadline"
@@ -2741,6 +2800,7 @@ export type Database = {
         | "card"
         | "page_photo"
         | "general"
+        | "source_text"
       source_kind: "book" | "script" | "questions" | "slides" | "other"
       study_mode: "reading" | "problems" | "review" | "questions"
       unit_kind: "chapter" | "question"
@@ -2893,6 +2953,9 @@ export const Constants = {
         "parse_study_program",
         "find_toc",
         "fetch_document",
+        "unit_summary",
+        "material_cards",
+        "tutor",
       ],
       assessment_kind: ["partial", "final", "integral", "makeup", "other"],
       assigned_by: ["ai", "user"],
@@ -2909,6 +2972,7 @@ export const Constants = {
         "card",
         "page_photo",
         "general",
+        "source_text",
       ],
       source_kind: ["book", "script", "questions", "slides", "other"],
       study_mode: ["reading", "problems", "review", "questions"],

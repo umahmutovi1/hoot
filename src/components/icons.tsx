@@ -156,6 +156,12 @@ export const UndoIcon = (p: IconProps) => (
     <path d="M3 3v1.3c0 2.2 0 3.3.7 3.9.7.6 1.8.4 4 0L9 8" />
   </Icon>
 )
+export const RefreshIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M20 11a8 8 0 0 0-14.6-4.5M4 13a8 8 0 0 0 14.6 4.5" />
+    <path d="M5 3v3.5h3.5M19 21v-3.5h-3.5" />
+  </Icon>
+)
 export const ClockIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="8" />

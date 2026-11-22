@@ -1887,7 +1887,8 @@
       "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
       "link": "Ovaj link ne mogu otvoriti. Provjeri da je javan (bez prijave) i da vodi do PDF-a, slike ili stranice.",
       "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h).",
-      "needs_paid": "Ovo AI radi samo sa plaćenim modelom: tvoj tekst nikad ne ide na besplatne servise."
+      "needs_paid": "Ovo AI radi samo sa plaćenim modelom: tvoj tekst nikad ne ide na besplatne servise.",
+      "no_text": "Ova jedinica još nema tekst izvora. Dodaj PDF na izvoru."
     },
     "document": {
       "stored": "Spremila sam „{{title}}“ u Dokumente.",
@@ -3401,5 +3402,90 @@
     "rowNeeds": "za {{grade}} treba još {{points}}",
     "or": "ili",
     "gradesSpan": "{{low}} do {{high}}"
+  },
+  "summary": {
+    "instead": {
+      "tag": "Deficit",
+      "title": "Ne stižeš sve pročitati",
+      "how": "Kako dalje",
+      "body_one": "Do ispita iz predmeta {{subject}} ostaje {{days}} dana, a {{count}} poglavlje je nepročitano. Za ovaj predmet je dovoljno proći, pa sažetak može zamijeniti čitanje.",
+      "body_few": "Do ispita iz predmeta {{subject}} ostaje {{days}} dana, a {{count}} poglavlja su nepročitana. Za ovaj predmet je dovoljno proći, pa sažetak može zamijeniti čitanje.",
+      "body_other": "Do ispita iz predmeta {{subject}} ostaje {{days}} dana, a {{count}} poglavlja je nepročitano. Za ovaj predmet je dovoljno proći, pa sažetak može zamijeniti čitanje.",
+      "read": "Pročitaj cijelo",
+      "readSub": "{{time}} · ne stiže do ispita",
+      "use": "Sažetak umjesto čitanja",
+      "useFits": "{{time}} · stiže do ispita",
+      "useShort": "{{time}} · i dalje fali {{short}}",
+      "hint": "Ta poglavlja se označe „Pročitano (sažetak)“, a prva provjera dolazi za 2 dana. Poglavlja možeš pročitati kad ti ostane vremena.",
+      "apply": "Koristi sažetke",
+      "keep": "Ostavi plan kako jeste",
+      "open": "Sažetak umjesto čitanja",
+      "done_one": "{{count}} poglavlje ide kroz sažetak",
+      "done_few": "{{count}} poglavlja idu kroz sažetak",
+      "done_other": "{{count}} poglavlja ide kroz sažetak",
+      "short": "{{time}} umjesto {{reading}}"
+    },
+    "title": "Sažetak",
+    "refresh": "Osvježi sažetak",
+    "scope": "Opseg sažetka",
+    "scopes": {
+      "unit": "Jedinica",
+      "chapter": "Cijelo poglavlje"
+    },
+    "aiTag": "AI sažetak",
+    "page": "str. {{page}}",
+    "formula": "Formula koju treba znati",
+    "made": "Napravljen {{when}} iz teksta izvora. Ostaje isti dok se tekst ne promijeni.",
+    "notReplacing": "Sažetak ne zamjenjuje čitanje za ispit. Provjera će pokazati šta ti je ostalo nejasno.",
+    "toCards": "Napravi kartice iz ovoga",
+    "check": "Provjeri se",
+    "emptyTitle": "Sažetak još nije napravljen",
+    "emptyBody": "Hoot ga pravi iz teksta izvora, sa stranicom uz svaku ideju. Ostaje spašen dok se tekst ne promijeni.",
+    "make": "Napravi sažetak",
+    "making": "Pravim sažetak…",
+    "readVia": "Pročitano (sažetak)",
+    "useSummary": "Koristi sažetak",
+    "useSummarySub": "{{time}} umjesto {{reading}}",
+    "planned": "U planu: sažetak umjesto čitanja",
+    "readFull": "Pročitaj cijelo",
+    "unitRows": {
+      "title": "Iz teksta izvora",
+      "summary": "Sažetak",
+      "summarySub": "Ključne ideje sa stranicama",
+      "summaryMade": "{{time}} umjesto {{reading}}",
+      "cards": "Kartice iz gradiva",
+      "cardsSub": "AI predlaže 5 do 15"
+    },
+    "useSummaryHint": "Učiš iz sažetka umjesto da čitaš stranice"
+  },
+  "materialCards": {
+    "title": "Kartice iz gradiva",
+    "sub": "Prijedlog za {{unit}}",
+    "from": "Iz čega",
+    "sources": {
+      "text": "Tekst jedinice",
+      "notes": "Bilješke",
+      "pasted": "Zalijepi tekst"
+    },
+    "pastePlaceholder": "Zalijepi tekst poglavlja ili odlomka",
+    "propose": "Predloži kartice",
+    "proposing": "Pravim kartice…",
+    "kept": "{{kept}} od {{total}} kartica ostaje",
+    "range": "AI predlaže 5 do 15",
+    "keep": "zadrži",
+    "dropped": "izbačeno",
+    "drop": "Izbaci",
+    "restore": "Vrati",
+    "edit": "Izmijeni",
+    "add_one": "Dodaj {{count}} karticu",
+    "add_few": "Dodaj {{count}} kartice",
+    "add_other": "Dodaj {{count}} kartica",
+    "addHint": "Postaju kartice ove jedinice, prvo ponavljanje sutra",
+    "added_one": "Dodana {{count}} kartica",
+    "added_few": "Dodane {{count}} kartice",
+    "added_other": "Dodano {{count}} kartica",
+    "noNotes": "Ova jedinica nema bilješki.",
+    "front": "Pitanje",
+    "back": "Odgovor"
   }
 }

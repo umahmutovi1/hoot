@@ -23,6 +23,7 @@ export { LATE_AFTER_MIN, shiftRestOfDay, type ShiftBlock, type ShiftResult } fro
 export { canonicalJson, hashString, inputHash, seededRandom, seedOf } from './hash'
 export { remainingWork, type RemainingWork } from './plan'
 export { isConditional, priorityFromGoal, type SubjectGoal } from './goal'
+export { SUMMARY_OFFER_MAX_PRIORITY, summaryOffer, type SummaryOffer } from './summaryOffer'
 export { pickForTime, type Pick, type PickBlock, type PickInput, type PickReview } from './pick'
 export {
   addPerDay,

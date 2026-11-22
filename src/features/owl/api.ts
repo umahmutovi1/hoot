@@ -132,7 +132,12 @@ export function useAiAvailability() {
       : status.isError
         ? 'disabled'
         : 'loading'
-  return { state, remaining: status.data?.remaining ?? null }
+  return {
+    state,
+    remaining: status.data?.remaining ?? null,
+    /** Book-text AI (summary, cards, tutor) can run; false = "needs the paid model". */
+    canPrivate: status.data?.private !== false,
+  }
 }
 
 export const documentsKey = (userId: string | undefined) => ['documents', userId] as const

@@ -313,6 +313,7 @@ export function useStartBlock() {
   const { suggestedId } = usePresets()
   const setTimerMode = useSessionUi((s) => s.setTimerMode)
   const setCheck = useSessionUi((s) => s.setCheck)
+  const setSummary = useSessionUi((s) => s.setSummary)
   const shiftLate = useShiftLateDay()
   return useCallback(
     async (
@@ -328,6 +329,8 @@ export function useStartBlock() {
         timerMode?: string
         /** Units of a knowledge check (default: the block's). */
         checkUnits?: string[]
+        /** Units studied through their summary in this session ("Koristi sažetak"). */
+        summaryUnits?: string[]
       } = {},
     ) => {
       const timerMode = opts.timerMode ?? suggestedId
@@ -343,6 +346,9 @@ export function useStartBlock() {
         plannedMinutes: minutes,
       })
       setTimerMode(timerMode)
+      setSummary(
+        sessionId && opts.summaryUnits?.length ? { sessionId, unitIds: opts.summaryUnits } : null,
+      )
       // A review block is a series of recall gates (Provjera znanja), timed like any session.
       if (block.kind === 'review' && sessionId) {
         setCheck({
@@ -352,7 +358,7 @@ export function useStartBlock() {
         navigate('/session/review')
       } else navigate('/session')
     },
-    [writer, suggestedId, setTimerMode, setCheck, navigate, shiftLate],
+    [writer, suggestedId, setTimerMode, setCheck, setSummary, navigate, shiftLate],
   )
 }
 

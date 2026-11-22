@@ -95,6 +95,8 @@ const unit = (id: string, position: number, patch: Partial<Unit> = {}): Unit => 
   fsrs_lapses: 0,
   review_streak: 0,
   read_amount: null,
+  use_summary: false,
+  read_via: null,
   last_review_at: null,
   created_at: '',
   updated_at: '',

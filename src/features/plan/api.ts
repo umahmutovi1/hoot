@@ -18,6 +18,7 @@ import { fitCompletion } from '@/lib/slots/completion'
 import { completionExamples, type ExampleBlock, type ExampleSkip } from '@/lib/slots/examples'
 import { SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
 import { supabase } from '@/lib/supabase'
+import { summaryInputsKey, useSummaryInputs } from '@/features/sources/summaryApi'
 import type { CardReview, PlanBlockRow, PlanInputs, SessionMinutes } from './state'
 
 // Plan data: every source, scope row and topic link of the user (the plan spans subjects), the
@@ -282,6 +283,7 @@ export function invalidatePlanInputs(queryClient: QueryClient, userId: string | 
     queryClient.invalidateQueries({ queryKey: topicLinksKey(userId) }),
     queryClient.invalidateQueries({ queryKey: questionLinksKey(userId) }),
     queryClient.invalidateQueries({ queryKey: cardReviewsKey(userId) }),
+    queryClient.invalidateQueries({ queryKey: summaryInputsKey(userId) }),
   ])
 }
 
@@ -326,6 +328,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
   )
   const schedule = useScheduleData()
   const energy = useDayEnergy().data
+  const summaries = useSummaryInputs().data
 
   // The personal completion posterior (a few ms of Newton steps): refitted only when its blocks,
   // sessions or the onboarding parts change.
@@ -367,7 +370,8 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       !cards ||
       !blocks ||
       !sessionList ||
-      !energy
+      !energy ||
+      !summaries
     )
       return null
     const sessions: SessionMinutes[] = sessionList
@@ -405,6 +409,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       feedback,
       shiftBlocks: shiftHistory.data,
       signals,
+      summaries,
       profile,
       subjects,
       deadlines,
@@ -425,6 +430,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
     feedback,
     shiftHistory.data,
     energy,
+    summaries,
     completion,
     profile,
     subjects,

@@ -11,6 +11,7 @@ import { useSubscriptions } from '@/features/notify/api'
 import { useProfile } from '@/features/settings/profile'
 import { useSources } from '@/features/sources/api'
 import { pagesLabel } from '@/features/sources/format'
+import { SessionSummary } from './SessionSummary'
 import { useSubject } from '@/features/subjects/api'
 import {
   activeMs,
@@ -293,6 +294,7 @@ export function SessionPage() {
           {t('session.units.other')}
         </button>
       </div>
+      <SessionSummary sessionId={session.id} unit={picked?.unit ?? null} />
       {pickedId && <LinkedQuestionsOffer unitId={pickedId} />}
       {pickedId && <SessionQuizOffer unitId={pickedId} />}
 

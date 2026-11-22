@@ -610,6 +610,111 @@ export const proposeAnswerOutputSchema = z.object({
 export type ProposeAnswerOutput = z.infer<typeof proposeAnswerOutputSchema>
 
 // ---------------------------------------------------------------------------
+// material: summary and cards from the source text (Sprint 18, paid model only)
+// ---------------------------------------------------------------------------
+
+/** A summary of one unit, or of the unit with its sub-units ("Cijelo poglavlje"). */
+export const SUMMARY_SCOPES = ['unit', 'chapter'] as const
+export type SummaryScope = (typeof SUMMARY_SCOPES)[number]
+
+/** Where proposed cards come from ("Tekst jedinice / Bilješke / Zalijepi tekst"). */
+export const CARD_SOURCES = ['text', 'notes', 'pasted'] as const
+export type CardSource = (typeof CARD_SOURCES)[number]
+
+/** PRD: the AI proposes 5–15 cards. */
+export const MIN_MATERIAL_CARDS = 5
+export const MAX_MATERIAL_CARDS = 15
+
+/** Source text sent per call: a chapter of ~20 pages, small enough for Haiku's budget. */
+export const MAX_MATERIAL_CHARS = 60000
+
+export const materialRequestSchema = z.discriminatedUnion('op', [
+  z.object({
+    op: z.literal('summary'),
+    unit_id: z.uuid(),
+    scope: z.enum(SUMMARY_SCOPES),
+    locale: localeSchema,
+    /** "Osvježi sažetak": make it again although the text is the same. */
+    refresh: z.boolean().optional(),
+  }),
+  z
+    .object({
+      op: z.literal('cards'),
+      unit_id: z.uuid(),
+      from: z.enum(CARD_SOURCES),
+      locale: localeSchema,
+      text: z.string().trim().min(1).max(MAX_PASTED_CHARS).optional(),
+    })
+    .refine((r) => (r.from === 'pasted') === (r.text !== undefined), {
+      message: 'text only with pasted',
+    }),
+])
+export type MaterialRequest = z.infer<typeof materialRequestSchema>
+
+const pageSchema = z
+  .int()
+  .nullable()
+  .describe('The book page the point comes from ([p. N] markers in the text); null if unknown')
+
+export const summaryOutputSchema = z.object({
+  points: z
+    .array(
+      z.object({
+        text: z.string().min(1).describe('One key idea in one or two sentences'),
+        page: pageSchema,
+      }),
+    )
+    .describe('4 to 8 key ideas in the order of the text'),
+  formula: z
+    .object({
+      tex: z.string().min(1).describe('The one formula to know, LaTeX without $'),
+      page: pageSchema,
+    })
+    .nullable()
+    .describe('The most important formula, or null when the text has none'),
+})
+export type SummaryOutput = z.infer<typeof summaryOutputSchema>
+
+export interface SummaryContent {
+  points: { text: string; page: number | null }[]
+  formula: { tex: string; page: number | null } | null
+}
+
+export interface SummaryResponse {
+  id: string
+  unit_id: string
+  scope: SummaryScope
+  content: SummaryContent
+  words: number
+  created_at: string
+  /** False when it came from the cache (no AI call). */
+  fresh: boolean
+}
+
+export const materialCardsOutputSchema = z.object({
+  cards: z
+    .array(
+      z.object({
+        front: z.string().min(1).describe('A short question in the user language'),
+        back: z.string().min(1).describe('The answer, at most 2 sentences'),
+        page: pageSchema,
+      }),
+    )
+    .describe('5 to 15 cards, one idea each, in the order of the material'),
+})
+export type MaterialCardsOutput = z.infer<typeof materialCardsOutputSchema>
+
+export interface MaterialCard {
+  front: string
+  back: string
+  page: number | null
+}
+
+export interface MaterialCardsResponse {
+  cards: MaterialCard[]
+}
+
+// ---------------------------------------------------------------------------
 // embed (gte-small vectors of units, cards and topics; no LLM)
 // ---------------------------------------------------------------------------
 
@@ -751,6 +856,11 @@ export interface AiStatus {
   /** AI calls left in the rolling 24 h window. */
   remaining: number
   limit: number
+  /**
+   * Private tasks (book text: summary, cards, tutor) can run: the paid model, or the beta switch
+   * LLM_PRIVATE_FREE. Absent from an older function = unknown, treated as available.
+   */
+  private?: boolean
 }
 
 /** Error codes returned by Edge Functions as `{ error: code }`. */
@@ -767,6 +877,8 @@ export const AI_ERRORS = [
   'needs_paid',
   /** The daily limit of links downloaded by find-academic-info (`FETCH_DAILY_LIMIT`). */
   'fetch_limited',
+  /** Summary, cards or tutor from the text of a unit that has no source text (Sprint 18). */
+  'no_text',
 ] as const
 export type AiErrorCode = (typeof AI_ERRORS)[number]
 

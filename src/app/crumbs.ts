@@ -21,7 +21,7 @@ export interface CrumbNames {
  */
 export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Crumb[] {
   const parts = pathname.split('/').filter(Boolean)
-  const [first, second, third, fourth, fifth, sixth] = parts
+  const [first, second, third, fourth, fifth, sixth, seventh] = parts
   const today: Crumb = { label: t('nav.today'), to: '/' }
   const plan: Crumb = { label: t('nav.plan'), to: '/plan' }
   const subjects: Crumb = { label: t('nav.subjects'), to: '/subjects' }
@@ -92,8 +92,12 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
         if (fifth === 'edit') out.push({ label: t('crumbs.edit'), to: pathname })
         if (fifth === 'links') out.push({ label: t('links.title'), to: pathname })
         if (fifth === 'text') out.push({ label: t('sources.text.title'), to: pathname })
-        if (fifth === 'units' && sixth)
-          out.push({ label: names.unit(sixth) ?? t('crumbs.unit'), to: pathname })
+        if (fifth === 'units' && sixth) {
+          const unitTo = `${sourceTo}/units/${sixth}`
+          out.push({ label: names.unit(sixth) ?? t('crumbs.unit'), to: unitTo })
+          if (seventh === 'summary') out.push({ label: t('summary.title'), to: pathname })
+          if (seventh === 'cards') out.push({ label: t('materialCards.title'), to: pathname })
+        }
       }
       return out
     }

@@ -186,6 +186,17 @@ export const router = createBrowserRouter([
                 lazy: page(() => import('@/features/sources/UnitPage'), 'UnitPage'),
               },
               {
+                path: 'subjects/:id/sources/:sourceId/units/:unitId/summary',
+                lazy: page(() => import('@/features/sources/SummaryPage'), 'SummaryPage'),
+              },
+              {
+                path: 'subjects/:id/sources/:sourceId/units/:unitId/cards',
+                lazy: page(
+                  () => import('@/features/sources/MaterialCardsPage'),
+                  'MaterialCardsPage',
+                ),
+              },
+              {
                 path: 'subjects/:id/sources/:sourceId/text',
                 lazy: page(() => import('@/features/sources/SourceTextPage'), 'SourceTextPage'),
               },

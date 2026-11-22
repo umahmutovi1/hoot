@@ -10,6 +10,8 @@ import {
   type LocalDate,
 } from '@/lib/day'
 import { energyFactors, type EnergyFactors } from '@/lib/energy'
+import type { LearnedRate } from '@/lib/estimates/calibration'
+import { summaryMinutes } from '@/lib/estimates/summary'
 import { questionsByChapter } from '@/lib/questions/links'
 import { project, retakeStatus } from '@/lib/grades'
 import {
@@ -107,6 +109,27 @@ export interface PlanInputs {
    * blocks: the slot signals (Sprint 17) that nudge `placeTimes()`. Absent = no nudge.
    */
   signals?: { sessions: SignalSession[]; plannedStart: Map<string, string> }
+  /**
+   * "Sažetak umjesto čitanja" (Sprint 18): words of each unit's summary (scope `unit`) and the
+   * user's summary pace; units with `use_summary` are planned at the summary's time.
+   */
+  summaries?: { words: Map<string, number>; pace: LearnedRate }
+}
+
+/**
+ * Minutes the plan gives an unread unit: its summary's time when the user chose "Sažetak umjesto
+ * čitanja", otherwise the reading estimate. Once read, the estimate is the usual one.
+ */
+export function plannedMinutes(
+  u: { id: string; minutes: number; level: number; use_summary: boolean },
+  summaries: PlanInputs['summaries'],
+): number {
+  if (!u.use_summary || u.level > 0) return u.minutes
+  return summaryMinutes(
+    u.minutes,
+    summaries?.words.get(u.id) ?? null,
+    summaries?.pace ?? { rate: null, samples: 0 },
+  )
 }
 
 /** Longest planning horizon (days). */
@@ -345,7 +368,7 @@ export function buildPlanState(
         order: (sourceOrder.get(source.id) ?? 0) * 100000 + u.position,
         kind: u.kind === 'question' ? 'question' : 'chapter',
         level: u.level,
-        minutes: Math.round(u.minutes * 10) / 10,
+        minutes: Math.round(plannedMinutes(u, input.summaries) * 10) / 10,
         difficulty: Math.round(u.difficulty * 100) / 100,
         confidence: u.confidence,
         questionCount: 0,

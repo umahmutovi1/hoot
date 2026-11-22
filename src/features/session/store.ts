@@ -21,6 +21,9 @@ interface SessionUiState {
   /** A session started as a knowledge check (review block or a due check) and its units. */
   check: { sessionId: string; unitIds: string[] } | null
   setCheck: (check: { sessionId: string; unitIds: string[] } | null) => void
+  /** Units this session studies through their summary ("Koristi sažetak", Sprint 18). */
+  summary: { sessionId: string; unitIds: string[] } | null
+  setSummary: (summary: { sessionId: string; unitIds: string[] } | null) => void
 }
 
 export const useSessionUi = create<SessionUiState>()(
@@ -38,6 +41,8 @@ export const useSessionUi = create<SessionUiState>()(
       recalibrated: (id) => set((s) => ({ recalibrate: s.recalibrate.filter((x) => x !== id) })),
       check: null,
       setCheck: (check) => set({ check }),
+      summary: null,
+      setSummary: (summary) => set({ summary }),
     }),
     {
       name: 'hoot-session-ui',
@@ -48,6 +53,7 @@ export const useSessionUi = create<SessionUiState>()(
         keptSegmentId: s.keptSegmentId,
         recalibrate: s.recalibrate,
         check: s.check,
+        summary: s.summary,
       }),
     },
   ),
