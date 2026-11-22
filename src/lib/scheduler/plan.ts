@@ -58,6 +58,18 @@ import type {
  * last day before a goal is its deficit. Pure and deterministic.
  */
 
+/**
+ * Minutes of a day's capacity that learning keeps under the block rules: whole intervals, plus a
+ * remainder only when it is at least the minimum block (a shorter one is dropped unless the EDF
+ * guard needs it). The EDF guard counts future days this way, so a feasible state gets its
+ * remainders used early instead of ending with a deficit (fast-check seed 477998151).
+ */
+export function usableMinutes(cap: number, interval: number, minBlock: number): number {
+  if (cap < minBlock) return 0
+  const rest = cap % interval
+  return cap >= interval && rest < minBlock ? cap - rest : cap
+}
+
 /** Block rhythm on a low-energy day (PRD: "predložak 25/5 za taj dan"). */
 const LOW_ENERGY_PRESET = BUILT_IN_PRESETS.find((p) => p.id === 'pomodoro')!
 
@@ -736,7 +748,8 @@ function run(
           const next = own + add
           if (next >= poolMinutes(sid)) return true
           if (own === 0) return add >= minBlock
-          return next <= interval || next % interval === 0
+          // A remainder too short for its own block lengthens the last one (58 = 50 + 8).
+          return next <= interval || next % interval < minBlock
         }
         let gained = Math.min(lack, Math.max(0, spare))
         if (!keeps(gained)) gained = 0
@@ -816,7 +829,9 @@ function run(
       }
       const list = [...open.entries()].sort(([a, x], [b, y]) => y.last - x.last || (a < b ? -1 : 1))
       for (let j = state.days.length - 1; j > k; j--) {
-        let room = effCap[j]!
+        const iv =
+          state.days[j]!.energy === 'low' ? planIntervalMin(LOW_ENERGY_PRESET) : baseInterval
+        let room = usableMinutes(effCap[j]!, iv, minBlock)
         for (const [, g] of list) {
           if (room <= 0) break
           if (g.left <= 0 || g.last < j || g.first > j || blockedFor(state.days[j]!.date, g.sid))

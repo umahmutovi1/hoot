@@ -152,8 +152,9 @@ describe('plan: goals', () => {
     const s = oneSubject({}, 20, 60, 3)
     const r = plan(s)
     expect(r.deficits).toHaveLength(1)
-    // 2 learning days (exam on day 3, buffer 1) of 216 min, 90% of 1200 min required.
-    expect(r.deficits[0]!.minutes).toBe(Math.round(0.9 * 1200) - 2 * 200)
+    // 2 learning days (exam on day 3, buffer 1) of 216 min, 90% of 1200 min required. Work that
+    // does not fit uses the whole day: the 16 min past four intervals lengthen the last block.
+    expect(r.deficits[0]!.minutes).toBe(Math.round(0.9 * 1200) - 2 * 216)
     expect(r.deficits[0]!.lastDay).toBe(day(1))
   })
 
@@ -318,8 +319,11 @@ describe('plan: priority and coverage', () => {
     const s = oneSubject({}, 10, 60, 3)
     s.subjects = [subject('a', { priority: 1 })]
     const r = plan(s)
-    // 70% of 600 min required, 2 days × 200 planned.
-    expect(r.deficits[0]!.minutes).toBe(420 - 400)
+    // 70% of 600 min required fits 2 days × 216; the other 180 min (full coverage would be
+    // 168 short) are optional, so there is no deficit.
+    expect(r.deficits).toEqual([])
+    const p5 = oneSubject({}, 10, 60, 3)
+    expect(plan(p5).deficits[0]!.minutes).toBe(Math.round(0.9 * 600) - 432)
   })
 
   it('target grade raises coverage to the needed share + 10 p.p.', () => {
