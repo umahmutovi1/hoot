@@ -297,6 +297,15 @@ export function SessionPage() {
       <SessionSummary sessionId={session.id} unit={picked?.unit ?? null} />
       {pickedId && <LinkedQuestionsOffer unitId={pickedId} />}
       {pickedId && <SessionQuizOffer unitId={pickedId} />}
+      {pickedId && picked?.unit.kind === 'chapter' && (
+        <Link
+          to={`/tutor/${pickedId}`}
+          className="flex flex-col items-center justify-center gap-0.5 rounded-[18px] bg-subject-lavender-soft py-2.5 text-subject-lavender-ink"
+        >
+          <span className="text-[15px] font-bold">{t('tutor.entry.ask')}</span>
+          <span className="text-xs">{t('tutor.entry.askSub')}</span>
+        </Link>
+      )}
 
       <button
         type="button"

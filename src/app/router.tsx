@@ -190,6 +190,35 @@ export const router = createBrowserRouter([
                 lazy: page(() => import('@/features/sources/SummaryPage'), 'SummaryPage'),
               },
               {
+                // AI tutor (Sprint 18): one layout keeps the tutor's session time across modes.
+                path: 'tutor/:unitId',
+                lazy: page(() => import('@/features/tutor/TutorLayout'), 'TutorLayout'),
+                children: [
+                  {
+                    index: true,
+                    lazy: page(() => import('@/features/tutor/TutorModesPage'), 'TutorModesPage'),
+                  },
+                  {
+                    path: 'explain',
+                    lazy: page(
+                      () => import('@/features/tutor/TutorExplainPage'),
+                      'TutorExplainPage',
+                    ),
+                  },
+                  {
+                    path: 'quiz',
+                    lazy: page(() => import('@/features/tutor/TutorQuizPage'), 'TutorQuizPage'),
+                  },
+                  {
+                    path: 'feynman',
+                    lazy: page(
+                      () => import('@/features/tutor/TutorFeynmanPage'),
+                      'TutorFeynmanPage',
+                    ),
+                  },
+                ],
+              },
+              {
                 path: 'subjects/:id/sources/:sourceId/units/:unitId/cards',
                 lazy: page(
                   () => import('@/features/sources/MaterialCardsPage'),

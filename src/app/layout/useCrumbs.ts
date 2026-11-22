@@ -31,6 +31,10 @@ export function useCrumbs() {
             ? `${unit.label} ${unit.title}`
             : unit.title
         },
+        unitPath: (id) => {
+          const source = sources?.find((s) => s.units.some((u) => u.id === id))
+          return source ? { subjectId: source.subject_id, sourceId: source.id } : undefined
+        },
         document: (id) => documents?.find((d) => d.id === id)?.title,
         session: (id) => {
           const s = sessions?.find((x) => x.id === id)

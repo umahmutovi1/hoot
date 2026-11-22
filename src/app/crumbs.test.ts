@@ -9,6 +9,7 @@ const names: CrumbNames = {
   unit: (id) => (id === 'u1' ? '3.1 Uvod' : undefined),
   document: () => 'Kalendar 2026',
   session: () => 'čet, 22. okt',
+  unitPath: (id) => (id === 'u1' ? { subjectId: 's1', sourceId: 'src1' } : undefined),
 }
 const path = (p: string) => crumbsFor(p, t, names).map((c) => `${c.label}@${c.to}`)
 
@@ -26,10 +27,15 @@ describe('crumbsFor', () => {
     ])
   })
 
-  it('summary and cards of a unit go back to the unit', () => {
+  it('summary, cards and tutor of a unit go back to the unit', () => {
     expect(path('/subjects/s1/sources/src1/units/u1/summary').slice(-2)).toEqual([
       '3.1 Uvod@/subjects/s1/sources/src1/units/u1',
       'summary.title@/subjects/s1/sources/src1/units/u1/summary',
+    ])
+    expect(path('/tutor/u1/quiz')).toEqual([
+      '3.1 Uvod@/subjects/s1/sources/src1/units/u1',
+      'tutor.title@/tutor/u1',
+      'tutor.modes.quiz@/tutor/u1/quiz',
     ])
   })
 
