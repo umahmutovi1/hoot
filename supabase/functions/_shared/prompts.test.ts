@@ -186,6 +186,7 @@ describe('answer', () => {
     const r = answerRequest(req, passages)
     expect(r.system).toContain('never claim you did')
     expect(r.system).toContain('import_document')
+    expect(r.system).toContain('tutor: a question about the study material')
   })
 
   it('drops an action that lacks what it needs', () => {
@@ -198,6 +199,14 @@ describe('answer', () => {
     expect(
       normalizeAction({ ...base, action: 'import_document', action_text: null }),
     ).toMatchObject({ action: 'none' })
+    expect(normalizeAction({ ...base, action: 'tutor', action_text: null })).toMatchObject({
+      action: 'none',
+    })
+    expect(normalizeAction({ ...base, action: 'tutor', action_text: 'Fourierov red' })).toEqual({
+      action: 'tutor',
+      action_text: 'Fourierov red',
+      import_kind: null,
+    })
     expect(normalizeAction({ ...base, action: 'search_notes', action_text: ' Fourier ' })).toEqual({
       action: 'search_notes',
       action_text: 'Fourier',

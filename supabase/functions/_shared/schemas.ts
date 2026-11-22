@@ -906,6 +906,8 @@ export const OWL_ACTIONS = [
   'add_timetable',
   'add_contents',
   'import_document',
+  /** Sprint 18: a question about the material goes to the tutor (it answers from the book). */
+  'tutor',
 ] as const
 export type OwlActionKind = (typeof OWL_ACTIONS)[number]
 export const REIMPORT_KINDS = ['academic_calendar', 'exam_schedule', 'timetable'] as const
@@ -929,7 +931,7 @@ export const answerOutputSchema = z.object({
     .string()
     .nullable()
     .describe(
-      'search_notes: what to look for; quiz: the chapter title; add_contents: the subject name; else null',
+      'search_notes: what to look for; quiz and tutor: the chapter title; add_contents: the subject name; else null',
     ),
   import_kind: z
     .enum(REIMPORT_KINDS)

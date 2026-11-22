@@ -1921,7 +1921,10 @@
       "timetable": "Give the class timetable",
       "contents": "Add contents or questions",
       "contentsFor": "Add contents · {{subject}}",
-      "giveDocument": "Give a document"
+      "giveDocument": "Give a document",
+      "openTutor": "Open the tutor",
+      "tutorNone": "I can't find the chapter “{{text}}” in your sources. Open the unit in Subjects and start the tutor there.",
+      "tutorStays": "The assistant stays for your plan, documents and schedule changes."
     },
     "syllabus": {
       "books_one": "{{count}} book",

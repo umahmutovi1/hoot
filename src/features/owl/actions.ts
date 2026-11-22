@@ -647,6 +647,8 @@ async function actionFor(res: AnswerResponse): Promise<OwlAction | null> {
         : null
     case 'quiz':
       return res.action_text ? { kind: 'quiz', text: res.action_text } : null
+    case 'tutor':
+      return res.action_text ? { kind: 'tutor', text: res.action_text } : null
     case 'add_timetable':
       return { kind: 'add_timetable' }
     case 'add_contents':

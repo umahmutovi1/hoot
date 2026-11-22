@@ -1997,7 +1997,10 @@
       "timetable": "Daj raspored nastave",
       "contents": "Dodaj sadržaj ili pitanja",
       "contentsFor": "Dodaj sadržaj · {{subject}}",
-      "giveDocument": "Daj dokument"
+      "giveDocument": "Daj dokument",
+      "openTutor": "Otvori tutora",
+      "tutorNone": "Ne nalazim poglavlje „{{text}}“ u tvojim izvorima. Otvori jedinicu u Predmetima i tamo pokreni tutora.",
+      "tutorStays": "Asistent ostaje za plan, dokumente i promjene u rasporedu."
     },
     "syllabus": {
       "books_one": "{{count}} knjiga",
