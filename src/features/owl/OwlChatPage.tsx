@@ -15,11 +15,14 @@ import { ImportCard } from './ImportCard'
 import { ShareReceiver } from './ShareReceiver'
 import { useOwlStore, type OwlMessage, type StateRef } from './store'
 import { useOwl } from './useOwl'
+import { MicButton } from '@/features/voice/Dictation'
+import { useSpeech } from '@/features/voice/useSpeech'
 
 /** The assistant in the AI tab (Chat.dc.html): conversation, suggestions and the document +. */
 export function OwlChatPage() {
   const { t } = useTranslation()
   const messages = useOwlStore((s) => s.messages)
+  useReadAnswers(messages)
   const busy = useOwlStore((s) => s.busy)
   // The chat shows how a reading ended, so the banner outside it has nothing left to say.
   const jobEnded = useOwlStore((s) => s.job !== null && s.job.status !== 'running')
@@ -144,6 +147,7 @@ export function OwlChatPage() {
             aria-label={t('owl.ask')}
             className="h-11 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink-subtle"
           />
+          {enabled && !busy && <MicButton readAloudSwitch onText={(text) => void owl.ask(text)} />}
           <button
             type="submit"
             disabled={!enabled || busy || !question.trim()}
@@ -158,6 +162,27 @@ export function OwlChatPage() {
       <ShareReceiver />
     </div>
   )
+}
+
+/**
+ * "Odgovori naglas" (board "AI chat · D Glas"): an answer that finished while the chat is open is
+ * read aloud, in English only. Answers already on screen when the chat opens are not.
+ */
+function useReadAnswers(messages: OwlMessage[]) {
+  const speech = useSpeech()
+  const seen = useRef<string | null | undefined>(undefined)
+  const last = messages.at(-1)
+  const ready = last?.role === 'owl' && last.type === 'answer' && !last.streaming ? last : null
+  const { speak, available } = speech
+  useEffect(() => {
+    if (seen.current === undefined) {
+      seen.current = ready?.id ?? null
+      return
+    }
+    if (!ready || ready.id === seen.current) return
+    seen.current = ready.id
+    if (available) speak(ready.text)
+  }, [ready, speak, available])
 }
 
 function OwlBubble({ children }: { children: React.ReactNode }) {

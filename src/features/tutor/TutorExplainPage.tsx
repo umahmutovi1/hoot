@@ -7,6 +7,8 @@ import { SendIcon } from '@/components/icons'
 import { ScreenTitle } from '@/components/ScreenTitle'
 import { AiCallError } from '@/features/owl/api'
 import { PageChip } from '@/features/sources/SummaryView'
+import { MicButton } from '@/features/voice/Dictation'
+import { useSpeech } from '@/features/voice/useSpeech'
 import { useExplain } from './api'
 import { useTutor } from './context'
 
@@ -23,6 +25,7 @@ export function TutorExplainPage() {
   const ctx = useTutor()
   const { t } = useTranslation()
   const explain = useExplain()
+  const speech = useSpeech()
   const [turns, setTurns] = useState<Turn[]>([])
   const [draft, setDraft] = useState('')
   const error = explain.error
@@ -42,8 +45,10 @@ export function TutorExplainPage() {
     explain.mutate(
       { unit_id: ctx.unit.id, question: q, style, history },
       {
-        onSuccess: (r) =>
-          setTurns((list) => [...list, { role: 'tutor', text: r.answer, quote: r.quote }]),
+        onSuccess: (r) => {
+          setTurns((list) => [...list, { role: 'tutor', text: r.answer, quote: r.quote }])
+          speech.speak(r.answer)
+        },
       },
     )
   }
@@ -138,6 +143,7 @@ export function TutorExplainPage() {
           aria-label={t('tutor.explain.placeholder')}
           className="h-full min-w-0 flex-1 bg-transparent text-base outline-none"
         />
+        <MicButton onText={(text) => ask(text)} />
         <button
           type="submit"
           aria-label={t('tutor.explain.send')}

@@ -127,6 +127,13 @@ export function SettingsPage() {
             {t(`appearance.theme.${theme}.name`)} ›
           </span>
         </Link>
+        <Link to="/settings/voice" className={row}>
+          <span className="flex flex-col gap-0.5">
+            <span className="text-[15px]">{t('voice.title')}</span>
+            <span className="text-xs text-ink-muted">{t('voice.sub')}</span>
+          </span>
+          <span className="text-sm text-ink-muted">›</span>
+        </Link>
         <Link to="/plan/availability" className={row}>
           <span className="text-[15px]">{t('availability.title')}</span>
           <span className="text-sm text-ink-muted">

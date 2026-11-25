@@ -194,6 +194,8 @@ for f in ai-status parse-document documents answer parse-toc parse-questions lin
 ```bash
 for f in material ai-status; do npx supabase functions deploy $f || break; done
 ```
+Glas (Sprint 18) nema edge funkciju ni ključ: Whisper (govor u tekst) i Kokoro (čitanje naglas, samo engleski) rade u pregledniku. Modeli se skidaju pri prvom korištenju sa Hugging Facea (~170 MB), a ONNX runtime je u buildu (nije u PWA precacheu). CSP u `public/_headers` dozvoljava `huggingface.co`, `*.hf.co` i `cdn.jsdelivr.net`, a `Permissions-Policy` mikrofon za isti origin.
+
 Tutor (Sprint 18, ista pravila za plaćeni model):
 ```bash
 npx supabase functions deploy tutor

@@ -112,6 +112,10 @@ export const router = createBrowserRouter([
                 ),
               },
               {
+                path: 'settings/voice',
+                lazy: page(() => import('@/features/voice/VoicePage'), 'VoicePage'),
+              },
+              {
                 path: 'settings/appearance',
                 lazy: page(() => import('@/features/settings/AppearancePage'), 'AppearancePage'),
               },

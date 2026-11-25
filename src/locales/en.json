@@ -3458,6 +3458,38 @@
       "ask": "Ask the tutor",
       "askSub": "The timer keeps running while you ask",
       "unitSub": "Explain, quiz, oral, in your own words"
+    },
+    "oral": {
+      "progress": "Question {{n}} of {{total}}",
+      "asks": "Hoot asks",
+      "you": "You",
+      "close": "Close oral",
+      "noVoice": "Voice in Bosnian isn't available yet: the question is written and you answer by voice."
     }
+  },
+  "voice": {
+    "title": "Voice",
+    "sub": "For the tutor and the assistant",
+    "speak": "The tutor speaks",
+    "speakSub": "Answers and questions are read aloud",
+    "notInBosnian": "Voice in Bosnian isn't available yet. Answers are written.",
+    "answer": "I answer by voice",
+    "answerSub": "Microphone instead of typing in Oral",
+    "howTitle": "How it works",
+    "onPhone": "Everything runs on your phone",
+    "onPhoneBody": "Whisper turns speech into text and understands Bosnian too. Kokoro reads aloud, in English only for now. The first time it downloads about 170 MB, then it works offline. Your voice recording never leaves the phone.",
+    "bosnianLater": "Dictation in Bosnian works. Reading aloud in Bosnian comes once there is a good open voice.",
+    "mic": "Dictate",
+    "listening": "Listening",
+    "transcribing": "Turning it into text…",
+    "loading": "Downloading the voice model… {{p}}%",
+    "done": "Done",
+    "cancel": "Cancel",
+    "type": "Type instead",
+    "repeat": "Repeat the question",
+    "micError": "The microphone isn't available. Allow it in the browser settings or type.",
+    "readAloud": "Read answers aloud",
+    "repeatShort": "Repeat",
+    "typeShort": "Type"
   }
 }
