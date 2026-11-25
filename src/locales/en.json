@@ -2491,7 +2491,8 @@
       "exam_question": "EXAM QUESTION {{label}}",
       "card": "CARD",
       "recall": "RECALL",
-      "question": "EXAM QUESTION"
+      "question": "EXAM QUESTION",
+      "source_text": "FROM THE SOURCE TEXT"
     },
     "recallPrompt": "What do you know about: {{title}}?",
     "answer": "ANSWER",
@@ -3356,5 +3357,104 @@
     "noNotes": "This unit has no notes.",
     "front": "Question",
     "back": "Answer"
+  },
+  "tutor": {
+    "title": "Tutor",
+    "pages": "p. {{from}} to {{to}}",
+    "questionsCount_one": "{{count}} exam question",
+    "questionsCount_other": "{{count}} exam questions",
+    "textHere": "The source text is here",
+    "noText": "No source text",
+    "noTextSub": "Explain and In your own words need the source PDF. Quiz me also works with questions and cards.",
+    "how": "How shall we study?",
+    "recommended": "Suggested",
+    "modes": {
+      "explain": "Explain",
+      "explainSub": "From your text, with the page",
+      "quiz": "Quiz me",
+      "quizSub": "Exam questions, cards and the text",
+      "oral": "Oral",
+      "oralSub": "Hoot asks out loud, you answer",
+      "feynman": "In your own words",
+      "feynmanSub": "You explain, the tutor finds the gaps"
+    },
+    "ratedHint": "Quiz me and Oral record ratings in your reviews, like a check. Explain and In your own words are study without a rating.",
+    "timeHint": "Time with the tutor counts in the session as",
+    "timeTag": "Tutor",
+    "thinking": "The tutor is thinking…",
+    "explain": {
+      "sub": "{{unit}} · from your text",
+      "empty": "Ask what isn't clear in this chapter. The tutor answers from your text and tells you the page.",
+      "fromBook": "From the book",
+      "example": "Give an example",
+      "simpler": "Simpler",
+      "quizMe": "Quiz me on this",
+      "placeholder": "Ask about this chapter",
+      "send": "Send"
+    },
+    "quiz": {
+      "preparing": "The tutor is preparing questions…",
+      "empty": "This chapter has no questions or cards yet, and no source text to ask from. Add the PDF or some cards.",
+      "progress": "{{n}} of {{total}}",
+      "questions": "Questions",
+      "examQuestion": "Exam question {{label}}",
+      "card": "Card",
+      "fromText": "From the text",
+      "yourAnswer": "Your answer",
+      "placeholder": "Answer in your own words, without looking at the book.",
+      "dontKnow": "I don't know",
+      "check": "Check my answer",
+      "thinks": "The tutor thinks: {{verdict}}",
+      "verdict": {
+        "forgot": "you don't remember",
+        "partial": "partly",
+        "remember": "you remember"
+      },
+      "correct": "Correct answer",
+      "howMuch": "How much did you know?",
+      "youDecide": "The tutor suggests, you decide. The rating goes into your reviews like a check.",
+      "rated": "Rated: {{rating}}"
+    },
+    "end": {
+      "title": "Good round",
+      "sub": "Tutor · {{unit}}",
+      "time": "Time",
+      "timeSub": "counts in the session as Tutor",
+      "answered": "Answered",
+      "questions_one": "{{count}} question",
+      "questions_other": "{{count}} questions",
+      "split": "{{yes}} remembered · {{partial}} partly · {{no}} no",
+      "next": "Next review",
+      "nextSub": "recorded in your reviews like a check",
+      "perQuestion": "By question",
+      "spoken": "spoken",
+      "written": "written",
+      "skipped": "no answer",
+      "unit": "Unit",
+      "levelHint": "The level changes from the ratings, like in a check. The tutor marks nothing by itself.",
+      "done": "Done",
+      "missedToCards": "Turn the missed questions into cards",
+      "again": "Another round"
+    },
+    "feynman": {
+      "sub": "Explain “{{topic}}” as if teaching a friend",
+      "yours": "Your explanation",
+      "placeholder": "Write as if explaining to a classmate who missed the lecture.",
+      "check": "Show the gaps",
+      "noticed": "What the tutor noticed",
+      "good": "Explained well",
+      "gaps_one": "One gap",
+      "gaps_other": "{{count}} gaps",
+      "again": "Try again",
+      "enough": "Enough for now",
+      "hint": "This mode doesn't record a rating. It shows what you can't yet say in your own words."
+    },
+    "entry": {
+      "study": "Study with the tutor",
+      "studySub": "The same session, just with the tutor. The time counts.",
+      "ask": "Ask the tutor",
+      "askSub": "The timer keeps running while you ask",
+      "unitSub": "Explain, quiz, oral, in your own words"
+    }
   }
 }

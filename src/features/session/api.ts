@@ -176,7 +176,12 @@ export interface StartInput {
   blockId?: string | null
   /** Planned length: the block, or "Imam samo X min". */
   plannedMinutes?: number | null
+  /** `tutor`: the session starts with the tutor open (Sprint 18). */
+  kind?: SegmentKind
 }
+
+/** A segment studied with the tutor open counts as tutor time (`study_segments.kind`). */
+export type SegmentKind = 'study' | 'tutor'
 
 /** A block's status follows its session: started, done, or back to planned when discarded. */
 const blockStatusOp = (id: string, status: 'planned' | 'in_progress' | 'done'): Op => ({
@@ -207,10 +212,11 @@ export function useSessionWriter() {
 
   return useMemo(() => {
     const nowIso = () => new Date().toISOString()
+    // Every row carries `kind`: a batch upsert sends missing keys as null (NOT NULL column).
     const segmentOp = (rows: SegmentRow[]): Op => ({
       kind: 'upsert',
       table: 'study_segments',
-      rows: rows as unknown as Row[],
+      rows: rows.map((r) => ({ ...r, kind: r.kind ?? 'study' })) as unknown as Row[],
     })
     // Web Push at the end of a planned break (notify sends it); leaving the break cancels it.
     const breakJobOp = (session: SessionRow, at: Date, notice: BreakNotice): Op => ({
@@ -250,6 +256,7 @@ export function useSessionWriter() {
         timerMode,
         blockId = null,
         plannedMinutes = null,
+        kind = 'study',
       }: StartInput) => {
         const t = nowIso()
         const session: SessionRow = {
@@ -277,6 +284,7 @@ export function useSessionWriter() {
           unit_id: unitId,
           started_at: t,
           ended_at: null,
+          kind,
         }
         await write(
           [
@@ -309,7 +317,11 @@ export function useSessionWriter() {
         }))
       },
 
-      resume: async ({ session, segments }: ActiveSession, unitId: string | null) => {
+      resume: async (
+        { session, segments }: ActiveSession,
+        unitId: string | null,
+        kind: SegmentKind = 'study',
+      ) => {
         if (openSegment(segments.map(toSegment))) return
         const t = nowIso()
         const segment: SegmentRow = {
@@ -318,6 +330,7 @@ export function useSessionWriter() {
           unit_id: unitId,
           started_at: t,
           ended_at: null,
+          kind,
         }
         const ops = [segmentOp([segment]), ...cancelBreakOps(session)]
         const row = session.break_ends_at
@@ -351,6 +364,34 @@ export function useSessionWriter() {
           unit_id: unitId,
           started_at: t,
           ended_at: null,
+          kind: open.kind ?? 'study',
+        }
+        await write([segmentOp([closed, next])], () => ({
+          session,
+          segments: [...segments.map((s) => (s.id === open.id ? closed : s)), next],
+        }))
+      },
+
+      /**
+       * The tutor opens or closes while the timer runs ("Timer ne staje dok pitaš"): the running
+       * segment closes and one of `kind` starts at the same instant, on `unitId`.
+       */
+      switchKind: async (
+        { session, segments }: ActiveSession,
+        kind: SegmentKind,
+        unitId: string | null,
+      ) => {
+        const open = segments.find((s) => s.ended_at === null)
+        if (!open || ((open.kind ?? 'study') === kind && open.unit_id === unitId)) return
+        const t = nowIso()
+        const closed = { ...open, ended_at: t }
+        const next: SegmentRow = {
+          id: crypto.randomUUID(),
+          session_id: session.id,
+          unit_id: unitId,
+          started_at: t,
+          ended_at: null,
+          kind,
         }
         await write([segmentOp([closed, next])], () => ({
           session,

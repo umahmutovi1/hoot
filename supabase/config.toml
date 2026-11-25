@@ -502,3 +502,7 @@ import_map = "./functions/deno.json"
 [functions.material]
 verify_jwt = false
 import_map = "./functions/deno.json"
+
+[functions.tutor]
+verify_jwt = false
+import_map = "./functions/deno.json"

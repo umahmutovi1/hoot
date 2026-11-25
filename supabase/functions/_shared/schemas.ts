@@ -715,6 +715,128 @@ export interface MaterialCardsResponse {
 }
 
 // ---------------------------------------------------------------------------
+// tutor: explain, grade, Feynman and questions from the source text (Sprint 18, paid model only)
+// ---------------------------------------------------------------------------
+
+/** Turns of an explain conversation sent back with each question (the model keeps nothing). */
+export const TUTOR_HISTORY = 6
+export const MAX_TUTOR_INPUT = 4000
+/** Questions the tutor writes from the text to fill a round of "Ispitaj me" / "Usmeni". */
+export const MAX_TUTOR_QUESTIONS = 8
+
+const tutorTurnSchema = z.object({
+  role: z.enum(['student', 'tutor']),
+  text: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+})
+
+export const tutorRequestSchema = z.discriminatedUnion('op', [
+  z.object({
+    op: z.literal('explain'),
+    unit_id: z.uuid(),
+    locale: localeSchema,
+    question: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+    /** "Daj primjer" / "Jednostavnije" on the last answer. */
+    style: z.enum(['plain', 'example', 'simpler']).optional(),
+    history: z.array(tutorTurnSchema).max(TUTOR_HISTORY),
+  }),
+  z.object({
+    op: z.literal('grade'),
+    unit_id: z.uuid(),
+    locale: localeSchema,
+    question: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+    /** The saved answer (exam question, card); null = grade from the source text. */
+    reference: z.string().trim().max(MAX_TUTOR_INPUT).nullable(),
+    answer: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+  }),
+  z.object({
+    op: z.literal('feynman'),
+    unit_id: z.uuid(),
+    locale: localeSchema,
+    topic: z.string().trim().min(1).max(300),
+    explanation: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+  }),
+  z.object({
+    op: z.literal('questions'),
+    unit_id: z.uuid(),
+    locale: localeSchema,
+    count: z.int().min(1).max(MAX_TUTOR_QUESTIONS),
+    /** Prompts already in the round, so the new ones do not repeat them. */
+    avoid: z.array(z.string().max(500)).max(30),
+  }),
+])
+export type TutorRequest = z.infer<typeof tutorRequestSchema>
+
+const citePage = z
+  .int()
+  .nullable()
+  .describe('The book page from the [p. N] markers that supports this; null if none')
+
+export const tutorExplainOutputSchema = z.object({
+  answer: z.string().min(1).describe('The explanation, 2-6 sentences; markdown and $math$ allowed'),
+  quote: z
+    .object({
+      text: z.string().min(1).describe('A short verbatim sentence from the TEXT'),
+      page: citePage,
+    })
+    .nullable()
+    .describe('The sentence of the book the answer rests on; null if the text does not cover it'),
+  in_text: z.boolean().describe('False when the TEXT does not cover the question'),
+})
+export type TutorExplainOutput = z.infer<typeof tutorExplainOutputSchema>
+
+export const TUTOR_VERDICTS = ['forgot', 'partial', 'remember'] as const
+export type TutorVerdict = (typeof TUTOR_VERDICTS)[number]
+
+export const tutorGradeOutputSchema = z.object({
+  verdict: z.enum(TUTOR_VERDICTS).describe('forgot = wrong or empty, partial = key part missing'),
+  feedback: z.string().min(1).describe('1-3 sentences: what is right and what is missing'),
+  page: citePage,
+})
+export type TutorGradeOutput = z.infer<typeof tutorGradeOutputSchema>
+
+export const tutorFeynmanOutputSchema = z.object({
+  good: z.string().min(1).describe('One or two sentences on what the explanation gets right'),
+  gaps: z
+    .array(
+      z.object({
+        text: z.string().min(1).describe('What is missing or wrong, one sentence'),
+        hint: z.string().min(1).describe('A nudge or question to fill it, not the full answer'),
+        page: citePage,
+      }),
+    )
+    .describe('At most 3 gaps, most important first; empty when nothing is missing'),
+})
+export type TutorFeynmanOutput = z.infer<typeof tutorFeynmanOutputSchema>
+
+export const tutorQuestionsOutputSchema = z.object({
+  questions: z
+    .array(
+      z.object({
+        question: z.string().min(1).describe('A short exam-style question in the user language'),
+        answer: z.string().min(1).describe('The answer from the TEXT, 1-3 sentences'),
+        page: citePage,
+      }),
+    )
+    .describe('Exactly the requested number of questions'),
+})
+export type TutorQuestionsOutput = z.infer<typeof tutorQuestionsOutputSchema>
+
+export type TutorResponse =
+  | {
+      op: 'explain'
+      answer: string
+      quote: { text: string; page: number | null } | null
+      in_text: boolean
+    }
+  | { op: 'grade'; verdict: TutorVerdict; feedback: string; page: number | null }
+  | {
+      op: 'feynman'
+      good: string
+      gaps: { text: string; hint: string; page: number | null }[]
+    }
+  | { op: 'questions'; questions: { question: string; answer: string; page: number | null }[] }
+
+// ---------------------------------------------------------------------------
 // embed (gte-small vectors of units, cards and topics; no LLM)
 // ---------------------------------------------------------------------------
 

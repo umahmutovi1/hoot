@@ -983,6 +983,7 @@ Po uzoru na Notilo i Gizmo, ali nije poseban kutak: tutor je način učenja u po
 - **Veza sa FSRS-om.** Odgovori u Ispitaj me i Usmenom su recall: ocjena 0/1/2 ide u `review_logs` i `levelAfter()` kao u recall gateu. Tutor koristi isti izbor pitanja kao gate (jedinice na redu, slabe teme, obim ispita). Vrijeme sa tutorom je vrijeme sesije (segmenti, način `tutor`).
 - **Glas.** TTS i STT kroz edge funkciju (`voice`): ElevenLabs (bs i en; Scribe za STT) do free tiera (~10k znakova mjesečno, broji se iz `ai_runs`), pa Web Speech API iz preglednika. Ključ samo u Supabase secrets. Plaćeni plan tek uz Pretplatu.
 - Svaki poziv kroz `_shared/llm.ts`, Zod izlaz, `ai_runs` (i znakovi glasa).
+- **Odluka (22. nov 2026).** Tutor je edge funkcija `tutor` (`explain`, `grade`, `feynman`, `questions`); tekst jedinice ide u prefiks koji se kešira, pa runda ne plaća cijeli tekst svaki put. Citat iz Objasni se prikazuje samo ako ga stvarno ima u tekstu. Runda Ispitaj me / Usmeni: pitanja iz recall gatea (ispitna pitanja jedinice, kartice sa onima na redu prvo), dopunjena pitanjima iz teksta do 6; tutor predloži ocjenu, student bira; ocjene se upisuju na kraju runde (`checkReviews` → `planReviews`, izvor `source_text` za pitanja iz teksta), a poslije svakog pitanja „Poništi“ vraća na to pitanje. Vrijeme: segment sesije sa oznakom `tutor`; tutor otvoren sa Jedinice bez sesije pokreće sesiju i završava je na „Gotovo“, a „Pitaj tutora“ iz timera ne zaustavlja timer.
 
 ### Prijava (Sprint 16)
 

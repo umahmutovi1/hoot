@@ -12,6 +12,8 @@ export interface CrumbNames {
   unit: (id: string) => string | undefined
   document: (id: string) => string | undefined
   session: (id: string) => string | undefined
+  /** Where a unit lives, for screens addressed by the unit alone (the tutor). */
+  unitPath?: (id: string) => { subjectId: string; sourceId: string } | undefined
 }
 
 /**
@@ -99,6 +101,20 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
           if (seventh === 'cards') out.push({ label: t('materialCards.title'), to: pathname })
         }
       }
+      return out
+    }
+    // The tutor of a unit (Sprint 18): Jedinica › Tutor › mode.
+    case 'tutor': {
+      if (!second) return []
+      const at = names.unitPath?.(second)
+      const unitCrumb: Crumb = {
+        label: names.unit(second) ?? t('crumbs.unit'),
+        to: at ? `/subjects/${at.subjectId}/sources/${at.sourceId}/units/${second}` : '/subjects',
+      }
+      const out = [unitCrumb, { label: t('tutor.title'), to: `/tutor/${second}` }]
+      if (third === 'explain') out.push({ label: t('tutor.modes.explain'), to: pathname })
+      if (third === 'quiz') out.push({ label: t('tutor.modes.quiz'), to: pathname })
+      if (third === 'feynman') out.push({ label: t('tutor.modes.feynman'), to: pathname })
       return out
     }
     // The session flow (timer, end form, recall gate, knowledge check) is full screen without the

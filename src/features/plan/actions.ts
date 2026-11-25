@@ -331,6 +331,8 @@ export function useStartBlock() {
         checkUnits?: string[]
         /** Units studied through their summary in this session ("Koristi sažetak"). */
         summaryUnits?: string[]
+        /** Where to go once started ("Uči sa tutorom": the tutor instead of the timer). */
+        to?: string
       } = {},
     ) => {
       const timerMode = opts.timerMode ?? suggestedId
@@ -356,7 +358,7 @@ export function useStartBlock() {
           unitIds: opts.checkUnits ?? block.plan_block_units.map((u) => u.unit_id),
         })
         navigate('/session/review')
-      } else navigate('/session')
+      } else navigate(opts.to ?? '/session')
     },
     [writer, suggestedId, setTimerMode, setCheck, setSummary, navigate, shiftLate],
   )

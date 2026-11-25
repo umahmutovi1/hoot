@@ -25,6 +25,12 @@ import {
   normalizeSummary,
   summaryRequest,
 } from '../supabase/functions/_shared/materialPrompts.ts'
+import {
+  explainRequest,
+  gradeRequest,
+  normalizeExplain,
+  normalizeGrade,
+} from '../supabase/functions/_shared/tutorPrompts.ts'
 import type {
   ImportKind,
   ParseDocumentRequest,
@@ -46,12 +52,18 @@ interface Vars {
     | 'find-toc'
     | 'material-summary'
     | 'material-cards'
+    | 'tutor-explain'
+    | 'tutor-grade'
   kind: ImportKind
   fixture: string
   /** find-toc: the book as the user would type it. */
   query?: string
   subject?: string
   topics?: string[]
+  /** tutor: the student's question or answer, and the saved reference answer. */
+  question?: string
+  answer?: string
+  reference?: string
 }
 
 type Deps = Parameters<typeof generate>[0]
@@ -154,6 +166,50 @@ async function material(vars: Vars) {
   }
 }
 
+/** tutor explain / grade on the same chapter text, as the function sends it. */
+async function tutor(vars: Vars) {
+  const key = process.env.GEMINI_API_KEY ?? (process.env.EVAL_MODEL ? 'chain' : undefined)
+  if (!key) return { error: 'tutor evals need GEMINI_API_KEY' }
+  const text = readFileSync(new URL(`./fixtures/${vars.fixture}`, import.meta.url), 'utf8')
+  const m = { subject: 'Signali i sistemi', title: 'Fourierov red', label: '4', text }
+  const unit_id = '11111111-1111-4111-8111-111111111111'
+  const deps: Deps = {
+    provider: evalProvider(key),
+    privateFree: true,
+    countRecentRuns: async () => 0,
+    logRun: async () => {},
+  }
+  try {
+    if (vars.task === 'tutor-explain') {
+      const result = await generate(
+        deps,
+        explainRequest(m, {
+          op: 'explain',
+          unit_id,
+          locale: 'bs',
+          question: vars.question ?? '',
+          history: [],
+        }),
+      )
+      return { output: normalizeExplain(result.data, text) }
+    }
+    const result = await generate(
+      deps,
+      gradeRequest(m, {
+        op: 'grade',
+        unit_id,
+        locale: 'bs',
+        question: vars.question ?? '',
+        reference: vars.reference ?? null,
+        answer: vars.answer ?? '',
+      }),
+    )
+    return { output: normalizeGrade(result.data, text) }
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : String(err) }
+  }
+}
+
 export default class ParseDocumentProvider {
   id() {
     return 'hoot-parse-document'
@@ -164,6 +220,7 @@ export default class ParseDocumentProvider {
     if (vars.task === 'find-toc') return await findToc(vars)
     if (vars.task === 'material-summary' || vars.task === 'material-cards')
       return await material(vars)
+    if (vars.task === 'tutor-explain' || vars.task === 'tutor-grade') return await tutor(vars)
     const { kind, fixture } = vars
     const path = new URL(`./fixtures/${fixture}`, import.meta.url)
     const isImage = fixture.endsWith('.png')

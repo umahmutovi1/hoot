@@ -58,6 +58,16 @@ export function UnitStudyRows({
         </div>
       )}
       <div className="surface overflow-hidden rounded-card">
+        <Link to={`/tutor/${unit.id}`} className={row}>
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-[13px] bg-subject-orange-soft text-subject-orange-ink">
+            <SparkleIcon size={20} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-bold">{t('tutor.entry.study')}</span>
+            <span className="text-[13px] text-ink-secondary">{t('tutor.entry.unitSub')}</span>
+          </span>
+          <ChevronRightIcon size={20} className="text-ink-muted" />
+        </Link>
         {hasText && (
           <Link to={`${base}/summary`} className={row}>
             <span className="flex size-10 shrink-0 items-center justify-center rounded-[13px] bg-subject-lavender-soft text-subject-lavender-ink">

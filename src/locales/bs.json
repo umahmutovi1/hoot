@@ -2589,7 +2589,8 @@
       "exam_question": "ISPITNO PITANJE {{label}}",
       "card": "KARTICA",
       "recall": "PRISJETI SE",
-      "question": "ISPITNO PITANJE"
+      "question": "ISPITNO PITANJE",
+      "source_text": "IZ TEKSTA IZVORA"
     },
     "recallPrompt": "Šta znaš o: {{title}}?",
     "answer": "ODGOVOR",
@@ -3487,5 +3488,107 @@
     "noNotes": "Ova jedinica nema bilješki.",
     "front": "Pitanje",
     "back": "Odgovor"
+  },
+  "tutor": {
+    "title": "Tutor",
+    "pages": "str. {{from}} do {{to}}",
+    "questionsCount_one": "{{count}} ispitno pitanje",
+    "questionsCount_few": "{{count}} ispitna pitanja",
+    "questionsCount_other": "{{count}} ispitnih pitanja",
+    "textHere": "Tekst izvora je tu",
+    "noText": "Nema teksta izvora",
+    "noTextSub": "Objasni i Svojim riječima trebaju PDF izvora. Ispitaj me radi i sa pitanjima i karticama.",
+    "how": "Kako da učimo?",
+    "recommended": "Preporuka",
+    "modes": {
+      "explain": "Objasni",
+      "explainSub": "Iz tvog teksta, sa stranicom",
+      "quiz": "Ispitaj me",
+      "quizSub": "Pitanja iz ispita, kartica i teksta",
+      "oral": "Usmeni",
+      "oralSub": "Hoot pita glasom, ti odgovaraš",
+      "feynman": "Svojim riječima",
+      "feynmanSub": "Ti objasniš, tutor traži rupe"
+    },
+    "ratedHint": "Ispitaj me i Usmeni upisuju ocjene u ponavljanje, kao provjera. Objasni i Svojim riječima su učenje bez ocjene.",
+    "timeHint": "Vrijeme sa tutorom ulazi u sesiju kao",
+    "timeTag": "Tutor",
+    "thinking": "Tutor razmišlja…",
+    "explain": {
+      "sub": "{{unit}} · iz tvog teksta",
+      "empty": "Pitaj šta ti nije jasno iz ovog poglavlja. Tutor odgovara iz tvog teksta i kaže na kojoj je stranici.",
+      "fromBook": "Iz knjige",
+      "example": "Daj primjer",
+      "simpler": "Jednostavnije",
+      "quizMe": "Ispitaj me o ovome",
+      "placeholder": "Pitaj o ovom poglavlju",
+      "send": "Pošalji"
+    },
+    "quiz": {
+      "preparing": "Tutor sprema pitanja…",
+      "empty": "Za ovo poglavlje još nema pitanja ni kartica, a ni teksta izvora iz kojeg bi tutor pitao. Dodaj PDF ili kartice.",
+      "progress": "{{n}} od {{total}}",
+      "questions": "Pitanja",
+      "examQuestion": "Ispitno pitanje {{label}}",
+      "card": "Kartica",
+      "fromText": "Iz teksta",
+      "yourAnswer": "Tvoj odgovor",
+      "placeholder": "Odgovori svojim riječima, bez gledanja u knjigu.",
+      "dontKnow": "Ne znam",
+      "check": "Provjeri odgovor",
+      "thinks": "Tutor misli: {{verdict}}",
+      "verdict": {
+        "forgot": "ne sjećaš se",
+        "partial": "djelimično",
+        "remember": "sjećaš se"
+      },
+      "correct": "Tačan odgovor",
+      "howMuch": "Koliko si znala?",
+      "youDecide": "Tutor predlaže, ti odlučuješ. Ocjena ide u ponavljanje kao u provjeri.",
+      "rated": "Ocjena: {{rating}}"
+    },
+    "end": {
+      "title": "Dobra runda",
+      "sub": "Tutor · {{unit}}",
+      "time": "Vrijeme",
+      "timeSub": "ulazi u sesiju kao Tutor",
+      "answered": "Odgovoreno",
+      "questions_one": "{{count}} pitanje",
+      "questions_few": "{{count}} pitanja",
+      "questions_other": "{{count}} pitanja",
+      "split": "{{yes}} sjećam se · {{partial}} djelimično · {{no}} ne",
+      "next": "Sljedeće ponavljanje",
+      "nextSub": "upisano u ponavljanje kao u provjeri",
+      "perQuestion": "Po pitanjima",
+      "spoken": "usmeno",
+      "written": "napisano",
+      "skipped": "bez odgovora",
+      "unit": "Jedinica",
+      "levelHint": "Nivo se mijenja iz ocjena, kao u provjeri. Tutor sam ne označava ništa.",
+      "done": "Gotovo",
+      "missedToCards": "Pitanja koja si promašila u kartice",
+      "again": "Još jedna runda"
+    },
+    "feynman": {
+      "sub": "Objasni „{{topic}}“ kao da učiš prijatelja",
+      "yours": "Tvoje objašnjenje",
+      "placeholder": "Piši kao da objašnjavaš kolegi koji nije bio na predavanju.",
+      "check": "Pokaži rupe",
+      "noticed": "Šta je tutor primijetio",
+      "good": "Dobro objašnjeno",
+      "gaps_one": "Jedna rupa",
+      "gaps_few": "{{count}} rupe",
+      "gaps_other": "{{count}} rupa",
+      "again": "Pokušaj ponovo",
+      "enough": "Dosta za sada",
+      "hint": "Ovaj način ne upisuje ocjenu u ponavljanje. Služi da vidiš šta još ne možeš reći svojim riječima."
+    },
+    "entry": {
+      "study": "Uči sa tutorom",
+      "studySub": "Ista sesija, samo s tutorom. Vrijeme se broji.",
+      "ask": "Pitaj tutora",
+      "askSub": "Timer ne staje dok pitaš",
+      "unitSub": "Objasni, ispitaj, usmeni, svojim riječima"
+    }
   }
 }

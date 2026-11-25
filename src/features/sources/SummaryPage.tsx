@@ -97,6 +97,12 @@ export function SummaryPage() {
           </p>
           <div className="flex flex-col gap-2">
             <Link
+              to={`/tutor/${unit.id}`}
+              className="btn-primary flex h-14 items-center justify-center rounded-[16px] text-[17px] font-bold"
+            >
+              {t('tutor.entry.study')}
+            </Link>
+            <Link
               to={`${base}/cards`}
               className="flex h-[52px] items-center justify-center rounded-[16px] bg-subject-blue-soft text-[15px] font-bold text-brand-strong"
             >

@@ -198,6 +198,28 @@ function Body({
           {t('today.start.begin')}
         </button>
       )}
+      {canStart && block.kind === 'learn' && block.plan_block_units[0] && (
+        <div className="-mt-1 flex flex-col gap-1.5">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              setBusy(true)
+              const unitId = block.plan_block_units[0]!.unit_id
+              void start(block, plan.units, {
+                timerMode: presetId ?? suggestedId,
+                to: `/tutor/${unitId}`,
+              }).finally(() => setBusy(false))
+            }}
+            className="flex h-[52px] items-center justify-center rounded-[16px] bg-subject-lavender-soft text-[15px] font-bold text-subject-lavender-ink"
+          >
+            {t('tutor.entry.study')}
+          </button>
+          <span className="text-center text-[13px] text-ink-secondary">
+            {t('tutor.entry.studySub')}
+          </span>
+        </div>
+      )}
       <div className="-mt-1 flex gap-1">
         <button type="button" onClick={() => onEdit(block)} className={secondary}>
           {t('today.start.edit')}
