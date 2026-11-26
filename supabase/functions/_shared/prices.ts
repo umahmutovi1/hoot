@@ -1,6 +1,7 @@
 // USD per 1M tokens. Gemini rows are the paid-tier list price: on the free tier nothing is
 // billed, but ai_runs still shows what the same calls would cost.
 export const PRICES: Record<string, { input: number; output: number }> = {
+  'gemini-3.5-flash-lite': { input: 0.3, output: 2.5 },
   'gemini-2.5-flash': { input: 0.3, output: 2.5 },
   'gemini-2.5-flash-lite': { input: 0.1, output: 0.4 },
   // Up to 100k prompt tokens; prompts here stay far below that.

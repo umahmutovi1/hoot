@@ -17,6 +17,7 @@ import {
   syllabusSaveCount,
   type GradingProposal,
   type SyllabusProposal,
+  bookTitle,
 } from '@/lib/import/syllabus'
 import { clockToMin, toSave, type ExamProposal, type PeriodProposal } from '@/lib/import'
 import { currentTeachingPeriod, suggestExamPeriod } from '@/lib/schedule'
@@ -85,7 +86,24 @@ export function useSaveImport(t: TFunction) {
     const yearIds = new Map(
       program.semesters.flatMap((s) => (s.yearId && s.yearLabel ? [[s.yearLabel, s.yearId]] : [])),
     )
-    for (const y of programYears(program)) {
+    const newYears = programYears(program)
+    // A retry after a half-finished save finds the years it already wrote instead of doubling them.
+    const { data: saved, error: readError } = newYears.length
+      ? await supabase
+          .from('academic_years')
+          .select('id,label')
+          .in(
+            'label',
+            newYears.map((y) => y.label),
+          )
+      : { data: [], error: null }
+    if (readError) throw readError
+    for (const y of newYears) {
+      const found = saved?.find((x) => x.label === y.label)
+      if (found) {
+        yearIds.set(y.label, found.id)
+        continue
+      }
       const yearId = crypto.randomUUID()
       const { error } = await supabase.from('academic_years').insert({
         id: yearId,
@@ -143,12 +161,24 @@ export function useSaveImport(t: TFunction) {
         if (error) throw error
         count++
       }
+      // All of it stays on the subject: Dodaj izvor asks again for what is not a source yet.
+      if (item.literature.length > 0) {
+        const literature = item.literature.map((l) => ({
+          title: l.title,
+          authors: l.authors,
+          required: l.required,
+        }))
+        const { error } = await supabase
+          .from('subjects')
+          .update({ syllabus_literature: literature })
+          .eq('id', subjectId)
+        if (error) throw error
+      }
       for (const l of pick(item.literature)) {
-        const title = (l.authors ? `${l.authors} — ${l.title}` : l.title).slice(0, 120)
         await createRoughSource({
           subjectId,
           size: 'medium',
-          title,
+          title: bookTitle(l),
           partTitle: roughTexts('medium').partTitle,
         })
         count++

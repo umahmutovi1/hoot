@@ -25,6 +25,7 @@ export const PUBLIC_TASKS: ReadonlySet<AiTask> = new Set<AiTask>([
   'parse_study_program',
   'parse_toc',
   'find_academic_info',
+  'find_toc',
 ])
 
 /**
@@ -54,6 +55,9 @@ export function parseChain(raw: string | undefined): ChainEntry[] {
         (CHAIN_PROVIDERS as readonly string[]).includes(e.provider) && e.model.length > 0,
     )
 }
+
+/** Links find-academic-info downloads per user in 24 h; logged as `fetch_document` runs. */
+export const FETCH_DAILY_LIMIT = 40
 
 /** A failed run in `ai_runs` (error = "<code>: <message>"). */
 export interface FailedRun {
@@ -92,6 +96,22 @@ export function nextReset(provider: string, at: Date): Date {
   const offset = local - Math.floor(at.getTime() / 1000) * 1000
   const midnight = Date.UTC(n('year'), n('month') - 1, n('day') + 1)
   return new Date(midnight - offset)
+}
+
+/**
+ * Whether a run uses one of the user's daily AI calls. A model that was out of quota or busy
+ * gave the user nothing and the chain moved on, so one request that fell through three free
+ * models counts once (the run that answered, or the last error), not three times.
+ */
+export function countsTowardLimit(run: {
+  task?: string
+  ok: boolean
+  error: string | null
+}): boolean {
+  // A downloaded link is logged in ai_runs but has its own limit (FETCH_DAILY_LIMIT).
+  if (run.task === 'fetch_document') return false
+  if (run.ok) return true
+  return !(run.error?.startsWith('quota_exhausted') || run.error?.startsWith('provider_busy'))
 }
 
 /** Until when each model is left out, from its failed runs (quota: next reset; busy: a minute). */

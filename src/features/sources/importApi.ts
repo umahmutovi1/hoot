@@ -1,4 +1,6 @@
 import type {
+  FindTocRequest,
+  FindTocResponse,
   ParseQuestionsRequest,
   ParseTocRequest,
   QuestionsParse,
@@ -51,6 +53,8 @@ export async function subjectTopicNames(subjectId: string): Promise<string[]> {
 export const parseToc = (req: ParseTocRequest) => invokeAi<TocParse>('parse-toc', req)
 export const parseQuestions = (req: ParseQuestionsRequest) =>
   invokeAi<QuestionsParse>('parse-questions', req)
+/** A book's table of contents from the web (Sprint 19); only the typed title goes out. */
+export const findToc = (req: FindTocRequest) => invokeAi<FindTocResponse>('find-toc', req)
 
 async function knownTopics(subjectId: string): Promise<KnownTopic[]> {
   const { data, error } = await supabase

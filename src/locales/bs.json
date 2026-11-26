@@ -2,9 +2,9 @@
   "app": {
     "name": "Hoot",
     "loading": "Učitavanje…",
-    "comingSoon": "Uskoro",
     "back": "Nazad",
-    "error": "Nešto nije u redu. Pokušaj ponovo."
+    "error": "Nešto nije u redu. Pokušaj ponovo.",
+    "reload": "Učitaj ponovo"
   },
   "locale": {
     "bs": "Bosanski",
@@ -14,16 +14,14 @@
   },
   "nav": {
     "label": "Glavna navigacija",
+    "ai": "AI",
     "today": "Danas",
     "plan": "Plan",
     "subjects": "Predmeti",
     "progress": "Napredak",
-    "aiLabel": "AI asistent",
-    "aiClose": "Zatvori asistenta",
     "home": "Hoot, idi na Danas"
   },
   "auth": {
-    "headline": "Uči pametnije,\nne duže.",
     "email": "Email",
     "emailPlaceholder": "ime@primjer.ba",
     "emailInvalid": "Upiši ispravan email.",
@@ -66,6 +64,29 @@
     "skip": "Preskoči"
   },
   "today": {
+    "adjust": {
+      "freeSub": "Van plana, Hoot predloži ili biraš sam",
+      "open": "Prilagodi dan: energija, imam samo malo vremena, danas ne mogu",
+      "title": "Prilagodi dan",
+      "feel": "Kako se osjećaš?",
+      "level": {
+        "low": "Malo",
+        "lowSub": "lakši dan",
+        "normal": "Normalno",
+        "normalSub": "po planu",
+        "high": "Puno",
+        "highSub": "mogu više"
+      },
+      "keep_one": "Plan ostaje kakav jeste: {{count}} blok, {{time}}.",
+      "keep_few": "Plan ostaje kakav jeste: {{count}} bloka, {{time}}.",
+      "keep_other": "Plan ostaje kakav jeste: {{count}} blokova, {{time}}.",
+      "only": "Imam samo malo vremena",
+      "onlySub": "Hoot bira najvažnije, ostatak ide u plan",
+      "more": "Imam više vremena",
+      "moreSub": "Dodaj blok, Hoot bira gradivo",
+      "cantSub": "Današnje gradivo se rasporedi na naredne dane",
+      "freeLink": "Ili započni slobodnu sesiju sada"
+    },
     "greeting": {
       "morning": "Dobro jutro, {{name}}",
       "day": "Dobar dan, {{name}}",
@@ -85,9 +106,6 @@
       "exam": "{{title}} · {{week}}. sedmica",
       "holiday": "Neradni dan · {{title}}"
     },
-    "planSoonTitle": "Dnevni plan učenja stiže uskoro",
-    "planSoonBody": "Dok app ne računa plan, sesiju pokrećeš ovdje, a nastavu i ispite vidiš u kalendaru.",
-    "todayInCalendar": "Danas u kalendaru",
     "next": {
       "label": "Sljedeće",
       "freeSub": "Izaberi predmet i koliko vremena imaš",
@@ -124,7 +142,6 @@
       "onTrack": "Ništa ne kasni za ispite."
     },
     "only": {
-      "button": "Imam samo 30 min",
       "title": "Imam samo…",
       "best": "Najviše ti donosi sad",
       "start": "Počni · {{minutes}} min",
@@ -175,12 +192,11 @@
       "toToday": "Prebačeno na danas u {{time}}",
       "toTomorrow": "Danas nema mjesta: prvi blok sutra u {{time}}",
       "toLater": "Prebačeno na prvi slobodan dan u {{time}}",
-      "carried": "prebačeno",
-      "fromNotification": "Preskočeno iz notifikacije: {{title}}"
+      "carried": "prebačeno"
     },
     "start": {
+      "rhythmSub": "Tvoj zadani, Hoot je po njemu složio blok",
       "title": "Započeti sesiju sada?",
-      "pauses": "Pauze: {{preset}}",
       "begin": "Počni",
       "edit": "Uredi",
       "skip": "Preskoči",
@@ -189,9 +205,12 @@
     },
     "noTimer": {
       "link": "Odradila sam bez timera",
+      "link_male": "Odradio sam bez timera",
       "title": "Odradila si bez timera?",
+      "title_male": "Odradio si bez timera?",
       "body": "{{title}}. Blok se označi kao odrađen; vrijeme ide u napredak, ali ne u kalibraciju.",
       "howLong": "Koliko si učila?",
+      "howLong_male": "Koliko si učio?",
       "next": "Dalje"
     },
     "replaced": "Danas je presložen: {{subject}} sad u {{time}}",
@@ -202,8 +221,6 @@
       "later": "Ne sad"
     },
     "energy": {
-      "low": "Nemam energije",
-      "high": "Pun/a sam energije",
       "toast": {
         "low": "Danas lakše: kraći blokovi, ponavljanja prvo",
         "high": "Danas malo više, najteže gradivo prvo",
@@ -213,7 +230,6 @@
   },
   "plan": {
     "title": "Plan",
-    "scheduleEmpty": "Satnica raspoređuje današnje blokove u slobodne termine.",
     "prevMonth": "Prethodni mjesec",
     "nextMonth": "Sljedeći mjesec",
     "legendExam": "Ispit",
@@ -289,6 +305,18 @@
     }
   },
   "subjects": {
+    "firstSource": {
+      "title": "Prvi izvor",
+      "pdf": "Imam PDF knjige ili skripte",
+      "pdfSub": "Hoot pročita sadržaj i podijeli ga na jedinice",
+      "web": "Nemam PDF, nađi sadržaj",
+      "webSub": "Upiši naslov, Hoot na internetu traži bar poglavlja",
+      "photo": "Slikaj sadržaj",
+      "photoSub": "Fotografija stranice sa sadržajem je dovoljna",
+      "hint": "Iz izvora Hoot zna koliko je gradiva i koliko traje, pa ne moraš pogađati.",
+      "later": "Izvor dodajem kasnije",
+      "laterHint": "Bez izvora Hoot planira okvirno, oko 25h, dok ga ne dodaš."
+    },
     "title": "Predmeti",
     "empty": "Još nemaš predmeta. Dodaj prvi: naziv i datum ispita su dovoljni.",
     "examTitle": {
@@ -297,7 +325,6 @@
       "partial2": "II parcijala",
       "integral": "Integralni"
     },
-    "new": "Novi",
     "activeCount_one": "{{count}} aktivan",
     "activeCount_few": "{{count}} aktivna",
     "activeCount_other": "{{count}} aktivnih",
@@ -376,6 +403,10 @@
       }
     },
     "form": {
+      "newSub": "Dovoljno je grubo, sve se kasnije mijenja",
+      "editSub": "Plan se preračuna kad spasiš.",
+      "conditional": "Uslovni predmet",
+      "conditionalSub": "Mora se položiti za upis dalje. Hoot mu daje prednost i više rezerve pred ispit.",
       "newTitle": "Novi predmet",
       "editTitle": "Uredi predmet",
       "name": "Naziv",
@@ -392,14 +423,9 @@
       "pickDate": "Datum",
       "removeExam": "Ukloni ispit",
       "contingent": "Samo ako zatreba",
-      "dateTentative": "Okvirni datum (još nije objavljen)",
       "notPlannedAhead": "ne planira se unaprijed",
       "dateNotConfirmed": "datum nije objavljen",
       "advanced": "Napredno",
-      "advancedSummary": "Prioritet {{priority}} · {{mode}}",
-      "priority": "Prioritet",
-      "priorityDescription": "{{n}} · {{name}}: {{description}}",
-      "howStudied": "Kako učiš ovaj predmet?",
       "campaignStart": "Početak",
       "campaignStartComputed": "Izračunava se iz plana",
       "campaignStartManual": "Ručno · {{date}}",
@@ -420,13 +446,11 @@
     },
     "detail": {
       "edit": "Uredi predmet",
-      "priorityChip": "Prioritet {{n}} · {{name}}",
       "nextExam": "{{title}} {{when}}.",
       "addExam": "+ Ispit",
       "noExams": "Još nema ispita.",
       "tentative": "datum okvirno",
       "contingent": "samo ako zatreba",
-      "passed": "položen",
       "tentativeUntil": "datum okvirno, najkasnije {{date}}"
     },
     "campaign": {
@@ -463,18 +487,20 @@
       "part": "Dio {{n}}"
     },
     "goal": {
+      "targetHint": {
+        "none": "Bez ocjene Hoot planira standardno.",
+        "low": "Za 6 Hoot prvo pokriva najvažnije gradivo.",
+        "mid": "Za {{grade}} Hoot planira standardno, sa ponavljanjem prije ispita.",
+        "high": "Za {{grade}} Hoot planira više ponavljanja i cijelo gradivo."
+      },
       "title": "Cilj",
       "edit": "Uredi",
-      "howImportant": "Koliko ti je bitan?",
-      "importantRow": "Koliko ti je bitan",
       "targetRow": "Željena ocjena",
       "whenRow": "Kad kreće učenje",
       "target": "Željena ocjena",
       "optional": "(opcionalno)",
       "noTarget": "—",
       "targetChip": "cilj {{grade}}",
-      "nudge": "Za {{grade}} obično treba „{{level}}“",
-      "change": "Promijeni",
       "when": "Kad kreće učenje?",
       "computedOn": "Izračunat · ~{{date}}",
       "fromToday": "Od danas",
@@ -494,23 +520,14 @@
           "sub": "App izračuna kad krenuti i najavi 3 dana prije"
         }
       },
-      "priorityDescription": {
-        "1": "Lagano, dovoljno je proći",
-        "2": "Manje bitan, bez velikih ambicija",
-        "3": "Uobičajen udio vremena i rezerve",
-        "4": "Važan, želim dobru ocjenu",
-        "5": "Uslovni, mora se položiti"
-      },
       "effect": "Plan pokriva {{coverage}}% gradiva i ponavlja {{often}}.",
       "often": {
         "low": "rjeđe",
         "mid": "uobičajeno",
         "high": "češće"
       },
-      "boost": "+{{minutes}} min dnevno do {{date}}",
       "boostSimple": "Više vremena do {{date}}",
-      "endBoost": "Ukloni pojačanje",
-      "unreachable": "Željena ocjena više nije dostižna sa preostalim bodovima."
+      "endBoost": "Ukloni pojačanje"
     }
   },
   "progress": {
@@ -609,34 +626,29 @@
   "session": {
     "title": "Sesija učenja",
     "start": {
-      "title": "Šta učiš sad?",
-      "subtitle": "Izaberi predmet, a jedinicu po želji.",
-      "recommendedEmpty": "Preporučeni blok",
-      "recommendedSoon": "Dolazi s dnevnim planom",
-      "tagRecommended": "Preporučeno",
+      "freeLead": "Van plana · ne skida nijedan blok sa Danas",
+      "what": "Šta učiš?",
+      "auto": "Hoot predloži",
+      "manual": "Biram sam",
+      "another": "Druga ideja · {{n}}/{{total}}",
+      "why": "Zašto: {{why}}",
+      "manualHint": "Jedinicu možeš promijeniti i u sesiji, na „Sad radim na“.",
       "free": "Slobodna sesija",
-      "freeSub": "Van plana · izaberi predmet",
-      "tagFree": "Bez plana",
       "noSubjects": "Prvo dodaj predmet.",
       "addSubject": "Dodaj predmet",
       "subject": "Predmet",
       "source": "Izvor",
       "unit": "Jedinica",
       "allUnits": "Prikaži sve ({{count}})",
-      "freeHint": "Jedinicu možeš promijeniti u sesiji („Sad radim na“). Vrijeme se računa u kalibraciju, ali ne skida blok iz plana.",
-      "go": "Počni",
       "breaks": "Pauze",
-      "breaksHint": "Zadnji korišten predložak je predložen. Default mijenjaš u Postavkama.",
-      "nextBlock": "Sljedeći blok",
-      "laterToday": "Kasnije danas",
-      "tagPlan": "Plan",
       "howLong": "Koliko vremena imaš?",
-      "wholeBlock": "Cijeli blok",
-      "onlyHint": "Imam samo {{minutes}} min → {{title}}. Ostatak bloka ide u plan od sutra.",
-      "subtitlePlan": "Predložen je sljedeći blok iz današnjeg plana.",
-      "newSubject": "+ Predmet",
       "newSource": "+ Izvor",
-      "addFirstSource": "+ Dodaj izvor (knjiga, skripta…)"
+      "addFirstSource": "+ Dodaj izvor (knjiga, skripta…)",
+      "other": "Drugo",
+      "duration": "Trajanje",
+      "durationLess": "Manje {{count}} minuta",
+      "durationMore": "Više {{count}} minuta",
+      "who": "Ko bira gradivo"
     },
     "mode": {
       "label": "Način učenja",
@@ -684,9 +696,11 @@
     },
     "forgotten": {
       "title": "Jesi li učila do sad?",
+      "title_male": "Jesi li učio do sad?",
       "body": "Timer radi od {{time}} ({{duration}}).",
       "yes": "Da, nastavi",
       "stoppedAt": "Završila sam u",
+      "stoppedAt_male": "Završio sam u",
       "finishAt": "Završi u {{time}}"
     },
     "end": {
@@ -701,6 +715,7 @@
         "items": "min / jedinica"
       },
       "howFar": "Dokle si stigla?",
+      "howFar_male": "Dokle si stigao?",
       "from": "od",
       "to": "do",
       "unit": "Jedinica ({{label}})",
@@ -722,6 +737,7 @@
       "reflection": "Šta je bilo teško?",
       "optional": "(opcionalno)",
       "reflectionPlaceholder": "npr. nisam skontala razliku 3NF i BCNF",
+      "reflectionPlaceholder_male": "npr. nisam skontao razliku 3NF i BCNF",
       "studied_one": "{{count}} min učenja",
       "studied_few": "{{count}} min učenja",
       "studied_other": "{{count}} min učenja",
@@ -745,21 +761,23 @@
       "whyLow": "Šta je smetalo?",
       "reason": {
         "tired": "Umorna",
+        "tired_male": "Umoran",
         "phone": "Telefon",
         "noise": "Buka",
         "hard": "Teško gradivo",
-        "sleep": "Loše spavala"
+        "sleep": "Loše spavala",
+        "sleep_male": "Loše spavao"
       }
     },
     "history": {
       "title": "Sesije",
-      "add": "Dodaj sesiju",
       "all": "Svi",
       "emptyTitle": "Još nema sesija",
       "empty": "Završene sesije se pojavljuju ovdje. Učila si bez timera? Dodaj sesiju sa +.",
-      "manual": "ručno",
+      "empty_male": "Završene sesije se pojavljuju ovdje. Učio si bez timera? Dodaj sesiju sa +.",
       "addTitle": "Dodaj sesiju",
       "addSubtitle": "Učila si bez timera? Upiši kad.",
+      "addSubtitle_male": "Učio si bez timera? Upiši kad.",
       "date": "Datum",
       "from": "Od",
       "to": "Do",
@@ -775,6 +793,7 @@
         "overlap": "Segmenti se preklapaju."
       },
       "studied": "Šta si učila",
+      "studied_male": "Šta si učio",
       "noUnits": "Bez jedinica. Dodaj ih kroz „Uredi ocjene“.",
       "deleteConfirm": "Sesija se briše sa svim segmentima. Statusi jedinica ostaju kakvi jesu.",
       "delete": "Obriši sesiju",
@@ -787,10 +806,7 @@
       "units_other": "jedinica",
       "count_one": "{{count}} sesija",
       "count_few": "{{count}} sesije",
-      "count_other": "{{count}} sesija",
-      "thisWeek_one": "{{count}} sesija ove sedmice",
-      "thisWeek_few": "{{count}} sesije ove sedmice",
-      "thisWeek_other": "{{count}} sesija ove sedmice"
+      "count_other": "{{count}} sesija"
     },
     "preset": {
       "standard": "Standardno",
@@ -840,6 +856,49 @@
       "discardSub": "Sesija se briše kao da nije ni počela; ništa se ne računa",
       "discarded": "Sesija je odbačena",
       "finishNow": "Završi sesiju"
+    },
+    "week": {
+      "prev": "Prethodna sedmica",
+      "next": "Sljedeća sedmica",
+      "now": "Ova sedmica",
+      "doneOf": "{{done}} od {{planned}}",
+      "count_one": "{{count}} sesija",
+      "count_few": "{{count}} sesije",
+      "count_other": "{{count}} sesija",
+      "plannedOnly": "{{planned}} planirano",
+      "ariaDay": "{{day}} {{done}} od {{planned}}",
+      "ariaPlan": "{{day}} plan {{planned}}",
+      "done": "Odrađeno",
+      "planned": "Planirano",
+      "free": "slobodno",
+      "freeDay": "Slobodan dan, ništa nije planirano.",
+      "today": "Danas",
+      "manual": "ručno upisano",
+      "more_one": "Prikaži još {{count}} dan",
+      "more_few": "Prikaži još {{count}} dana",
+      "more_other": "Prikaži još {{count}} dana",
+      "less": "Prikaži manje",
+      "addManual": "Upiši sesiju ručno",
+      "emptyWeek": "Ove sedmice nije bilo sesija.",
+      "thisWeekOf": "Ova sedmica {{done}} od {{planned}}"
+    },
+    "rhythm": {
+      "label": "Ritam učenja i pauza",
+      "done": "Gotovo",
+      "yourDefault": "tvoj zadani",
+      "own": "Svoj ritam",
+      "ownSub": "ti odrediš",
+      "value": "{{work}} · {{pause}}",
+      "minutes": "{{count}} min",
+      "study": "Učenje",
+      "break": "Pauza",
+      "studyLess": "Kraće učenje",
+      "studyMore": "Duže učenje",
+      "breakLess": "Kraća pauza",
+      "breakMore": "Duža pauza",
+      "keep": "Koristi i ubuduće",
+      "keepSub": "Hoot će planirati blokove u ovom ritmu",
+      "keepLabel": "Koristi ovaj ritam i ubuduće"
     }
   },
   "settings": {
@@ -894,7 +953,8 @@
       "quizletHint": "Kopira tekst za Quizlet → Uvezi (tab, nova linija)",
       "copy": "Kopiraj",
       "copied": "Kartice su kopirane. Zalijepi ih u Quizlet → Uvezi."
-    }
+    },
+    "address": "Obraćanje"
   },
   "validation": {
     "required": "Obavezno polje",
@@ -916,6 +976,7 @@
     "scaleOrder": "Svaki prag mora biti veći od prethodnog"
   },
   "common": {
+    "change": "Promijeni",
     "cancel": "Odustani",
     "save": "Spasi",
     "close": "Zatvori",
@@ -927,7 +988,6 @@
   "profile": {
     "nameLabel": "Ime",
     "namePlaceholder": "npr. Uma",
-    "continue": "Nastavi",
     "saveFailed": "Spašavanje nije uspjelo. Pokušaj ponovo.",
     "editName": "Promijeni ime"
   },
@@ -945,8 +1005,7 @@
       "other": "Ostalo"
     },
     "rangeHint": "Plan se pravi prema najranijem mogućem datumu, da budeš spremna i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
-    "inPeriod": "U roku",
-    "manualRange": "Ručni raspon",
+    "rangeHint_male": "Plan se pravi prema najranijem mogućem datumu, da budeš spreman i ako ispit bude ranije. Kad datum bude objavljen, isključi ovo i unesi tačan datum.",
     "showInCalendar": "Prikaži u kalendaru",
     "dateMode": {
       "label": "Kad je ispit?",
@@ -1032,7 +1091,8 @@
         "photo": "Slikaj sadržaj",
         "text": "Ukucaj",
         "pdf": "PDF s uređaja",
-        "drive": "Google Drive"
+        "drive": "Google Drive",
+        "web": "Nađi na internetu"
       },
       "outline": "Sadržaj",
       "placeholder": {
@@ -1055,7 +1115,8 @@
         "pdf": "Poglavlja i broj stranica iz fajla · fajl ostaje kod tebe",
         "drive": "Jedan ili više PDF-ova · izvor pamti link na Drive",
         "photo": "Stranice sadržaja, najviše 4",
-        "text": "Jedno poglavlje po liniji"
+        "text": "Jedno poglavlje po liniji",
+        "web": "Nemaš PDF, Hoot traži sadržaj"
       }
     },
     "section": "Izvori",
@@ -1138,7 +1199,13 @@
     },
     "rough": {
       "label": "Gruba procjena",
-      "hint": "Zamijeni ga pravim sadržajem: kad dodaš izvor, ovaj nestaje."
+      "hint": "Zamijeni ga pravim sadržajem: kad dodaš izvor, ovaj nestaje.",
+      "otherTitle": "Arhivirati i ostale grube izvore?",
+      "otherBody_one": "Ovaj grubi izvor za predmet je još u planu:",
+      "otherBody_few": "Ovi grubi izvori za predmet su još u planu:",
+      "otherBody_other": "Ovi grubi izvori za predmet su još u planu:",
+      "archiveOthers": "Arhiviraj",
+      "keepOthers": "Ostavi u planu"
     },
     "import": {
       "camera": "Uslikaj stranicu sadržaja",
@@ -1184,10 +1251,128 @@
       "tocTo": "Do stranice",
       "tocHint": "Nađene po riječi „Sadržaj“; ispravi ako treba. Šalje se samo tekst ovih stranica (najviše 8).",
       "typeInstead": "Ukucaj sama",
+      "typeInstead_male": "Ukucaj sam",
       "privacy": "Fajl se ne uploaduje; izvor pamti naziv fajla i broj stranica.",
       "originDrive": "PDF · Google Drive",
       "originDevice": "PDF s uređaja · fajl je kod tebe",
       "openDrive": "Otvori u Drive-u"
+    },
+    "web": {
+      "query": "Naslov i autor",
+      "placeholder": "npr. Haykin, Signals and Systems, 2. izdanje",
+      "onlyTitle": "Na internet ide samo naslov, autor i izdanje.",
+      "search": "Nađi sadržaj",
+      "searching": "Tražim sadržaj na internetu…",
+      "chapters_one": "{{count}} poglavlje",
+      "chapters_few": "{{count}} poglavlja",
+      "chapters_other": "{{count}} poglavlja",
+      "found": "Našla sam sadržaj: {{chapters}}",
+      "foundPages": "Našla sam sadržaj: {{chapters}}, {{pages}} str.",
+      "from": {
+        "publisher": "Sa stranice izdavača",
+        "library": "Iz kataloga biblioteke",
+        "store": "Sa stranice knjižare",
+        "other": "Sa interneta"
+      },
+      "origin": "{{from}}.",
+      "originEdition": "{{from}}, {{edition}}. izdanje.",
+      "checkEdition": "Provjeri da je isto izdanje kao tvoje, broj stranica zavisi od toga.",
+      "save_one": "Spasi {{count}} poglavlje",
+      "save_few": "Spasi {{count}} poglavlja",
+      "save_other": "Spasi {{count}} poglavlja",
+      "havePdf": "Ipak imam PDF",
+      "missTitle": "Nisam našla sadržaj ove knjige.",
+      "missBody": "Upiši poglavlja ručno, dovoljni su naslovi i stranice. Ili uslikaj stranicu sa sadržajem, to je najbrže.",
+      "typeInstead": "Upiši poglavlja",
+      "photoInstead": "Uslikaj sadržaj",
+      "sourceRow": "Sadržaj s interneta",
+      "open": "Otvori",
+      "findForRough": "Nađi sadržaj na internetu"
+    },
+    "syllabus": {
+      "from": "Iz plana i programa",
+      "fromAt": "Iz plana i programa · {{institution}}",
+      "title": "Koje od ovoga koristiš?",
+      "group": "Literatura iz plana i programa",
+      "required": "Obavezna",
+      "extra": "Dopunska",
+      "add_one": "Dodaj {{count}} izvor",
+      "add_few": "Dodaj {{count}} izvora",
+      "add_other": "Dodaj {{count}} izvora",
+      "pick": "Označi šta koristiš",
+      "none": "Ne koristim nijednu",
+      "hint": "Za svaku dodaš PDF ako ga imaš. Ako nemaš, Hoot na internetu nađe bar sadržaj."
+    },
+    "text": {
+      "title": "Tekst izvora",
+      "fileSub_one": "{{name}} · {{count}} str.",
+      "fileSub_few": "{{name}} · {{count}} str.",
+      "fileSub_other": "{{name}} · {{count}} str.",
+      "rowEmpty": "Dodaj PDF da tutor i sažetak znaju šta piše",
+      "rowHave_one": "{{count}} str. · za tutor i sažetak",
+      "rowHave_few": "{{count}} str. · za tutor i sažetak",
+      "rowHave_other": "{{count}} str. · za tutor i sažetak",
+      "rowPasted": "Zalijepljen tekst · za tutor i sažetak",
+      "introTitle": "Da tutor i sažetak znaju šta piše u knjizi",
+      "introBody": "Hoot čita PDF na tvom telefonu. U bazu ide samo tekst po poglavljima. Original ostaje kod tebe i ne čuva se.",
+      "noPages": "Jedinice ovog izvora nemaju stranice, pa Hoot ne zna koji tekst ide uz koju. Dodaj raspon stranica u Uredi sadržaj.",
+      "whereFrom": "Odakle je PDF?",
+      "device": "S uređaja",
+      "deviceSub": "Fajlovi, Preuzimanja",
+      "private": "Tekst je privatan. Ide samo na plaćeni model, nikad na besplatne servise.",
+      "progress": "stranica {{page}} od {{total}}",
+      "progressLabel": "Čitanje PDF-a",
+      "reading": "Čitam na telefonu. Ne zatvaraj ovaj ekran.",
+      "readingButton": "Čitam…",
+      "byChapter": "Po poglavljima",
+      "pages": "str. {{from}} do {{to}}",
+      "pagesRead": "str. {{from}} do {{to}} · pročitano",
+      "confirmTitle": "Gdje je str. {{page}} knjige?",
+      "confirmBody": "Nisam našla gdje počinje „{{title}}“. Na kojoj stranici PDF-a je str. {{page}} knjige?",
+      "pdfPage": "PDF stranica",
+      "pdfPageLess": "Ranija stranica",
+      "pdfPageMore": "Kasnija stranica",
+      "emptyPage": "Ova stranica je prazna.",
+      "read": "Pročitano",
+      "pagesValue_one": "{{count}} str.",
+      "pagesValue_few": "{{count}} str.",
+      "pagesValue_other": "{{count}} str.",
+      "units_one": "{{count}} jedinica",
+      "units_few": "{{count}} jedinice",
+      "units_other": "{{count}} jedinica",
+      "passages": "Odlomaka",
+      "passagesSub": "za pretragu u tutoru",
+      "embedding": "spremam za pretragu · {{done}} od {{total}}",
+      "saved": "Šta je spašeno",
+      "savedText": "Tekst po poglavljima",
+      "savedTextSub": "prema rasponu stranica iz izvora",
+      "original": "Originalni PDF",
+      "originalSub": "ostaje na tvom uređaju, ne šalje se",
+      "deleteHint": "Možeš ga obrisati u svakom trenutku. Brišu se tekst i odlomci, izvor i plan ostaju.",
+      "missingPages_one": "{{count}} jedinica nema raspon stranica, pa za nju nema teksta.",
+      "missingPages_few": "{{count}} jedinice nemaju raspon stranica, pa za njih nema teksta.",
+      "missingPages_other": "{{count}} jedinica nema raspon stranica, pa za njih nema teksta.",
+      "done": "Gotovo",
+      "again": "Pročitaj ponovo",
+      "delete": "Obriši tekst",
+      "deleted": "Tekst izvora je obrisan",
+      "failed": "Ovaj PDF ne mogu pročitati.",
+      "scannedTag": "Nema teksta u ovom PDF-u",
+      "scannedTitle": "Izgleda da je skeniran",
+      "scannedBody": "Stranice su slike, pa Hoot nema šta pročitati. Prepoznavanje slike (OCR) dolazi kasnije. Izvor ostaje u planu kako jeste.",
+      "now": "Šta možeš odmah",
+      "paste": "Zalijepi tekst poglavlja",
+      "pasteSub": "iz Worda, bilješki ili tačnog izvora",
+      "other": "Izaberi drugi PDF",
+      "otherSub": "tekstualna verzija iste knjige",
+      "notesOnly": "Samo bilješke",
+      "notesOnlySub": "tutor i kartice rade iz tvojih bilješki",
+      "scannedHint": "Plan, ponavljanja i provjere rade i bez teksta izvora.",
+      "back": "Nazad na izvor",
+      "pasteTitle": "Tekst poglavlja",
+      "pasteUnit": "Poglavlje",
+      "pastePlaceholder": "Zalijepi tekst ovdje",
+      "pasted": "Tekst poglavlja je spašen"
     }
   },
   "time": {
@@ -1368,7 +1553,6 @@
   },
   "calendar": {
     "title": "Akademski kalendar",
-    "heading": "Akademska godina",
     "intro": "Kad traje nastava, kad su parcijale i ispitni rokovi i koji su dani neradni. Datume pojedinih ispita unosiš na predmetu.",
     "add": "+ Dodaj",
     "newTitle": "Novi period",
@@ -1415,7 +1599,6 @@
   },
   "timetable": {
     "title": "Raspored nastave",
-    "heading": "Predavanja i vježbe",
     "periodLine_one": "{{title}} · važi do {{date}} · {{count}} termin sedmično",
     "periodLine_few": "{{title}} · važi do {{date}} · {{count}} termina sedmično",
     "periodLine_other": "{{title}} · važi do {{date}} · {{count}} termina sedmično",
@@ -1463,8 +1646,7 @@
     "photoHint": "AI prepozna termine; pregledaš prije spašavanja"
   },
   "availability": {
-    "title": "Dostupnost",
-    "heading": "Kad možeš učiti?",
+    "title": "Kad mogu učiti",
     "totalBefore": "Ove sedmice do",
     "totalAfter": "učenja. Plan nikad ne prelazi slobodne termine ni dnevni maksimum.",
     "perWeek": "{{hours}} sedmično",
@@ -1499,6 +1681,7 @@
     "context": "{{kind}} · danas {{time}}",
     "date": "Datum predavanja",
     "noSources": "Ovaj predmet još nema izvor sa jedinicama. Dodaj izvor da bi bilježila dokle se stiglo.",
+    "noSources_male": "Ovaj predmet još nema izvor sa jedinicama. Dodaj izvor da bi bilježio dokle se stiglo.",
     "hint": "Tapni zadnju jedinicu koja je obrađena.",
     "coveredUpTo": "Obrađeno do",
     "note": "Bilješka",
@@ -1519,22 +1702,6 @@
     "barLabel": "Ti si na {{you}}. dijelu, predavanja na {{lecture}}. od {{total}}",
     "youShort": "Ti · {{n}}",
     "lectureShort": "Predavanje · {{n}}",
-    "warnLectures_one": "Zaostaješ {{count}} predavanje",
-    "warnLectures_few": "Zaostaješ {{count}} predavanja",
-    "warnLectures_other": "Zaostaješ {{count}} predavanja",
-    "warnBody": "Pređeno na predavanjima, a još nije počelo: {{amount}} (~{{time}}).",
-    "action": {
-      "raise_priority": "Podigni prioritet na {{n}}",
-      "switch_to_regular": "Prebaci na redovno",
-      "take_time_from": "Uzmi vrijeme od drugog predmeta",
-      "start_earlier": "Kreni ranije",
-      "add_minutes": "Dodaj vrijeme dnevno"
-    },
-    "done": {
-      "raise_priority": "Prioritet je sada {{n}}.",
-      "switch_to_regular": "Predmet je sada u redovnom režimu."
-    },
-    "later": "Kasnije",
     "promptSub": "Dokle ste stigli? · {{time}}",
     "contextDate": "{{kind}} · {{date}} {{time}}",
     "behindTime": "~{{time}} učenja"
@@ -1594,7 +1761,6 @@
       "of": "od",
       "percent": "Procenat",
       "rescaleHint": "Ako je test bodovan drugačije (npr. od 50), upiši to; doprinos se preračuna na {{points}} bodova.",
-      "pct": "{{pct}}%",
       "passedLine": "{{pct}}% · položeno",
       "failedLine": "{{pct}}% · nije položeno",
       "thresholdNote": "prag {{pct}}%",
@@ -1634,34 +1800,18 @@
       "thresholdFor": "Prag za ocjenu {{grade}}",
       "below": "ispod {{pct}}%",
       "reset": "Vrati bosansku skalu",
-      "target": "Željena ocjena",
-      "noTarget": "bez cilja",
-      "targetHint": "Plan će podići ciljnu pokrivenost da stigneš do {{grade}}.",
-      "noTargetHint": "Bez cilja plan prati samo prioritet predmeta.",
       "globalSubtitle": "Za sve predmete",
       "applies": "Za koje predmete važi",
       "appliesAll": "Za sve predmete",
       "appliesSubject": "Samo ovaj predmet",
       "appliesAllHint": "Ista skala i ukupno bodova važe za sve predmete koji nemaju svoju. Izmjena ovdje mijenja ih za sve.",
       "appliesSubjectHint": "{{name}} dobija svoju skalu; ostali predmeti ostaju na zajedničkoj."
-    },
-    "overview": {
-      "title": "Ocjene",
-      "entry": "Uslov za {{title}}: još {{points}}",
-      "targetNeeds": "Cilj {{grade}} · treba {{points}} od {{remaining}} preostalih ({{pct}}%)",
-      "passNeeds": "Za prolaz treba {{points}} od {{remaining}} preostalih ({{pct}}%)",
-      "passSecured": "Prolaz osiguran",
-      "passUnreachable": "Prolaz više nije dostižan bez popravnog",
-      "noPoints": "Bodovi nisu uneseni",
-      "addOnSubject": "Dodaj na predmetu"
     }
   },
   "owl": {
     "name": "Asistent",
     "tagline": "zna tvoje dokumente i plan",
     "ask": "Pitaj asistenta…",
-    "askEmpty": "Daj mi raspored ispita…",
-    "open": "Otvori razgovor sa asistentom",
     "offline": "Asistent je offline. Vraća se kad se povežeš.",
     "disabled": "Asistent još nije podešen (nema AI ključa).",
     "add": "Daj dokument",
@@ -1670,9 +1820,7 @@
     "suggest": {
       "important": "Šta je danas najvažnije?",
       "importExams": "Uvezi raspored ispita",
-      "makeup": "Kad je popravni?",
-      "addSubject": "+ Dodaj predmet",
-      "importCalendar": "Uvezi akademski kalendar"
+      "makeup": "Kad je popravni?"
     },
     "sheet": {
       "title": "Daj dokument",
@@ -1729,6 +1877,7 @@
     "error": {
       "offline": "Nema interneta. Pokušaj kad se povežeš.",
       "rate_limited": "Za danas je dosta: iskorišteno je 30 AI poziva. Sutra nastavljamo.",
+      "fetch_limited": "Za danas je dosta linkova: preuzeto ih je 40. Sutra nastavljamo.",
       "provider_busy": "AI servis je trenutno zauzet. Pokušaj za minut.",
       "no_key": "AI još nije podešen.",
       "invalid_output": "Nisam uspjela pročitati ovaj dokument. Probaj ponovo; ako je slika, pošalji jasniju.",
@@ -1738,7 +1887,8 @@
       "file": "Ovo ne mogu pročitati. Pošalji sliku, PDF ili tekst.",
       "link": "Ovaj link ne mogu otvoriti. Provjeri da je javan (bez prijave) i da vodi do PDF-a, slike ili stranice.",
       "quota_exhausted": "Besplatni AI limit za danas je potrošen. Resetuje se sutra ujutro (oko 9 h).",
-      "needs_paid": "Ovo AI radi samo sa plaćenim modelom: tvoj tekst nikad ne ide na besplatne servise."
+      "needs_paid": "Ovo AI radi samo sa plaćenim modelom: tvoj tekst nikad ne ide na besplatne servise.",
+      "no_text": "Ova jedinica još nema tekst izvora. Dodaj PDF na izvoru."
     },
     "document": {
       "stored": "Spremila sam „{{title}}“ u Dokumente.",
@@ -1847,7 +1997,10 @@
       "timetable": "Daj raspored nastave",
       "contents": "Dodaj sadržaj ili pitanja",
       "contentsFor": "Dodaj sadržaj · {{subject}}",
-      "giveDocument": "Daj dokument"
+      "giveDocument": "Daj dokument",
+      "openTutor": "Otvori tutora",
+      "tutorNone": "Ne nalazim poglavlje „{{text}}“ u tvojim izvorima. Otvori jedinicu u Predmetima i tamo pokreni tutora.",
+      "tutorStays": "Asistent ostaje za plan, dokumente i promjene u rasporedu."
     },
     "syllabus": {
       "books_one": "{{count}} knjiga",
@@ -1921,19 +2074,14 @@
     "body": "Ovo se prvi put učitava s interneta. Timer i započeta sesija rade i bez mreže; promjene se šalju kad se veza vrati."
   },
   "menu": {
-    "title": "Meni",
-    "open": "Otvori meni",
-    "close": "Zatvori meni",
     "calendar": "Kalendar",
     "timetable": "Raspored nastave",
     "allSubjects": "Svi predmeti",
     "overview": "Pregled",
     "sessions": "Sesije",
     "settings": "Postavke",
-    "allSettings": "Sve postavke",
     "academicCalendar": "Akademski kalendar",
-    "documents": "Dokumenti",
-    "subpages": "Podstranice: {{section}}"
+    "documents": "Dokumenti"
   },
   "feeds": {
     "title": "Povezani kalendari",
@@ -1962,6 +2110,7 @@
     "name": "Naziv",
     "newLink": "Novi link (opcionalno)",
     "newLinkPlaceholder": "zalijepi samo ako si ga obnovila",
+    "newLinkPlaceholder_male": "zalijepi samo ako si ga obnovio",
     "remove": "Ukloni kalendar",
     "removeConfirm": "Ukloniti ovaj kalendar? Njegovi događaji nestaju iz plana.",
     "synced": "sinhronizovano {{when}}",
@@ -2016,11 +2165,17 @@
     "name": {
       "title": "Kako da te zovem?",
       "sub": "Plan i podsjetnici će ti se obraćati imenom.",
+      "address": "Kako da ti se obraćam?",
+      "addressFemale": "Spremna si",
+      "addressMale": "Spreman si",
       "zone": "Vremenska zona: {{zone}} (iz browsera)"
     },
     "import": {
       "title": "Šta već imaš?",
       "sub": "Uvezi ono što postoji, da nastava i obaveze budu zauzete prije nego biraš slobodno vrijeme.",
+      "syllabus": "Plan i program",
+      "syllabusSub": "Predmeti, literatura i bodovanje odjednom",
+      "syllabusHint": "S planom i programom predmete ne upisuješ ručno.",
       "calendar": "Akademski kalendar",
       "calendarSub": "PDF, slika ili tekst · nastava, rokovi, neradni dani",
       "timetable": "Raspored nastave",
@@ -2076,6 +2231,7 @@
     "presets": {
       "title": "Pauze i podsjetnici",
       "sub": "Ovo je samo podsjetnik. Pauzu uvijek tapneš sama, a za svaku sesiju možeš izabrati drugi.",
+      "sub_male": "Ovo je samo podsjetnik. Pauzu uvijek tapneš sam, a za svaku sesiju možeš izabrati drugi.",
       "recommended": "preporučeno",
       "own": "Vlastiti niz (npr. 45 → 10 → 45 → 20) složiš u Postavkama.",
       "reminders": "Podsjetnik prije bloka",
@@ -2094,6 +2250,7 @@
     "week": {
       "title": "Tvoja sedmica",
       "sub": "Ovako izgleda plan s onim što si unijela.",
+      "sub_male": "Ovako izgleda plan s onim što si unio.",
       "free": "slobodno sedmično",
       "needed": "potrebno do: {{exam}}",
       "noExam": "nema ispita s datumom",
@@ -2168,7 +2325,6 @@
   },
   "suggestions": {
     "later": "Kasnije",
-    "change": "Promijeni",
     "ok": "U redu",
     "fresh": {
       "title": "Krenimo ispočetka",
@@ -2193,11 +2349,6 @@
       "doneTake": "{{subject}} dobija {{minutes}} min dnevno od {{donor}} do {{date}}.",
       "doneEarlier": "Kampanja kreće {{date}}. Plan je preračunat.",
       "doneAdd": "Do {{date}} imaš {{minutes}} min dnevno više."
-    },
-    "grade": {
-      "title": "Željena ocjena iz {{subject}} traži više",
-      "sub": "Za takvu ocjenu obično treba „{{level}}“.",
-      "done": "Predmet je sad „{{level}}“. Plan je preračunat."
     },
     "period": {
       "title": "Ulaziš u ispitni rok — povećati maksimum na {{hours}} h do {{date}}?",
@@ -2309,7 +2460,6 @@
     "modeFixedSub": "Zaključan: plan ga ne pomjera ni briše, nego planira oko njega. Vrati na Automatski bilo kad."
   },
   "crumbs": {
-    "label": "Putanja",
     "fresh": "Krenimo ispočetka",
     "newSubject": "Novi predmet",
     "edit": "Uredi",
@@ -2362,9 +2512,11 @@
     "answerSaved": "Odgovor je spašen",
     "outlineLabel": "PO STRUKTURI POGLAVLJA",
     "outlineHint": "Za svaki podnaslov označi da li si ga mogla objasniti bez gledanja.",
+    "outlineHint_male": "Za svaki podnaslov označi da li si ga mogao objasniti bez gledanja.",
     "outlineYes": "Da",
     "outlineNo": "Ne",
     "outlineAria": "Da li si mogla objasniti: {{title}}",
+    "outlineAria_male": "Da li si mogao objasniti: {{title}}",
     "blurtLabel": "NAPIŠI SVE ČEGA SE SJEĆAŠ",
     "blurtPlaceholder": "Bez gledanja u knjigu ili bilješke…",
     "blurtHint": "Kad istekne vrijeme, uporedi sa svojim bilješkama pa se ocijeni.",
@@ -2372,6 +2524,7 @@
     "blurtCompareLabel": "BILJEŠKE I PODNASLOVI",
     "blurtNothing": "Za ovo poglavlje nema bilješki ni podnaslova — uporedi sa knjigom.",
     "howMuch": "Koliko si se sjetila?",
+    "howMuch_male": "Koliko si se sjetio?",
     "recall": {
       "0": "Ne",
       "1": "Djelimično",
@@ -2423,7 +2576,6 @@
     "discardProposal": "Odbaci"
   },
   "review": {
-    "title": "Provjera znanja",
     "progress": "Provjera znanja · {{n}} od {{total}}",
     "close": "Zatvori",
     "strength": "jačina {{pct}} · zadnji put {{last}}",
@@ -2440,7 +2592,8 @@
       "exam_question": "ISPITNO PITANJE {{label}}",
       "card": "KARTICA",
       "recall": "PRISJETI SE",
-      "question": "ISPITNO PITANJE"
+      "question": "ISPITNO PITANJE",
+      "source_text": "IZ TEKSTA IZVORA"
     },
     "recallPrompt": "Šta znaš o: {{title}}?",
     "answer": "ODGOVOR",
@@ -2491,7 +2644,6 @@
     "empty": "Jačina se računa kad poglavlje prođe prvi test (recall gate ili provjeru pročitanog).",
     "nextReview": "Sljedeće ponavljanje",
     "step": "korak {{n}} od 4",
-    "unitStrength": "jačina {{pct}} · {{band}}",
     "unlock": "„Razumijem” se otključava kroz",
     "unlockLink": "test pamćenja",
     "unlockQuestion": "„Znam” se otključava kroz",
@@ -2742,7 +2894,7 @@
       "appearance": {
         "title": "Izgled",
         "sub": "Postavke › Opće · tema",
-        "syn": "tema, boja, boje, izgled, lavanda, grafit, pijesak, kadulja, okean"
+        "syn": "tema, boja, boje, izgled, noć, grafit, mahovina, šljiva, kesten"
       },
       "faculty": {
         "title": "Fakultet i godina",
@@ -2760,25 +2912,20 @@
     "row": "Izgled",
     "rowSub": "tema boja",
     "theme": {
-      "lavender": {
-        "name": "Lavanda",
-        "sub": "zadana · ljubičasta magla"
+      "ocean": {
+        "name": "Noć"
       },
       "graphite": {
-        "name": "Grafit",
-        "sub": "neutralna · topla siva"
-      },
-      "sand": {
-        "name": "Pijesak",
-        "sub": "topla · bež"
+        "name": "Grafit"
       },
       "sage": {
-        "name": "Kadulja",
-        "sub": "smirena · zelena"
+        "name": "Mahovina"
       },
-      "ocean": {
-        "name": "Okean",
-        "sub": "hladna · plava"
+      "lavender": {
+        "name": "Šljiva"
+      },
+      "sand": {
+        "name": "Kesten"
       }
     }
   },
@@ -2991,33 +3138,50 @@
     }
   },
   "landing": {
-    "signIn": "Prijavi se",
+    "signIn": "Prijava",
     "start": "Počni",
-    "lead": "Hoot od tvojih rokova, literature i ispitnih pitanja napravi dnevni plan učenja i sam ga prepravi kad nešto propustiš.",
-    "devices": "Radi na telefonu i računaru · dodaj na početni ekran",
-    "shotAlt": "Ekran Danas u Hootu: sljedeći blok, ponavljanje i ispit za 12 dana",
-    "what": {
-      "title": "Ti učiš, Hoot planira",
-      "plan": "Plan iz tvojih rokova",
-      "planBody": "Uslikaj sadržaj knjige i dodaj datume ispita. Hoot rasporedi gradivo po danima, oko nastave i tvog slobodnog vremena.",
-      "adapt": "Sam se prilagodi",
-      "adaptBody": "Propušten dan ili dan bez energije? Jedan tap i plan se prepravi, bez krivnje i bez ručnog premještanja.",
-      "remember": "Pamti umjesto tebe",
-      "rememberBody": "Kratka provjera poslije učenja, a ponavljanja stižu baš kad bi gradivo počelo blijediti, do dana ispita."
+    "haveAccount": "Već imam nalog",
+    "headline": "Ti učiš.\nHoot planira.",
+    "lead": "Upiši ispite i knjige. Hoot složi svaki dan i sam ga prepravi kad dan krene drugačije.",
+    "owl": "Hoot",
+    "day": {
+      "title": "Ujutro otvoriš.\nDan je već složen.",
+      "alt": "Animacija: kartice dana se miješaju kao špil; prednja kartica izleti udesno i vrati se na dno, sljedeći blok dođe naprijed",
+      "next": "Sljedeće · {{time}}",
+      "minutes": "{{n}} min",
+      "chapter": "Poglavlje {{n}}",
+      "subject": "Predmet {{n}} · {{exam}}",
+      "examIn_one": "ispit za {{count}} dan",
+      "examIn_few": "ispit za {{count}} dana",
+      "examIn_other": "ispit za {{count}} dana",
+      "reading": "Čitanje"
     },
-    "how": {
-      "title": "Kako počinješ",
-      "signIn": "Prijavi se",
-      "signInBody": "emailom ili Googleom.",
-      "subjects": "Dodaj predmete:",
-      "subjectsBody": "uvezi akademski kalendar i raspored ili samo upiši ispite.",
-      "today": "Otvori Danas",
-      "todayBody": "i počni prvi blok."
+    "learn": {
+      "title": "Plan koji uči\nzajedno s tobom.",
+      "ml": "Mašinsko učenje",
+      "mlBody": "Model prati koliko ti stvarno treba po poglavlju i sa svakim danom preciznije procjenjuje vrijeme.",
+      "mlChip": "Pog. 3 · procjena 45 → 38 min",
+      "adapt": "Adaptivno preraspoređivanje",
+      "adaptBody": "Kad se dan promijeni, plan se sam preslaže. Poglavlja ostaju po redu, a ispiti pokriveni.",
+      "adaptChip": {
+        "missed": "Propušten dan",
+        "less": "Manje vremena",
+        "deadline": "Novi rok"
+      },
+      "progress": "Izvještaji o napretku",
+      "progressBody": "Vidiš koliko je spremno po predmetu i gdje kasniš, prije nego postane problem.",
+      "weekly": "Sedmični izvještaj"
     },
-    "cta": {
-      "title": "Sljedeći ispitni rok, bez panike",
-      "body": "Tvoji podaci ostaju tvoji: izvoz u svakom trenutku.",
-      "button": "Počni"
+    "replan": {
+      "title": "Dan ne ide po planu?\nNema veze.",
+      "cant": "Danas ne mogu",
+      "today": "Danas",
+      "tomorrow": "Sutra",
+      "free": "slobodno",
+      "chapter": "Pog. {{n}}",
+      "ok": "Sve pomjereno za jedan dan",
+      "okSub": "Poglavlja ostaju po redu, ispiti pokriveni",
+      "alt": "Animacija: Danas se oslobodi, a poglavlja oba predmeta se pomjere za dan, i dalje po redu: Predmet 1 poglavlja 1, 2, 3 i Predmet 2 poglavlja 1, 2"
     }
   },
   "semesterEnd": {
@@ -3035,6 +3199,7 @@
     "title": "Sedmični pregled",
     "fallback": "Pravila su izdvojila prijedloge za tvoj plan. Odaberi samo ono što ti odgovara. Pregled radi i bez AI-ja.",
     "apply": "Primijeni",
+    "done": "Primijenjeno. Plan se preračunava.",
     "applied": "Primijenjeno",
     "cancel": "Poništi prijedlog",
     "ask": "Pitaj AI za pregled",
@@ -3047,6 +3212,7 @@
     "applyError": "Promjena nije spašena. Pokušaj ponovo.",
     "effect": "Manjak prije: {{before}} min · poslije: {{after}} min",
     "strictGate": "Uključila si provjeru bez preskakanja za ovaj predmet. Odgovori na sve provjere; ovo možeš isključiti na Napretku.",
+    "strictGate_male": "Uključio si provjeru bez preskakanja za ovaj predmet. Odgovori na sve provjere; ovo možeš isključiti na Napretku.",
     "actions": {
       "set_priority": "{{subject}}: podigni prioritet na {{priority}}",
       "boost_priority": "{{subject}}: pojačaj do {{until}}",
@@ -3081,14 +3247,24 @@
       "speed": "Tempo gradiva"
     },
     "copy": {
-      "avoidance": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgode u 14 dana. Mali prvi korak može pomoći.",
+      "avoidance_one": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgoda u 14 dana. Mali prvi korak može pomoći.",
+      "avoidance_few": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgode u 14 dana. Mali prvi korak može pomoći.",
+      "avoidance_other": "Kod tebe izgleda da {{subject}} češće ostane za kasnije: {{count}} odgoda u 14 dana. Mali prvi korak može pomoći.",
       "calibration": "Kod tebe procjena za {{subject}} izgleda oko {{pct}} postotnih poena viša od provjere ({{count}} parova).",
       "recall_share": "{{pct}}% od {{hours}} h u sedmici bili su pitanja, zadaci i ponavljanje. Dva bloka pitanja mogu dati više prostora prisjećanju.",
       "late_before_exam": "U {{count}} večeri pred ispit učenje je završilo iza 00:30. Raniji kraj može ostaviti više prostora za san.",
-      "best_slot": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesija. Kod tebe ovaj termin izgleda dobar.",
-      "distraction": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesija.",
-      "first_break": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesija).",
-      "speed": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesija. Težina gradiva je uračunata."
+      "best_slot_one": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesiju. Kod tebe ovaj termin izgleda dobar.",
+      "best_slot_few": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesije. Kod tebe ovaj termin izgleda dobar.",
+      "best_slot_other": "{{days}} · {{part}}: fokus {{focus}}/3 kroz {{count}} sesija. Kod tebe ovaj termin izgleda dobar.",
+      "distraction_one": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesiju.",
+      "distraction_few": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesije.",
+      "distraction_other": "{{part}}: oko {{leaves}} izlazaka ili ometanja na 30 min, kroz {{count}} sesija.",
+      "first_break_one": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesija).",
+      "first_break_few": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesije).",
+      "first_break_other": "Prva pauza ti dođe nakon oko {{minutes}} min ({{count}} sesija).",
+      "speed_one": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesiju. Težina gradiva je uračunata.",
+      "speed_few": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesije. Težina gradiva je uračunata.",
+      "speed_other": "{{mode}}: izmjereno / očekivano trajanje {{ratio}}× kroz {{count}} sesija. Težina gradiva je uračunata."
     },
     "techniques": {
       "self_testing": "Samotestiranje · Dunlosky i sar., 2013.",
@@ -3103,6 +3279,7 @@
     "duration": "oko 2 minute",
     "summaryTitle": "Tvoja sedmica",
     "summary": "Ove sedmice si učila {{hours}}. Pogledaj šta je radilo i potvrdi samo promjene koje želiš ponijeti u sljedeću sedmicu.",
+    "summary_male": "Ove sedmice si učio {{hours}}. Pogledaj šta je radilo i potvrdi samo promjene koje želiš ponijeti u sljedeću sedmicu.",
     "vsPlan": "od {{hours}} plana",
     "doneBlocks": "odrađenih blokova",
     "recall": "udio prisjećanja",
@@ -3130,5 +3307,323 @@
       "unmotivated": "Nemam volje",
       "busy": "Obaveze"
     }
+  },
+  "proposals": {
+    "title": "Prijedlozi",
+    "lastWeek": "Iz prošle sedmice · {{range}}",
+    "thisWeek": "Iz ove sedmice · {{range}}",
+    "pending_one": "{{count}} čeka odluku",
+    "pending_few": "{{count}} čekaju odluku",
+    "pending_other": "{{count}} čeka odluku",
+    "allDecided": "Sve je odlučeno",
+    "applied_one": "{{count}} primijenjen",
+    "applied_few": "{{count}} primijenjena",
+    "applied_other": "{{count}} primijenjeno",
+    "confirm": "Potvrdi {{count}}",
+    "more_one": "Još {{count}} prijedlog",
+    "more_few": "Još {{count}} prijedloga",
+    "more_other": "Još {{count}} prijedloga",
+    "less": "Prikaži manje",
+    "notNow": "Ne sada",
+    "ok": "U redu",
+    "undo": "Poništi",
+    "takeBack": "Vrati odluku",
+    "applyAgain": "Ipak primijeni",
+    "restore": "Vrati",
+    "skipped": "Preskočeno · {{title}}",
+    "appliedEffect": "Primijenjeno. Plan je preračunat.",
+    "alreadyDone": "Hoot je već uradio",
+    "rules": {
+      "deficit": "Manjak u planu",
+      "behind": "Zaostatak",
+      "crowding": "Gužva pred ispit",
+      "slot": "Vrijeme učenja",
+      "read_untested": "Ponavljanje",
+      "avoidance": "Prvi korak",
+      "rhythm": "Ritam"
+    },
+    "moved": {
+      "title": "Propušten blok od {{minutes}}.",
+      "body": "Gradivo je prebačeno na {{when}}.",
+      "effect": "{{when}} · {{subject}} {{minutes}} ostaje u planu.",
+      "undone": "Vraćeno. Gradivo je izbačeno iz plana, a {{subject}} i dalje kasni."
+    },
+    "limit": "Ove sedmice su primijenjena 3 prijedloga. Ostali čekaju sljedeću sedmicu.",
+    "entry_one": "{{count}} prijedlog čeka tvoju odluku",
+    "entry_few": "{{count}} prijedloga čekaju tvoju odluku",
+    "entry_other": "{{count}} prijedloga čeka tvoju odluku",
+    "entryNone": "Prijedlozi za tvoj plan",
+    "entrySub": "Iz prošle sedmice · svaki se odobri jednim tapom",
+    "entryNoneSub": "Ništa ne čeka odluku",
+    "today": "danas",
+    "tomorrow": "sutra"
+  },
+  "points": {
+    "title": "Bodovi",
+    "sub_one": "{{count}} predmet",
+    "sub_few": "{{count}} predmeta",
+    "sub_other": "{{count}} predmeta",
+    "target": "cilj {{grade}}",
+    "edit": "Uredi bodove i skalu: {{name}}",
+    "noItems": "Još nema stavki koje nose bodove. Dodaj ih na olovci.",
+    "aria": "Osvojeno {{have}} od {{total}}. Cilj {{goal}} od {{points}} bodova.",
+    "legendEarned": "Osvojeno {{points}}",
+    "legendForecast": "Prognoza {{range}}",
+    "legendTarget": "Cilj {{grade}}",
+    "legendPass": "Prolaz",
+    "callNone": "Još nema bodova.",
+    "callNoneSub": "{{item}} nosi {{points}}, a za {{grade}} ti treba ukupno {{need}}.",
+    "callNeeds": "Za {{grade}} treba {{points}} od preostalih {{remaining}}.",
+    "callPace": "Ovim tempom stižeš {{range}} bodova, ocjena {{grades}}.",
+    "callRisk": "Prognoza je {{range}} bodova, a ispod {{pass}} je pad. {{name}} treba više vremena.",
+    "enter": "Upiši rezultat",
+    "enterHint": "Stigli su bodovi sa kolokvija, zadaće ili ispita? Upiši ih ovdje, a Hoot preračuna šta ti još treba. Skalu i stavke svakog predmeta mijenjaš na olovci.",
+    "defaultScale": "Zadana skala: {{scale}} bodova.",
+    "scaleStep": "{{grade}} od {{pct}}",
+    "pickSub": "Izaberi ispit ili zadaću",
+    "pickEmpty": "Nijedan ispit ni zadaća ne čeka rezultat.",
+    "editLabel": "Bodovanje i skala",
+    "items": "Šta nosi bodove",
+    "itemsTotal": "ukupno {{sum}} / {{total}}",
+    "threshold": "prag {{points}}",
+    "earnedFor": "{{title}}, osvojeno",
+    "tooMany": "Rezultat ne može biti veći od bodova stavke.",
+    "itemsHint": "Upiši rezultat čim ga dobiješ. Prazno znači da još nije bilo, pa Hoot računa koliko ti treba.",
+    "itemsEmpty": "Dodaj ispite ili zadaće sa bodovima, pa Hoot računa koliko ti treba za ocjenu.",
+    "addItem": "Dodaj stavku (prisustvo, seminarski…)",
+    "scale": "Skala ocjena",
+    "customScale": "Posebna skala za ovaj predmet",
+    "scaleDefault": "Zadana: {{scale}}",
+    "scaleOwn": "Ovaj predmet: {{scale}}",
+    "scaleAria": "Skala: {{scale}}",
+    "gradeFrom": "Ocjena {{grade}} od",
+    "less": "Manje bodova za {{grade}}",
+    "more": "Više bodova za {{grade}}",
+    "scaleHint": "Ispod {{points}} bodova predmet nije položen. Zadanu skalu za sve predmete mijenjaš u Postavkama.",
+    "rowEmpty": "Upiši bodove za ispite i zadaće",
+    "rowHave": "{{name}} {{have}} od {{max}}",
+    "rowNone": "{{name}} · još nema bodova",
+    "rowNeeds": "za {{grade}} treba još {{points}}",
+    "or": "ili",
+    "gradesSpan": "{{low}} do {{high}}"
+  },
+  "summary": {
+    "instead": {
+      "tag": "Deficit",
+      "title": "Ne stižeš sve pročitati",
+      "how": "Kako dalje",
+      "body_one": "Do ispita iz predmeta {{subject}} ostaje {{days}} dana, a {{count}} poglavlje je nepročitano. Za ovaj predmet je dovoljno proći, pa sažetak može zamijeniti čitanje.",
+      "body_few": "Do ispita iz predmeta {{subject}} ostaje {{days}} dana, a {{count}} poglavlja su nepročitana. Za ovaj predmet je dovoljno proći, pa sažetak može zamijeniti čitanje.",
+      "body_other": "Do ispita iz predmeta {{subject}} ostaje {{days}} dana, a {{count}} poglavlja je nepročitano. Za ovaj predmet je dovoljno proći, pa sažetak može zamijeniti čitanje.",
+      "read": "Pročitaj cijelo",
+      "readSub": "{{time}} · ne stiže do ispita",
+      "use": "Sažetak umjesto čitanja",
+      "useFits": "{{time}} · stiže do ispita",
+      "useShort": "{{time}} · i dalje fali {{short}}",
+      "hint": "Ta poglavlja se označe „Pročitano (sažetak)“, a prva provjera dolazi za 2 dana. Poglavlja možeš pročitati kad ti ostane vremena.",
+      "apply": "Koristi sažetke",
+      "keep": "Ostavi plan kako jeste",
+      "open": "Sažetak umjesto čitanja",
+      "done_one": "{{count}} poglavlje ide kroz sažetak",
+      "done_few": "{{count}} poglavlja idu kroz sažetak",
+      "done_other": "{{count}} poglavlja ide kroz sažetak",
+      "short": "{{time}} umjesto {{reading}}"
+    },
+    "title": "Sažetak",
+    "refresh": "Osvježi sažetak",
+    "scope": "Opseg sažetka",
+    "scopes": {
+      "unit": "Jedinica",
+      "chapter": "Cijelo poglavlje"
+    },
+    "aiTag": "AI sažetak",
+    "page": "str. {{page}}",
+    "formula": "Formula koju treba znati",
+    "made": "Napravljen {{when}} iz teksta izvora. Ostaje isti dok se tekst ne promijeni.",
+    "notReplacing": "Sažetak ne zamjenjuje čitanje za ispit. Provjera će pokazati šta ti je ostalo nejasno.",
+    "toCards": "Napravi kartice iz ovoga",
+    "check": "Provjeri se",
+    "emptyTitle": "Sažetak još nije napravljen",
+    "emptyBody": "Hoot ga pravi iz teksta izvora, sa stranicom uz svaku ideju. Ostaje spašen dok se tekst ne promijeni.",
+    "make": "Napravi sažetak",
+    "making": "Pravim sažetak…",
+    "readVia": "Pročitano (sažetak)",
+    "useSummary": "Koristi sažetak",
+    "useSummarySub": "{{time}} umjesto {{reading}}",
+    "planned": "U planu: sažetak umjesto čitanja",
+    "readFull": "Pročitaj cijelo",
+    "unitRows": {
+      "title": "Iz teksta izvora",
+      "summary": "Sažetak",
+      "summarySub": "Ključne ideje sa stranicama",
+      "summaryMade": "{{time}} umjesto {{reading}}",
+      "cards": "Kartice iz gradiva",
+      "cardsSub": "AI predlaže 5 do 15"
+    },
+    "useSummaryHint": "Učiš iz sažetka umjesto da čitaš stranice"
+  },
+  "materialCards": {
+    "title": "Kartice iz gradiva",
+    "sub": "Prijedlog za {{unit}}",
+    "from": "Iz čega",
+    "sources": {
+      "text": "Tekst jedinice",
+      "notes": "Bilješke",
+      "pasted": "Zalijepi tekst"
+    },
+    "pastePlaceholder": "Zalijepi tekst poglavlja ili odlomka",
+    "propose": "Predloži kartice",
+    "proposing": "Pravim kartice…",
+    "kept": "{{kept}} od {{total}} kartica ostaje",
+    "range": "AI predlaže 5 do 15",
+    "keep": "zadrži",
+    "dropped": "izbačeno",
+    "drop": "Izbaci",
+    "restore": "Vrati",
+    "edit": "Izmijeni",
+    "add_one": "Dodaj {{count}} karticu",
+    "add_few": "Dodaj {{count}} kartice",
+    "add_other": "Dodaj {{count}} kartica",
+    "addHint": "Postaju kartice ove jedinice, prvo ponavljanje sutra",
+    "added_one": "Dodana {{count}} kartica",
+    "added_few": "Dodane {{count}} kartice",
+    "added_other": "Dodano {{count}} kartica",
+    "noNotes": "Ova jedinica nema bilješki.",
+    "front": "Pitanje",
+    "back": "Odgovor"
+  },
+  "tutor": {
+    "title": "Tutor",
+    "pages": "str. {{from}} do {{to}}",
+    "questionsCount_one": "{{count}} ispitno pitanje",
+    "questionsCount_few": "{{count}} ispitna pitanja",
+    "questionsCount_other": "{{count}} ispitnih pitanja",
+    "textHere": "Tekst izvora je tu",
+    "noText": "Nema teksta izvora",
+    "noTextSub": "Objasni i Svojim riječima trebaju PDF izvora. Ispitaj me radi i sa pitanjima i karticama.",
+    "how": "Kako da učimo?",
+    "recommended": "Preporuka",
+    "modes": {
+      "explain": "Objasni",
+      "explainSub": "Iz tvog teksta, sa stranicom",
+      "quiz": "Ispitaj me",
+      "quizSub": "Pitanja iz ispita, kartica i teksta",
+      "oral": "Usmeni",
+      "oralSub": "Hoot pita glasom, ti odgovaraš",
+      "feynman": "Svojim riječima",
+      "feynmanSub": "Ti objasniš, tutor traži rupe"
+    },
+    "ratedHint": "Ispitaj me i Usmeni upisuju ocjene u ponavljanje, kao provjera. Objasni i Svojim riječima su učenje bez ocjene.",
+    "timeHint": "Vrijeme sa tutorom ulazi u sesiju kao",
+    "timeTag": "Tutor",
+    "thinking": "Tutor razmišlja…",
+    "explain": {
+      "sub": "{{unit}} · iz tvog teksta",
+      "empty": "Pitaj šta ti nije jasno iz ovog poglavlja. Tutor odgovara iz tvog teksta i kaže na kojoj je stranici.",
+      "fromBook": "Iz knjige",
+      "example": "Daj primjer",
+      "simpler": "Jednostavnije",
+      "quizMe": "Ispitaj me o ovome",
+      "placeholder": "Pitaj o ovom poglavlju",
+      "send": "Pošalji"
+    },
+    "quiz": {
+      "preparing": "Tutor sprema pitanja…",
+      "empty": "Za ovo poglavlje još nema pitanja ni kartica, a ni teksta izvora iz kojeg bi tutor pitao. Dodaj PDF ili kartice.",
+      "progress": "{{n}} od {{total}}",
+      "questions": "Pitanja",
+      "examQuestion": "Ispitno pitanje {{label}}",
+      "card": "Kartica",
+      "fromText": "Iz teksta",
+      "yourAnswer": "Tvoj odgovor",
+      "placeholder": "Odgovori svojim riječima, bez gledanja u knjigu.",
+      "dontKnow": "Ne znam",
+      "check": "Provjeri odgovor",
+      "thinks": "Tutor misli: {{verdict}}",
+      "verdict": {
+        "forgot": "ne sjećaš se",
+        "partial": "djelimično",
+        "remember": "sjećaš se"
+      },
+      "correct": "Tačan odgovor",
+      "howMuch": "Koliko si znala?",
+      "youDecide": "Tutor predlaže, ti odlučuješ. Ocjena ide u ponavljanje kao u provjeri.",
+      "rated": "Ocjena: {{rating}}"
+    },
+    "end": {
+      "title": "Dobra runda",
+      "sub": "Tutor · {{unit}}",
+      "time": "Vrijeme",
+      "timeSub": "ulazi u sesiju kao Tutor",
+      "answered": "Odgovoreno",
+      "questions_one": "{{count}} pitanje",
+      "questions_few": "{{count}} pitanja",
+      "questions_other": "{{count}} pitanja",
+      "split": "{{yes}} sjećam se · {{partial}} djelimično · {{no}} ne",
+      "next": "Sljedeće ponavljanje",
+      "nextSub": "upisano u ponavljanje kao u provjeri",
+      "perQuestion": "Po pitanjima",
+      "spoken": "usmeno",
+      "written": "napisano",
+      "skipped": "bez odgovora",
+      "unit": "Jedinica",
+      "levelHint": "Nivo se mijenja iz ocjena, kao u provjeri. Tutor sam ne označava ništa.",
+      "done": "Gotovo",
+      "missedToCards": "Pitanja koja si promašila u kartice",
+      "again": "Još jedna runda"
+    },
+    "feynman": {
+      "sub": "Objasni „{{topic}}“ kao da učiš prijatelja",
+      "yours": "Tvoje objašnjenje",
+      "placeholder": "Piši kao da objašnjavaš kolegi koji nije bio na predavanju.",
+      "check": "Pokaži rupe",
+      "noticed": "Šta je tutor primijetio",
+      "good": "Dobro objašnjeno",
+      "gaps_one": "Jedna rupa",
+      "gaps_few": "{{count}} rupe",
+      "gaps_other": "{{count}} rupa",
+      "again": "Pokušaj ponovo",
+      "enough": "Dosta za sada",
+      "hint": "Ovaj način ne upisuje ocjenu u ponavljanje. Služi da vidiš šta još ne možeš reći svojim riječima."
+    },
+    "entry": {
+      "study": "Uči sa tutorom",
+      "studySub": "Ista sesija, samo s tutorom. Vrijeme se broji.",
+      "ask": "Pitaj tutora",
+      "askSub": "Timer ne staje dok pitaš",
+      "unitSub": "Objasni, ispitaj, usmeni, svojim riječima"
+    },
+    "oral": {
+      "progress": "Pitanje {{n}} od {{total}}",
+      "asks": "Hoot pita",
+      "you": "Ti",
+      "close": "Zatvori usmeni",
+      "noVoice": "Glas na bosanskom još nije dostupan: pitanje je ispisano, a odgovaraš glasom."
+    }
+  },
+  "voice": {
+    "title": "Glas",
+    "sub": "Za tutora i asistenta",
+    "speak": "Tutor govori naglas",
+    "speakSub": "Odgovori i pitanja se čitaju",
+    "notInBosnian": "Glas na bosanskom još nije dostupan. Odgovori su pisani.",
+    "answer": "Odgovaram glasom",
+    "answerSub": "Mikrofon umjesto tipkanja u Usmenom",
+    "howTitle": "Kako radi",
+    "onPhone": "Sve radi na telefonu",
+    "onPhoneBody": "Govor u tekst pretvara Whisper i razumije i bosanski. Naglas čita Kokoro, za sada samo na engleskom. Prvi put se skida oko 170 MB, a poslije radi bez interneta. Snimak glasa ne napušta telefon.",
+    "bosnianLater": "Diktiranje na bosanskom radi. Čitanje naglas na bosanskom dolazi kad bude dobar slobodan glas.",
+    "mic": "Diktiraj",
+    "listening": "Slušam",
+    "transcribing": "Pretvaram u tekst…",
+    "loading": "Skidam model glasa… {{p}}%",
+    "done": "Gotovo",
+    "cancel": "Otkaži",
+    "type": "Piši umjesto glasa",
+    "repeat": "Ponovi pitanje",
+    "micError": "Mikrofon nije dostupan. Dozvoli ga u postavkama preglednika ili piši.",
+    "readAloud": "Odgovori naglas",
+    "repeatShort": "Ponovi",
+    "typeShort": "Piši"
   }
 }

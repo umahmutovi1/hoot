@@ -1,8 +1,9 @@
+import { ScreenTitle } from '@/components/ScreenTitle'
 import type { TFunction } from 'i18next'
 import { useMemo, useState, type ReactNode } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   ArchiveIcon,
@@ -11,6 +12,7 @@ import {
   ChevronLeftIcon,
   CloseIcon,
   DocIcon,
+  GlobeIcon,
   SparkleIcon,
   TextIcon,
   WarningIcon,
@@ -18,7 +20,8 @@ import {
 import { SplashScreen } from '@/components/SplashScreen'
 import { Button } from '@/components/ui/button'
 import { useAiAvailability } from '@/features/owl/api'
-import { useSubject } from '@/features/subjects/api'
+import { useProfile } from '@/features/settings/profile'
+import { useSubject, useUpdateSubject } from '@/features/subjects/api'
 import { ChipGroup, fieldInput, fieldLabel } from '@/features/subjects/fields'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
 import {
@@ -38,7 +41,11 @@ import {
 import { leavesOf } from '@/lib/progress'
 import { cn } from '@/lib/utils'
 import { validationKey } from '@/lib/validation'
-import { useDeleteSource, useSaveOutline, useSource } from './api'
+import { bookTitle, unusedLiterature } from '@/lib/import/syllabus'
+import { useArchiveRough, useDeleteSource, useSaveOutline, useSource, useSources } from './api'
+import { BottomSheet } from '@/components/BottomSheet'
+import { otherRough } from '@/lib/estimates/rough'
+import { SyllabusBooks } from './SyllabusBooks'
 import { amountLabel, formatDuration } from './format'
 import { carryDifficulty, sourceToForm, toFormattable, toStoredUnits } from './mappers'
 import {
@@ -58,10 +65,11 @@ import {
   type UnitForm,
 } from './schemas'
 import { UnitSheet } from './UnitSheet'
-import { useAiImport, type AiResult } from './useAiImport'
+import { useAiImport, useWebToc, type AiResult } from './useAiImport'
 import { driveAvailable } from './drive'
 import { PdfImport, type PdfOrigin } from './PdfImport'
-import type { AiOutline } from '@/lib/outline/ai'
+import { fromAi, type AiOutline } from '@/lib/outline/ai'
+import type { FoundToc } from '@shared/schemas.ts'
 
 /**
  * DodajIzvor → Parsiranje for manual entry: /subjects/:id/sources/new, and "Uredi sadržaj" at
@@ -69,16 +77,20 @@ import type { AiOutline } from '@/lib/outline/ai'
  */
 export function SourceEditorPage() {
   const { id, sourceId } = useParams()
+  const [params] = useSearchParams()
   const { data: subject, isPending } = useSubject(id)
   const { data: source, isPending: sourcePending } = useSource(id, sourceId)
 
   if (isPending || (sourceId && sourcePending)) return <SplashScreen />
   if (!subject) return <Navigate to="/subjects" replace />
   if (sourceId && !source) return <Navigate to={`/subjects/${subject.id}`} replace />
-  return <SourceEditor key={sourceId ?? 'new'} subject={subject} source={source} />
+  // Each syllabus book in the queue (`?books=`) is a fresh editor.
+  const key = sourceId ?? `new:${params.get('books') ?? ''}`
+  return <SourceEditor key={key} subject={subject} source={source} />
 }
 
-type Step = { kind: 'input' } | ({ kind: 'review' } & AiResult)
+/** `found`: the chapters came from the web ("Nađi na internetu"), shown with their page. */
+type Step = { kind: 'input' } | ({ kind: 'review'; found?: FoundToc } & AiResult)
 
 const NO_AI = { topics: {}, warnings: [] }
 
@@ -94,6 +106,16 @@ function SourceEditor({
   const save = useSaveOutline()
   const isEdit = Boolean(source)
   const existing = useMemo(() => (source ? activeUnits(source) : []), [source])
+  const [params] = useSearchParams()
+  // Syllabus books picked in "Koje od ovoga koristiš?" (`?books=2,0`), opened one after another,
+  // or a book title from a rough source (`?title=`): both start on the web search.
+  const queue = (params.get('books') ?? '')
+    .split(',')
+    .filter(Boolean)
+    .map(Number)
+    .filter(Number.isInteger)
+  const book = unusedLiterature(subject.syllabus_literature, []).find((b) => b.index === queue[0])
+  const askedTitle = book ? bookTitle(book) : (params.get('title')?.slice(0, 120) ?? '')
 
   const form = useForm<SourceForm>({
     resolver: zodResolver(sourceFormSchema),
@@ -103,22 +125,52 @@ function SourceEditor({
           id: crypto.randomUUID(),
           subjectId: subject.id,
           kind: 'book',
-          title: '',
+          title: askedTitle,
           measure: 'pages',
           minutesPerItem: null,
         },
   })
-  const [kind, measure] = useWatch({ control: form.control, name: ['kind', 'measure'] })
+  const [kind, measure, title] = useWatch({
+    control: form.control,
+    name: ['kind', 'measure', 'title'],
+  })
   const [text, setText] = useState(() =>
     source ? formatOutline(toFormattable(existing), measure) : '',
   )
   const [textError, setTextError] = useState<string | null>(null)
   const [step, setStep] = useState<Step>({ kind: 'input' })
-  const [mode, setMode] = useState<InputMode>(isEdit ? 'text' : 'pdf')
+  // NoviPredmet → Prvi izvor opens the editor on the picked way in (`?mode=pdf|web|photo`).
+  const [mode, setMode] = useState<InputMode>(() => {
+    if (isEdit) return 'text'
+    if (askedTitle) return 'web'
+    const asked = params.get('mode')
+    return asked === 'photo' || asked === 'web' ? asked : 'pdf'
+  })
   const [files, setFiles] = useState<File[]>([])
   const ai = useAiImport(subject)
+  const web = useWebToc()
+  // The query the web found nothing for; typing another one hides the miss.
+  const [missed, setMissed] = useState<string | null>(null)
+  const webMissed = missed !== null && missed === title.trim()
   const { state: aiState } = useAiAvailability()
   const aiReady = aiState === 'ready'
+  const { data: sources } = useSources(subject.id)
+  const archiveRough = useArchiveRough(subject.id)
+  // After the last save: the subject's other rough sources, offered for archiving.
+  const [askRough, setAskRough] = useState<{
+    titles: string[]
+    ids: string[]
+    merge: ReturnType<typeof mergeOutline>
+  } | null>(null)
+  const institution = useProfile().data?.institution ?? null
+  const updateSubject = useUpdateSubject()
+  const books =
+    isEdit || askedTitle || !sources
+      ? []
+      : unusedLiterature(
+          subject.syllabus_literature,
+          sources.map((s) => s.title),
+        )
 
   const toReview = form.handleSubmit(() => {
     const checked = outlineTextSchema.safeParse(text)
@@ -150,7 +202,23 @@ function SourceEditor({
       window.scrollTo(0, 0)
     })()
 
-  /** Where the units came from (PDF, Drive): kept on the source when it is saved. */
+  /** "Nađi sadržaj": the chapters go to review with their page; nothing is saved before. */
+  const findOnWeb = form.handleSubmit(async (values) => {
+    const query = values.title.trim()
+    const result = await web.run(query)
+    if (!result) return
+    if (!result.toc) return setMissed(query)
+    const found = result.toc
+    keepOrigin({ fileName: null, driveFileId: null, externalUrl: found.source_url })
+    const outline = fromAi(
+      found.units.map((u) => ({ ...u, topics: [] })),
+      measure,
+    )
+    setStep({ kind: 'review', ...outline, warnings: [], found })
+    window.scrollTo(0, 0)
+  })
+
+  /** Where the units came from (PDF, Drive, web): kept on the source when it is saved. */
   const keepOrigin = (origin: PdfOrigin) => {
     form.setValue('fileName', origin.fileName)
     form.setValue('driveFileId', origin.driveFileId)
@@ -178,6 +246,26 @@ function SourceEditor({
     const values = form.getValues()
     const merge = mergeOutline(toStoredUnits(source?.units ?? []), units, () => crypto.randomUUID())
     save.mutate({ form: values, measure, merge, topics })
+    // The last book saved: the subject's other rough sources are offered for archiving at once.
+    const rest = otherRough(
+      (sources ?? []).filter((s) => s.id !== values.id && s.units.some((u) => !u.archived_at)),
+      values.title,
+    )
+    if (queue.length <= 1 && rest.length > 0) {
+      setAskRough({ titles: rest.map((s) => s.title), ids: rest.map((s) => s.id), merge })
+      return
+    }
+    goNext(merge)
+  }
+
+  const goNext = (merge: ReturnType<typeof mergeOutline>) => {
+    const values = form.getValues()
+    if (queue.length > 1) {
+      navigate(`/subjects/${subject.id}/sources/new?books=${queue.slice(1).join(',')}`, {
+        replace: true,
+      })
+      return
+    }
     // Questions go on to their chapter links (AI suggestions for review), then the exam scope.
     const linkable =
       measure === 'questions' && aiReady && merge.units.some((u) => u.status !== 'unchanged')
@@ -191,43 +279,102 @@ function SourceEditor({
     )
   }
 
+  const roughSheet = (
+    <BottomSheet
+      open={askRough !== null}
+      onOpenChange={(open) => {
+        if (open || !askRough) return
+        setAskRough(null)
+        goNext(askRough.merge)
+      }}
+      title={t('sources.rough.otherTitle')}
+      subtitle={t('sources.rough.otherBody', { count: askRough?.ids.length ?? 0 })}
+    >
+      <div className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-1 rounded-[20px] surface p-3 text-[15px]">
+          {askRough?.titles.map((title) => (
+            <li key={title} className="truncate">
+              {title}
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          className="btn-primary flex h-14 items-center justify-center rounded-[18px] text-[17px] font-bold"
+          onClick={() => {
+            if (!askRough) return
+            archiveRough.mutate(askRough.ids)
+            setAskRough(null)
+            goNext(askRough.merge)
+          }}
+        >
+          {t('sources.rough.archiveOthers')}
+        </button>
+        <button
+          type="button"
+          className="flex h-12 items-center justify-center text-[15px] font-bold text-brand-strong"
+          onClick={() => {
+            if (!askRough) return
+            setAskRough(null)
+            goNext(askRough.merge)
+          }}
+        >
+          {t('sources.rough.keepOthers')}
+        </button>
+      </div>
+    </BottomSheet>
+  )
+
   if (step.kind === 'review') {
     return (
-      <Review
-        outline={step.outline}
-        topics={step.topics}
-        aiWarnings={step.warnings}
-        measure={measure}
-        minutesRate={
-          measure === 'items'
-            ? (form.getValues('minutesPerItem') ?? DEFAULT_ITEM_MINUTES)
-            : baseMinPerUnit(kind, measure)
-        }
-        existing={source}
-        onChange={(outline) => setStep({ ...step, outline })}
-        onTopics={(topics) => setStep({ ...step, topics })}
-        rate={
-          aiReady
-            ? {
-                busy: ai.busy,
-                error: ai.error,
-                run: async () => {
-                  const result = await ai.run(form.getValues(), measure, {
-                    kind: 'rate',
-                    outline: step.outline,
-                  })
-                  if (result) setStep({ ...step, ...result, warnings: step.warnings })
-                },
-              }
-            : null
-        }
-        onBack={() => {
-          setText(formatOutline(step.outline.units, measure))
-          setStep({ kind: 'input' })
-        }}
-        onSave={onSave}
-        saveLabel={t(splitByExam ? 'sources.review.saveAndSplit' : 'common.save')}
-      />
+      <>
+        {roughSheet}
+        <Review
+          outline={step.outline}
+          topics={step.topics}
+          aiWarnings={step.warnings}
+          measure={measure}
+          minutesRate={
+            measure === 'items'
+              ? (form.getValues('minutesPerItem') ?? DEFAULT_ITEM_MINUTES)
+              : baseMinPerUnit(kind, measure)
+          }
+          existing={source}
+          onChange={(outline) => setStep({ ...step, outline })}
+          onTopics={(topics) => setStep({ ...step, topics })}
+          rate={
+            aiReady
+              ? {
+                  busy: ai.busy,
+                  error: ai.error,
+                  run: async () => {
+                    const result = await ai.run(form.getValues(), measure, {
+                      kind: 'rate',
+                      outline: step.outline,
+                    })
+                    if (result) setStep({ ...step, ...result, warnings: step.warnings })
+                  },
+                }
+              : null
+          }
+          onBack={() => {
+            setText(formatOutline(step.outline.units, measure))
+            setStep({ kind: 'input' })
+          }}
+          found={step.found}
+          onHavePdf={() => {
+            keepOrigin({ fileName: null, driveFileId: null, externalUrl: null })
+            setMode('pdf')
+            setStep({ kind: 'input' })
+          }}
+          onSave={onSave}
+          saveLabel={
+            step.found && !splitByExam
+              ? t('sources.web.save', { count: step.outline.units.length })
+              : t(splitByExam ? 'sources.review.saveAndSplit' : 'common.save')
+          }
+        />
+      </>
     )
   }
 
@@ -246,14 +393,25 @@ function SourceEditor({
 
   return (
     <form onSubmit={toReview} noValidate className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-[13px] text-brand-muted">{subject.name}</span>
-          <h1 className="text-[26px] leading-tight font-bold tracking-[-0.4px]">
-            {t(isEdit ? 'sources.editor.editTitle' : 'sources.editor.newTitle')}
-          </h1>
-        </div>
-      </div>
+      <ScreenTitle
+        title={t(isEdit ? 'sources.editor.editTitle' : 'sources.editor.newTitle')}
+        sub={subject.name}
+      />
+
+      {books.length > 0 && (
+        <SyllabusBooks
+          books={books}
+          institution={institution}
+          onAdd={(indexes) =>
+            navigate(`/subjects/${subject.id}/sources/new?books=${indexes.join(',')}`, {
+              replace: true,
+            })
+          }
+          onNone={() =>
+            updateSubject.mutate({ id: subject.id, patch: { syllabus_literature: [] } })
+          }
+        />
+      )}
 
       {!isEdit && (
         <div className="flex flex-col gap-2">
@@ -268,7 +426,7 @@ function SourceEditor({
                 onClick={() => pickKind(k)}
                 className={cn(
                   'flex h-16 flex-col items-center justify-center gap-0.5 rounded-[18px] border-2 text-sm font-semibold',
-                  kind === k ? 'border-brand-accent bg-canvas-soft' : 'border-surface glass',
+                  kind === k ? 'border-brand-accent bg-canvas-soft' : 'border-surface surface',
                 )}
               >
                 {t(`sources.kind.${k}`)}
@@ -303,7 +461,7 @@ function SourceEditor({
                 min={1}
                 max={600}
                 aria-invalid={Boolean(errors.minutesPerItem)}
-                className={cn(fieldInput, 'glass')}
+                className={cn(fieldInput, 'surface')}
                 {...form.register('minutesPerItem', {
                   setValueAs: (v: string) => (v === '' ? null : Number(v)),
                 })}
@@ -317,12 +475,16 @@ function SourceEditor({
       )}
 
       <label className="flex flex-col gap-2">
-        <span className={fieldLabel}>{t('sources.editor.title')}</span>
+        <span className={fieldLabel}>
+          {t(mode === 'web' ? 'sources.web.query' : 'sources.editor.title')}
+        </span>
         <input
           maxLength={120}
-          placeholder={t('sources.editor.titlePlaceholder')}
+          placeholder={t(
+            mode === 'web' ? 'sources.web.placeholder' : 'sources.editor.titlePlaceholder',
+          )}
           aria-invalid={Boolean(errors.title)}
-          className={cn(fieldInput, 'h-[52px] glass')}
+          className={cn(fieldInput, 'h-[52px] surface')}
           {...form.register('title')}
         />
         {errors.title && (
@@ -360,14 +522,37 @@ function SourceEditor({
             busy={ai.busy}
           />
         )}
+        web={
+          <WebSearch
+            busy={web.busy}
+            missed={webMissed}
+            aiReady={aiReady}
+            onType={() => setMode('text')}
+            onPhoto={() => setMode('photo')}
+          />
+        }
       />
 
-      {ai.error && (
+      {(mode === 'web' ? web.error : ai.error) && (
         <span role="alert" className="text-sm text-danger">
-          {t(`owl.error.${ai.error as 'failed'}`)}
+          {t(`owl.error.${(mode === 'web' ? web.error : ai.error) as 'failed'}`)}
         </span>
       )}
-      {mode === 'pdf' || mode === 'drive' ? null : mode === 'photo' ? (
+      {mode === 'pdf' || mode === 'drive' || (mode === 'web' && webMissed) ? null : mode ===
+        'web' ? (
+        <>
+          <span className="text-center text-xs text-ink-muted">{t('sources.web.onlyTitle')}</span>
+          <Button
+            type="button"
+            size="pill"
+            disabled={!aiReady || web.busy || title.trim().length < 3}
+            onClick={() => void findOnWeb()}
+            className="btn-primary"
+          >
+            {t('sources.web.search')}
+          </Button>
+        </>
+      ) : mode === 'photo' ? (
         <>
           <span className="text-center text-xs text-ink-muted">
             {t('sources.import.deletedAfter')}
@@ -398,11 +583,12 @@ function SourceEditor({
   )
 }
 
-type InputMode = 'pdf' | 'drive' | 'photo' | 'text'
-const INPUT_MODES: InputMode[] = ['pdf', 'drive', 'photo', 'text']
+type InputMode = 'pdf' | 'drive' | 'web' | 'photo' | 'text'
+const INPUT_MODES: InputMode[] = ['pdf', 'drive', 'web', 'photo', 'text']
 const MODE_ICONS: Record<InputMode, ReactNode> = {
   pdf: <DocIcon size={18} />,
   drive: <ArchiveIcon size={18} />,
+  web: <GlobeIcon size={18} />,
   photo: <CameraIcon size={18} />,
   text: <TextIcon size={18} />,
 }
@@ -420,6 +606,7 @@ function OutlineInput({
   aiReady,
   onAiText,
   pdf,
+  web,
 }: {
   measure: Measure
   mode: InputMode
@@ -433,14 +620,17 @@ function OutlineInput({
   aiReady: boolean
   onAiText: () => void
   pdf: (source: 'pdf' | 'drive') => ReactNode
+  web: ReactNode
 }) {
   const { t } = useTranslation()
   const { state } = useAiAvailability()
-  // A PDF's outline and pages make sense for pages and slides; question lists are typed or photographed.
-  const modes = INPUT_MODES.filter(
-    (m) =>
-      (m !== 'pdf' && m !== 'drive') ||
-      ((measure === 'pages' || measure === 'slides') && (m !== 'drive' || driveAvailable())),
+  // A PDF's outline and pages make sense for pages and slides; a book's contents on the web for
+  // pages; question lists are typed or photographed.
+  const modes = INPUT_MODES.filter((m) =>
+    m === 'web'
+      ? measure === 'pages'
+      : (m !== 'pdf' && m !== 'drive') ||
+        ((measure === 'pages' || measure === 'slides') && (m !== 'drive' || driveAvailable())),
   )
   const current = modes.includes(mode) ? mode : modes[0]!
   return (
@@ -460,7 +650,7 @@ function OutlineInput({
               aria-checked={current === m}
               onClick={() => onMode(m)}
               className={cn(
-                'flex min-h-14 items-center gap-3 rounded-[20px] border-2 glass p-3 text-left',
+                'flex min-h-14 items-center gap-3 rounded-[20px] border-2 surface p-3 text-left',
                 current === m ? 'border-brand-accent' : 'border-surface',
               )}
             >
@@ -481,6 +671,8 @@ function OutlineInput({
 
       {current === 'pdf' || current === 'drive' ? (
         pdf(current)
+      ) : current === 'web' ? (
+        web
       ) : current === 'photo' ? (
         <>
           <ImportPhotos files={files} onChange={onFiles} disabled={busy} />
@@ -491,7 +683,7 @@ function OutlineInput({
           )}
         </>
       ) : (
-        <div className="flex flex-col gap-2 rounded-card-lg glass p-4">
+        <div className="flex flex-col gap-2 rounded-card-lg surface p-4">
           <textarea
             rows={9}
             value={text}
@@ -525,6 +717,78 @@ function OutlineInput({
         </div>
       )}
     </>
+  )
+}
+
+/** "Nađi na internetu" while searching, and when nothing was found (IzvorInternet). */
+function WebSearch({
+  busy,
+  missed,
+  aiReady,
+  onType,
+  onPhoto,
+}: {
+  busy: boolean
+  missed: boolean
+  aiReady: boolean
+  onType: () => void
+  onPhoto: () => void
+}) {
+  const { t } = useTranslation()
+  const { state } = useAiAvailability()
+  if (!aiReady)
+    return (
+      <span className="text-[13px] text-ink-muted">
+        {t(state === 'offline' ? 'owl.offline' : 'sources.import.noAi')}
+      </span>
+    )
+  if (busy)
+    return (
+      <div
+        role="status"
+        className="flex items-center gap-2.5 py-2 text-[15px] font-semibold text-brand-strong"
+      >
+        <span aria-hidden="true" className="flex gap-1">
+          {[0, 150, 300].map((delay) => (
+            <span
+              key={delay}
+              style={{ animationDelay: `${delay}ms` }}
+              className="size-1.5 animate-pulse rounded-full bg-brand motion-reduce:animate-none"
+            />
+          ))}
+        </span>
+        {t('sources.web.searching')}
+      </div>
+    )
+  if (!missed) return null
+  return (
+    <div className="flex flex-col gap-2">
+      <div
+        role="status"
+        className="flex flex-col gap-1 rounded-[20px] bg-warning-soft p-3.5 text-warning-ink"
+      >
+        <span className="text-[15px] font-bold">{t('sources.web.missTitle')}</span>
+        <span className="text-[13px] leading-[1.4]">{t('sources.web.missBody')}</span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          variant="link"
+          className="h-11 font-bold text-brand-strong"
+          onClick={onType}
+        >
+          {t('sources.web.typeInstead')}
+        </Button>
+        <Button
+          type="button"
+          variant="link"
+          className="h-11 font-bold text-brand-strong"
+          onClick={onPhoto}
+        >
+          {t('sources.web.photoInstead')}
+        </Button>
+      </div>
+    </div>
   )
 }
 
@@ -568,6 +832,8 @@ function Review({
   onTopics,
   rate,
   onBack,
+  found,
+  onHavePdf,
   onSave,
   saveLabel,
 }: {
@@ -582,6 +848,8 @@ function Review({
   /** "Procijeni težinu AI-jem"; null when AI is not available. */
   rate: { busy: boolean; error: string | null; run: () => Promise<void> } | null
   onBack: () => void
+  found?: FoundToc
+  onHavePdf: () => void
   onSave: (units: OutlineUnit[], topics: Record<string, string[]>) => void
   saveLabel: string
 }) {
@@ -634,7 +902,7 @@ function Review({
           type="button"
           onClick={onBack}
           aria-label={t('app.back')}
-          className="flex size-11 items-center justify-center rounded-full glass"
+          className="flex size-11 items-center justify-center"
         >
           <ChevronLeftIcon size={20} />
         </button>
@@ -642,35 +910,43 @@ function Review({
         <button
           type="button"
           onClick={() => setSheet({ open: true, label: null })}
-          className="flex h-11 items-center rounded-full glass px-3.5 text-sm font-semibold text-brand"
+          className="flex h-11 items-center rounded-full surface px-3.5 text-sm font-semibold text-brand"
         >
           {t('sources.review.add')}
         </button>
       </div>
 
-      <div className="flex items-center gap-3.5 rounded-card glass p-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-brand-soft text-brand">
-          <BookIcon />
+      {found ? (
+        <FoundCard
+          found={found}
+          chapters={units.length}
+          pages={units.some((u) => u.pageStart !== null) ? totalAmount : null}
+        />
+      ) : (
+        <div className="flex items-center gap-3.5 rounded-card surface p-4">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-[16px] bg-brand-soft text-brand">
+            <BookIcon />
+          </div>
+          <div className="flex flex-1 flex-col gap-0.5">
+            <span className="text-base font-semibold">
+              {t('sources.review.summary', { count: units.length })}
+              {measure !== 'questions' && measure !== 'items' && (
+                <> · {amountLabel(t, measure, totalAmount)}</>
+              )}
+            </span>
+            <span className="text-xs text-ink-muted">
+              {t(
+                Object.keys(topics).length > 0
+                  ? 'sources.review.estimateAi'
+                  : 'sources.review.estimate',
+                {
+                  time: formatDuration(t, totalMinutes),
+                },
+              )}
+            </span>
+          </div>
         </div>
-        <div className="flex flex-1 flex-col gap-0.5">
-          <span className="text-base font-semibold">
-            {t('sources.review.summary', { count: units.length })}
-            {measure !== 'questions' && measure !== 'items' && (
-              <> · {amountLabel(t, measure, totalAmount)}</>
-            )}
-          </span>
-          <span className="text-xs text-ink-muted">
-            {t(
-              Object.keys(topics).length > 0
-                ? 'sources.review.estimateAi'
-                : 'sources.review.estimate',
-              {
-                time: formatDuration(t, totalMinutes),
-              },
-            )}
-          </span>
-        </div>
-      </div>
+      )}
 
       {aiWarnings.map((w, i) => (
         <div
@@ -687,7 +963,7 @@ function Review({
           type="button"
           disabled={rate.busy}
           onClick={() => void rate.run()}
-          className="flex min-h-11 items-center justify-center gap-1.5 rounded-full glass px-4 text-sm font-semibold text-brand disabled:opacity-50"
+          className="flex min-h-11 items-center justify-center gap-1.5 rounded-full surface px-4 text-sm font-semibold text-brand disabled:opacity-50"
         >
           <SparkleIcon size={16} />
           {rate.busy ? t('sources.import.rating') : t('sources.import.rate')}
@@ -715,9 +991,11 @@ function Review({
       ))}
 
       {units.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.review.empty')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">
+          {t('sources.review.empty')}
+        </p>
       ) : (
-        <div className="flex flex-col rounded-card glass p-1.5">
+        <div className="flex flex-col rounded-card surface p-1.5">
           {units.map((u) => {
             const status = existing ? statusOf.get(u.label) : undefined
             const guessed = u.amountGuessed && leafLabels.has(u.label)
@@ -823,7 +1101,7 @@ function Review({
       )}
 
       {merge.archive.length > 0 && (
-        <div className="flex flex-col gap-1.5 rounded-card glass p-4">
+        <div className="flex flex-col gap-1.5 rounded-card surface p-4">
           <span className="text-sm font-semibold">
             {t('sources.review.archiving', { count: merge.archive.length })}
           </span>
@@ -843,6 +1121,16 @@ function Review({
       >
         {saveLabel}
       </Button>
+      {found && (
+        <Button
+          type="button"
+          variant="link"
+          className="h-12 font-bold text-brand-strong"
+          onClick={onHavePdf}
+        >
+          {t('sources.web.havePdf')}
+        </Button>
+      )}
 
       <UnitSheet
         open={sheet.open}
@@ -853,6 +1141,50 @@ function Review({
         takenLabels={new Set(units.map((u) => u.label).filter((l) => l !== editing?.label))}
         onSubmit={(values) => onChange(upsertUnit(units, values, editing?.label ?? null, measure))}
       />
+    </div>
+  )
+}
+
+/** Where the web contents came from, with the edition warning (IzvorInternet). */
+function FoundCard({
+  found,
+  chapters,
+  pages,
+}: {
+  found: FoundToc
+  chapters: number
+  pages: number | null
+}) {
+  const { t } = useTranslation()
+  const count = t('sources.web.chapters', { count: chapters })
+  const from = t(`sources.web.from.${found.site_kind}`)
+  let host = found.source_url
+  try {
+    host = new URL(found.source_url).hostname.replace(/^www\./, '')
+  } catch {
+    // Checked on the server; the raw link is still a fine label.
+  }
+  return (
+    <div className="next-card flex flex-col gap-1 rounded-[20px] px-3.5 py-3">
+      <span className="text-[15px] font-bold">
+        {pages === null
+          ? t('sources.web.found', { chapters: count })
+          : t('sources.web.foundPages', { chapters: count, pages })}
+      </span>
+      <span className="text-[13px] leading-[1.4]">
+        {found.edition === null
+          ? t('sources.web.origin', { from })
+          : t('sources.web.originEdition', { from, edition: found.edition })}{' '}
+        {t('sources.web.checkEdition')}
+      </span>
+      <a
+        href={found.source_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex min-h-11 items-center self-start text-[13px] font-bold underline-offset-2 hover:underline"
+      >
+        {found.source_title ? `${host} · ${found.source_title}` : host}
+      </a>
     </div>
   )
 }

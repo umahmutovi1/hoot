@@ -23,7 +23,7 @@ export function LecturePromptCard({
   const { entry, subject } = lecture
   const palette = paletteOf(subject.color)
   return (
-    <div className="flex items-center gap-3 rounded-card glass p-3.5 pl-4">
+    <div className="flex items-center gap-3 rounded-card surface p-3.5 pl-4">
       <div
         className={cn(
           'flex size-[38px] shrink-0 items-center justify-center rounded-[12px] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]',

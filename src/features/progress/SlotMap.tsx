@@ -10,7 +10,7 @@ export function SlotMap() {
   const [selected, setSelected] = useState<string | null>(null)
   if (!data) return null
   return (
-    <section className="glass flex flex-col gap-3 rounded-card p-4">
+    <section className="surface flex flex-col gap-3 rounded-card p-4">
       <h2 className="text-base font-semibold">{t('progress.slots.title')}</h2>
       <p className="text-xs text-ink-muted">
         {t(

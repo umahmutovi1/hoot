@@ -21,7 +21,7 @@ interface BottomSheetProps {
 }
 
 /**
- * Bottom sheet as in the UrediBlok mockups: white, 32 px top radius, handle, 22 px title, × to close.
+ * Bottom sheet as in the UrediBlok mockups: raised, 32 px top radius, handle, 28 px title, a plain × to close.
  * It slides in on the iOS curve and follows the finger: dragging the handle down closes it (only
  * the handle, so forms, text selection and scrolling inside keep working; design README, Sprint 12;
  * timing in index.css). The keyboard inset comes from `--vv-bottom`, so vaul does not reposition inputs.
@@ -52,7 +52,9 @@ export function BottomSheet({
         <div className={cn('flex gap-3', leading ? 'items-center' : 'items-start')}>
           {leading}
           <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <DrawerTitle className="text-[22px] font-bold text-ink">{title}</DrawerTitle>
+            <DrawerTitle className="text-[28px] leading-[1.08] font-bold text-ink">
+              {title}
+            </DrawerTitle>
             {subtitle ? (
               <DrawerDescription className="text-sm text-ink-muted">{subtitle}</DrawerDescription>
             ) : (
@@ -63,9 +65,9 @@ export function BottomSheet({
             type="button"
             onClick={() => onOpenChange(false)}
             aria-label={t('common.close')}
-            className="-mt-1 -mr-1 flex size-11 self-start shrink-0 items-center justify-center rounded-full bg-canvas text-ink-secondary"
+            className="-mt-1 -mr-2 flex size-11 shrink-0 items-center justify-center self-start text-ink"
           >
-            <CloseIcon size={16} />
+            <CloseIcon size={18} />
           </button>
         </div>
         {children}

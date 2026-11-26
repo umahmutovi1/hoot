@@ -3,7 +3,7 @@
 import { createClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { corsHeaders, json } from './cors.ts'
-import { availableChain, parseChain, type FailedRun } from './chain.ts'
+import { availableChain, countsTowardLimit, parseChain, type FailedRun } from './chain.ts'
 import { chainProviders, DAILY_AI_LIMIT, getProvider, LlmError } from './llm.ts'
 import type { LlmDeps, LlmEnv, LlmFile, LlmProvider, PromptCacheStore } from './llm.ts'
 import { toBase64 } from './prompts.ts'
@@ -66,12 +66,42 @@ const DAY_MS = 24 * 60 * 60 * 1000
 /** AI calls in the rolling 24 h window (the "30 calls per day" limit). */
 export async function countRecentRuns(ctx: EdgeContext): Promise<number> {
   const since = new Date(Date.now() - DAY_MS).toISOString()
+  const { data, error } = await ctx.db
+    .from('ai_runs')
+    .select('task, ok, error')
+    .gte('created_at', since)
+  if (error) throw error
+  return ((data ?? []) as { task: string; ok: boolean; error: string | null }[]).filter(
+    countsTowardLimit,
+  ).length
+}
+
+/** Links downloaded by find-academic-info in the rolling 24 h window (FETCH_DAILY_LIMIT). */
+export async function countRecentFetches(ctx: EdgeContext): Promise<number> {
+  const since = new Date(Date.now() - DAY_MS).toISOString()
   const { count, error } = await ctx.db
     .from('ai_runs')
     .select('id', { count: 'exact', head: true })
+    .eq('task', 'fetch_document')
     .gte('created_at', since)
   if (error) throw error
   return count ?? 0
+}
+
+/** Logs a find-academic-info download in ai_runs (no model, no tokens). */
+export async function logFetch(ctx: EdgeContext, ok: boolean, error: string | null) {
+  const { error: insertError } = await ctx.admin.from('ai_runs').insert({
+    user_id: ctx.userId,
+    task: 'fetch_document',
+    provider: 'fetch',
+    model: 'none',
+    input_tokens: 0,
+    output_tokens: 0,
+    cost_usd: 0,
+    ok,
+    error,
+  })
+  if (insertError) console.error('ai_runs insert failed', insertError.message)
 }
 
 export async function remainingRuns(ctx: EdgeContext): Promise<number> {
@@ -100,8 +130,7 @@ export async function llmDeps(ctx: EdgeContext): Promise<LlmDeps> {
   return {
     provider,
     chain,
-    providerPaid: (ctx.env.get('LLM_PROVIDER') ?? 'gemini') === 'anthropic',
-    privateFree: ctx.env.get('LLM_PRIVATE_FREE') === 'allow',
+    ...privateAccess(ctx.env),
     countRecentRuns: () => countRecentRuns(ctx),
     logRun: async (run) => {
       const { error } = await ctx.admin.from('ai_runs').insert({ ...run, user_id: ctx.userId })
@@ -175,5 +204,13 @@ export async function withUploads<T>(
       const { error } = await ctx.db.storage.from('uploads').remove(files.map((f) => f.path))
       if (error) console.error('upload cleanup failed', error.message)
     }
+  }
+}
+
+/** Whether private tasks may run: a paid provider, or free use allowed during the beta. */
+export function privateAccess(env: LlmEnv): { providerPaid: boolean; privateFree: boolean } {
+  return {
+    providerPaid: (env.get('LLM_PROVIDER') ?? 'gemini') === 'anthropic',
+    privateFree: env.get('LLM_PRIVATE_FREE') === 'allow',
   }
 }

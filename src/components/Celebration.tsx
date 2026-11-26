@@ -4,7 +4,7 @@ import { useCelebration } from './celebrate-store'
 
 const SHOW_MS = 3200
 
-/** A short glass card at the top with the ring drawing to full; tap to close. No mascot. */
+/** A short surface card at the top with the ring drawing to full; tap to close. No mascot. */
 export function Celebration() {
   const { t } = useTranslation()
   const current = useCelebration((s) => s.current)
@@ -21,7 +21,7 @@ export function Celebration() {
       type="button"
       role="status"
       onClick={hide}
-      className="glass-strong animate-in fade-in slide-in-from-top-3 fixed inset-x-0 top-[calc(12px+env(safe-area-inset-top))] z-50 mx-auto flex w-[calc(100%-36px)] max-w-[394px] items-center gap-3.5 rounded-card-lg p-3.5 pr-5 text-left motion-reduce:animate-none"
+      className="surface-raised animate-in fade-in slide-in-from-top-3 fixed inset-x-0 top-[calc(12px+env(safe-area-inset-top))] z-50 mx-auto flex w-[calc(100%-36px)] max-w-[394px] items-center gap-3.5 rounded-card-lg p-3.5 pr-5 text-left motion-reduce:animate-none"
     >
       <svg
         width={current.kind === 'passed' ? 120 : 48}

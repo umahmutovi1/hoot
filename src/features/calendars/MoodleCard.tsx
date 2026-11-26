@@ -8,7 +8,7 @@ export function MoodleCard({ proposals }: { proposals: DeadlineProposal[] }) {
   const { t } = useTranslation()
   const changed = proposals.filter((p) => p.status === 'changed').length
   return (
-    <Link to="/today/moodle" className="flex items-center gap-3 rounded-card glass p-4">
+    <Link to="/today/moodle" className="flex items-center gap-3 rounded-card surface p-4">
       <span
         className="icon-tile flex size-[38px] shrink-0 items-center justify-center rounded-[12px]"
         aria-hidden="true"

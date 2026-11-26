@@ -21,8 +21,9 @@ export default defineConfig({
         start_url: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ECE9F4',
-        theme_color: '#ECE9F4',
+        // Noćna sova (src/index.css): the splash is the ground, the bar the brand (as index.html).
+        background_color: '#FBF5E6',
+        theme_color: '#34527A',
         // Android "Podijeli" → Hoot: a PDF or image from Viber, WhatsApp, Moodle or Gmail opens
         // "Daj dokument" with it (public/share-sw.js). iOS does not support share targets.
         share_target: {
@@ -53,7 +54,16 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
         // pdf.js is loaded only when a PDF goes to the owl, which needs a connection anyway; the
         // FSRS optimizer worker only runs online (its wasm is not precached either).
-        globIgnores: ['**/assets/pdf-*.js', '**/assets/fsrs*.js'],
+        // Voice (Sprint 18): Whisper / Kokoro and the ONNX runtime load on the first use of voice,
+        // which downloads the models anyway.
+        globIgnores: [
+          '**/assets/pdf-*.js',
+          '**/assets/fsrs*.js',
+          '**/assets/kokoro-*.js',
+          '**/assets/transformers*.js',
+          '**/assets/stt.worker-*.js',
+          '**/assets/tts.worker-*.js',
+        ],
         // Share target (POST /share-target) and Web Push handlers (push, notificationclick).
         importScripts: ['share-sw.js', 'push-sw.js'],
       },
@@ -80,6 +90,10 @@ export default defineConfig({
               includeDependenciesRecursively: false,
               test: /node_modules[\\/](recharts|recharts-scale|d3-[^\\/]+|victory-vendor|@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|reselect|immer)[\\/]/,
             },
+            // Dynamically imported only (a PDF given to the AI or a source): its own chunk, or the
+            // catch-all below pulls it into the vendor chunk every screen loads. The name matches
+            // `globIgnores` above.
+            { name: 'pdf', test: /node_modules[\\/]pdfjs-dist[\\/]/ },
             { name: 'vendor', test: /node_modules[\\/]/ },
           ],
         },

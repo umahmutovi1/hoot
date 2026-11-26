@@ -19,7 +19,7 @@ function DrawerOverlay({
   return (
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
-      className={cn('fixed inset-0 z-50 bg-scrim backdrop-blur-[2px]', className)}
+      className={cn('fixed inset-0 z-50 bg-scrim', className)}
       {...props}
     />
   )
@@ -35,7 +35,7 @@ function DrawerContent({
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
-        className={cn('glass-sheet fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col', className)}
+        className={cn('sheet fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col', className)}
         {...props}
       >
         {children}

@@ -5,7 +5,7 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 
 ## Source of truth
 - Specification: `docs/PRD.md` (Bosnian). Read the relevant section before implementing a feature.
-- Screen designs: `docs/design/` — see `docs/design/README.md` for the visual system (Liquid Glass) and screen flows.
+- Screen designs: `docs/design/` — see `docs/design/README.md` for the visual system ("Noćna sova" since Sprint 19; older sections describe Liquid Glass) and screen flows. Sprint 19+ mockups are in the Hoot redesign canvas (claude.ai Design artifact), not in the repo.
 - Build order and Definition of Done: `docs/ROADMAP.md`. Work on one sprint at a time.
 - Manual service setup (Supabase, Cloudflare, Resend, Anthropic, opening to more users): `docs/SETUP.md`. Keep it updated when a dashboard setting changes.
 - The designs are mockups: port layout, colors and copy into React + Tailwind. Do NOT copy the HTML or the demo `<script>` logic.
@@ -17,7 +17,7 @@ Single user for now, but auth-ready: every table has `user_id` + RLS.
 - AI prompts receive the user's `locale`; source titles stay as written in the book.
 
 ## Stack
-React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router · TanStack Query (server state) · Zustand (UI state) · React Hook Form + Zod · date-fns (own calendar grid, no FullCalendar) · ts-fsrs (spaced repetition) · react-markdown + KaTeX · Dexie (offline queue) · vite-plugin-pwa · Supabase (Postgres + RLS, Auth, Storage, Edge Functions/Deno) · Claude Haiku 5.5 via LLM wrapper (structured outputs) · Vitest + fast-check (+ Playwright later) · Cloudflare Pages · GitHub Actions.
+React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router · TanStack Query (server state) · Zustand (UI state) · React Hook Form + Zod · date-fns (own calendar grid, no FullCalendar) · ts-fsrs (spaced repetition) · react-markdown + KaTeX · Dexie (offline queue) · vite-plugin-pwa · Supabase (Postgres + RLS, Auth, Storage, Edge Functions/Deno) · LLM wrapper with the provider from secrets (Gemini free tier today, Claude Haiku 5.5 as the paid model; structured outputs) · Vitest + fast-check (+ Playwright later) · Cloudflare Pages · GitHub Actions.
 
 ## Layout
 - `src/app/` router, layout, providers, i18n setup
@@ -32,7 +32,6 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - `npx supabase functions serve` / `npx supabase functions deploy <name>`
 - `npm run sim -- [--seeds 100] [--estimator model|old] [--slots model|off] [--baseline] [--check] [--report sim.md] [--examples ml/data/sim_blocks.json]` (Sprint 15 simulator: real `plan()` + student model; `scripts/sim/baseline.json` is the bar no model may fall below, `--check` fails when a metric is worse)
 - `npm run ml:cases` (refresh the TS = Python cases after a prior changes) · `cd ml && uv run python -m hoot_ml.train [--write]` / `hoot_ml.monitor` (Sprint 15 MLOps; `train.yml` monthly, `ml-monitor.yml` weekly)
-- `npm run landing:shots` (landing screenshots: real app on Vite + in-memory Supabase mock with demo data → `public/landing/today-<locale>.jpg`; rerun when Danas changes)
 - `npm run eval` (promptfoo evals for `parse-document`; needs `GEMINI_API_KEY` in the shell)
 
 ## Product principle
@@ -56,10 +55,12 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - Regenerate `src/types/database.ts` after every migration.
 
 ## Design implementation
-- Tokens (colors, font stack, radii) and the glass utilities (`glass`, `glass-strong`, `glass-sheet`, `glass-tint`, `btn-primary`) live in `src/index.css`; use token classes and utilities, not raw hex values or inline `backdrop-filter`. Color themes (`[data-theme]`, `profiles.theme`) override tokens only, so utilities never hardcode brand rgba values.
+- Tokens (colors, fonts, radii) and the surface utilities (`surface`, `surface-raised`, `sheet`, `header-bar`, `hero`, `btn-primary`, `toast`, `icon-tile`) live in `src/index.css`; use token classes and utilities, not raw hex values. No glass, blur or gradients: depth comes from the surface color. Color themes (`[data-theme]`, `profiles.theme`) override tokens only, so utilities never hardcode brand values; an element that shows another theme's color (a swatch) reads `var(--hoot-*)` directly.
+- Fonts: Figtree for text (`font-sans`), Bricolage Grotesque 700 for titles and big numbers (`font-display`, applied to `h1`/`h2`), both from `@fontsource-variable`. Numbers use `tabular-nums`.
+- Icon buttons (X, pencil, search, settings, kebab) are icon-only: no background, no text, 44 px hit area, `aria-label`. Exceptions: timer side controls and undo buttons with text.
 - Target 390 px width first; touch targets ≥ 44 px; stroke icons 1.8 px.
 - Prefer shadcn/ui primitives (Dialog, Sheet, Tabs) styled to match the mockups.
-- No mascot or illustrations: empty states are text and a button. The assistant is called "AI" / "asistent" in the UI, never "sova".
+- The owl (board DSSova, style A: only eyes and a beak on the surface, as on the landing and the app icon) appears where it carries a feeling: landing, energy on the first entry, an empty or free day, the end of a session, onboarding, and the plan updated after a missed day. Never in lists, Plan, settings, errors or chat answers; at most one owl on a screen, never in a loop. Its expression changes with the shape of the eye, the highlight and the beak. No other illustrations. The assistant is called "AI" / "asistent" in the UI, never "sova".
 
 ## Git workflow
 - Branches: `main` = production, `dev` = integration (default). Never commit directly to either.
@@ -68,7 +69,7 @@ React + TypeScript (strict) + Vite · Tailwind v4 + shadcn/ui · React Router ·
 - Hotfix = `hotfix/…` off `main` → PR into `main`, then merge `main` back into `dev`.
 - Conventional Commits (`feat(session): add pause segments`). Small focused commits.
 - No `Co-Authored-By` or other AI attribution trailers in commits or PRs.
-- Never commit `.env*` files or secrets. `VITE_SUPABASE_ANON_KEY` is public by design; service-role and Anthropic keys live only in Supabase secrets.
+- Never commit `.env*` files or secrets. `VITE_SUPABASE_PUBLISHABLE_KEY` is public by design; service-role and Anthropic keys live only in Supabase secrets.
 
 ## Before finishing a task
 - `npm run lint && npm run format:check && npm run typecheck && npm test && npm run build` pass.

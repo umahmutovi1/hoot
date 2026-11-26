@@ -156,4 +156,3 @@ export const gradeScaleFormSchema = z
       }
     })
   })
-export type GradeScaleForm = z.infer<typeof gradeScaleFormSchema>

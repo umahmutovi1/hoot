@@ -43,9 +43,9 @@ export function DeadlinesImportPage() {
       <span className="text-[13px] text-ink-muted">{t('moodle.lead')}</span>
 
       {rows.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('moodle.none')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">{t('moodle.none')}</p>
       ) : (
-        <div className="flex flex-col rounded-card glass p-1.5">
+        <div className="flex flex-col rounded-card surface p-1.5">
           {rows.map((r, i) => {
             const state = r.include ? r.status : 'skip'
             return (

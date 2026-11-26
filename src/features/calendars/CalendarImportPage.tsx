@@ -129,7 +129,7 @@ export function CalendarImportPage() {
           <span className="px-1 text-xs font-semibold tracking-wide text-ink-muted uppercase">
             {t('calendarImport.unknown')}
           </span>
-          <div className="flex flex-col rounded-card glass p-1.5">
+          <div className="flex flex-col rounded-card surface p-1.5">
             {unknown.map((u) => (
               <div
                 key={u.key}
@@ -169,14 +169,16 @@ export function CalendarImportPage() {
         </>
       )}
       {total === 0 && unknown.length === 0 && (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('calendarImport.none')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">
+          {t('calendarImport.none')}
+        </p>
       )}
       {lectures.length > 0 && (
         <>
           <span className="px-1 text-xs font-semibold tracking-wide text-ink-muted uppercase">
             {t('calendarImport.lectures')}
           </span>
-          <div className="flex flex-col rounded-card glass p-1.5">
+          <div className="flex flex-col rounded-card surface p-1.5">
             {lectures.map((p) =>
               row(
                 p,
@@ -196,7 +198,7 @@ export function CalendarImportPage() {
           <span className="px-1 text-xs font-semibold tracking-wide text-ink-muted uppercase">
             {t('calendarImport.exams')}
           </span>
-          <div className="flex flex-col rounded-card glass p-1.5">
+          <div className="flex flex-col rounded-card surface p-1.5">
             {exams.map((p) =>
               row(
                 p,

@@ -128,7 +128,7 @@ export function ImportReviewPage() {
             const lines = periodLines(t, p, day)
             const editable = !saved && p.include && p.status !== 'unchanged'
             return (
-              <div key={p.key} className="flex flex-col gap-3 rounded-card glass p-4">
+              <div key={p.key} className="flex flex-col gap-3 rounded-card surface p-4">
                 <ItemHeader
                   title={lines.title}
                   detail={lines.detail}
@@ -169,7 +169,7 @@ export function ImportReviewPage() {
             const lines = examLines(t, e, subject?.name, day)
             const editable = !saved && e.include && e.status !== 'unchanged'
             return (
-              <div key={e.key} className="flex flex-col gap-3 rounded-card glass p-4">
+              <div key={e.key} className="flex flex-col gap-3 rounded-card surface p-4">
                 <ItemHeader
                   title={lines.title}
                   detail={lines.detail}
@@ -240,7 +240,7 @@ export function ImportReviewPage() {
             const subject = subjects.find((s) => s.id === c.subjectId)
             const lines = classLines(t, c, subject?.name, (d) => weekdays[d] ?? '')
             return (
-              <div key={c.key} className="flex flex-col gap-3 rounded-card glass p-4">
+              <div key={c.key} className="flex flex-col gap-3 rounded-card surface p-4">
                 <ItemHeader
                   title={lines.title}
                   detail={lines.detail}
@@ -314,7 +314,7 @@ export function ImportReviewPage() {
       )}
 
       {!saved && (
-        <div className="fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-30 flex justify-center px-5">
+        <div className="fixed inset-x-0 bottom-[calc(16px+var(--nav-offset,0px)+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-30 flex justify-center px-5">
           <Button
             type="button"
             size="pill"

@@ -1,9 +1,11 @@
+import { ScreenTitle } from '@/components/ScreenTitle'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { CameraIcon, ChevronRightIcon, PlusIcon, TrashIcon } from '@/components/icons'
 import { SwipeRow } from '@/components/SwipeRow'
+import { Switch } from '@/components/Switch'
 import { useAiAvailability } from '@/features/owl/api'
 import { useOwlStore } from '@/features/owl/store'
 import { useDayBoundary, useProfile, useUpdateProfile } from '@/features/settings/profile'
@@ -56,32 +58,32 @@ export function TimetablePage() {
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="flex items-center justify-between">
-        <span className="text-base font-semibold">{t('timetable.title')}</span>
-        <button
-          type="button"
-          onClick={addClass}
-          aria-label={t('timetable.add')}
-          className="flex size-11 items-center justify-center rounded-full glass text-brand"
-        >
-          <PlusIcon size={18} strokeWidth={2.2} />
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <h1 className="text-[26px] leading-tight font-bold">{t('timetable.heading')}</h1>
-        {current ? (
-          <Link to="/settings/calendar" className="text-sm text-ink-muted">
-            {t('timetable.periodLine', {
-              title: current.title,
-              date: format(toDisplayDate(current.endsOn), 'd. MMM', {
-                locale: dateFnsLocales[locale],
-              }),
-              count: Math.round(weeklyClassCount(entries.map(toClass))),
-            })}
-          </Link>
-        ) : null}
-      </div>
+      <ScreenTitle
+        title={t('timetable.title')}
+        sub={
+          current ? (
+            <Link to="/settings/calendar" className="inline-flex min-h-11 items-center">
+              {t('timetable.periodLine', {
+                title: current.title,
+                date: format(toDisplayDate(current.endsOn), 'd. MMM', {
+                  locale: dateFnsLocales[locale],
+                }),
+                count: Math.round(weeklyClassCount(entries.map(toClass))),
+              })}
+            </Link>
+          ) : undefined
+        }
+        actions={
+          <button
+            type="button"
+            onClick={addClass}
+            aria-label={t('timetable.add')}
+            className="flex size-11 items-center justify-center"
+          >
+            <PlusIcon size={22} />
+          </button>
+        }
+      />
 
       {aiReady && (
         <button
@@ -90,7 +92,7 @@ export function TimetablePage() {
             openSheet('timetable')
             navigate('/chat')
           }}
-          className="flex items-center gap-3 rounded-card glass p-3.5 text-left"
+          className="flex items-center gap-3 rounded-card surface p-3.5 text-left"
         >
           <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-brand-soft text-brand">
             <CameraIcon size={20} />
@@ -104,7 +106,10 @@ export function TimetablePage() {
       )}
 
       {!current && (
-        <Link to="/settings/calendar" className="flex items-center gap-3 rounded-card glass p-3.5">
+        <Link
+          to="/settings/calendar"
+          className="flex items-center gap-3 rounded-card surface p-3.5"
+        >
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <span className="text-[15px] font-semibold">{t('timetable.noPeriodTitle')}</span>
             <span className="text-xs text-ink-muted">{t('timetable.noPeriodBody')}</span>
@@ -123,7 +128,7 @@ export function TimetablePage() {
             onClick={() => setDay(d)}
             className={cn(
               'h-11 flex-1 rounded-full text-sm font-semibold',
-              day === d ? 'bg-ink text-white' : 'glass text-ink',
+              day === d ? 'bg-ink text-white' : 'surface text-ink',
             )}
           >
             {names[d]}
@@ -155,14 +160,14 @@ export function TimetablePage() {
           </SwipeRow>
         ))}
         {list.length === 0 && (
-          <p className="rounded-[22px] glass p-5 text-center text-sm text-ink-muted">
+          <p className="rounded-[22px] surface p-5 text-center text-sm text-ink-muted">
             {t('timetable.dayEmpty')}
           </p>
         )}
       </div>
 
       <h2 className="mt-2 text-lg font-semibold">{t('timetable.howTitle')}</h2>
-      <div className="flex flex-col rounded-card glass px-4 py-1.5">
+      <div className="flex flex-col rounded-card surface px-4 py-1.5">
         <div className="flex items-center justify-between gap-3 border-b border-canvas py-3">
           <span className="flex flex-col gap-0.5">
             <span className="text-[15px]">{t('timetable.busyTitle')}</span>
@@ -175,19 +180,12 @@ export function TimetablePage() {
             <span className="text-[15px]">{t('timetable.recapTitle')}</span>
             <span className="text-xs text-ink-muted">{t('timetable.recapHint')}</span>
           </span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={recap}
-            aria-label={t('timetable.recapTitle')}
-            onClick={() => updateProfile.mutate({ recap_after_lecture: !recap })}
-            className={cn(
-              'flex h-8 w-[52px] shrink-0 rounded-full p-[3px] transition-colors',
-              recap ? 'justify-end bg-brand' : 'justify-start bg-radio-ring',
-            )}
-          >
-            <span className="size-[26px] rounded-full glass" />
-          </button>
+          <Switch
+            checked={recap}
+            label={t('timetable.recapTitle')}
+            hideLabel
+            onChange={(on) => updateProfile.mutate({ recap_after_lecture: on })}
+          />
         </div>
       </div>
 
@@ -224,7 +222,7 @@ function ClassCard({
     <button
       type="button"
       onClick={onOpen}
-      className="flex items-center gap-3.5 rounded-[22px] glass px-4 py-3.5 text-left"
+      className="flex w-full items-center gap-3.5 rounded-[22px] surface px-4 py-3.5 text-left"
     >
       <div className="flex w-[46px] flex-col items-end text-[13px]">
         <span className="font-bold">{formatClock(entry.start_min)}</span>

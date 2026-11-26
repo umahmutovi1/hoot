@@ -64,7 +64,7 @@ export function insightCopy(t: TFunction, i: Insight, subject: string) {
       return t('insights.copy.best_slot', {
         part: t(`progress.parts.${i.part}`),
         days: t(i.weekend ? 'progress.slots.weekend' : 'progress.slots.weekday'),
-        focus: i.focus,
+        focus: Math.round(i.focus * 10) / 10,
         count: i.sessions,
       })
     case 'distraction':

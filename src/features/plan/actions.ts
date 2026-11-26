@@ -34,7 +34,7 @@ function useUserId() {
 }
 
 /** Writes through the offline queue and refreshes the plan's own queries once sent. */
-function useQueueWrite() {
+export function useQueueWrite() {
   const userId = useUserId()
   const queryClient = useQueryClient()
   return useCallback(
@@ -83,7 +83,13 @@ export function useSetEnergy() {
       await write([
         energy === 'normal'
           ? { kind: 'delete', table: 'day_energy', match: { id } }
-          : { kind: 'upsert', table: 'day_energy', rows: [{ id, on_date: date, energy }] },
+          : {
+              kind: 'upsert',
+              table: 'day_energy',
+              rows: [{ id, on_date: date, energy }],
+              // The cache may miss a row another device wrote; the date is unique per user.
+              onConflict: 'user_id,on_date',
+            },
       ])
       void queryClient.invalidateQueries({ queryKey: key })
       replanNow()
@@ -244,21 +250,29 @@ export function useRaiseCaps() {
       cap: (current: number) => number
     }) => {
       const rows: { id: string; on_date: string; slots: unknown; cap_min: number }[] = []
+      // What puts the days back as they were ("Vrati odluku" on Prijedlozi).
+      const revert: Op[] = []
       for (let d = from; d <= until; d = addDays(d, 1)) {
         const existing = schedule.dayRows.find((r) => r.on_date === d)
         const current = capFor(d, schedule.dayInput(d))
         const next = Math.min(1440, cap(current))
         if (next === current) continue
-        rows.push({
-          id: existing?.id ?? crypto.randomUUID(),
-          on_date: d,
-          slots: existing?.slots ?? null,
-          cap_min: next,
-        })
+        const id = existing?.id ?? crypto.randomUUID()
+        rows.push({ id, on_date: d, slots: existing?.slots ?? null, cap_min: next })
+        revert.push(
+          existing
+            ? {
+                kind: 'upsert',
+                table: 'availability_days',
+                rows: [{ id, on_date: d, slots: existing.slots, cap_min: existing.cap_min }],
+              }
+            : { kind: 'delete', table: 'availability_days', match: { id } },
+        )
       }
-      if (rows.length === 0) return
+      if (rows.length === 0) return revert
       const { error } = await supabase.from('availability_days').upsert(rows as never)
       if (error) throw error
+      return revert
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: scheduleKey('availability_days', userId) })
@@ -299,6 +313,7 @@ export function useStartBlock() {
   const { suggestedId } = usePresets()
   const setTimerMode = useSessionUi((s) => s.setTimerMode)
   const setCheck = useSessionUi((s) => s.setCheck)
+  const setSummary = useSessionUi((s) => s.setSummary)
   const shiftLate = useShiftLateDay()
   return useCallback(
     async (
@@ -314,6 +329,10 @@ export function useStartBlock() {
         timerMode?: string
         /** Units of a knowledge check (default: the block's). */
         checkUnits?: string[]
+        /** Units studied through their summary in this session ("Koristi sažetak"). */
+        summaryUnits?: string[]
+        /** Where to go once started ("Uči sa tutorom": the tutor instead of the timer). */
+        to?: string
       } = {},
     ) => {
       const timerMode = opts.timerMode ?? suggestedId
@@ -329,6 +348,9 @@ export function useStartBlock() {
         plannedMinutes: minutes,
       })
       setTimerMode(timerMode)
+      setSummary(
+        sessionId && opts.summaryUnits?.length ? { sessionId, unitIds: opts.summaryUnits } : null,
+      )
       // A review block is a series of recall gates (Provjera znanja), timed like any session.
       if (block.kind === 'review' && sessionId) {
         setCheck({
@@ -336,9 +358,9 @@ export function useStartBlock() {
           unitIds: opts.checkUnits ?? block.plan_block_units.map((u) => u.unit_id),
         })
         navigate('/session/review')
-      } else navigate('/session')
+      } else navigate(opts.to ?? '/session')
     },
-    [writer, suggestedId, setTimerMode, setCheck, navigate, shiftLate],
+    [writer, suggestedId, setTimerMode, setCheck, setSummary, navigate, shiftLate],
   )
 }
 

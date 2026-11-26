@@ -68,15 +68,15 @@ function Review({
       <span className="text-[13px] text-ink-muted">{t('links.lead')}</span>
 
       {suggest.isPending ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('links.searching')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">{t('links.searching')}</p>
       ) : suggest.isError ? (
-        <p role="alert" className="rounded-card glass p-4 text-sm text-danger">
+        <p role="alert" className="rounded-card surface p-4 text-sm text-danger">
           {t(`owl.error.${errorCode as 'failed'}`)}
         </p>
       ) : rows.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('links.none')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">{t('links.none')}</p>
       ) : (
-        <div className="flex flex-col rounded-card glass p-1.5">
+        <div className="flex flex-col rounded-card surface p-1.5">
           {rows.map((l, i) => {
             const q = byId.get(l.question_id)!
             const c = byId.get(l.unit_id)!

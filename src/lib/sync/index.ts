@@ -269,11 +269,16 @@ export class SyncQueue {
     this.emit()
   }
 
-  /** Mirror rows with no op left in the queue are on the server now. */
+  /**
+   * Mirror rows with no op left in the queue are on the server now. A row whose op the server
+   * rejected for good (parked) is not: it stays pending, so the local copy is not taken for a
+   * synced one and replaced by an older server row.
+   */
   private async settle(sent: Set<string>) {
-    const left = (await this.db.queue.toArray()).filter((q) => !q.failed)
+    const all = await this.db.queue.toArray()
+    const left = all.filter((q) => !q.failed)
     const queued = new Set<string>()
-    for (const q of left) for (const id of rowIds(q.op)) queued.add(`${q.op.table}:${id}`)
+    for (const q of all) for (const id of rowIds(q.op)) queued.add(`${q.op.table}:${id}`)
     // An empty queue settles everything, also rows changed by ops that matched other fields.
     const keys =
       left.length === 0 ? await this.db.rows.filter((r) => r.pending).primaryKeys() : [...sent]

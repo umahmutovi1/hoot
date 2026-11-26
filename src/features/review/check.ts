@@ -9,7 +9,8 @@ import type { CardReview, Outcome, RecallSource, UnitReview } from './apply'
  * linked exam question with an answer, else its notes, else free recall.
  */
 
-export type CheckSource = 'exam_question' | 'notes' | 'recall' | 'question' | 'card'
+/** `source_text`: a question the tutor wrote from the source text (Sprint 18). */
+export type CheckSource = 'exam_question' | 'notes' | 'recall' | 'question' | 'card' | 'source_text'
 
 export interface CheckItem {
   key: string
@@ -74,6 +75,7 @@ const LOG_SOURCE: Record<Exclude<CheckSource, 'card'>, RecallSource> = {
   notes: 'notes',
   recall: 'blurt',
   question: 'exam_question',
+  source_text: 'source_text',
 }
 
 /** Ratings → reviews: the unit (and the exam question asked for it) and each card. */

@@ -1,7 +1,7 @@
 {
   "name": "hoot",
   "private": true,
-  "version": "0.10.5",
+  "version": "0.18.0",
   "type": "module",
   "engines": {
     "node": ">=24"
@@ -19,12 +19,13 @@
     "db:types": "supabase gen types typescript --linked > src/types/database.ts",
     "sim": "tsx --tsconfig tsconfig.scripts.json scripts/sim/cli.ts",
     "ml:cases": "tsx --tsconfig tsconfig.scripts.json scripts/ml/cases.ts && prettier --write src/lib/estimates/model.cases.json src/lib/slots/completion.cases.json",
-    "landing:shots": "tsx --tsconfig tsconfig.scripts.json scripts/landing/shots.ts",
     "eval": "npx -y promptfoo@0.124.1 eval -c evals/promptfooconfig.yaml --no-cache"
   },
   "dependencies": {
-    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/figtree": "^5.3.0",
     "@hookform/resolvers": "^6.0.0",
+    "@huggingface/transformers": "3.8.1",
     "@open-spaced-repetition/binding-wasm32-wasip1": "0.6.0",
     "@supabase/supabase-js": "^2.118.0",
     "@tanstack/query-async-storage-persister": "^5.105.0",
@@ -38,7 +39,7 @@
     "fuse.js": "^7.5.0",
     "i18next": "^26.5.11",
     "katex": "^0.19.1",
-    "lucide-react": "^1.61.0",
+    "kokoro-js": "1.2.1",
     "pdfjs-dist": "^6.4.299",
     "radix-ui": "^1.8.1",
     "react": "^19.3.1",
@@ -81,5 +82,8 @@
     "vite": "^8.3.5",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "sharp": "0.35.5"
   }
 }

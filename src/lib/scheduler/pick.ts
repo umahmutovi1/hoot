@@ -40,6 +40,11 @@ export interface PickInput {
   laterBlocks: PickBlock[]
   /** Only this subject ("Drugi predmet u ovo vrijeme", Sprint 12). */
   subjectId?: string
+  /**
+   * Slobodna sesija ("Hoot predloži"): a check that leaves most of the time empty gives way to a
+   * block that fills more of it; the check is picked only when nothing longer fits.
+   */
+  preferFill?: boolean
 }
 
 export interface Pick {
@@ -86,6 +91,12 @@ function fromBlock(block: PickBlock, minutes: number, from: Pick['from']): Pick 
 export function pickForTime(all: PickInput): Pick | null {
   const { minutes } = all
   if (minutes <= 0) return null
+  if (all.preferFill) {
+    const check = pickForTime({ ...all, preferFill: false })
+    if (check?.from !== 'review' || check.minutes >= minutes) return check
+    const block = pickForTime({ ...all, preferFill: false, dueReviews: [] })
+    return block && block.minutes > check.minutes ? block : check
+  }
   const of = <T extends { subjectId: string }>(list: T[]) =>
     all.subjectId === undefined ? list : list.filter((x) => x.subjectId === all.subjectId)
   const input = {

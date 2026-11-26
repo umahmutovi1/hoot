@@ -12,6 +12,8 @@ export interface CrumbNames {
   unit: (id: string) => string | undefined
   document: (id: string) => string | undefined
   session: (id: string) => string | undefined
+  /** Where a unit lives, for screens addressed by the unit alone (the tutor). */
+  unitPath?: (id: string) => { subjectId: string; sourceId: string } | undefined
 }
 
 /**
@@ -21,7 +23,7 @@ export interface CrumbNames {
  */
 export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Crumb[] {
   const parts = pathname.split('/').filter(Boolean)
-  const [first, second, third, fourth, fifth, sixth] = parts
+  const [first, second, third, fourth, fifth, sixth, seventh] = parts
   const today: Crumb = { label: t('nav.today'), to: '/' }
   const plan: Crumb = { label: t('nav.plan'), to: '/plan' }
   const subjects: Crumb = { label: t('nav.subjects'), to: '/subjects' }
@@ -32,6 +34,7 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
   switch (first) {
     case 'today':
       if (second === 'fresh') return [today, { label: t('crumbs.fresh'), to: pathname }]
+      if (second === 'free') return [today, { label: t('session.start.free'), to: pathname }]
       if (second === 'moodle') return [today, { label: t('moodle.title'), to: pathname }]
       return []
     case 'plan':
@@ -48,6 +51,8 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
       const own = [settings]
       if (second === 'calendar') own.push({ label: t('menu.academicCalendar'), to: pathname })
       if (second === 'feeds') own.push({ label: t('feeds.title'), to: pathname })
+      if (second === 'appearance') own.push({ label: t('appearance.title'), to: pathname })
+      if (second === 'voice') own.push({ label: t('voice.title'), to: pathname })
       if (second === 'academic') {
         own.push({ label: t('academic.faculty.title'), to: '/settings/academic' })
         if (third === 'found') own.push({ label: t('academic.found.crumb'), to: pathname })
@@ -60,7 +65,15 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
       return own
     }
     case 'progress':
-      return second === 'week' ? [progress, { label: t('checkin.title'), to: pathname }] : []
+      if (second === 'week') return [progress, { label: t('checkin.title'), to: pathname }]
+      if (second === 'suggestions') return [progress, { label: t('proposals.title'), to: pathname }]
+      if (second === 'points') {
+        const points = { label: t('points.title'), to: '/progress/points' }
+        return third
+          ? [progress, points, { label: names.subject(third) ?? t('nav.subjects'), to: pathname }]
+          : [progress, points]
+      }
+      return []
     case 'sessions': {
       const list = [progress, { label: t('menu.sessions'), to: '/sessions' }]
       return second
@@ -81,9 +94,28 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
         out.push({ label: names.source(fourth) ?? t('crumbs.source'), to: sourceTo })
         if (fifth === 'edit') out.push({ label: t('crumbs.edit'), to: pathname })
         if (fifth === 'links') out.push({ label: t('links.title'), to: pathname })
-        if (fifth === 'units' && sixth)
-          out.push({ label: names.unit(sixth) ?? t('crumbs.unit'), to: pathname })
+        if (fifth === 'text') out.push({ label: t('sources.text.title'), to: pathname })
+        if (fifth === 'units' && sixth) {
+          const unitTo = `${sourceTo}/units/${sixth}`
+          out.push({ label: names.unit(sixth) ?? t('crumbs.unit'), to: unitTo })
+          if (seventh === 'summary') out.push({ label: t('summary.title'), to: pathname })
+          if (seventh === 'cards') out.push({ label: t('materialCards.title'), to: pathname })
+        }
       }
+      return out
+    }
+    // The tutor of a unit (Sprint 18): Jedinica › Tutor › mode.
+    case 'tutor': {
+      if (!second) return []
+      const at = names.unitPath?.(second)
+      const unitCrumb: Crumb = {
+        label: names.unit(second) ?? t('crumbs.unit'),
+        to: at ? `/subjects/${at.subjectId}/sources/${at.sourceId}/units/${second}` : '/subjects',
+      }
+      const out = [unitCrumb, { label: t('tutor.title'), to: `/tutor/${second}` }]
+      if (third === 'explain') out.push({ label: t('tutor.modes.explain'), to: pathname })
+      if (third === 'quiz') out.push({ label: t('tutor.modes.quiz'), to: pathname })
+      if (third === 'feynman') out.push({ label: t('tutor.modes.feynman'), to: pathname })
       return out
     }
     // The session flow (timer, end form, recall gate, knowledge check) is full screen without the

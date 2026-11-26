@@ -155,7 +155,7 @@ function LectureForm({
                   onClick={() => setTab(i)}
                   className={cn(
                     'h-10 min-w-0 flex-1 truncate rounded-[18px] px-2 text-sm font-semibold',
-                    i === tab && 'glass',
+                    i === tab && 'surface',
                   )}
                 >
                   {m.source.title}
@@ -289,7 +289,7 @@ function UnitPicker({
             <span
               className={cn(
                 'flex size-[22px] shrink-0 items-center justify-center rounded-full border-2',
-                done ? 'border-brand bg-brand text-white' : 'border-radio-ring glass',
+                done ? 'border-brand bg-brand text-white' : 'border-radio-ring surface',
               )}
             >
               {done && <CheckIcon size={12} strokeWidth={3.5} />}

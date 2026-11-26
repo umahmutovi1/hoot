@@ -55,7 +55,7 @@ export function GoogleCalendarCard({ online }: { online: boolean }) {
 
   if (!account || account.status === 'reconnect')
     return (
-      <div className="flex flex-col gap-3 rounded-card glass p-4">
+      <div className="flex flex-col gap-3 rounded-card surface p-4">
         <div className="flex flex-col gap-1">
           <span className="text-[15px] font-semibold">
             {account ? t('googleCalendar.reconnectTitle') : t('googleCalendar.title')}
@@ -85,7 +85,7 @@ export function GoogleCalendarCard({ online }: { online: boolean }) {
   const synced = when(account.last_pushed_at ?? account.last_synced_at)
 
   return (
-    <div className="flex flex-col gap-3 rounded-card glass p-4">
+    <div className="flex flex-col gap-3 rounded-card surface p-4">
       <div className="flex items-start justify-between gap-3">
         <span className="flex min-w-0 flex-col gap-0.5">
           <span className="text-[15px] font-semibold">{t('googleCalendar.connectedTitle')}</span>

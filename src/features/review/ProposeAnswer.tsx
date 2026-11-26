@@ -31,7 +31,7 @@ export function ProposeAnswer({
           type="button"
           disabled={propose.isPending}
           onClick={() => propose.mutate(questionId)}
-          className="flex h-11 items-center gap-1.5 self-start rounded-full glass px-4 text-sm font-semibold text-brand disabled:opacity-50"
+          className="flex h-11 items-center gap-1.5 self-start rounded-full surface px-4 text-sm font-semibold text-brand disabled:opacity-50"
         >
           <SparkleIcon size={16} />
           {propose.isPending ? t('recall.proposing') : t('recall.propose')}

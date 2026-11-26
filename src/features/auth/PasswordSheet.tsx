@@ -59,7 +59,7 @@ export function PasswordSheet({
             autoComplete="new-password"
             placeholder={t('auth.newPasswordPlaceholder', { count: PASSWORD_MIN })}
             aria-invalid={Boolean(form.formState.errors.password) || failed}
-            className="h-[54px] rounded-input border-none glass px-4 text-base text-ink outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+            className="h-[54px] rounded-input border-none surface px-4 text-base text-ink outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
             {...form.register('password')}
           />
         </label>

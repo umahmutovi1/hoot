@@ -45,7 +45,7 @@ export function StrengthCard({
   if (summary.average === null && summary.needCheck.length === 0) {
     if (!leaves.some((l) => l.unit.level >= 1)) return null
     return (
-      <div className="flex flex-col gap-1.5 rounded-card glass p-4">
+      <div className="flex flex-col gap-1.5 rounded-card surface p-4">
         <span className="text-[15px] font-semibold">{t('strength.title')}</span>
         <span className="text-[13px] text-ink-muted">{t('strength.empty')}</span>
       </div>
@@ -61,7 +61,7 @@ export function StrengthCard({
   const name = (u: typeof first) => (u ? [u.label, u.title].filter(Boolean).join(' ') : '')
 
   return (
-    <div className="flex flex-col gap-3 rounded-card glass p-4">
+    <div className="flex flex-col gap-3 rounded-card surface p-4">
       <div className="flex items-baseline justify-between gap-2">
         <span className="text-[15px] font-semibold">{t('strength.title')}</span>
         <span className="text-xs text-ink-muted">{t('strength.scope')}</span>

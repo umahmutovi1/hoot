@@ -144,7 +144,7 @@ function DayFormView({ date, onDone }: { date: LocalDate; onDone: () => void }) 
                   type="time"
                   step={300}
                   aria-label={t('timetable.start')}
-                  className="h-11 min-w-0 flex-1 rounded-xl glass px-3 text-base"
+                  className="h-11 min-w-0 flex-1 rounded-xl surface px-3 text-base"
                   {...form.register(`slots.${i}.start`)}
                 />
                 <span className="text-ink-muted">–</span>
@@ -152,7 +152,7 @@ function DayFormView({ date, onDone }: { date: LocalDate; onDone: () => void }) 
                   type="time"
                   step={300}
                   aria-label={t('timetable.end')}
-                  className="h-11 min-w-0 flex-1 rounded-xl glass px-3 text-base"
+                  className="h-11 min-w-0 flex-1 rounded-xl surface px-3 text-base"
                   {...form.register(`slots.${i}.end`)}
                 />
                 <button
@@ -225,7 +225,7 @@ function DayFormView({ date, onDone }: { date: LocalDate; onDone: () => void }) 
             type="button"
             aria-label={t('availability.capLess')}
             onClick={() => stepCap(-0.5)}
-            className="flex size-10 items-center justify-center rounded-full glass text-lg font-semibold"
+            className="flex size-10 items-center justify-center rounded-full surface text-lg font-semibold"
           >
             −
           </button>
@@ -236,7 +236,7 @@ function DayFormView({ date, onDone }: { date: LocalDate; onDone: () => void }) 
             type="button"
             aria-label={t('availability.capMore')}
             onClick={() => stepCap(0.5)}
-            className="flex size-10 items-center justify-center rounded-full glass text-lg font-semibold"
+            className="flex size-10 items-center justify-center rounded-full surface text-lg font-semibold"
           >
             +
           </button>

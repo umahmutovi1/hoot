@@ -1,3 +1,5 @@
+import { AddressToggle } from '@/components/AddressToggle'
+import { useAddress } from './useAddress'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -27,8 +29,9 @@ import { useLocale } from './useLocale'
 export function SettingsPage() {
   const { t } = useTranslation()
   const { data: profile } = useProfile()
-  const theme = isTheme(profile?.theme) ? profile.theme : 'lavender'
+  const theme = isTheme(profile?.theme) ? profile.theme : 'ocean'
   const { locale, setLocale } = useLocale()
+  const { gender, setGender } = useAddress()
   const name = profile?.display_name ?? ''
   const [editingName, setEditingName] = useState(false)
   const [scaleOpen, setScaleOpen] = useState(false)
@@ -47,7 +50,7 @@ export function SettingsPage() {
       <ScreenTitle title={t('settings.title')} />
 
       {editingName ? (
-        <div className="rounded-card glass p-4">
+        <div className="rounded-card surface p-4">
           <DisplayNameForm
             initialName={name}
             submitLabel={t('common.save')}
@@ -61,7 +64,7 @@ export function SettingsPage() {
           type="button"
           onClick={() => setEditingName(true)}
           aria-label={t('profile.editName')}
-          className="flex items-center gap-3.5 rounded-card glass p-4 text-left"
+          className="flex items-center gap-3.5 rounded-card surface p-4 text-left"
         >
           <Avatar name={name} className="size-[52px] text-xl" />
           <div className="flex flex-col gap-0.5">
@@ -77,11 +80,17 @@ export function SettingsPage() {
       >
         {t('settings.general')}
       </h2>
-      <div className="flex flex-col rounded-card glass px-4 py-1.5">
+      <div className="flex flex-col rounded-card surface px-4 py-1.5">
         <div className="flex items-center justify-between border-b border-canvas py-2.5">
           <span className="text-[15px]">{t('settings.language')}</span>
           <LocaleToggle value={locale} onChange={setLocale} className="bg-canvas" />
         </div>
+        {locale === 'bs' && (
+          <div className="flex items-center justify-between border-b border-canvas py-2.5">
+            <span className="text-[15px]">{t('settings.address')}</span>
+            <AddressToggle value={gender} onChange={setGender} className="bg-canvas" />
+          </div>
+        )}
         {emailAccount && (
           <button
             type="button"
@@ -117,6 +126,13 @@ export function SettingsPage() {
             <ThemeSwatch theme={theme} size={22} />
             {t(`appearance.theme.${theme}.name`)} ›
           </span>
+        </Link>
+        <Link to="/settings/voice" className={row}>
+          <span className="flex flex-col gap-0.5">
+            <span className="text-[15px]">{t('voice.title')}</span>
+            <span className="text-xs text-ink-muted">{t('voice.sub')}</span>
+          </span>
+          <span className="text-sm text-ink-muted">›</span>
         </Link>
         <Link to="/plan/availability" className={row}>
           <span className="text-[15px]">{t('availability.title')}</span>
@@ -179,7 +195,7 @@ export function SettingsPage() {
       >
         {t('settings.data')}
       </h2>
-      <div className="flex flex-col rounded-card glass px-4">
+      <div className="flex flex-col rounded-card surface px-4">
         <AnkiExport className={cn(row, 'last:border-b-0')} />
       </div>
 
@@ -189,7 +205,7 @@ export function SettingsPage() {
       <button
         type="button"
         onClick={() => void signOut()}
-        className="mt-auto h-[52px] rounded-full glass text-[15px] font-semibold text-danger"
+        className="mt-auto h-[52px] rounded-full surface text-[15px] font-semibold text-danger"
       >
         {t('settings.signOut')}
       </button>

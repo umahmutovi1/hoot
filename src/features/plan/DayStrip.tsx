@@ -38,22 +38,22 @@ export function DayStrip({
             {format(selected, 'LLLL yyyy', { locale: dfLocale })}
           </h2>
         )}
-        <div className="flex gap-1.5">
+        <div className="-mr-2 flex">
           <button
             type="button"
             aria-label={t('plan.prevWeek')}
             onClick={() => onSelect(addWeeks(selected, -1))}
-            className="flex size-10 items-center justify-center rounded-full border border-line glass"
+            className="flex size-11 items-center justify-center"
           >
-            <ChevronLeftIcon size={16} />
+            <ChevronLeftIcon size={20} />
           </button>
           <button
             type="button"
             aria-label={t('plan.nextWeek')}
             onClick={() => onSelect(addWeeks(selected, 1))}
-            className="flex size-10 items-center justify-center rounded-full border border-line glass"
+            className="flex size-11 items-center justify-center"
           >
-            <ChevronRightIcon size={16} />
+            <ChevronRightIcon size={20} />
           </button>
         </div>
       </div>
@@ -70,7 +70,7 @@ export function DayStrip({
               onClick={() => onSelect(d)}
               className={cn(
                 'flex h-[68px] flex-1 flex-col items-center justify-center gap-0.5 rounded-[22px]',
-                on ? 'bg-ink text-white' : isToday ? 'bg-brand-soft' : 'glass',
+                on ? 'bg-ink text-white' : isToday ? 'bg-brand-soft' : 'surface',
               )}
             >
               <span className="text-lg font-bold">{format(d, 'd')}</span>

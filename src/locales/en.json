@@ -2,9 +2,9 @@
   "app": {
     "name": "Hoot",
     "loading": "Loading…",
-    "comingSoon": "Coming soon",
     "back": "Back",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "reload": "Reload"
   },
   "locale": {
     "bs": "Bosanski",
@@ -14,16 +14,14 @@
   },
   "nav": {
     "label": "Main navigation",
+    "ai": "AI",
     "today": "Today",
     "plan": "Plan",
     "subjects": "Subjects",
     "progress": "Progress",
-    "aiLabel": "AI assistant",
-    "aiClose": "Close the assistant",
     "home": "Hoot, go to Today"
   },
   "auth": {
-    "headline": "Study smarter,\nnot longer.",
     "email": "Email",
     "emailPlaceholder": "name@example.com",
     "emailInvalid": "Enter a valid email.",
@@ -64,6 +62,28 @@
     "skip": "Skip"
   },
   "today": {
+    "adjust": {
+      "freeSub": "Outside the plan, Hoot suggests or you pick",
+      "open": "Adjust the day: energy, only a little time, can't today",
+      "title": "Adjust the day",
+      "feel": "How do you feel?",
+      "level": {
+        "low": "Low",
+        "lowSub": "easier day",
+        "normal": "Normal",
+        "normalSub": "as planned",
+        "high": "High",
+        "highSub": "I can do more"
+      },
+      "keep_one": "The plan stays as it is: {{count}} block, {{time}}.",
+      "keep_other": "The plan stays as it is: {{count}} blocks, {{time}}.",
+      "only": "I only have a little time",
+      "onlySub": "Hoot picks what matters most, the rest goes back into the plan",
+      "more": "I have more time",
+      "moreSub": "Add a block, Hoot picks the material",
+      "cantSub": "Today's material is spread over the next days",
+      "freeLink": "Or start a free session now"
+    },
     "greeting": {
       "morning": "Good morning, {{name}}",
       "day": "Good afternoon, {{name}}",
@@ -83,9 +103,6 @@
       "exam": "{{title}} · week {{week}}",
       "holiday": "Holiday · {{title}}"
     },
-    "planSoonTitle": "Your daily study plan is coming soon",
-    "planSoonBody": "Until the app computes your plan, start sessions here and see classes and exams in the calendar.",
-    "todayInCalendar": "Today in the calendar",
     "next": {
       "label": "Next",
       "freeSub": "Pick a subject and how much time you have",
@@ -120,7 +137,6 @@
       "onTrack": "Nothing is late for exams."
     },
     "only": {
-      "button": "Only 30 min",
       "title": "I only have…",
       "best": "Most valuable now",
       "start": "Start · {{minutes}} min",
@@ -169,12 +185,11 @@
       "toToday": "Moved to today at {{time}}",
       "toTomorrow": "No room today: first block tomorrow at {{time}}",
       "toLater": "Moved to the first free day at {{time}}",
-      "carried": "moved",
-      "fromNotification": "Skipped from a notification: {{title}}"
+      "carried": "moved"
     },
     "start": {
+      "rhythmSub": "Your default, Hoot built the block on it",
       "title": "Start a session now?",
-      "pauses": "Breaks: {{preset}}",
       "begin": "Start",
       "edit": "Edit",
       "skip": "Skip",
@@ -196,8 +211,6 @@
       "later": "Not now"
     },
     "energy": {
-      "low": "Low on energy",
-      "high": "Full of energy",
       "toast": {
         "low": "Lighter today: shorter blocks, reviews first",
         "high": "A bit more today, hardest material first",
@@ -207,7 +220,6 @@
   },
   "plan": {
     "title": "Plan",
-    "scheduleEmpty": "The schedule places today's blocks into your free time slots.",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "legendExam": "Exam",
@@ -278,6 +290,18 @@
     }
   },
   "subjects": {
+    "firstSource": {
+      "title": "First source",
+      "pdf": "I have a PDF of the book or script",
+      "pdfSub": "Hoot reads the contents and splits them into units",
+      "web": "No PDF, find the contents",
+      "webSub": "Type the title, Hoot looks for at least the chapters on the web",
+      "photo": "Photograph the contents",
+      "photoSub": "A photo of the contents page is enough",
+      "hint": "From the source Hoot knows how much material there is and how long it takes, so you don't have to guess.",
+      "later": "I'll add a source later",
+      "laterHint": "Without a source Hoot plans roughly, about 25 h, until you add one."
+    },
     "title": "Subjects",
     "empty": "No subjects yet. Add your first one: a name and an exam date are enough.",
     "examTitle": {
@@ -286,7 +310,6 @@
       "partial2": "Midterm II",
       "integral": "Comprehensive exam"
     },
-    "new": "New",
     "activeCount_one": "{{count}} active",
     "activeCount_other": "{{count}} active",
     "archived": "Archived subjects ({{count}})",
@@ -363,6 +386,10 @@
       }
     },
     "form": {
+      "newSub": "Rough is fine, you can change everything later",
+      "editSub": "The plan is recalculated when you save.",
+      "conditional": "Required to progress",
+      "conditionalSub": "Must be passed to enrol further. Hoot gives it priority and more buffer before the exam.",
       "newTitle": "New subject",
       "editTitle": "Edit subject",
       "name": "Name",
@@ -379,14 +406,9 @@
       "pickDate": "Date",
       "removeExam": "Remove exam",
       "contingent": "Only if needed",
-      "dateTentative": "Tentative date (not announced yet)",
       "notPlannedAhead": "not planned ahead",
       "dateNotConfirmed": "date not announced",
       "advanced": "Advanced",
-      "advancedSummary": "Priority {{priority}} · {{mode}}",
-      "priority": "Priority",
-      "priorityDescription": "{{n}} · {{name}}: {{description}}",
-      "howStudied": "How do you study this subject?",
       "campaignStart": "Start",
       "campaignStartComputed": "Computed from the plan",
       "campaignStartManual": "Manual · {{date}}",
@@ -407,13 +429,11 @@
     },
     "detail": {
       "edit": "Edit subject",
-      "priorityChip": "Priority {{n}} · {{name}}",
       "nextExam": "{{title}} {{when}}.",
       "addExam": "+ Exam",
       "noExams": "No exams yet.",
       "tentative": "date approximate",
       "contingent": "only if needed",
-      "passed": "passed",
       "tentativeUntil": "date approximate, latest {{date}}"
     },
     "campaign": {
@@ -450,18 +470,20 @@
       "part": "Part {{n}}"
     },
     "goal": {
+      "targetHint": {
+        "none": "Without a target, Hoot plans as usual.",
+        "low": "For a 6, Hoot covers the most important material first.",
+        "mid": "For a {{grade}}, Hoot plans as usual, with reviews before the exam.",
+        "high": "For a {{grade}}, Hoot plans more reviews and all of the material."
+      },
       "title": "Goal",
       "edit": "Edit",
-      "howImportant": "How important is it?",
-      "importantRow": "How important",
       "targetRow": "Target grade",
       "whenRow": "Studying starts",
       "target": "Target grade",
       "optional": "(optional)",
       "noTarget": "—",
       "targetChip": "target {{grade}}",
-      "nudge": "A {{grade}} usually needs “{{level}}”",
-      "change": "Change",
       "when": "When does studying start?",
       "computedOn": "Computed · ~{{date}}",
       "fromToday": "From today",
@@ -481,23 +503,14 @@
           "sub": "The app computes when to start and tells you 3 days before"
         }
       },
-      "priorityDescription": {
-        "1": "Easy, passing is enough",
-        "2": "Less important, no big ambitions",
-        "3": "The usual share of time and slack",
-        "4": "Important, I want a good grade",
-        "5": "Must pass"
-      },
       "effect": "The plan covers {{coverage}}% of the material and reviews {{often}}.",
       "often": {
         "low": "less often",
         "mid": "as usual",
         "high": "more often"
       },
-      "boost": "+{{minutes}} min a day until {{date}}",
       "boostSimple": "More time until {{date}}",
-      "endBoost": "Remove the boost",
-      "unreachable": "The target grade is out of reach with the points left."
+      "endBoost": "Remove the boost"
     }
   },
   "progress": {
@@ -594,34 +607,29 @@
   "session": {
     "title": "Study session",
     "start": {
-      "title": "What are you studying?",
-      "subtitle": "Pick a subject, and a unit if you like.",
-      "recommendedEmpty": "Recommended block",
-      "recommendedSoon": "Comes with the daily plan",
-      "tagRecommended": "Recommended",
+      "freeLead": "Outside the plan · takes no block off Today",
+      "what": "What are you studying?",
+      "auto": "Hoot suggests",
+      "manual": "I'll pick",
+      "another": "Another idea · {{n}}/{{total}}",
+      "why": "Why: {{why}}",
+      "manualHint": "You can change the unit during the session too, under “Working on”.",
       "free": "Free session",
-      "freeSub": "Outside the plan · pick a subject",
-      "tagFree": "No plan",
       "noSubjects": "Add a subject first.",
       "addSubject": "Add subject",
       "subject": "Subject",
       "source": "Source",
       "unit": "Unit",
       "allUnits": "Show all ({{count}})",
-      "freeHint": "You can change the unit during the session (\"Working on\"). The time counts for calibration but does not tick off a planned block.",
-      "go": "Start",
       "breaks": "Breaks",
-      "breaksHint": "Your last preset is suggested. Change the default in Settings.",
-      "nextBlock": "Next block",
-      "laterToday": "Later today",
-      "tagPlan": "Plan",
       "howLong": "How much time do you have?",
-      "wholeBlock": "Whole block",
-      "onlyHint": "Only {{minutes}} min → {{title}}. The rest of the block goes into the plan from tomorrow.",
-      "subtitlePlan": "The next block of today's plan is suggested.",
-      "newSubject": "+ Subject",
       "newSource": "+ Source",
-      "addFirstSource": "+ Add a source (book, notes…)"
+      "addFirstSource": "+ Add a source (book, notes…)",
+      "other": "Other",
+      "duration": "Duration",
+      "durationLess": "{{count}} minutes less",
+      "durationMore": "{{count}} minutes more",
+      "who": "Who picks the material"
     },
     "mode": {
       "label": "Study mode",
@@ -730,11 +738,9 @@
     },
     "history": {
       "title": "Sessions",
-      "add": "Add session",
       "all": "All",
       "emptyTitle": "No sessions yet",
       "empty": "Finished sessions show up here. Studied without the timer? Add a session with +.",
-      "manual": "manual",
       "addTitle": "Add session",
       "addSubtitle": "Studied without the timer? Enter when.",
       "date": "Date",
@@ -761,9 +767,7 @@
       "units_one": "unit",
       "units_other": "units",
       "count_one": "{{count}} session",
-      "count_other": "{{count}} sessions",
-      "thisWeek_one": "{{count}} session this week",
-      "thisWeek_other": "{{count}} sessions this week"
+      "count_other": "{{count}} sessions"
     },
     "preset": {
       "standard": "Standard",
@@ -813,6 +817,47 @@
       "discardSub": "The session is deleted as if it never started; nothing counts",
       "discarded": "Session discarded",
       "finishNow": "End session"
+    },
+    "week": {
+      "prev": "Previous week",
+      "next": "Next week",
+      "now": "This week",
+      "doneOf": "{{done}} of {{planned}}",
+      "count_one": "{{count}} session",
+      "count_other": "{{count}} sessions",
+      "plannedOnly": "{{planned}} planned",
+      "ariaDay": "{{day}} {{done}} of {{planned}}",
+      "ariaPlan": "{{day}} plan {{planned}}",
+      "done": "Done",
+      "planned": "Planned",
+      "free": "free",
+      "freeDay": "Free day, nothing planned.",
+      "today": "Today",
+      "manual": "entered by hand",
+      "more_one": "Show {{count}} more day",
+      "more_other": "Show {{count}} more days",
+      "less": "Show less",
+      "addManual": "Add a session by hand",
+      "emptyWeek": "No sessions that week.",
+      "thisWeekOf": "This week {{done}} of {{planned}}"
+    },
+    "rhythm": {
+      "label": "Study and break rhythm",
+      "done": "Done",
+      "yourDefault": "your default",
+      "own": "Your rhythm",
+      "ownSub": "you set it",
+      "value": "{{work}} · {{pause}}",
+      "minutes": "{{count}} min",
+      "study": "Study",
+      "break": "Break",
+      "studyLess": "Shorter study",
+      "studyMore": "Longer study",
+      "breakLess": "Shorter break",
+      "breakMore": "Longer break",
+      "keep": "Use from now on",
+      "keepSub": "Hoot will plan blocks in this rhythm",
+      "keepLabel": "Use this rhythm from now on"
     }
   },
   "settings": {
@@ -864,7 +909,8 @@
       "quizletHint": "Copies text for Quizlet → Import (tab, new line)",
       "copy": "Copy",
       "copied": "Cards copied. Paste them into Quizlet → Import."
-    }
+    },
+    "address": "Address form"
   },
   "validation": {
     "required": "Required",
@@ -886,6 +932,7 @@
     "scaleOrder": "Each threshold must be higher than the one before"
   },
   "common": {
+    "change": "Change",
     "cancel": "Cancel",
     "save": "Save",
     "close": "Close",
@@ -897,7 +944,6 @@
   "profile": {
     "nameLabel": "Name",
     "namePlaceholder": "e.g. Uma",
-    "continue": "Continue",
     "saveFailed": "Saving failed. Try again.",
     "editName": "Change name"
   },
@@ -915,8 +961,6 @@
       "other": "Other"
     },
     "rangeHint": "The plan targets the earliest possible date, so you are ready even if the exam comes early. When the date is announced, turn this off and enter it.",
-    "inPeriod": "In period",
-    "manualRange": "Custom range",
     "showInCalendar": "Show in calendar",
     "dateMode": {
       "label": "When is the exam?",
@@ -1001,7 +1045,8 @@
         "photo": "Photograph contents",
         "text": "Type",
         "pdf": "PDF from this device",
-        "drive": "Google Drive"
+        "drive": "Google Drive",
+        "web": "Find on the web"
       },
       "outline": "Contents",
       "placeholder": {
@@ -1024,7 +1069,8 @@
         "pdf": "Chapters and pages from the file · the file stays with you",
         "drive": "One or more PDFs · the source keeps the Drive link",
         "photo": "Contents pages, up to 4",
-        "text": "One chapter per line"
+        "text": "One chapter per line",
+        "web": "No PDF, Hoot looks for the contents"
       }
     },
     "section": "Sources",
@@ -1102,7 +1148,12 @@
     },
     "rough": {
       "label": "Rough estimate",
-      "hint": "Replace it with real content: adding a source removes this one."
+      "hint": "Replace it with real content: adding a source removes this one.",
+      "otherTitle": "Archive the other rough sources too?",
+      "otherBody_one": "This rough source for the subject is still in the plan:",
+      "otherBody_other": "These rough sources for the subject are still in the plan:",
+      "archiveOthers": "Archive",
+      "keepOthers": "Keep in the plan"
     },
     "import": {
       "camera": "Take a photo of the contents",
@@ -1150,6 +1201,115 @@
       "originDrive": "PDF · Google Drive",
       "originDevice": "PDF from your device · the file stays with you",
       "openDrive": "Open in Drive"
+    },
+    "web": {
+      "query": "Title and author",
+      "placeholder": "e.g. Haykin, Signals and Systems, 2nd edition",
+      "onlyTitle": "Only the title, author and edition go to the web.",
+      "search": "Find contents",
+      "searching": "Looking for the contents on the web…",
+      "chapters_one": "{{count}} chapter",
+      "chapters_other": "{{count}} chapters",
+      "found": "Found the contents: {{chapters}}",
+      "foundPages": "Found the contents: {{chapters}}, {{pages}} pages",
+      "from": {
+        "publisher": "From the publisher's site",
+        "library": "From a library catalogue",
+        "store": "From a bookshop's site",
+        "other": "From the web"
+      },
+      "origin": "{{from}}.",
+      "originEdition": "{{from}}, edition {{edition}}.",
+      "checkEdition": "Check that it is the same edition as yours, the page numbers depend on it.",
+      "save_one": "Save {{count}} chapter",
+      "save_other": "Save {{count}} chapters",
+      "havePdf": "I have the PDF after all",
+      "missTitle": "I couldn't find the contents of this book.",
+      "missBody": "Type the chapters, titles and pages are enough. Or photograph the contents page, that's quickest.",
+      "typeInstead": "Type the chapters",
+      "photoInstead": "Photograph the contents",
+      "sourceRow": "Contents from the web",
+      "open": "Open",
+      "findForRough": "Find the contents on the web"
+    },
+    "syllabus": {
+      "from": "From the syllabus",
+      "fromAt": "From the syllabus · {{institution}}",
+      "title": "Which of these do you use?",
+      "group": "Literature from the syllabus",
+      "required": "Required",
+      "extra": "Supplementary",
+      "add_one": "Add {{count}} source",
+      "add_other": "Add {{count}} sources",
+      "pick": "Tick what you use",
+      "none": "I use none of them",
+      "hint": "Add the PDF of each if you have it. If not, Hoot finds at least the contents on the web."
+    },
+    "text": {
+      "title": "Source text",
+      "fileSub_one": "{{name}} · {{count}} page",
+      "fileSub_other": "{{name}} · {{count}} pages",
+      "rowEmpty": "Add the PDF so the tutor and summaries know what the book says",
+      "rowHave_one": "{{count}} page · for the tutor and summaries",
+      "rowHave_other": "{{count}} pages · for the tutor and summaries",
+      "rowPasted": "Pasted text · for the tutor and summaries",
+      "introTitle": "So the tutor and summaries know what the book says",
+      "introBody": "Hoot reads the PDF on your phone. Only the text per chapter goes to the database. The original stays with you and is not kept.",
+      "noPages": "The units of this source have no pages, so Hoot cannot tell which text belongs to which. Add page ranges in Edit content.",
+      "whereFrom": "Where is the PDF?",
+      "device": "From this device",
+      "deviceSub": "Files, Downloads",
+      "private": "The text is private. It only goes to the paid model, never to free services.",
+      "progress": "page {{page}} of {{total}}",
+      "progressLabel": "Reading the PDF",
+      "reading": "Reading on your phone. Keep this screen open.",
+      "readingButton": "Reading…",
+      "byChapter": "By chapter",
+      "pages": "pp. {{from}} to {{to}}",
+      "pagesRead": "pp. {{from}} to {{to}} · read",
+      "confirmTitle": "Where is page {{page}} of the book?",
+      "confirmBody": "I could not find where “{{title}}” starts. On which PDF page is page {{page}} of the book?",
+      "pdfPage": "PDF page",
+      "pdfPageLess": "Earlier page",
+      "pdfPageMore": "Later page",
+      "emptyPage": "This page is empty.",
+      "read": "Read",
+      "pagesValue_one": "{{count}} page",
+      "pagesValue_other": "{{count}} pages",
+      "units_one": "{{count}} unit",
+      "units_other": "{{count}} units",
+      "passages": "Passages",
+      "passagesSub": "for search in the tutor",
+      "embedding": "preparing for search · {{done}} of {{total}}",
+      "saved": "What is saved",
+      "savedText": "Text per chapter",
+      "savedTextSub": "by the source's page ranges",
+      "original": "Original PDF",
+      "originalSub": "stays on your device, never sent",
+      "deleteHint": "You can delete it at any time. The text and passages go; the source and the plan stay.",
+      "missingPages_one": "{{count}} unit has no page range, so it has no text.",
+      "missingPages_other": "{{count}} units have no page range, so they have no text.",
+      "done": "Done",
+      "again": "Read again",
+      "delete": "Delete text",
+      "deleted": "Source text deleted",
+      "failed": "I can't read this PDF.",
+      "scannedTag": "No text in this PDF",
+      "scannedTitle": "It looks scanned",
+      "scannedBody": "The pages are images, so Hoot has nothing to read. Image recognition (OCR) comes later. The source stays in the plan as it is.",
+      "now": "What you can do now",
+      "paste": "Paste a chapter's text",
+      "pasteSub": "from Word, notes or the exact source",
+      "other": "Pick another PDF",
+      "otherSub": "a text version of the same book",
+      "notesOnly": "Notes only",
+      "notesOnlySub": "the tutor and cards work from your notes",
+      "scannedHint": "The plan, reviews and checks work without the source text too.",
+      "back": "Back to the source",
+      "pasteTitle": "Chapter text",
+      "pasteUnit": "Chapter",
+      "pastePlaceholder": "Paste the text here",
+      "pasted": "Chapter text saved"
     }
   },
   "time": {
@@ -1327,7 +1487,6 @@
   },
   "calendar": {
     "title": "Academic calendar",
-    "heading": "Academic year",
     "intro": "When classes run, when partial exams and exam periods are, and which days are holidays. Dates of single exams go on the subject.",
     "add": "+ Add",
     "newTitle": "New period",
@@ -1374,7 +1533,6 @@
   },
   "timetable": {
     "title": "Class timetable",
-    "heading": "Lectures and exercises",
     "periodLine_one": "{{title}} · until {{date}} · {{count}} class a week",
     "periodLine_other": "{{title}} · until {{date}} · {{count}} classes a week",
     "noPeriodTitle": "Add a semester first",
@@ -1421,8 +1579,7 @@
     "photoHint": "The AI finds the classes; you review them before saving"
   },
   "availability": {
-    "title": "Availability",
-    "heading": "When can you study?",
+    "title": "When I can study",
     "totalBefore": "This week up to",
     "totalAfter": "of study. The plan never goes beyond your free slots or daily maximum.",
     "perWeek": "{{hours}} a week",
@@ -1477,21 +1634,6 @@
     "barLabel": "You are at part {{you}}, lectures at part {{lecture}} of {{total}}",
     "youShort": "You · {{n}}",
     "lectureShort": "Lecture · {{n}}",
-    "warnLectures_one": "{{count}} lecture behind",
-    "warnLectures_other": "{{count}} lectures behind",
-    "warnBody": "Covered in class but not started yet: {{amount}} (~{{time}}).",
-    "action": {
-      "raise_priority": "Raise priority to {{n}}",
-      "switch_to_regular": "Switch to regular",
-      "take_time_from": "Take time from another subject",
-      "start_earlier": "Start earlier",
-      "add_minutes": "Add time per day"
-    },
-    "done": {
-      "raise_priority": "Priority is now {{n}}.",
-      "switch_to_regular": "The subject is now in regular mode."
-    },
-    "later": "Later",
     "promptSub": "How far did you get? · {{time}}",
     "contextDate": "{{kind}} · {{date}} {{time}}",
     "behindTime": "~{{time}} of study"
@@ -1550,7 +1692,6 @@
       "of": "of",
       "percent": "Percentage",
       "rescaleHint": "If the test was marked differently (e.g. out of 50), enter that; it is scaled to {{points}} points.",
-      "pct": "{{pct}}%",
       "passedLine": "{{pct}}% · passed",
       "failedLine": "{{pct}}% · not passed",
       "thresholdNote": "threshold {{pct}}%",
@@ -1590,34 +1731,18 @@
       "thresholdFor": "Threshold for grade {{grade}}",
       "below": "below {{pct}}%",
       "reset": "Back to the Bosnian scale",
-      "target": "Target grade",
-      "noTarget": "no target",
-      "targetHint": "The plan will raise the target coverage so you can reach {{grade}}.",
-      "noTargetHint": "Without a target the plan follows the subject's priority only.",
       "globalSubtitle": "For all subjects",
       "applies": "Which subjects it applies to",
       "appliesAll": "All subjects",
       "appliesSubject": "This subject only",
       "appliesAllHint": "The same scale and points total apply to every subject without its own. Changing it here changes it for all of them.",
       "appliesSubjectHint": "{{name}} gets its own scale; the other subjects stay on the shared one."
-    },
-    "overview": {
-      "title": "Grades",
-      "entry": "Requirement for {{title}}: {{points}} to go",
-      "targetNeeds": "Target {{grade}} · needs {{points}} of {{remaining}} left ({{pct}}%)",
-      "passNeeds": "To pass: {{points}} of {{remaining}} left ({{pct}}%)",
-      "passSecured": "Pass secured",
-      "passUnreachable": "Passing is out of reach without a make-up",
-      "noPoints": "No points entered",
-      "addOnSubject": "Add on the subject"
     }
   },
   "owl": {
     "name": "Assistant",
     "tagline": "knows your documents and plan",
     "ask": "Ask the assistant…",
-    "askEmpty": "Give me your exam schedule…",
-    "open": "Open the conversation with the assistant",
     "offline": "The assistant is offline. Back when you reconnect.",
     "disabled": "The assistant is not set up yet (no AI key).",
     "add": "Give a document",
@@ -1626,9 +1751,7 @@
     "suggest": {
       "important": "What matters most today?",
       "importExams": "Import exam schedule",
-      "makeup": "When is the makeup exam?",
-      "addSubject": "+ Add subject",
-      "importCalendar": "Import academic calendar"
+      "makeup": "When is the makeup exam?"
     },
     "sheet": {
       "title": "Give a document",
@@ -1683,6 +1806,7 @@
     "error": {
       "offline": "No internet. Try again when you're online.",
       "rate_limited": "That's enough for today: all 30 AI calls are used. More tomorrow.",
+      "fetch_limited": "That's enough links for today: 40 were downloaded. More tomorrow.",
       "provider_busy": "The AI service is busy. Try again in a minute.",
       "no_key": "AI is not set up yet.",
       "invalid_output": "I could not read this document. Try again; if it is a photo, send a clearer one.",
@@ -1692,7 +1816,8 @@
       "file": "I can't read this. Send an image, a PDF or text.",
       "link": "This link could not be opened. Check that it is public (no sign-in) and leads to a PDF, an image or a page.",
       "quota_exhausted": "Today’s free AI quota is used up. It resets tomorrow morning (around 9 am CET).",
-      "needs_paid": "This AI feature only works with the paid model: your text never goes to free services."
+      "needs_paid": "This AI feature only works with the paid model: your text never goes to free services.",
+      "no_text": "This unit has no source text yet. Add the PDF on the source."
     },
     "document": {
       "stored": "I saved “{{title}}” to Documents.",
@@ -1796,7 +1921,10 @@
       "timetable": "Give the class timetable",
       "contents": "Add contents or questions",
       "contentsFor": "Add contents · {{subject}}",
-      "giveDocument": "Give a document"
+      "giveDocument": "Give a document",
+      "openTutor": "Open the tutor",
+      "tutorNone": "I can't find the chapter “{{text}}” in your sources. Open the unit in Subjects and start the tutor there.",
+      "tutorStays": "The assistant stays for your plan, documents and schedule changes."
     },
     "syllabus": {
       "books_one": "{{count}} book",
@@ -1865,19 +1993,14 @@
     "body": "This loads from the internet the first time. The timer and a started session work offline; changes are sent when you are back online."
   },
   "menu": {
-    "title": "Menu",
-    "open": "Open menu",
-    "close": "Close menu",
     "calendar": "Calendar",
     "timetable": "Class timetable",
     "allSubjects": "All subjects",
     "overview": "Overview",
     "sessions": "Sessions",
     "settings": "Settings",
-    "allSettings": "All settings",
     "academicCalendar": "Academic calendar",
-    "documents": "Documents",
-    "subpages": "Pages in {{section}}"
+    "documents": "Documents"
   },
   "feeds": {
     "title": "Connected calendars",
@@ -1960,11 +2083,17 @@
     "name": {
       "title": "What should I call you?",
       "sub": "The plan and reminders will use your name.",
+      "address": "How should Bosnian text address you?",
+      "addressFemale": "Spremna si",
+      "addressMale": "Spreman si",
       "zone": "Time zone: {{zone}} (from the browser)"
     },
     "import": {
       "title": "What do you already have?",
       "sub": "Import what exists, so classes and commitments are taken before you pick free time.",
+      "syllabus": "Syllabus",
+      "syllabusSub": "Subjects, literature and grading at once",
+      "syllabusHint": "With the syllabus you don't type the subjects in.",
       "calendar": "Academic calendar",
       "calendarSub": "PDF, photo or text · classes, exam periods, holidays",
       "timetable": "Class timetable",
@@ -2105,7 +2234,6 @@
   },
   "suggestions": {
     "later": "Later",
-    "change": "Change",
     "ok": "OK",
     "fresh": {
       "title": "Let's start over",
@@ -2130,11 +2258,6 @@
       "doneTake": "{{subject}} gets {{minutes}} min a day from {{donor}} until {{date}}.",
       "doneEarlier": "The campaign starts {{date}}. The plan is recomputed.",
       "doneAdd": "Until {{date}} you have {{minutes}} more min a day."
-    },
-    "grade": {
-      "title": "Your target grade in {{subject}} needs more",
-      "sub": "A grade like that usually needs “{{level}}”.",
-      "done": "The subject is now “{{level}}”. The plan is recomputed."
     },
     "period": {
       "title": "Exam period ahead — raise the maximum to {{hours}} h until {{date}}?",
@@ -2244,7 +2367,6 @@
     "modeFixedSub": "Locked: the plan doesn't move or delete it, it plans around it. Switch back to Automatic any time."
   },
   "crumbs": {
-    "label": "Breadcrumb",
     "fresh": "Fresh start",
     "newSubject": "New subject",
     "edit": "Edit",
@@ -2357,7 +2479,6 @@
     "discardProposal": "Discard"
   },
   "review": {
-    "title": "Knowledge check",
     "progress": "Knowledge check · {{n}} of {{total}}",
     "close": "Close",
     "strength": "strength {{pct}} · last {{last}}",
@@ -2373,7 +2494,8 @@
       "exam_question": "EXAM QUESTION {{label}}",
       "card": "CARD",
       "recall": "RECALL",
-      "question": "EXAM QUESTION"
+      "question": "EXAM QUESTION",
+      "source_text": "FROM THE SOURCE TEXT"
     },
     "recallPrompt": "What do you know about: {{title}}?",
     "answer": "ANSWER",
@@ -2420,7 +2542,6 @@
     "empty": "Strength is computed once a chapter passes its first test (recall gate or check of what you read).",
     "nextReview": "Next review",
     "step": "step {{n}} of 4",
-    "unitStrength": "strength {{pct}} · {{band}}",
     "unlock": "“Understood” unlocks through a",
     "unlockLink": "memory test",
     "unlockQuestion": "“Know it” unlocks through a",
@@ -2667,7 +2788,7 @@
       "appearance": {
         "title": "Appearance",
         "sub": "Settings › General · theme",
-        "syn": "theme, colour, color, look, lavender, graphite, sand, sage, ocean"
+        "syn": "theme, colour, color, look, night, graphite, moss, plum, chestnut"
       },
       "faculty": {
         "title": "Faculty and year",
@@ -2685,25 +2806,20 @@
     "row": "Appearance",
     "rowSub": "colour theme",
     "theme": {
-      "lavender": {
-        "name": "Lavender",
-        "sub": "default · purple mist"
+      "ocean": {
+        "name": "Night"
       },
       "graphite": {
-        "name": "Graphite",
-        "sub": "neutral · warm grey"
-      },
-      "sand": {
-        "name": "Sand",
-        "sub": "warm · beige"
+        "name": "Graphite"
       },
       "sage": {
-        "name": "Sage",
-        "sub": "calm · green"
+        "name": "Moss"
       },
-      "ocean": {
-        "name": "Ocean",
-        "sub": "cool · blue"
+      "lavender": {
+        "name": "Plum"
+      },
+      "sand": {
+        "name": "Chestnut"
       }
     }
   },
@@ -2911,31 +3027,47 @@
   "landing": {
     "signIn": "Sign in",
     "start": "Get started",
-    "lead": "Hoot turns your exam dates, books and exam questions into a daily study plan, and fixes it by itself when you miss something.",
-    "devices": "Works on phone and computer · add it to your home screen",
-    "shotAlt": "Hoot's Today screen: the next block, a review and an exam in 12 days",
-    "what": {
-      "title": "You study, Hoot plans",
-      "plan": "A plan from your deadlines",
-      "planBody": "Snap the book's table of contents and add exam dates. Hoot spreads the material over the days, around classes and your free time.",
-      "adapt": "Adapts by itself",
-      "adaptBody": "Missed a day or low on energy? One tap and the plan is redone, no guilt and no moving things by hand.",
-      "remember": "Remembers for you",
-      "rememberBody": "A short check after studying, and reviews come right when the material would start to fade, up to exam day."
+    "haveAccount": "I already have an account",
+    "headline": "You study.\nHoot plans.",
+    "lead": "Add your exams and books. Hoot lays out every day and fixes it on its own when the day goes differently.",
+    "owl": "Hoot",
+    "day": {
+      "title": "Open it in the morning.\nThe day is already planned.",
+      "alt": "Animation: the day's cards shuffle like a deck; the front card flies out to the right and goes to the back, the next block comes forward",
+      "next": "Next · {{time}}",
+      "minutes": "{{n}} min",
+      "chapter": "Chapter {{n}}",
+      "subject": "Subject {{n}} · {{exam}}",
+      "examIn_one": "exam in {{count}} day",
+      "examIn_other": "exam in {{count}} days",
+      "reading": "Reading"
     },
-    "how": {
-      "title": "How to start",
-      "signIn": "Sign in",
-      "signInBody": "with email or Google.",
-      "subjects": "Add subjects:",
-      "subjectsBody": "import the academic calendar and timetable, or just enter your exams.",
-      "today": "Open Today",
-      "todayBody": "and start the first block."
+    "learn": {
+      "title": "A plan that learns\nalong with you.",
+      "ml": "Machine learning",
+      "mlBody": "A model tracks how long each chapter really takes you and estimates time more precisely every day.",
+      "mlChip": "Ch. 3 · estimate 45 → 38 min",
+      "adapt": "Adaptive rescheduling",
+      "adaptBody": "When the day changes, the plan rearranges itself. Chapters stay in order and exams stay covered.",
+      "adaptChip": {
+        "missed": "Missed day",
+        "less": "Less time",
+        "deadline": "New deadline"
+      },
+      "progress": "Progress reports",
+      "progressBody": "See how ready each subject is and where you're behind, before it becomes a problem.",
+      "weekly": "Weekly report"
     },
-    "cta": {
-      "title": "Next exam period, no panic",
-      "body": "Your data stays yours: export it any time.",
-      "button": "Get started"
+    "replan": {
+      "title": "Day not going according to plan?\nNo problem.",
+      "cant": "I can't today",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "free": "free",
+      "chapter": "Ch. {{n}}",
+      "ok": "Everything moved by one day",
+      "okSub": "Chapters stay in order, exams covered",
+      "alt": "Animation: today is freed and the chapters of both subjects move by a day, still in order: Subject 1 chapters 1, 2, 3 and Subject 2 chapters 1, 2"
     }
   },
   "semesterEnd": {
@@ -2952,6 +3084,7 @@
     "title": "Weekly review",
     "fallback": "Rules have found suggestions for your plan. Choose what works for you. This review works without AI.",
     "apply": "Apply",
+    "done": "Applied. Your plan is being rebuilt.",
     "applied": "Applied",
     "cancel": "Cancel suggestion",
     "ask": "Ask AI for a review",
@@ -2998,14 +3131,19 @@
       "speed": "Study pace"
     },
     "copy": {
-      "avoidance": "Your data suggests {{subject}} is postponed more often: {{count}} postponements in 14 days. A small first step may help.",
+      "avoidance_one": "Your data suggests {{subject}} is postponed more often: {{count}} postponement in 14 days. A small first step may help.",
+      "avoidance_other": "Your data suggests {{subject}} is postponed more often: {{count}} postponements in 14 days. A small first step may help.",
       "calibration": "Your estimate for {{subject}} appears about {{pct}} percentage points higher than checks ({{count}} pairs).",
       "recall_share": "Questions, problems and review took {{pct}}% of {{hours}} h this week. Two question blocks can make more room for recall.",
       "late_before_exam": "Study ended after 00:30 on {{count}} evenings before the exam. An earlier finish can leave more room for sleep.",
-      "best_slot": "{{days}} · {{part}}: focus {{focus}}/3 over {{count}} sessions. This slot appears to work well for you.",
-      "distraction": "{{part}}: about {{leaves}} app leaves or distractions per 30 min, across {{count}} sessions.",
-      "first_break": "Your first break comes after about {{minutes}} min ({{count}} sessions).",
-      "speed": "{{mode}}: measured / expected duration {{ratio}}× over {{count}} sessions. Material difficulty is accounted for."
+      "best_slot_one": "{{days}} · {{part}}: focus {{focus}}/3 over {{count}} session. This slot appears to work well for you.",
+      "best_slot_other": "{{days}} · {{part}}: focus {{focus}}/3 over {{count}} sessions. This slot appears to work well for you.",
+      "distraction_one": "{{part}}: about {{leaves}} app leaves or distractions per 30 min, across {{count}} session.",
+      "distraction_other": "{{part}}: about {{leaves}} app leaves or distractions per 30 min, across {{count}} sessions.",
+      "first_break_one": "Your first break comes after about {{minutes}} min ({{count}} session).",
+      "first_break_other": "Your first break comes after about {{minutes}} min ({{count}} sessions).",
+      "speed_one": "{{mode}}: measured / expected duration {{ratio}}× over {{count}} session. Material difficulty is accounted for.",
+      "speed_other": "{{mode}}: measured / expected duration {{ratio}}× over {{count}} sessions. Material difficulty is accounted for."
     },
     "techniques": {
       "self_testing": "Self-testing · Dunlosky et al., 2013",
@@ -3047,5 +3185,311 @@
       "unmotivated": "Unmotivated",
       "busy": "Commitments"
     }
+  },
+  "proposals": {
+    "title": "Suggestions",
+    "lastWeek": "From last week · {{range}}",
+    "thisWeek": "From this week · {{range}}",
+    "pending_one": "{{count}} waiting for a decision",
+    "pending_other": "{{count}} waiting for a decision",
+    "allDecided": "All decided",
+    "applied_one": "{{count}} applied",
+    "applied_other": "{{count}} applied",
+    "confirm": "Confirm {{count}}",
+    "more_one": "{{count}} more suggestion",
+    "more_other": "{{count}} more suggestions",
+    "less": "Show less",
+    "notNow": "Not now",
+    "ok": "OK",
+    "undo": "Undo",
+    "takeBack": "Take back",
+    "applyAgain": "Apply anyway",
+    "restore": "Restore",
+    "skipped": "Skipped · {{title}}",
+    "appliedEffect": "Applied. The plan is updated.",
+    "alreadyDone": "Hoot already did this",
+    "rules": {
+      "deficit": "Plan shortfall",
+      "behind": "Falling behind",
+      "crowding": "Crowded before exams",
+      "slot": "Study time",
+      "read_untested": "Review",
+      "avoidance": "First step",
+      "rhythm": "Rhythm"
+    },
+    "moved": {
+      "title": "Missed a {{minutes}} block.",
+      "body": "The material moved to {{when}}.",
+      "effect": "{{when}} · {{subject}} {{minutes}} stays in the plan.",
+      "undone": "Undone. The material is out of the plan, and {{subject}} is still behind."
+    },
+    "limit": "3 suggestions were applied this week. The rest wait for next week.",
+    "entry_one": "{{count}} suggestion waiting for your decision",
+    "entry_other": "{{count}} suggestions waiting for your decision",
+    "entryNone": "Suggestions for your plan",
+    "entrySub": "From last week · approve each with one tap",
+    "entryNoneSub": "Nothing waiting for a decision",
+    "today": "today",
+    "tomorrow": "tomorrow"
+  },
+  "points": {
+    "title": "Points",
+    "sub_one": "{{count}} subject",
+    "sub_other": "{{count}} subjects",
+    "target": "target {{grade}}",
+    "edit": "Edit points and scale: {{name}}",
+    "noItems": "Nothing carries points yet. Add items with the pencil.",
+    "aria": "Earned {{have}} of {{total}}. Target {{goal}} from {{points}} points.",
+    "legendEarned": "Earned {{points}}",
+    "legendForecast": "Forecast {{range}}",
+    "legendTarget": "Target {{grade}}",
+    "legendPass": "Pass",
+    "callNone": "No points yet.",
+    "callNoneSub": "{{item}} carries {{points}}, and {{grade}} needs {{need}} in total.",
+    "callNeeds": "{{grade}} needs {{points}} of the remaining {{remaining}}.",
+    "callPace": "At this pace you reach {{range}} points, grade {{grades}}.",
+    "callRisk": "The forecast is {{range}} points, and below {{pass}} is a fail. {{name}} needs more time.",
+    "enter": "Enter a result",
+    "enterHint": "Got points for a midterm, assignment or exam? Enter them here and Hoot works out what you still need. Change each subject's items and scale with the pencil.",
+    "defaultScale": "Default scale: {{scale}} points.",
+    "scaleStep": "{{grade}} from {{pct}}",
+    "pickSub": "Pick an exam or assignment",
+    "pickEmpty": "No exam or assignment is waiting for a result.",
+    "editLabel": "Points and scale",
+    "items": "What carries points",
+    "itemsTotal": "total {{sum}} / {{total}}",
+    "threshold": "threshold {{points}}",
+    "earnedFor": "{{title}}, earned",
+    "tooMany": "A result can't be more than the item carries.",
+    "itemsHint": "Enter a result as soon as you get it. Empty means it hasn't happened yet, so Hoot works out what you need.",
+    "itemsEmpty": "Add exams or assignments with points and Hoot works out what you need for a grade.",
+    "addItem": "Add an item (attendance, paper…)",
+    "scale": "Grade scale",
+    "customScale": "Own scale for this subject",
+    "scaleDefault": "Default: {{scale}}",
+    "scaleOwn": "This subject: {{scale}}",
+    "scaleAria": "Scale: {{scale}}",
+    "gradeFrom": "Grade {{grade}} from",
+    "less": "Fewer points for {{grade}}",
+    "more": "More points for {{grade}}",
+    "scaleHint": "Below {{points}} points the subject is not passed. Change the default scale for all subjects in Settings.",
+    "rowEmpty": "Add points for exams and assignments",
+    "rowHave": "{{name}} {{have}} of {{max}}",
+    "rowNone": "{{name}} · no points yet",
+    "rowNeeds": "{{grade}} needs {{points}} more",
+    "or": "or",
+    "gradesSpan": "{{low}} to {{high}}"
+  },
+  "summary": {
+    "instead": {
+      "tag": "Deficit",
+      "title": "You won't get through all the reading",
+      "how": "What next",
+      "body_one": "{{days}} days are left until the {{subject}} exam and {{count}} chapter is unread. Passing is enough for this subject, so a summary can replace the reading.",
+      "body_other": "{{days}} days are left until the {{subject}} exam and {{count}} chapters are unread. Passing is enough for this subject, so a summary can replace the reading.",
+      "read": "Read it all",
+      "readSub": "{{time}} · won't fit before the exam",
+      "use": "Summary instead of reading",
+      "useFits": "{{time}} · fits before the exam",
+      "useShort": "{{time}} · still {{short}} short",
+      "hint": "Those chapters get marked “Read (summary)” and the first check comes in 2 days. You can read them in full when you have time left.",
+      "apply": "Use summaries",
+      "keep": "Keep the plan as it is",
+      "open": "Summary instead of reading",
+      "done_one": "{{count}} chapter goes through its summary",
+      "done_other": "{{count}} chapters go through their summaries",
+      "short": "{{time}} instead of {{reading}}"
+    },
+    "title": "Summary",
+    "refresh": "Refresh summary",
+    "scope": "Summary scope",
+    "scopes": {
+      "unit": "Unit",
+      "chapter": "Whole chapter"
+    },
+    "aiTag": "AI summary",
+    "page": "p. {{page}}",
+    "formula": "The formula to know",
+    "made": "Made {{when}} from the source text. It stays the same until the text changes.",
+    "notReplacing": "A summary doesn't replace reading for the exam. A check will show what's still unclear.",
+    "toCards": "Make cards from this",
+    "check": "Check yourself",
+    "emptyTitle": "No summary yet",
+    "emptyBody": "Hoot makes it from the source text, with the page next to each idea. It stays saved until the text changes.",
+    "make": "Make a summary",
+    "making": "Making the summary…",
+    "readVia": "Read (summary)",
+    "useSummary": "Use the summary",
+    "useSummarySub": "{{time}} instead of {{reading}}",
+    "planned": "In the plan: summary instead of reading",
+    "readFull": "Read it all",
+    "unitRows": {
+      "title": "From the source text",
+      "summary": "Summary",
+      "summarySub": "Key ideas with pages",
+      "summaryMade": "{{time}} instead of {{reading}}",
+      "cards": "Cards from the material",
+      "cardsSub": "AI suggests 5 to 15"
+    },
+    "useSummaryHint": "Study from the summary instead of reading the pages"
+  },
+  "materialCards": {
+    "title": "Cards from the material",
+    "sub": "Suggested for {{unit}}",
+    "from": "From",
+    "sources": {
+      "text": "Unit text",
+      "notes": "Notes",
+      "pasted": "Paste text"
+    },
+    "pastePlaceholder": "Paste the text of a chapter or a passage",
+    "propose": "Suggest cards",
+    "proposing": "Making cards…",
+    "kept": "{{kept}} of {{total}} cards stay",
+    "range": "AI suggests 5 to 15",
+    "keep": "keep",
+    "dropped": "dropped",
+    "drop": "Drop",
+    "restore": "Restore",
+    "edit": "Edit",
+    "add_one": "Add {{count}} card",
+    "add_other": "Add {{count}} cards",
+    "addHint": "They become this unit's cards, first review tomorrow",
+    "added_one": "{{count}} card added",
+    "added_other": "{{count}} cards added",
+    "noNotes": "This unit has no notes.",
+    "front": "Question",
+    "back": "Answer"
+  },
+  "tutor": {
+    "title": "Tutor",
+    "pages": "p. {{from}} to {{to}}",
+    "questionsCount_one": "{{count}} exam question",
+    "questionsCount_other": "{{count}} exam questions",
+    "textHere": "The source text is here",
+    "noText": "No source text",
+    "noTextSub": "Explain and In your own words need the source PDF. Quiz me also works with questions and cards.",
+    "how": "How shall we study?",
+    "recommended": "Suggested",
+    "modes": {
+      "explain": "Explain",
+      "explainSub": "From your text, with the page",
+      "quiz": "Quiz me",
+      "quizSub": "Exam questions, cards and the text",
+      "oral": "Oral",
+      "oralSub": "Hoot asks out loud, you answer",
+      "feynman": "In your own words",
+      "feynmanSub": "You explain, the tutor finds the gaps"
+    },
+    "ratedHint": "Quiz me and Oral record ratings in your reviews, like a check. Explain and In your own words are study without a rating.",
+    "timeHint": "Time with the tutor counts in the session as",
+    "timeTag": "Tutor",
+    "thinking": "The tutor is thinking…",
+    "explain": {
+      "sub": "{{unit}} · from your text",
+      "empty": "Ask what isn't clear in this chapter. The tutor answers from your text and tells you the page.",
+      "fromBook": "From the book",
+      "example": "Give an example",
+      "simpler": "Simpler",
+      "quizMe": "Quiz me on this",
+      "placeholder": "Ask about this chapter",
+      "send": "Send"
+    },
+    "quiz": {
+      "preparing": "The tutor is preparing questions…",
+      "empty": "This chapter has no questions or cards yet, and no source text to ask from. Add the PDF or some cards.",
+      "progress": "{{n}} of {{total}}",
+      "questions": "Questions",
+      "examQuestion": "Exam question {{label}}",
+      "card": "Card",
+      "fromText": "From the text",
+      "yourAnswer": "Your answer",
+      "placeholder": "Answer in your own words, without looking at the book.",
+      "dontKnow": "I don't know",
+      "check": "Check my answer",
+      "thinks": "The tutor thinks: {{verdict}}",
+      "verdict": {
+        "forgot": "you don't remember",
+        "partial": "partly",
+        "remember": "you remember"
+      },
+      "correct": "Correct answer",
+      "howMuch": "How much did you know?",
+      "youDecide": "The tutor suggests, you decide. The rating goes into your reviews like a check.",
+      "rated": "Rated: {{rating}}"
+    },
+    "end": {
+      "title": "Good round",
+      "sub": "Tutor · {{unit}}",
+      "time": "Time",
+      "timeSub": "counts in the session as Tutor",
+      "answered": "Answered",
+      "questions_one": "{{count}} question",
+      "questions_other": "{{count}} questions",
+      "split": "{{yes}} remembered · {{partial}} partly · {{no}} no",
+      "next": "Next review",
+      "nextSub": "recorded in your reviews like a check",
+      "perQuestion": "By question",
+      "spoken": "spoken",
+      "written": "written",
+      "skipped": "no answer",
+      "unit": "Unit",
+      "levelHint": "The level changes from the ratings, like in a check. The tutor marks nothing by itself.",
+      "done": "Done",
+      "missedToCards": "Turn the missed questions into cards",
+      "again": "Another round"
+    },
+    "feynman": {
+      "sub": "Explain “{{topic}}” as if teaching a friend",
+      "yours": "Your explanation",
+      "placeholder": "Write as if explaining to a classmate who missed the lecture.",
+      "check": "Show the gaps",
+      "noticed": "What the tutor noticed",
+      "good": "Explained well",
+      "gaps_one": "One gap",
+      "gaps_other": "{{count}} gaps",
+      "again": "Try again",
+      "enough": "Enough for now",
+      "hint": "This mode doesn't record a rating. It shows what you can't yet say in your own words."
+    },
+    "entry": {
+      "study": "Study with the tutor",
+      "studySub": "The same session, just with the tutor. The time counts.",
+      "ask": "Ask the tutor",
+      "askSub": "The timer keeps running while you ask",
+      "unitSub": "Explain, quiz, oral, in your own words"
+    },
+    "oral": {
+      "progress": "Question {{n}} of {{total}}",
+      "asks": "Hoot asks",
+      "you": "You",
+      "close": "Close oral",
+      "noVoice": "Voice in Bosnian isn't available yet: the question is written and you answer by voice."
+    }
+  },
+  "voice": {
+    "title": "Voice",
+    "sub": "For the tutor and the assistant",
+    "speak": "The tutor speaks",
+    "speakSub": "Answers and questions are read aloud",
+    "notInBosnian": "Voice in Bosnian isn't available yet. Answers are written.",
+    "answer": "I answer by voice",
+    "answerSub": "Microphone instead of typing in Oral",
+    "howTitle": "How it works",
+    "onPhone": "Everything runs on your phone",
+    "onPhoneBody": "Whisper turns speech into text and understands Bosnian too. Kokoro reads aloud, in English only for now. The first time it downloads about 170 MB, then it works offline. Your voice recording never leaves the phone.",
+    "bosnianLater": "Dictation in Bosnian works. Reading aloud in Bosnian comes once there is a good open voice.",
+    "mic": "Dictate",
+    "listening": "Listening",
+    "transcribing": "Turning it into text…",
+    "loading": "Downloading the voice model… {{p}}%",
+    "done": "Done",
+    "cancel": "Cancel",
+    "type": "Type instead",
+    "repeat": "Repeat the question",
+    "micError": "The microphone isn't available. Allow it in the browser settings or type.",
+    "readAloud": "Read answers aloud",
+    "repeatShort": "Repeat",
+    "typeShort": "Type"
   }
 }

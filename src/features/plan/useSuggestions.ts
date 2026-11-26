@@ -52,7 +52,6 @@ export function useSuggestions(subjectId?: string): Suggestion[] {
       result: model.result,
       today,
       behind: model.built.behind,
-      targetGrade: model.built.targetGrade,
       examPeriods: schedule.periods
         .filter((p) => p.kind === 'exam')
         .map((p) => ({ id: p.id, startsOn: p.startsOn, endsOn: p.endsOn })),

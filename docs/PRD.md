@@ -76,7 +76,7 @@ Nema podjele na MVP i v2: sve ispod ulazi u prvu verziju, osim stavki označenih
 | Opće | Jezik | Bosanski i engleski |
 | Opće | Rezultat ispita | Bodovi (Sprint 5) + spremnost dan prije (Napredak); zatvara krug za prognozu |
 | Opće | Pretraga | Jedno polje (ikona u gornjem redu) nalazi bilo koji ekran, postavku, predmet, ispit, izvor, jedinicu ili dokument i vodi direktno tamo; offline, bez AI-ja |
-| Opće | Teme boja | Lavanda (default), Grafit, Pijesak, Kadulja, Okean; mijenja se u Postavkama |
+| Opće | Teme boja | Noć (default), Grafit, Mahovina, Šljiva, Kesten (od Sprinta 19); mijenja se u Postavkama |
 | Opće | Swipe akcije | Swipe ulijevo na stavci liste: arhiviraj / obriši / preskoči, uz Poništi |
 | Opće | Podsjetnici | Prije svakog bloka (2 h / 1 h / 30 / 15 / 5 min, default 30), “kasniš 15 min”, akcije Započni / Preskoči |
 | Raspored | Akademska godina i semestar | Predmeti grupisani po godini studija i semestru; završen semestar se sklopi, nepoložen predmet se prenosi |
@@ -210,7 +210,7 @@ p_u = \frac{level_u}{3} \qquad P_{izvor} = \frac{\sum_u p_u \, m_u}{\sum_u m_u} 
 
 **Djelimično pročitano (odluka poslije pregleda Sprinta 12).** Kraj sesije pamti dokle je jedinica pročitana (`units.read_amount`, u mjeri izvora), i preko više sesija: intro od 9 stranica pročitan do str. 2 je „Djelimično · 2/9“. Sljedeća sesija u formi kraja nastavlja od str. 3, plan računa samo ostatak jedinice (i stranice planira od str. 3), a progres broji pročitani dio kao „Pročitano“ srazmjerno. Kad se dođe do kraja (zbirno), jedinica postaje „Pročitano“ i nudi se recall gate; tada se `read_amount` briše. Ručno vraćanje na „Nije počelo“ također ga briše.
 
-**Arhiviran ispit i popravni (odluka poslije pregleda Sprinta 12).** Swipe ulijevo na ispitu (Predmet) ga arhivira (`assessments.archived_at`): nestaje sa Danas, iz kalendara, pretrage, plana i ocjena; „Arhivirani ispiti“ na predmetu ga vraćaju. Popravni se ne prikazuje nigdje dok nije utvrđeno da redovni ispit nije položen (rezultat koji ne prolazi ili poništen); do tad živi u sheetu svog ispita.
+**Arhiviran ispit i popravni (odluka poslije pregleda Sprinta 12).** Swipe ulijevo na ispitu (Predmet) ga arhivira (`assessments.archived_at`): nestaje sa Danas, iz kalendara, pretrage, plana i ocjena; „Arhivirani ispiti“ na predmetu ga vraćaju. Popravni se ne prikazuje nigdje dok nije utvrđeno da redovni ispit nije položen (rezultat koji ne prolazi ili poništen); do tad živi u sheetu svog ispita. *Zamijenjeno 5. nov 2026: popravni se prikazuje na predmetu sa „Samo ako zatreba“ (vidi Dopune, 5. nov 2026).*
 ## Procjena težine i vremena
 
 Procjena minuta po jedinici kreće od heuristike i AI težine, a zatim je tvoje ocjene i timer postepeno preuzimaju. Umjesto fiksnih faza koristi se “shrinkage”: što više podataka, to više vjeruješ podacima.
@@ -292,7 +292,7 @@ Nisu svi predmeti jednako važni ni jednako teški. Prioritet kaže koliko je pr
 - Vrijednosti u tabeli su početne konstante u kodu (`src/lib/scheduler/`), ne korisničke postavke.
 - **Privremeno pojačanje** (`subjects.priority_boost_until`): dok traje, težina hitnosti predmeta se množi sa 1.3, i kad je prioritet već 5. Vrijeme se time prirodno uzima od predmeta nižeg prioriteta. Pojačanje ističe samo od sebe; koristi ga prijedlog “Uzmi vrijeme od [predmet]” (vidi Praćenje predavanja).
 
-**Šta korisnik vidi (odluka nakon Sprinta 7).** Prioritet, željena ocjena, pojačanje i ciljna pokrivenost se u modelu preklapaju, pa UI pokazuje samo dva pojma u jednoj sekciji “Cilj” (na Predmetu i pod “Napredno” na NoviPredmet):
+**Šta korisnik vidi (odluka nakon Sprinta 7; od Sprinta 19 zamijenjeno prekidačem Uslovni i željenom ocjenom, vidi Dopune, 5. nov 2026).** Prioritet, željena ocjena, pojačanje i ciljna pokrivenost se u modelu preklapaju, pa UI pokazuje samo dva pojma u jednoj sekciji “Cilj” (na Predmetu i pod “Napredno” na NoviPredmet):
 
 - **“Koliko ti je bitan”**: 5 imenovanih opcija bez brojeva (Lagano, Manje bitan, Standardno, Važan, Uslovni) sa opisom izabrane; čip na Predmetu prikazuje samo ime (“Važan”). Broj 1–5 ostaje samo u bazi i kodu.
 - **“Željena ocjena”** (opcionalno, 6–10), pomjerena iz kartice “Bodovi i ocjena” u “Cilj”; kartica bodova je i dalje prikazuje kao istaknut red projekcije.
@@ -937,7 +937,7 @@ Odluke, oktobar 2026 (Sprint 12). Izgled je u design/README.md.
 - **Sheetovi** klize odozdo kao na iOS-u (fizička kriva, ~400 ms) i zatvaraju se povlačenjem nadolje.
 - **Pretraga.** Ikona u gornjem redu otvara polje preko ekrana. Indeks: svi ekrani i postavke sa sinonimima (“više vremena”, “pauze”, “boja”), plus predmeti, ispiti, izvori, jedinice i dokumenti iz keša; `fuse.js`, offline, bez AI-ja. Rezultat vodi direktno na ekran ili otvara sheet; prazno polje pokazuje nedavne.
 - **Swipe ulijevo** na stavci liste (sesije, termini nastave, blokovi, izvori, predmeti, rokovi, dokumenti): kratki swipe otkriva dugmad, puni izvršava prvu akciju; uvijek toast Poništi, bez dijaloga potvrde. Arhiviraj: predmet, izvor (ništa na čemu stoje jedinice se ne briše). Obriši: sesija (kalibracija se preračuna), termin nastave, ručni blok, rok, dokument. Preskoči: AI blok (isto kao Preskoči na kartici). Iste akcije su i u “⋯” / dugom pritisku (pristupačnost, desktop).
-- **Teme boja.** Lavanda (default), Grafit (neutralna), Pijesak, Kadulja, Okean, u Postavkama → Općenito → Izgled (`profiles.theme`, sinhronizuje se). Mijenjaju brand boje, ljubičastu karticu sesije, dugmad i pozadinsku maglu; boje predmeta ostaju. Tamni režim je Kasnije.
+- **Teme boja.** Lavanda (default), Grafit (neutralna), Pijesak, Kadulja, Okean, u Postavkama → Općenito → Izgled (`profiles.theme`, sinhronizuje se). Mijenjaju brand boje, ljubičastu karticu sesije, dugmad i pozadinsku maglu; boje predmeta ostaju. Tamni režim je Kasnije. *Zamijenjeno 5. nov 2026: teme Noćne sove, vidi Dopune, 5. nov 2026.*
 - **Više vremena za određeni dan.** Model postoji (`availability_days`); akcija “Više vremena ovaj dan” je na Plan → Dan, u kartici Dan pred ispit i u pretrazi.
 
 ## Dopune, 29. okt 2026: energija, tutor, prijava i doživljaj
@@ -972,6 +972,7 @@ Zamjenjuje “Puni sadržaj materijala za asistenta” (Materijali, faza 3).
 - **Sažetak.** Po jedinici ili poglavlju, na zahtjev, keširan po hashu teksta. Kod deficita, za gradivo prioriteta 1–2, opcija “sažetak umjesto čitanja” uz manju procjenu vremena.
 - **Kartice iz gradiva.** AI predloži 5–15 kartica iz teksta jedinice, bilješki ili zalijepljenog teksta; pregled (zadrži / izmijeni / izbaci) pa postaju FSRS kartice jedinice (Sprint 10).
 - Tekst knjige je privatan sadržaj: ne ide na besplatne tierove (vidi Rotacija). Uslov: plaćeni model (Haiku) za ove zadatke.
+- **Odluka (22. nov 2026).** Sažetak se pravi samo na tap („Napravi sažetak“, Jedinica / Cijelo poglavlje) i čuva u `unit_summaries` dok je tekst isti. Koristi se na dva načina: „Koristi sažetak“ na početku sesije čitanja (sheet bloka ili u sesiji) za nepročitano poglavlje sa tekstom, i prijedlog kod deficita (kartica deficita → „Sažetak umjesto čitanja“, probni `plan()` kaže stiže li). Poglavlje učeno iz sažetka je „Pročitano (sažetak)“ (`units.read_via`) sa provjerom za 2 dana; čitanje u cijelosti skida oznaku. Procjena bloka sa sažetkom (`units.use_summary`, ulaz u `plan()`): 20% vremena čitanja dok sažetak ne postoji, pa dužina sažetka × tempo (3 min / 100 riječi), a tempo se uči iz sesija sa sažetkom (`session_units.summary_words`, isto skupljanje kao tempo čitanja). Obilježje u ML modelu trajanja dolazi u Sprintu 22. Dok je beta zatvorena, `LLM_PRIVATE_FREE=allow` pušta ove zadatke na Gemini radi testiranja; gasi se prije otvaranja (SETUP 6).
 
 ### AI tutor (Sprint 18)
 
@@ -982,6 +983,7 @@ Po uzoru na Notilo i Gizmo, ali nije poseban kutak: tutor je način učenja u po
 - **Veza sa FSRS-om.** Odgovori u Ispitaj me i Usmenom su recall: ocjena 0/1/2 ide u `review_logs` i `levelAfter()` kao u recall gateu. Tutor koristi isti izbor pitanja kao gate (jedinice na redu, slabe teme, obim ispita). Vrijeme sa tutorom je vrijeme sesije (segmenti, način `tutor`).
 - **Glas.** TTS i STT kroz edge funkciju (`voice`): ElevenLabs (bs i en; Scribe za STT) do free tiera (~10k znakova mjesečno, broji se iz `ai_runs`), pa Web Speech API iz preglednika. Ključ samo u Supabase secrets. Plaćeni plan tek uz Pretplatu.
 - Svaki poziv kroz `_shared/llm.ts`, Zod izlaz, `ai_runs` (i znakovi glasa).
+- **Odluka (22. nov 2026).** Tutor je edge funkcija `tutor` (`explain`, `grade`, `feynman`, `questions`); tekst jedinice ide u prefiks koji se kešira, pa runda ne plaća cijeli tekst svaki put. Citat iz Objasni se prikazuje samo ako ga stvarno ima u tekstu. Runda Ispitaj me / Usmeni: pitanja iz recall gatea (ispitna pitanja jedinice, kartice sa onima na redu prvo), dopunjena pitanjima iz teksta do 6; tutor predloži ocjenu, student bira; ocjene se upisuju na kraju runde (`checkReviews` → `planReviews`, izvor `source_text` za pitanja iz teksta), a poslije svakog pitanja „Poništi“ vraća na to pitanje. Vrijeme: segment sesije sa oznakom `tutor`; tutor otvoren sa Jedinice bez sesije pokreće sesiju i završava je na „Gotovo“, a „Pitaj tutora“ iz timera ne zaustavlja timer.
 
 ### Prijava (Sprint 16)
 
@@ -1088,6 +1090,41 @@ Ekran za prijavu na startu tjera nove korisnike ([RESEARCH-ML-2026-10.md](RESEAR
 - **AI bez naloga.** Samo uvoz (raspored, akademski kalendar, plan i program, studijski program, fakultet s interneta, sadržaj izvora), najviše 5 AI poziva ukupno, brojano iz `ai_runs`. Edge funkcije čitaju `is_anonymous` iz JWT-a (`_shared/`) i za ostalo vraćaju `needs_account`. Recall gate bez AI pitanja radi kao samoprocjena; asistent, tutor i kviz traže nalog.
 - **Čišćenje.** `pg_cron` sedmično briše anonimne naloge bez aktivnosti 30 dana; tabele se brišu kaskadno (`on delete cascade`), a fajlove u `uploads` posao briše posebno (Storage nema kaskadu).
 - **Otvaranje.** Anonimni nalog je novi korisnik, pa ovaj sprint otvara app: domena, Resend domena, registracija (SETUP 6), politika privatnosti i uslovi korištenja (Pravno), i pristanak za zajednički trening (`profiles.ml_consent_at`, vidi Zajednički trening) prije Sprinta 22.
+
+## Dopune, 5. nov 2026: redizajn (Sprint 19)
+
+Odluke iz pregleda redizajna („Noćna sova“). Ulaze u Sprint 19 uz uvoz gotovog plana.
+
+### Ispravke postojećeg
+
+- **Vizuelni sistem „Noćna sova“ umjesto Liquid Glass.** Krem podloga, navy brend, ćilibar za AI i energiju, pastelne boje predmeta; Figtree za tekst i Bricolage Grotesque za naslove; ravne površine bez stakla, blura i gradijenata; plavo zaglavlje s talasom. Vrijednosti su u `docs/design/README.md`.
+- **Teme (odluka 11. nov 2026).** Noć (zadana), Grafit, Mahovina, Šljiva, Kesten; vrijednosti u `profiles.theme` ostaju iste (`ocean`, `graphite`, `sage`, `lavender`, `sand`). Profili na staroj zadanoj Lavandi prelaze na Noć. Boje predmeta su iste u svim temama: Narandžasta je Terakota #D9774B (ćilibar ostaje samo za AI), Siva #7B8494. Tamni režim ostaje Kasnije.
+- **Cilj predmeta: uslovni + željena ocjena.** Umjesto 5 opcija „Koliko ti je bitan“ (vidi Prioritet i režim → Šta korisnik vidi) UI pita dvije stvari: prekidač **Uslovni predmet** („mora se položiti za upis dalje“) i **Željena ocjena** (6–10, opcionalno). `subjects.priority` ostaje u bazi i kodu i računa se iz toga: uslovni → 5; inače bez ocjene 3, ocjena 6 → 2, 7–8 → 3, 9–10 → 4. Prioritet 1 („dovoljno je proći“) ne nudi se kao izbor; ostaje za AI prijedlog i postojeće predmete. Mapiranje je čista funkcija u `src/lib/` sa testovima; ručno postavljen prioritet (stari predmeti) se ne prepisuje dok korisnik ne promijeni prekidač ili ocjenu. Kartica usklađivanja („Za 9 obično treba Važan“) otpada.
+- **Novi predmet traži prvi izvor, ne veličinu gradiva.** „Koliko je gradiva? Malo / Srednje / Puno“ otpada. Na NoviPredmet je sekcija **Prvi izvor**: PDF, „Nemam PDF, nađi sadržaj“ (vidi ispod) ili slika sadržaja. „Izvor dodajem kasnije“ ostavlja grubi izvor od ~25 h (`is_rough`), kao do sad default.
+- **Popravni na predmetu.** Popravni se prikazuje na Predmetu kao red ispita (datum, naziv), sa podtekstom „Samo ako zatreba“; ne ulazi u plan dok se ne aktivira (pravilo `contingent` ostaje). Zamjenjuje odluku „Popravni se ne prikazuje nigdje dok…“ iz Sprinta 12.
+- **Ritam planiranog bloka se ne bira na startu.** Sheet „Započeti sesiju sada?“ pokazuje zadani predložak („Ritam 50 · 15, tvoj zadani“) uz „Promijeni“, umjesto čipova. Izbor ritma ostaje u slobodnoj sesiji.
+- **Tutor je ista sesija.** „Uči sa tutorom“ iz bloka pokreće sesiju u načinu `tutor` (kao do sad u PRD-u); UI to kaže („Ista sesija, samo s tutorom. Vrijeme se broji.“).
+- **Prijedlozi: „Potvrdi N“** potvrđuje sve prikazane: odobrava otvorene i potvrđuje („U redu“) one koje je Hoot već uradio.
+- **Brisanje: poništi umjesto potvrde.** Sve što se može vratiti (blok, izvor, jedinica, arhiviranje predmeta ili ispita) briše se odmah, uz toast sa „Poništi“; bez dijaloga potvrde. Sheet „Potvrda brisanja“ samo za radnje koje se ne mogu vratiti (npr. brisanje naloga ili svih podataka).
+
+### Novo
+
+- **Izvor bez PDF-a: sadržaj s interneta.** Korisnik upiše naslov i autora; edge funkcija (isti web search wrapper kao „Fakultet s interneta“, šalje se samo naslov, autor i izdanje) traži sadržaj knjige (poglavlja, stranice) na stranici izdavača, biblioteke ili kataloga. Rezultat: poglavlja kao jedinice uz link na izvor i upozorenje „provjeri da je isto izdanje“; ništa se ne snima bez pregleda. Ne nađe ništa → ručni unos poglavlja ili slika sadržaja. Jedan poziv po naslovu (keš), `ai_runs`.
+- **Literatura iz plana i programa na potvrdu.** Kad plan i program (uvezen ili nađen na internetu) ima literaturu, Dodaj izvor i pregled uvoza pitaju „Koje od ovoga koristiš?“; ništa nije unaprijed označeno (kao i do sad). Za označenu knjigu bez PDF-a nudi se sadržaj s interneta.
+- **Onboarding preskače „prvi predmet“.** Ako je u koraku 2 uvezen plan i program (ili studijski program) i dao bar jedan predmet, korak 7 (prvi predmet) se preskače; korak 2 nudi „Plan i program“ kao izbor.
+- **Danas: „Prilagodi dan“.** Ikona (bez teksta i pozadine) desno od naslova Danas otvara sheet: energija (Malo / Normalno / Puno, sa rečenicom šta mijenja), „Imam samo“ 30 min / 1h / 1h 30, slobodna sesija, „Imam više vremena“ (Dodaj blok) i „Danas ne mogu“. Ispod kartice „Sljedeće“ sitno: „Ili započni slobodnu sesiju sada“.
+- **Slobodna sesija.** Trajanje → „Hoot predloži“ (default, `pickForTime()`, uz „Druga ideja“) ili „Biram sam“ (predmet, jedinica opcionalno) → pauze sklopljene u jedan red (Hoot bira, uz Promijeni).
+- **Bodovi po predmetu.** Svaki predmet na Bodovima ima olovku: stavke i bodovi, rezultati i posebna skala ocjena za taj predmet (default skala iz Postavki).
+- **Navigacija: traka s oznakama.** Donja traka pune širine, ikona + naziv ispod; aktivni tab ima pozadinu (pilulu) koja klizi s taba na tab (≈300 ms, ease-out; bez animacije uz `prefers-reduced-motion`).
+- **Ikonska dugmad bez pozadine.** Olovka, X, pretraga, postavke i slične akcije u zaglavljima i karticama su samo ikona (min. 44×44 px dodirna površina, `aria-label`), bez okrugle pozadine i bez teksta uz ikonu.
+
+### Ideje (Kasnije)
+
+- **Mod pred ispit.** Zadnja 3 dana samo pitanja s ranijih rokova i slabe teme iz obima, uz jedan ekran „spremnost po temama“.
+- **„Kako je prošao ispit?“ odmah upisuje bodove** i, kad treba, aktivira popravni (proširenje kartice iz Sprinta 20).
+- **Nedjeljni sažetak kao notifikacija** sa jednim dugmetom „Potvrdi plan za sedmicu“.
+- **Fokus mod u sesiji.** Podsjetnik da utišaš telefon i opcionalni bijeli šum (uz „Study with me“).
+- **Grupno učenje.** Dijeljenje kartica i ispitnih pitanja s kolegama s istog predmeta (uz Social v2).
 
 ## Tech stack
 

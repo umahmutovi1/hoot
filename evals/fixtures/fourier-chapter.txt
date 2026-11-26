@@ -1,0 +1,8 @@
+[p. 114]
+Periodičan signal x(t) sa osnovnim periodom T može se prikazati kao zbir kompleksnih eksponencijala čije su frekvencije cjelobrojni umnošci osnovne frekvencije ω₀ = 2π/T. Takav prikaz zovemo Fourierov red. Koeficijent aₖ uz k-ti harmonik računa se kao integral proizvoda x(t) i e^(−jkω₀t) preko jednog perioda, podijeljen sa T. Koeficijent a₀ je srednja vrijednost signala tokom perioda.
+
+[p. 115]
+Ako je signal realan, koeficijenti zadovoljavaju konjugovanu simetriju: a₋ₖ je konjugovano kompleksan broj od aₖ. Zato se realan signal može zapisati i preko kosinusa i sinusa, sa amplitudama 2|aₖ| i fazama jednakim argumentu aₖ.
+
+[p. 116]
+Pomak signala u vremenu za t₀ ne mijenja amplitude koeficijenata: svaki koeficijent se množi sa e^(−jkω₀t₀), pa se mijenja samo faza, i to više za više harmonike. Parsevalova relacija kaže da je prosječna snaga periodičnog signala jednaka zbiru kvadrata modula svih koeficijenata. Za pravougaoni impuls širine 2T₁ koeficijenti imaju oblik sin(kω₀T₁)/(kπ), a a₀ = 2T₁/T. Red konvergira ako signal zadovoljava Dirichletove uslove; oko prekida ostaje preskok od oko 9 posto, poznat kao Gibbsov fenomen.

@@ -13,12 +13,12 @@ export function Skeleton({ className }: { className?: string }) {
   )
 }
 
-/** A glass card holding grey lines; `rows` lines under a title line. */
+/** A surface card holding grey lines; `rows` lines under a title line. */
 export function SkeletonCard({ rows = 2, className }: { rows?: number; className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={cn('glass flex flex-col gap-2.5 rounded-card-lg p-[18px]', className)}
+      className={cn('surface flex flex-col gap-2.5 rounded-card-lg p-[18px]', className)}
     >
       <Skeleton className="h-4 w-2/5" />
       {Array.from({ length: rows }, (_, i) => (
@@ -41,7 +41,7 @@ export function TodaySkeleton() {
       <LoadingLabel />
       <div
         aria-hidden="true"
-        className="glass mt-4 flex items-center gap-4 rounded-card-lg p-[18px]"
+        className="surface mt-4 flex items-center gap-4 rounded-card-lg p-[18px]"
       >
         <Skeleton className="size-20 shrink-0 rounded-full" />
         <div className="grid flex-1 grid-cols-2 gap-x-3 gap-y-3">

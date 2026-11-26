@@ -50,7 +50,10 @@ export function StepRhythm({ setSave }: StepProps) {
           </span>
           <div className="grid grid-cols-2 gap-2">
             {(['wake', 'sleep'] as const).map((key) => (
-              <label key={key} className="flex flex-col gap-0.5 rounded-[18px] glass px-3.5 py-2.5">
+              <label
+                key={key}
+                className="flex flex-col gap-0.5 rounded-[18px] surface px-3.5 py-2.5"
+              >
                 <span className="text-xs text-ink-muted">{t(`onboarding.rhythm.${key}`)}</span>
                 <input
                   type="time"

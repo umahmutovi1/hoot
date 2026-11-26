@@ -1,4 +1,8 @@
+import type { TFunction } from 'i18next'
 import { useNavigate } from 'react-router-dom'
+import { format, type Locale } from 'date-fns'
+import { formatDuration } from '@/features/sources/format'
+import { toDisplayDate } from '@/lib/day'
 import type { useTranslation } from 'react-i18next'
 import { useStartBlock } from '@/features/plan/actions'
 import { blockTitle, isOpen, type UnitInfo } from '@/features/plan/model'
@@ -31,7 +35,12 @@ export function toPickBlock(b: PlanBlockRow): PickBlock {
 }
 
 /** `pickForTime()` over today's plan, the checks due and the next blocks (optionally one subject). */
-export function pickFor(plan: PlanToday, minutes: number, subjectId?: string): Pick | null {
+export function pickFor(
+  plan: PlanToday,
+  minutes: number,
+  subjectId?: string,
+  preferFill = false,
+): Pick | null {
   const sourceOf = new Map([...plan.units.values()].map((i) => [i.unit.id, i.source]))
   const dueReviews = dueUnits(
     [...plan.units.values()].map((i) => i.unit),
@@ -56,7 +65,33 @@ export function pickFor(plan: PlanToday, minutes: number, subjectId?: string): P
     dueReviews,
     laterBlocks: plan.blocks.filter((b) => b.on_date > plan.today && isOpen(b)).map(toPickBlock),
     subjectId,
+    preferFill,
   })
+}
+
+/**
+ * Slobodna sesija → "Hoot predloži" with "Druga ideja": the piece that best fills the time, a
+ * short check due (when it was not first), then the best piece of each other subject, up to
+ * `limit` (all from `pickForTime()`, no AI). A later block is filled up to the time.
+ */
+export function picksFor(
+  plan: PlanToday,
+  minutes: number,
+  subjectIds: string[],
+  limit = 3,
+): Pick[] {
+  const out: Pick[] = []
+  const add = (pick: Pick | null) => {
+    if (!pick || out.length >= limit) return
+    const same = (p: Pick) =>
+      p.subjectId === pick.subjectId && p.from === pick.from && p.blockId === pick.blockId
+    if (!out.some(same)) out.push(fillPick(plan, pick, minutes))
+  }
+  add(pickFor(plan, minutes, undefined, true))
+  add(pickFor(plan, minutes))
+  for (const id of subjectIds)
+    if (!out.some((p) => p.subjectId === id)) add(pickFor(plan, minutes, id, true))
+  return out
 }
 
 /**
@@ -81,7 +116,25 @@ export function fillPick(plan: PlanToday, pick: Pick, minutes: number): Pick {
   return { ...pick, units, minutes: total }
 }
 
-/** Title of a picked piece: subject and the units it covers. */
+/** Why the piece was picked: a check due, (part of) today's block, or a later block's day. */
+export function pickWhy(t: TFunction, plan: PlanToday, pick: Pick, dfLocale: Locale): string {
+  if (pick.from === 'review')
+    return t('today.only.whyReview', { minutes: formatDuration(t, pick.minutes) })
+  if (pick.from === 'today') {
+    const block = plan.blocks.find((b) => b.id === pick.blockId)
+    return block && pick.minutes < block.planned_minutes
+      ? t('today.only.whyPart')
+      : t('today.only.whyWhole')
+  }
+  const later = plan.blocks.find(
+    (b) => isOpen(b) && b.on_date > plan.today && b.subject_id === pick.subjectId,
+  )
+  return t('today.only.whyNext', {
+    day: later ? format(toDisplayDate(later.on_date), 'EEEE', { locale: dfLocale }) : '',
+  })
+}
+
+/** Title of a picked piece: subject (when given) and the units it covers. */
 export function pickTitle(
   t: ReturnType<typeof useTranslation>['t'],
   pick: Pick,
@@ -106,7 +159,7 @@ export function pickTitle(
     units,
     goalTitle,
   )
-  return `${subjectName} · ${title}`
+  return subjectName ? `${subjectName} · ${title}` : title
 }
 
 /**

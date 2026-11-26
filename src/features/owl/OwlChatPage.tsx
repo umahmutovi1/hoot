@@ -1,3 +1,4 @@
+import { PageTitle } from '@/components/PageTitle'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -14,11 +15,14 @@ import { ImportCard } from './ImportCard'
 import { ShareReceiver } from './ShareReceiver'
 import { useOwlStore, type OwlMessage, type StateRef } from './store'
 import { useOwl } from './useOwl'
+import { MicButton } from '@/features/voice/Dictation'
+import { useSpeech } from '@/features/voice/useSpeech'
 
 /** The assistant in the AI tab (Chat.dc.html): conversation, suggestions and the document +. */
 export function OwlChatPage() {
   const { t } = useTranslation()
   const messages = useOwlStore((s) => s.messages)
+  useReadAnswers(messages)
   const busy = useOwlStore((s) => s.busy)
   // The chat shows how a reading ended, so the banner outside it has nothing left to say.
   const jobEnded = useOwlStore((s) => s.job !== null && s.job.status !== 'running')
@@ -56,38 +60,39 @@ export function OwlChatPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-col">
-          <h1 className="truncate text-[30px] font-bold tracking-[-0.6px]">{t('owl.name')}</h1>
-          <span className="truncate text-[13px] text-ink-secondary">
-            {state === 'ready'
-              ? t('owl.tagline')
-              : state === 'offline'
-                ? t('owl.offline')
-                : t('owl.disabled')}
-          </span>
-        </div>
-        <div className="flex shrink-0 gap-2">
-          <Link
-            to="/chat/history"
-            aria-label={t('owl.history.title')}
-            className="glass flex size-11 items-center justify-center rounded-full text-ink"
-          >
-            <ClockIcon size={18} />
-          </Link>
-          {messages.length > 0 && (
-            <button
-              type="button"
-              onClick={newConversation}
-              disabled={busy}
-              aria-label={t('owl.history.new')}
-              className="glass flex size-11 items-center justify-center rounded-full text-ink disabled:opacity-60"
+      <PageTitle
+        sub={
+          state === 'ready'
+            ? t('owl.tagline')
+            : state === 'offline'
+              ? t('owl.offline')
+              : t('owl.disabled')
+        }
+        actions={
+          <>
+            <Link
+              to="/chat/history"
+              aria-label={t('owl.history.title')}
+              className="flex size-11 items-center justify-center"
             >
-              <PencilIcon size={18} />
-            </button>
-          )}
-        </div>
-      </div>
+              <ClockIcon size={22} />
+            </Link>
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={newConversation}
+                disabled={busy}
+                aria-label={t('owl.history.new')}
+                className="flex size-11 items-center justify-center disabled:opacity-60"
+              >
+                <PencilIcon size={22} />
+              </button>
+            )}
+          </>
+        }
+      >
+        {t('owl.name')}
+      </PageTitle>
 
       <ChatPlan />
       <div className="flex flex-1 flex-col justify-end gap-3 pb-2" aria-live="polite">
@@ -98,7 +103,7 @@ export function OwlChatPage() {
         <div ref={end} className="scroll-mb-24" />
       </div>
 
-      <div className="sticky bottom-[calc(16px+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-10 keyboard:bottom-[calc(8px+var(--vv-bottom,0px))] flex flex-col gap-2">
+      <div className="sticky bottom-[calc(16px+var(--nav-offset,0px)+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-10 keyboard:bottom-[calc(8px+var(--vv-bottom,0px))] flex flex-col gap-2">
         {enabled && messages.length === 0 && (
           <div className="-mx-5 flex gap-2 overflow-x-auto px-5 py-0.5 [scrollbar-width:none]">
             {suggestions.map((sug) => (
@@ -107,7 +112,7 @@ export function OwlChatPage() {
                 type="button"
                 disabled={busy}
                 onClick={() => (sug.kind ? openSheet(sug.kind) : void owl.ask(sug.ask))}
-                className="glass-flat h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
+                className="surface h-11 shrink-0 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap text-brand disabled:opacity-60"
               >
                 {sug.label}
               </button>
@@ -116,7 +121,7 @@ export function OwlChatPage() {
         )}
         <form
           onSubmit={submit}
-          className="glass-strong flex h-14 items-center gap-2 rounded-full px-1.5"
+          className="surface-raised flex h-14 items-center gap-2 rounded-full px-1.5"
         >
           <button
             type="button"
@@ -142,6 +147,7 @@ export function OwlChatPage() {
             aria-label={t('owl.ask')}
             className="h-11 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink-subtle"
           />
+          {enabled && !busy && <MicButton readAloudSwitch onText={(text) => void owl.ask(text)} />}
           <button
             type="submit"
             disabled={!enabled || busy || !question.trim()}
@@ -156,6 +162,27 @@ export function OwlChatPage() {
       <ShareReceiver />
     </div>
   )
+}
+
+/**
+ * "Odgovori naglas" (board "AI chat · D Glas"): an answer that finished while the chat is open is
+ * read aloud, in English only. Answers already on screen when the chat opens are not.
+ */
+function useReadAnswers(messages: OwlMessage[]) {
+  const speech = useSpeech()
+  const seen = useRef<string | null | undefined>(undefined)
+  const last = messages.at(-1)
+  const ready = last?.role === 'owl' && last.type === 'answer' && !last.streaming ? last : null
+  const { speak, available } = speech
+  useEffect(() => {
+    if (seen.current === undefined) {
+      seen.current = ready?.id ?? null
+      return
+    }
+    if (!ready || ready.id === seen.current) return
+    seen.current = ready.id
+    if (available) speak(ready.text)
+  }, [ready, speak, available])
 }
 
 function OwlBubble({ children }: { children: React.ReactNode }) {
@@ -179,13 +206,13 @@ function Message({ message: m }: { message: OwlMessage }) {
   switch (m.type) {
     case 'text':
       return (
-        <div className="max-w-[80%] self-end glass-tint rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-[15px] leading-[1.35] whitespace-pre-wrap">
+        <div className="max-w-[80%] self-end hero rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-[15px] leading-[1.35] whitespace-pre-wrap">
           {m.text}
         </div>
       )
     case 'file':
       return (
-        <div className="flex max-w-[80%] flex-col gap-1.5 self-end glass-tint rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-sm">
+        <div className="flex max-w-[80%] flex-col gap-1.5 self-end hero rounded-[20px_20px_6px_20px] px-3.5 py-2.5 text-sm">
           <span className="flex min-w-0 items-center gap-2">
             <DocIcon size={18} className="shrink-0" />
             <span className="truncate">{m.name}</span>

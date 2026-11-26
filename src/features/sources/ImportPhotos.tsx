@@ -33,7 +33,7 @@ export function ImportPhotos({
   const full = files.length >= MAX_IMPORT_FILES
 
   return (
-    <div className="flex flex-col gap-3 rounded-card-lg glass p-4">
+    <div className="flex flex-col gap-3 rounded-card-lg surface p-4">
       <div className="grid grid-cols-2 gap-2">
         {[
           { ref: camera, Icon: CameraIcon, label: t('sources.import.camera') },

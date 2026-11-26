@@ -65,6 +65,10 @@ begin
   insert into units (id, user_id, source_id, title, position) values (u, a, src, '1 Uvod', 0);
   insert into assessment_units (user_id, assessment_id, unit_id) values (a, ex, u);
   insert into cards (user_id, unit_id, front, back) values (a, u, 'p', 'o');
+  insert into source_chunks (id, user_id, source_id, unit_id, page, position, content)
+    values ('00000000-0000-4000-8000-0000000000c1', a, src, u, 1, 0, 'Tekst');
+  insert into source_chunk_embeddings (chunk_id, user_id, embedding)
+    values ('00000000-0000-4000-8000-0000000000c1', a, array_fill(0.1, array[384])::extensions.vector);
   insert into plan_runs (id, user_id, input_hash) values (run, a, 'h');
   insert into plan_blocks (id, user_id, subject_id, on_date, planned_minutes, plan_run_id) values (blk, a, s, current_date, 50, run);
   insert into plan_block_units (user_id, block_id, unit_id, planned_minutes) values (a, blk, u, 50);

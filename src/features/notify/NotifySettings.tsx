@@ -41,7 +41,7 @@ export function NotifySettings() {
   }
 
   return (
-    <div className="flex flex-col rounded-card glass px-4 py-1.5">
+    <div className="flex flex-col rounded-card surface px-4 py-1.5">
       <div className="flex flex-col gap-2.5 border-b border-canvas py-3">
         <span className="flex flex-col">
           <span className="text-[15px]">{t('notify.reminders')}</span>

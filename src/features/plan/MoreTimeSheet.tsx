@@ -64,7 +64,7 @@ export function MoreTimeSheet({
             key={m}
             type="button"
             onClick={() => raise(m)}
-            className="h-12 rounded-full glass text-[15px] font-semibold"
+            className="h-12 rounded-full surface text-[15px] font-semibold"
           >
             +{formatDuration(t, m)}
           </button>

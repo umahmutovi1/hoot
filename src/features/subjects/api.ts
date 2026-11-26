@@ -148,6 +148,7 @@ function optimisticSubject(
     archived: false,
     points_total: 100,
     grade_scale: null,
+    syllabus_literature: null,
     custom_scale: false,
     target_grade: null,
     priority_boost_until: null,
@@ -278,6 +279,7 @@ export function useUpdateSubject() {
           | 'grade_scale'
           | 'custom_scale'
           | 'target_grade'
+          | 'syllabus_literature'
         >
       >
     }) => {

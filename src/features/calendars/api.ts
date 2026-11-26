@@ -1,3 +1,4 @@
+import { readPages } from '@/lib/readPages'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/auth-context'
 import type { EventKind } from '@/lib/calendar/classify'
@@ -77,13 +78,16 @@ export function useExternalEvents() {
     queryKey: eventsKey(userId),
     enabled: Boolean(userId),
     queryFn: async (): Promise<EventRow[]> => {
-      const { data, error } = await supabase
-        .from('external_events')
-        .select(EVENT_COLUMNS)
-        .order('starts_at')
-        .limit(5000)
-      if (error) throw error
-      return data as EventRow[]
+      // A limit above the API's 1000-row cap is clamped to it, so the events are read in pages.
+      const rows = await readPages((from, to) =>
+        supabase
+          .from('external_events')
+          .select(EVENT_COLUMNS)
+          .order('starts_at')
+          .order('id')
+          .range(from, to),
+      )
+      return rows as EventRow[]
     },
   })
 }
@@ -269,11 +273,14 @@ export function useCalendarMatches() {
     queryKey: matchesKey(userId),
     enabled: Boolean(userId),
     queryFn: async (): Promise<MatchRow[]> => {
-      const { data, error } = await supabase
-        .from('calendar_matches')
-        .select('feed_id, match_key, kind, target_id, decision, seen_start')
-      if (error) throw error
-      return data
+      return readPages((from, to) =>
+        supabase
+          .from('calendar_matches')
+          .select('feed_id, match_key, kind, target_id, decision, seen_start')
+          .order('feed_id')
+          .order('match_key')
+          .range(from, to),
+      )
     },
   })
 }

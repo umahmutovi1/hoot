@@ -57,7 +57,7 @@ export function AiAsk({
               type="button"
               disabled={busy}
               onClick={() => ref.current?.click()}
-              className="flex h-12 items-center justify-center gap-2 rounded-full border-2 border-brand glass text-sm font-semibold text-brand disabled:opacity-50"
+              className="flex h-12 items-center justify-center gap-2 rounded-full border-2 border-brand surface text-sm font-semibold text-brand disabled:opacity-50"
             >
               <Icon size={18} />
               {label}
@@ -100,7 +100,7 @@ export function AiAsk({
                 type="button"
                 disabled={busy || !text.trim()}
                 onClick={() => onText(text.trim())}
-                className="flex h-12 items-center justify-center gap-2 rounded-full border-2 border-brand glass text-[15px] font-semibold text-brand disabled:opacity-50"
+                className="flex h-12 items-center justify-center gap-2 rounded-full border-2 border-brand surface text-[15px] font-semibold text-brand disabled:opacity-50"
               >
                 <SparkleIcon size={18} />
                 {busy ? t('recall.ai.making') : t('recall.ai.make', { count })}
@@ -124,7 +124,7 @@ export function AiAsk({
           type="button"
           disabled={busy}
           onClick={onAsk}
-          className="flex h-12 items-center justify-center gap-2 rounded-full border-2 border-brand glass text-[15px] font-semibold text-brand disabled:opacity-50"
+          className="flex h-12 items-center justify-center gap-2 rounded-full border-2 border-brand surface text-[15px] font-semibold text-brand disabled:opacity-50"
         >
           <SparkleIcon size={18} />
           {busy ? t('recall.ai.making') : t('recall.ai.make', { count })}

@@ -30,7 +30,7 @@ export function SetupChecklist() {
   const stepsDone = Math.min(ONBOARDING_STEPS, ONBOARDING_STEPS - open)
 
   return (
-    <section className="flex flex-col gap-2 rounded-card glass p-4">
+    <section className="flex flex-col gap-2 rounded-card surface p-4">
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="text-[17px] font-semibold">
           {t('onboarding.checklist.title', { count: open })}

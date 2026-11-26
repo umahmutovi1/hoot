@@ -157,7 +157,7 @@ export function GateTest({
       </div>
 
       {tab === 'questions' && (
-        <div className="flex flex-col gap-3.5 rounded-card-lg glass p-5">
+        <div className="flex flex-col gap-3.5 rounded-card-lg surface p-5">
           {available.length === 0 ? (
             <p className="text-sm text-ink-secondary">{t('recall.emptyQuestions')}</p>
           ) : (
@@ -453,7 +453,7 @@ function Item({
         <button
           type="button"
           onClick={onReveal}
-          className="h-12 rounded-full border-2 border-brand glass text-[15px] font-semibold text-brand"
+          className="h-12 rounded-full border-2 border-brand surface text-[15px] font-semibold text-brand"
         >
           {t('recall.reveal')}
         </button>
@@ -527,7 +527,7 @@ function Blurt({
   const [text, setText] = useState('')
   const notes = target.leaves.filter((l) => l.notes?.trim())
   return (
-    <div className="flex flex-col gap-3 rounded-card-lg glass p-5">
+    <div className="flex flex-col gap-3 rounded-card-lg surface p-5">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-brand-muted">{t('recall.blurtLabel')}</span>
         <span className="rounded-full bg-brand-hero px-2.5 py-1 text-sm font-semibold text-brand tabular-nums">
@@ -568,7 +568,7 @@ function Blurt({
         <button
           type="button"
           onClick={onCompare}
-          className="h-12 rounded-full border-2 border-brand glass text-[15px] font-semibold text-brand"
+          className="h-12 rounded-full border-2 border-brand surface text-[15px] font-semibold text-brand"
         >
           {t('recall.blurtCompare')}
         </button>

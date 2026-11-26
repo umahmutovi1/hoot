@@ -4,7 +4,8 @@ import { activeMs, MINUTE, type Segment } from '@/lib/session/timer'
 
 /** Session and segment rows as the queue and the mirror keep them (no `user_id`, RLS fills it). */
 export type SessionRow = Omit<Tables<'study_sessions'>, 'user_id' | 'created_at'>
-export type SegmentRow = Omit<Tables<'study_segments'>, 'user_id'>
+/** `kind` defaults to 'study' in the database; a tutor segment sets it (Sprint 18). */
+export type SegmentRow = Omit<Tables<'study_segments'>, 'user_id' | 'kind'> & { kind?: string }
 
 export interface ActiveSession {
   session: SessionRow
@@ -24,12 +25,6 @@ export function toSegment(row: SegmentRow): Segment {
 
 export function bySegmentStart(a: SegmentRow, b: SegmentRow) {
   return a.started_at.localeCompare(b.started_at)
-}
-
-/** The unit of the last segment: what "Sad radim na" shows as active. */
-export function currentUnitId(segments: SegmentRow[]): string | null {
-  const last = [...segments].sort(bySegmentStart).at(-1)
-  return last?.unit_id ?? null
 }
 
 /** "23:41", "1:05:09" */

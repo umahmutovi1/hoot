@@ -7,7 +7,6 @@ import {
   leavesOf,
   progressOf,
   subjectProgress,
-  subtreeLeaves,
   type Progress,
   type ProgressUnit,
 } from '@/lib/progress'
@@ -145,11 +144,6 @@ export function asProgress(units: (Unit & { minutes: number })[]): ProgressUnit[
   }))
 }
 
-/** Progress of a unit; a parent's comes from its sub-units. */
-export function unitProgress(material: SourceMaterial, unitId: string): Progress {
-  return progressOf(subtreeLeaves(asProgress(material.units), unitId))
-}
-
 export function subjectMaterialProgress(materials: SourceMaterial[]): number {
   return subjectProgress(materials.map((m) => ({ weight: m.source.weight, progress: m.progress })))
 }
@@ -172,12 +166,6 @@ export function examProgress(
   if (units.length === 0) return EMPTY_PROGRESS
   const inScope = scopeOf({ id: exam.id, scopeAll: exam.scope_all }, units, rows)
   return progressOf(leavesOf(units).filter((u) => inScope.has(u.id)))
-}
-
-/** "1h 52", "45 min" */
-export function formatMinutes(minutes: number): { hours: number; minutes: number } {
-  const total = Math.max(0, Math.round(minutes))
-  return { hours: Math.floor(total / 60), minutes: total % 60 }
 }
 
 export function topicsOfUnit(unitId: string, topics: TopicWithUnits[]): TopicWithUnits[] {

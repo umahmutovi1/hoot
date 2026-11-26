@@ -11,7 +11,7 @@ export function EnergyInsight() {
   if (!energy || (energy.lowDays === 0 && energy.highDays === 0)) return null
   const pct = (x: number) => Math.round(x * 100)
   return (
-    <section className="glass flex flex-col gap-1.5 rounded-card p-4">
+    <section className="surface flex flex-col gap-1.5 rounded-card p-4">
       <h2 className="text-[15px] font-semibold">{t('progress.energy.title')}</h2>
       {energy.lowDays > 0 && (
         <p className="text-sm text-ink-secondary">

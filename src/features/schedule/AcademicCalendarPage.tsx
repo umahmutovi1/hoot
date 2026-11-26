@@ -23,10 +23,7 @@ export function AcademicCalendarPage() {
   return (
     <div className="flex flex-col gap-3.5">
       <ScreenTitle title={t('calendar.title')} />
-      <div className="flex flex-col gap-1">
-        <h1 className="text-[26px] leading-tight font-bold">{t('calendar.heading')}</h1>
-        <p className="text-sm leading-[1.45] text-ink-muted">{t('calendar.intro')}</p>
-      </div>
+      <p className="text-sm leading-[1.45] text-ink-muted">{t('calendar.intro')}</p>
 
       {PERIOD_KINDS.map((kind) => {
         const list = periods.filter((p) => p.kind === kind)
@@ -37,13 +34,13 @@ export function AcademicCalendarPage() {
               <button
                 type="button"
                 onClick={() => setSheet({ open: true, kind })}
-                className="flex h-10 items-center rounded-full glass px-3.5 text-sm font-semibold text-brand"
+                className="flex h-10 items-center rounded-full surface px-3.5 text-sm font-semibold text-brand"
               >
                 {t('calendar.add')}
               </button>
             </div>
             {list.length === 0 ? (
-              <p className="rounded-[20px] glass px-4 py-3.5 text-sm text-ink-muted">
+              <p className="rounded-[20px] surface px-4 py-3.5 text-sm text-ink-muted">
                 {t(`calendar.empty.${kind}`)}
               </p>
             ) : (
@@ -89,7 +86,7 @@ function PeriodRowButton({
     <button
       type="button"
       onClick={onOpen}
-      className="flex items-center gap-3 rounded-[20px] glass px-4 py-3.5 text-left"
+      className="flex items-center gap-3 rounded-[20px] surface px-4 py-3.5 text-left"
     >
       <DateTile
         date={period.starts_on}

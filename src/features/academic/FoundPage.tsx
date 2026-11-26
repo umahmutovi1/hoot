@@ -106,7 +106,7 @@ export function FoundPage() {
       )}
 
       {find.isPending && (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">
           {t('academic.found.searching')}
         </p>
       )}
@@ -118,7 +118,7 @@ export function FoundPage() {
 
       {!find.isPending && docs.length > 0 && (
         <>
-          <div className="flex flex-col divide-y divide-hairline rounded-card glass">
+          <div className="flex flex-col divide-y divide-hairline rounded-card surface">
             {docs.map((d) => {
               const yearOk = d.academic_year === academicYear
               return (
@@ -192,7 +192,7 @@ export function FoundPage() {
       )}
 
       {!find.isPending && search && docs.length === 0 && (
-        <div className="flex flex-col items-start gap-3 rounded-card glass p-4">
+        <div className="flex flex-col items-start gap-3 rounded-card surface p-4">
           <span className="text-base font-semibold">
             {t('academic.found.none', { year: academicYear })}
           </span>

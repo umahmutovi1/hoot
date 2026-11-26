@@ -72,6 +72,7 @@ export function useUpdateLocale() {
   const userId = session?.user.id
   const queryClient = useQueryClient()
   return useMutation({
+    meta: { planInput: false },
     mutationFn: async (locale: Locale) => {
       const { error } = await supabase.from('profiles').update({ locale }).eq('id', userId!)
       if (error) throw error
@@ -115,12 +116,16 @@ export function useUpdateDisplayName() {
   })
 }
 
-/** Partial update of profile settings (recap after lecture, pace days, …). */
-export function useUpdateProfile() {
+/**
+ * Partial update of profile settings (recap after lecture, pace days, …). Pass
+ * `planInput: false` for a caller that only writes fields the plan does not read (theme, gender).
+ */
+export function useUpdateProfile({ planInput = true }: { planInput?: boolean } = {}) {
   const { session } = useAuth()
   const userId = session?.user.id
   const queryClient = useQueryClient()
   return useMutation({
+    meta: { planInput },
     mutationFn: async (
       patch: Partial<
         Pick<
@@ -142,6 +147,7 @@ export function useUpdateProfile() {
           | 'notify_first_block'
           | 'notify_break_end'
           | 'theme'
+          | 'gender'
           | 'institution'
           | 'study_program'
           | 'year_of_study'

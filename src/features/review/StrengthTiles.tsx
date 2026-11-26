@@ -33,7 +33,7 @@ export function StrengthTiles({
     .sort()[0]
   return (
     <>
-      <div className="flex flex-col gap-1.5 rounded-[22px] glass p-3.5">
+      <div className="flex flex-col gap-1.5 rounded-[22px] surface p-3.5">
         <span className="text-xs text-ink-muted">{t('strength.title')}</span>
         {r === null ? (
           // No strength before the first test: say what is missing instead of a dash.
@@ -57,7 +57,7 @@ export function StrengthTiles({
           </>
         )}
       </div>
-      <div className="flex flex-col gap-1.5 rounded-[22px] glass p-3.5">
+      <div className="flex flex-col gap-1.5 rounded-[22px] surface p-3.5">
         <span className="text-xs text-ink-muted">{t('strength.nextReview')}</span>
         {next ? (
           <span className="text-[22px] font-bold">

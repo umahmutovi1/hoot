@@ -18,12 +18,12 @@ import { fitCompletion } from '@/lib/slots/completion'
 import { completionExamples, type ExampleBlock, type ExampleSkip } from '@/lib/slots/examples'
 import { SLOT_PARTS, type SlotPart } from '@/lib/schedule/rhythm'
 import { supabase } from '@/lib/supabase'
+import { summaryInputsKey, useSummaryInputs } from '@/features/sources/summaryApi'
 import type { CardReview, PlanBlockRow, PlanInputs, SessionMinutes } from './state'
 
 // Plan data: every source, scope row and topic link of the user (the plan spans subjects), the
 // blocks from two weeks ago on (history for ρ) and the latest plan run.
 
-export const planKey = (userId: string | undefined) => ['plan', userId] as const
 export const planBlocksKey = (userId: string | undefined) => ['plan', userId, 'blocks'] as const
 export const planRunKey = (userId: string | undefined) => ['plan', userId, 'run'] as const
 const allSourcesKey = (userId: string | undefined) => ['plan', userId, 'sources'] as const
@@ -67,9 +67,15 @@ function useAllScope() {
     queryKey: allScopeKey(userId),
     enabled: Boolean(userId),
     queryFn: async (): Promise<AssessmentUnit[]> => {
-      const { data, error } = await supabase.from('assessment_units').select('*')
-      if (error) throw error
-      return data
+      // Scope rows are units × exams: over the API's 1000-row cap after a few subjects.
+      return readPages((from, to) =>
+        supabase
+          .from('assessment_units')
+          .select('*')
+          .order('assessment_id')
+          .order('unit_id')
+          .range(from, to),
+      )
     },
   })
 }
@@ -80,9 +86,14 @@ export function useTopicLinks() {
     queryKey: topicLinksKey(userId),
     enabled: Boolean(userId),
     queryFn: async () => {
-      const { data, error } = await supabase.from('unit_topics').select('unit_id, topic_id')
-      if (error) throw error
-      return data
+      return readPages((from, to) =>
+        supabase
+          .from('unit_topics')
+          .select('unit_id, topic_id')
+          .order('unit_id')
+          .order('topic_id')
+          .range(from, to),
+      )
     },
   })
 }
@@ -94,11 +105,14 @@ export function useQuestionLinks() {
     queryKey: questionLinksKey(userId),
     enabled: Boolean(userId),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('question_links')
-        .select('question_id, unit_id, linked, assigned_by')
-      if (error) throw error
-      return data
+      return readPages((from, to) =>
+        supabase
+          .from('question_links')
+          .select('question_id, unit_id, linked, assigned_by')
+          .order('question_id')
+          .order('unit_id')
+          .range(from, to),
+      )
     },
   })
 }
@@ -110,13 +124,16 @@ export function useCardReviews() {
     queryKey: cardReviewsKey(userId),
     enabled: Boolean(userId),
     queryFn: async (): Promise<CardReview[]> => {
-      const { data, error } = await supabase
-        .from('cards')
-        .select(
-          'id, unit_id, next_review_on, fsrs_stability, fsrs_difficulty, fsrs_state, fsrs_reps, fsrs_lapses, review_streak, last_review_at',
-        )
-      if (error) throw error
-      return data
+      // An imported Anki deck alone can pass the API's 1000-row cap.
+      return readPages((from, to) =>
+        supabase
+          .from('cards')
+          .select(
+            'id, unit_id, next_review_on, fsrs_stability, fsrs_difficulty, fsrs_state, fsrs_reps, fsrs_lapses, review_streak, last_review_at',
+          )
+          .order('id')
+          .range(from, to),
+      )
     },
   })
 }
@@ -157,30 +174,41 @@ function useCompletionHistory(boundary: DayBoundary) {
     }> => {
       const today = localDay(new Date(), boundary)
       const since = addDays(today, -COMPLETION_DAYS)
+      // Four months of history can pass the API's 1000-row cap: read in pages.
       const [blocks, skips, units] = await Promise.all([
-        supabase
-          .from('plan_blocks')
-          .select(
-            'id, subject_id, on_date, kind, status, origin, plan_start_min, planned_start, day_load_min, days_to_goal, demand',
-          )
-          .eq('origin', 'ai')
-          .gte('on_date', since),
-        supabase
-          .from('block_skips')
-          .select('subject_id, on_date, kind, start_min, day_load_min, days_to_goal, demand')
-          .gte('on_date', since),
+        readPages((from, to) =>
+          supabase
+            .from('plan_blocks')
+            .select(
+              'id, subject_id, on_date, kind, status, origin, plan_start_min, planned_start, day_load_min, days_to_goal, demand',
+            )
+            .eq('origin', 'ai')
+            .gte('on_date', since)
+            .order('id')
+            .range(from, to),
+        ),
+        readPages((from, to) =>
+          supabase
+            .from('block_skips')
+            .select('subject_id, on_date, kind, start_min, day_load_min, days_to_goal, demand')
+            .gte('on_date', since)
+            .order('id')
+            .range(from, to),
+        ),
         // Material done per session, for the speed signal of slots (Sprint 17).
-        supabase
-          .from('session_units')
-          .select('session_id, unit_id, minutes, amount_done, study_sessions!inner(started_at)')
-          .gte('study_sessions.started_at', dayStartInstant(since, boundary).toISOString()),
+        readPages((from, to) =>
+          supabase
+            .from('session_units')
+            .select('session_id, unit_id, minutes, amount_done, study_sessions!inner(started_at)')
+            .gte('study_sessions.started_at', dayStartInstant(since, boundary).toISOString())
+            .order('session_id')
+            .order('unit_id')
+            .range(from, to),
+        ),
       ])
-      if (blocks.error) throw blocks.error
-      if (skips.error) throw skips.error
-      if (units.error) throw units.error
       return {
         today,
-        blocks: blocks.data.map((b) => ({
+        blocks: blocks.map((b) => ({
           id: b.id,
           subjectId: b.subject_id,
           onDate: b.on_date,
@@ -193,7 +221,7 @@ function useCompletionHistory(boundary: DayBoundary) {
           daysToGoal: b.days_to_goal,
           demand: b.demand,
         })),
-        skips: skips.data.map((x) => ({
+        skips: skips.map((x) => ({
           subjectId: x.subject_id,
           onDate: x.on_date,
           kind: x.kind,
@@ -202,7 +230,7 @@ function useCompletionHistory(boundary: DayBoundary) {
           daysToGoal: x.days_to_goal,
           demand: x.demand,
         })),
-        units: units.data.map((u) => ({
+        units: units.map((u) => ({
           sessionId: u.session_id,
           unitId: u.unit_id,
           minutes: Number(u.minutes),
@@ -255,6 +283,7 @@ export function invalidatePlanInputs(queryClient: QueryClient, userId: string | 
     queryClient.invalidateQueries({ queryKey: topicLinksKey(userId) }),
     queryClient.invalidateQueries({ queryKey: questionLinksKey(userId) }),
     queryClient.invalidateQueries({ queryKey: cardReviewsKey(userId) }),
+    queryClient.invalidateQueries({ queryKey: summaryInputsKey(userId) }),
   ])
 }
 
@@ -299,6 +328,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
   )
   const schedule = useScheduleData()
   const energy = useDayEnergy().data
+  const summaries = useSummaryInputs().data
 
   // The personal completion posterior (a few ms of Newton steps): refitted only when its blocks,
   // sessions or the onboarding parts change.
@@ -340,7 +370,8 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       !cards ||
       !blocks ||
       !sessionList ||
-      !energy
+      !energy ||
+      !summaries
     )
       return null
     const sessions: SessionMinutes[] = sessionList
@@ -378,6 +409,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
       feedback,
       shiftBlocks: shiftHistory.data,
       signals,
+      summaries,
       profile,
       subjects,
       deadlines,
@@ -398,6 +430,7 @@ export function usePlanInputs(boundary: DayBoundary): PlanInputs | null {
     feedback,
     shiftHistory.data,
     energy,
+    summaries,
     completion,
     profile,
     subjects,

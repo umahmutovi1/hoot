@@ -1,4 +1,6 @@
-import { DocIcon } from '@/components/icons'
+import { ScreenTitle } from '@/components/ScreenTitle'
+import type { TFunction } from 'i18next'
+import { ChevronRightIcon, DocIcon, GlobeIcon, TextIcon } from '@/components/icons'
 import { useRates } from '@/features/plan/api'
 import { useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
@@ -6,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { DetailSkeleton } from '@/components/Skeleton'
 import { useSubject } from '@/features/subjects/api'
 import type { SubjectWithAssessments } from '@/features/subjects/model'
+import { ROUGH_SIZES } from '@/lib/estimates/rough'
 import { levelMinutes, leavesOf, subtreeLeaves } from '@/lib/progress'
 import { scopeOf } from '@/lib/progress/scope'
 import { cn } from '@/lib/utils'
@@ -60,22 +63,39 @@ function SourceDetail({
       <div className="flex items-center justify-end">
         <Link
           to={`${base}/edit`}
-          className="flex h-11 items-center rounded-full glass px-4 text-sm font-semibold"
+          className="flex h-11 items-center rounded-full surface px-4 text-sm font-semibold"
         >
           {t('sources.detail.editContent')}
         </Link>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <span className="text-[13px] text-brand-muted">
-          {subject.name} · {t(`sources.kind.${source.kind}`)}
-        </span>
-        <h1 className="text-[26px] leading-[1.15] font-bold">{source.title}</h1>
-      </div>
+      <ScreenTitle
+        title={source.title}
+        sub={`${subject.name} · ${t(`sources.kind.${source.kind}`)}`}
+      />
+
+      {source.is_rough && isBook(t, source.title) && (
+        // A syllabus book kept as a rough source: its contents can come from the web (Sprint 19).
+        <Link
+          to={`/subjects/${subject.id}/sources/new?title=${encodeURIComponent(source.title)}`}
+          className="flex min-h-14 items-center gap-3 rounded-[20px] next-card p-3"
+        >
+          <span
+            aria-hidden="true"
+            className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
+          >
+            <GlobeIcon size={18} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('sources.web.findForRough')}</span>
+            <span className="text-xs text-ink-secondary">{t('sources.rough.hint')}</span>
+          </span>
+        </Link>
+      )}
 
       {source.file_name && (
         // Where the units came from (Sprint 13): the PDF's name, and the Drive link when picked there.
-        <div className="flex items-center gap-3 rounded-[20px] glass p-3">
+        <div className="flex items-center gap-3 rounded-[20px] surface p-3">
           <span
             aria-hidden="true"
             className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
@@ -100,8 +120,57 @@ function SourceDetail({
           )}
         </div>
       )}
+      {!source.file_name && source.external_url && (
+        // Chapters found on the web (Sprint 19): the page they came from, to check the edition.
+        <div className="flex items-center gap-3 rounded-[20px] surface p-3">
+          <span
+            aria-hidden="true"
+            className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
+          >
+            <GlobeIcon size={18} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('sources.web.sourceRow')}</span>
+            <span className="truncate text-xs text-ink-muted">{hostOf(source.external_url)}</span>
+          </span>
+          <a
+            href={source.external_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-11 shrink-0 items-center px-1 text-[13px] font-semibold text-brand"
+          >
+            {t('sources.web.open')}
+          </a>
+        </div>
+      )}
 
-      <div className="flex flex-col gap-3 rounded-card glass p-4">
+      {!source.is_rough && source.kind !== 'questions' && material.units.length > 0 && (
+        // Tekst izvora (Sprint 18): the book's text per unit, for the tutor and summaries.
+        <Link
+          to={`${base}/text`}
+          className="flex min-h-14 items-center gap-3 rounded-[20px] surface p-3"
+        >
+          <span
+            aria-hidden="true"
+            className="icon-tile flex size-10 shrink-0 items-center justify-center rounded-[12px]"
+          >
+            <TextIcon size={18} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('sources.text.title')}</span>
+            <span className="text-xs text-ink-secondary">
+              {source.text_pages
+                ? t('sources.text.rowHave', { count: source.text_pages })
+                : source.text_read_at
+                  ? t('sources.text.rowPasted')
+                  : t('sources.text.rowEmpty')}
+            </span>
+          </span>
+          <ChevronRightIcon size={20} />
+        </Link>
+      )}
+
+      <div className="flex flex-col gap-3 rounded-card surface p-4">
         <LevelBar
           minutes={levelMinutes(leaves)}
           questions={source.kind === 'questions'}
@@ -132,8 +201,8 @@ function SourceDetail({
               aria-pressed={filter === f.id}
               onClick={() => setFilter(f.id)}
               className={cn(
-                'h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
-                filter === f.id ? 'bg-ink text-white' : 'glass',
+                'tap h-[38px] rounded-full px-3.5 text-[13px] font-semibold',
+                filter === f.id ? 'bg-ink text-white' : 'surface',
               )}
             >
               {f.title}
@@ -143,7 +212,9 @@ function SourceDetail({
       )}
 
       {material.units.length === 0 ? (
-        <p className="rounded-card glass p-4 text-sm text-ink-muted">{t('sources.detail.empty')}</p>
+        <p className="rounded-card surface p-4 text-sm text-ink-muted">
+          {t('sources.detail.empty')}
+        </p>
       ) : (
         <UnitList material={material} base={base} visible={visible} />
       )}
@@ -187,13 +258,13 @@ function UnitList({
 
   if (units.length === 0) {
     return (
-      <p className="rounded-card glass p-4 text-sm text-ink-muted">
+      <p className="rounded-card surface p-4 text-sm text-ink-muted">
         {t('sources.detail.noneInExam')}
       </p>
     )
   }
   return (
-    <div className="flex flex-col rounded-card glass p-1.5">
+    <div className="flex flex-col rounded-card surface p-1.5">
       {units.map((u, i) => {
         const d = depth.get(u.id) ?? 0
         // A parent shows the lowest status of its sub-units ("whole chapter read").
@@ -260,7 +331,7 @@ function Archived({ subjectId, source }: { subjectId: string; source: SourceWith
         {t('sources.detail.archived', { count: archived.length })}
       </button>
       {open && (
-        <div className="flex flex-col rounded-card glass p-1.5">
+        <div className="flex flex-col rounded-card surface p-1.5">
           {archived.map((u) => (
             <div key={u.id} className="flex items-center gap-3 py-1.5 pr-1 pl-2.5">
               <span className="w-[30px] shrink-0 text-[13px] font-semibold text-ink-muted">
@@ -280,4 +351,21 @@ function Archived({ subjectId, source }: { subjectId: string; source: SourceWith
       )}
     </>
   )
+}
+
+function hostOf(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return url
+  }
+}
+
+/** A rough source named after a book (from the syllabus), not a rough size or the chapters. */
+function isBook(t: TFunction, title: string) {
+  const generic = [
+    ...ROUGH_SIZES.map((z) => t(`subjects.rough.sourceTitle.${z}`)),
+    t('owl.syllabus.chaptersSource'),
+  ]
+  return !generic.includes(title)
 }

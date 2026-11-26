@@ -402,11 +402,11 @@ Odluke od 29. okt 2026, PRD „Dopune, 29. okt 2026“. Dva PR-a: (1) doživljaj
 PRD „Dopune, 29. okt 2026“ → Tekst izvora, AI tutor. Uslov: plaćeni model (Haiku) za privatni tekst; ElevenLabs nalog (free tier).
 
 - [ ] Tekst izvora: PDF (uređaj ili Drive) → tekst po jedinici prema rasponu stranica, `source_chunks` sa embeddings; original se ne čuva; poruka za skenirani PDF
-- [ ] Sažetak jedinice / poglavlja (keš po hashu teksta); opcija „sažetak umjesto čitanja“ kod deficita za prioritet 1–2
-- [ ] Kartice iz gradiva: AI prijedlog 5–15 kartica iz teksta, bilješki ili zalijepljenog teksta → pregled → FSRS kartice
-- [ ] Tutor: ulazi iz bloka, sesije i jedinice; načini Objasni (citat stranice), Ispitaj me, Usmeni, Feynman; isti izbor pitanja kao recall gate; ocjene u `review_logs` i `levelAfter()`; vrijeme kao sesija (način `tutor`); mockup prije koda
-- [ ] Glas: edge funkcija `voice` (ElevenLabs TTS bs/en, Scribe STT), budžet free tiera iz `ai_runs`, rezerva Web Speech API
-- [ ] Asistent na Danas ostaje za plan i dokumente; pitanja o gradivu vode u tutora
+- [x] Sažetak jedinice / poglavlja (keš po hashu teksta); opcija „sažetak umjesto čitanja“ kod deficita za prioritet 1–2 i „Koristi sažetak“ na početku sesije; procjena 20% čitanja → dužina sažetka → naučeni tempo iz sesija (`summary_words`)
+- [x] Kartice iz gradiva: AI prijedlog 5–15 kartica iz teksta, bilješki ili zalijepljenog teksta → pregled → FSRS kartice
+- [x] Tutor: ulazi iz bloka, sesije i jedinice; načini Objasni (citat stranice), Ispitaj me, Usmeni, Feynman; isti izbor pitanja kao recall gate; ocjene u `review_logs` i `levelAfter()`; vrijeme kao sesija (`study_segments.kind = 'tutor'`); po Tutor* boardovima (Usmeni sa glasom u stavci Glas)
+- [x] Glas: edge funkcija `voice` (ElevenLabs TTS bs/en, Scribe STT), budžet free tiera iz `ai_runs`, rezerva Web Speech API
+- [x] Asistent na Danas ostaje za plan i dokumente; pitanja o gradivu vode u tutora
 - **DoD** → `v0.18.0`
 
 ## Sprint 19 — Uvoz gotovog plana i termina
@@ -422,6 +422,24 @@ PRD „AI uvoz, dokumenti i asistent“ → Gotov plan učenja (dopuna 2. nov 20
 - [ ] `plan()`: tvrd redoslijed modula uvezenog izvora i meki rokovi modula (i iz nepinovanih termina) u ulazu i `input_hash` + property testovi; pinovani termini su ručni blokovi
 - [ ] Ekrani: pregled sadržaja i „Tvoji termini“, onboarding korak 7 „Imam svoj plan“ (pa korak 8), Plan → „Uvezi plan“, asistent; UrediBlok „Fiksiraj“ / skini pin
 - [ ] Kartica „ispred / iza plana“ na Danas; ponovni uvoz spaja po oznaci (ručno mijenjani blokovi ostaju)
+
+**Redizajn (PRD „Dopune, 5. nov 2026: redizajn“; mockupi u Hoot redesign canvasu):**
+
+- [ ] Vizuelni sistem Noćna sova: Figtree + Bricolage, tokeni i ravne površine umjesto stakla u `src/index.css`, teme Noć (zadana) / Grafit / Mahovina / Šljiva / Kesten, boje predmeta sa DSBoje; zaglavlje s talasom
+- [x] Cilj predmeta: prekidač Uslovni + željena ocjena umjesto „Koliko ti je bitan“; `priorityFromGoal()` u `src/lib/` (uslovni → 5, ocjena 6 → 2, 7–8 → 3, 9–10 → 4, bez ocjene 3) + testovi; stari ručni prioritet se ne prepisuje; NoviPredmet i Predmet → Cilj
+- [x] NoviPredmet: sekcija „Prvi izvor“ (PDF / nađi sadržaj / slika) umjesto Malo / Srednje / Puno; „Izvor dodajem kasnije“ = grubi izvor ~25 h
+- [x] Sadržaj izvora s interneta: web search kroz wrapper (naslov, autor, izdanje), poglavlja kao jedinice + link i upozorenje za izdanje, pregled prije snimanja, keš po naslovu, `ai_runs`; prazan rezultat → ručni unos ili slika sadržaja; eval
+- [x] Literatura iz plana i programa: „Koje od ovoga koristiš?“ u Dodaj izvor i pregledu uvoza (ništa unaprijed označeno)
+- [x] Onboarding: „Plan i program“ u koraku 2; korak 7 (prvi predmet) preskočen kad uvoz da bar jedan predmet
+- [x] Popravni na Predmetu kao red ispita sa „Samo ako zatreba“ (i dalje van plana dok se ne aktivira)
+- [x] Danas: ikona „Prilagodi dan“ (energija, Imam samo, slobodna sesija, Imam više vremena, Danas ne mogu); link „Ili započni slobodnu sesiju sada“ ispod kartice Sljedeće
+- [ ] Slobodna sesija: trajanje → Hoot predloži (`pickForTime()`, Druga ideja) / Biram sam → pauze u jednom redu; sheet planiranog bloka pokazuje zadani ritam uz Promijeni (bez čipova) i „Uči sa tutorom“ kao ista sesija
+- [x] Prijedlozi: „Potvrdi N“ potvrđuje i ono što je Hoot već uradio (ekran `/progress/suggestions`; „već uradio“ = propušteni blok koji je replan premjestio, Poništi ga izbacuje iz plana za ispit; Vrati odluku vraća ulaze iz zapamćenog stanja)
+- [x] Bodovi: olovka po predmetu → stavke, rezultati i posebna skala ocjena; jasniji „Upiši rezultat“ (ekrani `/progress/points` i `/progress/points/:id`, red „Bodovi“ na Napretku)
+- [x] Sesije: graf planirano / odrađeno vidljiv na istoj skali (sedmica po sedmica sa ‹ ›, sljedeća sedmica prikazuje plan; red Sesije na Napretku „X od Y“)
+- [x] Navigacija: traka s oznakama, pozadina aktivnog taba klizi (reduced motion bez animacije); ikonska dugmad (olovka, X, pretraga, postavke) bez pozadine i teksta, ≥ 44 px
+- [ ] Brisanje svuda: odmah + toast „Poništi“; sheet „Potvrda brisanja“ samo za nepovratne radnje (nalog, svi podaci)
+- [ ] Tekst sa boardova po [design/copy-redesign-nov5.md](design/copy-redesign-nov5.md) (bs + en); uz to stalni banner kad sinhronizacija ne uspije („Pokušaj ponovo“), toast poslije Replana i toast „Predložak je obrisan“ umjesto trenutnog brisanja bez traga
 - **DoD** → `v0.19.0`
 
 ## Sprint 20 — Ispiti iza tebe i pridruživanje usred semestra
@@ -442,6 +460,7 @@ PRD „Dopune, 2. nov 2026: novi korisnik i ispiti iza tebe“ → Obim poslije 
 PRD „Dopune, 2. nov 2026: novi korisnik i ispiti iza tebe“ → Prvo plan, pa prijava; [SETUP.md](SETUP.md#6-otvaranje-aplikacije-za-više-korisnika). Otvara app za više korisnika, pa ide prije Sprinta 22.
 
 - [ ] Mockup `docs/design/SpasiPlan.dc.html` prije koda: landing „Počni“ bez prijave, kartica „Spasi svoj plan“, sheet (Google / email i lozinka / „Već imam nalog“), stanje „Ovo traži nalog“
+- [ ] Jezik bez koraka: zadan iz jezika telefona (bs/hr/sr → bs, ostalo → en), prekidač BS | EN na landingu; locale ide u `user_metadata` pri prijavi, a šablon maila grana po `{{ .Data.locale }}` (samo jedan jezik u mailu)
 - [ ] Anonimna prijava: landing „Počni“ → `signInAnonymously()` uz Turnstile (CAPTCHA važi za sve prijave), pa onboarding i prvi plan bez emaila; „Već imam nalog“ vodi na postojeću prijavu
 - [ ] „Spasi svoj plan“: Google (`linkIdentity`, uključeno ručno povezivanje), email + lozinka (`updateUser`, potvrda emailom); isti `user_id`, ništa se ne kopira; email koji već ima nalog → „Prijavi se“ uz upozorenje da se ovaj plan ne spaja
 - [ ] Kad se traži: kartica poslije „Tvoja sedmica“ (Kasnije → vraća se 3. i 7. dan), a obavezno prije instalacije PWA (početni ekran na iOS-u ima drugu memoriju, pa bi se plan izgubio), notifikacija, Google kalendara i Drive-a, i AI-ja preko limita
@@ -455,6 +474,7 @@ PRD „Dopune, 2. nov 2026: novi korisnik i ispiti iza tebe“ → Prvo plan, pa
 
 PRD „Dopune, 2. nov 2026“, [RESEARCH-ML-2026-11.md](RESEARCH-ML-2026-11.md).
 
+- [ ] Sažetak u modelu trajanja: obilježje `summary` (sesija iz sažetka, `session_units.summary_words`) u modelu trajanja i `ml/` zajedno (paritet), kad bude dovoljno sesija sa sažetkom; do tad Bayesov tempo iz `src/lib/estimates/summary.ts`
 - [ ] Ručni blokovi u modelu odrađenosti: težina `w_manual` i obilježje `manual` u `src/lib/slots/examples.ts` i `ml/hoot_ml/data.py` zajedno (paritet `completion.cases.json`), `manual = 0` pri ocjeni termina; `w_manual` u `priors.json` (verzija u `input_hash`), fit u `ml/`
 - [ ] Simulator za populaciju: tipovi studenata iz raspodjele po seedu, student sa ručnim blokovima, metrike po tipu (prosjek i najgori decil), hladni start (2 sedmice), test pogrešnog priora (oporavak ≤ 3 sedmice); `baseline.json` i `--check` po tipu; `train.yml` gate na populaciji
 - [ ] Migracija: `profiles.study_barriers`; onboarding korak 3 „Šta te najviše koči?“ (do 3 čipa) i „Različito / ne znam“ uz „Kad ti je najlakše učiti?“; Postavke → Ritam; regenerisan `database.ts`
@@ -482,7 +502,7 @@ PRD „Dopune, 2. nov 2026“, [RESEARCH-ML-2026-11.md](RESEARCH-ML-2026-11.md).
 - **v2 (odluka, oktobar 2026):** prstenovi i izazovi kao Apple Fitness, bez streaka koji puca (PRD „Tehnike učenja“); social (poslije otvaranja za više korisnika, traži dijeljenje mimo owner-only RLS-a): dijeljenje sesija i kartica, prijatelj za odgovornost (dopuna 29. okt 2026).
 - Study with me uz timer: lofi muzika ili stream (YouTube embed), samo dok je app otvoren na iOS-u (PRD „Dopune“).
 - OCR skeniranih PDF-ova za tekst izvora; ElevenLabs plaćeni plan uz Pretplatu.
-- Tamni režim (teme iz Sprinta 12 su svijetle).
+- Tamni režim (teme su svijetle): vrijednosti na boardovima DSBoje „Noć · tamna“ i DSDanasNoc, izbor Svijetla / Tamna / Kao telefon u Izgledu (odluka 11. nov 2026).
 - Read-only demo nalog sa seed podacima za portfolio.
 - MCP server (opcionalno): Hoot podaci i alati uvoza za vanjske AI klijente (npr. Claude Desktop). App ga ne treba; asistent koristi tool calling u edge funkciji.
 - Prijedlog obima parcijale iz onoga što je pređeno na predavanjima do datuma parcijale.

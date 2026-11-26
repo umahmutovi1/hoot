@@ -1,3 +1,4 @@
+import { readPages } from '@/lib/readPages'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo } from 'react'
 import { syncQueueFor } from '@/app/sync'
@@ -23,8 +24,6 @@ export const activeSessionKey = (userId: string | undefined) =>
   ['session', 'active', userId] as const
 export const sessionKey = (userId: string | undefined, id: string | undefined) =>
   ['session', 'one', userId, id] as const
-export const modeRatesKey = (userId: string | undefined, subjectId: string | undefined) =>
-  ['session', 'modeRates', userId, subjectId] as const
 
 function useUserId() {
   return useAuth().session?.user.id
@@ -98,27 +97,41 @@ export function useSessions() {
     networkMode: 'always',
     queryFn: async (): Promise<SessionListItem[]> => {
       const queue = syncQueueFor(userId!)
-      const { data, error } = await supabase
-        .from('study_sessions')
-        .select(`${SESSION_COLUMNS}, study_segments(${SEGMENT_COLUMNS})`)
-        .not('ended_at', 'is', null)
-        .order('started_at', { ascending: false })
-        .limit(500)
-      const remote = (error ? [] : data) as unknown as SessionListItem[]
-      const merged = (error
+      // The whole history in pages: a fixed limit would drop the oldest sessions from the
+      // statistics and the plan's signals after a few months.
+      let remote: SessionListItem[] | null
+      try {
+        remote = (await readPages((from, to) =>
+          supabase
+            .from('study_sessions')
+            .select(`${SESSION_COLUMNS}, study_segments(${SEGMENT_COLUMNS})`)
+            .not('ended_at', 'is', null)
+            .order('started_at', { ascending: false })
+            .order('id')
+            .range(from, to),
+        )) as unknown as SessionListItem[]
+      } catch {
+        remote = null
+      }
+      const merged = (remote === null
         ? (await queue.local('study_sessions')).map((r) => r.row)
         : await queue.merge(
             'study_sessions',
             remote as unknown as Row[],
           )) as unknown as SessionListItem[]
+      // One read of the local segments for all sessions, not one per session.
+      const localSegs = new Map<string, SegmentRow[]>()
+      for (const r of await queue.local('study_segments')) {
+        const seg = r.row as unknown as SegmentRow
+        localSegs.set(seg.session_id, [...(localSegs.get(seg.session_id) ?? []), seg])
+      }
+      const remoteSegs = new Map((remote ?? []).map((r) => [r.id, r.study_segments ?? []]))
       const out: SessionListItem[] = []
       for (const s of merged) {
         if (!s.ended_at) continue
-        const local = (await queue.local('study_segments', { session_id: s.id })).map(
-          (r) => r.row as unknown as SegmentRow,
+        const segs = new Map(
+          [...(remoteSegs.get(s.id) ?? []), ...(localSegs.get(s.id) ?? [])].map((x) => [x.id, x]),
         )
-        const remoteSegs = remote.find((r) => r.id === s.id)?.study_segments ?? []
-        const segs = new Map([...remoteSegs, ...local].map((x) => [x.id, x]))
         out.push({ ...s, study_segments: [...segs.values()] })
       }
       return out.sort((a, b) => b.started_at.localeCompare(a.started_at))
@@ -138,31 +151,9 @@ export function useSessionUnits(sessionId: string | undefined) {
       const { data, error } = await supabase
         .from('session_units')
         .select(
-          'session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty, recall_skipped',
+          'session_id, unit_id, minutes, amount_done, level_before, level_after, difficulty, recall_skipped, summary_words',
         )
         .eq('session_id', sessionId!)
-      if (error) throw error
-      return data
-    },
-  })
-}
-
-export type ModeRate = Pick<
-  Tables<'source_mode_rates'>,
-  'source_id' | 'mode' | 'min_per_unit' | 'samples'
->
-
-/** Calibration per source × mode of a subject's sources; null offline without a cached copy. */
-export function useModeRates(subjectId: string | undefined, sourceIds: string[]) {
-  const userId = useUserId()
-  return useQuery({
-    queryKey: [...modeRatesKey(userId, subjectId), sourceIds.join(',')],
-    enabled: Boolean(userId && subjectId) && sourceIds.length > 0,
-    queryFn: async (): Promise<ModeRate[]> => {
-      const { data, error } = await supabase
-        .from('source_mode_rates')
-        .select('source_id, mode, min_per_unit, samples')
-        .in('source_id', sourceIds)
       if (error) throw error
       return data
     },
@@ -185,7 +176,12 @@ export interface StartInput {
   blockId?: string | null
   /** Planned length: the block, or "Imam samo X min". */
   plannedMinutes?: number | null
+  /** `tutor`: the session starts with the tutor open (Sprint 18). */
+  kind?: SegmentKind
 }
+
+/** A segment studied with the tutor open counts as tutor time (`study_segments.kind`). */
+export type SegmentKind = 'study' | 'tutor'
 
 /** A block's status follows its session: started, done, or back to planned when discarded. */
 const blockStatusOp = (id: string, status: 'planned' | 'in_progress' | 'done'): Op => ({
@@ -216,10 +212,11 @@ export function useSessionWriter() {
 
   return useMemo(() => {
     const nowIso = () => new Date().toISOString()
+    // Every row carries `kind`: a batch upsert sends missing keys as null (NOT NULL column).
     const segmentOp = (rows: SegmentRow[]): Op => ({
       kind: 'upsert',
       table: 'study_segments',
-      rows: rows as unknown as Row[],
+      rows: rows.map((r) => ({ ...r, kind: r.kind ?? 'study' })) as unknown as Row[],
     })
     // Web Push at the end of a planned break (notify sends it); leaving the break cancels it.
     const breakJobOp = (session: SessionRow, at: Date, notice: BreakNotice): Op => ({
@@ -259,6 +256,7 @@ export function useSessionWriter() {
         timerMode,
         blockId = null,
         plannedMinutes = null,
+        kind = 'study',
       }: StartInput) => {
         const t = nowIso()
         const session: SessionRow = {
@@ -286,6 +284,7 @@ export function useSessionWriter() {
           unit_id: unitId,
           started_at: t,
           ended_at: null,
+          kind,
         }
         await write(
           [
@@ -318,7 +317,11 @@ export function useSessionWriter() {
         }))
       },
 
-      resume: async ({ session, segments }: ActiveSession, unitId: string | null) => {
+      resume: async (
+        { session, segments }: ActiveSession,
+        unitId: string | null,
+        kind: SegmentKind = 'study',
+      ) => {
         if (openSegment(segments.map(toSegment))) return
         const t = nowIso()
         const segment: SegmentRow = {
@@ -327,6 +330,7 @@ export function useSessionWriter() {
           unit_id: unitId,
           started_at: t,
           ended_at: null,
+          kind,
         }
         const ops = [segmentOp([segment]), ...cancelBreakOps(session)]
         const row = session.break_ends_at
@@ -360,6 +364,34 @@ export function useSessionWriter() {
           unit_id: unitId,
           started_at: t,
           ended_at: null,
+          kind: open.kind ?? 'study',
+        }
+        await write([segmentOp([closed, next])], () => ({
+          session,
+          segments: [...segments.map((s) => (s.id === open.id ? closed : s)), next],
+        }))
+      },
+
+      /**
+       * The tutor opens or closes while the timer runs ("Timer ne staje dok pitaš"): the running
+       * segment closes and one of `kind` starts at the same instant, on `unitId`.
+       */
+      switchKind: async (
+        { session, segments }: ActiveSession,
+        kind: SegmentKind,
+        unitId: string | null,
+      ) => {
+        const open = segments.find((s) => s.ended_at === null)
+        if (!open || ((open.kind ?? 'study') === kind && open.unit_id === unitId)) return
+        const t = nowIso()
+        const closed = { ...open, ended_at: t }
+        const next: SegmentRow = {
+          id: crypto.randomUUID(),
+          session_id: session.id,
+          unit_id: unitId,
+          started_at: t,
+          ended_at: null,
+          kind,
         }
         await write([segmentOp([closed, next])], () => ({
           session,

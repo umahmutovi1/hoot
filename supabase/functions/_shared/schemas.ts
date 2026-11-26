@@ -326,6 +326,60 @@ export interface AcademicSearch {
 }
 
 // ---------------------------------------------------------------------------
+// find-toc (Sprint 19): a book's table of contents from the web, for a source without a PDF
+// ---------------------------------------------------------------------------
+
+export const TOC_SITE_KINDS = ['publisher', 'library', 'store', 'other'] as const
+
+export const webTocUnitSchema = z.object({
+  label: z
+    .string()
+    .min(1)
+    .max(20)
+    .describe('Chapter number as listed ("4", "4.1"); when there is none, the position "1", "2"'),
+  title: z.string().min(1).max(200),
+  page_start: z.int().min(1).nullable().describe('First page as listed; null if not listed'),
+  page_end: z.int().min(1).nullable().describe('Last page only when listed, else null'),
+})
+export type WebTocUnit = z.infer<typeof webTocUnitSchema>
+
+export const findTocOutputSchema = z.object({
+  units: z
+    .array(webTocUnitSchema)
+    .max(300)
+    .describe('The chapters exactly as listed on the page; empty when no contents were found'),
+  source_url: z
+    .string()
+    .nullable()
+    .describe('Full https URL of the page the contents come from, exactly as found'),
+  source_title: z.string().nullable().describe('Title of that page as shown'),
+  site_kind: z.enum(TOC_SITE_KINDS).describe('Who published that page'),
+  edition: z.int().min(1).max(50).nullable().describe('Edition number of the listed contents'),
+})
+export type FindTocOutput = z.infer<typeof findTocOutputSchema>
+
+/** Only what the user typed (title, author, edition) goes to the web search (PRD). */
+export const findTocRequestSchema = z.object({
+  query: z.string().trim().min(3).max(200),
+  locale: localeSchema,
+})
+export type FindTocRequest = z.infer<typeof findTocRequestSchema>
+
+/** Found contents with a checked link; null when nothing usable was found. */
+export interface FoundToc {
+  units: WebTocUnit[]
+  source_url: string
+  source_title: string | null
+  site_kind: (typeof TOC_SITE_KINDS)[number]
+  edition: number | null
+}
+
+export interface FindTocResponse {
+  toc: FoundToc | null
+  cached: boolean
+}
+
+// ---------------------------------------------------------------------------
 // documents (chunks + embeddings, no LLM)
 // ---------------------------------------------------------------------------
 
@@ -556,10 +610,238 @@ export const proposeAnswerOutputSchema = z.object({
 export type ProposeAnswerOutput = z.infer<typeof proposeAnswerOutputSchema>
 
 // ---------------------------------------------------------------------------
+// material: summary and cards from the source text (Sprint 18, paid model only)
+// ---------------------------------------------------------------------------
+
+/** A summary of one unit, or of the unit with its sub-units ("Cijelo poglavlje"). */
+export const SUMMARY_SCOPES = ['unit', 'chapter'] as const
+export type SummaryScope = (typeof SUMMARY_SCOPES)[number]
+
+/** Where proposed cards come from ("Tekst jedinice / Bilješke / Zalijepi tekst"). */
+export const CARD_SOURCES = ['text', 'notes', 'pasted'] as const
+export type CardSource = (typeof CARD_SOURCES)[number]
+
+/** PRD: the AI proposes 5–15 cards. */
+export const MIN_MATERIAL_CARDS = 5
+export const MAX_MATERIAL_CARDS = 15
+
+/** Source text sent per call: a chapter of ~20 pages, small enough for Haiku's budget. */
+export const MAX_MATERIAL_CHARS = 60000
+
+export const materialRequestSchema = z.discriminatedUnion('op', [
+  z.object({
+    op: z.literal('summary'),
+    unit_id: z.uuid(),
+    scope: z.enum(SUMMARY_SCOPES),
+    locale: localeSchema,
+    /** "Osvježi sažetak": make it again although the text is the same. */
+    refresh: z.boolean().optional(),
+  }),
+  z
+    .object({
+      op: z.literal('cards'),
+      unit_id: z.uuid(),
+      from: z.enum(CARD_SOURCES),
+      locale: localeSchema,
+      text: z.string().trim().min(1).max(MAX_PASTED_CHARS).optional(),
+    })
+    .refine((r) => (r.from === 'pasted') === (r.text !== undefined), {
+      message: 'text only with pasted',
+    }),
+])
+export type MaterialRequest = z.infer<typeof materialRequestSchema>
+
+const pageSchema = z
+  .int()
+  .nullable()
+  .describe('The book page the point comes from ([p. N] markers in the text); null if unknown')
+
+export const summaryOutputSchema = z.object({
+  points: z
+    .array(
+      z.object({
+        text: z.string().min(1).describe('One key idea in one or two sentences'),
+        page: pageSchema,
+      }),
+    )
+    .describe('4 to 8 key ideas in the order of the text'),
+  formula: z
+    .object({
+      tex: z.string().min(1).describe('The one formula to know, LaTeX without $'),
+      page: pageSchema,
+    })
+    .nullable()
+    .describe('The most important formula, or null when the text has none'),
+})
+export type SummaryOutput = z.infer<typeof summaryOutputSchema>
+
+export interface SummaryContent {
+  points: { text: string; page: number | null }[]
+  formula: { tex: string; page: number | null } | null
+}
+
+export interface SummaryResponse {
+  id: string
+  unit_id: string
+  scope: SummaryScope
+  content: SummaryContent
+  words: number
+  created_at: string
+  /** False when it came from the cache (no AI call). */
+  fresh: boolean
+}
+
+export const materialCardsOutputSchema = z.object({
+  cards: z
+    .array(
+      z.object({
+        front: z.string().min(1).describe('A short question in the user language'),
+        back: z.string().min(1).describe('The answer, at most 2 sentences'),
+        page: pageSchema,
+      }),
+    )
+    .describe('5 to 15 cards, one idea each, in the order of the material'),
+})
+export type MaterialCardsOutput = z.infer<typeof materialCardsOutputSchema>
+
+export interface MaterialCard {
+  front: string
+  back: string
+  page: number | null
+}
+
+export interface MaterialCardsResponse {
+  cards: MaterialCard[]
+}
+
+// ---------------------------------------------------------------------------
+// tutor: explain, grade, Feynman and questions from the source text (Sprint 18, paid model only)
+// ---------------------------------------------------------------------------
+
+/** Turns of an explain conversation sent back with each question (the model keeps nothing). */
+export const TUTOR_HISTORY = 6
+export const MAX_TUTOR_INPUT = 4000
+/** Questions the tutor writes from the text to fill a round of "Ispitaj me" / "Usmeni". */
+export const MAX_TUTOR_QUESTIONS = 8
+
+const tutorTurnSchema = z.object({
+  role: z.enum(['student', 'tutor']),
+  text: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+})
+
+export const tutorRequestSchema = z.discriminatedUnion('op', [
+  z.object({
+    op: z.literal('explain'),
+    unit_id: z.uuid(),
+    locale: localeSchema,
+    question: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+    /** "Daj primjer" / "Jednostavnije" on the last answer. */
+    style: z.enum(['plain', 'example', 'simpler']).optional(),
+    history: z.array(tutorTurnSchema).max(TUTOR_HISTORY),
+  }),
+  z.object({
+    op: z.literal('grade'),
+    unit_id: z.uuid(),
+    locale: localeSchema,
+    question: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+    /** The saved answer (exam question, card); null = grade from the source text. */
+    reference: z.string().trim().max(MAX_TUTOR_INPUT).nullable(),
+    answer: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+  }),
+  z.object({
+    op: z.literal('feynman'),
+    unit_id: z.uuid(),
+    locale: localeSchema,
+    topic: z.string().trim().min(1).max(300),
+    explanation: z.string().trim().min(1).max(MAX_TUTOR_INPUT),
+  }),
+  z.object({
+    op: z.literal('questions'),
+    unit_id: z.uuid(),
+    locale: localeSchema,
+    count: z.int().min(1).max(MAX_TUTOR_QUESTIONS),
+    /** Prompts already in the round, so the new ones do not repeat them. */
+    avoid: z.array(z.string().max(500)).max(30),
+  }),
+])
+export type TutorRequest = z.infer<typeof tutorRequestSchema>
+
+const citePage = z
+  .int()
+  .nullable()
+  .describe('The book page from the [p. N] markers that supports this; null if none')
+
+export const tutorExplainOutputSchema = z.object({
+  answer: z.string().min(1).describe('The explanation, 2-6 sentences; markdown and $math$ allowed'),
+  quote: z
+    .object({
+      text: z.string().min(1).describe('A short verbatim sentence from the TEXT'),
+      page: citePage,
+    })
+    .nullable()
+    .describe('The sentence of the book the answer rests on; null if the text does not cover it'),
+  in_text: z.boolean().describe('False when the TEXT does not cover the question'),
+})
+export type TutorExplainOutput = z.infer<typeof tutorExplainOutputSchema>
+
+export const TUTOR_VERDICTS = ['forgot', 'partial', 'remember'] as const
+export type TutorVerdict = (typeof TUTOR_VERDICTS)[number]
+
+export const tutorGradeOutputSchema = z.object({
+  verdict: z.enum(TUTOR_VERDICTS).describe('forgot = wrong or empty, partial = key part missing'),
+  feedback: z.string().min(1).describe('1-3 sentences: what is right and what is missing'),
+  page: citePage,
+})
+export type TutorGradeOutput = z.infer<typeof tutorGradeOutputSchema>
+
+export const tutorFeynmanOutputSchema = z.object({
+  good: z.string().min(1).describe('One or two sentences on what the explanation gets right'),
+  gaps: z
+    .array(
+      z.object({
+        text: z.string().min(1).describe('What is missing or wrong, one sentence'),
+        hint: z.string().min(1).describe('A nudge or question to fill it, not the full answer'),
+        page: citePage,
+      }),
+    )
+    .describe('At most 3 gaps, most important first; empty when nothing is missing'),
+})
+export type TutorFeynmanOutput = z.infer<typeof tutorFeynmanOutputSchema>
+
+export const tutorQuestionsOutputSchema = z.object({
+  questions: z
+    .array(
+      z.object({
+        question: z.string().min(1).describe('A short exam-style question in the user language'),
+        answer: z.string().min(1).describe('The answer from the TEXT, 1-3 sentences'),
+        page: citePage,
+      }),
+    )
+    .describe('Exactly the requested number of questions'),
+})
+export type TutorQuestionsOutput = z.infer<typeof tutorQuestionsOutputSchema>
+
+export type TutorResponse =
+  | {
+      op: 'explain'
+      answer: string
+      quote: { text: string; page: number | null } | null
+      in_text: boolean
+    }
+  | { op: 'grade'; verdict: TutorVerdict; feedback: string; page: number | null }
+  | {
+      op: 'feynman'
+      good: string
+      gaps: { text: string; hint: string; page: number | null }[]
+    }
+  | { op: 'questions'; questions: { question: string; answer: string; page: number | null }[] }
+
+// ---------------------------------------------------------------------------
 // embed (gte-small vectors of units, cards and topics; no LLM)
 // ---------------------------------------------------------------------------
 
-export const EMBED_KINDS = ['unit', 'card', 'topic'] as const
+/** `chunk`: a passage of a source's text (`source_chunks`, Sprint 18). */
+export const EMBED_KINDS = ['unit', 'card', 'topic', 'chunk'] as const
 export type EmbedKind = (typeof EMBED_KINDS)[number]
 
 /** Rows sent per `embed` call; the function stops earlier when the text budget is used up. */
@@ -624,6 +906,8 @@ export const OWL_ACTIONS = [
   'add_timetable',
   'add_contents',
   'import_document',
+  /** Sprint 18: a question about the material goes to the tutor (it answers from the book). */
+  'tutor',
 ] as const
 export type OwlActionKind = (typeof OWL_ACTIONS)[number]
 export const REIMPORT_KINDS = ['academic_calendar', 'exam_schedule', 'timetable'] as const
@@ -647,7 +931,7 @@ export const answerOutputSchema = z.object({
     .string()
     .nullable()
     .describe(
-      'search_notes: what to look for; quiz: the chapter title; add_contents: the subject name; else null',
+      'search_notes: what to look for; quiz and tutor: the chapter title; add_contents: the subject name; else null',
     ),
   import_kind: z
     .enum(REIMPORT_KINDS)
@@ -696,6 +980,11 @@ export interface AiStatus {
   /** AI calls left in the rolling 24 h window. */
   remaining: number
   limit: number
+  /**
+   * Private tasks (book text: summary, cards, tutor) can run: the paid model, or the beta switch
+   * LLM_PRIVATE_FREE. Absent from an older function = unknown, treated as available.
+   */
+  private?: boolean
 }
 
 /** Error codes returned by Edge Functions as `{ error: code }`. */
@@ -710,6 +999,10 @@ export const AI_ERRORS = [
   'failed',
   /** A private task without a paid model (PRD: private text never goes to a free tier). */
   'needs_paid',
+  /** The daily limit of links downloaded by find-academic-info (`FETCH_DAILY_LIMIT`). */
+  'fetch_limited',
+  /** Summary, cards or tutor from the text of a unit that has no source text (Sprint 18). */
+  'no_text',
 ] as const
 export type AiErrorCode = (typeof AI_ERRORS)[number]
 

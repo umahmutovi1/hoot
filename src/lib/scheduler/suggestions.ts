@@ -45,7 +45,6 @@ export type Suggestion =
       behindMinutes: number
       actions: BehindAction[]
     }
-  | { kind: 'target_grade'; key: string; subjectId: string; priority: number }
   | { kind: 'exam_period'; key: string; periodId: string; until: LocalDate; capMin: number }
   | { kind: 'campaign_soon'; key: string; subjectId: string; start: LocalDate; days: number }
   /**
@@ -83,8 +82,6 @@ export interface SuggestionInput {
   result: PlanResult
   today: LocalDate
   behind: SubjectBehindInput[]
-  /** Subjects whose target grade is out of reach or needs > 90% at priority < 4. */
-  targetGrade: string[]
   examPeriods: { id: string; startsOn: LocalDate; endsOn: LocalDate }[]
   /** Missed (not done, not skipped) planned days in a row, up to yesterday. */
   missedStreak: number
@@ -263,17 +260,6 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
       })
   }
 
-  for (const id of [...input.targetGrade].sort()) {
-    const subject = subjects.get(id)
-    if (subject && subject.priority < 4)
-      out.push({
-        kind: 'target_grade',
-        key: `grade:${id}`,
-        subjectId: id,
-        priority: Math.max(4, subject.priority + 1),
-      })
-  }
-
   for (const p of [...input.examPeriods].sort((a, b) => (a.startsOn < b.startsOn ? -1 : 1))) {
     const startsSoon = p.startsOn >= today && diffDays(today, p.startsOn) <= SOON_DAYS
     const lowCap = state.days.some(
@@ -361,10 +347,9 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
     deficit: 1,
     exam_eve: 2,
     behind: 3,
-    target_grade: 4,
-    exam_period: 5,
-    campaign_soon: 6,
-    check: 7,
+    exam_period: 4,
+    campaign_soon: 5,
+    check: 6,
   }
   const goalOn = (s: Suggestion) => (s.kind === 'deficit' ? (goals.get(s.goalId)?.on ?? '') : '')
   const weight = (s: Suggestion) =>

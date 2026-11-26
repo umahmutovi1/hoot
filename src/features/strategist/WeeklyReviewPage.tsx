@@ -51,7 +51,7 @@ function WeeklyReview() {
     insight = useInsightData(),
     feedback = useFeedback()
   const navigate = useNavigate(),
-    record = useRecordFeedback(),
+    record = useRecordFeedback({ planInput: false }),
     toast = useToast((s) => s.show)
   const schedule = useScheduleData()
   const [editDate, setEditDate] = useState<string | null>(null)
@@ -81,7 +81,9 @@ function WeeklyReview() {
   })
   if (!data || !window) return <p className="text-sm text-ink-muted">{t('insights.loading')}</p>
   const fmt = (date: string) =>
-    format(toDisplayDate(date), 'd. MMM', { locale: dateFnsLocales[locale] })
+    format(toDisplayDate(date), locale === 'en' ? 'MMM d' : 'd. MMM', {
+      locale: dateFnsLocales[locale],
+    })
   const sum = (from: string, to: string) =>
     stats.data
       ?.filter((d) => d.day >= from && d.day <= to)
@@ -144,21 +146,21 @@ function WeeklyReview() {
   const delta = (a: number | null | undefined, b: number | null | undefined, suffix: string) =>
     a == null || b == null
       ? '—'
-      : `${a > b ? '↑' : a < b ? '↓' : '→'} ${Math.round(Math.abs(a - b))} ${suffix}`
+      : `${Math.round(Math.abs(a - b)) === 0 ? '→' : a > b ? '↑' : '↓'} ${Math.round(Math.abs(a - b))} ${suffix}`
   return (
     <div className="flex flex-col gap-4">
       <PageTitle>{t('checkin.title')}</PageTitle>
       <p className="text-sm text-ink-muted">
         {fmt(window.from)} – {fmt(window.to)} · {t('checkin.duration')}
       </p>
-      <section className="glass flex flex-col gap-2 rounded-card p-4">
+      <section className="surface flex flex-col gap-2 rounded-card p-4">
         <h2 className="text-base font-semibold">{t('checkin.summaryTitle')}</h2>
         <p className="text-sm text-ink-secondary">
           {strategy.output?.summary ??
             t('checkin.summary', { hours: current ? formatDuration(t, current.minutes) : '—' })}
         </p>
       </section>
-      <section className="glass grid grid-cols-2 gap-5 rounded-card p-4">
+      <section className="surface grid grid-cols-2 gap-5 rounded-card p-4">
         <NumberCard
           value={current ? formatDuration(t, current.minutes) : '—'}
           label={t('checkin.vsPlan', { hours: current ? formatDuration(t, current.planned) : '—' })}
@@ -194,7 +196,7 @@ function WeeklyReview() {
         </p>
       )}
       <InsightsPanel review />
-      <section className="glass flex flex-col gap-3 rounded-card p-4">
+      <section className="surface flex flex-col gap-3 rounded-card p-4">
         <h2 className="text-base font-semibold">{t('checkin.subjects')}</h2>
         {data.inputs.subjects
           .filter((s) => !s.archived)
@@ -253,7 +255,7 @@ function WeeklyReview() {
             .catch(() => {})
         }
       >
-        <section className="glass flex flex-col gap-3 rounded-card p-4">
+        <section className="surface flex flex-col gap-3 rounded-card p-4">
           <h2 className="text-base font-semibold">{t('checkin.nextWeek')}</h2>
           <p className="text-xs text-ink-muted">
             {fmt(window.nextFrom)} – {fmt(window.nextTo)} · {t('checkin.exceptionsHint')}
@@ -335,7 +337,7 @@ function ReflectionForm({
         onSave(value)
       }}
     >
-      <section className="glass flex flex-col gap-3 rounded-card p-4">
+      <section className="surface flex flex-col gap-3 rounded-card p-4">
         <h2 className="text-base font-semibold">{t('checkin.reflection')}</h2>
         <label htmlFor="worked" className="text-sm">
           {t('checkin.worked')}

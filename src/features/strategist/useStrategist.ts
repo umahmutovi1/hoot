@@ -1,3 +1,4 @@
+import { readPages } from '@/lib/readPages'
 import { supabase } from '@/lib/supabase'
 import { useMemo } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -9,7 +10,7 @@ import { invokeAi } from '@/features/owl/api'
 import { candidates } from '@/lib/strategist'
 import { diffDays, localDay } from '@/lib/day'
 import { actionLabel } from './copy'
-import { latestFeedback, useFeedback, useRecordFeedback } from './feedback'
+import { isReverted, latestFeedback, useFeedback, useRecordFeedback } from './feedback'
 import { useInsightData } from './useInsights'
 import { weekWindow } from '@/lib/progress/week'
 
@@ -24,9 +25,9 @@ export function useStrategist() {
     queryKey: ['progress', data?.inputs.profile.id, 'topics'],
     enabled: Boolean(data),
     queryFn: async () => {
-      const { data, error } = await supabase.from('topics').select('*')
-      if (error) throw error
-      return data
+      return readPages((from, to) =>
+        supabase.from('topics').select('*').order('id').range(from, to),
+      )
     },
   })
   const list = useMemo(() => {
@@ -47,6 +48,7 @@ export function useStrategist() {
       const previous = latestFeedback(feedback.data ?? [], c.id)
       return (
         !previous ||
+        isReverted(previous) ||
         diffDays(
           localDay(new Date(previous.created_at), {
             timeZone: data.inputs.profile.timezone,

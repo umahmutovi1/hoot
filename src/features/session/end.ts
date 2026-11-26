@@ -28,6 +28,8 @@ export interface EndUnit {
   lastReviewAt: string | null
   /** Read so far before this session (`units.read_amount`), in the unit's measure. */
   readAmount?: number
+  /** `units.read_via`: 'summary' = "Pročitano (sažetak)". */
+  readVia?: string | null
 }
 
 export interface EndSource {
@@ -57,6 +59,12 @@ export interface EndAnswers {
   reflection: string
   /** "Samo spasi": the recall gate of the units read is skipped (recorded with the session). */
   skipGate?: boolean
+  /**
+   * Units studied through their summary in this session, with the summary's words (Sprint 18):
+   * they count as read ("Pročitano (sažetak)") but not as pages, so the reading pace stays clean
+   * and the summary pace is learned from `session_units.summary_words`.
+   */
+  summaryWords?: Record<string, number>
 }
 
 /** Covered amount per unit for every range, keyed by unit id. */
@@ -163,10 +171,11 @@ export function planEnd(
   const difficultyOf = (u: EndUnit) => answers.ratings[u.id] ?? u.difficulty
   const touched = new Set<string>([...covered.keys()])
   for (const id of minutesByUnit.keys()) if (id && unitInfo.has(id)) touched.add(id)
+  for (const id of Object.keys(answers.summaryWords ?? {})) if (unitInfo.has(id)) touched.add(id)
 
   const allocationUnits: AllocationUnit[] = [...touched].map((id) => {
     const { unit, source } = unitInfo.get(id)!
-    const amountDone = covered.get(id)?.amountDone ?? 0
+    const amountDone = answers.summaryWords?.[id] ? 0 : (covered.get(id)?.amountDone ?? 0)
     return {
       id,
       sourceId: source.id,
@@ -185,15 +194,22 @@ export function planEnd(
 
   for (const id of touched) {
     const { unit } = unitInfo.get(id)!
-    const amountDone = covered.get(id)?.amountDone ?? 0
+    const words = answers.summaryWords?.[id]
+    const viaSummary = words !== undefined && words > 0
+    const amountDone = viaSummary ? 0 : (covered.get(id)?.amountDone ?? 0)
     const min = minutes.get(id) ?? 0
-    const levelAfter = answers.levels[id] ?? defaultLevel(unit, covered.get(id))
+    const coveredNow = viaSummary ? undefined : covered.get(id)
+    const levelAfter =
+      answers.levels[id] ??
+      (viaSummary && unit.kind === 'chapter' && unit.level === 0
+        ? 1
+        : defaultLevel(unit, coveredNow))
     const testedNow = unit.lastReviewAt !== null && unit.lastReviewAt >= session.started_at
-    const coveredNow = covered.get(id)
     const readNow = readAfter(unit, coveredNow)
-    const finished =
+    const readInFull =
       coveredNow !== undefined &&
       (coveredNow.complete || (unit.amount > 0 && readNow >= unit.amount))
+    const finished = viaSummary || readInFull
     const read = finished && levelAfter >= 1 && !testedNow
     if (read) gate.push(id)
     const rating = answers.ratings[id] ?? null
@@ -207,8 +223,13 @@ export function planEnd(
       level_after: levelAfter,
       difficulty: rating,
       recall_skipped: read && answers.skipGate === true,
+      summary_words: viaSummary ? words : null,
     })
     const patch: Row = {}
+    // "Pročitano (sažetak)" until the chapter is read in full.
+    if (viaSummary && levelAfter >= 1 && unit.level === 0 && unit.readVia !== 'summary')
+      patch.read_via = 'summary'
+    if (readInFull && unit.readVia === 'summary') patch.read_via = null
     // A chapter read (again) without passing its gate: the check of what was read in 2 days.
     if (read && today !== null && unit.kind === 'chapter' && levelAfter <= 1) {
       const on = readCheckOn(today, unit.nextReviewOn)

@@ -1,5 +1,5 @@
-// gte-small vectors of units, cards and topics (question <-> chapter candidates, topic dedupe, the
-// notes search). No LLM call, not rate limited. Rows are read and written as the user (RLS).
+// gte-small vectors of units, cards, topics and source passages (question <-> chapter candidates,
+// topic dedupe, the notes search, the tutor's passages). No LLM call, not rate limited. Rows are read and written as the user (RLS).
 import { json } from '../_shared/cors.ts'
 import { embed } from '../_shared/embed.ts'
 import { readJson, serve } from '../_shared/edge.ts'
@@ -22,17 +22,34 @@ const TABLES: Record<EmbedKind, { table: string; key: string; columns: string }>
   unit: { table: 'unit_embeddings', key: 'unit_id', columns: 'id, title, notes' },
   card: { table: 'card_embeddings', key: 'card_id', columns: 'id, front, back' },
   topic: { table: 'topic_embeddings', key: 'topic_id', columns: 'id, name' },
+  chunk: { table: 'source_chunk_embeddings', key: 'chunk_id', columns: 'id, content' },
+}
+
+const SOURCE_TABLE: Record<EmbedKind, string> = {
+  unit: 'units',
+  card: 'cards',
+  topic: 'topics',
+  chunk: 'source_chunks',
 }
 
 async function readRows(ctx: EdgeContext, kind: EmbedKind, ids: string[]) {
   if (ids.length === 0) return []
-  const source = { unit: 'units', card: 'cards', topic: 'topics' }[kind]
-  const { data, error } = await ctx.db.from(source).select(TABLES[kind].columns).in('id', ids)
+  const { data, error } = await ctx.db
+    .from(SOURCE_TABLE[kind])
+    .select(TABLES[kind].columns)
+    .in('id', ids)
   if (error) throw error
   return (data as unknown as Record<string, string | null>[]).map((r): EmbedSourceRow => ({
     kind,
     id: r.id!,
-    parts: kind === 'unit' ? [r.title, r.notes] : kind === 'card' ? [r.front, r.back] : [r.name],
+    parts:
+      kind === 'unit'
+        ? [r.title, r.notes]
+        : kind === 'card'
+          ? [r.front, r.back]
+          : kind === 'chunk'
+            ? [r.content]
+            : [r.name],
   }))
 }
 
@@ -74,6 +91,7 @@ Deno.serve(
       ...(await readRows(ctx, 'unit', ids('unit'))),
       ...(await readRows(ctx, 'card', ids('card'))),
       ...(await readRows(ctx, 'topic', ids('topic'))),
+      ...(await readRows(ctx, 'chunk', ids('chunk'))),
     ]
     // Rows that are gone (deleted, not the user's) count as done, so the app does not retry them.
     const missing = body.items.filter((i) => !found.some((r) => r.id === i.id)).map((i) => i.id)

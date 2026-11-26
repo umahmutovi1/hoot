@@ -25,7 +25,7 @@ export function GainedCard({ plan }: { plan: PlanToday }) {
   return (
     <>
       {gained && (
-        <div className="glass flex flex-col gap-3 rounded-card p-4">
+        <div className="surface flex flex-col gap-3 rounded-card p-4">
           <div className="flex items-start gap-3">
             <span
               className="icon-tile flex size-[38px] shrink-0 items-center justify-center rounded-[12px]"

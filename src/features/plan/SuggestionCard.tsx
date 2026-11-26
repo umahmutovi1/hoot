@@ -16,6 +16,8 @@ import { useStartCheck } from '@/features/review/useStartCheck'
 import { usePatchSubject, useRaiseCaps } from './actions'
 import { useGoalTitle } from './model'
 import { ReplanSheet } from './ReplanSheet'
+import { SummaryInsteadSheet } from './SummaryInsteadSheet'
+import { useSummaryOffer } from './useSummaryOffer'
 import { usePlanStore } from './store'
 import { SNOOZE_DAYS, usePlanUi } from './ui'
 
@@ -36,7 +38,7 @@ function Card({
     <div
       className={cn(
         'flex flex-col gap-3 rounded-card p-4',
-        tone === 'warning' ? 'bg-warning-soft' : 'glass',
+        tone === 'warning' ? 'bg-warning-soft' : 'surface',
       )}
     >
       <div className="flex items-start gap-3">
@@ -69,6 +71,22 @@ function Card({
       </div>
       <div className="flex flex-wrap gap-2">{children}</div>
     </div>
+  )
+}
+
+/** "Sažetak umjesto čitanja" on a deficit card, when the goal has unread chapters with text. */
+function SummaryInsteadButton({ goalId, className }: { goalId: string; className: string }) {
+  const { t } = useTranslation()
+  const offer = useSummaryOffer(goalId)
+  const [open, setOpen] = useState(false)
+  if (!offer) return null
+  return (
+    <>
+      <button type="button" className={className} onClick={() => setOpen(true)}>
+        {t('summary.instead.open')}
+      </button>
+      <SummaryInsteadSheet offer={offer} open={open} onOpenChange={setOpen} />
+    </>
   )
 }
 
@@ -148,6 +166,7 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
           <button type="button" className={primary} onClick={() => setReplanOpen(true)}>
             {t('suggestions.deficit.solve')}
           </button>
+          <SummaryInsteadButton goalId={suggestion.goalId} className={secondary} />
           {laterButton}
           <ReplanSheet open={replanOpen} onOpenChange={setReplanOpen} goalId={suggestion.goalId} />
         </Card>
@@ -175,26 +194,6 @@ export function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
               {behindLabel(a)}
             </button>
           ))}
-          {laterButton}
-        </Card>
-      )
-    case 'target_grade':
-      return (
-        <Card
-          icon={<ChartIcon size={18} />}
-          title={t('suggestions.grade.title', { subject: name(suggestion.subjectId) })}
-          sub={t('suggestions.grade.sub', { level: levelName(suggestion.priority) })}
-        >
-          <button
-            type="button"
-            className={primary}
-            onClick={() => {
-              patch.mutate({ id: suggestion.subjectId, patch: { priority: suggestion.priority } })
-              setDone(t('suggestions.grade.done', { level: levelName(suggestion.priority) }))
-            }}
-          >
-            {t('suggestions.change')}
-          </button>
           {laterButton}
         </Card>
       )

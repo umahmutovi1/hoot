@@ -29,7 +29,7 @@ export function CalendarFeedsPage() {
       <GoogleCalendarCard online={online} />
 
       {!isPending && (feeds ?? []).length > 0 && (
-        <div className="flex flex-col rounded-card glass px-4 py-1">
+        <div className="flex flex-col rounded-card surface px-4 py-1">
           {(feeds ?? []).map((f, i) => (
             <FeedRowButton
               key={f.id}
@@ -45,7 +45,7 @@ export function CalendarFeedsPage() {
         type="button"
         onClick={() => setSheet('new')}
         disabled={!online}
-        className="flex h-[52px] items-center justify-center gap-1.5 rounded-full glass text-[15px] font-semibold text-brand disabled:opacity-60"
+        className="flex h-[52px] items-center justify-center gap-1.5 rounded-full surface text-[15px] font-semibold text-brand disabled:opacity-60"
       >
         <PlusIcon size={18} />
         {t('feeds.add')}

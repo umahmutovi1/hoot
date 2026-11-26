@@ -1,3 +1,4 @@
+import { readPages } from '@/lib/readPages'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/auth-context'
 import { cardsToCsv, cardsToQuizlet } from '@/lib/cards/anki'
@@ -19,11 +20,15 @@ export function useCardCount() {
 }
 
 async function allCards() {
-  const { data, error } = await supabase
-    .from('cards')
-    .select('front, back, created_at, units(label, sources(subjects(name)))')
-    .order('created_at')
-  if (error) throw error
+  // Every card, not only the first 1000 the API returns in one answer.
+  const data = await readPages((from, to) =>
+    supabase
+      .from('cards')
+      .select('front, back, created_at, units(label, sources(subjects(name)))')
+      .order('created_at')
+      .order('id')
+      .range(from, to),
+  )
   return data.map((c) => {
     const unit = c.units as { label: string | null; sources: unknown } | null
     const subject = (unit?.sources as { subjects?: { name?: string } } | null)?.subjects?.name

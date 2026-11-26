@@ -30,6 +30,26 @@ describe('proposeProgram', () => {
     ])
   })
 
+  it('does not merge numbered subjects with a similar existing one', () => {
+    const p = proposeProgram(
+      [
+        { subject_name: 'Matematika 2', semester: 3, ects: 7, elective_group: null },
+        { subject_name: 'Fizika II', semester: 3, ects: 5, elective_group: null },
+      ],
+      {
+        ...ctx,
+        subjects: [
+          { id: 'm1', name: 'Matematika 1' },
+          { id: 'f1', name: 'Fizika I' },
+        ],
+      },
+    )
+    expect(p.semesters[0]!.subjects.map((x) => [x.existingId, x.include])).toEqual([
+      [null, true],
+      [null, true],
+    ])
+  })
+
   it('keeps existing subjects, skips past semesters and electives by default', () => {
     const p = proposeProgram(parsed, ctx)
     const flat = p.semesters.flatMap((s) =>

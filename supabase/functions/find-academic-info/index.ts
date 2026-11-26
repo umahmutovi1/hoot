@@ -4,63 +4,29 @@
 // change: the same search returns the saved result without an AI call. Links are kept only when
 // they come from a site the search returned and open. `fetch`: downloads a found link, or any
 // public link the user pasted, for parse-document (the browser cannot, CORS): a PDF or an image
-// as a file, a web page as text. Nothing is written to the plan here.
+// as a file, a web page as text. Nothing is written to the plan here. Every download is logged in
+// ai_runs (`fetch_document`) and limited to FETCH_DAILY_LIMIT a day; it is not one of the 30 AI
+// calls.
 import { json } from '../_shared/cors.ts'
 import {
   academicSearchRequest,
   htmlToPages,
-  isPublicLink,
   keepFound,
   normalizeYear,
   searchKey,
   titleFromUrl,
 } from '../_shared/academicSearch.ts'
-import { llmDeps, readJson, serve } from '../_shared/edge.ts'
+import { FETCH_DAILY_LIMIT } from '../_shared/chain.ts'
+import { countRecentFetches, llmDeps, logFetch, readJson, serve } from '../_shared/edge.ts'
+import type { EdgeContext } from '../_shared/edge.ts'
+import { fetchPublic, opens } from '../_shared/linkCheck.ts'
 import { generate } from '../_shared/llm.ts'
 import { findAcademicInfoRequestSchema } from '../_shared/schemas.ts'
 import type { AcademicSearch, FoundDocument } from '../_shared/schemas.ts'
 
-const CHECK_TIMEOUT_MS = 6000
 const FETCH_TIMEOUT_MS = 20000
 const MAX_FILE_BYTES = 15 * 1024 * 1024
-const MAX_REDIRECTS = 5
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
-
-/** Follows redirects by hand, so every hop is checked to be a public host. */
-async function fetchPublic(url: string): Promise<Response | null> {
-  let next = url
-  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-    if (!isPublicLink(next)) return null
-    const res = await fetch(next, {
-      redirect: 'manual',
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      headers: { 'user-agent': 'Mozilla/5.0 (compatible; Hoot)' },
-    })
-    const location = res.headers.get('location')
-    if (res.status < 300 || res.status >= 400 || !location) return res
-    await res.body?.cancel()
-    next = new URL(location, next).toString()
-  }
-  return null
-}
-
-async function opens(url: string): Promise<boolean> {
-  const attempt = async (method: 'HEAD' | 'GET') => {
-    const res = await fetch(url, {
-      method,
-      redirect: 'follow',
-      signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
-      headers: method === 'GET' ? { range: 'bytes=0-1023' } : {},
-    })
-    await res.body?.cancel()
-    return res.status < 400
-  }
-  try {
-    return (await attempt('HEAD')) || (await attempt('GET'))
-  } catch {
-    return false
-  }
-}
 
 Deno.serve(
   serve(Deno.env, async (req, ctx) => {
@@ -93,38 +59,59 @@ Deno.serve(
     }
 
     // fetch: a link from the last search (it has a title and a kind) or one the user pasted.
+    if ((await countRecentFetches(ctx)) >= FETCH_DAILY_LIMIT)
+      return json({ error: 'fetch_limited' }, 429)
     const found = saved?.documents.find((d) => d.url === body.url)
-    const url = found?.url ?? body.url
-    const title = found?.title ?? titleFromUrl(url)
-    let res: Response | null
-    try {
-      res = await fetchPublic(url)
-    } catch {
-      return json({ error: 'failed' }, 502)
-    }
-    if (!res) return json({ error: 'bad_request' }, 400)
-    if (!res.ok) return json({ error: 'failed' }, 502)
-    const length = Number(res.headers.get('content-length') ?? 0)
-    if (length > MAX_FILE_BYTES) return json({ error: 'bad_request' }, 413)
-    const bytes = new Uint8Array(await res.arrayBuffer())
-    if (bytes.byteLength > MAX_FILE_BYTES) return json({ error: 'bad_request' }, 413)
-    const type = (res.headers.get('content-type') ?? '').split(';')[0]!.trim().toLowerCase()
-    const isPdf = type.includes('pdf') || String.fromCharCode(...bytes.slice(0, 4)) === '%PDF'
-    const image = IMAGE_TYPES.find((t) => t === type)
-    if (isPdf || image) {
-      const mediaType = isPdf ? 'application/pdf' : image!
-      const ext = isPdf ? 'pdf' : mediaType.split('/')[1]
-      const path = `${ctx.userId}/documents/${crypto.randomUUID()}.${ext}`
-      const { error: upError } = await ctx.db.storage
-        .from('uploads')
-        .upload(path, bytes, { contentType: mediaType })
-      if (upError) return json({ error: 'failed' }, 500)
-      return json({ kind: 'file', path, media_type: mediaType, title })
-    }
-    if (type && !type.startsWith('text/') && !type.includes('html') && !type.includes('xml'))
-      return json({ error: 'bad_request' }, 415)
-    const pages = htmlToPages(new TextDecoder().decode(bytes))
-    if (pages.length === 0) return json({ error: 'bad_request' }, 422)
-    return json({ kind: 'text', pages, title })
+    const res = await download(ctx, found?.url ?? body.url, found?.title)
+    await logFetch(ctx, res.ok, res.ok ? null : `${res.status}: ${res.error}`)
+    return json(res.ok ? res.body : { error: res.error }, res.ok ? 200 : res.status)
   }),
 )
+
+type Downloaded =
+  | { ok: true; body: Record<string, unknown> }
+  | { ok: false; status: number; error: 'bad_request' | 'failed' }
+
+const fail = (status: number, error: 'bad_request' | 'failed'): Downloaded => ({
+  ok: false,
+  status,
+  error,
+})
+
+/** Downloads a link: a PDF or an image into Storage for parse-document, a web page as text. */
+async function download(ctx: EdgeContext, url: string, foundTitle?: string): Promise<Downloaded> {
+  const title = foundTitle ?? titleFromUrl(url)
+  let res: Response | null
+  try {
+    res = await fetchPublic(url, {
+      timeoutMs: FETCH_TIMEOUT_MS,
+      headers: { 'user-agent': 'Mozilla/5.0 (compatible; Hoot)' },
+    })
+  } catch {
+    return fail(502, 'failed')
+  }
+  if (!res) return fail(400, 'bad_request')
+  if (!res.ok) return fail(502, 'failed')
+  const length = Number(res.headers.get('content-length') ?? 0)
+  if (length > MAX_FILE_BYTES) return fail(413, 'bad_request')
+  const bytes = new Uint8Array(await res.arrayBuffer())
+  if (bytes.byteLength > MAX_FILE_BYTES) return fail(413, 'bad_request')
+  const type = (res.headers.get('content-type') ?? '').split(';')[0]!.trim().toLowerCase()
+  const isPdf = type.includes('pdf') || String.fromCharCode(...bytes.slice(0, 4)) === '%PDF'
+  const image = IMAGE_TYPES.find((t) => t === type)
+  if (isPdf || image) {
+    const mediaType = isPdf ? 'application/pdf' : image!
+    const ext = isPdf ? 'pdf' : mediaType.split('/')[1]
+    const path = `${ctx.userId}/documents/${crypto.randomUUID()}.${ext}`
+    const { error: upError } = await ctx.db.storage
+      .from('uploads')
+      .upload(path, bytes, { contentType: mediaType })
+    if (upError) return fail(500, 'failed')
+    return { ok: true, body: { kind: 'file', path, media_type: mediaType, title } }
+  }
+  if (type && !type.startsWith('text/') && !type.includes('html') && !type.includes('xml'))
+    return fail(415, 'bad_request')
+  const pages = htmlToPages(new TextDecoder().decode(bytes))
+  if (pages.length === 0) return fail(422, 'bad_request')
+  return { ok: true, body: { kind: 'text', pages, title } }
+}

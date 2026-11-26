@@ -195,16 +195,6 @@ export const useDeleteClass = ({ undo = false } = {}) =>
 
 // ------------------------------------------------------------------ availability
 
-export const useSaveRule = () => useUpsert<RuleRow>('availability_rules', { over_classes: false })
-export const useDeleteRule = () => useDelete('availability_rules')
-export const useSaveException = () =>
-  useUpsert<ExceptionRow>('availability_exceptions', {
-    start_min: null,
-    end_min: null,
-    is_busy: true,
-    lecture_log_id: null,
-  })
-export const useDeleteException = () => useDelete('availability_exceptions')
 /** A date's own slots and/or cap; one row per date (unique), so the id is reused when it exists. */
 export const useSaveDay = () =>
   useUpsert<DayRow>('availability_days', { slots: null, cap_min: null })

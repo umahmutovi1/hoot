@@ -21,7 +21,14 @@ export type AiTask =
   | 'parse_syllabus'
   | 'parse_study_program'
   | 'find_academic_info'
+  | 'find_toc'
   | 'classify_events'
+  /** Sprint 18: the source text, so private (paid model or LLM_PRIVATE_FREE). */
+  | 'unit_summary'
+  | 'material_cards'
+  | 'tutor'
+  /** find-academic-info `fetch`: a server download, not an AI call (own limit, `chain.ts`). */
+  | 'fetch_document'
 
 export type LlmMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'application/pdf'
 

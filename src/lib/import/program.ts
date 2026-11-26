@@ -70,10 +70,11 @@ export function proposeProgram(
           const existingId = matchSubject(
             { subject_id: null, subject_name: p.subject_name },
             ctx.subjects,
+            { exactOnly: true },
           )
           return {
             key: `${semester}:${i}`,
-            name: p.subject_name.trim(),
+            name: p.subject_name.trim().slice(0, 80),
             ects: p.ects,
             electiveGroup: p.elective_group,
             existingId,

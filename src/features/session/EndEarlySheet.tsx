@@ -79,7 +79,7 @@ export function EndEarlySheet({
         <button
           type="button"
           onClick={() => void discard()}
-          className="flex min-h-12 flex-col items-center justify-center rounded-full glass px-4 py-2"
+          className="flex min-h-12 flex-col items-center justify-center rounded-full surface px-4 py-2"
         >
           <span className="text-[15px] font-semibold text-danger">
             {t('session.leave.discard')}

@@ -143,7 +143,7 @@ export function useSaveOutline() {
     mutationFn: async ({ form, measure, merge, topics = {} }: SaveOutlineInput) => {
       const { error } = await supabase.from('sources').upsert(toSourceRow(form))
       if (error) throw error
-      await archiveRoughSources(form.subjectId)
+      await archiveRoughSources(form.subjectId, form.title)
       const rows = toUnitRows(form.id, measure, merge.units)
       // Parents come before their children, and FK checks run at the end of the statement.
       if (rows.length > 0) {
@@ -207,22 +207,39 @@ export function useSaveOutline() {
 }
 
 /**
- * Real content replaces the rough size (PRD "Onboarding" step 7): the subject's temporary
- * sources get their parts archived, so they leave the plan and the progress, history stays.
+ * Real content replaces the rough source of the same book (PRD "Onboarding" step 7); the other
+ * rough sources are offered in one tap after the save (`otherRough`, `useArchiveRough`).
  */
-async function archiveRoughSources(subjectId: string) {
-  const { data } = await supabase.from('sources').select('id, is_rough').eq('subject_id', subjectId)
-  const rough = roughToArchive(data ?? [])
-  if (rough.length === 0) return
+async function archiveRoughSources(subjectId: string, title: string) {
+  const { data } = await supabase
+    .from('sources')
+    .select('id, is_rough, title')
+    .eq('subject_id', subjectId)
+  await archiveRoughUnits(roughToArchive(data ?? [], title).map((r) => r.id))
+}
+
+/** Archives the parts of rough sources, so they leave the plan and the progress; history stays. */
+async function archiveRoughUnits(sourceIds: string[]) {
+  if (sourceIds.length === 0) return
   const { error } = await supabase
     .from('units')
     .update({ archived_at: now() })
-    .in(
-      'source_id',
-      rough.map((r) => r.id),
-    )
+    .in('source_id', sourceIds)
     .is('archived_at', null)
   if (error) throw error
+}
+
+/** "Arhiviraj i ostale" after saving real content: the subject's other rough sources. */
+export function useArchiveRough(subjectId: string | undefined) {
+  const userId = useUserId()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: archiveRoughUnits,
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: sourcesKey(userId, subjectId) })
+      void queryClient.invalidateQueries({ queryKey: ['plan', userId, 'sources'] })
+    },
+  })
 }
 
 export interface RoughSourceInput {
@@ -357,6 +374,8 @@ function emptyUnit(meta: { user_id: string; created_at: string; updated_at: stri
     next_review_on: null,
     archived_at: null,
     read_amount: null,
+    use_summary: false,
+    read_via: null,
   } satisfies Omit<Unit, 'id' | 'source_id' | 'kind' | 'position' | 'title'>
 }
 

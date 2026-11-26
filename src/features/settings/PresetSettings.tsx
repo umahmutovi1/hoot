@@ -22,7 +22,7 @@ export function PresetSettings() {
     update.mutate({ session_presets: list, default_preset: nextDefault })
 
   return (
-    <div className="flex flex-col gap-2 rounded-card glass p-4">
+    <div className="flex flex-col gap-2 rounded-card surface p-4">
       <span className="text-[15px]">{t('settings.presets.title')}</span>
       <div
         role="radiogroup"
@@ -45,7 +45,7 @@ export function PresetSettings() {
                 role="radio"
                 aria-checked={on}
                 onClick={() => update.mutate({ default_preset: p.id })}
-                className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                className="tap flex min-w-0 flex-1 items-center gap-3 text-left"
               >
                 <span
                   className={cn(

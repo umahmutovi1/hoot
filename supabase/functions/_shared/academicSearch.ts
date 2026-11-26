@@ -75,7 +75,12 @@ const REDIRECT_HOST = 'vertexaisearch.cloud.google.com'
 const hostOf = (url: string, schemes = ['https:']): string | null => {
   try {
     const u = new URL(url)
-    return schemes.includes(u.protocol) ? u.hostname.toLowerCase().replace(/^www\./, '') : null
+    return schemes.includes(u.protocol)
+      ? u.hostname
+          .toLowerCase()
+          .replace(/\.+$/, '')
+          .replace(/^www\./, '')
+      : null
   } catch {
     return null
   }
@@ -84,6 +89,9 @@ const hostOf = (url: string, schemes = ['https:']): string | null => {
 const isPublicHost = (host: string | null): boolean => {
   if (!host || !host.includes('.')) return false
   if (/^\d+\.\d+\.\d+\.\d+$/.test(host) || host.includes(':') || host.startsWith('[')) return false
+  // An IPv4 address inside the name (127.0.0.1.nip.io) resolves to that address.
+  if (/(^|\.)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\.|$)/.test(host)) return false
+  if (/(^|\.)(nip|sslip|xip)\.io$/.test(host)) return false
   return !/(^|\.)localhost$|\.local$|\.internal$/.test(host)
 }
 
@@ -110,11 +118,10 @@ export function titleFromUrl(url: string): string {
 }
 
 /**
- * Found links worth checking: public https, one per URL, and from a site the search really
- * returned (a link on another site was made up). Without any source to compare (a provider that
- * returned none) the reachability check alone decides.
+ * A public https link on a site the search really returned (a link on another site was made
+ * up). Without any source to compare (a provider that returned none) every public link passes.
  */
-export function keepFound(docs: FoundDocument[], sources: WebSource[]): FoundDocument[] {
+export function searchedSite(sources: WebSource[]): (url: string) => boolean {
   const allowed = new Set<string>()
   for (const s of sources) {
     const host = hostOf(s.url)
@@ -122,15 +129,28 @@ export function keepFound(docs: FoundDocument[], sources: WebSource[]): FoundDoc
     else if (s.title && /^[a-z0-9.-]+\.[a-z]{2,}$/i.test(s.title))
       allowed.add(s.title.toLowerCase().replace(/^www\./, ''))
   }
-  const sameSite = (host: string) =>
-    allowed.size === 0 ||
-    [...allowed].some((a) => host === a || host.endsWith(`.${a}`) || a.endsWith(`.${host}`))
+  return (url) => {
+    const host = hostOf(url)
+    if (!host || !isPublicHttps(url)) return false
+    return (
+      allowed.size === 0 ||
+      [...allowed].some((a) => host === a || host.endsWith(`.${a}`) || a.endsWith(`.${host}`))
+    )
+  }
+}
+
+/**
+ * Found links worth checking: public https, one per URL, and from a site the search really
+ * returned (a link on another site was made up). Without any source to compare (a provider that
+ * returned none) the reachability check alone decides.
+ */
+export function keepFound(docs: FoundDocument[], sources: WebSource[]): FoundDocument[] {
+  const fromSearch = searchedSite(sources)
   const seen = new Set<string>()
   const out: FoundDocument[] = []
   for (const d of docs) {
     const url = d.url.trim()
-    const host = hostOf(url)
-    if (!host || !isPublicHttps(url) || seen.has(url) || !sameSite(host)) continue
+    if (seen.has(url) || !fromSearch(url)) continue
     seen.add(url)
     out.push({ ...d, url, title: d.title.trim() })
     if (out.length >= MAX_FOUND) break

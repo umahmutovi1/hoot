@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { syncQueueFor } from '@/app/sync'
 import { useAuth } from '@/features/auth/auth-context'
+import { diffDays } from '@/lib/day'
 import { supabase } from '@/lib/supabase'
 import type { Row } from '@/lib/sync'
 import type { Json, Tables } from '@/types/database'
@@ -39,10 +40,12 @@ export type FeedbackDraft = {
   status: Feedback['status']
   payload?: unknown
 }
-export function useRecordFeedback() {
+/** `planInput: false` for feedback that is only text (the weekly check-in reflection). */
+export function useRecordFeedback({ planInput = true }: { planInput?: boolean } = {}) {
   const userId = useAuth().session?.user.id
   const queryClient = useQueryClient()
   return useMutation({
+    meta: { planInput },
     networkMode: 'always',
     mutationFn: async (draft: FeedbackDraft) => {
       if (!userId) throw new Error('Authentication required')
@@ -70,4 +73,27 @@ export function latestFeedback(rows: Feedback[], id: string) {
   return rows
     .filter((r) => r.insight_id === id || r.candidate_id === id)
     .sort((a, b) => b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id))[0]
+}
+
+/**
+ * "Vrati odluku" / "Vrati" on Prijedlozi: the decision is taken back and the suggestion is open
+ * again. Stored as a rejection (so inputs from an accepted row switch off) marked `reverted`.
+ */
+export function isReverted(row: Feedback) {
+  const p = row.payload
+  return Boolean(p && typeof p === 'object' && !Array.isArray(p) && p.reverted === true)
+}
+
+/** Days an accepted or declined suggestion stays decided before it can be offered again. */
+export const DECISION_DAYS = 14
+
+/**
+ * The latest decision for a key while it still holds: "not useful" hides for good, accepted and
+ * declined only for `DECISION_DAYS`, so a new episode weeks later can be acted on.
+ */
+export function activeDecision(rows: Feedback[], id: string, today: string) {
+  const latest = latestFeedback(rows, id)
+  if (!latest || isReverted(latest)) return undefined
+  if (latest.status === 'not_useful') return latest
+  return diffDays(latest.created_at.slice(0, 10), today) < DECISION_DAYS ? latest : undefined
 }

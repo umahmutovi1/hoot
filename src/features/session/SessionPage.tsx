@@ -11,6 +11,7 @@ import { useSubscriptions } from '@/features/notify/api'
 import { useProfile } from '@/features/settings/profile'
 import { useSources } from '@/features/sources/api'
 import { pagesLabel } from '@/features/sources/format'
+import { SessionSummary } from './SessionSummary'
 import { useSubject } from '@/features/subjects/api'
 import {
   activeMs,
@@ -137,12 +138,12 @@ export function SessionPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 glass-bar px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 ">
+      <div className="sticky top-0 z-10 -mx-5 -mt-6 flex items-center justify-between gap-2 header-bar px-5 pt-[calc(24px+env(safe-area-inset-top))] pb-2 ">
         <button
           type="button"
           onClick={() => goBack(navigate, '/')}
           aria-label={t('app.back')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full glass"
+          className="flex size-11 shrink-0 items-center justify-center"
         >
           <ChevronLeftIcon size={20} />
         </button>
@@ -158,7 +159,7 @@ export function SessionPage() {
           type="button"
           onClick={() => setTimerSheet(true)}
           aria-label={t('session.timer.settings')}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full glass"
+          className="flex size-11 shrink-0 items-center justify-center"
         >
           <svg
             width="20"
@@ -190,7 +191,7 @@ export function SessionPage() {
         ))}
       </div>
 
-      <section className="flex flex-col items-center gap-[18px] rounded-[32px] glass px-5 py-6">
+      <section className="flex flex-col items-center gap-[18px] rounded-[32px] surface px-5 py-6">
         <div className="relative size-[236px]">
           <svg width="236" height="236" viewBox="0 0 236 236" aria-hidden="true">
             <circle
@@ -233,7 +234,7 @@ export function SessionPage() {
           <button
             type="button"
             onClick={toggle}
-            className="flex h-14 items-center gap-2 rounded-full border-2 border-brand glass px-[22px] text-base font-semibold text-brand"
+            className="flex h-14 items-center gap-2 rounded-full border-2 border-brand surface px-[22px] text-base font-semibold text-brand"
           >
             {open ? t('session.timer.pause') : t('session.timer.resume')}
           </button>
@@ -268,7 +269,7 @@ export function SessionPage() {
       <div
         role="radiogroup"
         aria-label={t('session.units.title')}
-        className="flex flex-col gap-0.5 rounded-[24px] glass p-1.5"
+        className="flex flex-col gap-0.5 rounded-[24px] surface p-1.5"
       >
         {unitRows(
           sources,
@@ -293,8 +294,18 @@ export function SessionPage() {
           {t('session.units.other')}
         </button>
       </div>
+      <SessionSummary sessionId={session.id} unit={picked?.unit ?? null} />
       {pickedId && <LinkedQuestionsOffer unitId={pickedId} />}
       {pickedId && <SessionQuizOffer unitId={pickedId} />}
+      {pickedId && picked?.unit.kind === 'chapter' && (
+        <Link
+          to={`/tutor/${pickedId}`}
+          className="flex flex-col items-center justify-center gap-0.5 rounded-[18px] bg-subject-lavender-soft py-2.5 text-subject-lavender-ink"
+        >
+          <span className="text-[15px] font-bold">{t('tutor.entry.ask')}</span>
+          <span className="text-xs">{t('tutor.entry.askSub')}</span>
+        </Link>
+      )}
 
       <button
         type="button"
@@ -302,7 +313,7 @@ export function SessionPage() {
           void writer.distracted(data)
           navigator.vibrate?.(30)
         }}
-        className="flex h-[52px] items-center justify-center gap-2 rounded-full glass text-[15px] font-semibold"
+        className="flex h-[52px] items-center justify-center gap-2 rounded-full surface text-[15px] font-semibold"
       >
         <svg
           width="18"
@@ -330,7 +341,7 @@ export function SessionPage() {
       {picked && (
         <Link
           to={`/subjects/${session.subject_id}/sources/${picked.source.source.id}/units/${picked.unit.id}`}
-          className="flex h-[52px] items-center justify-center gap-2 rounded-full glass text-[15px] font-semibold"
+          className="flex h-[52px] items-center justify-center gap-2 rounded-full surface text-[15px] font-semibold"
         >
           <PencilIcon size={18} className="text-brand" />
           {t('session.units.note')}

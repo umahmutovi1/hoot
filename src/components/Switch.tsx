@@ -26,7 +26,7 @@ export function Switch({ checked, label, onChange, disabled, hideLabel }: Switch
           checked ? 'justify-end bg-brand' : 'justify-start bg-radio-ring',
         )}
       >
-        <span className="size-5 rounded-full glass" />
+        <span className="size-5 rounded-full surface" />
       </span>
       {hideLabel ? <span className="sr-only">{label}</span> : label}
     </button>

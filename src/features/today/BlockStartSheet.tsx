@@ -1,21 +1,23 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
-import { CircleMinusIcon, PencilIcon, SkipIcon, TrashIcon } from '@/components/icons'
 import { useToast } from '@/components/toast-store'
 import { useDeleteBlock, useStartBlock } from '@/features/plan/actions'
 import { blockMode, blockPages, blockTitle, useGoalTitle } from '@/features/plan/model'
 import type { PlanBlockRow } from '@/features/plan/state'
-import { presetName, usePresets } from '@/features/session/presets'
+import { useKeepRhythm, usePresets } from '@/features/session/presets'
+import { RhythmRow } from '@/features/session/RhythmRow'
 import { formatDuration } from '@/features/sources/format'
 import { useSubjects } from '@/features/subjects/api'
 import { paletteOf } from '@/features/subjects/colors'
 import { formatClock } from '@/lib/schedule'
+import { Switch } from '@/components/Switch'
+import { useUnitsWithText } from '@/features/sources/summaryApi'
 import { cn } from '@/lib/utils'
 import type { PlanToday } from './usePlanToday'
 
 const secondary =
-  'flex h-16 flex-1 flex-col items-center justify-center gap-1 rounded-[20px] bg-white/55 text-[13px] font-semibold shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.7),inset_0_1px_1px_rgba(255,255,255,0.9)]'
+  'flex h-12 flex-1 items-center justify-center text-[15px] font-bold text-brand-strong'
 
 /**
  * "Započeti sesiju sada?" (StartSesije.dc.html, PRD "Blok na listi Danas"): a tap on a block in
@@ -94,8 +96,26 @@ function Body({
   const start = useStartBlock()
   const remove = useDeleteBlock()
   const show = useToast((s) => s.show)
-  const { resolve, suggestedId } = usePresets()
+  const { suggestedId } = usePresets()
+  // The default rhythm, read-only until "Promijeni" (PRD "Dopune, 5. nov 2026").
+  const [presetId, setPresetId] = useState<string | null>(null)
+  const [keep, setKeep] = useState(false)
+  const keepRhythm = useKeepRhythm()
   const [busy, setBusy] = useState(false)
+  // "Koristi sažetak" (Sprint 18): unread chapters of a reading block that have source text.
+  const withText = useUnitsWithText().data
+  const summaryUnits =
+    block.kind === 'learn'
+      ? block.plan_block_units
+          .map((u) => plan.units.get(u.unit_id)?.unit)
+          .filter(
+            (u): u is NonNullable<typeof u> =>
+              !!u && u.kind === 'chapter' && u.level === 0 && !!withText?.has(u.id),
+          )
+      : []
+  const [useSummary, setUseSummary] = useState<boolean | null>(null)
+  const summaryOn =
+    useSummary ?? (summaryUnits.length > 0 && summaryUnits.every((u) => u.use_summary))
   const subject = subjects.find((s) => s.id === block.subject_id)
   const manual = block.origin === 'user'
   const mode = block.kind === 'learn' ? blockMode(block, plan.units) : block.kind
@@ -117,7 +137,7 @@ function Body({
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="glass flex flex-col gap-1.5 rounded-[22px] px-4 py-3.5">
+      <div className="surface flex flex-col gap-1.5 rounded-[22px] px-4 py-3.5">
         <div className="flex items-center gap-2">
           <span
             className={cn('size-2.5 shrink-0 rounded-full', paletteOf(subject?.color ?? null).bar)}
@@ -134,31 +154,77 @@ function Body({
           {blockTitle(t, block, plan.units, goalTitle(block.deadline_id ?? ''))}
         </span>
         <span className="text-[13px] text-ink-secondary">{meta}</span>
-        <span className="text-[13px] text-ink-muted">
-          {t('today.start.pauses', { preset: presetName(t, resolve(suggestedId)) })}
-        </span>
       </div>
+      <RhythmRow
+        value={presetId ?? suggestedId}
+        onChange={setPresetId}
+        sub={presetId ? undefined : t('today.start.rhythmSub')}
+        keep={keep}
+        onKeepChange={setKeep}
+      />
+      {summaryUnits.length > 0 && (
+        <div className="surface flex items-center justify-between gap-3 rounded-[20px] py-2.5 pr-3 pl-4">
+          <span className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-[15px] font-bold">{t('summary.useSummary')}</span>
+            <span className="text-[13px] text-ink-secondary">{t('summary.useSummaryHint')}</span>
+          </span>
+          <Switch
+            checked={summaryOn}
+            onChange={setUseSummary}
+            label={t('summary.useSummary')}
+            hideLabel
+          />
+        </div>
+      )}
       {canStart && (
         <button
           type="button"
           disabled={busy}
           onClick={() => {
             setBusy(true)
-            void start(block, plan.units).finally(() => setBusy(false))
+            const mode = presetId ?? suggestedId
+            void (keep ? keepRhythm(mode) : Promise.resolve(mode))
+              .then((timerMode) =>
+                start(block, plan.units, {
+                  timerMode,
+                  ...(summaryOn ? { summaryUnits: summaryUnits.map((u) => u.id) } : {}),
+                }),
+              )
+              .finally(() => setBusy(false))
           }}
-          className="btn-primary flex h-14 items-center justify-center gap-2 rounded-full text-base font-semibold"
+          className="btn-primary flex h-14 items-center justify-center gap-2.5 rounded-[18px] text-[17px] font-bold"
         >
           <PlayIcon />
           {t('today.start.begin')}
         </button>
       )}
-      <div className="flex gap-2">
+      {canStart && block.kind === 'learn' && block.plan_block_units[0] && (
+        <div className="-mt-1 flex flex-col gap-1.5">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              setBusy(true)
+              const unitId = block.plan_block_units[0]!.unit_id
+              void start(block, plan.units, {
+                timerMode: presetId ?? suggestedId,
+                to: `/tutor/${unitId}`,
+              }).finally(() => setBusy(false))
+            }}
+            className="flex h-[52px] items-center justify-center rounded-[16px] bg-subject-lavender-soft text-[15px] font-bold text-subject-lavender-ink"
+          >
+            {t('tutor.entry.study')}
+          </button>
+          <span className="text-center text-[13px] text-ink-secondary">
+            {t('tutor.entry.studySub')}
+          </span>
+        </div>
+      )}
+      <div className="-mt-1 flex gap-1">
         <button type="button" onClick={() => onEdit(block)} className={secondary}>
-          <PencilIcon size={18} className="text-brand" />
           {t('today.start.edit')}
         </button>
         <button type="button" onClick={() => onSkip(block)} className={secondary}>
-          <SkipIcon size={18} className="text-brand" />
           {t('today.start.skip')}
         </button>
         {manual ? (
@@ -167,7 +233,6 @@ function Body({
             onClick={() => void deleteNow()}
             className={cn(secondary, 'text-danger')}
           >
-            <TrashIcon size={18} />
             {t('today.start.delete')}
           </button>
         ) : (
@@ -176,7 +241,6 @@ function Body({
             onClick={() => onDrop(block)}
             className={cn(secondary, 'text-danger')}
           >
-            <CircleMinusIcon size={18} />
             {t('today.start.drop')}
           </button>
         )}

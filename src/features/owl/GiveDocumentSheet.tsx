@@ -274,7 +274,7 @@ function SheetBody({
               }
               className="flex items-center gap-3 rounded-[18px] bg-canvas p-3 text-left"
             >
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] glass text-brand">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] surface text-brand">
                 <Icon size={20} />
               </span>
               <span className="text-sm font-semibold">{label}</span>
@@ -404,7 +404,7 @@ function SheetBody({
                 aria-checked={kind === k}
                 onClick={() => setKind(k)}
                 className={cn(
-                  'h-[38px] rounded-full px-3 text-xs font-semibold',
+                  'tap h-[38px] rounded-full px-3 text-xs font-semibold',
                   kind === k ? 'bg-ink text-white' : 'bg-white/50 text-ink',
                 )}
               >
@@ -471,10 +471,10 @@ function AttachmentCard({
         <img
           src={preview}
           alt=""
-          className="size-14 shrink-0 rounded-[14px] glass object-cover object-top"
+          className="size-14 shrink-0 rounded-[14px] surface object-cover object-top"
         />
       ) : (
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-[14px] glass text-brand">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-[14px] surface text-brand">
           <Icon size={22} />
         </span>
       )}

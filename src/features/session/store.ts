@@ -4,10 +4,6 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 // UI state of the session flow. The timer itself is never here: it is in the database (segments).
 
 interface SessionUiState {
-  /** "Šta učiš sad?" is open (Today hides the owl bar meanwhile). */
-  startOpen: boolean
-  openStart: () => void
-  closeStart: () => void
   /** Last timer mode picked; a new session starts with it. */
   /** Preset id. */
   timerMode: string
@@ -25,14 +21,14 @@ interface SessionUiState {
   /** A session started as a knowledge check (review block or a due check) and its units. */
   check: { sessionId: string; unitIds: string[] } | null
   setCheck: (check: { sessionId: string; unitIds: string[] } | null) => void
+  /** Units this session studies through their summary ("Koristi sažetak", Sprint 18). */
+  summary: { sessionId: string; unitIds: string[] } | null
+  setSummary: (summary: { sessionId: string; unitIds: string[] } | null) => void
 }
 
 export const useSessionUi = create<SessionUiState>()(
   persist(
     (set) => ({
-      startOpen: false,
-      openStart: () => set({ startOpen: true }),
-      closeStart: () => set({ startOpen: false }),
       timerMode: 'pomodoro25',
       setTimerMode: (timerMode) => set({ timerMode }),
       nextUnit: null,
@@ -45,6 +41,8 @@ export const useSessionUi = create<SessionUiState>()(
       recalibrated: (id) => set((s) => ({ recalibrate: s.recalibrate.filter((x) => x !== id) })),
       check: null,
       setCheck: (check) => set({ check }),
+      summary: null,
+      setSummary: (summary) => set({ summary }),
     }),
     {
       name: 'hoot-session-ui',
@@ -55,6 +53,7 @@ export const useSessionUi = create<SessionUiState>()(
         keptSegmentId: s.keptSegmentId,
         recalibrate: s.recalibrate,
         check: s.check,
+        summary: s.summary,
       }),
     },
   ),

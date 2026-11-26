@@ -114,7 +114,7 @@ Subject:
 Hoot: kod za prijavu / sign-in code
 ```
 
-Body (Source): cijeli sadržaj fajla [`supabase/templates/magic_link.html`](../supabase/templates/magic_link.html) (Liquid Glass od Sprinta 16: lavanda gradijent, staklena kartica, dugme u gradijentu appa). Kad se fajl promijeni, ponovo ga zalijepi ovdje. Isti fajl koristi lokalni Supabase (`supabase/config.toml` → `[auth.email.template.magic_link]`).
+Body (Source): cijeli sadržaj fajla [`supabase/templates/magic_link.html`](../supabase/templates/magic_link.html) (Noćna sova: ravna podloga, kartica i dugme u boji brenda). Kad se fajl promijeni, ponovo ga zalijepi ovdje. Isti fajl koristi lokalni Supabase (`supabase/config.toml` → `[auth.email.template.magic_link]`).
 
 Email-safe tabele i inline stilovi u bojama appa, bez `backdrop-filter` (email klijenti ga ne podržavaju): staklo je poluprozirna bijela kartica, a gdje klijent izbaci gradijent ostaje `bgcolor`. Ikonica je PNG sa produkcije (WebP ne podržavaju svi klijenti), font je sistemski (SF Pro / Segoe UI / Arial).
 
@@ -187,8 +187,20 @@ Kad dođe Anthropic (sekcija 5): `LLM_PROVIDER=anthropic`, pa `npx supabase secr
 
 **Deploy poslije Sprinta 16** (`_shared/llm.ts` se promijenio, pa sve AI funkcije): prvo `LLM_PRIVATE_FREE=allow` (gore), pa
 ```bash
-for f in ai-status parse-document documents answer parse-toc parse-questions link-questions recall-questions propose-answer find-academic-info classify-events; do npx supabase functions deploy $f; done
+for f in ai-status parse-document documents answer parse-toc parse-questions link-questions recall-questions propose-answer find-academic-info find-toc classify-events; do npx supabase functions deploy $f; done
 ```
+
+**Sprint 18: tekst izvora (sažetak, kartice iz gradiva, tutor).** Šalju tekst knjige, pa su privatni zadaci: rade samo sa plaćenim modelom (`LLM_PROVIDER=anthropic`) ili dok je uključen beta prekidač `LLM_PRIVATE_FREE=allow` (zatvorena beta, testira samo vlasnik). `ai-status` vraća `private`, pa app bez toga pokaže „samo sa plaćenim modelom“ umjesto dugmeta. Deploy nove funkcije `material` (i `ai-status`, jer javlja `private`):
+```bash
+for f in material ai-status; do npx supabase functions deploy $f || break; done
+```
+Glas (Sprint 18) nema edge funkciju ni ključ: Whisper (govor u tekst) i Kokoro (čitanje naglas, samo engleski) rade u pregledniku. Modeli se skidaju pri prvom korištenju sa Hugging Facea (~170 MB), a ONNX runtime je u buildu (nije u PWA precacheu). CSP u `public/_headers` dozvoljava `huggingface.co`, `*.hf.co` i `cdn.jsdelivr.net`, a `Permissions-Policy` mikrofon za isti origin.
+
+Tutor (Sprint 18, ista pravila za plaćeni model):
+```bash
+npx supabase functions deploy tutor
+```
+Evali za sažetak i kartice (uz ostale): `GEMINI_API_KEY=… npm run eval`.
 
 Groq i OpenRouter (opcionalno, besplatni nalozi): console.groq.com → API Keys → Create; openrouter.ai → Keys → Create (modeli sa `:free`). Ključeve `npx supabase secrets set GROQ_API_KEY=… OPENROUTER_API_KEY=…` (preko `read -rs` kao u 5d). Model ide u `LLM_CHAIN` tek kad prođe eval (`EVAL_MODEL=groq:llama-3.3-70b-versatile GROQ_API_KEY=… npm run eval`) i kad je dodan u `EVALUATED_MODELS` u `chain.ts` (PR); model iz lanca koji nije na toj listi se preskače. Groq/OpenRouter ne primaju PDF ni web pretragu: takav poziv ide sljedećem modelu u lancu.
 
@@ -355,6 +367,8 @@ Uvoz sadržaja iz PDF-a na Drive-u. Scope je samo `drive.file` (app vidi fajlove
 
 **Web pretraga za „Fakultet s interneta“ (Sprint 13).** Poslije mergea: `npx supabase functions deploy find-academic-info` i ponovo `parse-document` (nova vrsta „Plan i program“); novih secreta nema, koristi `LLM_PROVIDER` / `LLM_MODEL` / ključ kao ostale AI funkcije. Eval za plan i program: `GEMINI_API_KEY=... npm run eval` (slučaj „syllabus of a programme“). Bez novog ključa: na Gemini-ju je Google Search grounding (na free tieru ima dnevni limit, provjeriti u AI Studio → Usage), na Anthropicu web search tool (plaća se po pretrazi uz tokene). Jedan poziv po promjeni fakulteta.
 
+**Sadržaj knjige s interneta (Sprint 19).** Poslije mergea: `npx supabase db push` (migracija `0041_toc_searches.sql`: vrsta AI poziva `find_toc` i keš `toc_searches`), `npm run db:types`, pa `npx supabase functions deploy find-toc` i ponovo `find-academic-info` (dijele provjeru linka). Novih secreta nema; isti web search kao gore. Jedan poziv po naslovu (i prazan rezultat ostaje u kešu). Eval: `GEMINI_API_KEY=... npm run eval` (slučajevi „book contents from the web“, traže živi internet).
+
 ## 5e. ML trening i praćenje: `train.yml`, `ml-monitor.yml` (Sprint 15)
 
 `train.yml` (ručno i 1. u mjesecu) izvozi tvoje podatke, trenira, pokreće backtest i simulator i otvara PR u `dev` sa novim `priors.json` samo kad nema pogoršanja; inače ostaje samo izvještaj u Actions → run → Summary. `ml-monitor.yml` (ponedjeljkom) u Summary piše sedmične metrike (pokrivenost P80, Brier odrađenosti, kalibracija FSRS-a). Izvoz čita bazu kao ti (RLS kao u appu: uloga `authenticated`, JWT `sub` = tvoj id), iste kolone kao ručni izvoz, bez slobodnog teksta; podaci ne napuštaju runner.
@@ -383,7 +397,8 @@ Kod i baza su već spremni (svaka tabela ima `user_id` + RLS, profil se pravi au
    - **CAPTCHA.** Cloudflare → Turnstile → Add widget (domena app-a, mode Managed) → site key ide u `VITE_TURNSTILE_SITE_KEY` (Cloudflare Pages env), secret u Supabase → Authentication → Attack Protection → Enable CAPTCHA protection → Turnstile. Važi za sve prijave, pa i forma za email/lozinku šalje token.
    - **Rate limit anonimnih prijava.** Authentication → Rate Limits → „anonymous sign-ins per hour“ (default 30 po IP-u) ostaje dok nema problema.
    - **Čišćenje.** `pg_cron` posao iz migracije Sprinta 21 (sedmično, anonimni nalozi bez aktivnosti 30 dana); provjeri u Database → Cron Jobs da je aktivan.
-8. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Sprintu 6); anonimno najviše 5 poziva ukupno, samo uvoz (PRD „Prvo plan, pa prijava“), napomena o privatnosti (admin pregled i zajednički ML trening uz pristanak, PRD „Dopune, 2. nov 2026“ → Zajednički trening), demo nalog.
+8. **Beta prekidač za privatni AI.** Prije otvaranja: `npx supabase secrets unset LLM_PRIVATE_FREE` (uz `LLM_PROVIDER=anthropic`), da tekst knjige, bilješke i tutor drugih korisnika nikad ne idu na besplatni Gemini (PRD „Rotacija besplatnih AI-eva“).
+9. **Prije toga odlučiti:** AI troškovi drugih korisnika (limit 30 poziva/dan/korisniku je u Sprintu 6); anonimno najviše 5 poziva ukupno, samo uvoz (PRD „Prvo plan, pa prijava“), napomena o privatnosti (admin pregled i zajednički ML trening uz pristanak, PRD „Dopune, 2. nov 2026“ → Zajednički trening), demo nalog.
 
 Besplatna alternativa bez domene: Gmail SMTP sa app passwordom (radi za bilo koji email, ~500 dnevno, ali šalje sa lične Gmail adrese).
 
