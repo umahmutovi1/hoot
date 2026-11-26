@@ -26,6 +26,7 @@ import { toSegment } from '@/features/session/model'
 import type { Recall } from '@/lib/srs'
 import { cn } from '@/lib/utils'
 import { useGrade, useTextQuestions } from './api'
+import { OralAsk } from './OralAsk'
 import { missing, textItems } from './round'
 import { useTutor } from './context'
 import { useRound } from './useRound'
@@ -139,6 +140,7 @@ export function TutorQuizPage() {
       item={item}
       onPick={pick}
       onUndo={at > 0 ? () => setAt(at - 1) : undefined}
+      oral={oral}
     />
   )
 }
@@ -157,7 +159,9 @@ function QuizStep({
   item,
   onPick,
   onUndo,
+  oral,
 }: {
+  oral: boolean
   title: string
   index: number
   total: number
@@ -171,6 +175,8 @@ function QuizStep({
   const toast = useToast((s) => s.show)
   const [answer, setAnswer] = useState('')
   const [shown, setShown] = useState(false)
+  const [typing, setTyping] = useState(false)
+  const navigate = useNavigate()
   const feedback = grade.data
     ? { verdict: grade.data.verdict, text: grade.data.feedback, page: grade.data.page }
     : null
@@ -181,13 +187,13 @@ function QuizStep({
       : 'failed'
     : null
 
-  const check = () =>
+  const check = (text = answer) =>
     grade.mutate(
       {
         unit_id: ctx.unit.id,
         question: item.prompt,
         reference: item.answer,
-        answer: answer.trim(),
+        answer: text.trim(),
       },
       { onSettled: () => setShown(true) },
     )
@@ -225,6 +231,19 @@ function QuizStep({
         </div>
       </section>
 
+      {oral && !typing && !shown && !grade.isPending && (
+        <OralAsk
+          index={index}
+          total={total}
+          prompt={item.prompt}
+          onAnswer={(text) => {
+            setAnswer(text)
+            check(text)
+          }}
+          onType={() => setTyping(true)}
+          onClose={() => navigate('..', { relative: 'path' })}
+        />
+      )}
       {!shown ? (
         <div className="flex flex-col gap-2">
           <label>
@@ -249,7 +268,7 @@ function QuizStep({
             <button
               type="button"
               disabled={!answer.trim() || grade.isPending}
-              onClick={check}
+              onClick={() => check()}
               className="btn-primary h-[52px] flex-[2] rounded-[16px] text-base font-bold disabled:opacity-60"
             >
               {grade.isPending ? t('tutor.thinking') : t('tutor.quiz.check')}

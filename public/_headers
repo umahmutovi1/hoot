@@ -5,10 +5,13 @@
 # downloads (which may redirect to googleusercontent.com).
 # 'wasm-unsafe-eval' (Sprint 15): the FSRS optimizer worker compiles WebAssembly; it allows wasm
 # compilation only, not eval of JavaScript.
+# Voice (Sprint 18): Whisper and Kokoro run on the device; their models download once from
+# Hugging Face and the ONNX runtime from jsDelivr (pinned by @huggingface/transformers). The
+# microphone is allowed for this origin only; audio never leaves the phone.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://apis.google.com https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: blob: https://*.supabase.co; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googleapis.com https://*.googleusercontent.com https://accounts.google.com/gsi/; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob:; frame-src https://docs.google.com https://accounts.google.com https://content.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://apis.google.com https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: blob: https://*.supabase.co; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googleapis.com https://*.googleusercontent.com https://accounts.google.com/gsi/ https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob:; frame-src https://docs.google.com https://accounts.google.com https://content.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=(), usb=()
+  Permissions-Policy: camera=(self), microphone=(self), geolocation=(), payment=(), usb=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains

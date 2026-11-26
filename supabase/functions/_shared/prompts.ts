@@ -300,6 +300,10 @@ one "action"; the app runs it next to your answer and the student confirms anyth
   the notes (you do not see them).
 - quiz: the student wants to be tested on a chapter ("ispitaj me iz …"). action_text = the chapter
   title as the student said it.
+- tutor: a question about the study material itself (explain a concept, a definition, a formula,
+  "šta znači …", "objasni mi …"). You stay for the plan and documents: answer in one sentence that
+  the tutor answers this from their own book text with the page and can quiz them, and do not
+  explain the material yourself. action_text = the chapter (or topic) title the question is about.
 - add_timetable: the student wants to add their weekly class timetable. Tell them to give it as a
   photo, PDF or text; the app opens the form.
 - add_contents: the student wants to add a textbook's table of contents or a list of exam
@@ -361,7 +365,8 @@ export function toBase64(bytes: Uint8Array): string {
 /** An action without what it needs falls back to none. */
 export function normalizeAction(output: AnswerOutput) {
   const text = output.action_text?.trim() || null
-  const needsText = output.action === 'search_notes' || output.action === 'quiz'
+  const needsText =
+    output.action === 'search_notes' || output.action === 'quiz' || output.action === 'tutor'
   if ((needsText && !text) || (output.action === 'import_document' && !output.import_kind))
     return { action: 'none' as const, action_text: null, import_kind: null }
   return {

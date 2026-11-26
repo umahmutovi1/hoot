@@ -30,6 +30,7 @@ export interface NoteHit {
 export type OwlAction =
   | { kind: 'search_notes'; text: string; hits: NoteHit[] | null }
   | { kind: 'quiz'; text: string }
+  | { kind: 'tutor'; text: string }
   | { kind: 'add_timetable' }
   | { kind: 'add_contents'; text: string | null }
   | { kind: 'import_document'; importKind: ReimportKind; documentId: string | null }

@@ -1997,7 +1997,10 @@
       "timetable": "Daj raspored nastave",
       "contents": "Dodaj sadržaj ili pitanja",
       "contentsFor": "Dodaj sadržaj · {{subject}}",
-      "giveDocument": "Daj dokument"
+      "giveDocument": "Daj dokument",
+      "openTutor": "Otvori tutora",
+      "tutorNone": "Ne nalazim poglavlje „{{text}}“ u tvojim izvorima. Otvori jedinicu u Predmetima i tamo pokreni tutora.",
+      "tutorStays": "Asistent ostaje za plan, dokumente i promjene u rasporedu."
     },
     "syllabus": {
       "books_one": "{{count}} knjiga",
@@ -3589,6 +3592,38 @@
       "ask": "Pitaj tutora",
       "askSub": "Timer ne staje dok pitaš",
       "unitSub": "Objasni, ispitaj, usmeni, svojim riječima"
+    },
+    "oral": {
+      "progress": "Pitanje {{n}} od {{total}}",
+      "asks": "Hoot pita",
+      "you": "Ti",
+      "close": "Zatvori usmeni",
+      "noVoice": "Glas na bosanskom još nije dostupan: pitanje je ispisano, a odgovaraš glasom."
     }
+  },
+  "voice": {
+    "title": "Glas",
+    "sub": "Za tutora i asistenta",
+    "speak": "Tutor govori naglas",
+    "speakSub": "Odgovori i pitanja se čitaju",
+    "notInBosnian": "Glas na bosanskom još nije dostupan. Odgovori su pisani.",
+    "answer": "Odgovaram glasom",
+    "answerSub": "Mikrofon umjesto tipkanja u Usmenom",
+    "howTitle": "Kako radi",
+    "onPhone": "Sve radi na telefonu",
+    "onPhoneBody": "Govor u tekst pretvara Whisper i razumije i bosanski. Naglas čita Kokoro, za sada samo na engleskom. Prvi put se skida oko 170 MB, a poslije radi bez interneta. Snimak glasa ne napušta telefon.",
+    "bosnianLater": "Diktiranje na bosanskom radi. Čitanje naglas na bosanskom dolazi kad bude dobar slobodan glas.",
+    "mic": "Diktiraj",
+    "listening": "Slušam",
+    "transcribing": "Pretvaram u tekst…",
+    "loading": "Skidam model glasa… {{p}}%",
+    "done": "Gotovo",
+    "cancel": "Otkaži",
+    "type": "Piši umjesto glasa",
+    "repeat": "Ponovi pitanje",
+    "micError": "Mikrofon nije dostupan. Dozvoli ga u postavkama preglednika ili piši.",
+    "readAloud": "Odgovori naglas",
+    "repeatShort": "Ponovi",
+    "typeShort": "Piši"
   }
 }

@@ -25,6 +25,7 @@
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
     "@fontsource-variable/figtree": "^5.3.0",
     "@hookform/resolvers": "^6.0.0",
+    "@huggingface/transformers": "3.8.1",
     "@open-spaced-repetition/binding-wasm32-wasip1": "0.6.0",
     "@supabase/supabase-js": "^2.118.0",
     "@tanstack/query-async-storage-persister": "^5.105.0",
@@ -38,6 +39,7 @@
     "fuse.js": "^7.5.0",
     "i18next": "^26.5.11",
     "katex": "^0.19.1",
+    "kokoro-js": "1.2.1",
     "pdfjs-dist": "^6.4.299",
     "radix-ui": "^1.8.1",
     "react": "^19.3.1",
@@ -80,5 +82,8 @@
     "vite": "^8.3.5",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "sharp": "0.35.5"
   }
 }

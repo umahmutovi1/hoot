@@ -54,7 +54,16 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
         // pdf.js is loaded only when a PDF goes to the owl, which needs a connection anyway; the
         // FSRS optimizer worker only runs online (its wasm is not precached either).
-        globIgnores: ['**/assets/pdf-*.js', '**/assets/fsrs*.js'],
+        // Voice (Sprint 18): Whisper / Kokoro and the ONNX runtime load on the first use of voice,
+        // which downloads the models anyway.
+        globIgnores: [
+          '**/assets/pdf-*.js',
+          '**/assets/fsrs*.js',
+          '**/assets/kokoro-*.js',
+          '**/assets/transformers*.js',
+          '**/assets/stt.worker-*.js',
+          '**/assets/tts.worker-*.js',
+        ],
         // Share target (POST /share-target) and Web Push handlers (push, notificationclick).
         importScripts: ['share-sw.js', 'push-sw.js'],
       },

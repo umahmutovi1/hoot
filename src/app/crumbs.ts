@@ -52,6 +52,7 @@ export function crumbsFor(pathname: string, t: TFunction, names: CrumbNames): Cr
       if (second === 'calendar') own.push({ label: t('menu.academicCalendar'), to: pathname })
       if (second === 'feeds') own.push({ label: t('feeds.title'), to: pathname })
       if (second === 'appearance') own.push({ label: t('appearance.title'), to: pathname })
+      if (second === 'voice') own.push({ label: t('voice.title'), to: pathname })
       if (second === 'academic') {
         own.push({ label: t('academic.faculty.title'), to: '/settings/academic' })
         if (third === 'found') own.push({ label: t('academic.found.crumb'), to: pathname })

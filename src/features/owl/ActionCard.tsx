@@ -22,6 +22,8 @@ export function ActionCard({ action }: { action: OwlAction }) {
       return <NotesCard action={action} />
     case 'quiz':
       return <QuizCard text={action.text} />
+    case 'tutor':
+      return <TutorCard text={action.text} />
     case 'add_timetable':
       return <TimetableCard />
     case 'add_contents':
@@ -59,6 +61,55 @@ function NotesCard({ action }: { action: Extract<OwlAction, { kind: 'search_note
           {h.snippet && <span className="text-xs text-ink-muted">{h.snippet}</span>}
         </Link>
       ))}
+    </div>
+  )
+}
+
+/**
+ * A question about the material goes to the tutor (board "AI chat · pitanje o gradivu vodi u
+ * tutora"): the chapter it is about, with "Otvori tutora" on Objasni.
+ */
+function TutorCard({ text }: { text: string }) {
+  const { t } = useTranslation()
+  const { data: sources = [] } = useAllSources()
+  const chapters = sources
+    .filter((s) => !s.is_rough)
+    .flatMap((s) => s.units)
+    .filter((u) => u.kind === 'chapter' && u.archived_at === null)
+  const found = findChapter(text, chapters)
+  const source = found ? sources.find((s) => s.id === found.source_id) : undefined
+  const pages =
+    found?.page_start != null && found.page_end != null
+      ? t('tutor.pages', { from: found.page_start, to: found.page_end })
+      : null
+  return (
+    <div className="flex flex-col gap-2">
+      {found ? (
+        <div className="surface flex flex-col gap-3 rounded-[22px] p-3.5">
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-[13px] bg-subject-lavender-soft text-subject-lavender-ink">
+              <SparkleIcon size={20} />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-px">
+              <span className="text-[15px] font-bold">
+                {t('tutor.modes.explain')} · {[found.label, found.title].filter(Boolean).join(' ')}
+              </span>
+              <span className="text-[13px] text-ink-secondary tabular-nums">
+                {[source?.title, pages].filter(Boolean).join(' · ')}
+              </span>
+            </span>
+          </div>
+          <Link
+            to={`/tutor/${found.id}/explain`}
+            className="btn-primary flex h-[52px] items-center justify-center rounded-[16px] text-base font-bold"
+          >
+            {t('owl.action.openTutor')}
+          </Link>
+        </div>
+      ) : (
+        <p className="text-sm text-ink-muted">{t('owl.action.tutorNone', { text })}</p>
+      )}
+      <p className="text-sm leading-[21px] text-ink-secondary">{t('owl.action.tutorStays')}</p>
     </div>
   )
 }
