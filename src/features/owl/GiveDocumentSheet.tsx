@@ -467,8 +467,9 @@ function AttachmentCard({
 
   return (
     <div className="flex items-center gap-3 rounded-[18px] bg-canvas p-2.5">
-      {preview ? (
+      {preview?.startsWith('blob:') ? (
         <img
+          // Only a local object URL of the picked file is shown.
           src={preview}
           alt=""
           className="size-14 shrink-0 rounded-[14px] surface object-cover object-top"

@@ -25,6 +25,8 @@ function load() {
 }
 
 self.onmessage = async (event: MessageEvent<{ text?: string; warm?: boolean }>) => {
+  // Only this app's pages may talk to the worker (a dedicated worker reports '' or its origin).
+  if (event.origin !== '' && event.origin !== self.location.origin) return
   try {
     const model = await load()
     if (event.data.warm || !event.data.text) {
