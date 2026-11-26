@@ -8,6 +8,8 @@ import type { OptimizerResult, TrainReview } from '@/lib/srs/optimize'
  * the first message.
  */
 self.onmessage = async (event: MessageEvent<TrainReview[][]>) => {
+  // Only this app's pages may talk to the worker (a dedicated worker reports '' or its origin).
+  if (event.origin !== '' && event.origin !== self.location.origin) return
   try {
     const b = await import('@open-spaced-repetition/binding-wasm32-wasip1')
     const items = event.data.map(

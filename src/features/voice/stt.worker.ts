@@ -31,6 +31,8 @@ function load() {
 self.onmessage = async (
   event: MessageEvent<{ audio?: Float32Array; language?: string; warm?: boolean }>,
 ) => {
+  // Only this app's pages may talk to the worker (a dedicated worker reports '' or its origin).
+  if (event.origin !== '' && event.origin !== self.location.origin) return
   try {
     const run = await load()
     if (event.data.warm || !event.data.audio) {
