@@ -17,6 +17,7 @@ function Mode({
   subClass,
   icon,
   badge,
+  unavailable,
 }: {
   to: string
   title: string
@@ -25,15 +26,11 @@ function Mode({
   subClass: string
   icon: ReactNode
   badge?: string
+  /** Why the mode cannot run for this chapter yet; the tile is then shown but not a link. */
+  unavailable?: string
 }) {
-  return (
-    <Link
-      to={to}
-      className={cn(
-        'flex min-h-[168px] flex-col justify-between rounded-card p-4 text-ink',
-        className,
-      )}
-    >
+  const body = (
+    <>
       <span className="flex items-center justify-between">
         <span className="flex size-10 items-center justify-center rounded-[13px] bg-raised/65">
           {icon}
@@ -46,8 +43,27 @@ function Mode({
       </span>
       <span className="flex flex-col gap-1">
         <span className="font-display text-[22px] leading-[1.1] font-bold">{title}</span>
-        <span className={cn('text-[13px] leading-[1.35] font-semibold', subClass)}>{sub}</span>
+        <span
+          className={cn(
+            'text-[13px] leading-[1.35] font-semibold',
+            unavailable ? 'text-ink-secondary' : subClass,
+          )}
+        >
+          {unavailable ?? sub}
+        </span>
       </span>
+    </>
+  )
+  const tile = 'flex min-h-[168px] flex-col justify-between rounded-card p-4 text-ink'
+  if (unavailable)
+    return (
+      <div aria-disabled="true" className={cn(tile, 'surface opacity-70')}>
+        {body}
+      </div>
+    )
+  return (
+    <Link to={to} className={cn(tile, className)}>
+      {body}
     </Link>
   )
 }
@@ -58,7 +74,13 @@ export function TutorModesPage() {
   const { t } = useTranslation()
   const { data: subjects = [] } = useSubjects()
   const { canPrivate, state } = useAiAvailability()
-  const { questions } = useRound(ctx)
+  const { questions, items } = useRound(ctx)
+  // Objasni and Svojim riječima read the source text; Ispitaj me and Usmeni also work from exam
+  // questions and cards. A mode that cannot run says why instead of opening an empty screen.
+  const canQuiz = ctx.hasText || (items?.length ?? 0) > 0
+  const needsText = t('tutor.needsText')
+  const needsMaterial = t('tutor.needsMaterial')
+  const recommended = canQuiz ? 'quiz' : ctx.hasText ? 'explain' : null
   const subject = subjects.find((s) => s.id === ctx.subjectId)?.name
   const pages =
     ctx.unit.page_start !== null && ctx.unit.page_end !== null
@@ -95,6 +117,14 @@ export function TutorModesPage() {
             {ctx.hasText ? info : t('tutor.noTextSub')}
           </span>
         </span>
+        {!ctx.hasText && (
+          <Link
+            to={`/subjects/${ctx.subjectId}/sources/${ctx.source.id}/text`}
+            className="flex h-11 shrink-0 items-center rounded-full bg-brand px-3.5 text-[13px] font-bold text-ground"
+          >
+            {t('tutor.addText')}
+          </Link>
+        )}
       </div>
       {state === 'ready' && !canPrivate && (
         <p className="surface rounded-card px-4 py-3.5 text-sm text-ink-secondary">
@@ -110,6 +140,8 @@ export function TutorModesPage() {
           className="bg-subject-blue-soft"
           subClass="text-brand-strong"
           icon={<BookIcon size={20} />}
+          badge={recommended === 'explain' ? t('tutor.recommended') : undefined}
+          unavailable={ctx.hasText ? undefined : needsText}
         />
         <Mode
           to="quiz"
@@ -118,7 +150,8 @@ export function TutorModesPage() {
           className="bg-subject-lavender-soft"
           subClass="text-subject-lavender-ink"
           icon={<CheckIcon size={20} />}
-          badge={t('tutor.recommended')}
+          badge={recommended === 'quiz' ? t('tutor.recommended') : undefined}
+          unavailable={canQuiz ? undefined : needsMaterial}
         />
         <Mode
           to="quiz?oral=1"
@@ -127,6 +160,7 @@ export function TutorModesPage() {
           className="bg-subject-orange-soft"
           subClass="text-subject-orange-ink"
           icon={<SparkleIcon size={20} />}
+          unavailable={canQuiz ? undefined : needsMaterial}
         />
         <Mode
           to="feynman"
@@ -135,6 +169,7 @@ export function TutorModesPage() {
           className="bg-success-soft"
           subClass="text-success-ink"
           icon={<SparkleIcon size={20} />}
+          unavailable={ctx.hasText ? undefined : needsText}
         />
       </div>
       <p className="px-1 text-[13px] leading-[1.4] text-ink-secondary">{t('tutor.ratedHint')}</p>

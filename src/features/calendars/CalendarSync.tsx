@@ -67,8 +67,10 @@ export function CalendarSync() {
       )
     }
     const filter = `user_id=eq.${userId}`
+    // A fresh topic per subscription: supabase-js hands back a channel with the same topic while
+    // the previous one is still being removed, and adding callbacks to it then throws.
     const channel = supabase
-      .channel(`calendar-sync:${userId}`)
+      .channel(`calendar-sync:${userId}:${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'external_events', filter },

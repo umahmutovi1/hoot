@@ -1,7 +1,3 @@
-import { StrategistCard } from '@/features/strategist/StrategistCard'
-import { ReadinessCard } from '@/features/progress/ReadinessCard'
-import { ProgressProvider } from '@/features/progress/useProgress'
-import { ForecastCard } from '@/features/progress/ForecastCard'
 import { MoodleCard } from '@/features/calendars/MoodleCard'
 import { CalendarImportCard } from '@/features/calendars/CalendarImportCard'
 import { useCalendarProposals } from '@/features/calendars/matches'
@@ -40,9 +36,13 @@ import { SemesterEndCard } from './SemesterEndCard'
 import { useActiveSession } from '@/features/session/api'
 import { GainedCard } from './GainedCard'
 import { useGainedCard } from './useGainedCard'
+import { ResultPromptCard } from './ResultPromptCard'
+import { useAwaitingResults } from './useAwaitingResults'
+import { SectionBoundary } from '@/components/SectionBoundary'
 import { DayOffCard, NextCard } from './NextCard'
 import { AdjustDaySheet } from './AdjustDaySheet'
 import { TodaySchedule } from './TodaySchedule'
+import { TodayProgress } from './TodayProgress'
 import { usePlanToday, type PlanToday } from './usePlanToday'
 
 // "Znaš li?" is switched off for now: Today gets crowded once the plan and its cards arrive
@@ -132,7 +132,9 @@ export function TodayPage() {
           )}
           {dayOff && <MovedCard plan={plan} />}
           <div className="mt-3">
-            <FocusBar plan={plan} />
+            <SectionBoundary name="focus-bar">
+              <FocusBar plan={plan} />
+            </SectionBoundary>
           </div>
           <AdjustDaySheet
             open={adjusting}
@@ -140,16 +142,26 @@ export function TodayPage() {
             plan={plan}
             dayOff={dayOff}
           />
-          <SemesterEndCard />
-          <ActionCards plan={plan} />
-          {!dayOff && <WhyToday plan={plan} />}
-          <TodaySchedule plan={plan} />
-          <ProgressProvider>
-            <ForecastCard compact />
-            <ReadinessCard />
-            <StrategistCard compact />
-          </ProgressProvider>
-          <ExamTiles now={plan.now} />
+          <SectionBoundary name="semester-end">
+            <SemesterEndCard />
+          </SectionBoundary>
+          <SectionBoundary name="action-cards">
+            <ActionCards plan={plan} />
+          </SectionBoundary>
+          {!dayOff && (
+            <SectionBoundary name="why-today">
+              <WhyToday plan={plan} />
+            </SectionBoundary>
+          )}
+          <SectionBoundary name="schedule">
+            <TodaySchedule plan={plan} />
+          </SectionBoundary>
+          <SectionBoundary name="exams">
+            <ExamTiles now={plan.now} />
+          </SectionBoundary>
+          <SectionBoundary name="progress">
+            <TodayProgress />
+          </SectionBoundary>
           <BlockSheet
             open={params.get('extra') === '1'}
             onOpenChange={(o) => !o && setParams({}, { replace: true })}
@@ -177,7 +189,9 @@ export function TodayPage() {
           <SetupChecklist />
         </div>
       )}
-      <AutoReplanSheet plan={plan} />
+      <SectionBoundary name="auto-replan">
+        <AutoReplanSheet plan={plan} />
+      </SectionBoundary>
 
       {SHOW_FACT_CARD && (
         <div className="mt-10">
@@ -241,7 +255,9 @@ function ActionCards({ plan }: { plan: PlanToday }) {
   const rest = suggestions.filter((s) => s.kind !== 'fresh_start' && s.kind !== 'deficit')
   const moodle = useDeadlineProposals()
   const fromCalendar = useCalendarProposals()
+  const awaitingResult = useAwaitingResults(plan.today).length > 0
   const cards = [
+    ...(awaitingResult ? [<ResultPromptCard key="result" today={plan.today} />] : []),
     ...urgent.map((s) => <SuggestionCard key={s.key} suggestion={s} />),
     ...(gained ? [<GainedCard key="gained" plan={plan} />] : []),
     ...lectures.pending.map((l) => (

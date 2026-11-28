@@ -21,8 +21,11 @@ export async function signOut() {
 
 /** After the first sign-in with a code (PRD "Dopune, 29. okt 2026" → Prijava). */
 export async function signInWithPassword(email: string, password: string) {
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) throw error
+  // Signing in with a password proves there is one: never offer "Postavi lozinku" afterwards.
+  if (!data.user?.user_metadata?.password_set)
+    await supabase.auth.updateUser({ data: { password_set: true } }).catch(() => undefined)
 }
 
 /**

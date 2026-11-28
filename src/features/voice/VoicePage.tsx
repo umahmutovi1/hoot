@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { ScreenTitle } from '@/components/ScreenTitle'
 import { Switch } from '@/components/Switch'
-import { useLocale } from '@/features/settings/useLocale'
 import { useVoiceSettings } from './store'
-import { canSpeak } from './text'
+import { useSpeech } from './useSpeech'
 
 const row = 'flex min-h-14 items-center gap-3 py-2 pr-3 pl-4 [&+&]:border-t [&+&]:border-hairline'
 
@@ -13,9 +12,9 @@ const row = 'flex min-h-14 items-center gap-3 py-2 pr-3 pl-4 [&+&]:border-t [&+&
  */
 export function VoicePage() {
   const { t } = useTranslation()
-  const { locale } = useLocale()
   const { speakAloud, answerByVoice, set } = useVoiceSettings()
-  const speaks = canSpeak(locale)
+  // English: Kokoro; Bosnian: only with a Bosnian-like voice built into the phone.
+  const speaks = useSpeech().supported
   return (
     <div className="flex flex-col gap-4">
       <ScreenTitle title={t('voice.title')} sub={t('voice.sub')} />

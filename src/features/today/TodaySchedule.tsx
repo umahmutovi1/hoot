@@ -281,9 +281,13 @@ export function TodaySchedule({ plan }: { plan: PlanToday }) {
         <button
           type="button"
           onClick={() => setEditing({ open: true, block: null, deleting: false })}
-          className="flex w-full items-center gap-3 px-4 py-[13px]"
+          className={cn(
+            'flex min-h-12 w-full items-center gap-3 px-4 py-[13px]',
+            rows.length === 0 && 'justify-center',
+          )}
         >
-          <span className="w-11" />
+          {/* Lines up with the time column under blocks; alone it is centred. */}
+          {rows.length > 0 && <span className="w-11" />}
           <span className="flex size-[22px] shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">
             <PlusIcon size={14} />
           </span>

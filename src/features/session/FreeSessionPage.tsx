@@ -9,7 +9,11 @@ import { formatDuration, pagesLabel, statusLabel } from '@/features/sources/form
 import { useSubjects } from '@/features/subjects/api'
 import { defaultMode } from '@/lib/estimates/calibration'
 import { cn } from '@/lib/utils'
-import { useSessionWriter } from './api'
+import { AUTO_RHYTHM, autoRhythmId } from '@/lib/session/shape'
+import { useActiveSession, useSessionWriter } from './api'
+import { formatClock, toSegment } from './model'
+import { useNow } from './useNow'
+import { activeMs } from '@/lib/session/timer'
 import { Chip } from './Chip'
 import { RhythmRow } from './RhythmRow'
 import { Stepper } from './Stepper'
@@ -44,11 +48,13 @@ export function FreeSessionPage() {
   const navigate = useNavigate()
   const online = useOnline()
   const setTimerMode = useSessionUi((s) => s.setTimerMode)
-  const { suggestedId } = usePresets()
+  const { defaultId } = usePresets()
   const keepRhythm = useKeepRhythm()
-  const [presetId, setPresetId] = useState<string | null>(null)
+  // "Hoot bira" by default: the rhythm follows the length, so 30 min never gets a 50/15 break.
+  const [presetId, setPresetId] = useState<string>(AUTO_RHYTHM)
   const [keep, setKeep] = useState(false)
-  const timerMode = presetId ?? suggestedId
+  const { data: running } = useActiveSession()
+  const now = useNow(1000, Boolean(running))
   const writer = useSessionWriter()
   const { data: subjects, isPending } = useSubjects()
   const active = (subjects ?? []).filter((s) => !s.archived)
@@ -86,6 +92,9 @@ export function FreeSessionPage() {
   const unit = source?.leaves.find((u) => u.id === unitId) ?? null
   const pickSubject = active.find((s) => s.id === pick?.subjectId)
   const canStart = mode === 'auto' ? pick !== null : subject !== null
+  // The session is as long as the picked piece (filled up to the time) or the chosen time.
+  const sessionMinutes = mode === 'auto' && pick ? pick.minutes : minutes
+  const timerMode = presetId === AUTO_RHYTHM ? autoRhythmId(sessionMinutes, defaultId) : presetId
   const pickMinutes = (m: number | 'custom') => {
     setPreset(m)
     setIdeaIndex(0)
@@ -118,6 +127,31 @@ export function FreeSessionPage() {
       setBusy(false)
     }
   }
+
+  // One session at a time: starting another would fail, so the running one comes first.
+  if (running)
+    return (
+      <>
+        {title}
+        <div className="surface mt-2 flex flex-col gap-3 rounded-card p-4">
+          <span className="flex flex-col gap-0.5">
+            <span className="text-[15px] font-semibold">{t('session.start.running')}</span>
+            <span className="text-[13px] leading-[1.35] text-ink-secondary tabular-nums">
+              {t('session.start.runningSub', {
+                subject: active.find((s) => s.id === running.session.subject_id)?.name ?? '',
+                time: formatClock(activeMs(running.segments.map(toSegment), now)),
+              })}
+            </span>
+          </span>
+          <Link
+            to="/session"
+            className="btn-primary flex h-12 items-center justify-center rounded-full text-[15px] font-semibold"
+          >
+            {t('session.start.resume')}
+          </Link>
+        </div>
+      </>
+    )
 
   if (active.length === 0)
     return (
@@ -362,11 +396,17 @@ export function FreeSessionPage() {
 
         <div className="flex flex-col gap-2.5">
           <span className={label}>{t('session.start.breaks')}</span>
-          <RhythmRow value={timerMode} onChange={setPresetId} keep={keep} onKeepChange={setKeep} />
+          <RhythmRow
+            value={presetId}
+            onChange={setPresetId}
+            keep={keep}
+            onKeepChange={setKeep}
+            minutes={sessionMinutes}
+          />
         </div>
       </div>
 
-      <div className="sticky bottom-[calc(16px+var(--nav-offset,0px)+env(safe-area-inset-bottom))] z-10 -mx-5 mt-6 bg-ground px-5 pt-3">
+      <div className="sticky bottom-[calc(16px+var(--nav-offset,0px)+env(safe-area-inset-bottom))] z-10 -mx-5 mt-6 bg-ground px-5 pt-3 shadow-[0_-12px_20px_var(--color-ground)]">
         <button
           type="button"
           onClick={() => void start()}
@@ -376,7 +416,7 @@ export function FreeSessionPage() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M7 5v14l12-7z" />
           </svg>
-          {t('today.only.start', { minutes: mode === 'auto' && pick ? pick.minutes : minutes })}
+          {t('today.only.start', { minutes: sessionMinutes })}
         </button>
       </div>
     </>

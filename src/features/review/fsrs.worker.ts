@@ -8,8 +8,7 @@ import type { OptimizerResult, TrainReview } from '@/lib/srs/optimize'
  * the first message.
  */
 self.onmessage = async (event: MessageEvent<TrainReview[][]>) => {
-  // Only this app's pages may talk to the worker (a dedicated worker reports '' or its origin).
-  if (event.origin !== '' && event.origin !== self.location.origin) return
+  if (!sameOrigin(event.origin)) return
   try {
     const b = await import('@open-spaced-repetition/binding-wasm32-wasip1')
     const items = event.data.map(
@@ -28,4 +27,12 @@ self.onmessage = async (event: MessageEvent<TrainReview[][]>) => {
   } catch (e) {
     self.postMessage({ error: String(e) })
   }
+}
+
+/**
+ * Only this app's pages may talk to the worker. A dedicated worker gets '' from Chromium, but
+ * other engines report 'null' or nothing; dropping those silently hung dictation on the phone.
+ */
+function sameOrigin(origin: string | undefined | null): boolean {
+  return !origin || origin === 'null' || origin === self.location.origin
 }

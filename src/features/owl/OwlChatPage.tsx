@@ -2,7 +2,15 @@ import { PageTitle } from '@/components/PageTitle'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AiSparkIcon, ClockIcon, DocIcon, PencilIcon, PlusIcon, SendIcon } from '@/components/icons'
+import {
+  AiSparkIcon,
+  ClockIcon,
+  DocIcon,
+  PencilIcon,
+  PlusIcon,
+  SendIcon,
+  SparkleIcon,
+} from '@/components/icons'
 import { useSubjects } from '@/features/subjects/api'
 import { splitLink } from '@/lib/documents/link'
 import { cn } from '@/lib/utils'
@@ -17,6 +25,7 @@ import { useOwlStore, type OwlMessage, type StateRef } from './store'
 import { useOwl } from './useOwl'
 import { MicButton } from '@/features/voice/Dictation'
 import { useSpeech } from '@/features/voice/useSpeech'
+import { useNextTutorUnit } from '@/features/tutor/useNextTutorUnit'
 
 /** The assistant in the AI tab (Chat.dc.html): conversation, suggestions and the document +. */
 export function OwlChatPage() {
@@ -52,6 +61,7 @@ export function OwlChatPage() {
     setQuestion('')
   }
 
+  const tutorUnit = useNextTutorUnit()
   const suggestions = [
     { label: t('owl.suggest.important'), ask: t('owl.suggest.important') },
     { label: t('owl.suggest.importExams'), kind: 'exam_schedule' as const },
@@ -104,9 +114,19 @@ export function OwlChatPage() {
       </div>
 
       <div className="sticky bottom-[calc(16px+var(--nav-offset,0px)+env(safe-area-inset-bottom)+var(--vv-bottom,0px))] z-10 keyboard:bottom-[calc(8px+var(--vv-bottom,0px))] flex flex-col gap-2">
-        {enabled && messages.length === 0 && (
+        {enabled && (messages.length === 0 || tutorUnit) && (
           <div className="-mx-5 flex gap-2 overflow-x-auto px-5 py-0.5 [scrollbar-width:none]">
-            {suggestions.map((sug) => (
+            {tutorUnit && (
+              // The tutor is one tap from the AI tab, on the next chapter in the plan.
+              <Link
+                to={`/tutor/${tutorUnit.id}`}
+                className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-subject-lavender-soft px-3.5 text-[13px] font-semibold whitespace-nowrap text-subject-lavender-ink"
+              >
+                <SparkleIcon size={16} />
+                {t('tutor.entry.chip', { title: tutorUnit.title })}
+              </Link>
+            )}
+            {(messages.length === 0 ? suggestions : []).map((sug) => (
               <button
                 key={sug.label}
                 type="button"

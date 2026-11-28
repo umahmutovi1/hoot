@@ -216,6 +216,17 @@
         "high": "A bit more today, hardest material first",
         "normal": "Today's plan is back to usual"
       }
+    },
+    "result": {
+      "title": "How did the exam go?",
+      "sub": "{{subject}} · {{exam}}. Add the result so Hoot knows where you stand.",
+      "enter": "Add result",
+      "later": "Later"
+    },
+    "progress": {
+      "title": "Progress",
+      "range": "{{low}}–{{high}}% of the material by the exam",
+      "rangeOne": "about {{pct}}% of the material by the exam"
     }
   },
   "plan": {
@@ -629,7 +640,10 @@
       "duration": "Duration",
       "durationLess": "{{count}} minutes less",
       "durationMore": "{{count}} minutes more",
-      "who": "Who picks the material"
+      "who": "Who picks the material",
+      "running": "A session is already running",
+      "runningSub": "{{subject}} · {{time}} studied. Finish it before a new one.",
+      "resume": "Continue session"
     },
     "mode": {
       "label": "Study mode",
@@ -657,7 +671,10 @@
       "segments_other": "{{count}} segments",
       "pauseTotal_one": "{{count}} min of breaks",
       "pauseTotal_other": "{{count}} min of breaks",
-      "freePause": "Free pause · {{time}}"
+      "freePause": "Free pause · {{time}}",
+      "endIn": "Ends in {{time}}",
+      "endDue": "Time's up",
+      "finishSession": "Finish session"
     },
     "units": {
       "title": "Working on",
@@ -665,7 +682,8 @@
       "other": "Another unit",
       "pickTitle": "What are you working on?",
       "none": "No unit",
-      "note": "Note for the active unit"
+      "note": "Note for the active unit",
+      "short": "Unit"
     },
     "timerSheet": {
       "title": "Timer mode",
@@ -857,7 +875,18 @@
       "breakMore": "Longer break",
       "keep": "Use from now on",
       "keepSub": "Hoot will plan blocks in this rhythm",
-      "keepLabel": "Use this rhythm from now on"
+      "keepLabel": "Use this rhythm from now on",
+      "auto": "Hoot picks",
+      "autoOne": "in one go, no break",
+      "autoTwo": "one short break halfway",
+      "autoLong": "your rhythm: {{name}}",
+      "noBreak": "no break",
+      "breaks_one": "{{count}} break",
+      "breaks_other": "{{count}} breaks",
+      "shape": "{{study}} min of study · {{breaks}} · ends around {{end}}",
+      "shapeAria": "Session plan: {{steps}}",
+      "stepWork": "study {{min}} min",
+      "stepBreak": "break {{min}} min"
     }
   },
   "settings": {
@@ -987,9 +1016,9 @@
     "makeupScope": "Same material as {{title}}.",
     "makeupTitle": "Make-up: {{title}}",
     "steps": {
-      "label": "Steps",
       "1": "1 · Basics",
       "2": "2 · What's on it",
+      "label": "Steps",
       "next": "Next: what's on it",
       "back": "Back"
     },
@@ -2585,11 +2614,11 @@
     "reminders": "Reminder before a block",
     "remindersSub": "Pick one or more. None means no reminders.",
     "offset": {
-      "120": "2 h",
-      "60": "1 h",
-      "30": "30 min",
+      "5": "5 min",
       "15": "15 min",
-      "5": "5 min"
+      "30": "30 min",
+      "60": "1 h",
+      "120": "2 h"
     },
     "remindersHint": "If you don't start a block, “15 min late” comes 15 min later, once per block. Nothing comes between {{from}} and {{to}} (your rhythm).",
     "remindersHintNoRhythm": "If you don't start a block, “15 min late” comes 15 min later, once per block.",
@@ -3457,7 +3486,8 @@
       "studySub": "The same session, just with the tutor. The time counts.",
       "ask": "Ask the tutor",
       "askSub": "The timer keeps running while you ask",
-      "unitSub": "Explain, quiz, oral, in your own words"
+      "unitSub": "Explain, quiz, oral, in your own words",
+      "chip": "Study with the tutor · {{title}}"
     },
     "oral": {
       "progress": "Question {{n}} of {{total}}",
@@ -3465,20 +3495,23 @@
       "you": "You",
       "close": "Close oral",
       "noVoice": "Voice in Bosnian isn't available yet: the question is written and you answer by voice."
-    }
+    },
+    "needsText": "Needs the source text (PDF)",
+    "needsMaterial": "Needs a PDF, questions or cards",
+    "addText": "Add PDF"
   },
   "voice": {
     "title": "Voice",
     "sub": "For the tutor and the assistant",
     "speak": "The tutor speaks",
     "speakSub": "Answers and questions are read aloud",
-    "notInBosnian": "Voice in Bosnian isn't available yet. Answers are written.",
+    "notInBosnian": "Your phone has no Bosnian, Croatian or Serbian voice, so answers stay written.",
     "answer": "I answer by voice",
     "answerSub": "Microphone instead of typing in Oral",
     "howTitle": "How it works",
     "onPhone": "Everything runs on your phone",
-    "onPhoneBody": "Whisper turns speech into text and understands Bosnian too. Kokoro reads aloud, in English only for now. The first time it downloads about 170 MB, then it works offline. Your voice recording never leaves the phone.",
-    "bosnianLater": "Dictation in Bosnian works. Reading aloud in Bosnian comes once there is a good open voice.",
+    "onPhoneBody": "Whisper turns speech into text and understands Bosnian too. Kokoro reads aloud in English, and your phone’s built-in voice reads Bosnian. The first time about 170 MB downloads, then it works offline. Your voice recording never leaves the phone.",
+    "bosnianLater": "Bosnian is read with a voice built into your phone. On iPhone: Settings → Accessibility → Spoken Content → Voices → Croatian (or Serbian), then reopen Hoot. Dictating in Bosnian works without it.",
     "mic": "Dictate",
     "listening": "Listening",
     "transcribing": "Turning it into text…",
@@ -3490,6 +3523,10 @@
     "micError": "The microphone isn't available. Allow it in the browser settings or type.",
     "readAloud": "Read answers aloud",
     "repeatShort": "Repeat",
-    "typeShort": "Type"
+    "typeShort": "Type",
+    "empty": "Didn’t catch anything. Try again, closer to the mic.",
+    "failed": "Couldn’t turn it into text. Check your connection (the model downloads the first time) and try again.",
+    "again": "Again",
+    "speakNow": "Speak, then tap Done."
   }
 }

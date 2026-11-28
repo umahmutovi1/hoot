@@ -94,7 +94,13 @@ export function pickForTime(all: PickInput): Pick | null {
   if (all.preferFill) {
     const check = pickForTime({ ...all, preferFill: false })
     if (check?.from !== 'review' || check.minutes >= minutes) return check
-    const block = pickForTime({ ...all, preferFill: false, dueReviews: [] })
+    // Without the checks: today's review block is the same check again, so it is left out too.
+    const block = pickForTime({
+      ...all,
+      preferFill: false,
+      dueReviews: [],
+      todayBlocks: all.todayBlocks.filter((b) => b.kind !== 'review'),
+    })
     return block && block.minutes > check.minutes ? block : check
   }
   const of = <T extends { subjectId: string }>(list: T[]) =>
