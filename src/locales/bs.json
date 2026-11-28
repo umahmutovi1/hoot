@@ -226,6 +226,17 @@
         "high": "Danas malo više, najteže gradivo prvo",
         "normal": "Plan danas je opet uobičajen"
       }
+    },
+    "result": {
+      "title": "Kako ti je prošao ispit?",
+      "sub": "{{subject}} · {{exam}}. Upiši rezultat da Hoot zna dokle si.",
+      "enter": "Upiši rezultat",
+      "later": "Kasnije"
+    },
+    "progress": {
+      "title": "Napredak",
+      "range": "{{low}}–{{high}}% gradiva do ispita",
+      "rangeOne": "oko {{pct}}% gradiva do ispita"
     }
   },
   "plan": {
@@ -648,7 +659,10 @@
       "duration": "Trajanje",
       "durationLess": "Manje {{count}} minuta",
       "durationMore": "Više {{count}} minuta",
-      "who": "Ko bira gradivo"
+      "who": "Ko bira gradivo",
+      "running": "Sesija je već u toku",
+      "runningSub": "{{subject}} · {{time}} učenja. Završi je prije nove.",
+      "resume": "Nastavi sesiju"
     },
     "mode": {
       "label": "Način učenja",
@@ -678,7 +692,10 @@
       "pauseTotal_one": "{{count}} min pauze ukupno",
       "pauseTotal_few": "{{count}} min pauze ukupno",
       "pauseTotal_other": "{{count}} min pauze ukupno",
-      "freePause": "Slobodna pauza · {{time}}"
+      "freePause": "Slobodna pauza · {{time}}",
+      "endIn": "Kraj za {{time}}",
+      "endDue": "Vrijeme je isteklo",
+      "finishSession": "Završi sesiju"
     },
     "units": {
       "title": "Sad radim na",
@@ -686,7 +703,8 @@
       "other": "Druga jedinica",
       "pickTitle": "Na čemu radiš?",
       "none": "Bez jedinice",
-      "note": "Bilješka za aktivnu jedinicu"
+      "note": "Bilješka za aktivnu jedinicu",
+      "short": "Jedinica"
     },
     "timerSheet": {
       "title": "Režim timera",
@@ -898,7 +916,19 @@
       "breakMore": "Duža pauza",
       "keep": "Koristi i ubuduće",
       "keepSub": "Hoot će planirati blokove u ovom ritmu",
-      "keepLabel": "Koristi ovaj ritam i ubuduće"
+      "keepLabel": "Koristi ovaj ritam i ubuduće",
+      "auto": "Hoot bira",
+      "autoOne": "u komadu, bez pauze",
+      "autoTwo": "jedna kratka pauza na pola",
+      "autoLong": "tvoj ritam: {{name}}",
+      "noBreak": "bez pauze",
+      "breaks_one": "{{count}} pauza",
+      "breaks_few": "{{count}} pauze",
+      "breaks_other": "{{count}} pauza",
+      "shape": "{{study}} min učenja · {{breaks}} · kraj oko {{end}}",
+      "shapeAria": "Raspored sesije: {{steps}}",
+      "stepWork": "učenje {{min}} min",
+      "stepBreak": "pauza {{min}} min"
     }
   },
   "settings": {
@@ -1033,9 +1063,9 @@
     "makeupScope": "Isto gradivo kao {{title}}.",
     "makeupTitle": "Popravni: {{title}}",
     "steps": {
-      "label": "Koraci",
       "1": "1 · Osnovno",
       "2": "2 · Šta ulazi",
+      "label": "Koraci",
       "next": "Dalje: šta ulazi",
       "back": "Nazad"
     },
@@ -2687,11 +2717,11 @@
     "reminders": "Podsjetnik prije bloka",
     "remindersSub": "Može više izbora. Bez izbora nema podsjetnika.",
     "offset": {
-      "120": "2 h",
-      "60": "1 h",
-      "30": "30 min",
+      "5": "5 min",
       "15": "15 min",
-      "5": "5 min"
+      "30": "30 min",
+      "60": "1 h",
+      "120": "2 h"
     },
     "remindersHint": "Ako blok ne započneš, 15 min poslije stiže „Kasniš 15 min“, jednom po bloku. Između {{from}} i {{to}} (tvoj ritam) ništa ne stiže.",
     "remindersHintNoRhythm": "Ako blok ne započneš, 15 min poslije stiže „Kasniš 15 min“, jednom po bloku.",
@@ -3591,7 +3621,8 @@
       "studySub": "Ista sesija, samo s tutorom. Vrijeme se broji.",
       "ask": "Pitaj tutora",
       "askSub": "Timer ne staje dok pitaš",
-      "unitSub": "Objasni, ispitaj, usmeni, svojim riječima"
+      "unitSub": "Objasni, ispitaj, usmeni, svojim riječima",
+      "chip": "Uči sa tutorom · {{title}}"
     },
     "oral": {
       "progress": "Pitanje {{n}} od {{total}}",
@@ -3599,20 +3630,23 @@
       "you": "Ti",
       "close": "Zatvori usmeni",
       "noVoice": "Glas na bosanskom još nije dostupan: pitanje je ispisano, a odgovaraš glasom."
-    }
+    },
+    "needsText": "Treba tekst izvora (PDF)",
+    "needsMaterial": "Treba PDF, pitanja ili kartice",
+    "addText": "Dodaj PDF"
   },
   "voice": {
     "title": "Glas",
     "sub": "Za tutora i asistenta",
     "speak": "Tutor govori naglas",
     "speakSub": "Odgovori i pitanja se čitaju",
-    "notInBosnian": "Glas na bosanskom još nije dostupan. Odgovori su pisani.",
+    "notInBosnian": "Telefon nema bosanski, hrvatski ni srpski glas, pa odgovori ostaju pisani.",
     "answer": "Odgovaram glasom",
     "answerSub": "Mikrofon umjesto tipkanja u Usmenom",
     "howTitle": "Kako radi",
     "onPhone": "Sve radi na telefonu",
-    "onPhoneBody": "Govor u tekst pretvara Whisper i razumije i bosanski. Naglas čita Kokoro, za sada samo na engleskom. Prvi put se skida oko 170 MB, a poslije radi bez interneta. Snimak glasa ne napušta telefon.",
-    "bosnianLater": "Diktiranje na bosanskom radi. Čitanje naglas na bosanskom dolazi kad bude dobar slobodan glas.",
+    "onPhoneBody": "Govor u tekst pretvara Whisper i razumije i bosanski. Na engleskom naglas čita Kokoro, a na bosanskom glas ugrađen u telefon. Prvi put se skida oko 170 MB, a poslije radi bez interneta. Snimak glasa ne napušta telefon.",
+    "bosnianLater": "Naglas na bosanskom čita glas ugrađen u telefon. Na iPhoneu: Postavke → Pristupačnost → Izgovoreni sadržaj → Glasovi → Hrvatski (ili Srpski), pa otvori Hoot ponovo. Diktiranje na bosanskom radi i bez toga.",
     "mic": "Diktiraj",
     "listening": "Slušam",
     "transcribing": "Pretvaram u tekst…",
@@ -3624,6 +3658,10 @@
     "micError": "Mikrofon nije dostupan. Dozvoli ga u postavkama preglednika ili piši.",
     "readAloud": "Odgovori naglas",
     "repeatShort": "Ponovi",
-    "typeShort": "Piši"
+    "typeShort": "Piši",
+    "empty": "Nije uhvaćen nijedan glas. Pokušaj ponovo, bliže mikrofonu.",
+    "failed": "Pretvaranje u tekst nije uspjelo. Provjeri internet (prvi put se skida model) i pokušaj ponovo.",
+    "again": "Ponovo",
+    "speakNow": "Govori, pa tapni Gotovo."
   }
 }
