@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/BottomSheet'
 import { useSessionWriter } from './api'
 import type { ActiveSession } from './model'
+import { Chip } from './Chip'
+import { STUDY_MODES } from './model'
 import { PresetChips } from './PresetChips'
 import { useSessionUi } from './store'
 
-/** The session's preset (reminders only) and "Odbaci sesiju". */
+/** The study mode, the session's preset (reminders only) and "Odbaci sesiju". */
 export function TimerSheet({
   open,
   onOpenChange,
@@ -33,6 +35,18 @@ export function TimerSheet({
       title={t('session.timerSheet.title')}
       subtitle={t('session.timerSheet.subtitle')}
     >
+      <div role="group" aria-label={t('session.mode.label')} className="flex flex-wrap gap-1.5">
+        {STUDY_MODES.map((m) => (
+          <Chip
+            key={m}
+            tone="brand"
+            selected={data.session.mode === m}
+            onClick={() => void writer.update(data, { mode: m })}
+          >
+            {t(`session.mode.${m}`)}
+          </Chip>
+        ))}
+      </div>
       <PresetChips
         label={t('session.timerSheet.title')}
         value={data.session.timer_mode}

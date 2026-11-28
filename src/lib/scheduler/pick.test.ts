@@ -107,6 +107,23 @@ describe('pickForTime', () => {
       })
     })
 
+    it("looks past today's review block, which is the same short check", () => {
+      const review = block('r1', {
+        kind: 'review',
+        minutes: 5,
+        daysToGoal: 0,
+        units: [{ unitId: 'u1', minutes: 5 }],
+      })
+      const r = pickForTime(
+        input({
+          todayBlocks: [review, block('b1', { minutes: 24, startMin: 1140 })],
+          dueReviews: due,
+          preferFill: true,
+        }),
+      )
+      expect(r).toMatchObject({ from: 'today', blockId: 'b1', minutes: 24 })
+    })
+
     it('keeps a check that fills the time', () => {
       const long = [{ ...due[0]!, minutes: 30 }]
       const r = pickForTime(
