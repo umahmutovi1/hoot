@@ -6,9 +6,33 @@
 
 export type VoiceLocale = 'bs' | 'en'
 
-/** Kokoro speaks English only; Bosnian text is never read with an English voice. */
-export function canSpeak(locale: VoiceLocale): boolean {
-  return locale === 'en'
+/**
+ * Kokoro speaks English only; Bosnian text is never read with an English voice. Bosnian is read
+ * only with a voice the phone already has (`hasSystemVoice`, see `pickSystemVoice()`).
+ */
+export function canSpeak(locale: VoiceLocale, hasSystemVoice = false): boolean {
+  return locale === 'en' || hasSystemVoice
+}
+
+/** Languages close enough to read Bosnian text, best first. */
+const BOSNIAN_LIKE = ['bs', 'hr', 'sr-latn', 'sr']
+
+/**
+ * The phone's own voice for Bosnian text (`speechSynthesis`): Bosnian, then Croatian, then
+ * Serbian; a local voice before a network one. Null when the phone has none.
+ */
+export function pickSystemVoice<V extends { lang: string; localService: boolean }>(
+  voices: V[],
+  locale: VoiceLocale,
+): V | null {
+  if (locale !== 'bs') return null
+  const rank = (v: V) => {
+    const lang = v.lang.toLowerCase().replace('_', '-')
+    const i = BOSNIAN_LIKE.findIndex((l) => lang === l || lang.startsWith(`${l}-`))
+    return i < 0 ? -1 : i * 2 + (v.localService ? 0 : 1)
+  }
+  const ranked = voices.filter((v) => rank(v) >= 0).sort((a, b) => rank(a) - rank(b))
+  return ranked[0] ?? null
 }
 
 /** Whisper's language for the app locale (Bosnian is close enough to its "bosnian"). */

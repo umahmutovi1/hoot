@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { CheckIcon, CloseIcon, PencilIcon } from '@/components/icons'
+import { CheckIcon, CloseIcon, PencilIcon, RefreshIcon } from '@/components/icons'
 import { Switch } from '@/components/Switch'
-import { useLocale } from '@/features/settings/useLocale'
 import { useVoiceSettings } from './store'
-import { canSpeak } from './text'
+import { useSpeech } from './useSpeech'
 import { useDictation } from './useDictation'
 
 export function MicIcon({ size = 22 }: { size?: number }) {
@@ -41,9 +40,9 @@ function DictationOverlay({
   readAloudSwitch: boolean
 }) {
   const { t } = useTranslation()
-  const { locale } = useLocale()
   const dictation = useDictation()
   const { speakAloud, set } = useVoiceSettings()
+  const canRead = useSpeech().supported
   const [text, setText] = useState('')
   const started = useRef(false)
   const { start } = dictation
@@ -54,10 +53,18 @@ function DictationOverlay({
     void start()
   }, [start])
 
+  // Nothing heard or a failure keeps the screen open: the big button listens again.
+  const retry = ['empty', 'failed', 'error'].includes(dictation.state)
   const done = async () => {
+    if (retry) {
+      setText('')
+      void start()
+      return
+    }
     const heard = dictation.state === 'listening' ? await dictation.stop() : text
+    if (!heard) return
     setText(heard)
-    if (heard) onText(heard)
+    onText(heard)
     onClose()
   }
   const status =
@@ -65,9 +72,13 @@ function DictationOverlay({
       ? t('voice.loading', { p: dictation.progress ?? 0 })
       : dictation.state === 'transcribing'
         ? t('voice.transcribing')
-        : dictation.state === 'error' || !dictation.supported
-          ? t('voice.micError')
-          : null
+        : dictation.state === 'empty'
+          ? t('voice.empty')
+          : dictation.state === 'failed'
+            ? t('voice.failed')
+            : dictation.state === 'error' || !dictation.supported
+              ? t('voice.micError')
+              : null
 
   return createPortal(
     <div
@@ -89,7 +100,7 @@ function DictationOverlay({
           >
             <CloseIcon size={22} />
           </button>
-          {readAloudSwitch && canSpeak(locale) && (
+          {readAloudSwitch && canRead && (
             <span className="flex h-11 items-center gap-2.5 rounded-full bg-ground/12 pr-1.5 pl-3.5 text-[13px] font-bold">
               {t('voice.readAloud')}
               <Switch
@@ -110,12 +121,10 @@ function DictationOverlay({
         >
           {text}
           {dictation.state === 'listening' && (
-            <span
-              aria-hidden="true"
-              className="ml-0.5 inline-block h-6 w-0.5 animate-pulse bg-ai align-[-4px] motion-reduce:animate-none"
-            />
+            <span className="text-ground/70">{t('voice.speakNow')}</span>
           )}
         </p>
+        {dictation.state === 'listening' && <LevelWave level={dictation.level} />}
         <section className="relative mt-auto flex h-[196px] items-start justify-between bg-ground px-6 pt-7 text-ink">
           <svg
             width="390"
@@ -136,12 +145,14 @@ function DictationOverlay({
               type="button"
               disabled={dictation.state === 'transcribing' || dictation.state === 'loading'}
               onClick={() => void done()}
-              aria-label={t('voice.done')}
+              aria-label={retry ? t('voice.again') : t('voice.done')}
               className="btn-primary flex size-[88px] items-center justify-center rounded-full shadow-[0_12px_28px_rgb(34_57_90/0.3)] disabled:opacity-60"
             >
-              <CheckIcon size={26} />
+              {retry ? <RefreshIcon size={26} /> : <CheckIcon size={26} />}
             </button>
-            <span className="text-[13px] font-bold text-brand-strong">{t('voice.done')}</span>
+            <span className="text-[13px] font-bold text-brand-strong">
+              {retry ? t('voice.again') : t('voice.done')}
+            </span>
           </div>
           <div className="flex w-[72px] flex-col items-center gap-1.5 pt-3.5">
             <button
@@ -160,6 +171,45 @@ function DictationOverlay({
       </div>
     </div>,
     document.body,
+  )
+}
+
+/**
+ * The board's wave, driven by the microphone's loudness (not a loop): flat when silent, taller
+ * when it hears speech, so it is clear the phone is listening.
+ */
+function LevelWave({ level }: { level: number }) {
+  const scale = 0.15 + level * 0.85
+  const path = (amp: number) =>
+    `M0 80 C 48 ${80 - amp}, 104 ${80 - amp}, 150 ${80 - amp * 0.2} C 176 ${80 + amp * 0.4}, 214 ${80 + amp * 0.4}, 240 ${80 - amp * 0.2} C 286 ${80 - amp}, 342 ${80 - amp}, 390 80`
+  return (
+    <svg
+      viewBox="0 0 390 160"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      className="mt-10 h-40 w-full"
+    >
+      <g
+        style={{ transform: `scaleY(${scale})`, transformOrigin: 'center' }}
+        className="transition-transform duration-100 ease-out motion-reduce:transition-none"
+      >
+        <path d={path(28)} stroke="rgb(251 245 230 / 0.25)" strokeWidth="3" fill="none" />
+        <path
+          d={path(40)}
+          className="stroke-brand-soft"
+          strokeWidth="3"
+          fill="none"
+          opacity="0.6"
+        />
+        <path
+          d={path(50)}
+          className="stroke-ground"
+          strokeWidth="4"
+          fill="none"
+          strokeLinecap="round"
+        />
+      </g>
+    </svg>
   )
 }
 

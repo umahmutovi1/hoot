@@ -25,8 +25,7 @@ function load() {
 }
 
 self.onmessage = async (event: MessageEvent<{ text?: string; warm?: boolean }>) => {
-  // Only this app's pages may talk to the worker (a dedicated worker reports '' or its origin).
-  if (event.origin !== '' && event.origin !== self.location.origin) return
+  if (!sameOrigin(event.origin)) return
   try {
     const model = await load()
     if (event.data.warm || !event.data.text) {
@@ -38,4 +37,12 @@ self.onmessage = async (event: MessageEvent<{ text?: string; warm?: boolean }>) 
   } catch (err) {
     self.postMessage({ error: err instanceof Error ? err.message : String(err) })
   }
+}
+
+/**
+ * Only this app's pages may talk to the worker. A dedicated worker gets '' from Chromium, but
+ * other engines report 'null' or nothing; dropping those silently hung dictation on the phone.
+ */
+function sameOrigin(origin: string | undefined | null): boolean {
+  return !origin || origin === 'null' || origin === self.location.origin
 }
