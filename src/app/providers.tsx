@@ -44,8 +44,8 @@ export function Providers({ children }: { children: ReactNode }) {
       persistOptions={{
         persister: queryPersister,
         maxAge: 7 * 24 * 60 * 60_000,
-        // Bump when a cached query changes shape.
-        buster: '1',
+        // Bump when a cached query changes shape (2: Set/Map caches became arrays, Nov 2026).
+        buster: '2',
       }}
     >
       <AuthProvider>

@@ -39,7 +39,7 @@ export function useUnitSummary(unitId: string, scope: SummaryScope) {
   const userId = useAuth().session?.user.id
   return useQuery({
     queryKey: summaryKey(userId, unitId, scope),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId && unitId),
     queryFn: async (): Promise<UnitSummary | null> => {
       const { data, error } = await supabase
         .from('unit_summaries')
@@ -144,7 +144,8 @@ export function useUnitsWithText() {
   return useQuery({
     queryKey: unitsWithTextKey(userId),
     enabled: Boolean(userId),
-    queryFn: async (): Promise<Set<string>> => {
+    // The cache is persisted as JSON, where a Set turns into {}: keep ids, build the Set in select.
+    queryFn: async (): Promise<string[]> => {
       const rows = await readPages((from, to) =>
         supabase
           .from('source_chunks')
@@ -153,15 +154,29 @@ export function useUnitsWithText() {
           .order('unit_id')
           .range(from, to),
       )
-      return new Set(rows.map((r) => r.unit_id))
+      return rows.map((r) => r.unit_id)
     },
+    select: idSet,
   })
 }
+
+const idSet = (ids: string[] | unknown): Set<string> =>
+  new Set(Array.isArray(ids) ? (ids as string[]) : [])
 
 export interface SummaryInputs {
   words: Map<string, number>
   pace: LearnedRate
 }
+
+interface CachedSummaryInputs {
+  words: [string, number][]
+  pace: LearnedRate
+}
+
+const toSummaryInputs = (c: CachedSummaryInputs): SummaryInputs => ({
+  words: new Map(Array.isArray(c.words) ? c.words : []),
+  pace: c.pace,
+})
 
 /** Plan input: each unit's summary length and the summary pace from timer sessions. */
 export function useSummaryInputs() {
@@ -169,7 +184,8 @@ export function useSummaryInputs() {
   return useQuery({
     queryKey: summaryInputsKey(userId),
     enabled: Boolean(userId),
-    queryFn: async (): Promise<SummaryInputs> => {
+    // Persisted as JSON (a Map would come back as {}): cached as entries, the Map is built in select.
+    queryFn: async (): Promise<CachedSummaryInputs> => {
       const [summaries, samples] = await Promise.all([
         readPages((from, to) =>
           supabase
@@ -189,11 +205,12 @@ export function useSummaryInputs() {
         ),
       ])
       return {
-        words: new Map(summaries.map((s) => [s.unit_id, s.words])),
+        words: summaries.map((s): [string, number] => [s.unit_id, s.words]),
         pace: summaryPace(
           samples.map((s) => ({ minutes: Number(s.minutes), words: s.summary_words ?? 0 })),
         ),
       }
     },
+    select: toSummaryInputs,
   })
 }
